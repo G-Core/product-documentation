@@ -1,6 +1,6 @@
 ---
-title: Manage custom images
-sidebarTitle: Manage
+title: Upload a custom image
+sidebarTitle: Upload
 ai-navigation: Upload a custom image to Gcore Cloud via the Customer Portal, REST API, or Terraform for use with Virtual Instances, Bare Metal servers, and GPU clusters.
 ---
 
@@ -9,15 +9,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>Use the Customer Portal to upload a custom image from a public URL and manage it in Gcore Cloud storage. Before uploading, verify the image meets the format, driver, and package requirements below.</p>
-
-## Image requirements
-
-Before uploading an image to the storage, check that it meets the required format, driver, and package requirements.
+<p>Use the [Gcore Customer Portal](https://portal.gcore.com) to upload a custom image from a public URL. Before uploading, verify it meets the format, driver, and package requirements below.</p>
 
 ### Supported formats
 
-The uploaded image must be in one of the following formats:
+<p>The uploaded image must be in one of the following formats:</p>
 
 |   |   |    
 |---|---|  
@@ -30,23 +26,23 @@ The uploaded image must be in one of the following formats:
   
 ### Drivers and packages
 
-Images downloaded from other cloud providers already include both VirtIO SCSI drivers and the `cloud-init` package. For custom-built images, install and configure both before uploading.
+<p>Images downloaded from other cloud providers already include both VirtIO SCSI drivers and the `cloud-init` package. For custom-built images, install and configure both before uploading.</p>
 
 ### Start modes
 
-The **Instance quick start** checkbox controls how Virtual Instances are deployed from the image. Choose based on speed requirements and whether the image needs to remain deletable.
+<p>The **Instance quick start** checkbox controls how Virtual Instances are deployed from the image. Choose based on speed requirements and whether it needs to remain deletable.</p>
 
 Deployment mode | Standard | Quick start  
 ---|---|---  
 Technology | RBD copy-on-write | RBD copy-on-write  
-Image data | All data is copied to a separate volume | Image data is **not** copied when reading or writing — all changes are applied directly to the original image  
+Image data | All data is copied to a separate volume | Image data is not copied when reading or writing — all changes are applied directly to the original image  
 Format | qcow2 | raw  
 Resource usage | Resource-intensive | Less resources used  
 Image deletion | The image can be deleted at any time | The image cannot be deleted while Virtual Instances created from it are active  
 
 ## Upload an image
 
-Once the image meets the requirements above, upload it using the following steps.
+<p>Once the image meets the requirements above, upload it using the following steps.</p>
 
 ### Open the upload form
 
@@ -65,13 +61,13 @@ Once the image meets the requirements above, upload it using the following steps
 - Virtual GPU Clusters
 - Bare Metal GPU Clusters
 
-<p>2. Enter the image name and specify the URL from where the image will be downloaded.</p>
+<p>2. Enter a name and the public URL from which to download the image.</p>
 
 <Frame>![Upload an Image form with the image name and URL fields filled in](/images/docs/cloud/images/upload-an-image-to-the-storage/enter-url-of-your-image-new.png)</Frame>
 
 <p>3. Choose the architecture of the image based on the processor type where it will run: select **x86-64** for traditional CISC processors like Intel or AMD, or **ARM** for RISC-based processors such as ARM CPUs.</p>
 
-<p>4. (Optional) Select the **Instance quick start** checkbox to use raw format for faster deployment. Without this option, the image is copied to a separate qcow2 volume before use. See [Start modes](#start-modes) for a full comparison.</p>
+<p>4. (Optional) Select the **Instance quick start** checkbox to use raw format for faster deployment — the [start modes](#start-modes) comparison table covers the trade-offs. Without this option, the image is copied to a separate qcow2 volume before use.</p>
 
 <Note>
 When Instance quick start is enabled, the image cannot be deleted while Virtual Instances created from it are active.
@@ -83,24 +79,27 @@ When Instance quick start is enabled, the image cannot be deleted while Virtual 
 
 <p>7. In the **Type of firmware with which to boot the guest** field, select **UEFI** or **BIOS**. Bare Metal servers and GPU Bare Metal clusters support UEFI only. Virtual Instances and GPU virtual clusters support both — choose UEFI for modern systems or BIOS for legacy setups.</p>
 
-<p>8. In the **Virtual chipset type** field, choose **q35** or **i440** based on the OS version, required functionality, and supported virtual devices.</p>
+<p>8. In the **Virtual chipset type** field, choose the virtual motherboard chipset:</p>
 
-<p>9. (Optional) Select the **Add tags** checkbox and add metadata tags using **Key** and **Value** pairs to organize and identify images.</p>
+- **q35** — modern PCIe-based chipset, recommended for current operating systems and UEFI
+- **i440** — legacy PCI-based chipset, for older operating systems with limited PCIe support
 
-### Upload and verify
+<p>9. (Optional) Select the **Add tags** checkbox, then enter **Key** and **Value** pairs to attach [tags](/cloud/tags) to the image.</p>
+
+### Upload
 
 <p>1. Click the **Upload** button.</p>
 
 <Frame>![Upload an Image form with the Upload button](/images/docs/cloud/images/upload-an-image-to-the-storage/click-upload-new.png)</Frame>
 
-<p>Gcore fetches the image from the URL and stores it in the selected region. Once the download completes, the image appears in the **Images** list and is ready to use when creating Virtual Instances, Bare Metal servers, or GPU clusters.</p>
+<p>2. Confirm it appears in the **Images** list. Gcore fetches and stores it in the selected region, making it available for creating Virtual Instances, Bare Metal servers, and GPU clusters.</p>
 
 <Frame>![Images list showing a newly added custom image](/images/docs/cloud/images/upload-an-image-to-the-storage/images-list-new.png)</Frame>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Use the Gcore Cloud API to upload a custom image by providing a public URL. Gcore fetches and stores the image in the selected region. Images must be in raw, vhd, vhdx, vdi, ploop, qcow2, ami, aki, or ari format. Once the import task finishes, the image is available for creating Virtual Instances and Bare Metal servers.</p>
+<p>Provide a public URL — Gcore fetches and stores the image in the selected region. Images must be in raw, vhd, vhdx, vdi, ploop, qcow2, ami, aki, or ari format. Once the import task finishes, the image is available for creating Virtual Instances and Bare Metal servers.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a [region ID](/api-reference/cloud/regions/list-regions).
@@ -116,7 +115,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 ## Upload an image
 
-<p>The [upload image](/api-reference/cloud#tag/Images/operation/ImageDownloadViewSet.post) endpoint fetches the image from the provided URL and stores it in the region. The image becomes available once the download task completes.</p>
+<p>The [upload image](/api-reference/cloud#tag/Images/operation/ImageDownloadViewSet.post) endpoint fetches the file from the provided URL and stores it in the region. It becomes available once the download task completes.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -202,21 +201,21 @@ Response:
 }
 ```
 
-Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The image ID is in `created_resources.images[0]`.
+Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The image ID is in `created_resources.images[0]`.
   </Tab>
 </Tabs>
 
-<p>Uploaded images are assigned `visibility: "shared"` — they are visible within the project and region but not publicly available. To list, update, or delete images, see [Manage custom images](/cloud/images/manage-custom-images).</p>
+<p>Uploaded images are assigned `visibility: "shared"` — visible within the project and region but not publicly available. To list, update, or delete images, open [Manage custom images](/cloud/images/manage-custom-images).</p>
 
 </MethodSection>
 <MethodSection id="terraform" label="Terraform">
 
-<p>Use Terraform to declare a custom image as a managed resource. Provide a public URL — Gcore fetches and stores the image in the specified region. The image must be in raw, vhd, vhdx, vdi, ploop, qcow2, ami, aki, or ari format. Once created, the `gcore_cloud_instance_image` resource ID can be referenced in instance or volume resources.</p>
+<p>Provide a public URL in the `gcore_cloud_instance_image` resource — Gcore fetches and stores it in the specified region. Supported formats: raw, vhd, vhdx, vdi, ploop, qcow2, ami, aki, or ari. Once created, the resource ID can be referenced in instance or volume resources.</p>
 
 
 ## Upload an image
 
-<p>Upload an image from a public URL. After apply, the image is available in the region with `visibility: "shared"`.</p>
+<p>Upload from a public URL. After apply, the resource is available in the region with `visibility: "shared"`.</p>
 
 ```hcl
 resource "gcore_cloud_instance_image" "example" {
@@ -240,7 +239,7 @@ output "image_id" {
 
 ## Replace an image
 
-<Warning>Any change to the resource block triggers a replace — Terraform deletes the existing image and re-uploads from the URL, assigning a new image ID regardless of the type of change.</Warning>
+<Warning>Changing `url` or `os_version` destroys the existing image and uploads a new one — the image ID changes. Changing `name` or `tags` updates in place without replacement.</Warning>
 
 ```hcl
 resource "gcore_cloud_instance_image" "example" {

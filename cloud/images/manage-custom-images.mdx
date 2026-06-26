@@ -1,7 +1,7 @@
 ---
 title: Manage custom images
 sidebarTitle: Manage
-ai-navigation: List, view details, update, and delete custom images in Gcore Cloud via the Customer Portal, REST API, or Terraform.
+ai-navigation: View, rename, edit tags, create instances from, and delete custom images in Gcore Cloud via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,38 +9,62 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>Use the Customer Portal to view, rename, and delete custom images stored in Gcore Cloud. Images uploaded to a region are available only within that project and region.</p>
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** → **Images** and select the project and region. All operations below are performed from this page.</p>
 
 ## View images
 
-<p>1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** → **Images**.</p>
+<p>The **Images** page lists all custom images in the region — name, resource type, size, architecture, tags, and creation date.</p>
 
-<p>2. Select the project and region where the image was uploaded.</p>
+<Frame>
+  <img src="/images/docs/cloud/images/manage-custom-images/images-actions-menu.png" alt="Images list with the actions menu open showing Create Virtual Instance, Rename, Edit tags, and Delete options" />
+</Frame>
 
-<p>The **Images** page opens. The table shows all custom images in the region with their name, status, format, size, and upload date.</p>
+<p>Click the three-dot menu next to an image to create a virtual instance, rename it, edit its tags, or delete it.</p>
 
-## Delete an image
+## Create virtual instance
+
+<p>Click the three-dot menu next to the image and select **Create Virtual Instance** to open the [virtual instance](/cloud/virtual-instances/create-an-instance) creation form with the image pre-selected as the boot source.</p>
+
+## Rename
+
+<p>1. Click the three-dot menu next to the image and select **Rename**.</p>
+
+<p>2. Enter the new name and press **Enter** to confirm.</p>
+
+## Edit tags
+
+<p>[Tags](/cloud/tags) are key-value pairs used to organize Cloud resources. Tag images by environment, team, or purpose to filter them later.</p>
+
+<p>1. Click the three-dot menu next to the image and select **Edit tags**.</p>
+
+<p>2. In the dialog, enter a **Key** and a **Value** for each tag. Click **+ Add tag** to add more tags.</p>
+
+<Frame>
+  <img src="/images/docs/cloud/images/manage-custom-images/edit-tags-dialog.png" alt="Edit tags dialog with Key and Value fields and an Add tag button" />
+</Frame>
+
+<p>3. Click **Save**.</p>
+
+## Delete
 
 <Warning>
 Deleting an image is permanent. If the image was uploaded with **Instance quick start** enabled, it cannot be deleted while instances created from it are still running.
 </Warning>
 
-<p>1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** → **Images**.</p>
+<p>1. Click the three-dot menu next to the image and select **Delete**.</p>
 
-<p>2. Select the project and region.</p>
+<p>2. In the confirmation dialog, click **Delete image**.</p>
 
-<p>3. Locate the image to delete.</p>
-
-<p>4. Click the three-dot menu next to the image and select **Delete**.</p>
-
-<p>5. In the confirmation dialog, click **Delete image**.</p>
+<Frame>
+  <img src="/images/docs/cloud/images/manage-custom-images/delete-image-dialog.png" alt="Delete image confirmation dialog stating the action is irreversible" />
+</Frame>
 
 <p>The image is removed from the list.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Use the Gcore Cloud API to list, inspect, rename, and delete custom images. These operations work on images that were previously imported into a region. To upload a new image, see [Upload a custom image](/cloud/images/upload-an-image-to-the-storage).</p>
+<p>Use the [Gcore Cloud API](/api-reference/cloud#tag/Images) to list, inspect, rename, and delete custom images previously [uploaded](/cloud/images/upload-an-image-to-the-storage) to a region.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a [region ID](/api-reference/cloud/regions/list-regions).
@@ -192,7 +216,7 @@ Response:
 
 ## Update an image
 
-<p>The [update image](/api-reference/cloud#tag/Images/operation/ImageDetailViewSet.patch) endpoint modifies image properties such as its name, OS type, firmware type, and SSH key policy. The update takes effect immediately — no task polling is needed.</p>
+<p>The [update image](/api-reference/cloud#tag/Images/operation/ImageDetailViewSet.patch) endpoint modifies image properties — name, OS type, firmware type, and SSH key policy. The update takes effect immediately — no task polling is needed.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -280,28 +304,27 @@ Response:
 }
 ```
 
-Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
 </MethodSection>
 <MethodSection id="terraform" label="Terraform">
 
-<p>Terraform manages images through the `gcore_cloud_instance_image` resource lifecycle — there are no separate update or list operations. Any change to the resource block triggers a replace: Terraform deletes the existing image and re-uploads from the URL. To remove an image, delete or comment out the resource block and run `terraform apply`. For the full resource configuration and upload instructions, see [Upload a custom image](/cloud/images/upload-an-image-to-the-storage).</p>
+<p>The `name` and `tags` attributes of `gcore_cloud_instance_image` update in place — the image ID does not change. The `url` and `os_version` attributes trigger image replacement: changing either causes Terraform to delete the existing image and [upload](/cloud/images/upload-an-image-to-the-storage) a new one, assigning a new image ID.</p>
 
-## Replace an image
+## Rename
 
-<p>The `gcore_cloud_instance_image` resource is immutable. Because of this, any change to the resource block — including renaming — triggers a replace: Terraform deletes the existing image and re-uploads from the URL, assigning a new image ID.</p>
+<p>Update the `name` attribute and run `terraform apply`. Terraform sends a PATCH request to the API — the image ID does not change.</p>
 
 ```hcl
 resource "gcore_cloud_instance_image" "example" {
-  project_id   = var.project_id
-  region_id    = var.region_id
-  name         = "my-custom-image-v2"  # any change triggers a replace
-  url          = "https://example.com/images/ubuntu-24.04-custom.qcow2"
-  os_type      = "linux"
-  architecture = "x86_64"
-  ssh_key      = "allow"
+  project_id       = var.project_id
+  region_id        = var.region_id
+  name             = "my-custom-image-v2"
+  url              = "https://example.com/images/ubuntu-24.04-custom.qcow2"
+  os_type          = "linux"
+  hw_firmware_type = "uefi"
 }
 ```
 
@@ -309,7 +332,54 @@ resource "gcore_cloud_instance_image" "example" {
 terraform apply
 ```
 
-## Delete an image
+## Edit tags
+
+<p>Add, update, or remove entries in the `tags` map and run `terraform apply`. Terraform updates tags in place without replacing the image.</p>
+
+```hcl
+resource "gcore_cloud_instance_image" "example" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  name             = "my-custom-image"
+  url              = "https://example.com/images/ubuntu-24.04-custom.qcow2"
+  os_type          = "linux"
+  hw_firmware_type = "uefi"
+
+  tags = {
+    env  = "production"
+    team = "backend"
+  }
+}
+```
+
+```bash
+terraform apply
+```
+
+## Replace image
+
+<Warning>Changing `url` or `os_version` destroys the existing image and uploads a new one. The image ID changes — any resources referencing the old ID must be updated.</Warning>
+
+<p>Update the `url` attribute to a new image source and run `terraform apply`. Terraform shows `-/+` in the plan — destroy then create replacement — and executes both operations in sequence. Changing `os_version` triggers the same replacement.</p>
+
+```hcl
+resource "gcore_cloud_instance_image" "example" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  name             = "my-custom-image"
+  url              = "https://example.com/images/ubuntu-24.04-v2.qcow2"  # forces replacement
+  os_type          = "linux"
+  os_version       = "24.04"                                              # forces replacement if changed
+  hw_firmware_type = "uefi"
+}
+```
+
+```bash
+terraform plan   # shows: -/+ destroy and then create replacement
+terraform apply
+```
+
+## Delete
 
 <p>Remove or comment out the resource block, then run `terraform apply`. Terraform detects the missing declaration and deletes the image.</p>
 
