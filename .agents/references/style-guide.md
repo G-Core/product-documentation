@@ -548,8 +548,8 @@ Info block is visually disproportionate. Use plain prose instead.
 ```mdx
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
-[project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get)
-and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
 </Info>
 
 Set the following environment variables before running the examples:
