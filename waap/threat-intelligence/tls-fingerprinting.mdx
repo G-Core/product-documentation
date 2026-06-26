@@ -15,18 +15,18 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 | | JA3 | JA4 |
 |---|---|---|
-| Algorithm | MD5 | Normalized MD5 |
+| Algorithm | MD5 | Truncated SHA-256 |
 | Ordering sensitivity | Sensitive — values can differ between sessions | Stable — sorts fields before hashing |
 | Output format | 32-character hex string | Three-part string (`prefix_hex12_hex12`) |
 | Example value | `e2925c27149b0d0dc34373d55040dde1` | `t13d1516h2_8daaf6152771_b1ff8ab2d16f` |
 
 <p>JA3 dominates threat intelligence feeds and external security tools, making it the right choice when cross-referencing fingerprints across systems. JA4 is better suited for modern TLS clients — it normalizes handshake fields that browsers may reorder between sessions, so fingerprints stay consistent.</p>
 
-<p>For every incoming request, WAAP computes and logs its JA3 fingerprint automatically. No configuration is required.</p>
+<p>For every incoming request, WAAP computes and logs both the JA3 and JA4 fingerprints automatically. No configuration is required.</p>
 
 ## View events by fingerprint
 
-<p>Every event logged by WAAP includes the JA3 fingerprint of the originating request — visible both in the event list and in the request details panel. Filter by hash to isolate all traffic from a specific client library:</p>
+<p>Every event logged by WAAP includes both the JA3 and JA4 fingerprints of the originating request — visible in the event list and in the request details panel. Filter by hash to isolate all traffic from a specific client library:</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Events**.
 2. In the filter bar, click the filter icon and select **JA3**.
@@ -59,13 +59,13 @@ request.ja3 == '7d671906ed4a1edac3262a54676dacfa'
 
 <p>Explicit fingerprint matching isn't the only option.</p>
 
-<p>WAAP automatically assigns the `malicioustlsfingerprint` [predefined tag](/waap/waap-rules/custom-rules/tag-rules/predefined-tags) to requests whose fingerprint appears in Gcore's threat intelligence feed of known-malicious client libraries. A [tag-based rule](/waap/waap-rules/custom-rules/tag-rules) targeting this tag applies an action without requiring knowledge of a specific hash value:</p>
+<p>WAAP automatically assigns the `malicioustlsfp` [predefined tag](/waap/waap-rules/custom-rules/tag-rules/predefined-tags) to requests whose JA3 fingerprint consistently shows malicious behavior across Gcore's traffic. A [tag-based rule](/waap/waap-rules/custom-rules/tag-rules) targeting this tag applies an action without requiring knowledge of a specific hash value:</p>
 
 ```text
-tags.exists('malicioustlsfingerprint')
+tags.exists('malicioustlsfp')
 ```
 
-<p>When a fingerprint is not yet in the feed, an explicit `request.ja3` or `request.ja4` condition in an Advanced Rule is the fallback — as the incident below illustrates.</p>
+<p>When a fingerprint hasn't yet crossed the behavioral threshold, an explicit `request.ja3` or `request.ja4` condition in an Advanced Rule is the fallback — as the incident below illustrates.</p>
 
 ### Incident example
 
@@ -94,7 +94,7 @@ curl "https://api.gcore.com/waap/v1/analytics/requests?domain_ids=${WAAP_DOMAIN_
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
-<p>Each event in the response includes a `ja3` field. For JA4, use the `ja4` parameter with a value in the `prefix_hex12_hex12` format.</p>
+<p>Each event in the response includes both a `ja3` field and a `ja4` field. To filter by JA4, use the `ja4` query parameter with a value in the `prefix_hex12_hex12` format.</p>
 
 <p>Once you've identified the fingerprint to block, use it in an Advanced Rule condition.</p>
 
