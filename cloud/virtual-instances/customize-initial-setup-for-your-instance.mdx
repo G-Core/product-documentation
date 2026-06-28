@@ -1,5 +1,5 @@
 ﻿---
-title: Customize the initial setup for your Virtual Machine
+title: Customize the initial setup for a Virtual Machine
 sidebarTitle: Customize initial setup
 ai-navigation: Configure Virtual Machine initial setup using User Data field with cloud-init YAML syntax to set passwords, create users, configure groups, add SSH keys, install packages, and configure network interfaces via Gcore portal, API, or Terraform.
 ---
@@ -9,27 +9,23 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>The **User Data** field accepts a cloud-init YAML document that runs once on first boot. Use it to set passwords, create users, install packages, write files, and configure network interfaces.</p>
+<p>When creating a Virtual Machine, the **Additional options** section includes a **User data** field that passes a `cloud-init` YAML script to the VM on first boot. Use it to set passwords, create users, install packages, write files, and configure network interfaces on Linux-based Virtual Machines. Windows Virtual Machines do not support `cloud-init`.</p>
 
-<p>`Cloud-init` is an industry-standard tool for automating the initialization of cloud Virtual Machines. It supports all major Linux distributions including Ubuntu, Debian, CentOS, Rocky Linux, Fedora, and Alpine. Every document must begin with `#cloud-config` on the first line.</p>
+## Enable User data
 
-## Enable User Data
+<p>By default, the **User data** field is disabled for new Virtual Machines. Enable it by switching on the **User data** toggle. The portal pre-fills a sample password configuration template — edit the template or replace it with a custom cloud-init YAML document.</p>
 
-<p>By default, the **User Data** field is disabled for new Virtual Machines. Enable it by switching on the toggle and pasting a cloud-init YAML document into the textbox.</p>
-
-<Frame>![User Data content field with toggle enabled](/images/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png)</Frame>
-
-<p>Every cloud-init document must begin with `#cloud-config` on the first line. The [Cloud-init directives](#cloud-init-directives) section below covers all available options.</p>
+<Frame>
+  <img src="/images/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-enabled.png" alt="User data field enabled with default cloud-init template" width="70%"/>
+</Frame>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>`Cloud-init` is an industry-standard tool for automating Virtual Machine initialization on first boot. It accepts a YAML document that can set passwords, create users, install packages, write files, and configure network interfaces.</p>
-
-<p>The `user_data` field in the [instance creation](/api-reference/cloud#tag/Instances/operation/InstanceCreateSetV2.post) request accepts a base64-encoded cloud-init YAML string. The encoding step is required — the API rejects plain-text YAML.</p>
+<p>The `user_data` field in the [instance creation](/api-reference/cloud#tag/Instances/operation/InstanceCreateSetV2.post) request passes a `cloud-init` YAML script to the VM on first boot. The value must be base64-encoded — the API rejects plain-text YAML.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 <p>Open a terminal and set these as environment variables before running the examples:</p>
@@ -44,7 +40,7 @@ export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 
 <Info>
 To find the values for each variable:
-- **IMAGE\_ID**: the UUID of a public or private image. Use `GET /cloud/v1/images/{project_id}/{region_id}` to list available images, or see [Upload an image](/cloud/images/upload-an-image-to-the-storage).
+- **IMAGE\_ID**: the UUID of a public or private image. Use `GET /cloud/v1/images/{project_id}/{region_id}` to list available images; the [image upload](/cloud/images/upload-an-image-to-the-storage) article covers custom uploads.
 - **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in the region.
 </Info>
 
@@ -158,7 +154,7 @@ write_files:
     permissions: '0644'
 ```
 
-Save this file as `user-data.yaml`. The [Cloud-init directives](#cloud-init-directives) section covers all available options.
+Save this file as `user-data.yaml`.
 
 ### Step 2. Encode to base64
 
@@ -305,7 +301,7 @@ Pass the encoded string in the `user_data` field of the instance creation reques
     }
     ```
 
-    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
   </Tab>
 </Tabs>
 
@@ -336,7 +332,6 @@ If the file is absent, check `/var/log/cloud-init.log` and `/var/log/cloud-init-
 `user_data` runs on first boot only — changes to an existing configuration take effect only when the instance is recreated.
 </Warning>
 
-
 ```hcl
 resource "gcore_cloud_instance" "example" {
   project_id   = var.project_id
@@ -358,33 +353,29 @@ resource "gcore_cloud_instance" "example" {
 }
 ```
 
-<p>The [Virtual Machine](/cloud/virtual-instances/create-an-instance) article covers the full configuration including boot volume and SSH key. The [Cloud-init directives](#cloud-init-directives) section below lists all available YAML options.</p>
+<p>The [Virtual Machine](/cloud/virtual-instances/create-an-instance) article covers the full configuration including boot volume and SSH key.</p>
 
 </MethodSection>
 </MethodSwitch>
 
-## Cloud-init directives
-
-`Cloud-init` is an industry-standard tool for automating the initialization of cloud Virtual Machines. It runs on first boot, processes the YAML document in the User Data field, and supports all major Linux distributions. Every document must begin with `#cloud-config` on the first line.
-
 ### Set a password
 
-By default, Gcore Virtual Machines do not allow SSH authentication with a username and password — only SSH key authentication is enabled. Set `ssh_pwauth: True` to allow password access.
+By default, password-based SSH authentication is disabled on Gcore Virtual Machines — only SSH key authentication is enabled. Set `ssh_pwauth: true` to allow password access.
 
 ```yaml
 #cloud-config
 password: your_password
-chpasswd: { expire: False }
-ssh_pwauth: True
+chpasswd: { expire: false }
+ssh_pwauth: true
 power_state:
   mode: reboot
   timeout: 30
-  condition: True
+  condition: true
 ```
 
 - `password` — sets the password for the default OS user (e.g. `ubuntu` on Ubuntu images).
-- `chpasswd: { expire: False }` — keeps the password active without requiring a change on first login.
-- `ssh_pwauth: True` — enables password-based SSH authentication.
+- `chpasswd: { expire: false }` — keeps the password active without requiring a change on first login.
+- `ssh_pwauth: true` — enables password-based SSH authentication.
 - `power_state` — reboots the VM after cloud-init finishes so the changes take effect.
 
 After the VM is ready, connect with:
@@ -409,7 +400,7 @@ users:
 power_state:
   mode: reboot
   timeout: 30
-  condition: True
+  condition: true
 ```
 
 - `sudo: ALL=(ALL) NOPASSWD:ALL` — grants the user passwordless sudo rights.
@@ -423,6 +414,8 @@ Run `groups` after connecting to verify group membership.
 </Info>
 
 ### Enable root user
+
+Set `disable_root: false` to allow the root user to log in with SSH.
 
 ```yaml
 #cloud-config
@@ -440,7 +433,7 @@ groups:
 power_state:
   mode: reboot
   timeout: 30
-  condition: True
+  condition: true
 ```
 
 After the VM is ready, run `compgen -g` to verify the group appears.
@@ -452,7 +445,7 @@ Add public SSH keys from other machines using `ssh_authorized_keys`.
 ```yaml
 #cloud-config
 ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLoSbgtCDju1vmEOws3cBpU5BDZJ3iwuHb0HnNaxJDDU72TYp4DZRxhkSy7KAGCnGl1x1et3i8TR9HeYLzF4B6+lBkHL3cfxuKqrTr7bYUNmmhxMj1THdH5lyS5ezYQGsd/QUryPNw9mbl1WrWu7sbyihF+B9+tHDoJ7owUehgHEG90XNJRFFe/ZHU+wHzJIRpQxFtdfZghwSBfRGJLTL6/nJtO39P7nAen48vH4iSzJYwsNtrWLG7Sr4kU6q8UJD+lCJ2IIumr6p66W9wh7IwgPED5ABQziSFCRXbeZIraaFvAhsV0r90u9t8cR8Yf2hU1rKcEaPRxYFC3IrrY94GnjTnzSE9p9a8DnF4G28/DHSMiTQd5yJKlED/n0piHMEMiJUpAruz3eHTqBz4T8taSZGuoqG4S6qrow6zigfesrWTmqegGUcQDdkTxj6DA5xtK2IIQSTsatQ9+7ggUIOFKGjoSKFxj2rJfxBjFS4pYFjOQBTdzz6ZCJjaMkhTXK8= account-name@hostname
+  - ssh-rsa <YOUR_PUBLIC_KEY> user@host
 ```
 
 After the VM starts, verify with `cat ~/.ssh/authorized_keys`.
@@ -460,6 +453,10 @@ After the VM starts, verify with `cat ~/.ssh/authorized_keys`.
 ### Add repositories and install packages
 
 Install packages at first boot using the `packages` directive. Packages from external repositories require an `apt.sources` entry.
+
+<Info>
+The example below uses `apt` and applies to Debian-based distributions (Ubuntu, Debian). For RPM-based distributions (CentOS, Rocky Linux, Fedora), use the `yum_repos` directive and replace `packages` entries with the corresponding package names.
+</Info>
 
 ```yaml
 #cloud-config
@@ -483,7 +480,7 @@ packages:
 power_state:
   mode: reboot
   timeout: 30
-  condition: True
+  condition: true
 ```
 
 ### Write files
@@ -506,6 +503,10 @@ write_files:
 
 Add a static IP address by writing a Netplan configuration file. Cloud-init merges it with the auto-generated `50-cloud-init.yaml` during boot.
 
+<Info>
+Netplan applies to Ubuntu. For other distributions, write the appropriate network configuration file for the system's network manager (for example, NetworkManager connection files on Rocky Linux or CentOS).
+</Info>
+
 ```yaml
 #cloud-config
 write_files:
@@ -527,7 +528,7 @@ write_files:
 power_state:
   mode: reboot
   timeout: 30
-  condition: True
+  condition: true
 ```
 
 After the VM reboots, run `ip a` to verify the static addresses appear on the `enp3s0` interface.
