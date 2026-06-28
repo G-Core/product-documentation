@@ -268,7 +268,7 @@ created during testing (instances, networks, etc.).
 
 ---
 
-## Phase 3 — Findings summary
+## Phase 3 — Findings summary and Jira ticket
 
 After completing Phase 2, present all findings to the user as a numbered list
 grouped by category.
@@ -278,6 +278,99 @@ Also present:
 - List of prerequisites noted, with article paths where available
 - List of screenshots that need replacement, with old and new filenames
 - Any steps where the feature was unavailable (UNVERIFIED)
+
+### Create the Jira ticket immediately after presenting findings
+
+Do not wait for the user to ask. Create the ticket now, while the findings are
+fresh and before any fixes are applied.
+
+Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
+and fill in `SUMMARY` and `DESCRIPTION` with the article name and the findings
+list collected in Phase 2.
+
+**What belongs in the description — every finding in full.**
+
+Copy the full FINDING blocks from Phase 2 verbatim. Do not summarise, shorten,
+or paraphrase. The description must read as a complete audit report so that
+anyone opening the ticket understands the exact scope of work without
+reading the article or the portal.
+
+Group findings by category, include the finding number, location, "Article says",
+"Portal shows", and "Action needed" for each one. This is the same format used
+in Phase 2 — reproduce it exactly.
+
+**Do NOT include in the description:**
+- Style guide micro-fixes (Phase 5)
+- MDX encoding issues (Phase 6)
+- CRLF/LF, BOM, or p-tag cleanup
+
+Format:
+
+```
+SUMMARY = "Update {article title}"
+
+DESCRIPTION = (
+    "Regression findings for '{article title}':\n\n"
+    "{Category 1} ({N})\n\n"
+    "FINDING 1: {category}\n"
+    "Location: {location}\n"
+    "Article says: \"{...}\"\n"
+    "Portal shows: \"{...}\"\n"
+    "Action needed: {...}\n\n"
+    "FINDING 2: ...\n"
+    "...\n\n"
+    "{Category 2} ({N})\n\n"
+    "FINDING 3: ..."
+)
+```
+
+Example of correct content (do not copy — fill with actual findings):
+
+```
+UI label mismatch (2)
+
+FINDING 1: UI label mismatch
+Location: Filter list, bullet 1
+Article says: "ID (resource name)"
+Portal shows: "Resource name"
+Action needed: Rename filter
+
+FINDING 2: UI label mismatch
+Location: Opening sentence
+Article says: "Gcore Edge Cloud"
+Portal shows: navigation is under Cloud Management > User Actions
+Action needed: Replace with "Gcore Customer Portal"
+
+Missing step (1)
+
+FINDING 3: Missing step
+Location: Article opening — no navigation path given
+Article says: (nothing)
+Portal shows: Navigation path is Cloud Management > User Actions
+Action needed: Add navigation instructions
+```
+
+Dry run first:
+
+```powershell
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py --dry-run
+```
+
+Show the dry-run output to the user, then run without `--dry-run` immediately
+after — do not wait for separate confirmation unless the user objects.
+
+```powershell
+.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py
+```
+
+Report the created ticket key and URL to the user. Record the ticket key —
+it is needed in Phase 8.
+
+Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
+the ticket so the script is ready for the next article.
+
+### Ask to proceed with fixes
 
 Ask the user: "Should I proceed with applying all fixes?"
 
@@ -644,67 +737,20 @@ Run all three checks before committing:
 
 ---
 
-## Phase 8 — Create Jira ticket and send to review
+## Phase 8 — Send to review
 
-Run this phase only after the PR has been pushed and the user confirms.
+Run this phase only after the commit has been pushed and the user confirms.
 
-### Step 1 — Create the ticket
+The Jira ticket was already created in Phase 3. This phase only transitions it
+to In Review and records the completion.
 
-Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
-and fill in `SUMMARY` and `DESCRIPTION` with the actual article name and the list
-of changes applied. Use past tense — describe what was done, not what to do.
+### Step 1 — Transition to In Review and post comment
 
-**What belongs in the description — meaningful content changes only:**
-- UI label or name corrections found in the portal (e.g., renamed a button, updated navigation path)
-- Added or removed sections, screenshots, steps
-- Structural rewrites (e.g., "Restructured as comparison table")
-- Factual corrections (e.g., added a missing product to a list)
-
-**Do NOT include in the description:**
-- CRLF/LF conversions
-- Style guide micro-fixes (removed "etc.", fixed colon spacing, rewrote one sentence)
-- MDX encoding fixes (BOM, line endings)
-- p tag additions
-
-3–5 bullets maximum. If a change is too small to matter to a reviewer, skip it.
-
-Format:
-
-```
-SUMMARY = "Update {article title}"
-
-DESCRIPTION = (
-    "Updated the '{article title}' article:\n\n"
-    "- {change 1}\n"
-    "- {change 2}\n"
-    "- {change 3}"
-)
-```
-
-Do a dry run first to confirm the values look correct:
-
-```powershell
-cd C:\Projects\docops-agent2
-.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py --dry-run
-```
-
-Show the dry-run output to the user and wait for confirmation before creating
-the ticket. After confirmation:
-
-```powershell
-.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py
-```
-
-Report the created ticket key and URL to the user.
-
-### Step 2 — Transition to In Review and post comment
-
-After the ticket is created, open
-`c:\Projects\docops-agent2\scripts\send_to_review.py` and fill in the three
-constants:
+Open `c:\Projects\docops-agent2\scripts\send_to_review.py` and fill in the
+three constants:
 
 ```python
-TICKET = "DOC-XXXX"           # the key returned in step 1
+TICKET = "DOC-XXXX"           # the key created in Phase 3
 
 BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1514
 
@@ -727,6 +773,7 @@ Where `{branch-number}` is the numeric part of the branch name
 Dry run first:
 
 ```powershell
+cd C:\Projects\docops-agent2
 .\venv\Scripts\python.exe scripts/send_to_review.py --dry-run
 ```
 
@@ -736,12 +783,10 @@ After confirming:
 .\venv\Scripts\python.exe scripts/send_to_review.py
 ```
 
-After running, reset both scripts back to their placeholder values so they are
-ready for the next article.
+After running, reset the three constants back to placeholder values so the
+script is ready for the next article.
 
-After the ticket is created and transitioned:
-
-**1. Mark the article as done in the plan.**
+### Step 2 — Mark the article as done in the plan
 
 Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
 find the article's row, and add the Jira ticket key to the status column:
@@ -750,7 +795,7 @@ find the article's row, and add the Jira ticket key to the status column:
 done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
 ```
 
-**2. Write the changelog entry.**
+### Step 3 — Write the changelog entry
 
 Create a file at:
 
