@@ -452,6 +452,11 @@ The first occurrence is the canonical link.
 The link text must be the noun or short verb phrase that names the destination.
 Never use a full clause, sentence fragment, or description.
 
+**Exception — Gcore product names:** `Gcore Customer Portal` is a three-word proper noun
+and must never be shortened. Use it in full as link text for the first mention:
+`[Gcore Customer Portal](https://portal.gcore.com)`. The 1–2 word rule does not apply
+to registered product names.
+
 ### Non-breaking spaces in multi-word link text
 
 When link text contains two words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between the words:

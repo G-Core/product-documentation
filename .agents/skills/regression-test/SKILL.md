@@ -9,6 +9,31 @@ then apply all fixes and check against the style guide.
 
 ---
 
+## FIRST ACTION — Create a todo list
+
+Before doing anything else, create a todo list with every phase as a separate item,
+all set to `pending`. Update each item to `in_progress` when you start it and
+`completed` only when it is fully done. Do not start a new phase until the previous
+one is marked `completed`.
+
+Phases to track:
+
+- Phase 0: Find and read the article; claim in plan
+- Phase 1: Open the portal and log in
+- Phase 2: Regression test (follow steps, record FINDINGs)
+- Phase 3: Findings summary + create Jira ticket
+- Phase 4: Apply fixes
+- Phase 5: Style guide check
+- Phase 6: MDX rules check
+- Phase 7: LLM quality review
+- Phase 8: Present for review (pre-commit checklist + commit + push)
+- Phase 9: Send to review (Jira transition + plan update + changelog)
+
+If a phase is not `completed`, do not move to the next one.
+If you are unsure whether a phase is done, re-read its section below and verify.
+
+---
+
 ## STRICT RULE: one phase at a time
 
 **Work on exactly one phase. Finish it completely. Then stop.**
@@ -229,6 +254,29 @@ Categories:
 - `Feature unavailable` — the feature cannot be tested (gated, region, account)
 - `Broken flow` — the described action produces an error or unexpected result
 - `Missing context` — the article does not explain why a step is needed
+- `Unverified procedure` — a technical instruction that may have side effects or may not be
+  the standard approach, but cannot be confirmed without SME input
+
+### Potentially dangerous technical instructions
+
+When a step performs an irreversible or high-impact action — for example: re-running an
+initialization tool on a running system, purging state files, resetting configuration
+modules, or any command that says `clean`, `purge`, `reset`, `wipe`, or `reformat` —
+do NOT assume it is wrong, do NOT replace it with an alternative, and do NOT skip it silently.
+
+Record it as:
+
+```
+UNVERIFIED: This procedure may have side effects. Technical validation by an SME is
+required before changing or publishing it.
+Location: [section / step number]
+Instruction: [the specific command or procedure verbatim]
+Concern: [one sentence describing the potential risk]
+```
+
+Do not add this note to the published article. It belongs only in the Jira ticket
+description (Phase 3) and the changelog (Phase 9). The published text stays as-is
+until an SME confirms or corrects the procedure.
 
 ### Screenshot audit
 
