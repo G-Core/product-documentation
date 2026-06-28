@@ -21,7 +21,7 @@ When a phase is done:
 - Report what was completed
 - Immediately start the next phase without asking for permission
 
-**EXCEPTION — after Phase 8 (article fully complete):**
+**EXCEPTION — after Phase 9 (article fully complete):**
 Stop completely. Do NOT move to the next article.
 Wait for explicit user instruction to proceed to the next article.
 The auto-progression rule applies only to phases within a single article.
@@ -365,7 +365,7 @@ after — do not wait for separate confirmation unless the user objects.
 ```
 
 Report the created ticket key and URL to the user. Record the ticket key —
-it is needed in Phase 8.
+it is needed in Phase 9.
 
 Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
 the ticket so the script is ready for the next article.
@@ -594,9 +594,102 @@ StrReplace is explicit, auditable, and safe.
 
 ---
 
-## Phase 7 — Present for review
+## Phase 7 — LLM quality review
 
-After completing Phase 6, scan every tab (Portal, API, Terraform, CLI) for
+Before presenting the article to the user, run the automated quality review script.
+This must happen after Phase 6 and before Phase 8 — never skip it.
+
+```powershell
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts/review_article_quality.py --article "C:\Projects\product-documentation\{article-path}.mdx"
+```
+
+The script sends the article to GPT-4 and scores it on 11 criteria (1–10 each).
+
+### Step 1 — Classify every remark
+
+For each remark the LLM produces, classify it before doing anything:
+
+**Automatic false positives — reject without fixing:**
+
+- Suggests explaining bash, curl, SSH, Python, Go, Terraform, RDP, cloud-init,
+  or any tool that is a prerequisite for the section's audience.
+- Suggests making the article self-contained by adding information that belongs
+  in a separate article and is already linked.
+- Complains that an Accordion, Tabs, Info, Tip, or Warning adds cognitive load.
+- Complains about the position of a method tab (Portal/API/Terraform order).
+- Suggests adding transition sentences between numbered steps where the
+  numbering already makes the sequence obvious.
+- Flags technical terms (IPv4, CIDR, DHCP, SDK, API key, region ID) as jargon
+  requiring explanation.
+- Suggests the article is incomplete because a related topic (connecting,
+  monitoring, deleting) is not covered — those are separate articles.
+- Flags a screenshot caption or alt text as insufficient when the screenshot
+  itself makes the meaning clear.
+- Suggests adding detail about a UI element that is visible on the adjacent screenshot.
+
+**Requires judgment — verify before deciding:**
+
+- Mentions a diagram or image that the article references but the LLM cannot see.
+  → Check whether the referenced visual actually exists in the article. If it does,
+  false positive. If it does not exist, it is a real finding.
+- Flags a sentence as hard to read.
+  → Read the sentence yourself. If a native English speaker would pause on it,
+  fix it. If the sentence is just technical, reject.
+- Flags repeated information across sections.
+  → Check whether the repetition is intentional (e.g., a warning duplicated at
+  the point of action) or genuine duplication. Fix only genuine duplication.
+
+**Always real — fix immediately:**
+
+- A specific word that has a simpler, equally precise alternative
+  (e.g., "prior" → "before", "utilize" → "use").
+- A sentence that contains two nested clauses that could be two sentences.
+- Information stated twice in consecutive paragraphs with no structural reason.
+- A step that promises a result ("The window opens") but the result never comes.
+
+### Step 2 — Apply fixes
+
+Fix only the remarks classified as real. Do not touch:
+- Factual content verified against the portal in Phase 2.
+- Step numbering.
+- Portal-verified UI labels, button names, field names.
+- The structure of MethodSwitch tabs.
+
+### Step 3 — Re-run (max 2 iterations)
+
+After applying fixes, re-run the script. Compare the new score to the previous one.
+
+- If the score improved and all remaining remarks are false positives — stop.
+- If the score did not improve despite real fixes — stop after this second run.
+  Do not loop a third time.
+- If no real remarks were found in the first run — proceed directly to Phase 8
+  without re-running.
+
+### Step 4 — Report to the user
+
+Do NOT ask the user to approve fixes or review individual remarks.
+Do NOT present the raw LLM output to the user.
+
+When Phase 7 is complete, include a single block in the Phase 8 report:
+
+```
+Auto-review (GPT-4): X.X / 10
+  Fixed: [list of real fixes applied, one line each]
+  Rejected as false positives: [count] remarks
+  Remaining remarks (not fixed): [list only if they are genuinely debatable]
+```
+
+If no fixes were needed and no debatable remarks remain, write:
+```
+Auto-review (GPT-4): X.X / 10 — no actionable remarks.
+```
+
+---
+
+## Phase 8 — Present for review
+
+After completing Phase 7, scan every tab (Portal, API, Terraform, CLI) for
 template-language issues before presenting the report:
 
 **Template language check (all tabs):**
@@ -610,7 +703,7 @@ template-language issues before presenting the report:
 - [ ] Portal tab: same check — no dictionary-card paragraphs, no consecutive sections
   with identical opening patterns.
 
-After completing Phase 6, present the article to the user for review.
+After completing Phase 7, present the article to the user for review.
 
 Report:
 
@@ -740,7 +833,7 @@ Run all three checks before committing:
 
 ---
 
-## Phase 8 — Send to review
+## Phase 9 — Send to review
 
 Run this phase only after the commit has been pushed and the user confirms.
 
