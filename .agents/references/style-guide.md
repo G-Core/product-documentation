@@ -471,24 +471,37 @@ Plain space inside `[...]` allows the browser to break the link mid-text, which 
 
 ### Banned link sentence patterns
 
-These create empty sentences. Merge the link into the previous sentence instead.
+These create empty sentences. The test: if the link were removed, would the sentence still carry real information? If no — it is a banned pattern.
+
+The ban covers **any verb** that just routes the reader to a destination:
 
 - `For more details, see [X]`
 - `See [X] for more information`
 - `Learn more in [X]`
 - `For details, see [X]`
 - `Refer to [X] for`
+- `Use the [X] to ...`
+- `Open the [X] to ...`
+- `Read the [X] for ...`
+- `Check the [X] for ...`
+- `The same data is available via the [X].`
+- `The same log is available programmatically via the [X].`
 - Any standalone sentence whose only purpose is to host a link
 
-**Bad:**
+**Bad — verb-routes-to-destination pattern:**
 ```
 For more details, see [API tokens](/account-settings/api-tokens).
+Use the [Cloud API](/api-reference/cloud) to retrieve audit records.
+The same log is available via the [Cloud API](/api-reference/cloud).
 ```
 
-**Good:**
+**Good — link is an attribute of the subject, not the destination:**
 ```
 Generate an [API token](/account-settings/api-tokens) in account settings.
+The same events are exposed by the [Cloud API](/api-reference/cloud) audit endpoint.
 ```
+
+**The rule in one sentence:** the link must describe what the linked thing IS or DOES as part of a sentence that already makes a point — not tell the reader to go there.
 
 ### Links must carry meaning
 
