@@ -563,6 +563,9 @@ relevant checks for the component, its sections, and the import line.
 - [ ] Outside `<MethodSection>`: no stray `<p>` wrappers around plain prose paragraphs
 - [ ] Inside EVERY `<MethodSection>` (Portal, API, Terraform, CLI — all tabs): EVERY standalone prose paragraph IS wrapped in `<p>` — no exceptions, no analysis of what is adjacent; numbered list items and bullet list items are NOT wrapped in `<p>`
 - [ ] `<Frame>` wraps each screenshot; no bare `![]()` outside `<Frame>`
+- [ ] Every `<img>` inside `<Frame>` uses an explicit `width` attribute (`width="70%"`),
+  not the markdown `![alt](src)` shorthand and not `style={{ width:"..." }}`.
+  Run `scripts/fix_image_widths.py` if bulk conversion is needed (see `mdx-rules.md`).
 - [ ] `<Tabs>` / `<Tab>` structure is valid: every `<Tab>` has a `title` attribute
 
 **Callout blocks (`<Info>`, `<Warning>`, `<Note>`, `<Tip>`):**

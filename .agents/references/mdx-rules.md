@@ -374,6 +374,51 @@ if data.startswith(b'\xef\xbb\xbf'):
 
 ---
 
+## Image display width
+
+All screenshots must use `<img>` with an explicit `width` attribute inside `<Frame>`.
+Do not use the markdown `![alt](src)` shorthand — it renders the image at full container
+width, which can fill the entire screen on large monitors.
+
+**Correct:**
+```mdx
+<Frame>
+  <img src="/images/docs/..." alt="Alt text" width="70%"/>
+</Frame>
+```
+
+**Wrong — full-width and cannot be resized:**
+```mdx
+<Frame>
+  ![Alt text](/images/docs/...)
+</Frame>
+```
+
+**Standard width values:**
+
+| Use case | Width |
+|----------|-------|
+| Full-form portal screenshot (dialogs, forms, pages) | `70%` |
+| Narrow UI fragment (toggle, field, small control) | `50%` |
+| Wide diagram or architecture overview | `100%` |
+
+When in doubt, use `70%`.
+
+To convert all markdown images in a file at once, use the script
+`scripts/fix_image_widths.py` in the `docops-agent2` repository:
+
+```powershell
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts\fix_image_widths.py "C:\Projects\product-documentation\path\to\article.mdx"
+```
+
+The script:
+- Converts `![alt](src)` inside `<Frame>` to `<img src="src" alt="alt" width="70%"/>`
+- Removes `style={{ width:"..." }}` and replaces with the `width` attribute
+- Preserves UTF-8 encoding without BOM
+
+---
+
 ## Internal links
 
 All internal links must be root-relative:
