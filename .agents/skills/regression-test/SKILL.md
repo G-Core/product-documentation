@@ -418,11 +418,7 @@ it is needed in Phase 9.
 Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
 the ticket so the script is ready for the next article.
 
-### Ask to proceed with fixes
-
-Ask the user: "Should I proceed with applying all fixes?"
-
-Wait for explicit confirmation before starting Phase 4.
+Immediately proceed to Phase 4 without asking for confirmation.
 
 ---
 
@@ -883,7 +879,7 @@ Run all three checks before committing:
 
 ## Phase 9 — Send to review
 
-Run this phase only after the commit has been pushed and the user confirms.
+Run this phase immediately after the commit has been pushed — do not wait for separate user confirmation.
 
 The Jira ticket was already created in Phase 3. This phase only transitions it
 to In Review and records the completion.
@@ -921,7 +917,7 @@ cd C:\Projects\docops-agent2
 .\venv\Scripts\python.exe scripts/send_to_review.py --dry-run
 ```
 
-After confirming:
+Run without `--dry-run` immediately after — do not wait for separate confirmation unless the user objects:
 
 ```powershell
 .\venv\Scripts\python.exe scripts/send_to_review.py
