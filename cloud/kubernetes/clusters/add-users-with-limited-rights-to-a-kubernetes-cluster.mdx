@@ -46,16 +46,25 @@ roleRef:
 EOF
 ```
 
-3\. List the secrets in the namespace to find the service account token secret. Its name follows the pattern `test-serviceaccount-token-<suffix>` and its type is `kubernetes.io/service-account-token`:
+3\. Create a long-lived token Secret for the service account. Save the following manifest to a file or apply it directly:
 
 ```sh
-kubectl -n test-namespace get secret
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-serviceaccount-token
+  namespace: test-namespace
+  annotations:
+    kubernetes.io/service-account.name: test-serviceaccount
+type: kubernetes.io/service-account-token
+EOF
 ```
 
-Retrieve the decoded token from the secret (replace `<suffix>` with the actual suffix from the previous step):
+Retrieve the decoded token:
 
 ```sh
-kubectl -n test-namespace get secret test-serviceaccount-token-<suffix> -o jsonpath="{.data.token}" | base64 -d
+kubectl -n test-namespace get secret test-serviceaccount-token -o jsonpath="{.data.token}" | base64 -d
 ```
 
 4\. Edit the kubeconfig file for the service account. In the `users` section, replace the admin certificate credentials with the service account token obtained in step 3:
