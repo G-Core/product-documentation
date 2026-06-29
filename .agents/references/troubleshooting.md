@@ -26,25 +26,51 @@ no content panels.
 ### Root cause A: `{identifier}` inside a `<code>` HTML element
 
 MDX treats `{...}` as a JSX expression even inside lowercase HTML elements like `<code>`.
-When the identifier (`task_id`, `project_id`, etc.) is not defined in scope, compilation
-fails silently. The MethodSwitch component receives `undefined` children → `tabs = []`.
+When the identifier (`task_id`, `project_id`, etc.) is not defined in scope, MDX fails.
+
+**Two failure modes depending on context:**
+
+- **Inside `<MethodSection>`:** compilation fails silently. The MethodSwitch component
+  receives `undefined` children → `tabs = []` → blank page.
+- **Outside `<MethodSection>` (top-level or in a plain article):** `mintlify dev` fails
+  to start with an explicit parse error pointing to the file and line:
+  ```
+  parsing error .\cloud\path\article.mdx:91:8 - Expected a closing tag for `<code>`
+  (91:207-91:213) before the end of `paragraph`
+  ```
+  Mintlify reports the error at the `<code>` opening tag position. If the `<code>` tag
+  is inside a `<MethodSection>`, the error may be reported at the `<MethodSection>`
+  opening line instead of the actual `{identifier}` location — scan the entire section.
 
 **Find:**
-```
+```powershell
+# Scan one file
 rg "<code>[^<]*\{[^}]+\}[^<]*</code>" path/to/article.mdx
+
+# Scan all changed files
+git diff --name-only HEAD | ForEach-Object { rg "<code>[^<]*\{[^}]+\}[^<]*</code>" $_ }
 ```
 
 **Fix — replace `<code>` with backtick inline code:**
 ```
-# Wrong
+# Wrong — API path with placeholder
 Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 
-# Correct
+# Wrong — Windows path with placeholder
+The default directory is <code>C:\Users\{username}\.ssh\</code> for Windows.
+
+# Correct — backtick code spans treat {…} as literal text
 Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
+The default directory is `C:\Users\{username}\.ssh\` for Windows.
 ```
 
+Note: `&nbsp;` inside `<code>` becomes a regular space in backtick code — this is fine.
+
 Files fixed: `cloud/virtual-instances/create-an-instance.mdx`,
-`cloud/networking/add-and-configure-a-firewall.mdx` (PR #2208, June 2026).
+`cloud/networking/add-and-configure-a-firewall.mdx` (PR #2208, June 2026),
+`cloud/kubernetes/clusters/upgrade.mdx` line 286,
+`cloud/virtual-instances/connect/connect-to-your-instance-via-ssh.mdx` line 91
+(branch DOC-1544, June 2026).
 
 ### Root cause B: `{identifier}` inside `ai-navigation` frontmatter
 

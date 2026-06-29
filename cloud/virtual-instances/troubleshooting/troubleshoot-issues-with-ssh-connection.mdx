@@ -1,34 +1,32 @@
 ---
 title: Troubleshoot issues with an SSH connection
 sidebarTitle: SSH connection
-ai-navigation: Troubleshoot SSH connection issues to Gcore Virtual Machines including root login permission denied errors, SSH key authentication setup, multiple SSH key management, and VNC console password recovery when private keys are lost.
+ai-navigation: Troubleshoot SSH connection issues to Gcore Virtual Machines including root login permission denied errors, SSH key format issues with PuTTYgen and OpenSSH, multiple SSH key management, firewall rules for SSH and ICMP, floating IP requirements, Windows VM RDP usage, and VNC console password recovery when private keys are lost.
 ---
 
 ## Recommended SSH connection method
 
-We recommend using SSH key authentication for connecting to your Virtual Machines. SSH keys provide better security compared to password authentication.
+SSH key authentication is the recommended connection method for Virtual Machines. SSH keys provide better security compared to password authentication.
 
 To set up SSH key authentication:
 
 1. [Generate SSH keys](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys) or use existing ones.
-2. [Add your public key to the Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
+2. [Add a public SSH key to the Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
 3. Select the key when [creating a VM](/cloud/virtual-instances/create-an-instance).
 
 <Warning>
-**Warning**
-
-SSH keys cannot be downloaded again after creation. Make sure to save your private key in a secure location immediately after generating it.
+SSH keys cannot be downloaded again after creation. Save the private key in a secure location immediately after generating it.
 </Warning>
 
 ### Add multiple SSH keys to a resource
 
-To allow multiple users or devices to access the same VM, add several SSH keys through the Gcore Customer Portal when [creating a VM](/cloud/virtual-instances/create-an-instance). In the **SSH key** section, select multiple keys from your saved keys list.
+To allow multiple users or devices to access the same VM, add several SSH keys through the Gcore Customer Portal when [creating a VM](/cloud/virtual-instances/create-an-instance). In the **SSH key** section, select multiple keys from the saved keys list.
 
-To add more keys to your account, see [Add a public SSH key to the Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
+To add more keys to the account, follow the [SSH key setup guide](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
 
 ## Cannot log in as root. Permission denied error
 
-Gcore platform images have root SSH login disabled by default for security reasons. 
+Gcore images have root SSH login disabled by default for security reasons.
 
 The default username depends on the operating system. When creating a VM, the portal displays the correct username in the format `ssh [username]@ipaddress`.
 
@@ -43,87 +41,75 @@ The default username depends on the operating system. When creating a VM, the po
 | Fedora-CoreOS | `core` |
 | Windows | `Admin` (RDP only) |
 
-You can also find your VM's username in the Gcore Customer Portal: go to **Cloud** > **Virtual Instances**, open your instance, and check the information next to the **Access to Console** link in the format `[login]@[ip-of-your-VM]`.
+The VM username is also available in the Gcore Customer Portal: navigate to **Cloud** > **Virtual Instances**, open the instance, and check the **Access to Console** button area where the SSH login is displayed in the format `[login]@[ip-of-the-VM]`.
 
-After connecting with the default user, you can switch to root:
+After connecting with the default user, switch to root with:
 
 ```sh
 sudo -i
 ```
 
 <Info>
-**Info**
-
-Custom images may have different default usernames or allow root login. Check with the image provider for specific access credentials.
+Custom images may have different default usernames or allow root login. Check with the image provider for the specific access credentials.
 </Info>
 
 ## No password received via email
 
 Gcore does not send VM credentials via email. By default, Virtual Machines only accept SSH key authentication.
 
-If you need password access for the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a password during VM creation. For details, see [Set a password for a Virtual Machine](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine).
+For password access to the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a password during VM creation — see [password setup](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine) for details.
 
 <Warning>
-**Warning**
-
 VNC console passwords are for emergency access only. SSH key authentication is the recommended method for connecting to Virtual Machines.
 </Warning>
 
 ## Lost SSH key and cannot connect
 
-If you lost your private SSH key:
+If the private SSH key is lost:
 
-1. **If you configured a password during VM creation:** Access the VM via the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) and add a new public key to `~/.ssh/authorized_keys`.
+1. **If a password was configured during VM creation:** Access the VM via the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) and add a new public key to `~/.ssh/authorized_keys`.
 
-2. **If no password was configured:** Delete the VM and create a new one. Make sure to save the SSH private key during creation.
+2. **If no password was configured:** Delete the VM and create a new one. Save the SSH private key immediately after generation.
 
 <Tip>
-**Tip**
-
-To prevent losing access, add multiple SSH keys to your VM during creation or use the User Data field to configure a VNC console password as a backup access method.
+To prevent losing access, add multiple SSH keys to the VM during creation or use the User Data field to configure a VNC console password as a backup access method.
 </Tip>
 
 ## Incorrect firewall rules. Errors: Connection timed out
 
-This error is usually caused by incorrect firewall configuration.
+This error is usually caused by incorrect security group configuration.
 
-**To allow ping (ICMP):**
-
-Add an inbound rule with ICMP protocol:
+Add an inbound rule with ICMP protocol to allow ping:
 
 | Protocol | Type | Code | Source |
 |----------|------|------|--------|
 | ICMP | Any | Any | 0.0.0.0/0 |
 
-**To allow SSH connections:**
-
-Add an inbound rule for TCP port 22:
+Add an inbound rule for TCP port 22 to allow SSH connections:
 
 | Protocol | Port | Source |
 |----------|------|--------|
 | TCP | 22 | 0.0.0.0/0 |
 
-The **default** firewall group includes these rules. Select the default group when creating a VM if you have difficulties configuring a custom firewall.
+The **default** security group includes these rules. Select the default group when creating a VM to avoid misconfiguring a custom security group.
 
 ## Incorrectly added SSH key. Errors: Connection refused
 
-While generating a key with the PuttyGen utility, you should keep in mind that PuTTY and OpenSSH use different formats of public SSH keys. If the public key has a format like BEGIN SSH2 PUBLIC KEY, it will not work. The key should start with \"ssh-rsa AAAA...\".
+PuTTY and OpenSSH use different public key formats. If the public key starts with `BEGIN SSH2 PUBLIC KEY`, it will not work with Gcore Virtual Machines. The key must start with `ssh-rsa AAAA...` (OpenSSH format).
 
-When creating a key from the PuttyGen utility, you can just use The OpenSSH format key that appears in the interface after generation. You should copy it from the field \"Public key for pasting into OpenSSH authorized_keys file\"
+When generating a key with PuTTYgen, copy the key from the **Public key for pasting into OpenSSH authorized_keys file** field at the top of the PuTTYgen window — do not use the text from **Save public key**.
 
 ## No floating (public) IP address. Connection refused error
 
-If you used a previously created subnet while creating the machine, the system allows you to create a server without a floating IP.
+When creating a VM with a pre-existing subnet, it is possible to create a server without a floating (public) IP.
 
-The SSH connection would not be possible in this case, because an internal IP address is not announced on the Internet. You should add [a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to the newly created machine for the connection from external networks.
+Without a floating IP, SSH connections from external networks are not possible because the internal IP address is not reachable from the Internet. Add [a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to the VM to enable external SSH access.
 
-## The failure to connect to the remote server with Windows OS on it. Connection error
+## Cannot connect to a VM with Windows OS
 
-The Connection error occurs when you are trying to connect to the remote machine with Windows OS on it.
+SSH is not supported for Windows-based VMs. Attempting to connect via SSH results in a connection error.
 
-In most cases, it is due to an incorrectly selected VM connection Protocol. It is not possible to connect to a Windows OS-based server through SSH.
-
-You should use the RDP Protocol (Remote Desktop Protocol). On a Windows PC, the distribution is installed by the default.
+Use RDP (Remote Desktop Protocol) instead. On Windows PCs, the Remote Desktop client is installed by default.
 
 ## Network appliance images (FortiGate, MikroTik)
 
@@ -131,7 +117,7 @@ Network appliance images have their own authentication methods and do not use st
 
 | Appliance | Default username | Default password |
 |-----------|------------------|------------------|
-| FortiGate | `admin` | empty (you will be prompted to set a new password on first login) |
+| FortiGate | `admin` | empty (new password required on first login) |
 | MikroTik CHR | `admin` | empty |
 
 Access these appliances via:

@@ -96,12 +96,15 @@ Sub-items indent 3 spaces:
    - On the VM creation page, go to **Networking**.
 ```
 
-**2. Prose paragraphs between steps — wrap in `<p>` tags:**
+**2. Every prose paragraph — wrap in `<p>` tags:**
 ```mdx
 <p>Both options can be combined. If neither is specified, the rule applies to all IP addresses.</p>
 ```
-Do NOT leave prose paragraphs unwrapped — they merge with adjacent content and render
-as one unbroken block.
+Wrap ALL standalone prose paragraphs inside `<MethodSection>` — without exception.
+Do not try to determine whether a paragraph is adjacent to a specific block element.
+Just wrap every prose paragraph. This eliminates all ambiguity about before/after `<Frame>`,
+before/after code blocks, before/after `<Tabs>`, and between numbered steps — all covered
+by one rule: every paragraph gets `<p>`.
 
 **3. Bullet-only lists — use `-` at column 0:** `<ul>/<li>` is block-level and renders correctly without wrapping.
 
@@ -196,20 +199,16 @@ Each step below explains what the call does.
 Applies to every prose paragraph that immediately precedes `<Accordion>` inside any
 `<MethodSection>`. Does not affect content outside JSX.
 
-### `<p>` around `<Frame>`, code blocks, and `<Tabs>` inside `<MethodSection>`
+### `<p>` for all prose inside `<MethodSection>`
 
-Inside `<MethodSection>`, prose that sits directly adjacent to a `<Frame>`, a fenced
-code block, or a `<Tabs>` component will visually "stick" to it — no spacing, no
-paragraph break. Wrap only the **immediately adjacent prose** in `<p>`.
+Inside `<MethodSection>`, every standalone prose paragraph must be wrapped in `<p>`.
+This covers all cases: before/after `<Frame>`, before/after code blocks,
+before/after `<Tabs>`, and between numbered steps.
 
-Do NOT wrap every paragraph in `<p>` — only the ones that touch a block element or
-sit between numbered steps. Overuse of `<p>` is incorrect.
+**The rule is simple: if it is a prose paragraph inside `<MethodSection>`, it gets `<p>`.**
 
 **When to use `<p>`:**
-1. Prose immediately before or after a `<Frame>` (screenshot)
-2. Prose immediately before or after a fenced code block
-3. Prose immediately before or after `<Tabs>` / `<Tab>`
-4. Prose that sits between numbered list steps (prevents step numbers from merging into the paragraph)
+- Every standalone prose paragraph inside `<MethodSection>`
 
 **Correct:**
 ```mdx
@@ -229,6 +228,11 @@ cargo build --target wasm32-wasi --release
 
 <p>The output file is located in `target/wasm32-wasi/release/`.</p>
 ```
+
+**Never wrap in `<p>`:**
+- Numbered list items (`1.`, `2.`, `3.`) — they are list elements, not prose paragraphs
+- Bullet list items (`-`, `*`) — block-level, renders correctly without wrapping
+- JSX components (`<Info>`, `<Warning>`, `<Frame>`, `<Tabs>`) — already block-level
 
 This applies inside any `<MethodSection>`. Does not apply to content outside `<MethodSection>`.
 
@@ -367,6 +371,51 @@ data = open('article.mdx', 'rb').read()
 if data.startswith(b'\xef\xbb\xbf'):
     open('article.mdx', 'wb').write(data[3:])
 ```
+
+---
+
+## Image display width
+
+All screenshots must use `<img>` with an explicit `width` attribute inside `<Frame>`.
+Do not use the markdown `![alt](src)` shorthand — it renders the image at full container
+width, which can fill the entire screen on large monitors.
+
+**Correct:**
+```mdx
+<Frame>
+  <img src="/images/docs/..." alt="Alt text" width="70%"/>
+</Frame>
+```
+
+**Wrong — full-width and cannot be resized:**
+```mdx
+<Frame>
+  ![Alt text](/images/docs/...)
+</Frame>
+```
+
+**Standard width values:**
+
+| Use case | Width |
+|----------|-------|
+| Full-form portal screenshot (dialogs, forms, pages) | `70%` |
+| Narrow UI fragment (toggle, field, small control) | `50%` |
+| Wide diagram or architecture overview | `100%` |
+
+When in doubt, use `70%`.
+
+To convert all markdown images in a file at once, use the script
+`scripts/fix_image_widths.py` in the `docops-agent2` repository:
+
+```powershell
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts\fix_image_widths.py "C:\Projects\product-documentation\path\to\article.mdx"
+```
+
+The script:
+- Converts `![alt](src)` inside `<Frame>` to `<img src="src" alt="alt" width="70%"/>`
+- Removes `style={{ width:"..." }}` and replaces with the `width` attribute
+- Preserves UTF-8 encoding without BOM
 
 ---
 

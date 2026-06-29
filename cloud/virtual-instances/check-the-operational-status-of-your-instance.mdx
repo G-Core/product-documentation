@@ -1,7 +1,7 @@
-﻿---
-title: Check the operational status of your Virtual Machine
+---
+title: Check the operational status of a Virtual Machine
 sidebarTitle: Check the status
-ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column, the REST API using GET /cloud/v1/instances to read ACTIVE, BUILD, SHUTOFF, and ERROR status values, or Terraform using the gcore_cloud_instance data source.
+ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column, the Gcore Cloud REST API instances endpoint, or Terraform using the gcore_cloud_instance data source.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -12,21 +12,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Virtual Machine statuses are visible on the **Virtual Instances** page inside a project. Check the **Status** column:</p>
 
-<Frame>![VM status column with the Power on status displayed](/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-status-column.png)</Frame>
-
-<p>For a full list of status values and their meanings, see [Status values](#status-values) below.</p>
+<Frame><img src="/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-list-status-column.png" alt="Virtual Instances list showing the Status column with a Power on badge" width="70%"/></Frame>
 
 <Tip>
-If a Virtual Machine enters the **Error** state, contact [Gcore support](mailto:support@gcore.com) for assistance.
+If a Virtual Machine enters the `Error` state, contact [Gcore support](mailto:support@gcore.com) for assistance.
 </Tip>
 
 </MethodSection>
 
 <MethodSection id="api" label="REST API">
 
-<p>Two endpoints expose instance status: the list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
+<p>Two endpoints expose instance status. The list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
 
-<Info>An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).</Info>
+<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).</Info>
 
 <p>Set these variables before running the examples:</p>
 
@@ -38,7 +36,7 @@ export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 ```
 
 <Info>
-**INSTANCE\_ID** is the UUID of the virtual machine to check. To create a VM or find its ID, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
+`INSTANCE_ID` is the UUID of the Virtual Machine — retrieve it from the `id` field in the list endpoint response below.
 </Info>
 
 ## List instances
@@ -149,10 +147,9 @@ Response:
 
 <p>Read a Virtual Machine's current `status` and `vm_state` without managing it. The [`gcore_cloud_instance`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instance) data source fetches live state from the API and exposes it as Terraform outputs.</p>
 
-
 ## Get instance status
 
-<p>Reads a single instance by ID and surfaces its `status`, `vm_state`, and `task_state`. Use in configurations where the live state of an existing VM must be known before provisioning dependent resources.</p>
+<p>Reads a single instance by ID and surfaces its `status`, `vm_state`, and `task_state`. Use when the live state of an existing VM must be known before provisioning dependent resources.</p>
 
 ```hcl
 data "gcore_cloud_instance" "status" {
@@ -181,13 +178,13 @@ instance_task_state = tostring(null)
 
 ## Check state of a managed instance
 
-<p>For instances declared as `gcore_cloud_instance` resources, `terraform show` prints the last known state without an API call:</p>
+<p>For instances declared as `gcore_cloud_instance` resources, `terraform show` reads from the state file — it reflects the state at the last `apply` or `refresh`, not the current API value:</p>
 
 ```bash
 terraform show
 ```
 
-<p>To sync state with the live API:</p>
+<p>To query the live API and update the state file:</p>
 
 ```bash
 terraform apply -refresh-only
@@ -215,5 +212,5 @@ The `status` field uses uppercase string constants. The `vm_state` field provide
 | `REBUILD` | `active` | — | VM is being rebuilt from an image. |
 | `RESIZE` | `resized` | — | VM flavor is being changed. |
 | `MIGRATING` | `active` | — | VM is being migrated to another host. |
-| `SUSPENDED` | `suspended` | — | VM is suspended by the platform. |
+| `SUSPENDED` | `suspended` | — | VM is suspended. |
 | `SOFT_DELETED` | `soft-deleted` | — | VM is pending permanent deletion. |

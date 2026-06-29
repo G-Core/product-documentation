@@ -6,19 +6,19 @@ ai-navigation: Enable Prometheus listener on load balancers to expose metrics en
 
 import { Caution } from "/snippets/caution.mdx";
 
-Gcore collects and stores metrics and logs from various cloud resources, including load balancers. This guide explains the different monitoring features and how to configure them for an existing load balancer.
+This guide explains the monitoring features available for Gcore Load Balancers and how to configure them for an existing load balancer.
 
 ## Prometheus listener
 
-Load balancers use listeners to associate a port with a pool of instances. In addition to the regular balancing listeners, you can create one that exposes an endpoint with the balancer's metrics. This enables you to scrape them with Prometheus and view them with Grafana.
+Load balancers use listeners to associate a port with a pool of instances. In addition to the regular balancing listeners, a Prometheus listener exposes an endpoint with the balancer's metrics for scraping with Prometheus and viewing with Grafana.
 
 <Tip>
-  Tip: Import [this pre-made Grafana dashboard](https://grafana.com/grafana/dashboards/15828-openstack-octavia-amphora-load-balancer/) to display your metrics.
+  Import [this pre-made Grafana dashboard](https://grafana.com/grafana/dashboards/15828-openstack-octavia-amphora-load-balancer/) to display the metrics.
 </Tip>
 
 ### Enable Prometheus listener
 
-You can enable the Prometheus listener from the Customer Portal by following these steps:
+To enable the Prometheus listener, use the Customer Portal:
 
 <Steps>
   <Step title="Open the listener settings">
@@ -30,7 +30,7 @@ You can enable the Prometheus listener from the Customer Portal by following the
       style={{ width:"62%" }}
     />
 
-    This will take you to the **Load Balancer Details** page.
+    The **Load Balancer** page opens.
   </Step>
   <Step title="Initialize the listener creation">
     Select the **Listeners** tab, scroll down until you see the **Add Listener** button, and click it.
@@ -41,17 +41,17 @@ You can enable the Prometheus listener from the Customer Portal by following the
       style={{ width:"36%" }}
     />
 
-    This will open the **Add Listener** dialog.
+    The **Add Listener** panel opens.
   </Step>
   <Step title="Configure the listener">
-    Enter a **Name** for your listener, set a **Port** and a **Connection limit**, and for the **Protocol** select **Prometheus**.
+    Enter a **Name**, select **Prometheus** as the **Protocol**, set a **Port** and a **Connection limit**.
 
-    Just like with regular listeners, you have the following options to secure your Prometheus listener:
+    The following options are available to secure the Prometheus listener:
 
-    - Define an allowed IP range with CIDRs.
-    - Define a list of users who get access through Basic Auth.
-    - Enable SSL/TLS by [<u>adding certificates</u>](/cloud/networking/load-balancers/add-certificates-to-load-balancer).
-    - Enable mTLS [<u>via the Gcore Cloud API</u>](/cloud/networking/load-balancers/configure-mtls-authentication).
+    - Define an allowed IP range with **Allowed CIDRs**.
+    - Define a list of users with access through **Basic Auth** (**User List**).
+    - Enable SSL/TLS by [adding certificates](/cloud/networking/load-balancers/add-certificates-to-load-balancer).
+    - Enable mTLS [via the Gcore Cloud API](/cloud/networking/load-balancers/configure-mtls-authentication).
 
     <img
       src="/images/load-balancers-monitoring-3.png"
@@ -62,7 +62,7 @@ You can enable the Prometheus listener from the Customer Portal by following the
   <Step title="Finalize the listener">
     Click the **Create Listener** button and wait until the Prometheus listener appears in the list.
 
-    You can now add the listener as a target to a Prometheus instance by adding the following lines to its prometheus.yml under the scrape_configs section:
+    Add the listener as a target to a Prometheus instance by adding the following lines to `prometheus.yml` under `scrape_configs`:
 
     ```yaml
     - job_name: <LOAD_BALANCER_NAME>
@@ -77,10 +77,10 @@ You can enable the Prometheus listener from the Customer Portal by following the
 ### Disable Prometheus listener
 
 <Info>
-  Before you delete a Prometheus listener, you should delete the corresponding job from all _prometheus.yml_ files.
+  Before deleting a Prometheus listener, delete the corresponding job from all `prometheus.yml` files.
 </Info>
 
-You can disable the Prometheus listener in the **Customer Portal** by following these steps:
+To disable the Prometheus listener, use the **Customer Portal**:
 
 <Steps>
   <Step title="Open the load balancer settings">
@@ -93,21 +93,17 @@ You can disable the Prometheus listener in the **Customer Portal** by following 
     />
   </Step>
   <Step title="Delete the listener">
-    Select the **Listeners** tab, scroll down until you see the Prometheus listener, click on its corresponding action menu on the right, and click **Delete**.
+    Select the **Listeners** tab, scroll down to the Prometheus listener, click the action menu on the right, and click **Delete**.
   </Step>
 </Steps>
 
 ## Logging as a service
 
-Gcore offers Managed Logging, also known as logging as a service (LaaS) for all cloud resources.
-
-<Info>
-  When you enable logging on a load balancer, LaaS will store the logs in the same region as the load balancer.
-</Info>
+In addition to Prometheus metrics, load balancers can forward listener access logs to Gcore Managed Logging (LaaS). Logs are stored in the same region as the load balancer.
 
 ### Enable logging
 
-You can enable logging via the **Customer Portal** by following these steps:
+To enable logging, use the **Customer Portal**:
 
 <Steps>
   <Step title="Open the load balancer settings">
@@ -122,7 +118,7 @@ You can enable logging via the **Customer Portal** by following these steps:
   <Step title="Initialize logging">
     Select the **Logging** tab, and activate the **Enable Logging** toggle.
 
-    You can either use an existing log **Topic** or create a new one, allowing you to define a **Retention** period.
+    Select an existing log **Topic** or create a new one to define a **Retention** period. For full configuration details, see [Logging for load balancers](/cloud/networking/load-balancers/logging-for-load-balancers).
 
     <img
       src="/images/load-balancers-monitoring-4.png"
@@ -131,13 +127,13 @@ You can enable logging via the **Customer Portal** by following these steps:
     />
   </Step>
   <Step title="Finalize logging">
-    Click the **Save changes** button, and Gcore’s LaaS will set up the logging for the load balancer.
+    Click **Save changes**. The Logging service configures log collection for the load balancer.
   </Step>
 </Steps>
 
 ### View the logs
 
-You can now view your logs in the **Customer Portal** or [<u>your own Grafana instance</u>](/cloud/logging-as-a-service/view-opensearch-logs-in-Grafana). To view the logs in the **Customer Portal**, follow these steps:
+Logs can be viewed in the **Customer Portal** or in [a Grafana instance](/cloud/logging-as-a-service/view-opensearch-logs-in-Grafana). To view the logs in the **Customer Portal**:
 
 <Steps>
   <Step title="Open Managed Logging">
@@ -156,7 +152,7 @@ You can now view your logs in the **Customer Portal** or [<u>your own Grafana in
 
 ### Disable logging
 
-You can disable logging via the **Customer Portal** by following these steps:
+To disable logging, use the **Customer Portal**:
 
 <Steps>
   <Step title="Open the load balancer settings">
@@ -181,7 +177,7 @@ You can disable logging via the **Customer Portal** by following these steps:
 
 ## Cloud API endpoints
 
-You can request status, metrics, and general statistics for your load balancers via the Gcore Cloud API.
+Status, metrics, and general statistics for load balancers are available via the Gcore Cloud API.
 
 ### Load balancer status
 
@@ -194,7 +190,7 @@ The status endpoints provide details about a load balancer's operating and provi
   style={{ width:"81%" }}
 />
 
-You can find more information about the endpoints on the following documentation pages.
+For more information, see:
 
 - [Status of one specific load balancer](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerStatusInstanceViewSet.get)
 - [Status of all load balancers](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerStatusViewSet.get)
@@ -210,7 +206,7 @@ The metrics endpoint provides information about CPU, memory, and network utiliza
   style={{ width:"78%" }}
 />
 
-You can find more information about the endpoints on the following documentation pages.
+For more information, see:
 
 - [Metrics of one specific load balancer](/api-reference/cloud#tag/Load-Balancers/operation/LoadbalancerMetricsHandler.post)
 
@@ -232,7 +228,7 @@ The get endpoints for load balancers and listeners provide data about connection
   style={{ width:"78%" }}
 />
 
-You can find more information about the endpoints on the following documentation pages.
+For more information, see:
 
 - [Get one specific load balancer](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerInstanceViewSet.get)
 - [Get one listener](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerListenerInstanceViewSet.get)
