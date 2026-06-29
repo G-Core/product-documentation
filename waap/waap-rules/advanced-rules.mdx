@@ -1,7 +1,7 @@
 ﻿---
 sidebarTitle: "Advanced Rules"
 title: "Advanced Rules"
-ai-navigation: Create and edit advanced WAAP rules in the Gcore Customer Portal or via API using Common Expression Language (CEL) syntax with If/Then conditions, rule objects, source field objects, quick templates, and single-action enforcement (allow, block, captcha, handshake, or tag).
+ai-navigation: Create and manage WAAP advanced rules using Common Expression Language (CEL) syntax via REST API or Python and Go SDKs, with If/Then conditions, source field objects, and actions including allow, block, captcha, handshake, and tag.
 ---
 
 <Info>
@@ -14,56 +14,20 @@ Similarly to WAAP [custom rules](/waap/waap-rules/custom-rules), you can create,
 
 ## Create advanced rules
 
-You can create and edit advanced rules in the [Gcore Customer Portal](https://portal.gcore.com/) or via our API. Advanced rules use the same **If/Then** structure as [custom rules](/waap/waap-rules/custom-rules), but support more complex conditions written in [Common Expression Language (CEL)](https://github.com/google/cel-spec) syntax.
+Due to the highly technical aspect of the advanced rules functionality, the ability to create and edit these rules is currently only available through our API.
 
-### In the Customer Portal
+Check out the following guides for details on how to create advanced rules and their key components:
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Custom Rules**.
-2. Click **Add custom rule** to create a new rule, or open an existing rule to edit it.
-3. Enter a **Rule name** and set the **Status** toggle as needed.
-4. Under **Rule type**, select **Advanced Rule**.
-5. In the **Define rule** section, configure the rule logic:
-   - **If**: Select the domain or zone the rule applies to.
-   - **And**: Add one or more conditions by choosing **Object**, **Attribute**, **Operator**, and **Value**. Click **+** to add additional conditions. To build more complex logic, select **Group** as the object type to add a nested group of conditions. Groups support **And**, **Or**, and **If** operators and can be nested inside each other to create layered rule logic.
-   - **Then**: Select the action: **Block**, **Allow**, **Captcha**, **JS Challenge** (Handshake), or **Tag**. For **Block**, set the status code and optional block duration; for **Tag**, enter one or more tags.
-   - **Phase**: Choose when the rule is evaluated (for example, **Access (request phase)**).
-6. Review the generated **Expression**. To write or modify the CEL expression directly, click **Edit manually**.
-7. Optionally, use a **Quick Template** to prefill common advanced rule configurations, such as brute force protection, blocking sanctioned countries, or rate limiting.
-8. Click **Save**.
-
-<Frame>
-  ![Add custom rule form with Advanced Rule selected](/images/docs/waap/waap-rules/advanced-rules/add-custom-rule-advanced-rule.png)
-</Frame>
-
-<Tip>
-  **Tip**
-
-  Use the visual rule builder to define conditions step by step. The portal generates the underlying CEL expression automatically. Switch to **Edit manually** when you need full control over the expression syntax.
-</Tip>
-
-The following **Quick Templates** are available for advanced rules:
-
-- Block Fake Account Creation
-- Brute Force Protection
-- Challenge Suspicious User-Agent
-- Block Malicious Automation
-- Block Sanctioned Countries
-- Form Spam Prevention
-- Block Inventory Hoarding
-- Block Dangerous Uploads
-- Captcha Rate Limit 100 req/5s
-- Block Rate Limit 200 req/5s
-- Block Penalized Requests
-
-### Via API
-
-You can also create and manage advanced rules programmatically using our API. This approach is useful for automation, bulk operations, or integration with your own tooling.
-
-Check out the following guides for details on how to construct advanced rules and their key components:
-
-- [API docs](/api-reference/waap): Learn how to construct and manage advanced rules.
+- [API docs](https://api.gcore.com/docs/waap): Learn how to construct and manage advanced rules.
 - [Advanced rule objects and attributes](/waap/waap-rules/advanced-rules/advanced-rule-objects): Get the list of all available objects you can use in rule expressions along with their respective attributes and types.
 - [Source field objects](/waap/waap-rules/advanced-rules/source-field-objects): Check the available source field objects you can use in your expressions along with their respective attributes and types.
+
+An [API token](/account-settings/api-tokens) is required along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). Set these as environment variables before running any of the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
 
 ## Advanced rule properties
 
@@ -96,210 +60,879 @@ The advanced rule object contains the following properties:
 <Info>
   **Info**
 
-  Each rule can contain only one action—`block`, `allow`, `captcha`, `handshake`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
+  Each rule can contain only one action ΓÇö `block`, `allow`, `captcha`, `handshake`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
 </Info>
 
 <Accordion title="Description of the properties">
-  | Field         | Description                                     | Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Details                                                                                                                                                                                                                                                                                                                                                                                                   |
+  | Field         | Description                                     | Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Details                                                                                                                                                                                                                                                                                                                                                                                                   |
   | ------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Required.                                                                                                                                                                                                                                                                                                                                                                                             |
-  | `action`      | The action to execute when a condition is true. | <ul>               <li>               block: WAAP blocks the request.</li>                              <li>               allow: WAAP allows the request.</li>                              <li>               captcha: WAAP presents the user with a CAPTCHA.</li>                              <li>               handshake: WAAP presents a JS Challenge.</li>                              <li>               tag: WAAP generates a tag with no action.</li>                              </ul> | Required. For the `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), provide the `tags` list (1–5 tags).<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), optional fields: `status_code` (403 default; also accepts 405, 418, 429) and `action_duration` (a value above zero with optional unit s/m/h/d). If `action_duration` is omitted, no block duration is applied. |
-  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                                                                                                                      | Required. Every string value should be enclosed in single quotation marks `'` and not in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
-  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Required.                                                                                                                                                                                                                                                                                                                                                                                             |
-  | `description` | A string to describe the purpose of the rule.   | Any string.<br />The character limit for the description field is 100 characters.                                                                                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                           |
-  | `phase`       | The request processing phase.                   | <ul>               <li>               access: The advanced rule applies to the request phase (request headers and body available).</li>                              <li>               header_filter: The advanced rule applies to the response headers phase.</li>                              <li>               body_filter: The advanced rule applies to the response body phase.</li>                              </ul>                                                                                           | Default value: `access`                                                                                                                                                                                                                                                                                                                                                                                   |
+  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                                                                                                     | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `action`      | The action to execute when a condition is true. | <ul><li>block: WAAP blocked the request.</li><li>allow: WAAP allowed the request.</li><li>captcha: WAAP presented the user with a CAPTCHA</li><li>handshake: WAAP performed automatic browser validation.</li><li>tag: WAAP will generate a tag with no action.</li></ul> | **Required.** On `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), the tag field should be provided.<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), setting up the `status_code` (integer) and `action_duration` (time in seconds) is optional. By default, the status is set to `"status_code": 403`, and duration equals to `0s`. |
+  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                                                                                                      | **Required.** Every string value should be enclosed in single quotation marks `'` and **not** in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
+  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `description` | A string to describe the purpose of the rule.   | Any string. The character limit for the description field is 100 characters.                                                                                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                           |
+  | `phase`       | The request processing phase.                   | <ul><li>access: The advanced rule applies to the request phase (request headers and body available).</li><li>header_filter: The advanced rule applies to the response headers phase.</li><li>body_filter: The advanced rule applies to the response body phase.</li></ul>                                                                                                                                                           | Default value: `access`                                                                                                                                                                                                                                                                                                                                                                                   |
 </Accordion>
 
 ## Best practices
 
-The following sections provide examples of advanced rules you can create in the Gcore Customer Portal or via our API. Use the visual rule builder and **Quick Templates** for common scenarios, or adapt the API examples below when you need programmatic control.
+You can use our API documentation as a guide when constructing your own advanced rules. The following sections provide examples of advanced rules and the key CEL expressions used in each.
 
 <Note>
   **Note**
 
-  Examples are illustrative. Field values (paths, cookies, IPs, countries) should be adapted to the customer’s environment.
+  Examples are illustrative. Field values (paths, cookies, IPs, countries) should be adapted to the customer's environment.
 </Note>
 
 ### Rate limiting
 
-You can rate limit IPs based on the number of requests they make to your website. For example, this can be useful for mitigating scrapers or automated clients that generate a high volume of requests over a short period of time.
+Rate-limit IPs based on the number of requests they make to your website. This can be useful for mitigating scrapers or automated clients that generate a high volume of requests over a short period of time.
+
+The following rule limits the rate of requests an IP can send for 10 minutes when it exceeds 200 requests in 5 seconds, but excludes requests from mobile or web clients that have specific cookies.
 
 You can find more examples in our [Rate limiting](/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules) guide.
 
-The following rule limits the rate of requests an IP can send for 10 minutes, when it exceeds 200 requests in 5 seconds, but excludes requests from mobile or web clients that have specific cookies.
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-**Rate Limiting curl example**
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403,
-      "action_duration": "10m"
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Block Scrapers",
+        description="Block IPs that hit more than 200 requests per 5 seconds for any events paths",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403, "action_duration": "10m"}},
+        source=(
+            "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')"
+            " and not ('mb-web-ui' in request.headers['Cookie']"
+            " or 'mb-mobile-ios' in request.headers['Cookie']"
+            " or 'mb-mobile-android' in request.headers['Cookie']"
+            " or 'session-token' in request.headers['Cookie'])"
+            " and not request.headers['session']"
+        ),
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        source := "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')" +
+            " and not ('mb-web-ui' in request.headers['Cookie']" +
+            " or 'mb-mobile-ios' in request.headers['Cookie']" +
+            " or 'mb-mobile-android' in request.headers['Cookie']" +
+            " or 'session-token' in request.headers['Cookie'])" +
+            " and not request.headers['session']"
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Block Scrapers",
+                Description: gcore.String("Block IPs that hit more than 200 requests per 5 seconds for any events paths"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action: waap.DomainAdvancedRuleNewParamsAction{
+                    Block: waap.DomainAdvancedRuleNewParamsActionBlock{
+                        StatusCode:     403,
+                        ActionDuration: gcore.String("10m"),
+                    },
+                },
+                Source: source,
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Block Scrappers",
-  "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
-  "enabled": false,
-  "source": "((request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')) and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']) or tags.exists('penalty')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block Scrapers",
+        "description": "Block IPs that hit more than 200 requests per 5 seconds for any events paths",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403, "action_duration": "10m"}},
+        "source": "((request.limit_rate(url='\''.*events'\'', interval=5, requests=200, scope='\''ip'\'')) and not ('\''mb-web-ui'\'' in request.headers['\''Cookie'\''] or '\''mb-mobile-ios'\'' in request.headers['\''Cookie'\''] or '\''session-token'\'' in request.headers['\''Cookie'\'']) and not request.headers['\''session'\'']) or tags.exists('\''penalty'\'')"
+      }'
+    ```
+
+    The API returns the created rule with its assigned ID:
+
+    ```json
+    {
+      "id": 269009,
+      "name": "Block Scrapers",
+      "description": "Block IPs that hit more than 200 requests per 5 seconds for any events paths",
+      "enabled": false,
+      "action": {"block": {"status_code": 403, "action_duration": "10m"}},
+      "source": "...",
+      "phase": "access"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### The penalty tag
 
 The WAAP system appends the `penalty` tag to the local (domain-related) IP record when an IP address triggers a block rule configured with an `action_duration` parameter.
 
-To continue blocking an IP address after the original rule’s conditions are no longer met, include a `penalty` tag check in the rule’s source conditions (for example, by appending `or tags.exists('penalty')` to the existing conditions), or define a separate rule that targets requests carrying the penalty tag. The following example illustrates this approach.
+To continue blocking an IP address after the original rule's conditions are no longer met, include a `penalty` tag check in the rule's source conditions (for example, using `tags.exists('penalty')`), or define a separate rule that targets requests carrying the penalty tag.
 
 #### Block all penalty requests
 
 The following rule blocks requests from IP addresses tagged with the `penalty` tag, allowing block actions applied by other rules to persist.
 
-**Block penalty-tagged IP requests**
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "name": "Block Penalized Requests",
-    "description": "Block requests from IP addresses tagged with the penalty tag",
-    "enabled": false,
-    "phase": "access",
-    "action": {
-      "block": {}
-    },
-    "source": "tags.exists('penalty')"
-  }'
-```
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Block Penalized Requests",
+        description="Block requests from IP addresses tagged with the penalty tag",
+        enabled=False,
+        phase="access",
+        action={"block": {}},
+        source="tags.exists('penalty')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Block Penalized Requests",
+                Description: gcore.String("Block requests from IP addresses tagged with the penalty tag"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{}},
+                Source:      "tags.exists('penalty')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block Penalized Requests",
+        "description": "Block requests from IP addresses tagged with the penalty tag",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {}},
+        "source": "tags.exists('\''penalty'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 ## Other examples
 
 ### Validate a set of countries
 
-Demonstrates how to apply browser validation (JavaScript-based challenge) using the `handshake `action to requests originating from specific countries, based on the `whois.country` field, while excluding requests that contain certain cookies.
+Applies browser validation (JavaScript-based challenge) using the `handshake` action to requests originating from specific countries, based on the `whois.country` field, while excluding requests that contain certain cookies.
 
-**Validate a set of countries**
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "action": {
-      "handshake": {}
-    },
-    "phase": "access",
-    "name": "Validate set of countries",
-    "description": "Validate with JavaScript challenge IPs that are coming from the following countries",
-    "enabled": false,
-    "source": "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK'] and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'])"
-  }'
-```
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Validate set of countries",
+        description="Validate with JavaScript challenge IPs coming from specific countries",
+        enabled=False,
+        phase="access",
+        action={"handshake": {}},
+        source=(
+            "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK']"
+            " and not ('mb-web-ui' in request.headers['Cookie']"
+            " or 'mb-mobile-ios' in request.headers['Cookie']"
+            " or 'mobile-android' in request.headers['Cookie']"
+            " or 'mb-mobile-android' in request.headers['Cookie'])"
+        ),
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        source := "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK']" +
+            " and not ('mb-web-ui' in request.headers['Cookie']" +
+            " or 'mb-mobile-ios' in request.headers['Cookie']" +
+            " or 'mobile-android' in request.headers['Cookie']" +
+            " or 'mb-mobile-android' in request.headers['Cookie'])"
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Validate set of countries",
+                Description: gcore.String("Validate with JavaScript challenge IPs coming from specific countries"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Handshake: map[string]any{}},
+                Source:      source,
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "action": {"handshake": {}},
+        "phase": "access",
+        "name": "Validate set of countries",
+        "description": "Validate with JavaScript challenge IPs coming from specific countries",
+        "enabled": false,
+        "source": "whois.country in ['\''BR'\'', '\''VN'\'', '\''ID'\'', '\''TH'\'', '\''ME'\'', '\''XK'\'', '\''LK'\''] and not ('\''mb-web-ui'\'' in request.headers['\''Cookie'\''] or '\''mb-mobile-ios'\'' in request.headers['\''Cookie'\''] or '\''mobile-android'\'' in request.headers['\''Cookie'\''] or '\''mb-mobile-android'\'' in request.headers['\''Cookie'\''])"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 ### Add clients to allow list
 
-Demonstrates how to allow requests from specific IP addresses or IP ranges by matching IP values in the rule condition.
+Allow requests from specific IP addresses or IP ranges by matching IP values in the rule condition.
 
-**Add clients to allow list**
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "name": "Whitelist known IPs",
-    "enabled": false,
-    "action": {
-      "allow": {}
-    },
-    "source": "request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')"
-  }'
-```
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Allowlist known IPs",
+        enabled=False,
+        action={"allow": {}},
+        source="request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:    "Allowlist known IPs",
+                Enabled: false,
+                Action:  waap.DomainAdvancedRuleNewParamsAction{Allow: map[string]any{}},
+                Source:  "request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Allowlist known IPs",
+        "enabled": false,
+        "action": {"allow": {}},
+        "source": "request.ip == '\''117.20.32.5'\'' or request.ip == '\''117.20.32.4'\'' or request.ip_in_range('\''72.21.217.0'\'', '\''72.21.217.255'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 ### Tag and allow registered clients
 
-Demonstrates how to tag requests based on the presence of a specific cookie and allow requests associated with the assigned tag. 
-When defining tag values in JSON, double quotation marks must be used, while string values inside rule expressions must be enclosed in single quotation marks.
+Tag requests based on the presence of a specific cookie and allow requests associated with the assigned tag. When defining tag values in JSON, double quotation marks must be used, while string values inside rule expressions must be enclosed in single quotation marks.
 
-**Tag registered clients**
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "name": "Tag registered clients",
-    "description": "Detect and tag registered clients by cookie",
-    "enabled": false,
-    "phase": "access",
-    "source": "'mb-mobile-android' in request.headers['Cookie']",
-    "action": {
-      "tag": {
-        "tags": ["registered"]
-      }
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Step 1: tag registered clients by cookie
+    tag_rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Tag registered clients",
+        description="Detect and tag registered clients by cookie",
+        enabled=False,
+        phase="access",
+        action={"tag": {"tags": ["registered"]}},
+        source="'mb-mobile-android' in request.headers['Cookie']",
+    )
+    print(f"Tag rule ID: {tag_rule.id}")
+
+    # Step 2: allow requests carrying the tag
+    allow_rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Allow registered clients",
+        description="Allow registered clients",
+        enabled=False,
+        phase="access",
+        action={"allow": {}},
+        source="tags.exists('registered')",
+    )
+    print(f"Allow rule ID: {allow_rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Step 1: tag registered clients by cookie
+        tagRule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Tag registered clients",
+                Description: gcore.String("Detect and tag registered clients by cookie"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Tag: waap.DomainAdvancedRuleNewParamsActionTag{Tags: []string{"registered"}}},
+                Source:      "'mb-mobile-android' in request.headers['Cookie']",
+            },
+        )
+        fmt.Printf("Tag rule ID: %d\n", tagRule.ID)
+
+        // Step 2: allow requests carrying the tag
+        allowRule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Allow registered clients",
+                Description: gcore.String("Allow registered clients"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Allow: map[string]any{}},
+                Source:      "tags.exists('registered')",
+            },
+        )
+        fmt.Printf("Allow rule ID: %d\n", allowRule.ID)
     }
-  }'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Step 1: tag registered clients by cookie
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Tag registered clients",
+        "description": "Detect and tag registered clients by cookie",
+        "enabled": false,
+        "phase": "access",
+        "source": "'\''mb-mobile-android'\'' in request.headers['\''Cookie'\'']",
+        "action": {"tag": {"tags": ["registered"]}}
+      }'
 
-**Allow registered clients**
+    # Step 2: allow requests carrying the tag
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Allow registered clients",
+        "description": "Allow registered clients",
+        "enabled": false,
+        "phase": "access",
+        "source": "tags.exists('\''registered'\'')",
+        "action": {"allow": {}}
+      }'
+    ```
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "name": "Allow registered clients",
-    "description": "Allow registered clients",
-    "enabled": false,
-    "phase": "access",
-    "source": "tags.exists('registered')",
-    "action": {
-      "allow": {}
-    }
-  }'
-```
+    Both calls return 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 ### Define login pages
 
-Demonstrates how to tag requests that match specific URL patterns using string matching on the request URI.
+Tag requests that match specific URL patterns using string matching on the request URI.
 
-**Define login pages**
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
-  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
-  --header 'accept: application/json' \
-  --header 'content-type: application/json' \
-  --data '{
-    "name": "Detect and Tag Login Pages",
-    "enabled": false,
-    "phase": "access",
-    "source": "['url1/login','url2/signup'] in request.uri",
-    "action": {
-      "tag": {
-        "tags": ["login page"]
-      }
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Detect and Tag Login Pages",
+        enabled=False,
+        phase="access",
+        action={"tag": {"tags": ["login page"]}},
+        source="['url1/login','url2/signup'] in request.uri",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:    "Detect and Tag Login Pages",
+                Enabled: false,
+                Phase:   waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:  waap.DomainAdvancedRuleNewParamsAction{Tag: waap.DomainAdvancedRuleNewParamsActionTag{Tags: []string{"login page"}}},
+                Source:  "['url1/login','url2/signup'] in request.uri",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  }'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Detect and Tag Login Pages",
+        "enabled": false,
+        "phase": "access",
+        "source": "['\''url1/login'\'','\''url2/signup'\''] in request.uri",
+        "action": {"tag": {"tags": ["login page"]}}
+      }'
+    ```
 
-## Review existing rules
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
-Advanced rules can be reviewed, created, edited, enabled, disabled, or deleted in the [Gcore Customer Portal](https://portal.gcore.com/) on the **WAAP** > **Custom Rules** page. Advanced rules appear alongside other custom rules and are identified by the **Advanced Rule** type.
+## List rules
 
-You can also retrieve and manage advanced rules programmatically using the [Advanced Rules retrieval endpoint](/api-reference/waap/advanced-rules/retrieve-advanced-rules).
+Retrieve all advanced rules configured for a domain, including their current enabled state, actions, and CEL source expressions.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rules = client.waap.domains.advanced_rules.list(domain_id)
+    for rule in rules:
+        status = "enabled" if rule.enabled else "disabled"
+        print(f"{rule.id}: {rule.name} [{status}] ΓÇö {rule.source[:60]}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rules, _ := client.Waap.Domains.AdvancedRules.List(context.Background(), domainID, waap.DomainAdvancedRuleListParams{})
+        for _, rule := range rules.Results {
+            status := "disabled"
+            if rule.Enabled {
+                status = "enabled"
+            }
+            fmt.Printf("%d: %s [%s]\n", rule.ID, rule.Name, status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    The API returns a paginated list of rules:
+
+    ```json
+    {
+      "limit": 100,
+      "offset": 0,
+      "count": 1,
+      "results": [
+        {
+          "id": 269009,
+          "name": "Block Scrapers",
+          "description": "Block IPs that hit more than 200 requests per 5 seconds",
+          "enabled": false,
+          "action": {"block": {"status_code": 403, "action_duration": "10m"}},
+          "source": "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip') ...",
+          "phase": "access"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The rules are also visible in the Gcore Customer Portal, where they can be enabled, disabled, or deleted:
 
 <Frame>
-  ![Custom Rules page listing rate limit, basic, and advanced rules, with the Advanced Rule tooltip shown on the type icon](/images/docs/waap/waap-rules/advanced-rules/advanced-rule.png)
+  ![Advanced rules section with a sample penalty fingerprint rule](/images/docs/waap/waap-rules/advanced-rules/advanced-rules-sample.png)
 </Frame>
+
+## Update a rule
+
+Update any combination of a rule's name, description, enabled state, action, phase, or source expression. Only fields included in the request body are changed. The API returns 204 with no body on success.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269009
+
+    client.waap.domains.advanced_rules.update(
+        rule_id,
+        domain_id=domain_id,
+        description="Updated: block IPs exceeding 100 req/5s on all paths",
+        source="request.limit_rate(url='.*', interval=5, requests=100, scope='ip')",
+    )
+    print("Rule updated")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269009)
+
+        client.Waap.Domains.AdvancedRules.Update(
+            context.Background(),
+            ruleID,
+            waap.DomainAdvancedRuleUpdateParams{
+                DomainID:    domainID,
+                Description: gcore.String("Updated: block IPs exceeding 100 req/5s on all paths"),
+                Source:      gcore.String("request.limit_rate(url='.*', interval=5, requests=100, scope='ip')"),
+            },
+        )
+        fmt.Println("Rule updated")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269009
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "description": "Updated: block IPs exceeding 100 req/5s on all paths",
+        "source": "request.limit_rate(url='\''.*'\'', interval=5, requests=100, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 204 with no body on success.
+  </Tab>
+</Tabs>
+
+## Enable and disable a rule
+
+Switch a rule between active and inactive without deleting it. Disabling a rule stops it from matching requests while preserving its configuration. The API returns 204 with no body for both operations.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269009
+
+    client.waap.domains.advanced_rules.toggle("disable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule disabled")
+
+    client.waap.domains.advanced_rules.toggle("enable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule enabled")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269009)
+
+        client.Waap.Domains.AdvancedRules.Toggle(
+            context.Background(),
+            waap.DomainAdvancedRuleToggleParamsActionDisable,
+            waap.DomainAdvancedRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule disabled")
+
+        client.Waap.Domains.AdvancedRules.Toggle(
+            context.Background(),
+            waap.DomainAdvancedRuleToggleParamsActionEnable,
+            waap.DomainAdvancedRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule enabled")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269009
+
+    # Disable
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules/${RULE_ID}/disable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+
+    # Enable
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules/${RULE_ID}/enable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Both calls return 204 with no body on success.
+  </Tab>
+</Tabs>
+
+## Delete a rule
+
+Delete a rule by ID. The operation is irreversible and returns 204 with no body on success.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269009
+
+    client.waap.domains.advanced_rules.delete(rule_id, domain_id=domain_id)
+    print("Rule deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269009)
+
+        client.Waap.Domains.AdvancedRules.Delete(
+            context.Background(),
+            ruleID,
+            waap.DomainAdvancedRuleDeleteParams{DomainID: domainID},
+        )
+        fmt.Println("Rule deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269009
+
+    curl -X DELETE "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    The API returns 204 with no body on success.
+  </Tab>
+</Tabs>
