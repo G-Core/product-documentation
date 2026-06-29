@@ -335,3 +335,15 @@ Where:
   * _DMF1ucDxtHCxwYQ_ is a secure token,
   * _2147483647_ is the time in the UNIX timestamp format until which the link is considered valid.
 
+
+## IP binding and mobile networks
+
+When you bind a secure token to the client's IP address, the CDN recomputes the hash using the IP address it sees on the incoming request. 
+This becomes a problem on some mobile networks. In certain countries, mobile ISPs change a subscriber's public IP address very aggressively — sometimes within minutes — because they route many subscribers through carrier-grade NAT (CGNAT) and rotate addresses across a pool. A token signed for one IP fails as soon as the carrier moves the user to another.
+
+The effect is most visible with [Query String Forwarding](/cdn/cdn-resource-options/query-string-forwarding) for video. The player requests the manifest, gets a token, and the token is forwarded to the related sub-segments. If the mobile ISP switches the client IP between requests, the next segment is downloaded from a different IP and returns `403`, while earlier segments returned `200`. So a single user can receive `200` and `403` responses almost simultaneously, and this is a strong indicator that the cause is mobile IP rotation rather than an expired or malformed token.
+
+If you observe this pattern — `200` and `403` mixed together for the same user on a mobile network — we can change the default token behavior from binding to a dedicated IP to binding to a wider subnet mask, such as `/24` or even `/16` for very aggressive mobile operators. A wider mask still ties the URL to the user's ISP block (so external sharing and hotlinking remain blocked) while tolerating IP rotation within that block.
+
+This option is available for Enterprise customers. To enable it, contact our [support team](https://gcore.com/support) or your account manager.
+

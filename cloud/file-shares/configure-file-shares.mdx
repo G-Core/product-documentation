@@ -1,7 +1,7 @@
----
+﻿---
 title: "Configuring file shares"
 sidebarTitle: "Configure"
-ai-navigation: Create NFS-based file shares and mount them to Virtual Machines via Customer Portal or REST API.
+ai-navigation: Create NFS-based file shares and mount them to Virtual Machines via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -17,17 +17,17 @@ Two types of file shares are available:
 - **VAST** are high-performance type file shares, available in selected GPU-enabled regions.
 
 <Info>
-  File share types are **mutually exclusive**, meaning each region has either Standard **or** VAST file shares, but not both.
+  File share types are mutually exclusive — each region has either Standard or VAST file shares, but not both.
 </Info>
 
 <Tip>
-  The best practice is to create VAST shares **when** creating [GPU clusters](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) or **before** provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+  Create VAST shares when creating [GPU clusters](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) or before provisioning [compute resources](/cloud/virtual-instances/types-of-virtual-machines) — VMs, Bare Metal servers, and GPU clusters.
 </Tip>
 
-The creation flow for both types starts the same. Use the steps below and follow the instructions for the selected file share type.
+The creation flow for both types starts the same. Follow the instructions for the selected file share type.
 
 <Info>
-  Please ensure that there are enough quotas to create the file share. To increase quotas, send us a request according to our guide. The quotas for File Shares are located on the Storage tab and include File Share count and File Share size (GiB).
+  Verify that quotas are sufficient for the file share. To increase quotas, send us a request according to our guide. The quotas for File Shares are located on the Storage tab and include File Share count and File Share size (GiB).
 </Info>
 
 <Frame>
@@ -50,7 +50,7 @@ If needed, create a new network and enable the **Bare Metal Network** toggle dur
 
 ## Configure file shares for Linux VMs and Bare Metal
 
-This section describes creating and connecting a standard NFS-based file share using a private network. It can be used with Linux virtual machines or bare-metal servers.
+A Standard NFS file share connects to a private network and can be mounted on Linux Virtual Machines or Bare Metal servers.
 
 ### Step 1. Create a file share
 
@@ -86,7 +86,7 @@ sudo yum install nfs-utils
 
 ### Step 3. Mount the file share
 
-1. Use an existing directory for mounting the share, or create a new one, for example:
+1. Use an existing directory for mounting the share, or create a new one:
 
    ```bash
    sudo mkdir -p /mount/path
@@ -113,7 +113,7 @@ Replace `/mount/path` with the absolute local directory path where the file shar
 </Info>
 
 <Tip>
-  The best practice is to create VAST shares **when** creating [GPU clusters](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) or **before** provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+  Create VAST shares when creating GPU clusters or before provisioning compute resources — VMs, Bare Metal servers, and GPU clusters.
 </Tip>
 
 ### Step 1. Create a VAST share
@@ -126,7 +126,7 @@ Replace `/mount/path` with the absolute local directory path where the file shar
 
 When VAST share type is selected, controls in **Network settings** and **Access** panels are disabled, and the network is assigned automatically.
 
-The access rules cannot be configured manually - the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
+The access rules cannot be configured manually — the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
 
 VAST file shares always use read/write access; access rules are not supported.
 
@@ -152,7 +152,7 @@ The VAST network only becomes available after the file share has been created. I
 While the VAST interface can be attached to an already-provisioned GPU cluster or compute resource, this requires additional manual network configuration and is not the standard workflow.
 
 <Tip>
-  The best practice is to create VAST shares **when** creating [GPU clusters](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) or **before** provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+  Create VAST shares when creating GPU clusters or before provisioning compute resources — VMs, Bare Metal servers, and GPU clusters.
 </Tip>
 
 **Attach VAST network interface**
@@ -160,10 +160,10 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
 1. Go to server **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster)).
 2. Select the **Networking** tab and click **Add interface**.
 3. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
-4. Once the interface is added, **note the following details** for use in subsequent steps:
-   - **IP** address (such as `198.51.100.25`)
-   - **MAC** address (such as `fa:16:3e:12:34:56`)
-   - **CIDR** range (such as `198.51.102.0/22`)
+4. Once the interface is added, note the following details for use in subsequent steps:
+   - **IP** address — `198.51.100.25`
+   - **MAC** address — `fa:16:3e:12:34:56`
+   - **CIDR** range — `198.51.102.0/22`
 
 **Configure attached VAST network interface**
 
@@ -213,9 +213,9 @@ The DHCP client automatically configures the IP address, subnet mask, gateway, a
 
 **Manual configuration (alternative method)**
 
-If you prefer manual configuration or need custom network settings, you can configure the network interface manually.
+For custom network settings, configure the interface manually instead.
 
-Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
+Connect to the server via the Customer Portal or SSH and configure the attached VAST network interface.
 
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
@@ -317,10 +317,10 @@ Bare Metal servers require different configuration depending on the network hard
 ### Step 3. Set up VAST NFS client support
 
 <Info>
-  This step is **always required** for VAST file shares, regardless of whether they are added during or after resource provisioning.
+  This step is always required for VAST file shares, regardless of whether they are added during or after resource provisioning.
 </Info>
 
-Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and set up VAST NFS client support.
+Connect to the server via the Customer Portal or SSH and set up VAST NFS client support.
 
 1. Install NFS client tools:
 
@@ -342,7 +342,7 @@ Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/c
 
 ### Step 4. Mount the file share
 
-Use an existing directory for mounting the share, or create a new one, for example:
+Use an existing directory for mounting the share, or create a new one:
 
 ```bash
 sudo mkdir -p /mount/path
@@ -369,7 +369,7 @@ The contents of the VAST file share are now accessible in the specified director
 
 <Info>
   - **VAST** shares can be resized directly, without being unmounted.
-  - **Standard** shares must first be unmounted before they can be resized, for example:
+  - **Standard** shares must be unmounted before resizing:
 
     ```bash
     umount -lf /mount/path
@@ -392,7 +392,7 @@ This process is the same for both Standard and VAST-based file shares:
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. The steps below create a network, subnet, and NFS file share, then retrieve the connection point used to mount the share.
+NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. Each step below creates one resource — network, subnet, file share — and ends with the connection point used in the mount command.
 
 <p>Before picking a region, check that file shares are available there — look for `has_sfs: true` in the regions response:</p>
 
@@ -402,7 +402,7 @@ curl "https://api.gcore.com/cloud/v1/regions" \
 ```
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get).
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -527,499 +527,9 @@ The scripts below create a private network, subnet, and 5 GiB NFS file share, th
   </Tab>
 </Tabs>
 
-## Step-by-step
-
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. Create a private network
-
-A private network isolates traffic between the file share and the VMs that mount it.
-
-| Parameter | Required | Description |
-|---|---|---|
-| `name` | Yes | Network name |
-| `create_router` | No | Set to `true` to attach a virtual router - required when adding subnets later |
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore()
-    network = client.cloud.networks.create_and_poll(name="my-network", create_router=True)
-    print(network.id)  # save as NETWORK_ID
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-        "context"
-        "fmt"
-        "log"
-
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/packages/param"
-    )
-
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
-
-        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
-            Name:         "my-network",
-            CreateRouter: param.NewOpt(true),
-        })
-        if err != nil {
-            log.Fatal(err)
-        }
-        fmt.Println(network.ID) // save as NETWORK_ID
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "my-network",
-        "create_router": true
-      }'
-    ```
-
-    Response:
-
-    ```json
-    {
-      "tasks": ["668e75b8-..."]
-    }
-    ```
-
-    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the network ID:
-
-    ```json
-    {
-      "state": "FINISHED",
-      "created_resources": {
-        "networks": ["6880a081-..."]
-      }
-    }
-    ```
-  </Tab>
-</Tabs>
-
-The full parameter list is in the [networks](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkCreateV1.post) API reference.
-
-### Step 2. Create a subnet
-
-A subnet assigns the address range that the file share and VMs will use. The file share and any VM that mounts it must share the same subnet.
-
-| Parameter | Required | Description |
-|---|---|---|
-| `network_id` | Yes | ID of the network from Step 1 |
-| `cidr` | Yes | IPv4 CIDR block for the subnet |
-| `enable_dhcp` | No | Enables automatic IP assignment for VMs on this subnet - defaults to `true` |
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    # client initialized in Step 1
-    subnet = client.cloud.networks.subnets.create_and_poll(
-        network_id="{NETWORK_ID}",
-        name="my-subnet",
-        cidr="192.168.100.0/24",
-    )
-    print(subnet.id)  # save as SUBNET_ID
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    // client and ctx initialized in Step 1
-    subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
-        Name:      "my-subnet",
-        Cidr:      "192.168.100.0/24",
-        NetworkID: "{NETWORK_ID}",
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(subnet.ID) // save as SUBNET_ID
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "my-subnet",
-        "cidr": "192.168.100.0/24",
-        "network_id": "{NETWORK_ID}",
-        "enable_dhcp": true
-      }'
-    ```
-
-    Response:
-
-    ```json
-    {
-      "tasks": ["921b0e4d-..."]
-    }
-    ```
-
-    Poll the task every 5 seconds until `FINISHED`, then save the subnet ID:
-
-    ```json
-    {
-      "state": "FINISHED",
-      "created_resources": {
-        "subnets": ["a87cedcc-..."]
-      }
-    }
-    ```
-  </Tab>
-</Tabs>
-
-The full parameter list is in the [subnets](https://api.gcore.com/docs/cloud#tag/Subnets/operation/SubnetCreateV1.post) API reference.
-
-### Step 3. Create the file share
-
-A single create call provisions the NFS share on the private network and sets the initial access rules. File share creation typically takes 60-90 seconds.
-
-| Parameter | Required | Description |
-|---|---|---|
-| `name` | Yes | Share name |
-| `protocol` | Yes | Must be `"NFS"` for Standard shares |
-| `size` | Yes | Share size in GiB - minimum 1 |
-| `network.network_id` | Yes | ID of the private network from Step 1 |
-| `network.subnet_id` | No | Subnet ID - if omitted, a subnet is selected automatically |
-| `access[].access_mode` | Yes | `"rw"` (read-write) or `"ro"` (read-only) |
-| `access[].ip_address` | Yes | Source IP address or CIDR that may mount the share |
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    # client initialized in Step 1
-    task_id_list = client.cloud.file_shares.create(
-        name="my-share",
-        protocol="NFS",
-        size=5,
-        network={"network_id": "{NETWORK_ID}", "subnet_id": "{SUBNET_ID}"},
-        access=[{"access_mode": "rw", "ip_address": "192.168.100.0/24"}],
-    )
-    task = client.cloud.tasks.poll(task_id_list.tasks[0])
-    share_id = task.created_resources.file_shares[0]
-    print(share_id)  # save as FILE_SHARE_ID
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    // client and ctx initialized in Step 1
-    // param and constant are from github.com/G-Core/gcore-go/packages/param and shared/constant
-    share, err := client.Cloud.FileShares.NewAndPoll(ctx, cloud.FileShareNewParams{
-        OfCreateStandardFileShareSerializer: &cloud.FileShareNewParamsBodyCreateStandardFileShareSerializer{
-            Name: "my-share",
-            Network: cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerNetwork{
-                NetworkID: "{NETWORK_ID}",
-                SubnetID:  param.NewOpt("{SUBNET_ID}"),
-            },
-            Size:     5,
-            Protocol: constant.ValueOf[constant.Nfs](),
-            Access: []cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerAccess{
-                {AccessMode: "rw", IPAddress: "192.168.100.0/24"},
-            },
-        },
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(share.ID) // save as FILE_SHARE_ID
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "my-share",
-        "protocol": "NFS",
-        "size": 5,
-        "network": {
-          "network_id": "{NETWORK_ID}",
-          "subnet_id": "{SUBNET_ID}"
-        },
-        "access": [
-          {"access_mode": "rw", "ip_address": "192.168.100.0/24"}
-        ]
-      }'
-    ```
-
-    Response:
-
-    ```json
-    {
-      "tasks": ["390170eb-..."]
-    }
-    ```
-
-    Poll the task every 5 seconds until `FINISHED` (typically 60-90 seconds):
-
-    ```json
-    {
-      "state": "FINISHED",
-      "created_resources": {
-        "file_shares": ["6b3b713e-..."]
-      }
-    }
-    ```
-  </Tab>
-</Tabs>
-
-The full parameter list is in the [file shares](https://api.gcore.com/docs/cloud#tag/File-Shares/operation/FileShareCreate.post) API reference.
-
-### Step 4. Retrieve the connection point
-
-The connection point is the NFS server address and share path used in the mount command. It becomes available once the share reaches `available` status.
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    # client initialized in Step 1
-    share = client.cloud.file_shares.get(file_share_id="{FILE_SHARE_ID}")
-    print(share.connection_point)  # save as CONNECTION_POINT
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    // client and ctx initialized in Step 1
-    details, err := client.Cloud.FileShares.Get(ctx, "{FILE_SHARE_ID}", cloud.FileShareGetParams{})
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(details.ConnectionPoint) // save as CONNECTION_POINT
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response:
-
-    ```json
-    {
-      "id": "6b3b713e-...",
-      "status": "available",
-      "connection_point": "192.168.100.58:/shares/share-416d581b-...",
-      "size": 5,
-      "protocol": "NFS",
-      "network_id": "6880a081-...",
-      "subnet_id": "a87cedcc-..."
-    }
-    ```
-  </Tab>
-</Tabs>
-
-The `connection_point` value follows the format `{NFS_SERVER_IP}:/shares/{SHARE_PATH}`. Copy the full string - it is used verbatim in the mount command.
-
-### Step 5. Create a VM on the same network
-
-The VM must join the private subnet to reach the file share NFS server IP. A [floating IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) is added so the instance is accessible via SSH from outside the private network.
-
-| Parameter | Required | Description |
-|---|---|---|
-| `flavor` | Yes | Instance [flavor](https://api.gcore.com/docs/cloud#tag/Flavors/operation/FlavorListV1.get) name - IDs are region-specific |
-| `interfaces[].type` | Yes | Use `"subnet"` to place the instance on the private subnet |
-| `interfaces[].network_id` | Yes | Must match the network used for the file share |
-| `interfaces[].subnet_id` | Yes | Must match the subnet used for the file share |
-| `interfaces[].floating_ip.source` | No | Set to `"new"` to allocate and attach a floating IP automatically |
-| `keypair_name` | Yes | Name of an SSH key pair registered in the project |
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    # client initialized in Step 1
-    task_id_list = client.cloud.instances.create(
-        flavor="{FLAVOR_NAME}",
-        name="{INSTANCE_NAME}",
-        interfaces=[
-            {
-                "type": "subnet",
-                "network_id": "{NETWORK_ID}",
-                "subnet_id": "{SUBNET_ID}",
-                "floating_ip": {"source": "new"},
-            }
-        ],
-        volumes=[
-            {
-                "source": "image",
-                "image_id": "{IMAGE_ID}",
-                "size": 20,
-                "boot_index": 0,
-                "delete_on_termination": True,
-            }
-        ],
-        keypair_name="{KEY_NAME}",
-    )
-    task = client.cloud.tasks.poll(task_id_list.tasks[0])
-    instance_id = task.created_resources.instances[0]
-    print(instance_id)  # save as INSTANCE_ID
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    // client and ctx initialized in Step 1
-    // gcore is the root package: github.com/G-Core/gcore-go
-    instanceResult, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-        Name:   gcore.String("{INSTANCE_NAME}"),
-        Flavor: "{FLAVOR_NAME}",
-        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
-            {
-                OfSubnet: &cloud.InstanceNewParamsInterfaceSubnet{
-                    NetworkID: "{NETWORK_ID}",
-                    SubnetID:  "{SUBNET_ID}",
-                    FloatingIP: cloud.InstanceNewParamsInterfaceSubnetFloatingIPUnion{
-                        OfNew: &cloud.InstanceNewParamsInterfaceSubnetFloatingIPNew{},
-                    },
-                },
-            },
-        },
-        Volumes: []cloud.InstanceNewParamsVolumeUnion{
-            {
-                OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:             "{IMAGE_ID}",
-                    BootIndex:           gcore.Int(0),
-                    Size:                gcore.Int(20),
-                    DeleteOnTermination: gcore.Bool(true),
-                },
-            },
-        },
-        SSHKeyName: gcore.String("{KEY_NAME}"),
-    })
-    if err != nil {
-        log.Fatal(err)
-    }
-    fmt.Printf("Instance ID: %s\n", instanceResult.ID)
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "flavor": "{FLAVOR_NAME}",
-        "name": "{INSTANCE_NAME}",
-        "interfaces": [
-          {
-            "type": "subnet",
-            "network_id": "{NETWORK_ID}",
-            "subnet_id": "{SUBNET_ID}",
-            "floating_ip": {"source": "new"}
-          }
-        ],
-        "volumes": [
-          {
-            "source": "image",
-            "image_id": "{IMAGE_ID}",
-            "size": 20,
-            "boot_index": 0,
-            "delete_on_termination": true
-          }
-        ],
-        "keypair_name": "{KEY_NAME}"
-      }'
-    ```
-
-    Response:
-
-    ```json
-    {
-      "tasks": ["f0b4df4f-..."]
-    }
-    ```
-
-    Poll the task every 5 seconds until `FINISHED`, then read the instance ID from `created_resources.instances[0]`. Retrieve the floating IP:
-
-    ```bash
-    curl -s "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{INSTANCE_ID}" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      | grep -o '"addr":"[^"]*"'
-    ```
-  </Tab>
-</Tabs>
-
-Image selection, flavor lookup, and SSH key registration are covered in the [VM guide](/cloud/virtual-instances/create-an-instance).
-
-### Step 6. Mount the file share
-
-Connect to the VM via SSH and mount the NFS share. The `nfs-common` package provides the NFS client utilities required to mount Standard file shares.
-
-Connect to the VM:
-
-```bash
-ssh ubuntu@{FLOATING_IP}
-```
-
-Install the NFS client:
-
-For Ubuntu or Debian:
-
-```bash
-sudo apt-get install -y nfs-common
-```
-
-For CentOS or Rocky Linux:
-
-```bash
-sudo yum install -y nfs-utils
-```
-
-Create a mount point and mount the share:
-
-```bash
-sudo mkdir -p /mnt/share
-sudo mount -t nfs {CONNECTION_POINT} /mnt/share
-```
-
-Replace `{CONNECTION_POINT}` with the full value from Step 4, for example:
-
-```bash
-sudo mount -t nfs 192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625 /mnt/share
-```
-
-Verify the share is mounted and accessible:
-
-```bash
-df -h /mnt/share
-echo "test" | sudo tee /mnt/share/test.txt && cat /mnt/share/test.txt
-```
-
-```
-Filesystem                                                         Size  Used Avail Use% Mounted on
-192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625  4.9G     0  4.6G   0% /mnt/share
-test
-```
-
-To make the mount persistent across reboots, add it to `/etc/fstab`:
-
-```bash
-echo "{CONNECTION_POINT} /mnt/share nfs defaults 0 0" | sudo tee -a /etc/fstab
-```
-
-</Accordion>
-
 ## Resize the file share
 
-Standard file shares must be unmounted before resizing. The new size must be larger than the current size - downsizing is not supported.
+Standard file shares must be unmounted before resizing. The new size must be larger than the current size — downsizing is not supported.
 
 Unmount the share first:
 
@@ -1069,7 +579,12 @@ Then extend the share:
   </Tab>
 </Tabs>
 
-Poll the task every 5 seconds until `FINISHED`, then remount the share:
+Poll the task every 5 seconds until `FINISHED`, then retrieve the connection point and remount the share:
+
+```bash
+curl -s "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" | grep connection_point
+```
 
 ```bash
 sudo mount -t nfs {CONNECTION_POINT} /mnt/share
@@ -1083,32 +598,20 @@ Filesystem                                                         Size  Used Av
 
 ## Clean up
 
-Delete the file share, subnet, and network when no longer needed:
+Delete the file share when it is no longer needed:
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    # client initialized in Step 1
+    # client initialized in the Quickstart
     del_tasks = client.cloud.file_shares.delete(file_share_id="{FILE_SHARE_ID}")
     client.cloud.tasks.poll(del_tasks.tasks[0])
-
-    del_subnet_tasks = client.cloud.networks.subnets.delete(subnet_id="{SUBNET_ID}")
-    client.cloud.tasks.poll(del_subnet_tasks.tasks[0])
-
-    del_net_tasks = client.cloud.networks.delete(network_id="{NETWORK_ID}")
-    client.cloud.tasks.poll(del_net_tasks.tasks[0])
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    // client and ctx initialized in Step 1
+    // client and ctx initialized in the Quickstart
     if err := client.Cloud.FileShares.DeleteAndPoll(ctx, "{FILE_SHARE_ID}", cloud.FileShareDeleteParams{}); err != nil {
-        log.Fatal(err)
-    }
-    if _, err := client.Cloud.Networks.Subnets.Delete(ctx, "{SUBNET_ID}", cloud.NetworkSubnetDeleteParams{}); err != nil {
-        log.Fatal(err)
-    }
-    if _, err := client.Cloud.Networks.Delete(ctx, "{NETWORK_ID}", cloud.NetworkDeleteParams{}); err != nil {
         log.Fatal(err)
     }
     ```
@@ -1117,15 +620,79 @@ Delete the file share, subnet, and network when no longer needed:
     ```bash
     curl -s -X DELETE "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
-
-    curl -s -X DELETE "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{SUBNET_ID}" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-
-    curl -s -X DELETE "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{NETWORK_ID}" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>
 </Tabs>
 
-  </MethodSection>
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision an NFS file share with per-CIDR access rules. The [`gcore_cloud_file_share`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_file_share) resource and its access rule companion are declared in a single configuration.</p>
+
+
+## Create a file share
+
+<p>Declare the file share and access rule using an existing network and subnet.</p>
+
+```hcl
+resource "gcore_cloud_file_share" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-share"
+  protocol   = "NFS"
+  size       = 5  # GiB; minimum is 1
+
+  network = {
+    network_id = var.network_id
+    subnet_id  = var.subnet_id
+  }
+
+  # terraform import gcore_cloud_file_share.example '<project_id>/<region_id>/<file_share_id>'
+}
+
+resource "gcore_cloud_file_share_access_rule" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  file_share_id = gcore_cloud_file_share.example.id
+  access_mode   = "rw"  # "rw" or "ro"
+  ip_address    = var.allowed_cidr
+}
+
+output "connection_point" {
+  value = gcore_cloud_file_share.example.connection_point
+}
+```
+
+<p>After `terraform apply`, `connection_point` holds the NFS server address and share path for the mount command, in the format `<nfs-ip>:/shares/<share-uuid>`. File share creation takes 60–90 seconds.</p>
+
+## Resize a file share
+
+<p>Edit the `size` field and run `terraform apply` — size can only be increased. Standard shares must be unmounted before resizing.</p>
+
+```hcl
+resource "gcore_cloud_file_share" "example" {
+  # ... (unchanged fields)
+  size = 10  # increased from 5
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a file share
+
+<p>Remove the resource blocks — Terraform deletes the access rule first, then the file share on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out both blocks:
+# resource "gcore_cloud_file_share_access_rule" "example" { ... }
+# resource "gcore_cloud_file_share" "example" { ... }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
 </MethodSwitch>

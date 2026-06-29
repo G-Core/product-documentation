@@ -1,31 +1,36 @@
 ---
 title: "Create a Bare Metal GPU cluster"
 sidebarTitle: "Create a Bare Metal GPU cluster"
-ai-navigation: Create Bare Metal GPU clusters with dedicated physical servers, selecting region, GPU model, cluster type (Bare Metal GPU or Spot Bare Metal GPU), node count, and InfiniBand networking via Gcore Customer Portal GPU Cloud interface.
+ai-navigation: Create Bare Metal GPU clusters with dedicated physical servers via Customer Portal or REST API using the GPU Bare Metal API.
 ---
 
-GPU clusters are high-performance computing resources designed for AI/ML workloads, inference, and large-scale data processing. Each cluster consists of one or more GPU servers connected via high-speed networking.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-GPU clusters come in two types:
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>GPU clusters are high-performance computing resources designed for AI/ML workloads, inference, and large-scale data processing. Each cluster consists of one or more GPU servers connected via high-speed networking.</p>
+
+<p>GPU clusters come in two types:</p>
 
 - **Bare Metal GPU**: Dedicated physical servers without virtualization, offering maximum performance and full hardware control.
 - **Spot Bare Metal GPU**: Discounted servers suitable for batch processing, experiments, and testing. [Spot clusters](/edge-ai/ai-infrastructure/spot-bare-metal-gpu) provide the same hardware access as standard Bare Metal GPUs and may be reclaimed with 24 hours' notice.
 
-Cluster type and GPU model availability vary by region. The creation form displays only the options available in the selected region.
+<p>Cluster type and GPU model availability vary by region. The creation form displays only the options available in the selected region.</p>
 
 ## Cluster architecture
 
-Each cluster consists of one or more dedicated bare-metal GPU servers. When creating a multi-node cluster, all servers are placed in the same private network and share an identical configuration, including the image, network settings, and file shares.
+<p>A cluster consists of one or more GPU servers with identical configuration.</p>
 
-For flavors with InfiniBand cards, high-speed inter-node networking is configured automatically. No manual network configuration is required for distributed training.
+<p>For multi-node clusters:</p>
 
-The platform provides the infrastructure layer: GPU servers, networking, storage options, and secure access. This allows installing and running preferred frameworks for distributed training, job scheduling, or container orchestration.
-
-For multi-node workloads, configure SSH trust between nodes to enable distributed training frameworks. File shares provide shared storage for datasets and checkpoints across all nodes.
+- Nodes share the same image and network settings.
+- InfiniBand networking is configured automatically when supported by the flavor.
+- File shares provide shared storage for datasets and checkpoints across all nodes.
 
 ## Create a GPU cluster
 
-To create a Bare Metal GPU cluster, complete the following steps in the Gcore Customer Portal.
+<p>To create a Bare Metal GPU cluster, complete the following steps in the Gcore Customer Portal.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
 2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
@@ -33,27 +38,27 @@ To create a Bare Metal GPU cluster, complete the following steps in the Gcore Cu
 
 ### Step 1. Select region
 
-In the **Region** section, select the data center location for the cluster.
+<p>In the **Region** section, select the data center location for the cluster.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-region.png" alt="Region selection section showing available regions grouped by geography" />
 </Frame>
 
-Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows its availability status. Some features (such as file share integration) are available only in select regions.
+<p>Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows its availability status. File share integration, for example, is available only in select regions.</p>
 
 <Info>
-GPU model availability and pricing vary by region. Check other regions if a required GPU model is not available. For help with availability, contact the [sales team.](https://gcore.com/contact-sales)
+GPU model availability and pricing vary by region. Check other regions if a required GPU model is not available. For help with availability, contact the [sales team](https://gcore.com/contact-sales).
 </Info>
 
 ### Step 2. Configure cluster capacity
 
-Cluster capacity determines the hardware specifications for each node in the cluster. The available options depend on the selected region.
+<p>In this step, select the GPU model and flavor that define the hardware configuration for every node in the cluster. Available options depend on the selected region.</p>
 
 1. In the **Cluster capacity** section, select the **GPU Cluster type**:
    - **Bare Metal GPU** for dedicated physical servers
    - **Spot Bare Metal GPU** for discounted, interruptible instances (available in select regions)
 
-2. Select the **GPU Model**. Available models (such as A100, H100, or H200) depend on the region.
+2. Select the **GPU Model**. Available models — A100, H100, or H200 — depend on the region.
 
 3. Enable or disable **Show out of stock** to filter available flavors.
 
@@ -65,23 +70,23 @@ Cluster capacity determines the hardware specifications for each node in the clu
 
 ### Step 3. Set the number of instances
 
-In the **Number of Instances** section, specify how many servers to provision in the cluster.
+<p>In the **Number of Instances** section, specify how many servers to provision in the cluster.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-instances.png" alt="Number of Instances section with instance counter" />
 </Frame>
 
-Each instance is a separate physical server with the selected flavor configuration. For single-node workloads, one instance is sufficient. For distributed training, provision multiple instances.
+<p>Each instance is a separate physical server with the selected flavor configuration. For single-node workloads, one instance is sufficient. For distributed training, provision multiple instances.</p>
 
-The maximum number of instances is limited by the current stock availability in the region. There is no fixed per-cluster limit—clusters can scale to hundreds of nodes if capacity is available.
+<p>The maximum number of instances is limited by the current stock availability in the region. There is no fixed per-cluster limit — clusters can scale to hundreds of nodes if capacity is available.</p>
 
 <Info>
-After creation, the cluster can be resized. Scaling up adds nodes with the same configuration used at creation. Scaling down removes a random node—to delete a specific node, use the per-node delete action in the cluster details. Deleting the last node in a cluster deletes the entire cluster.
+After creation, the cluster can be resized. Scaling up adds nodes with the same configuration used at creation. Scaling down removes a random node — to delete a specific node, use the per-node delete action in the cluster details. Deleting the last node in a cluster deletes the entire cluster.
 </Info>
 
 ### Step 4. Select image
 
-The image defines the operating system and pre-installed software for cluster nodes.
+<p>The image defines the operating system and pre-installed software for cluster nodes.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-image.png" alt="Image section with Public and Custom tabs and image selector" />
@@ -91,37 +96,31 @@ The image defines the operating system and pre-installed software for cluster no
    - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit (recommended)
    - **Custom**: Custom images uploaded to the account
 
-The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix in the name are configured for InfiniBand interconnect.
+<p>The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix in the name are configured for InfiniBand interconnect.</p>
 
 2. Note the default login credentials displayed below the image selector: username `ubuntu`, SSH port `22`. These credentials are used to connect to the cluster after creation.
 
 ### Step 5. Configure file share integration
 
-File shares provide shared storage accessible from all cluster nodes simultaneously, allowing access to shared datasets, checkpoints, and outputs even if a cluster is deleted. They use NFS with a minimum size of 100 GiB, and the creation form displays this option only in regions where file shares are available. Full configuration details, including manual mounting procedures, are described in the [file share documentation](/cloud/file-shares/configure-file-shares).
+<p>File shares provide shared storage accessible from all cluster nodes. GPU-enabled regions use VAST-backed high-performance shares. This option appears only in regions where file shares are available.</p>
+
+<p>For share types, sizing, access rules, and manual mounting, see [Configure file shares](/cloud/file-shares/configure-file-shares).</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-file-share.png" alt="File share integration section with Enable File Share checkbox" />
 </Frame>
 
-To configure a file share:
-
 1. Enable the **File Share integration** checkbox.
+2. Select an existing file share or create a new one.
+3. Specify the mount path on cluster nodes (default: `/home/ubuntu/mnt/nfs`).
 
-2. Select an existing file share, or create a new one by specifying its name, size (minimum 100 GiB), and optional settings such as Root squash or Slurm compatibility.
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-create-file-share-modal.png" alt="Create VAST File Share dialog with basic settings and additional options" />
-</Frame>
-
-3. Specify the mount path for the file share on cluster nodes (default: `/home/ubuntu/mnt/nfs`). Additional file shares can be attached by clicking **Add File Share**.
-
-<Warning>
-If **User data** is enabled in Additional options, mounting commands are automatically included in the user data script. Do not modify or delete these commands, as this breaks automatic mounting.
-</Warning>
+<Info>
+When file share integration is enabled, the cluster automatically adds mount commands to the user data script. If **User data** is also configured in Additional options, do not remove these commands — they handle automatic mounting on first boot.
+</Info>
 
 ### Step 6. Configure network settings
 
-Network settings define how the cluster communicates with external services and other resources. At least one interface is required.
+<p>Network settings define how the cluster communicates with external services and other resources. At least one interface is required.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-network.png" alt="Network settings section showing interface configuration" />
@@ -135,23 +134,23 @@ Network settings define how the cluster communicates with external services and 
 | **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
 | **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
 
-   For multi-node clusters, a private interface keeps internal traffic separate from internet-facing traffic.
+   <p>For multi-node clusters, a private interface keeps internal traffic separate from internet-facing traffic.</p>
 
-To add or configure interfaces, expand the interface card and adjust settings as needed. Additional interfaces can be attached by clicking **Add Interface**.
+<p>To add or configure interfaces, expand the interface card and adjust settings as needed. Additional interfaces can be attached by clicking **Add Interface**.</p>
 
-All public interfaces include Basic DDoS Protection at no additional cost.
+<p>All public interfaces include Basic DDoS Protection at no additional cost.</p>
 
-Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.
+<p>Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/network-settings-security-groups.png" alt="Security Groups field with default group selected per interface" />
 </Frame>
 
-To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.
+<p>To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.</p>
 
 ### Step 7. Configure SSH key
 
-In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.
+<p>In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the Customer Portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-ssh-key.png" alt="SSH key section with dropdown and options to add or generate keys" />
@@ -159,7 +158,7 @@ In the **SSH key** section, select an existing key from the dropdown or create a
 
 ### Step 8. Set additional options
 
-The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
+<p>The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-additional-options.png" alt="Additional options section with User data and Add tags checkboxes" />
@@ -167,7 +166,7 @@ The **Additional options** section provides optional settings: user data scripts
 
 ### Step 9. Name and create the cluster
 
-The final step assigns a name to the cluster and initiates provisioning.
+<p>The final step assigns a name to the cluster and initiates provisioning.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-name.png" alt="GPU Cluster Name section with name input field" />
@@ -179,51 +178,605 @@ The final step assigns a name to the cluster and initiates provisioning.
 
 3. Click **Create Cluster**.
 
-Once all instances reach **Power on** status, the cluster is ready for use.
+<p>Once all instances reach **Power on** status, the cluster is ready for use.</p>
 
 <Warning>
 Cluster-level settings (image, file share integration, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
 </Warning>
 
-## Connect to the cluster
+## Connect and verify the cluster
 
-After the cluster is created, use SSH to access the nodes. The default username is `ubuntu`.
+<p>After the cluster is created, use SSH to connect to a node. The default username is `ubuntu`.</p>
 
 ```bash
 ssh ubuntu@<instance-ip-address>
 ```
 
-Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details.
+<p>Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details. For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
 
-For instances with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console.](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel)
-
-## Verify cluster status
-
-After connecting, verify that GPUs are available and drivers are loaded:
+<p>Verify that GPUs are available and drivers are loaded:</p>
 
 ```bash
 nvidia-smi
 ```
 
-The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.
+<p>The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.</p>
 
-If file share integration was enabled during cluster creation, verify the mount is accessible:
+<p>If file share integration was enabled, verify the mount is accessible:</p>
 
 ```bash
 ls /home/ubuntu/mnt/nfs
 ```
 
-The directory should be empty initially. Files saved here are accessible from all nodes in the cluster.
+<p>Clusters can also be created programmatically using the [GPU Bare Metal API](/api-reference/cloud/gpu-bare-metal).</p>
 
-## Automating cluster management
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-The [Gcore Customer Portal](https://portal.gcore.com) is suitable for creating and managing individual clusters. For automated workflows—such as CI/CD pipelines, infrastructure-as-code, or batch provisioning—use the GPU Bare Metal API.
+<p>Create a Bare Metal GPU cluster by selecting a flavor and image, then provisioning the cluster with a single API call.</p>
 
-The API allows:
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a
+[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
+Bare Metal GPU clusters are available in select regions — use the [List flavors](#step-1-list-available-flavors) call to confirm availability.
+</Info>
 
-- Creating and deleting clusters programmatically
-- Scaling the number of instances in a cluster
-- Querying available GPU flavors and regions
-- Checking quota and capacity before provisioning
+<p>Open a terminal and set these environment variables before running the examples:</p>
 
-For authentication, request formats, and code examples, see the [GPU Bare Metal API reference.](/api-reference/cloud/gpu-bare-metal/create-bare-metal-gpu-cluster)
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
+```
+
+## Quickstart
+
+<p>Complete scripts that list flavors and images, create a one-node cluster, wait for provisioning, and print the SSH command.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    ssh_key_name = os.environ["GCORE_SSH_KEY_NAME"]
+
+    # Step 1. List flavors — select the one with the fewest GPUs
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
+        project_id=project_id,
+        region_id=region_id,
+    )
+    flavor = min(
+        flavors.results,
+        key=lambda f: f.hardware_properties.gpu_count,
+    )
+    print(f"Flavor: {flavor.name}  ({flavor.hardware_properties.gpu_count} GPU(s))")
+
+    # Step 2. List images — select the first (latest) image
+    images = client.cloud.gpu_baremetal.clusters.images.list(
+        project_id=project_id,
+        region_id=region_id,
+    )
+    image = images.results[0]
+    print(f"Image: {image.name}")
+
+    # Step 3. Create the cluster
+    task_id_list = client.cloud.gpu_baremetal.clusters.create(
+        project_id=project_id,
+        region_id=region_id,
+        name="my-gpu-cluster",
+        flavor=flavor.name,
+        image_id=image.id,
+        servers_count=1,
+        servers_settings={
+            "interfaces": [{"type": "external"}],
+            "credentials": {"ssh_key_name": ssh_key_name},
+        },
+    )
+    task_id = task_id_list.tasks[0]
+    print(f"Provisioning — task: {task_id}")
+
+    # Step 4. Poll task until FINISHED
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            cluster_id = task.created_resources.clusters[0]
+            print(f"Cluster ID: {cluster_id}")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Cluster creation failed: {task.error}")
+        print(f"  state={task.state} — retrying in 15s…")
+        time.sleep(15)
+
+    # Step 5. Get the public IP and print SSH command
+    ifaces = client.cloud.gpu_baremetal.clusters.interfaces.list(
+        cluster_id=cluster_id,
+        project_id=project_id,
+        region_id=region_id,
+    )
+    for iface in ifaces.results:
+        if iface.network_details.external:
+            ip = iface.ip_assignments[0].ip_address
+            print(f"SSH: ssh ubuntu@{ip}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "sort"
+        "strconv"
+        "time"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        // Step 1. List flavors — select the one with fewest GPUs
+        flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
+            cloud.GPUBaremetalClusterFlavorListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        sort.Slice(flavorList.Results, func(i, j int) bool {
+            return flavorList.Results[i].HardwareProperties.GPUCount <
+                flavorList.Results[j].HardwareProperties.GPUCount
+        })
+        flavor := flavorList.Results[0]
+        fmt.Printf("Flavor: %s  (%d GPU(s))\n", flavor.Name, flavor.HardwareProperties.GPUCount)
+
+        // Step 2. List images — select the first (latest) image
+        imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
+            cloud.GPUBaremetalClusterImageListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        image := imageList.Results[0]
+        fmt.Printf("Image: %s\n", image.Name)
+
+        // Step 3. Create the cluster
+        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
+            cloud.GPUBaremetalClusterNewParams{
+                ProjectID:    gcore.Int(projectIDInt),
+                RegionID:     gcore.Int(regionIDInt),
+                Name:         "my-gpu-cluster",
+                Flavor:       flavor.Name,
+                ImageID:      image.ID,
+                ServersCount: 1,
+                ServersSettings: cloud.GPUBaremetalClusterNewParamsServersSettings{
+                    Interfaces: []cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceUnion{{
+                        OfExternal: &cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceExternal{},
+                    }},
+                    Credentials: cloud.GPUBaremetalClusterNewParamsServersSettingsCredentials{
+                        SSHKeyName: gcore.String(sshKeyName),
+                    },
+                },
+            })
+        if err != nil {
+            panic(err)
+        }
+        taskID := taskIDList.Tasks[0]
+        fmt.Printf("Provisioning — task: %s\n", taskID)
+
+        // Step 4. Poll task until FINISHED
+        var clusterID string
+        for {
+            task, err := client.Cloud.Tasks.Get(ctx, taskID)
+            if err != nil {
+                panic(err)
+            }
+            if task.State == "FINISHED" {
+                clusterID = task.CreatedResources.Clusters[0]
+                fmt.Printf("Cluster ID: %s\n", clusterID)
+                break
+            }
+            if task.State == "ERROR" {
+                panic(fmt.Sprintf("Cluster creation failed: %v", task.Error))
+            }
+            fmt.Printf("  state=%s — retrying in 15s…\n", task.State)
+            time.Sleep(15 * time.Second)
+        }
+
+        // Step 5. Get the public IP and print SSH command
+        ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
+            clusterID,
+            cloud.GPUBaremetalClusterInterfaceListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        for _, iface := range ifaces.Results {
+            if iface.NetworkDetails.External {
+                ip := iface.IPAssignments[0].IPAddress
+                fmt.Printf("SSH: ssh ubuntu@%s\n", ip)
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains the call, its key parameters, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available flavors
+
+<p>Returns all Bare Metal GPU flavors available in the region. Use the response to pick a flavor name — required when creating the cluster.</p>
+
+| Field | Description |
+|-------|-------------|
+| `name` | Flavor identifier — pass this value as `flavor` when creating the cluster |
+| `hardware_description.gpu` | GPU model name and VRAM |
+| `hardware_properties.gpu_count` | Number of GPUs per node |
+| `hardware_properties.nic_ib` | InfiniBand configuration, if present |
+| `capacity` | Available node count in the region (`0` means currently out of stock) |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for f in flavors.results:
+        print(f.name, f.hardware_description.gpu, f"GPUs={f.hardware_properties.gpu_count}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
+        cloud.GPUBaremetalClusterFlavorListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, f := range flavorList.Results {
+        fmt.Printf("%s  gpu=%s  count=%d\n",
+            f.Name, f.HardwareDescription.GPU, f.HardwareProperties.GPUCount)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/flavors" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "name": "bm3-ai-1xlarge-h100-80-8",
+      "architecture": "x86_64",
+      "disabled": false,
+      "capacity": 0,
+      "hardware_description": {
+        "cpu": "2x Intel Xeon 8480+",
+        "ram": "2TB RAM",
+        "disk": "8 x 3.84 TB NVMe",
+        "network": "3.2 Tbit/s Infiniband",
+        "gpu": "NVIDIA H100-8GPU (80GB)"
+      },
+      "hardware_properties": {
+        "gpu_model": "h100",
+        "gpu_manufacturer": "nvidia",
+        "gpu_count": 8,
+        "nic_eth": "2x100",
+        "nic_ib": "8x400"
+      }
+    }
+  ]
+}
+```
+
+### Step 2. List available images
+
+<p>Returns all Bare Metal GPU cluster images available in the region. Use the response to pick an image ID — required when creating the cluster.</p>
+
+| Field | Description |
+|-------|-------------|
+| `id` | Image UUID — pass this as `image_id` when creating the cluster |
+| `name` | Image name; images with the `eni` suffix are optimized for InfiniBand |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    images = client.cloud.gpu_baremetal.clusters.images.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for img in images.results:
+        print(img.id, img.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
+        cloud.GPUBaremetalClusterImageListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, img := range imageList.Results {
+        fmt.Printf("%s  %s\n", img.ID, img.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/images" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 9,
+  "results": [
+    {
+      "id": "e975eac6-e81e-49b6-a0ca-967786907961",
+      "name": "gcloud-ai-gpu-ubuntu-24.04-580.126.16-open-13.0.2-bm-v1.14.20"
+    },
+    {
+      "id": "0e2600fe-df82-40bf-97f1-0b4b1f8bc9e0",
+      "name": "ubuntu-22.04-x64-nvidia-a100/h100-eni"
+    }
+  ]
+}
+```
+
+### Step 3. Create the cluster
+
+<p>Submits the cluster creation request and returns a task ID for tracking provisioning progress.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Cluster name (2–63 chars, alphanumeric, hyphens, underscores) |
+| `flavor` | Yes | Flavor name from Step 1 |
+| `image_id` | Yes | Image UUID from Step 2 |
+| `servers_count` | Yes | Number of nodes to provision |
+| `servers_settings.interfaces` | Yes | At least one interface — use `"type": "external"` for public internet access |
+| `servers_settings.credentials.ssh_key_name` | Yes | Name of an existing SSH key in the project |
+| `tags` | No | Key-value metadata tags |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    task_id_list = client.cloud.gpu_baremetal.clusters.create(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        name="my-gpu-cluster",
+        flavor="{FLAVOR_NAME}",
+        image_id="{IMAGE_ID}",
+        servers_count=1,
+        servers_settings={
+            "interfaces": [{"type": "external"}],
+            "credentials": {"ssh_key_name": os.environ["GCORE_SSH_KEY_NAME"]},
+        },
+        tags={"env": "production"},
+    )
+    print(task_id_list.tasks)  # save as TASK_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
+        cloud.GPUBaremetalClusterNewParams{
+            ProjectID:    gcore.Int(projectID),
+            RegionID:     gcore.Int(regionID),
+            Name:         "my-gpu-cluster",
+            Flavor:       "{FLAVOR_NAME}",
+            ImageID:      "{IMAGE_ID}",
+            ServersCount: 1,
+            ServersSettings: cloud.GPUBaremetalClusterNewParamsServersSettings{
+                Interfaces: []cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceUnion{{
+                    OfExternal: &cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceExternal{},
+                }},
+                Credentials: cloud.GPUBaremetalClusterNewParamsServersSettingsCredentials{
+                    SSHKeyName: gcore.String(os.Getenv("GCORE_SSH_KEY_NAME")),
+                },
+            },
+        })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("%+v\n", taskIDList.Tasks)  // save as TASK_ID
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-gpu-cluster",
+        "flavor": "{FLAVOR_NAME}",
+        "image_id": "{IMAGE_ID}",
+        "servers_count": 1,
+        "servers_settings": {
+          "interfaces": [{"type": "external"}],
+          "credentials": {"ssh_key_name": "{YOUR_SSH_KEY_NAME}"}
+        },
+        "tags": {"env": "production"}
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{ "tasks": ["e4cecbfc-5258-40bb-b78f-3cd92621c3b2"] }
+```
+
+### Step 4. Wait for provisioning
+
+<p>Poll the task endpoint every 15 seconds until `state` is `FINISHED`. Bare Metal GPU nodes typically provision in 15–20 minutes.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/tasks/e4cecbfc-5258-40bb-b78f-3cd92621c3b2" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+<p>While provisioning:</p>
+
+```json
+{
+  "id": "e4cecbfc-5258-40bb-b78f-3cd92621c3b2",
+  "state": "RUNNING",
+  "created_resources": null
+}
+```
+
+<p>When complete:</p>
+
+```json
+{
+  "id": "e4cecbfc-5258-40bb-b78f-3cd92621c3b2",
+  "state": "FINISHED",
+  "created_resources": {
+    "clusters": ["4146c059-501a-409f-8fe1-04de091d917a"]
+  }
+}
+```
+
+<p>Read the cluster ID from `created_resources.clusters[0]`.</p>
+
+### Step 5. Get the cluster public IP
+
+<p>Retrieve the network interfaces to find the node's public IP address for SSH access.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    ifaces = client.cloud.gpu_baremetal.clusters.interfaces.list(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for iface in ifaces.results:
+        if iface.network_details.external:
+            print("Public IP:", iface.ip_assignments[0].ip_address)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
+        "{CLUSTER_ID}",
+        cloud.GPUBaremetalClusterInterfaceListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, iface := range ifaces.Results {
+        if iface.NetworkDetails.External {
+            fmt.Println("Public IP:", iface.IPAssignments[0].IPAddress)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/interfaces" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "port_id": "302f6e9c-ff95-4d67-ac19-2d3473e2c3ee",
+      "ip_assignments": [{ "ip_address": "85.234.84.39", "subnet_id": "351b0dd7-ca09-431c-be53-935db3785067" }],
+      "network_details": { "name": "pub_net", "external": true }
+    }
+  ]
+}
+```
+
+<p>The interface with `network_details.external: true` is the public network. Use its `ip_assignments[0].ip_address` for SSH.</p>
+
+</Accordion>
+
+## Connect to the cluster
+
+<p>After the cluster reaches `active` status, connect to a node via SSH using the `ubuntu` user:</p>
+
+```bash
+ssh ubuntu@{NODE_PUBLIC_IP}
+```
+
+<p>Verify that GPUs are detected:</p>
+
+```bash
+nvidia-smi
+```
+
+<p>A successful output shows the list of GPUs, driver version, and CUDA version. For nodes with only private interfaces, connect through a bastion host or VPN.</p>
+
+</MethodSection>
+</MethodSwitch>

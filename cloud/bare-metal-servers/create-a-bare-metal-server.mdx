@@ -1,7 +1,7 @@
----
+﻿---
 title: "Create a Bare Metal server"
 sidebarTitle: "Create a Bare Metal server"
-ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal or REST API.
+ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -14,7 +14,7 @@ A Bare Metal server is a physical machine allocated entirely to a single tenant,
 <Info>
   **Info**
 
-  Bare Metal servers require a quota increase before creation. Select a region and server type in the creation form, then click **Send quota request** in the **Quota Increase Required** block. Requests are typically reviewed within 5 minutes, with a 95% approval rate.
+  Bare Metal servers require a quota increase before creation. Select a region and server type in the creation form, then click **Send quota request** in the **Quota Increase Required** block. Requests are reviewed by the operations team.
 </Info>
 
 ## Step 1. Open the creation page
@@ -197,7 +197,7 @@ To add a sub-interface to a bond, click **Add Sub-Interface** in the correspondi
 A Bare Metal server is a physical machine allocated entirely to one tenant - no hypervisor, no shared resources. Provisioning takes 4-5 minutes.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+An [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -318,7 +318,7 @@ The scripts below list available flavors and images, provision a Bare Metal serv
 
 ### Step 1. List available flavors
 
-BM [flavors](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/list-baremetal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. The `capacity` field shows how many machines of that type are physically available in the region.
+BM [flavors](/api-reference/cloud/bare-metal-servers/list-baremetal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. The `capacity` field shows how many machines of that type are physically available in the region.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -380,7 +380,7 @@ Replace `{YOUR_FLAVOR_ID}` with a `flavor_id` value from the response above. Fla
 
 ### Step 2. List bare metal images
 
-BM images use a dedicated [endpoint](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/list-baremetal-images) - standard VM images from <code>GET&nbsp;/cloud/v1/images</code> are not compatible. Each BM image name ends with `-ironic` and contains `"is_baremetal": true` in the response.
+BM images use a dedicated [endpoint](/api-reference/cloud/bare-metal-servers/list-baremetal-images) - standard VM images from <code>GET&nbsp;/cloud/v1/images</code> are not compatible. Each BM image name ends with `-ironic` and contains `"is_baremetal": true` in the response.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -436,7 +436,7 @@ Replace `{YOUR_IMAGE_ID}` with the `id` of the chosen image from the response ab
 
 ### Step 3. Create the server
 
-The [create](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/create-baremetal-server) call submits a provisioning request and returns a task ID. The Python and Go SDKs block until the task completes (4-5 minutes), then return the server object. With curl, poll the task manually.
+The [create](/api-reference/cloud/bare-metal-servers/create-baremetal-server) call submits a provisioning request and returns a task ID. The Python and Go SDKs block until the task completes (4-5 minutes), then return the server object. With curl, poll the task manually.
 
 <Info>
 An SSH key must already exist in the project. Add one following the [SSH guide](/cloud/virtual-instances/connect/connect-via-ssh).
@@ -531,7 +531,7 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
 
 ### Step 4. Get server details
 
-Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP address](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/get-baremetal-server).
+Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP address](/api-reference/cloud/bare-metal-servers/get-baremetal-server).
 
 <Tabs>
   <Tab title="Python SDK">
@@ -582,33 +582,23 @@ Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP addres
   </Tab>
 </Tabs>
 
-`security_groups: []` is expected - Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.
+`security_groups: []` is expected — Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.
 
-`volumes: []` is expected - Bare Metal servers use local NVMe storage; external block volumes cannot be attached.
+`volumes: []` is expected — Bare Metal servers use local NVMe storage; external block volumes cannot be attached.
+
+Use the public IP from the response to connect. The default user for Ubuntu images is `ubuntu`:
+
+```bash
+ssh -i ~/.ssh/my-key ubuntu@<public-ip>
+```
+
+Bare Metal servers use LACP bonding, so interfaces are named `bond0` rather than `eth0`. If a private network was attached at creation, it appears as `bond0.<vlan_id>`.
 
 </Accordion>
 
 ## Check quota
 
 Bare Metal servers have per-region quotas tracked separately for `baremetal_hf`, `baremetal_basic`, `baremetal_storage`, `baremetal_network`, and `baremetal_infrastructure` categories. Before creating a server, verify [quota usage](/cloud/getting-started/check-resource-quota) is below the limit.
-
-## Connect via SSH
-
-Use the public IP from [Step 4](#step-4-get-server-details) to connect. The default user for Ubuntu images is `ubuntu`.
-
-```bash
-ssh -i ~/.ssh/my-key ubuntu@85.234.84.18
-```
-
-After connecting, run `ip a` to list network interfaces. Bare Metal servers use LACP bonding, so interfaces are named `bond0` rather than `eth0`:
-
-```bash
-$ ip a
-5: bond0: ... inet 85.234.84.18/24 ... scope global bond0
-6: bond0.2853@bond0: ... inet 10.0.0.125/24 ...
-```
-
-`bond0` carries public traffic. If a private network was attached at creation, it appears as `bond0.<vlan_id>`. Use these interface names when configuring firewall rules or static routes inside the OS.
 
 ## Attach a private network interface
 
@@ -805,6 +795,107 @@ These constraints apply to all Bare Metal servers regardless of the provisioning
 - No more than six network interfaces can be attached at creation time.
 - Private network interfaces added after deployment must be configured manually inside the OS - they are not managed by the Gcore control plane.
 - The interface order set at creation determines routing priority and cannot be changed after provisioning.
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a dedicated Bare Metal server — physical hardware with no virtualization layer — using [`gcore_cloud_baremetal_server`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_baremetal_server). Provisioning is asynchronous and may take several minutes to complete.</p>
+
+
+## Create a Bare Metal server
+
+<p>Declares a server with a public IPv4 interface and an SSH key. Creation takes 4-6 minutes.</p>
+
+```hcl
+resource "gcore_cloud_baremetal_server" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  flavor       = var.flavor_id   # region-specific; find with the Customer Portal or flavors API
+  name         = "my-bare-metal"
+  image_id     = var.image_id    # region-specific; find with the Customer Portal or images API
+  ssh_key_name = "my-keypair"
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+
+  # terraform import gcore_cloud_baremetal_server.example '<project_id>/<region_id>/<server_id>'
+}
+
+output "public_ip" {
+  value = gcore_cloud_baremetal_server.example.addresses
+}
+```
+
+<Info>
+Flavor IDs and image IDs are region-specific. Find available values in the Gcore Customer Portal under **Cloud** > **Bare Metal** > **Create server**, then pass them as `var.flavor_id` and `var.image_id` in `terraform.tfvars`. The Terraform provider does not include a data source for listing Bare Metal flavors or images.
+</Info>
+
+<p>After `terraform apply`, `status` is `ACTIVE` and `addresses` contains the assigned public IP. Use the IP to connect over SSH.</p>
+
+## Attach a private network
+
+<p>Private networks for Bare Metal require `type = "vlan"` on the network resource — add both interfaces at creation, as interface order determines routing priority.</p>
+
+```hcl
+resource "gcore_cloud_network" "bm_net" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-bm-network"
+  type       = "vlan"  # required for Bare Metal
+}
+
+resource "gcore_cloud_network_subnet" "bm_subnet" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-bm-subnet"
+  network_id = gcore_cloud_network.bm_net.id
+  cidr       = "192.168.10.0/24"
+}
+
+resource "gcore_cloud_baremetal_server" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  flavor       = var.flavor_id
+  name         = "my-bare-metal"
+  image_id     = var.image_id
+  ssh_key_name = "my-keypair"
+
+  interfaces = [
+    {
+      type      = "external"
+      ip_family = "ipv4"
+    },
+    {
+      type       = "subnet"
+      network_id = gcore_cloud_network.bm_net.id
+      subnet_id  = gcore_cloud_network_subnet.bm_subnet.id
+    },
+  ]
+}
+```
+
+<Warning>
+The interface order is fixed at creation. With both a public and a private interface, disable the default gateway on the private subnet to avoid routing conflicts.
+</Warning>
+
+## Start, stop, and reboot
+
+<p>The Terraform provider does not support power state operations (`start`, `stop`, `reboot`, `reboot_hard`) for Bare Metal servers. Use the Customer Portal or the REST API tab to perform these actions.</p>
+
+## Delete a Bare Metal server
+
+<p>Remove the resource block — Terraform deletes the server on the next `terraform apply`. Deprovisioning takes 3-5 minutes and permanently wipes local NVMe storage.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_baremetal_server" "example" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

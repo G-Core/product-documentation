@@ -84,6 +84,16 @@ Same result: empty page on deploy.
 - `portal` always comes first — it is the default tab
 - Do not add `terraform` or `cli` tabs until the content exists
 
+### How Mintlify compiles MethodSwitch internally
+
+Mintlify wraps each custom component in an internal `_MdxComponentBoundary` element
+at compile time. The `snippets/method-switch.jsx` component accounts for this: when
+iterating over children it first checks for a direct `props.id` (for future-proofing),
+then checks `c.props.children.props.id` to unwrap the boundary.
+
+Do not change the filter logic in `method-switch.jsx` without understanding this.
+Removing the unwrap step will break all MethodSwitch pages silently (blank page, no JS error).
+
 ### No content before `<MethodSwitch>`
 
 All article content — including intro paragraphs — must be INSIDE a `<MethodSection>`.
@@ -119,6 +129,29 @@ as one unbroken block.
 **3. Bullet-only lists — use `-` at column 0:** `<ul>/<li>` is block-level and renders correctly without wrapping.
 
 **4. JSX components (`<Info>`, `<Frame>`, `<Warning>`, `<Note>`):** always block-level, no special treatment needed.
+
+**5. Structural separators — never remove, only replace text:**
+
+Inside `<MethodSection>`, `<Info>`, `<Warning>`, and `<p>` tags that appear between numbered list items act as structural anchors for the MDX parser — not just as content containers. Removing such a tag (even if the text inside is outdated) changes how the parser reads surrounding numbered lists and can cause the entire page to render blank.
+
+**Rule:** When removing outdated information from a structural element, replace the text inside the tag with neutral content. Never delete the tag itself.
+
+```mdx
+# Wrong — blank page after this edit
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+   Click **Add rule** and select a template or custom rule.   <- inline, Info removed
+
+# Correct — keep the tag, update text
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+
+<Info>
+By default, all outbound traffic is allowed. Add outbound rules only to restrict specific traffic.
+</Info>
+
+<p>Click **Add rule** and select a template or custom rule.</p>
+```
+
+A structural separator is any JSX block that sits between a numbered step header and its sub-bullets, or between the last content of one step and the next numbered step.
 
 ### Closing tag indent after a list
 
@@ -186,6 +219,42 @@ Each step below explains what the call does.
 Applies to every prose paragraph that immediately precedes `<Accordion>` inside any
 `<MethodSection>`. Does not affect content outside JSX.
 
+### `<p>` around `<Frame>`, code blocks, and `<Tabs>` inside `<MethodSection>`
+
+Inside `<MethodSection>`, prose that sits directly adjacent to a `<Frame>`, a fenced
+code block, or a `<Tabs>` component will visually "stick" to it — no spacing, no
+paragraph break. Wrap only the **immediately adjacent prose** in `<p>`.
+
+Do NOT wrap every paragraph in `<p>` — only the ones that touch a block element or
+sit between numbered steps. Overuse of `<p>` is incorrect.
+
+**When to use `<p>`:**
+1. Prose immediately before or after a `<Frame>` (screenshot)
+2. Prose immediately before or after a fenced code block
+3. Prose immediately before or after `<Tabs>` / `<Tab>`
+4. Prose that sits between numbered list steps (prevents step numbers from merging into the paragraph)
+
+**Correct:**
+```mdx
+<p>Upload the compiled binary file:</p>
+
+<Frame>![Upload binary dialog](/images/docs/fastedge/.../upload-binary.png)</Frame>
+
+<p>After uploading, click **Save binary** to confirm.</p>
+```
+
+```mdx
+<p>Run the following command to compile:</p>
+
+```sh
+cargo build --target wasm32-wasi --release
+```
+
+<p>The output file is located in `target/wasm32-wasi/release/`.</p>
+```
+
+This applies inside any `<MethodSection>`. Does not apply to content outside `<MethodSection>`.
+
 ---
 
 ## Frontmatter
@@ -250,23 +319,59 @@ ai-navigation: Configure the Authorization: APIKey header.
 
 ## MDX parsing gotchas
 
-### `{identifier}` inside backtick inline code spans
+### `{identifier}` inside inline code — use backticks, never `<code>`
 
-MDX parses `{identifier}` inside single-backtick spans as JSX expressions. If the
-identifier is a valid JavaScript name (`task_id`, `project_id`, `LB_VIP`), the parser throws.
+MDX treats `{...}` as a JSX expression **even inside `<code>` HTML elements**. If the
+identifier is a valid JavaScript name (`task_id`, `project_id`, `LB_VIP`), the parser
+throws at compile time. The page renders as a blank shell — no error is shown in the browser.
 
-**Wrong (breaks MDX):**
-```
-Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
-```
-
-**Correct — use HTML `<code>` tag with `&nbsp;` inside:**
+**Wrong — `<code>` does NOT escape curly braces in MDX:**
 ```
 Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 ```
 
-`{...}` inside triple-backtick fenced code blocks is always safe.
-Characters that are not valid JS identifiers (e.g. `{|}~`) are also safe inside backtick spans.
+**Correct — backtick code spans escape their content; `{...}` is treated as literal text:**
+```
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
+```
+
+`{...}` inside triple-backtick fenced code blocks is also always safe.
+
+**How to find violations:**
+```
+rg "<code>[^<]*\{[^}]+\}[^<]*</code>" path/to/article.mdx
+```
+
+### PowerShell file edits corrupt non-ASCII characters
+
+`Get-Content` + `Set-Content` without explicit encoding uses the system ANSI codepage
+(Windows-1252), which cannot represent Unicode characters such as em dashes (`—`, U+2014),
+non-breaking spaces, or any other non-ASCII character. They are silently replaced with `?`.
+
+**Never edit MDX files with PowerShell `Set-Content` without specifying UTF-8:**
+
+```powershell
+# Wrong — corrupts em dashes and other non-ASCII characters
+$c = Get-Content file.mdx -Raw
+$c = $c -replace 'foo', 'bar'
+Set-Content file.mdx $c
+
+# Correct — preserves UTF-8 encoding
+$c = [System.IO.File]::ReadAllText('file.mdx', [System.Text.Encoding]::UTF8)
+$c = $c -replace 'foo', 'bar'
+[System.IO.File]::WriteAllText('file.mdx', $c, [System.Text.Encoding]::UTF8)
+```
+
+**Recovery:** if corruption has already occurred (em dashes show as `?` in the browser),
+the affected characters have a space on both sides — use ` — ` as the replacement pattern:
+
+```powershell
+$c = [System.IO.File]::ReadAllText('file.mdx', [System.Text.Encoding]::UTF8)
+$c = $c -replace ' \? ', ' — '
+[System.IO.File]::WriteAllText('file.mdx', $c, [System.Text.Encoding]::UTF8)
+```
+
+This is safe because URL query strings use `?` without surrounding spaces.
 
 ### CRITICAL: Never simplify method-switch.jsx
 

@@ -325,3 +325,11 @@ TODO items for the writer:
 
 Next step: assign the PR to a technical writer for review
 ```
+
+
+---
+
+## Terminology rule
+
+Never use the word `permanent` when referring to API tokens. The expiration is user-controlled.
+Always write: `An [API token](/account-settings/api-tokens) is required.`

@@ -1,7 +1,7 @@
----
+﻿---
 title: "Create and configure a load balancer"
 sidebarTitle: "Create load balancer"
-ai-navigation: Create and configure a Load Balancer with region selection, computing configuration (vCPU, GiB), network type (Public, Private), IP family (IPv4, IPv6, Dual), reserved IP assignment, preferred connectivity method (L2 or L3), listeners, and pools via Customer Portal or REST API.
+ai-navigation: Create and configure a Load Balancer with region selection, computing configuration (vCPU, GiB), network type (Public, Private), IP family (IPv4, IPv6, Dual), reserved IP assignment, preferred connectivity method (L2 or L3), listeners, and pools via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -308,10 +308,10 @@ Make sure their ports are open for the Load Balancer traffic:
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-A [load balancer](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-balancer) distributes incoming requests across backend VMs, routing traffic only to healthy members. Creating one requires four API calls: create the balancer, add a listener, create a pool, and register the backend VMs as pool members.
+A [load balancer](/api-reference/cloud/load-balancers/create-load-balancer) distributes incoming requests across backend VMs, routing traffic only to healthy members. Creating one requires four API calls: create the balancer, add a listener, create a pool, and register the backend VMs as pool members.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -467,7 +467,7 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
 
 ### Step 1. List load balancer flavors
 
-A [flavor](https://gcore.com/docs/api-reference/cloud/load-balancers/list-load-balancer-flavors) determines the vCPU count, RAM, and maximum network throughput of the load balancer instance. Flavor availability is region-specific — run this call to see what's available in the target region.
+A [flavor](/api-reference/cloud/load-balancers/list-load-balancer-flavors) determines the vCPU count, RAM, and maximum network throughput of the load balancer instance. Flavor availability is region-specific — run this call to see what's available in the target region.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -594,7 +594,7 @@ export LB_VIP="{LB_VIP_ADDRESS}"
 
 ### Step 3. Create a listener
 
-A [listener](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-balancer-listener) watches for incoming connections on a specific protocol and port, then forwards them to a pool.
+A [listener](/api-reference/cloud/load-balancers/create-load-balancer-listener) watches for incoming connections on a specific protocol and port, then forwards them to a pool.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -657,7 +657,7 @@ export LISTENER_ID="{LISTENER_ID}"
 
 ### Step 4. Create a pool
 
-A [pool](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-balancer-pool) groups the backend VMs and distributes requests across them according to the chosen algorithm.
+A [pool](/api-reference/cloud/load-balancers/create-load-balancer-pool) groups the backend VMs and distributes requests across them according to the chosen algorithm.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -724,7 +724,7 @@ export POOL_ID="{POOL_ID}"
 
 ### Step 5. Add backend VMs as pool members
 
-Each [pool member](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-balancer-pool-member) is a VM identified by its IP address and the port where the application listens. Repeat this call for each VM.
+Each [pool member](/api-reference/cloud/load-balancers/create-load-balancer-pool-member) is a VM identified by its IP address and the port where the application listens. Repeat this call for each VM.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -780,11 +780,11 @@ Each [pool member](https://gcore.com/docs/api-reference/cloud/load-balancers/cre
   </Tab>
 </Tabs>
 
-Members show `operating_status: NO_MONITOR` when no health monitor is configured — this is expected. The load balancer still distributes traffic. To enable automatic member removal when a backend becomes unhealthy, add a [health monitor](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-balancer-pool-health-monitor) to the pool.
+Members show `operating_status: NO_MONITOR` when no health monitor is configured — this is expected. The load balancer still distributes traffic. To enable automatic member removal when a backend becomes unhealthy, add a [health monitor](/api-reference/cloud/load-balancers/create-load-balancer-pool-health-monitor) to the pool.
 
 ### Step 6. Verify the load balancer
 
-After adding both members, confirm the load balancer is active and traffic is flowing. The [load balancers](https://gcore.com/docs/api-reference/cloud/load-balancers) endpoint also supports updating listeners, resizing the flavor, enabling logging, and configuring DDoS protection.
+After adding both members, confirm the load balancer is active and traffic is flowing. The [load balancers](/api-reference/cloud/load-balancers) endpoint also supports updating listeners, resizing the flavor, enabling logging, and configuring DDoS protection.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -868,6 +868,246 @@ Deleting the load balancer removes the listener, pool, and members automatically
     Poll until `FINISHED`.
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Build a complete load balancer from scratch — from [`gcore_cloud_load_balancer`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_load_balancer) to listeners, pools, and backend members. The [Terraform provider](/developer-tools/terraform/overview) models each as a separate resource, provisioned in dependency order.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+
+## Quickstart
+
+<p>Deploys an HTTP load balancer with a round-robin pool and two backend members.</p>
+
+```hcl
+resource "gcore_cloud_load_balancer" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-lb"
+  flavor     = "lb1-1-2"
+}
+
+resource "gcore_cloud_load_balancer_listener" "http" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "http-listener"
+  protocol         = "HTTP"
+  protocol_port    = 80
+}
+
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  listener_id      = gcore_cloud_load_balancer_listener.http.id
+  name             = "backend-pool"
+  lb_algorithm     = "ROUND_ROBIN"
+  protocol         = "HTTP"
+
+  members = [
+    {
+      address       = "192.0.2.10"  # VM1's IP address
+      protocol_port = 80
+    },
+    {
+      address       = "192.0.2.11"  # VM2's IP address
+      protocol_port = 80
+    }
+  ]
+}
+
+output "vip_address" {
+  value = gcore_cloud_load_balancer.example.vip_address
+}
+```
+
+<p>Run `terraform init && terraform apply`. Load balancer creation takes approximately one minute.</p>
+
+## Step-by-step
+
+<p>Each resource is covered independently below with its key attributes and options.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create the load balancer
+
+<p>The `gcore_cloud_load_balancer` resource provisions the balancer and its virtual IP (VIP).</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name of the load balancer. |
+| `flavor` | No | Compute flavor. Omit to use the region default. |
+| `vip_network_id` | No | Network ID for the VIP. Omit for a public VIP. |
+| `vip_subnet_id` | No | Subnet ID for the VIP within the selected network. |
+| `vip_ip_family` | No | IP version when auto-selecting a subnet. Values: `ipv4` (default), `ipv6`, `dual`. |
+| `preferred_connectivity` | No | How backends connect to the VIP. Values: `L2` (better performance), `L3` (fewer IPs used). |
+
+<p>Available flavors and their vCPU/RAM configurations:</p>
+
+| Flavor | vCPU | RAM | Max bandwidth |
+|--------|------|-----|---------------|
+| `lb1-1-2` | 1 | 2 GiB | 1.5 Gbps |
+| `lb1-2-4` | 2 | 4 GiB | 5 Gbps |
+| `lb1-4-8` | 4 | 8 GiB | 10 Gbps |
+| `lb1-8-16` | 8 | 16 GiB | 10 Gbps |
+
+<p>To attach a public floating IP to the load balancer's VIP:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-lb"
+  flavor     = "lb1-1-2"
+
+  floating_ip = {
+    source = "new"  # use "existing" and set existing_floating_id to reuse one
+  }
+}
+```
+
+### Step 2. Create a listener
+
+<p>A listener defines the protocol and port on which the load balancer accepts traffic. One load balancer supports multiple listeners.</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | ID of the parent load balancer. |
+| `name` | Yes | Display name of the listener. |
+| `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
+| `protocol_port` | Yes | Port number the listener binds to. |
+
+<p>For HTTP and TCP listeners, use `gcore_cloud_load_balancer_listener` directly. For `TERMINATED_HTTPS`, set `secret_id = ""` and pass the certificate ID via `sni_secret_id`:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_listener" "example" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "https-listener"
+  protocol         = "TERMINATED_HTTPS"
+  protocol_port    = 443
+  secret_id        = ""
+  sni_secret_id    = [var.tls_secret_id]  # ID of a gcore_cloud_secret resource
+}
+```
+
+<p>For an HTTP listener, omit `secret_id` and `sni_secret_id`:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_listener" "http" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "http-listener"
+  protocol         = "HTTP"
+  protocol_port    = 80
+}
+```
+
+### Step 3. Create a pool with backend members
+
+<p>A pool groups backend VMs and defines how traffic is distributed among them. Members are declared inline using the `members` attribute.</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | ID of the parent load balancer. |
+| `listener_id` | No | ID of the listener to attach the pool to. |
+| `name` | Yes | Display name of the pool. |
+| `lb_algorithm` | Yes | Distribution algorithm. Values: `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. |
+| `protocol` | Yes | Backend protocol. Must match the listener protocol (use `HTTP` for both `HTTP` and `TERMINATED_HTTPS` listeners). |
+
+<p>Each entry in the `members` list supports the following fields:</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `address` | Yes | IP address of the backend VM. |
+| `protocol_port` | Yes | Port the application listens on inside the VM. |
+| `weight` | No | Relative weight for traffic distribution. Range: 1–256, default 1. |
+| `backup` | No | Set to `true` to mark as a backup member. Traffic goes to backup members only when all primary members are unreachable. |
+
+<p>Example pool with weighted members:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  listener_id      = gcore_cloud_load_balancer_listener.http.id
+  name             = "backend-pool"
+  lb_algorithm     = "ROUND_ROBIN"
+  protocol         = "HTTP"
+
+  members = [
+    {
+      address       = "192.0.2.10"
+      protocol_port = 80
+      weight        = 3
+    },
+    {
+      address       = "192.0.2.11"
+      protocol_port = 80
+      weight        = 1
+    }
+  ]
+}
+```
+
+### Step 4. (Optional) Add a health monitor
+
+<p>A health monitor probes each pool member on a schedule and removes unreachable members from rotation automatically. Define it inline in the pool resource using the `healthmonitor` attribute.</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `type` | Yes | Probe protocol. Values: `HTTP`, `HTTPS`, `TCP`, `PING`, `UDP-CONNECT`, `TLS-HELLO`. |
+| `delay` | Yes | Seconds between probes. |
+| `timeout` | Yes | Seconds to wait for a probe response. Must be less than `delay`. |
+| `max_retries` | Yes | Consecutive successes before marking a member `ONLINE`. |
+| `url_path` | No | HTTP path to probe. Default is `/`. Only for `HTTP` and `HTTPS` types. |
+| `expected_codes` | No | Expected HTTP response codes, e.g. `200` or `200,204`. Default is `200`. |
+
+<p>Example pool block with a health monitor:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  # ... other attributes ...
+
+  healthmonitor = {
+    type        = "HTTP"
+    delay       = 10
+    timeout     = 5
+    max_retries = 3
+    url_path    = "/health"
+  }
+}
+```
+
+</Accordion>
+
+## Import
+
+<p>To bring existing load balancer resources under Terraform management, run each import command separately:</p>
+
+```bash
+terraform import gcore_cloud_load_balancer.example PROJECT_ID:REGION_ID:LB_ID
+terraform import gcore_cloud_load_balancer_listener.http PROJECT_ID:REGION_ID:LISTENER_ID
+terraform import gcore_cloud_load_balancer_pool.backend PROJECT_ID:REGION_ID:POOL_ID
+```
+
+<p>Find the IDs in the Customer Portal under **Networking** → **Load Balancers**, or retrieve them with the REST API.</p>
+
+## Clean up
+
+<p>Terraform removes the pool, listener, and load balancer in the correct dependency order.</p>
+
+```bash
+terraform destroy
+```
 
   </MethodSection>
 </MethodSwitch>

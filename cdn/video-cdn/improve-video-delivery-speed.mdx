@@ -1,7 +1,7 @@
 ---
 title: Improve video delivery speed for low-traffic accounts
 sidebarTitle: Improve delivery speed
-ai-navigation: Configure Gcore CDN cache hit ratio and time-to-first-byte (TTFB) for video delivery by monitoring cache miss behavior, cache expiration, and edge server cache warming strategies for low-traffic accounts.
+ai-navigation: Troubleshoot slow video delivery by checking CDN cache hits, origin 404s, live player requests, TTLs, Origin Shielding, and prefetch.
 ---
 
 <Frame>
@@ -22,6 +22,27 @@ Every subsequent request for the same file from the same edge location is served
 ```
 Cache MISS:  Viewer → CDN Edge → Origin
 Cache HIT :  Viewer → CDN Edge (cache)
+```
+
+### Example: how the cache changes over time
+
+To see how this works in practice, imagine three viewers watching the same video at different times:
+
+- **Viewer 1 — the first request.** No edge server has the video yet, so the CDN fetches it from your origin and stores a copy at the edge. This first view is a little slower while the copy is being retrieved.
+- **Viewer 2 — a few minutes later.** The video is still warm in the edge cache, so it's delivered straight from the CDN — fast, with no trip back to your origin.
+- **Viewer 3 — several days later.** If no one watched the video in the meantime, the edge may have already removed it to make room for more frequently requested content. The CDN then fetches it from your origin again, just like the very first time.
+
+This is completely normal: a cached copy stays at the edge only as long as the content is requested often enough to keep it warm.
+
+```
+Day 0, 10:00   Viewer 1 ─► CDN edge (empty)  ─► Origin ─► copy cached at edge   [MISS · slower]
+
+Day 0, 10:05   Viewer 2 ─► CDN edge (cached) ─► delivered to viewer             [HIT · fast]
+                                │
+                                │   3–7 days pass with no requests
+                                │   → edge evicts the video to free space
+                                ▼
+Day 5, 14:00   Viewer 3 ─► CDN edge (empty again) ─► Origin ─► re-cached         [MISS · slower]
 ```
 
 **Scenario: few viewers, rare requests (cold cache)**
@@ -59,8 +80,6 @@ You can inspect the cache status of any individual video segment directly in you
 
 If you consistently see `Cache: MISS` across multiple segments and multiple page loads, the cache is cold and the steps below will help.
 
-
-
 ### Check in the Gcore Customer Portal
 
 1. Open the [CDN Statistics](https://portal.gcore.com/cdn/reports/statistics) section in the Gcore Customer Portal.
@@ -70,18 +89,70 @@ If you consistently see `Cache: MISS` across multiple segments and multiple page
 
 The chart above shows two examples. The orange line stays at 100% — every viewer request is served from cache, meaning fast delivery at all times. The purple line drops repeatedly to 0% — the cache empties between bursts of traffic, so many requests go back to the origin server and viewers experience slow playback until the cache fills again.
 
-A ratio below 80% in combination with slow delivery usually means your content is not being served from cache. For guidance on interpreting and improving the cache hit ratio, see [Cache hit ratio is low: how to solve the issue](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
+### What cache hit ratio to expect
+
+The figures below are **average, typical values** — not guarantees or thresholds Gcore sets for you. Your actual ratio depends on your content, audience size, TTLs, and configuration. Use them to gauge where you stand and to decide which actions to take. **Improving the ratio is driven by your own decisions** — choosing TTLs, enabling features, and sizing your setup. Gcore provides the tools (origin shielding, cache lifetime controls, and larger shield cache for enterprise customers on a committed plan); which ones you apply is up to you.
+
+VOD and live streaming behave differently, so judge them against different baselines.
+
+**VOD (video on demand)**
+
+Static content should cache well, so VOD ratios are high on average.
+
+| Typical ratio | What it usually means | Actions you can take |
+|---------------|-----------------------|----------------------|
+| **90–100%** | Hot content is served from edge cache mainly | If you plan to increase traffic, consider additional optimization |
+| **70–90%** | Warm content is served from cache and origin, some requests are forwarded to origin | Analyze which content is being served from origin, and if it is possible to increase TTLs and use CDN shield cache |
+| **50–70%** | Cold content with the occasional appearance of frequent requests | Your content is rarely requested, or is requested from different locations across the region/world. If you're confident you have a large number of users, then connecting to a Shield will help. If you have a small number of users, then this is normal behavior for cold content. |
+| **Below 50%** | A sign of low number of requests | See the section below for how to optimize hit-ratio |
+
+**Live streaming**
+
+Live runs with lower hit ratio by design: playlists and manifests (`.m3u8`, `.mpd`) carry a very short TTL and are re-requested every few seconds, so they almost always MISS.
+
+<Note>
+Manifests will always show a low or near-zero hit ratio. That is expected and not something to fix — don't include them when assessing live cache performance.
+</Note>
+
+So, evaluate the **segment** hit ratio only, not the overall figure.
+
+| Typical ratio of segments | What it usually means | Actions you can take |
+|---------------|-----------------------|----------------------|
+| **70–99% (segments)** | Normal for live streaming | No action needed — this is expected behavior for live. |
+| **Below 70% (segments)** | Segments are being re-fetched more than expected | See the section below for how to optimize hit-ratio |
 
 
 ## How to improve delivery speed
 
-### 1. Allow the cache to warm up naturally
+### 1. Check what files are frequently requested from the origin
+
+If you see a high number of cache misses, the first step is to understand which files are being re-fetched from the origin. You can find this information in the CDN statistics and logs.
+
+First, check the Response statistics. If you see a large number of non-200 responses, clients may be requesting non-existent content or the origin can't find the requested content. Check why the origin can't find the content.
+
+<Frame>
+![Response statistics](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-stat-response-classes.png)
+</Frame>
+
+Then check what content is being requested and check the advanced analytics.
+
+<Frame>
+![Advanced analytics](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-stat-advanced-directories.png)
+</Frame>
+
+And if you need more detail or a breakdown down to each request, check the logs page. You can filter by status codes (200, 404, etc.) and by caching status for MISS.
+
+<Frame>
+![Logs page](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-stat-logs-miss.png)
+</Frame>
+
+### 2. Allow the cache to warm up naturally
 
 After a CDN resource is created or new content is uploaded, it takes time for edge servers to populate their caches as real viewers request files. In most cases, wait for steady viewer traffic before evaluating delivery performance.
 
 If your viewer traffic is consistently low (fewer than a few hundred requests per day per title), natural cache warmup may never produce a meaningfully high cache hit ratio — use the options below instead.
 
-### 2. Pre-load popular content with Prefetch
+### 3. Pre-load popular content with Prefetch
 
 If you have a set of video files that you expect to receive significant traffic, you can push them into the CDN cache before viewers request them using the Prefetch feature. This eliminates cold-start latency for those specific files.
 
@@ -91,25 +162,23 @@ Prefetch is recommended for MP4 files. HLS and MPEG-DASH streams consist of a ma
 
 See [Load content to CDN before users request it](/cdn/load-the-content-to-cdn-before-users-request-it) for instructions.
 
-### 3. Verify cache TTL settings
+### 4. Verify cache TTL settings
 
 If your CDN resource is configured with very short or zero cache TTLs, segments are evicted quickly and the cache never stays warm. Check that your cache settings allow segments to be stored for a reasonable duration:
-
-| File type | Recommended TTL |
-|-----------|----------------|
-| VOD segments (`.ts`, `.m4s`) | 1–24 hours |
-| VOD playlists (`.m3u8`) | 5–60 seconds |
-| Initialization segments (`.mp4`) | 1–24 hours |
 
 <Note>
 TTL is the **maximum** time a file can stay in cache. In practice, content may be removed earlier — for example, when an edge server evicts less-requested files to make room for new ones, or when a cache purge is triggered. Setting a high TTL improves the chance of a cache hit but does not guarantee content will always be cached.
 </Note>
 
-To review and configure cache TTLs, see [Specify cache lifetime on a CDN resource or origin](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin).
+To review and configure cache TTLs, see [Specify cache lifetime on a CDN resource for video VOD and/or Live](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules).
 
-Also verify that your origin is not sending `Cache-Control: no-store`, `no-cache`, or `max-age=0` headers for video segments — these headers prevent caching entirely. See [Cache hit ratio is low: how to solve the issue](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) for a full list of headers that block caching.
+### 5. Verify CDN resource settings
 
-### 4. Enable origin shielding
+Check that the CDN resource is properly configured for video delivery.
+
+Apply these [recommended settings](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules) for better performance and delivery.
+
+### 6. Enable origin shielding
 
 Origin shielding is the most effective way to improve cache hit ratio for low-traffic content. It inserts a dedicated **shield (precache) server** between your origin and all CDN edge servers.
 
@@ -123,6 +192,48 @@ To configure shielding after it is enabled on your account, see [Enable and conf
 
 **Recommended shield location**: choose the location geographically closest to your origin server.
 
+### 7. Slice very large single-file videos
+
+If you deliver video as **large single MP4 files** (progressive download, not split into segments), enable [Large File Delivery Optimization](/cdn/cdn-resource-options/optimize-large-file-delivery). The CDN then fetches the file from origin in 10 MB chunks and caches each chunk independently, so viewers can start playback and seek without waiting for the whole file to be pulled.
+
+<Note>
+This applies only to **large single-file MP4** delivery. **HLS and MPEG-DASH don't need slicing** — those formats are already split into small segments that the CDN caches individually. For how chunked origin fetching works, see [Example of large file slicing](/cdn/cdn-resource-options/optimize-large-file-delivery#example-of-large-file-slicing).
+</Note>
+
+### 8. More help
+
+See [Cache hit ratio is low](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) for more information.
+
+## How to improve 404 (Not Found) errors
+
+### 1. Check origin mapping for 404s
+
+When the CDN forwards a segment request to the origin and the origin returns `404 Not Found`, check origin access logs and error logs for the exact URL path shown in CDN logs. If the segment is expected to exist, fix the origin mapping before tuning cache settings.
+
+| Origin type | Checks |
+|-------------|--------|
+| S3-compatible object storage | Confirm that the object key matches the request path exactly, including bucket prefix, capitalization, file extension, and URL encoding. Check that the CDN uses the correct bucket endpoint and Host header, and that the origin has read access to the objects. |
+| Web server origin, including NGINX | Confirm that `root`, `alias`, and rewrite rules map the CDN path to the real file path. Check file permissions for the web server process and confirm that `access_log` and `error_log` entries show the same `404` path. |
+| Media server origin, including Wowza, Flussonic, or Nimble Streamer | Confirm that the VOD content directory, storage location, application name, and playback URL format match the requested stream. For live streams, confirm that the encoder is publishing the exact stream name and all expected renditions before the CDN requests the HLS or DASH segments. |
+
+For HLS and MPEG-DASH, also compare the manifest with the missing segment URL. If the manifest advertises a segment that the origin can't serve, the issue is in the packager, storage path, stream name, or file generation workflow rather than CDN caching.
+
+### 2. Check live players for 404s
+
+Live streams can generate many origin `404` responses when the player asks for a segment outside the live window. This often happens with low-latency settings, especially for MPEG-DASH, when the player calculates the live edge too aggressively and requests the nearest future segment before the origin has generated it.
+
+Open your player page in a browser, keep DevTools on the **Network** tab, and let playback run for several hours for long live events or 24/7 broadcasts. Filter by `404` and segment extensions (`.ts`, `.m4s`, `.mp4`) to see whether failed requests repeat over time, affect one rendition, or happen only near the live edge.
+
+Use the failed segment URLs to identify the pattern:
+
+| Pattern | Likely cause | Checks |
+|---------|--------------|--------|
+| The player requests segment numbers or timestamps slightly ahead of the manifest | Live delay or target latency is too low, or the player clock is ahead of the packager clock | Increase the player live delay, review low-latency mode settings, and verify DASH timing values including `suggestedPresentationDelay`, `availabilityStartTime`, and `timeShiftBufferDepth`. |
+| The player requests old segments after the tab has been open for a long time | The player fell behind the sliding live window, or the browser/CDN cached an outdated manifest | Keep manifest TTL short, confirm that the player reloads the manifest, and configure the player to return to the live edge when it falls outside the live window. |
+| Only one bitrate, audio track, or subtitle track returns 404 | The encoder or packager stopped producing one rendition, or the manifest references a file that was never written | Check encoder and packager logs for the affected rendition, then compare the manifest entries with files available on the origin. |
+
+If 404s appear only from one custom player, test the same stream in a reference player. If the reference player stays stable while the custom player keeps requesting future or expired segments, adjust the player rather than CDN cache settings.
+
 ## Check CDN-to-origin connectivity
 
 When you see a high number of cache misses, the speed of the connection between CDN edge servers and your origin becomes critical. On every miss, the edge pulls the file directly from your origin — so if your origin is slow, distant, or under load, viewers feel that latency on every uncached request.
@@ -134,6 +245,33 @@ When you see a high number of cache misses, the speed of the connection between 
 - **[Object Storage](/storage/create-an-s3-or-sftp-storage)** — S3-compatible storage for VOD files (MP4, HLS segments, images). Use it as a CDN origin for fast, reliable pulls with no external hops. See [Use storage as the origin for your CDN resource](/storage/use-storage-as-the-origin-for-your-cdn-resource).
 - **[Video Streaming for VOD](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app)** — upload video files and let Gcore handle transcoding, storage, and CDN delivery as a single integrated service.
 - **[Video Streaming for live streams](/streaming/live-streaming/create-a-live-stream)** — ingest live streams via RTMP, SRT, or WebRTC and deliver them globally through Gcore CDN with no external origin required.
+
+## Check response codes and origin response time
+
+Cache hit ratio tells you whether content is served from cache, but it won't tell you whether errors are coming from your origin. Two metrics in the Customer Portal help separate a delivery problem from an origin problem.
+
+Go to **Customer Portal → Reports → Statistics** and select your CDN resource:
+
+- **Response classes** — counts of `2xx`/`3xx`/`4xx`/`5xx` responses the CDN returned to viewers. A rise in `5xx` indicates delivery errors. Note that if your origin returns a `504`, it is counted here as a `5xx` — this view does **not** distinguish whether the error came from the origin or was generated by the CDN itself.
+- **Upstream response time** — the average time, in seconds, the CDN waited for a response from your origin. A high or rising value means the origin is slow or struggling, which is a common cause of buffering and `5xx` errors during traffic peaks such as live events.
+
+![Check response codes and origin response time](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-stat-upstream-response-time.png)
+
+Use the values below as operational guidelines, not as an SLA. Investigate sustained values above the threshold, especially when they happen together with low cache hit ratio, rising `5xx`, or viewer buffering.
+
+| Request type | Expected origin response time on cache MISS | Investigate when |
+|--------------|---------------------------------------------|------------------|
+| Large single MP4 files or byte-range requests | Less than 1 s for TTFB; total transfer can be longer because the file is large | TTFB is above 2 s, download speed is low, or viewers wait before playback starts. Enable Large File Delivery Optimization for large single-file MP4 delivery. |
+| VOD manifests (`.m3u8`, `.mpd`) from object storage or a media server | 100–500 ms | Average response time is above 500 ms, because manifests are small and should be returned quickly. |
+| VOD segments (`.ts`, `.m4s`) from object storage or a media server | 200–1000 ms | Average response time is above 1 s, or segment misses show high TTFB in browser DevTools. |
+| Live manifests (`.m3u8`, `.mpd`) from a media server | 100–500 ms | Average response time is above 1 s, or manifests are slow during traffic peaks. |
+| Live regular segments (`.ts`, `.m4s`) from a media server | 100–500 ms | Average response time is above 1 s, or slow responses appear with `404`/`5xx` errors. |
+| Low-latency live manifests and segments (`.m3u8`, `.mpd`, `.m4s`) | 500–5000+ ms | Response time can be close to the video segment duration, because in low-latency manifests and segments are produced and pulled in realtime by arrays of bytes continuously.  |
+
+
+<Note>
+If `5xx` errors climb during a live event **and** upstream response time rises at the same time, the bottleneck is almost certainly your origin, not the CDN. Protect it with [origin shielding](/cdn/video-cdn/origin-shielding-for-video) and verify origin capacity. For a full origin-side checklist, see [5xx error: how to solve server issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues).
+</Note>
 
 ## When to contact support
 
@@ -176,5 +314,8 @@ If you have applied the steps above and delivery is still slow, contact [Support
   </Card>
   <Card title="Cache lifetime settings" icon="clock" href="/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin">
     Configure how long CDN edge servers keep your content cached
+  </Card>
+  <Card title="Large file delivery" icon="film" href="/cdn/cdn-resource-options/optimize-large-file-delivery">
+    Serve large single-file MP4 videos in 10 MB chunks for faster start and seek
   </Card>
 </CardGroup>

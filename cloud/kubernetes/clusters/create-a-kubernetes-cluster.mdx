@@ -1,7 +1,7 @@
----
+﻿---
 title: Create a Kubernetes cluster
 sidebarTitle: Create
-ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal). Includes REST API, Python SDK, and Go SDK examples.
+ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal). Includes REST API, Python SDK, Go SDK, and Terraform examples.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -245,7 +245,7 @@ The cluster will be created in just a few minutes!
 A Kubernetes cluster consists of a control plane managed by Gcore and one or more node pools running workloads. The API flow creates a private network, provisions the cluster into that network, and returns a kubeconfig file for `kubectl` access.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -468,7 +468,7 @@ The available K8s versions change as Gcore adds new releases and retires old one
   </Tab>
 </Tabs>
 
-A [K8s versions](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sClusterCreateVersionViewSet.get) list is also available in the API reference.
+A [K8s versions](/api-reference/cloud#tag/Kubernetes/operation/K8sClusterCreateVersionViewSet.get) list is also available in the API reference.
 
 ### Step 2. Create a network
 
@@ -690,7 +690,7 @@ A cluster requires a node pool with at least one node. The pool defines the VM f
   </Tab>
 </Tabs>
 
-The full [create cluster](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sClustersViewSetV2.post) and [list flavors](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sFlavorsViewSet.get) references are in the API docs.
+The full [create cluster](/api-reference/cloud#tag/Kubernetes/operation/K8sClustersViewSetV2.post) and [list flavors](/api-reference/cloud#tag/Kubernetes/operation/K8sFlavorsViewSet.get) references are in the API docs.
 
 ### Step 5. Get the kubeconfig
 
@@ -802,6 +802,123 @@ To delete the cluster and the network resources created for it, run the followin
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a Kubernetes cluster with one or more worker node pools using [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster). Node pools are declared inline and scaled by updating the `count` attribute.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+
+## Create a cluster
+
+<p>Provisions a cluster into an existing network and subnet — pass `network_id` and `subnet_id` as variables, or reference resources if the network is declared in the same configuration.</p>
+
+```hcl
+variable "network_id" { type = string }
+variable "subnet_id"  { type = string }
+variable "ssh_key_name"  { type = string }
+variable "k8s_version"   { type = string }  # use GET /cloud/v2/k8s/{project_id}/{region_id}/create_versions to list available
+
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-k8s-cluster"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+  keypair       = var.ssh_key_name
+  version       = var.k8s_version
+
+  pods_ip_pool     = "172.16.0.0/18"  # default for Calico; cannot overlap with 10.255.255.0/24 or 192.168.128.0/17
+  services_ip_pool = "172.24.0.0/18"
+
+  pools = [{
+    name               = "default-pool"
+    flavor_id          = "g2-standard-2-4"   # example; available flavors are region-specific — use GET /cloud/v1/k8s/{project_id}/{region_id}/flavors
+    servergroup_policy = "anti-affinity"     # nodes placed on different hypervisors
+    min_node_count     = 1
+    max_node_count     = 3
+    boot_volume_size   = 50
+    boot_volume_type   = "ssd_hiiops"
+    auto_healing_enabled = true
+  }]
+}
+
+output "cluster_name"   { value = gcore_cloud_k8s_cluster.example.name }
+output "cluster_status" { value = gcore_cloud_k8s_cluster.example.status }
+```
+
+<p>Cluster creation takes approximately 2–20 minutes. A `cluster_status` output of `"Provisioned"` confirms the cluster is ready.</p>
+
+<Warning>
+The cluster `name` is immutable — changing it in the resource block forces a full replacement (destroy + recreate).
+</Warning>
+
+**Key pool fields:**
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `flavor_id` | Yes | VM flavor for worker nodes. Use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list available options |
+| `servergroup_policy` | No | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `min_node_count` / `max_node_count` | No | Autoscaler range. Set both to the same value to disable autoscaling |
+| `boot_volume_type` | No | `standard`, `ssd_hiiops`, `ssd_lowlatency`, `cold`, or `ultra` |
+| `auto_healing_enabled` | No | Automatically replace unhealthy nodes |
+| `is_public_ipv4` | No | Assign a public IPv4 to each node (default: `false`) |
+
+<Accordion title="Create the network and subnet from the same configuration">
+
+<p>To provision the network alongside the cluster, declare the network and subnet resources and reference them by expression instead of using variables.</p>
+
+```hcl
+resource "gcore_cloud_network" "k8s" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "k8s-network"
+}
+
+resource "gcore_cloud_network_subnet" "k8s" {
+  project_id      = var.project_id
+  region_id       = var.region_id
+  network_id      = gcore_cloud_network.k8s.id
+  name            = "k8s-subnet"
+  cidr            = "10.0.0.0/24"
+  enable_dhcp     = true
+  dns_nameservers = ["8.8.8.8", "8.8.4.4"]
+}
+
+resource "gcore_cloud_k8s_cluster" "example" {
+  # ...
+  fixed_network = gcore_cloud_network.k8s.id
+  fixed_subnet  = gcore_cloud_network_subnet.k8s.id
+  # ...
+}
+```
+
+</Accordion>
+
+## Import
+
+<p>Use when a cluster was created outside Terraform and needs to be managed as code. The identifier is the cluster name, not its UUID.</p>
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+```
+
+## Delete a cluster
+
+<p>Remove the resource block — Terraform deletes the cluster on the next `terraform apply`. If the network and subnet were declared in the same configuration, Terraform removes them in the correct dependency order (cluster first, then subnet, then network).</p>
+
+```hcl
+# Remove or comment out the resource block:
+# resource "gcore_cloud_k8s_cluster" "example" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

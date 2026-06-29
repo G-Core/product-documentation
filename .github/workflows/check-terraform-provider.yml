@@ -1,0 +1,266 @@
+name: Check Terraform provider version
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # every day at 09:00 UTC
+  workflow_dispatch:      # allow manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Get latest provider release
+        id: provider
+        run: |
+          LATEST=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/G-Core/terraform-provider-gcore/releases/latest \
+            | jq -r '.tag_name // empty')
+          if [ -z "$LATEST" ]; then
+            echo "Could not fetch latest release tag. Exiting."
+            exit 1
+          fi
+          LATEST="${LATEST#v}"
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Latest provider release: $LATEST"
+
+      - name: Get pinned version from docs
+        id: pinned
+        run: |
+          PINNED=$(grep -r 'version = "= ' cloud/ --include="*.mdx" -h \
+            | grep -oP '[\d.]+-alpha\.\d+|[\d.]+' \
+            | sort -V | tail -1)
+          if [ -z "$PINNED" ]; then
+            echo "Could not find a pinned version in docs. Exiting."
+            exit 1
+          fi
+          echo "pinned=$PINNED" >> "$GITHUB_OUTPUT"
+          echo "Pinned version in docs: $PINNED"
+
+      - name: Skip if versions match
+        if: steps.provider.outputs.latest == steps.pinned.outputs.pinned
+        run: |
+          echo "Provider version matches docs (${{ steps.pinned.outputs.pinned }}). Nothing to do."
+
+      - name: Get schema for pinned version
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        run: |
+          mkdir -p /tmp/tf-old
+          cat > /tmp/tf-old/main.tf <<EOF
+          terraform {
+            required_providers {
+              gcore = {
+                source  = "G-Core/gcore"
+                version = "= ${{ steps.pinned.outputs.pinned }}"
+              }
+            }
+          }
+          provider "gcore" { api_key = "dummy" }
+          EOF
+          cd /tmp/tf-old
+          terraform init -input=false 2>&1 | tail -5
+          terraform providers schema -json > /tmp/schema-old.json
+          echo "Old schema extracted."
+
+      - name: Get schema for latest version
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        run: |
+          mkdir -p /tmp/tf-new
+          cat > /tmp/tf-new/main.tf <<EOF
+          terraform {
+            required_providers {
+              gcore = {
+                source  = "G-Core/gcore"
+                version = "= ${{ steps.provider.outputs.latest }}"
+              }
+            }
+          }
+          provider "gcore" { api_key = "dummy" }
+          EOF
+          cd /tmp/tf-new
+          terraform init -input=false 2>&1 | tail -5
+          terraform providers schema -json > /tmp/schema-new.json
+          echo "New schema extracted."
+
+      - name: Diff schemas for documented resources
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        id: diff
+        run: |
+          python3 << 'PYEOF'
+          import json, os
+
+          DOCUMENTED_RESOURCES = [
+              "gcore_cloud_project",
+              "gcore_cloud_network",
+              "gcore_cloud_network_subnet",
+              "gcore_cloud_network_router",
+              "gcore_cloud_security_group",
+              "gcore_cloud_volume",
+              "gcore_cloud_placement_group",
+              "gcore_cloud_instance",
+              "gcore_cloud_floating_ip",
+              "gcore_cloud_reserved_fixed_ip",
+              "gcore_cloud_secret",
+              "gcore_cloud_load_balancer",
+              "gcore_cloud_load_balancer_listener",
+              "gcore_cloud_load_balancer_pool",
+              "gcore_cloud_load_balancer_pool_member",
+              "gcore_cloud_k8s_cluster",
+              "gcore_cloud_file_share",
+              "gcore_cloud_file_share_access_rule",
+              "gcore_cloud_baremetal_server",
+              "gcore_cloud_instance_image",
+          ]
+
+          def get_resources(path):
+              with open(path) as f:
+                  schema = json.load(f)
+              provider_key = list(schema.get("provider_schemas", {}).keys())[0]
+              return schema["provider_schemas"][provider_key].get("resource_schemas", {})
+
+          def get_attrs(resource_schema):
+              return resource_schema.get("block", {}).get("attributes", {})
+
+          old_resources = get_resources("/tmp/schema-old.json")
+          new_resources = get_resources("/tmp/schema-new.json")
+
+          lines = []
+          has_changes = False
+
+          for resource in DOCUMENTED_RESOURCES:
+              old = old_resources.get(resource)
+              new = new_resources.get(resource)
+
+              resource_lines = []
+
+              if old is None and new is not None:
+                  resource_lines.append(f"- **Added resource** `{resource}`")
+                  has_changes = True
+              elif old is not None and new is None:
+                  resource_lines.append(f"- **Removed resource** `{resource}`")
+                  has_changes = True
+              elif old is not None and new is not None:
+                  old_attrs = get_attrs(old)
+                  new_attrs = get_attrs(new)
+
+                  added   = sorted(set(new_attrs) - set(old_attrs))
+                  removed = sorted(set(old_attrs) - set(new_attrs))
+                  changed = []
+
+                  for attr in sorted(set(old_attrs) & set(new_attrs)):
+                      old_req = old_attrs[attr].get("required", False)
+                      new_req = new_attrs[attr].get("required", False)
+                      old_opt = old_attrs[attr].get("optional", False)
+                      new_opt = new_attrs[attr].get("optional", False)
+                      old_type = old_attrs[attr].get("type")
+                      new_type = new_attrs[attr].get("type")
+                      if old_req != new_req or old_opt != new_opt or old_type != new_type:
+                          changed.append(attr)
+
+                  if added or removed or changed:
+                      has_changes = True
+                      resource_lines.append(f"\n#### `{resource}`")
+                      for a in added:
+                          resource_lines.append(f"- Added attribute `{a}`")
+                      for r in removed:
+                          resource_lines.append(f"- Removed attribute `{r}`")
+                      for c in changed:
+                          resource_lines.append(f"- Changed attribute `{c}`")
+
+              lines.extend(resource_lines)
+
+          if not has_changes:
+              lines.append("No schema changes detected in documented resources.")
+
+          output = "\n".join(lines)
+          print(output)
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              # Write multiline output
+              f.write("schema_diff<<DIFF_EOF\n")
+              f.write(output + "\n")
+              f.write("DIFF_EOF\n")
+              f.write(f"has_changes={'true' if has_changes else 'false'}\n")
+          PYEOF
+
+      - name: Ensure terraform label exists
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "terraform" \
+            --repo "$GITHUB_REPOSITORY" \
+            --description "Terraform provider or configuration" \
+            --color "7B42BC" \
+            --force
+
+      - name: Check if issue already open
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="[Terraform] Provider updated to v${{ steps.provider.outputs.latest }}"
+          EXISTS=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --label "terraform" \
+            --state open \
+            --search "$TITLE" \
+            --json title \
+            | jq -r '.[0].title // empty')
+          if [ "$EXISTS" = "$TITLE" ]; then
+            echo "Issue already exists. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create issue with schema diff
+        if: |
+          steps.provider.outputs.latest != steps.pinned.outputs.pinned &&
+          steps.existing.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LATEST_VERSION: ${{ steps.provider.outputs.latest }}
+          PINNED_VERSION: ${{ steps.pinned.outputs.pinned }}
+          SCHEMA_DIFF: ${{ steps.diff.outputs.schema_diff }}
+        run: |
+          python3 - <<'PYEOF'
+          import os
+          latest = os.environ["LATEST_VERSION"]
+          pinned = os.environ["PINNED_VERSION"]
+          diff   = os.environ["SCHEMA_DIFF"]
+          body = (
+              "## Terraform provider version drift detected\n\n"
+              "The Gcore Terraform provider has a new release.\n\n"
+              "| | Version |\n"
+              "|---|---|\n"
+              f"| Latest release | `{latest}` |\n"
+              f"| Pinned in docs  | `{pinned}` |\n\n"
+              "### Schema changes in documented resources\n\n"
+              f"{diff}\n\n"
+              "### Action required\n\n"
+              f"1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v{latest}) for context on each change listed above.\n"
+              "2. Run live tests for each changed resource in the affected Cloud Terraform tab.\n"
+              f"3. Update the pinned version in all Terraform tabs from `= {pinned}` to `= {latest}`.\n"
+              "4. Update `.agents/TF-PROVIDER-BUGS.md` if any known issues are resolved or new ones appear.\n"
+          )
+          with open("/tmp/issue-body.md", "w") as f:
+              f.write(body)
+          PYEOF
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "[Terraform] Provider updated to v${LATEST_VERSION}" \
+            --label "terraform" \
+            --body-file /tmp/issue-body.md

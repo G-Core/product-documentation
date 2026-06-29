@@ -1,89 +1,188 @@
-﻿---
+---
 title: Bloom Filter
 sidebarTitle: Bloom Filter
-ai-navigation: Create and manage Bloom Filters in FastEdge Edge Storage via Gcore Customer Portal to test set membership with space-efficient probabilistic data structures supporting manual value entry and file uploads up to 1 MB.
+ai-navigation: Create and manage Bloom Filters in FastEdge Edge Storage via the Gcore Customer Portal or the FastEdge REST API. Bloom filters are space-efficient probabilistic structures that test set membership and support only append operations — individual values cannot be removed once added.
 ---
 
-### What is a Bloom Filter?
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-A Bloom Filter is a space-efficient probabilistic data structure used to test whether an element is a member of a set. It can yield false positives but never false negatives, meaning it may indicate that an element is in the set when it is not, but if it indicates that an element is not in the set, it definitely is not.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-Bloom Filters are particularly useful in scenarios where space is a constraint and where the cost of false positives is low. They are commonly used in applications such as database query optimization, network caching, and distributed systems to quickly check for membership without storing the entire dataset.
+<p>Bloom Filters are designed for fast membership checks on large datasets. Common use cases include IP blocklists, bot detection, deduplication, and cache pre-screening.</p>
 
-- False positives are possible, but false negatives are not.
-- The size of the Bloom Filter and the number of hash functions used affect its performance and accuracy.
-- Once an element is added to a Bloom Filter, it cannot be removed.
+<p>Unlike a regular key-value store, applications do not use Bloom Filters to retrieve stored values. Instead, they answer one question: "Have I seen this value before?" Bloom Filters can return false positives — reporting a value as present when it is not — but never false negatives. Once a value is added, it cannot be removed individually.</p>
 
+## Create a Bloom Filter
 
-## Creating a Bloom Filter
+<p>Open the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge**, and select **Edge Storage** in the sidebar. Click the store name to open it.</p>
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
-
-2\. Find the Edge Storage you want to edit and click its name to open it.
-
-3\. Click **Insert item** and select **Bloom Filter**.
+1. Click **Insert item** and select **Bloom Filter**.
 
 <Frame>
-  ![FastEdge Insert Bloom
-  Filter](/images/docs/fastedge/kv-stores/insert-bloom.png)
+  ![Edge Storage store view with Insert item dropdown showing Bloom Filter option](/images/docs/fastedge/kv-stores/bloom-filter/insert-bloom.png)
 </Frame>
 
-4\. Give the Bloom Filter a key, then click **Insert value**
+2. Enter a key in the **Key** field.
 
 <Frame>
-  ![FastEdge Create Bloom
-  Filter](/images/docs/fastedge/kv-stores/create-bloom.png)
+  ![Create Bloom Filter form with Key field and empty values table](/images/docs/fastedge/kv-stores/bloom-filter/create-bloom.png)
 </Frame>
 
-5\. Add as many rows as you would like, providing the value. Values can be entered manually or uploaded from file.
+3. Click **Insert value**. In the panel that opens, enter a value in the **Value** field.
 
 <Frame>
-  ![FastEdge Insert Bloom Filter
-  Values](/images/docs/fastedge/kv-stores/insert-bloom-values.png)
+  ![Insert Bloom Filter values panel with Value fields and Add value button](/images/docs/fastedge/kv-stores/bloom-filter/insert-bloom-values.png)
 </Frame>
 
-Click **+ Add value** to get another entry row.
+4. To add more values, click **+ Add value** and fill in the field.
+
+5. Click **Save** to create the Bloom Filter.
 
 <Info>
-**Info**
-
-Uploading values from file has a 1 MB file size limit.
-
-**Note**:
-File uploads will transform the value in the UI Portal to a hash representation of its content.
-
+Uploading a value from a file has a 1&nbsp;MB size limit. File uploads replace the value in the portal with a hash of the file content.
 </Info>
 
-## Editing a Bloom Filter
+## Edit a Bloom Filter
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
-
-2\. Find the Edge Storage you want to edit and click its name to open it.
-
-3\. Find the Bloom Filter you want to edit, click the three-dot icon next to the key-value and select **Edit**.
+<p>To edit a Bloom Filter, open the store that contains it. In the item list, click the three-dot icon next to the Bloom Filter and select **Edit**.</p>
 
 <Frame>
-  ![FastEdge Edge Bloom Filter
-  Edit](/images/docs/fastedge/kv-stores/edit-bloom-store.png)
+  ![Edge Storage store view with three-dot menu open on a Bloom Filter row showing Edit and Delete options](/images/docs/fastedge/kv-stores/bloom-filter/edit-bloom-store.png)
 </Frame>
 
-4\. You are now able to add more values. Editing existing values or deleting values is not available.
+<p>The editor lists the current values and a search box. Click **Insert value** to open the value panel, add entries, and click **Save Bloom Filter** to apply.</p>
 
 <Frame>
-  ![FastEdge Edge Bloom Filter
-  Editting](/images/docs/fastedge/kv-stores/edit-bloom-filter.png)
+  ![Edit Bloom Filter page showing existing values list and Insert value button](/images/docs/fastedge/kv-stores/bloom-filter/edit-bloom-filter.png)
 </Frame>
 
-The probabilistic nature of this data structure prevents you from changing existing values.
+<Info>
+Bloom Filters are append-only. Individual values cannot be edited or removed. To reset the filter, delete it and create a new one.
+</Info>
 
-5\. If everything is configured correctly, click **Save Bloom Filter** in the top right corner.
+## Delete a Bloom Filter
 
-## Deleting a Bloom Filter
+<p>To delete a Bloom Filter, open the store that contains it. Click the three-dot icon next to the Bloom Filter and select **Delete**. Confirm the deletion when prompted.</p>
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-2\. Find the Edge Storage you want to edit and click its name to open it.
+<p>Bloom Filters are managed through the same data endpoint as key-value pairs. Use <code>datatype: bloom_filter</code> in all operations.</p>
 
-3\. Find the Bloom Filter you want to delete, click the three-dot icon next to the Bloom Filter and select **Delete**.
+<Info>
+An [API token](/account-settings/api-tokens) is required. Use the store ID from the store creation response or from the list endpoint.
+</Info>
 
-4\. Confirm you want to delete the entire Bloom Filter.
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STORE_ID="{YOUR_STORE_ID}"
+```
+
+## Create a Bloom Filter
+
+<p>A Bloom Filter is stored as a single key inside an Edge Storage store. The key identifies the filter, while the payload contains its values.</p>
+
+<p>Use <code>PUT /fastedge/v1/kv/{store_id}/data</code> with <code>op: add</code> to create a Bloom Filter. The <code>payload</code> is an array of values, each with an <code>encoding</code> and a <code>value</code> field.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "add",
+      "key": "blocked-ips",
+      "datatype": "bloom_filter",
+      "payload": [
+        { "encoding": "plain", "value": "192.168.1.1" },
+        { "encoding": "plain", "value": "10.0.0.1" },
+        { "encoding": "plain", "value": "172.16.0.5" }
+      ]
+    }
+  ]'
+```
+
+<p>The API returns write statistics:</p>
+
+```json
+{
+  "write_count": 3,
+  "del_count": 0,
+  "write_size": 71,
+  "store_size": 356,
+  "revision": 602
+}
+```
+
+## Read a Bloom Filter
+
+<p>The API exposes the stored values for management and debugging purposes. Applications typically use Bloom Filters for membership checks rather than value retrieval.</p>
+
+<p>Retrieve the values stored in a Bloom Filter with <code>GET /fastedge/v1/kv/{store_id}/data/{key}</code>:</p>
+
+```bash
+curl "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data/blocked-ips" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns the full value list:</p>
+
+```json
+{
+  "datatype": "bloom_filter",
+  "key": "blocked-ips",
+  "payload": [
+    { "encoding": "plain", "value": "192.168.1.1" },
+    { "encoding": "plain", "value": "10.0.0.1" },
+    { "encoding": "plain", "value": "172.16.0.5" }
+  ],
+  "count": 3
+}
+```
+
+## Add values
+
+<p>Unlike sorted sets, Bloom Filters do not support updates or removals. New values can only be appended. Use the same <code>PUT</code> endpoint with <code>op: add</code> to add values to an existing filter. Values that are already present are ignored without error.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "add",
+      "key": "blocked-ips",
+      "datatype": "bloom_filter",
+      "payload": [
+        { "encoding": "plain", "value": "192.168.2.100" }
+      ]
+    }
+  ]'
+```
+
+<Warning>
+<code>del_entries</code> is not supported for Bloom Filters. Removing individual values would introduce false negatives and break the fundamental guarantee of the data structure — Bloom Filters are append-only by design. To reset a filter, delete it with <code>op: del_key</code> and recreate it.
+</Warning>
+
+## Delete a Bloom Filter
+
+<p>Use <code>op: del_key</code> to delete the entire Bloom Filter and all its values.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "del_key",
+      "key": "blocked-ips",
+      "datatype": "bloom_filter"
+    }
+  ]'
+```
+
+<p>The API returns <code>del_count: 1</code> on success.</p>
+
+</MethodSection>
+</MethodSwitch>

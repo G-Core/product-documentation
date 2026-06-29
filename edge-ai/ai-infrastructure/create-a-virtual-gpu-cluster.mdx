@@ -1,20 +1,33 @@
 ---
 title: Create a Virtual GPU cluster
 sidebarTitle: Create a Virtual GPU cluster
-ai-navigation: Create Virtual GPU clusters with configurable node count, GPU models, flavors, network boot disks, local data disks, optional network data disks, file share integration, and InfiniBand networking in Gcore GPU Cloud.
+ai-navigation: Create Virtual GPU clusters with configurable node count, GPU models, flavors, volumes, and network settings via Customer Portal or REST API using the GPU Virtual API.
 ---
 
-Virtual GPU clusters provide GPU computing resources through virtualization, offering flexibility in configuration and resource allocation. Each cluster consists of one or more virtual machines with dedicated GPU access. Virtual GPU is one of the [GPU cluster types](/edge-ai/ai-infrastructure/about-gpu-cloud) available in GPU Cloud, alongside Bare Metal and Spot options.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>A Virtual GPU cluster is a group of one or more virtual machines with dedicated GPU access. It provides a managed environment for AI training, inference, and other GPU workloads without provisioning bare metal servers. Virtual GPU is one of the [GPU cluster types](/edge-ai/ai-infrastructure/about-gpu-cloud) available in GPU Cloud, alongside Bare Metal and Spot options.</p>
 
 <Frame>![Virtual GPU Clusters page with cluster list and Create Cluster button](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-clusters-list.png)</Frame>
 
+## Before you start
+
+<p>Before creating a Virtual GPU cluster, confirm that the following are in place:</p>
+
+- A Gcore account with [GPU Cloud](https://portal.gcore.com) access
+- An SSH key added to the project — required to connect to cluster nodes after creation
+- A target region — not all GPU models are available in every region
+
 ## Cluster architecture
 
-Each Virtual GPU cluster consists of one or more virtual machine nodes. All nodes are created from an identical template (image, network settings, disk configuration). After creation, individual nodes can have their disk and network configurations modified independently.
+<p>Each Virtual GPU cluster consists of one or more virtual machine nodes. All nodes are created from an identical template (image, network settings, disk configuration). After creation, individual nodes can have their disk and network configurations modified independently.</p>
 
-For flavors with InfiniBand support, high-speed inter-node networking is configured automatically. This enables efficient distributed training across multiple nodes without manual network configuration.
+<p>For flavors with InfiniBand support, high-speed inter-node networking is configured automatically. This enables efficient distributed training across multiple nodes without manual network configuration.</p>
 
-Each node has:
+<p>Each node has:</p>
 
 - A **network boot disk** (required). At least one network disk is required as the boot volume for the operating system.
 - A **local data disk** added by default. This non-replicated disk is dedicated to temporary storage.
@@ -33,19 +46,26 @@ The local data disk is a non-replicated volume that comes with every Virtual GPU
 Use this disk only for temporary data. Store all important data on network disks or NFS storage to prevent data loss.
 </Warning>
 
-
 ## Create a Virtual GPU cluster
 
-To create a cluster:
+<p>Creating a cluster consists of the following steps:</p>
+
+1. Choosing a GPU model and flavor
+2. Setting the number of nodes
+3. Selecting an image
+4. Configuring storage and networking
+5. Clicking **Create** and connecting via SSH
+
+<p>To start:</p>
 
 1. Open the [Gcore Customer Portal](https://portal.gcore.com) and go to **GPU Cloud**.
-2. Select **Sines-3** region.
+2. Select the target region.
 3. Navigate to **GPU Clusters** > **Virtual GPU Clusters**.
 4. Click **Create Cluster**.
 
 ### Step 1. Configure cluster capacity
 
-Cluster capacity determines the hardware specifications for each node in the cluster.
+<p>Select the GPU model and flavor for each cluster node.</p>
 
 1. Select the **GPU Model**. Available models depend on the region.
 
@@ -57,26 +77,28 @@ Cluster capacity determines the hardware specifications for each node in the clu
 
 ### Step 2. Set the number of instances
 
-In the **Number of Instances** section, specify how many virtual machines to provision in the cluster.
+<p>In the **Number of Instances** section, specify how many virtual machines to provision in the cluster.</p>
 
-Each instance is a separate virtual machine with the selected flavor configuration. When created, all instances have identical configurations. The minimum is 1 instance, maximum depends on regional availability.
+<p>Each instance is a separate virtual machine with the selected flavor configuration. When created, all instances have identical configurations. The minimum is 1 instance, maximum depends on regional availability.</p>
+
+<Frame>![Number of Instances section with plus/minus controls and selected flavor summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/number-of-instances.png)</Frame>
 
 ### Step 3. Select image
 
-The image defines the operating system and pre-installed software for cluster nodes.
+<p>The image defines the operating system and pre-installed software for cluster nodes.</p>
 
-In the **Image** section, choose the operating system:
+<p>In the **Image** section, choose the operating system:</p>
 
 - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit
 - **Custom**: Custom images uploaded to the account
 
-The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix are configured for InfiniBand interconnect.
+<p>The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix are configured for InfiniBand interconnect.</p>
 
 <Frame>![Image section with Public and Custom tabs and Ubuntu image dropdown](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/image-selector.png)</Frame>
 
 ### Step 4. Configure volumes
 
-Each Virtual GPU cluster instance has the following storage:
+<p>Each Virtual GPU cluster instance has the following storage:</p>
 
 - **System volume** (required): The boot volume for the operating system. This network disk persists across power cycles.
 - **Local volume**: Added automatically to every instance. This non-replicated disk is dedicated to temporary storage only. It cannot be edited, removed, or used as a boot volume. Data on this disk is deleted when the instance is shelved, reconfigured, or deleted.
@@ -84,13 +106,13 @@ Each Virtual GPU cluster instance has the following storage:
 
 <Frame>![Volumes section with System and Local volumes configuration](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/volumes-config.png)</Frame>
 
-Configure the **System** volume:
+<p>Configure the **System** volume:</p>
 
 - **Name**: Enter a name for the volume
 - **Size**: Minimum size depends on the selected image (default: 120 GiB)
 - **Type**: Select from available storage types in the region
 
-To add additional storage, click **Add Volume** and configure the name, size, and type for each volume. All configured volumes are attached to every instance in the cluster.
+<p>To add additional storage, click **Add Volume** and configure the name, size, and type for each volume. All configured volumes are attached to every instance in the cluster.</p>
 
 <Warning>
 **Warning**
@@ -98,15 +120,15 @@ To add additional storage, click **Add Volume** and configure the name, size, an
 Store important data on network volumes or file shares, not on the local volume. The local volume is wiped when the instance is shelved, reconfigured, or deleted, resulting in permanent data loss.
 </Warning>
 
-After cluster creation, network volumes can be managed individually per instance.
+<p>After cluster creation, network volumes can be managed individually per instance.</p>
 
 ### Step 5. Configure file share integration (optional)
 
-The **File share integration** section enables connecting a [shared file system](/cloud/file-shares/configure-file-shares) accessible across all instances in the cluster.
+<p>The **File share integration** section connects a [shared file system](/cloud/file-shares/configure-file-shares) to all instances in the cluster, making it accessible across nodes.</p>
 
-Enabling file share integration is recommended for workflows that require shared data access, such as distributed training or shared datasets.
+<p>Use file share integration for workflows that require shared data access — distributed training, shared datasets, or any workload that reads the same files from multiple nodes.</p>
 
-To enable file share integration:
+<p>To enable file share integration:</p>
 
 1. Enable the **File Share integration** toggle.
 2. Select an existing file share or create a new one.
@@ -115,7 +137,7 @@ To enable file share integration:
 
 ### Step 6. Configure network settings
 
-Network settings define how the cluster communicates with external services and other resources based on the [network architecture](/cloud/networking/create-and-manage-a-network). At least one interface is required.
+<p>Network settings control how cluster nodes access external services and other cloud resources. At least one interface is required.</p>
 
 <Info>
 **Info**
@@ -125,46 +147,49 @@ Virtual GPU clusters support a maximum of 3 network interfaces (Public and Priva
 InfiniBand interfaces are not counted toward this limit; they are configured automatically based on the selected flavor.
 </Info>
 
-In the **Network settings** section, select an interface type:
+<p>In the **Network settings** section, select an [interface type](/cloud/networking/create-and-manage-a-network):</p>
 
 | Type | Access | Use case |
 |------|--------|----------|
-| **Public** | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
-| **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
-| **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
+| Public | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
+| Private | Internal network only, no external access | Production workloads, security-sensitive environments |
+| Dedicated public | Reserved static public IP | Production APIs, services requiring stable endpoints |
 
-To add additional interfaces, click **Add Interface**.
+<p>To add additional interfaces, click **Add Interface**.</p>
 
 <Frame>![Network settings section with Public and Private interfaces configured](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/network-settings.png)</Frame>
 
-Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.
+<p>Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.</p>
 
 <Frame>![Security Groups field with default group selected per interface](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/network-settings-security-groups.png)</Frame>
 
-To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.
+<p>To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.</p>
 
 ### Step 7. Configure SSH key
 
-In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.
+<p>In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the Customer Portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.</p>
+
+<Frame>![SSH key section with key dropdown selector](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/ssh-key.png)</Frame>
 
 ### Step 8. Set additional options
 
-The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
+<p>The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.</p>
 
 <Frame>![Additional options section with User data and Add tags toggles](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/additional-options.png)</Frame>
 
 ### Step 9. Name and create the cluster
 
-The final step assigns a name to the cluster and initiates provisioning.
-
+<p>Before clicking **Create Cluster**, review the estimated cost shown in the right panel.</p>
 
 1. In the **GPU Cluster Name** section, enter a name or use the auto-generated one.
 
-2. Review the **Estimated cost** panel on the right.
+2. Click **Create Cluster**.
 
-3. Click **Create Cluster**.
+<p>The cluster appears in the list with **Creating** status. Provisioning typically takes 3–8 minutes.</p>
 
-Once all instances reach **Power on** status, the cluster is ready for use.
+<Frame>![Virtual GPU Clusters list showing a newly created cluster with Creating status](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-creating-status.png)</Frame>
+
+<p>Once all instances reach **Power on** status, the cluster is ready for use.</p>
 
 <Warning>
 **Warning**
@@ -174,7 +199,7 @@ Cluster-level settings (image, default networks) cannot be changed after creatio
 
 ## Connect to the cluster
 
-After the cluster is created, connect to a node via SSH and verify that GPUs are available.
+<p>After the cluster is created, connect to a node via SSH and verify that GPUs are available.</p>
 
 1. Open a terminal and connect using the default username `ubuntu`:
 
@@ -192,6 +217,623 @@ After the cluster is created, connect to a node via SSH and verify that GPUs are
 
    A successful output shows the list of available GPUs, driver version, and CUDA version. If the command fails or no GPUs appear, the image may be missing the correct drivers.
 
-For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).
+<p>For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
 
-Clusters can also be created programmatically using the [GPU Virtual API](/api-reference/cloud/gpu-virtual/create-virtual-gpu-cluster).
+<p>Clusters can also be created programmatically using the [GPU Virtual API](/api-reference/cloud/gpu-virtual/create-virtual-gpu-cluster).</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Create a virtual GPU cluster by selecting a flavor and image, then provisioning the cluster with a single API call.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a
+[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
+Virtual GPU clusters are available in select regions — use the [List flavors](#step-1-list-available-flavors) call to confirm availability.
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
+```
+
+## Quickstart
+
+<p>Complete scripts that list flavors and images, create a one-node cluster, wait for provisioning, and print the SSH command.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    ssh_key_name = os.environ["GCORE_SSH_KEY_NAME"]
+
+    # Step 1. List flavors — select the one with the fewest GPUs
+    flavors = client.cloud.gpu_virtual.clusters.flavors.list(
+        project_id=project_id,
+        region_id=region_id,
+    )
+    flavor = min(
+        flavors.results,
+        key=lambda f: f.hardware_properties.gpu_count,
+    )
+    print(f"Flavor: {flavor.name}  ({flavor.hardware_properties.gpu_count} GPU(s))")
+
+    # Step 2. List images — select the first (latest) image
+    images = client.cloud.gpu_virtual.clusters.images.list(
+        project_id=project_id,
+        region_id=region_id,
+    )
+    image = images.results[0]
+    print(f"Image: {image.name}")
+
+    # Step 3. Create the cluster
+    task_id_list = client.cloud.gpu_virtual.clusters.create(
+        project_id=project_id,
+        region_id=region_id,
+        name="my-gpu-cluster",
+        flavor=flavor.name,
+        servers_count=1,
+        servers_settings={
+            "interfaces": [{"type": "external"}],
+            "volumes": [{
+                "boot_index": 0,
+                "name": "boot-disk",
+                "size": 50,
+                "source": "image",
+                "type": "ssd_hiiops",
+                "image_id": image.id,
+            }],
+            "credentials": {"ssh_key_name": ssh_key_name},
+        },
+    )
+    task_id = task_id_list.tasks[0]
+    print(f"Provisioning — task: {task_id}")
+
+    # Step 4. Poll task until FINISHED
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            cluster_id = task.created_resources.ai_clusters[0]
+            print(f"Cluster ID: {cluster_id}")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Cluster creation failed: {task.error}")
+        print(f"  state={task.state} — retrying in 10s…")
+        time.sleep(10)
+
+    # Step 5. Get the public IP and print SSH command
+    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(
+        cluster_id=cluster_id,
+        project_id=project_id,
+        region_id=region_id,
+    )
+    for iface in ifaces.results:
+        if iface.network.external:
+            ip = iface.ip_assignments[0].ip_address
+            print(f"SSH: ssh ubuntu@{ip}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "sort"
+        "strconv"
+        "time"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        // Step 1. List flavors — select the one with fewest GPUs
+        flavorList, err := client.Cloud.GPUVirtual.Clusters.Flavors.List(ctx,
+            cloud.GPUVirtualClusterFlavorListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        sort.Slice(flavorList.Results, func(i, j int) bool {
+            return flavorList.Results[i].HardwareProperties.GPUCount <
+                flavorList.Results[j].HardwareProperties.GPUCount
+        })
+        flavor := flavorList.Results[0]
+        fmt.Printf("Flavor: %s  (%d GPU(s))\n", flavor.Name, flavor.HardwareProperties.GPUCount)
+
+        // Step 2. List images — select the first (latest) image
+        imageList, err := client.Cloud.GPUVirtual.Clusters.Images.List(ctx,
+            cloud.GPUVirtualClusterImageListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        image := imageList.Results[0]
+        fmt.Printf("Image: %s\n", image.Name)
+
+        // Step 3. Create the cluster
+        taskIDList, err := client.Cloud.GPUVirtual.Clusters.New(ctx,
+            cloud.GPUVirtualClusterNewParams{
+                ProjectID:    gcore.Int(projectIDInt),
+                RegionID:     gcore.Int(regionIDInt),
+                Name:         "my-gpu-cluster",
+                Flavor:       flavor.Name,
+                ServersCount: 1,
+                ServersSettings: cloud.GPUVirtualClusterNewParamsServersSettings{
+                    Interfaces: []cloud.GPUVirtualClusterNewParamsServersSettingsInterfaceUnion{{
+                        OfExternal: &cloud.GPUVirtualClusterNewParamsServersSettingsInterfaceExternal{},
+                    }},
+                    Volumes: []cloud.GPUVirtualClusterNewParamsServersSettingsVolumeUnion{{
+                        OfImage: &cloud.GPUVirtualClusterNewParamsServersSettingsVolumeImage{
+                            BootIndex: int64(0),
+                            Name:      "boot-disk",
+                            Size:      int64(50),
+                            Type:      "ssd_hiiops",
+                            ImageID:   image.ID,
+                        },
+                    }},
+                    Credentials: cloud.GPUVirtualClusterNewParamsServersSettingsCredentials{
+                        SSHKeyName: gcore.String(sshKeyName),
+                    },
+                },
+            })
+        if err != nil {
+            panic(err)
+        }
+        taskID := taskIDList.Tasks[0]
+        fmt.Printf("Provisioning — task: %s\n", taskID)
+
+        // Step 4. Poll task until FINISHED
+        var clusterID string
+        for {
+            task, err := client.Cloud.Tasks.Get(ctx, taskID)
+            if err != nil {
+                panic(err)
+            }
+            if task.State == "FINISHED" {
+                clusterID = task.CreatedResources.AIClusters[0]
+                fmt.Printf("Cluster ID: %s\n", clusterID)
+                break
+            }
+            if task.State == "ERROR" {
+                panic(fmt.Sprintf("Cluster creation failed: %v", task.Error))
+            }
+            fmt.Printf("  state=%s — retrying in 10s…\n", task.State)
+            time.Sleep(10 * time.Second)
+        }
+
+        // Step 5. Get the public IP and print SSH command
+        ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(ctx,
+            clusterID,
+            cloud.GPUVirtualClusterInterfaceListParams{
+                ProjectID: gcore.Int(projectIDInt),
+                RegionID:  gcore.Int(regionIDInt),
+            })
+        if err != nil {
+            panic(err)
+        }
+        for _, iface := range ifaces.Results {
+            if iface.Network.External {
+                ip := iface.IPAssignments[0].IPAddress
+                fmt.Printf("SSH: ssh ubuntu@%s\n", ip)
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains the call, its key parameters, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available flavors
+
+<p>Returns all GPU flavors available in the region. Use the response to pick a flavor name — the name is required when creating the cluster.</p>
+
+| Field | Description |
+|-------|-------------|
+| `name` | Flavor identifier — pass this value as `flavor` when creating the cluster |
+| `hardware_description.gpu` | GPU model name and VRAM |
+| `hardware_properties.gpu_count` | Number of GPUs per node |
+| `hardware_properties.nic_ib` | InfiniBand configuration, if present |
+| `capacity` | Available node count in the region (`0` means currently out of stock) |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    flavors = client.cloud.gpu_virtual.clusters.flavors.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for f in flavors.results:
+        print(f.name, f.hardware_description.gpu, f"GPUs={f.hardware_properties.gpu_count}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    gpuVirtualFlavorList, err := client.Cloud.GPUVirtual.Clusters.Flavors.List(ctx,
+        cloud.GPUVirtualClusterFlavorListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, f := range gpuVirtualFlavorList.Results {
+        fmt.Printf("%s  gpu=%s  count=%d\n",
+            f.Name, f.HardwareDescription.GPU, f.HardwareProperties.GPUCount)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/flavors" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 4,
+  "results": [
+    {
+      "name": "g3-ai-24-232-1250-h100-80-1",
+      "architecture": "x86_64",
+      "disabled": false,
+      "capacity": 2,
+      "hardware_description": {
+        "vcpus": 24,
+        "ram": 237568,
+        "gpu": "NVIDIA H100-1GPU (80GB)",
+        "local_storage": 1250
+      },
+      "hardware_properties": {
+        "gpu_model": "h100",
+        "gpu_manufacturer": "nvidia",
+        "gpu_count": 1,
+        "nic_ib": "1x400"
+      }
+    }
+  ]
+}
+```
+
+### Step 2. List available images
+
+<p>Returns all GPU cluster images available in the region. Use the response to pick an image ID — required when creating the cluster and when configuring the boot volume.</p>
+
+| Field | Description |
+|-------|-------------|
+| `id` | Image UUID — pass this as `image_id` inside the boot volume when creating the cluster |
+| `name` | Image name; images with the `eni` suffix are optimized for InfiniBand |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    images = client.cloud.gpu_virtual.clusters.images.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for img in images.results:
+        print(img.id, img.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    imageList, err := client.Cloud.GPUVirtual.Clusters.Images.List(ctx,
+        cloud.GPUVirtualClusterImageListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, img := range imageList.Results {
+        fmt.Printf("%s  %s\n", img.ID, img.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/images" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 4,
+  "results": [
+    {
+      "id": "2a818d08-a9d3-4477-9966-2663d46f6a27",
+      "name": "gcloud-ai-gpu-ubuntu-24.04-580.126.20-open-13.0.2-vm-v1.14.27"
+    },
+    {
+      "id": "28752f2a-df21-45b6-a14e-23007daffc44",
+      "name": "gcloud-ai-gpu-ubuntu-24.04-570.211.01-open-12.8.1-vm-v1.14.27"
+    }
+  ]
+}
+```
+
+### Step 3. Create the cluster
+
+<p>Submits the cluster creation request and returns a task ID for tracking provisioning progress.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Cluster name (2–63 chars, alphanumeric, hyphens, underscores) |
+| `flavor` | Yes | Flavor name from Step 1 |
+| `servers_count` | Yes | Number of nodes to provision |
+| `servers_settings.interfaces` | Yes | At least one interface — use `"type": "external"` for public internet access |
+| `servers_settings.volumes[].source` | Yes | Must be `"image"` for boot volumes |
+| `servers_settings.volumes[].image_id` | Yes | Image UUID from Step 2 |
+| `servers_settings.credentials.ssh_key_name` | Yes | Name of an existing SSH key in the project |
+| `tags` | No | Key-value metadata tags |
+
+<Info>
+Place `image_id` inside the volume object only; the boot volume `source` must be `"image"`, not `"new"`. Use volume `type: "ssd_hiiops"` — not all volume types are available in every region.
+</Info>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    task_id_list = client.cloud.gpu_virtual.clusters.create(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        name="my-gpu-cluster",
+        flavor="{FLAVOR_NAME}",
+        servers_count=1,
+        servers_settings={
+            "interfaces": [{"type": "external"}],
+            "volumes": [{
+                "boot_index": 0,
+                "name": "boot-disk",
+                "size": 50,
+                "source": "image",
+                "type": "ssd_hiiops",
+                "image_id": "{IMAGE_ID}",
+            }],
+            "credentials": {"ssh_key_name": os.environ["GCORE_SSH_KEY_NAME"]},
+        },
+        tags={"env": "production"},
+    )
+    print(task_id_list.tasks)  # save as TASK_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    taskIDList, err := client.Cloud.GPUVirtual.Clusters.New(ctx,
+        cloud.GPUVirtualClusterNewParams{
+            ProjectID:    gcore.Int(projectID),
+            RegionID:     gcore.Int(regionID),
+            Name:         "my-gpu-cluster",
+            Flavor:       "{FLAVOR_NAME}",
+            ServersCount: 1,
+            ServersSettings: cloud.GPUVirtualClusterNewParamsServersSettings{
+                Interfaces: []cloud.GPUVirtualClusterNewParamsServersSettingsInterfaceUnion{{
+                    OfExternal: &cloud.GPUVirtualClusterNewParamsServersSettingsInterfaceExternal{},
+                }},
+                Volumes: []cloud.GPUVirtualClusterNewParamsServersSettingsVolumeUnion{{
+                    OfImage: &cloud.GPUVirtualClusterNewParamsServersSettingsVolumeImage{
+                        BootIndex: int64(0),
+                        Name:      "boot-disk",
+                        Size:      int64(50),
+                        Type:      "ssd_hiiops",
+                        ImageID:   "{IMAGE_ID}",
+                    },
+                }},
+                Credentials: cloud.GPUVirtualClusterNewParamsServersSettingsCredentials{
+                    SSHKeyName: gcore.String(os.Getenv("GCORE_SSH_KEY_NAME")),
+                },
+            },
+        })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("%+v\n", taskIDList.Tasks)  // save as TASK_ID
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-gpu-cluster",
+        "flavor": "{FLAVOR_NAME}",
+        "image_id": "{IMAGE_ID}",
+        "servers_count": 1,
+        "servers_settings": {
+          "interfaces": [{"type": "external"}],
+          "volumes": [{
+            "boot_index": 0,
+            "name": "boot-disk",
+            "size": 50,
+            "source": "image",
+            "type": "ssd_hiiops",
+            "image_id": "{IMAGE_ID}"
+          }],
+          "credentials": {"ssh_key_name": "{YOUR_SSH_KEY_NAME}"}
+        },
+        "tags": {"env": "production"}
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{ "tasks": ["b1c2de3f-7e4a-49b7-8603-ebf743df8c9f"] }
+```
+
+### Step 4. Wait for provisioning
+
+<p>Poll the task endpoint every 10 seconds until `state` is `FINISHED`. Virtual GPU nodes typically provision in 3–8 minutes.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/tasks/b1c2de3f-7e4a-49b7-8603-ebf743df8c9f" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+While provisioning:
+
+```json
+{
+  "id": "b1c2de3f-7e4a-49b7-8603-ebf743df8c9f",
+  "state": "RUNNING",
+  "created_resources": null
+}
+```
+
+When complete:
+
+```json
+{
+  "id": "b1c2de3f-7e4a-49b7-8603-ebf743df8c9f",
+  "state": "FINISHED",
+  "created_resources": {
+    "ai_clusters": ["ca685f02-2c56-4dfd-bf27-f105ad38dc6a"]
+  }
+}
+```
+
+<p>Read the cluster ID from `created_resources.ai_clusters[0]`.</p>
+
+### Step 5. Get the cluster public IP
+
+<p>Retrieve the network interfaces to find the node's public IP address for SSH access.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for iface in ifaces.results:
+        if iface.network.external:
+            print("Public IP:", iface.ip_assignments[0].ip_address)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(ctx,
+        "{CLUSTER_ID}",
+        cloud.GPUVirtualClusterInterfaceListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+        })
+    if err != nil {
+        panic(err)
+    }
+    for _, iface := range ifaces.Results {
+        if iface.Network.External {
+            fmt.Println("Public IP:", iface.IPAssignments[0].IPAddress)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/interfaces" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "port_id": "3b5835e7-33dc-4168-87c3-166601959ebd",
+      "ip_assignments": [{ "ip_address": "85.234.66.69" }],
+      "network": { "name": "pub_net", "external": true }
+    },
+    {
+      "port_id": "0882597d-67f5-4cf5-8168-cbb20f47ad35",
+      "ip_assignments": [{ "ip_address": "192.168.242.176" }],
+      "network": { "name": "gpu-cluster-ib-network-ca685f02-…", "external": false }
+    }
+  ]
+}
+```
+
+<p>The interface with `"external": true` is the public network. Use its `ip_assignments[0].ip_address` for SSH.</p>
+
+</Accordion>
+
+## Connect to the cluster
+
+<p>After the cluster reaches `active` status, connect to a node via SSH using the `ubuntu` user:</p>
+
+```bash
+ssh ubuntu@{NODE_PUBLIC_IP}
+```
+
+<p>Verify that GPUs are detected:</p>
+
+```bash
+nvidia-smi
+```
+
+<p>A successful output shows the list of GPUs, driver version, and CUDA version. For nodes with only private interfaces, connect through a bastion host or VPN.</p>
+
+</MethodSection>
+</MethodSwitch>
