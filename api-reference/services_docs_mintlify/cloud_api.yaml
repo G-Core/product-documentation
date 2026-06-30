@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 2606518da447
+  version: 522c7402cd23
 servers:
 - url: https://api.gcore.com
 paths:
@@ -122,54 +122,67 @@ paths:
     get:
       operationId: BmCapacityHandler.get
       summary: Get bare metal capacity
-      description: Get the number of available bare metal nodes per flavor in the specified project and region.
+      description: |-
+        Get the number of available bare metal nodes per flavor
+        in the specified project and region.
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 4
+          examples:
+          - 4
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Available bare metal nodes count per flavor
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaremetalCapacitySchema'
+                $ref: '#/components/schemas/BmCapacityResponse'
       tags:
       - Bare Metal
   /cloud/v2/bmcapacity/{region_id}:
     get:
       operationId: ClientBmCapacityHandler.get
       summary: Get bare metal capacity from default project
-      description: Get the number of available bare metal nodes without client's reservations in the default project.
+      description: |-
+        Get the number of available bare metal nodes without
+        client's reservations in the default project.
       parameters:
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
-          type: integer
-      - in: query
-        name: client_id
-        required: false
-        description: Available for roots
-        schema:
+          description: Region ID
+          example: 4
+          examples:
+          - 4
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Available bare metal nodes count per flavor
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BaremetalCapacitySchema'
+                $ref: '#/components/schemas/BmCapacityResponse'
       tags:
       - Bare Metal
   /cloud/v1/bmflavors/{project_id}/{region_id}:
@@ -8169,6 +8182,77 @@ paths:
               $ref: '#/components/schemas/ApplySettingsBody'
       tags:
       - GPU Bare Metal
+  /cloud/v4/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/servers/{server_id}/rebuild:
+    post:
+      operationId: BaremetalClusterServerRebuild.post
+      summary: Rebuild bare metal GPU cluster server
+      description: |-
+        Rebuild a single server in a bare metal GPU cluster with a chosen image, user data, and SSH key.
+        Any parameter that is omitted falls back to the cluster's current settings.
+
+        The server is marked with pending changes (`has_pending_changes=true`) until the cluster settings
+        are reapplied via `POST /v3/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/apply_settings`.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 7
+          examples:
+          - 7
+          title: Region Id
+          type: integer
+      - in: path
+        name: cluster_id
+        required: true
+        description: Cluster unique identifier
+        schema:
+          description: Cluster unique identifier
+          example: 1aaaab48-10d0-46d9-80cc-85209284ceb4
+          examples:
+          - 1aaaab48-10d0-46d9-80cc-85209284ceb4
+          format: uuid4
+          title: Cluster Id
+          type: string
+      - in: path
+        name: server_id
+        required: true
+        description: Server unique identifier
+        schema:
+          description: Server unique identifier
+          example: f1c1eeb6-1834-48c9-a7b0-daafce64872b
+          examples:
+          - f1c1eeb6-1834-48c9-a7b0-daafce64872b
+          format: uuid4
+          title: Server Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaremetalServerRebuildBodySerializer'
+      tags:
+      - GPU Bare Metal
   /cloud/v3/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/servers/{server_id}/replace:
     post:
       operationId: BaremetalClusterServerReplaceAction.post
@@ -10979,6 +11063,15 @@ paths:
           title: Region Id
           type: integer
       - in: query
+        name: architecture
+        required: false
+        description: Filter by image architecture.
+        schema:
+          $ref: '#/components/schemas/ImageArchitectureTypeEnum'
+          description: Filter by image architecture.
+          examples:
+          - x86_64
+      - in: query
         name: include_prices
         required: false
         description: Show price.
@@ -11001,6 +11094,17 @@ paths:
           title: Limit
           type: integer
       - in: query
+        name: name
+        required: false
+        description: Filter by image name (case-insensitive substring match)
+        schema:
+          description: Filter by image name (case-insensitive substring match)
+          example: ubuntu
+          examples:
+          - ubuntu
+          title: Name
+          type: string
+      - in: query
         name: offset
         required: false
         description: Optional. Offset value is used to exclude the first set of records from the result
@@ -11013,6 +11117,28 @@ paths:
           minimum: 0
           title: Offset
           type: integer
+      - in: query
+        name: os_distro
+        required: false
+        description: Filter by OS distribution (case-insensitive). E.g. `ubuntu`, `centos`, `debian`
+        schema:
+          description: Filter by OS distribution (case-insensitive). E.g. `ubuntu`, `centos`, `debian`
+          example: ubuntu
+          examples:
+          - ubuntu
+          title: Os Distro
+          type: string
+      - in: query
+        name: os_version
+        required: false
+        description: Filter by OS version (case-insensitive). E.g. `22.04`
+        schema:
+          description: Filter by OS version (case-insensitive). E.g. `22.04`
+          example: '22.04'
+          examples:
+          - '22.04'
+          title: Os Version
+          type: string
       - in: query
         name: private
         required: false
@@ -11209,6 +11335,15 @@ paths:
           title: Region Id
           type: integer
       - in: query
+        name: architecture
+        required: false
+        description: Filter by image architecture.
+        schema:
+          $ref: '#/components/schemas/ImageArchitectureTypeEnum'
+          description: Filter by image architecture.
+          examples:
+          - x86_64
+      - in: query
         name: include_prices
         required: false
         description: Show price.
@@ -11231,6 +11366,17 @@ paths:
           title: Limit
           type: integer
       - in: query
+        name: name
+        required: false
+        description: Filter by image name (case-insensitive substring match)
+        schema:
+          description: Filter by image name (case-insensitive substring match)
+          example: ubuntu
+          examples:
+          - ubuntu
+          title: Name
+          type: string
+      - in: query
         name: offset
         required: false
         description: Optional. Offset value is used to exclude the first set of records from the result
@@ -11243,6 +11389,28 @@ paths:
           minimum: 0
           title: Offset
           type: integer
+      - in: query
+        name: os_distro
+        required: false
+        description: Filter by OS distribution (case-insensitive). E.g. `ubuntu`, `centos`, `debian`
+        schema:
+          description: Filter by OS distribution (case-insensitive). E.g. `ubuntu`, `centos`, `debian`
+          example: ubuntu
+          examples:
+          - ubuntu
+          title: Os Distro
+          type: string
+      - in: query
+        name: os_version
+        required: false
+        description: Filter by OS version (case-insensitive). E.g. `22.04`
+        schema:
+          description: Filter by OS version (case-insensitive). E.g. `22.04`
+          example: '22.04'
+          examples:
+          - '22.04'
+          title: Os Version
+          type: string
       - in: query
         name: private
         required: false
@@ -13712,33 +13880,43 @@ paths:
       summary: Powercycle instance
       description: |-
         Stops and then starts the instance, effectively performing a hard reboot.
+
         Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="reboot_hard" instead
+
+        Deprecated
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       tags:
       - Instances
@@ -13746,33 +13924,43 @@ paths:
     post:
       operationId: InstanceRebootHandler.post
       summary: Reboot instance
-      description: Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="reboot" instead
+      description: |-
+        Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="reboot" instead
+
+        Deprecated
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       tags:
       - Instances
@@ -13782,33 +13970,43 @@ paths:
       summary: Resume instance
       description: |-
         Resume a suspended server to an active state.
+
         Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="resume" instead
+
+        Deprecated
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       tags:
       - Instances
@@ -13819,6 +14017,7 @@ paths:
       description: |-
         Power on the server.
         Required VM state: Shutoff, Stopped
+
         Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="start" instead
       parameters:
       - in: path
@@ -13826,26 +14025,33 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       requestBody:
         content:
@@ -13861,6 +14067,7 @@ paths:
       description: |-
         Power off the server.
         Required VM state: Active, Shutoff, Rescued
+
         Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="stop" instead
       parameters:
       - in: path
@@ -13868,26 +14075,33 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       tags:
       - Instances
@@ -13901,33 +14115,43 @@ paths:
         Suspending a server is similar to placing a device in hibernation,
         and its occupied resource will not be freed but rather kept for when the server is resumed.
         Required VM state: Active, Shutoff
+
         Use POST /v2/instances/{`project_id`}/{`region_id`}/{`instance_id`}/action with action="suspend" instead
+
+        Deprecated
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Returned instance
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceCollectionSerializer'
+                $ref: '#/components/schemas/InstanceSerializer'
       deprecated: true
       tags:
       - Instances
@@ -30206,6 +30430,7 @@ components:
           example: 59905c8e-2619-420a-b046-536096473370
           examples:
           - 59905c8e-2619-420a-b046-536096473370
+          format: uuid4
           title: Network Id
           type: string
         port_security_enabled:
@@ -31920,19 +32145,6 @@ components:
       - SUSPENDED
       title: BareMetalStatusQueryChoices
       type: string
-    BaremetalCapacitySchema:
-      type: object
-      description: Available bare metal nodes count per flavor
-      properties:
-        capacity:
-          type: object
-          additionalProperties: true
-          description: Bare metal capacity dict. Bare metal flavors are the keys of this dictionary, available nodes count are corresponding values
-      example:
-        capacity:
-          bm1-basic-small: 3
-          bm1-infrastructure-small: 2
-          bm1-infrastructure-medium: 1
     BaremetalClusterCreateSerializer:
       properties:
         flavor:
@@ -32482,6 +32694,33 @@ components:
           title: Egress Traffic Baremetal
       title: BaremetalPricingPerGBSerializer
       type: object
+    BaremetalServerRebuildBodySerializer:
+      properties:
+        image_id:
+          description: New or existing image to rebuild the node with. Omit to keep the cluster's current image.
+          example: ded40aad-505c-463b-aa59-8f5f455d1b6f
+          examples:
+          - ded40aad-505c-463b-aa59-8f5f455d1b6f
+          format: uuid4
+          title: Image Id
+          type: string
+        ssh_key_name:
+          description: New or existing SSH keypair name. Omit to keep the cluster's current SSH key.
+          example: my-ssh-key
+          examples:
+          - my-ssh-key
+          minLength: 1
+          title: Ssh Key Name
+          type: string
+        user_data:
+          description: New or existing user data (Base64-encoded). Omit to keep the cluster's current user data.
+          example: eyJ0ZXN0IjogImRhdGEifQ==
+          examples:
+          - eyJ0ZXN0IjogImRhdGEifQ==
+          title: User Data
+          type: string
+      title: BaremetalServerRebuildBodySerializer
+      type: object
     BaremetalServerSettingsInputSerializer:
       properties:
         credentials:
@@ -32506,6 +32745,7 @@ components:
             - $ref: '#/components/schemas/ExternalInterfaceInputSerializer'
             - $ref: '#/components/schemas/SubnetInterfaceInputSerializer'
             - $ref: '#/components/schemas/AnySubnetInterfaceInputSerializer'
+          minItems: 1
           title: Interfaces
           type: array
         security_groups:
@@ -33149,6 +33389,25 @@ components:
       - AlertDuration
       - DestinationIP
       title: BlackholePortSerializer
+      type: object
+    BmCapacityResponse:
+      properties:
+        capacity:
+          additionalProperties:
+            type: integer
+          description: Bare metal capacity. Keys are flavor names, values are available node counts.
+          title: Capacity
+          type: object
+        reserved_capacity:
+          additionalProperties:
+            type: integer
+          description: Reserved capacity. Keys are flavor names, values are reserved node counts.
+          title: Reserved Capacity
+          type: object
+      required:
+      - capacity
+      - reserved_capacity
+      title: BmCapacityResponse
       type: object
     CaasApiKeyCreateResultSerializer:
       properties:
@@ -74346,6 +74605,7 @@ components:
           example: 59905c8e-2619-420a-b046-536096473370
           examples:
           - 59905c8e-2619-420a-b046-536096473370
+          format: uuid4
           title: Network Id
           type: string
         port_security_enabled:
@@ -74913,10 +75173,6 @@ components:
           default: null
           description: If the task creates resources, this field will contain their IDs
         data:
-          anyOf:
-          - {}
-          - type: 'null'
-          default: null
           description: Task parameters
           examples:
           - block_device_config:
@@ -81446,6 +81702,7 @@ components:
             - $ref: '#/components/schemas/ExternalInterfaceInputSerializer'
             - $ref: '#/components/schemas/SubnetInterfaceInputSerializer'
             - $ref: '#/components/schemas/AnySubnetInterfaceInputSerializer'
+          minItems: 1
           title: Interfaces
           type: array
         security_groups:
