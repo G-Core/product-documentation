@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: e43692b643aa
+  version: a41613cd4a9e
 servers:
 - url: https://api.gcore.com
 tags:
@@ -3484,6 +3484,7 @@ paths:
         - `active`: Whether the stream is enabled in your account.
         - `live`: `true` if the primary ingest point is receiving a signal.
         - Backup fields like `backup_live` show if the redundant ingest is active.
+        - `active_ingest_region_primary` and `active_ingest_region_backup`: actual ingest regions currently receiving the primary and backup streams. These values are `null` when the corresponding ingest is not active.
 
         Ingestion URLs
         The response includes URLs for various ingestion protocols to start your broadcast:
@@ -7044,6 +7045,26 @@ components:
               State of receiving and transcoding master stream from source by backup server if you pushing stream to "backup_push_url" or "backup_push_url_srt".
 
               Displays the backup server status of PUSH method only. For PULL a "live" field is always used, even when origin servers are switched using round robin scheduling (look "uri" field for details).
+          active_ingest_region_primary:
+            type: string
+            nullable: true
+            readOnly: true
+            default: null
+            example: ed2
+            description: |-
+              Read-only actual ingest region currently receiving the primary stream.
+
+              This field cannot be changed in the request body. The value is `null` when the primary ingest is not active.
+          active_ingest_region_backup:
+            type: string
+            nullable: true
+            readOnly: true
+            default: null
+            example: anx1
+            description: |-
+              Read-only actual ingest region currently receiving the backup stream.
+
+              This field cannot be changed in the request body. The value is `null` when the backup ingest is not active.
           stream_source_type:
             type: string
             description: |-
@@ -7144,7 +7165,7 @@ components:
             description: URL to PUSH master stream to our backup server using SRT protocol with the same logic of backup-streams
           push_url_whip:
             type: string
-            description: |-
+            description: |+
               URL to PUSH WebRTC stream to our server using WHIP protocol.
 
                 
@@ -7176,24 +7197,40 @@ components:
 
               **WebRTC WHIP Client**
 
-              We provide a convenient WebRTC WHIP library for working in browsers. You can use our library, or any other you prefer.
-              Simple example of usage is here: https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html 
+              To start a broadcast, your client application must push a WebRTC WHIP stream to this `push_url_whip` URL.
 
-              Also try to use the feature in UI of the Customer Portal. In the Streaming section inside the settings of a specific live stream, a new section "Quick start in browser" has been added.
+              Other WHIP-compatible clients and tools:
+              - [JS WebRTC WHIP client](https://github.com/G-Core/gcore-webrtc-sdk-js). Simple example of usage is here: https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html
+              - [@eyevinn/whip-web-client](https://web.whip.eyevinn.technology/).
+              - [whip-go](https://github.com/ggarber/whip-go).
+              - [OBS](https://obsproject.com/) (Open Broadcaster Software).
+              - Larix Broadcaster, free apps for iOS and Android with WebRTC.
+
+              More details are available in the Product Documentation on our website.
+
+              **WHIP ingest rejection reasons**
+
+              Pushing to the WHIP URL can return 200 OK, then its normal work.
+
+                
+              However, sometimes it can return a non-200 HTTP response. In that case, check the HTTP response status code and the extra `X-Reason-Code` response header.
+              Possible reject reasons:
+              - Stream does not exist: HTTP 401, `X-Reason-Code: 2001`.
+              - Stream token is invalid: HTTP 403, `X-Reason-Code: 2002`.
+              - Someone else is already streaming: HTTP 403, `X-Reason-Code: 2003`.
+              - Stream disabled: HTTP 403, `X-Reason-Code: 2004`.
+              - Client's live streams limit reached: HTTP 403, `X-Reason-Code: 2005`.
+              - Client's status is not "active": HTTP 403, `X-Reason-Code: 2006`.
 
                 
 
 
-              Please note that 1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests into the single `push_url_whip`, or 2+ protocols at once will not lead to a result.
+              Please note that only 1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests into the single `push_url_whip`, or 2+ protocols at once will not lead to a result.
 
               For example, transcoding process will fail if:
               - you are pushing primary and backup WHIP to the same single `push_url_whip` simultaneously
               - you are pushing WHIP to `push_url_whip` and RTMP to `push_url` simultaneously
 
-                
-               
-
-              More information in the Product Documentation on the website.
           created_at:
             type: string
             description: Datetime of creation in ISO 8601
@@ -7354,6 +7391,8 @@ components:
           created_at: '2023-10-01T00:01:01.000Z'
           started_at_primary: '2023-10-03T00:01:01.000Z'
           started_at_backup: null
+          active_ingest_region_primary: anx2
+          active_ingest_region_backup: null
           finished_at_primary: '2023-10-01T23:59:59.000Z'
           dvr_duration: 3600
           iframe_url: https://demo-public.gvideo.io/streams/2675_19146
