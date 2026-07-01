@@ -1,0 +1,98 @@
+---
+title: Delete or disable a live stream
+sidebarTitle: Delete live stream
+ai-navigation: Delete or disable live streams via Customer Portal or REST API, including active state behavior and irreversible removal.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Disable a live stream to stop ingest and playback temporarily, or delete the stream entity when its settings and statistics are no longer needed.</p>
+
+<p>An enabled live stream can receive a master stream and deliver playback links to viewers. A disabled live stream cannot process ingest, so the player has no video to show even if the embed remains on a page.</p>
+
+## Stream disabling
+
+<p>Use disabling when the stream may be needed again later.</p>
+
+1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **Streaming** > **Live Streaming**.
+
+2. Open the required live stream.
+
+3. Turn off **Enable live stream** and click **Save**.
+
+<Frame>![Turn off enable live stream toggle](/images/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-disable.png)</Frame>
+
+<p>To restore stream availability, turn on **Enable live stream** and save the settings.</p>
+
+## Stream deletion
+
+<p>Delete a live stream only when the live stream entity must be removed from the account.</p>
+
+<Warning>
+Live stream deletion is irreversible. It removes stream settings, ingest and playback links, and stream statistics.
+</Warning>
+
+1. On the **Live Streaming** page, find the stream to remove.
+
+2. Click **Delete**.
+
+3. Confirm the deletion.
+
+<Frame>![Live stream settings UI](/images/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-delete.png)</Frame>
+
+<p>Saved recordings are not deleted with the live stream. If a recording was created before deletion, it remains available as a separate VOD video in Video Hosting.</p>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Disable or delete live streams with the Streams API. All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens).</p>
+
+<p>Set the API token and live stream ID before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{STREAM_ID}"
+```
+
+## Stream disabling
+
+<p>Set `stream.active` to `false` with the [Change&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint to stop ingest and playback without removing the stream entity.</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"stream":{"active":false}}'
+```
+
+<p>The API returns the updated stream object with `active` set to `false`.</p>
+
+## Stream enabling
+
+<p>Set `stream.active` to `true` when the stream should accept ingest and serve playback links again.</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"stream":{"active":true}}'
+```
+
+<p>The API returns the updated stream object with `active` set to `true`.</p>
+
+## Stream deletion
+
+<p>Use the [Delete&nbsp;stream](/api-reference/streaming/streams/delete-live-stream) endpoint only when the stream entity must be removed permanently.</p>
+
+<Warning>
+Live stream deletion is irreversible. It removes stream settings, ingest and playback links, and stream statistics.
+</Warning>
+
+```bash
+curl -X DELETE "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>A successful delete request returns no response body. Saved recordings are not deleted with the live stream, and recordings created before deletion remain available as separate VOD videos in Video Hosting.</p>
+</MethodSection>
+</MethodSwitch>
