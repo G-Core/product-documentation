@@ -38,6 +38,22 @@ Both application types share the same deployment workflow:
 - **Isolated execution per application.** Each application runs in a WebAssembly sandbox, isolated from other applications on the same node.
 - **Write in Rust or JavaScript.** Both languages have first-class SDK support. Rust covers both HTTP and CDN application types; JavaScript supports HTTP applications.
 
+## Request call limits
+
+FastEdge tracks request calls at three levels simultaneously: hourly, daily (UTC midnight), and monthly (UTC calendar month). Exceeding the limit at any one level automatically disables the application until that window resets — consumption is not measured against a single billing cycle alone.
+
+When a limit is exceeded, the application status changes to `3` (hourly limit exceeded) or `4` (daily limit exceeded) and stops serving traffic until that window resets. Other per-plan resource limits — execution time, memory, and outbound requests — are listed at https://gcore.com/docs/fastedge/troubleshooting.
+
+### Checking current usage
+
+Current consumption across all applications is available via `GET /fastedge/v1/me`, documented in the [API reference](https://api.gcore.com/docs/fastedge#tag/FastEdge-Clients/operation/getClientMe), which returns three fields alongside the active plan name and total app count.
+
+| Field | Description |
+|---|---|
+| `hourly_consumption` | Calls across all apps during the current hour |
+| `daily_consumption` | Calls across all apps during the current day (UTC) |
+| `monthly_consumption` | Calls across all apps during the current calendar month (UTC) |
+
 ## Use cases
 
 ### A/B testing
