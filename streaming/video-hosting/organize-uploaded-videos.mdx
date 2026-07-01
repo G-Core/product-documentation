@@ -1,7 +1,7 @@
 ---
 title: Organize uploaded videos
 sidebarTitle: Directories and tags
-ai-navigation: Organize videos in Gcore Streaming using directories and tags for filtering and grouping by metadata; create directories, upload videos, move videos between directories, add tags to videos, and filter videos by tag names in the Customer Portal.
+ai-navigation: Organize videos in Gcore Streaming using directories and tags; create, move, and delete directories; add and filter tags; understand environment separation patterns using separate accounts, directories, or custom CDN resources for dev/prod isolation.
 ---
 
 There are two ways to organize videos in the Gcore Customer Portal:
@@ -93,3 +93,27 @@ To view the list of created tags, open the **All videos** page and expand the **
 
 
 <Frame>![Filter videos by tags](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/tag-list.png)</Frame>
+
+## Environment separation
+
+Directories and tags organize videos within a single Streaming account — they share the same storage, billing, and API credentials, so they don't create isolation between development and production environments. Three patterns exist for separating environments in Gcore Streaming, each at a different layer.
+
+| Pattern | Isolation level | Best for |
+|---|---|---|
+| Separate Gcore accounts | Full — independent storage, billing, credentials, and configuration | Teams that require strict data and access separation between environments |
+| Separate directories | Organizational only — same account, storage, and credentials | Informal naming conventions without strict isolation requirements |
+| Separate CDN resources | Delivery layer only — different hostnames and access policies | Different delivery domains or security policies per environment |
+
+The strongest approach is separate Gcore accounts, because each account has its own API tokens, storage, billing, and configuration — an upload or configuration change in the development account cannot affect production.
+
+### Separate accounts
+
+Create two separate Gcore accounts — one for development, one for production. Each account has independent API tokens, storage, billing, and streaming configuration (live stream settings, player configs, and webhooks). This is the recommended approach when uploads, configurations, and workflows must be completely isolated.
+
+### Separate directories
+
+A `dev` directory and a `prod` directory within one account provide a lightweight naming convention, but any API token with access to the account can read and write both directories. Credentials, billing, and configuration remain shared, so this approach suits informal organization rather than strict environment separation.
+
+### Separate CDN resources
+
+When the same video assets require different delivery behavior per environment — for example, different delivery domains, access token policies, or geo-blocking rules — create two [CDN resources](/streaming/interaction-with-cdn/custom-cdn-resource) pointing to the same Streaming origin. This separates the delivery layer without duplicating storage or transcoding costs.
