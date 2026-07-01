@@ -12,18 +12,18 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>A snapshot captures the full state of a volume at a point in time. Snapshots support backup and recovery, and boot volume snapshots can deploy new Virtual Machines.</p>
 
 <Info>
-Turning off the Virtual Instance before taking a snapshot is recommended to maintain data consistency. Snapshot cost is based on the full volume size.
+For the best data consistency, stop the Virtual Machine before taking a snapshot. Snapshots are billed at the full volume size regardless of how much data the volume contains.
 </Info>
 
 ## Difference between system and regular volume snapshots
 
-<p>Snapshots can be taken from both system (boot) volumes and regular data volumes.</p>
+<p>Snapshots can be created from both system (boot) volumes and regular data volumes.</p>
 
-<p>The system volume holds the operating system and everything it needs to run. A regular volume contains all other data, separate from the OS. In the volume list, system volumes display the `_bootvolume` suffix in the name.</p>
+<p>A snapshot of a system volume captures the operating system and its configuration, while a snapshot of a regular volume captures only the data stored on that volume. In the volume list, system volumes display the `_bootvolume` suffix in the name.</p>
 
 ## Create a snapshot
 
-<p>A snapshot can be initiated from the **Snapshots** page, the **Volumes** page, or a Virtual Machine overview. A volume or Virtual Machine must already exist in the target region — see [Create](/cloud/virtual-instances/volumes/create-and-configure-volumes) and [Create](/cloud/virtual-instances/create-an-instance).</p>
+<p>Snapshots can be taken from the **Snapshots** page, the **Volumes** page, or a Virtual Machine overview. A [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes) or [Virtual Machine](/cloud/virtual-instances/create-an-instance) must exist in the target region first.</p>
 
 <Tabs>
   <Tab title="From the Snapshots page">
@@ -35,18 +35,14 @@ Turning off the Virtual Instance before taking a snapshot is recommended to main
       ![Snapshots page with Take snapshot form and volume dropdown](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image1.png)
     </Frame>
 
-    3. Enter a name in the **Name** field. The portal may suggest a generated name that can be replaced.
+    3. Enter a name in the **Name** field. The Customer Portal may suggest a generated name; replace it if needed.
 
     4. Click **Create snapshot**.
 
-    <Frame>
-      ![Take snapshot form with volume selected and Create snapshot button](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image2.png)
-    </Frame>
-
-    <p>The snapshot appears in the list below after creation starts.</p>
+    <p>The snapshot appears in the list once creation completes.</p>
   </Tab>
   <Tab title="From the Volumes page">
-    1. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+    1. In the Customer Portal, navigate to **Cloud** > **Storage**.
 
     2. Click the three-dot icon next to the target volume.
 
@@ -65,7 +61,7 @@ Turning off the Virtual Instance before taking a snapshot is recommended to main
     </Frame>
   </Tab>
   <Tab title="From a Virtual Machine">
-    1. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual Instances**.
+    1. In the Customer Portal, navigate to **Cloud** > **Virtual Instances**.
 
     2. Select the target Virtual Machine to open its overview.
 
@@ -107,9 +103,11 @@ Turning off the Virtual Instance before taking a snapshot is recommended to main
   ![Snapshot actions menu with Create Virtual Instance option](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image8.png)
 </Frame>
 
-3. Configure the instance as described in [Create](/cloud/virtual-instances/create-an-instance).
+3. Complete the [Virtual Machine](/cloud/virtual-instances/create-an-instance) configuration form and click **Create**.
 
 ### Delete a snapshot
+
+<p>Snapshots can be deleted at any time from the **Snapshots** page.</p>
 
 1. On the **Snapshots** page, click the three-dot icon next to the target snapshot.
 
@@ -123,7 +121,7 @@ Turning off the Virtual Instance before taking a snapshot is recommended to main
 
 ### Revert a volume to the latest snapshot
 
-<p>Volume reversion restores a detached volume to its most recent snapshot state. For the full procedure, see [Revert](/cloud/virtual-instances/volumes/create-and-configure-volumes#revert-volume-to-the-latest-snapshot).</p>
+<p>[Volume reversion](/cloud/virtual-instances/volumes/create-and-configure-volumes#revert-volume-to-the-latest-snapshot) restores a detached volume to its most recent snapshot state.</p>
 
 <Warning>
 After resizing a volume, reversion is unavailable because the latest snapshot reflects the previous size. Create a new volume from the snapshot instead, then take a new snapshot for the resized volume.
@@ -132,13 +130,13 @@ After resizing a volume, reversion is unavailable because the latest snapshot re
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-The Gcore REST API lets you create and delete volume snapshots programmatically. A snapshot captures the full state of a volume at a point in time and can later be used to restore data or create new volumes.
+<p>The Gcore REST API supports creating and deleting volume snapshots. A snapshot captures the full state of a volume at a point in time; it can later restore data or serve as the source for new volumes.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
-Set environment variables before running the examples:
+<p>Set the following environment variables before running the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -148,12 +146,12 @@ export VOLUME_ID="{YOUR_VOLUME_ID}"
 ```
 
 <Info>
-**VOLUME\_ID** is the UUID of an existing volume to snapshot. To create a volume or find its ID, see [Create and configure volumes](/cloud/virtual-instances/volumes/create-and-configure-volumes).
+**VOLUME\_ID** is the UUID of an existing [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes). Create one first if needed.
 </Info>
 
 ## Quickstart
 
-The scripts below create a snapshot from an existing volume, print the snapshot details, then delete the snapshot.
+<p>The scripts below create a snapshot from an existing volume, print the snapshot details, then delete the snapshot.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -236,7 +234,7 @@ The scripts below create a snapshot from an existing volume, print the snapshot 
 
 ### Step 1. Find the volume ID
 
-The snapshot API requires the UUID of the volume to snapshot. List volumes to find the right one — boot volumes have `is_root_volume: true`.
+<p>The snapshot API requires the UUID of the volume to snapshot. List volumes to find the right one — boot volumes have `is_root_volume: true`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -294,11 +292,11 @@ The snapshot API requires the UUID of the volume to snapshot. List volumes to fi
   </Tab>
 </Tabs>
 
-Copy the `id` of the volume to use as `VOLUME_ID` in the next step.
+<p>Copy the `id` of the volume to use as `VOLUME_ID` in the next step.</p>
 
 ### Step 2. Create a snapshot
 
-The [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotViewSet.post) is created asynchronously — the API returns a task ID immediately, and the actual snapshot becomes available after the task finishes.
+<p>The [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotViewSet.post) is created asynchronously — the API returns a task ID immediately, and the snapshot becomes available only after the task finishes.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -348,9 +346,9 @@ The [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotViewSet.post
 
 ### Step 3. Poll the task
 
-Creating a snapshot is asynchronous — the API returns a task ID immediately, and the snapshot becomes available only after the task finishes. Both SDK methods handle this automatically: `create_and_poll` and `NewAndPoll` block the program until the task completes and then return a fully populated snapshot object. No manual polling loop is needed. The returned object has `id`, `status`, `size`, `volume_id`, and `created_at` available immediately — use `snapshot.id` in all subsequent calls.
+<p>Both SDK methods (`create_and_poll` and `NewAndPoll`) block until the task completes and return a fully populated snapshot object — no manual polling loop is needed. The returned object has `id`, `status`, `size`, `volume_id`, and `created_at` available immediately.</p>
 
-When using curl, there is no built-in polling, so the GET request below must be repeated every 5 seconds until `state` changes to `FINISHED`.
+<p>With curl, repeat the GET request below every five seconds until `state` changes to `FINISHED`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -410,7 +408,7 @@ When using curl, there is no built-in polling, so the GET request below must be 
 
 ### Step 4. Get snapshot details
 
-Retrieve the [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.get) to confirm its status and record its properties.
+<p>Retrieve the [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.get) to confirm its status and record its properties.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -457,7 +455,7 @@ Retrieve the [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotIns
 
 ## Clean up
 
-Delete a snapshot with the [delete snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.delete) endpoint when it is no longer needed.
+<p>Delete a snapshot using the [delete snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.delete) API endpoint when it is no longer needed.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -490,7 +488,7 @@ Delete a snapshot with the [delete snapshot](/api-reference/cloud#tag/Snapshots/
   </Tab>
 </Tabs>
 
-Poll the returned task ID until `state` is `FINISHED` to confirm the snapshot is gone.
+<p>Poll the returned task ID until `state` is `FINISHED` to confirm the snapshot is gone.</p>
 
 </MethodSection>
 </MethodSwitch>

@@ -376,31 +376,29 @@ if data.startswith(b'\xef\xbb\xbf'):
 
 ## Image display width
 
-All screenshots must use `<img>` with an explicit `width` attribute inside `<Frame>`.
-Do not use the markdown `![alt](src)` shorthand — it renders the image at full container
-width, which can fill the entire screen on large monitors.
+All screenshots use `<Frame>` with a markdown image shorthand inside.
+Do not add `width` attributes or `style` props — let Mintlify size the image naturally.
 
-**Correct:**
-```mdx
-<Frame>
-  <img src="/images/docs/..." alt="Alt text" width="70%"/>
-</Frame>
-```
-
-**Wrong — full-width and cannot be resized:**
+**Correct (matches WAAP and all new articles):**
 ```mdx
 <Frame>
   ![Alt text](/images/docs/...)
 </Frame>
 ```
 
-**Standard width values:**
+**Wrong — width attribute breaks on Mintlify production:**
+```mdx
+<Frame>
+  <img src="/images/docs/..." alt="Alt text" width="70%"/>
+</Frame>
+```
 
-| Use case | Width |
-|----------|-------|
-| Full-form portal screenshot (dialogs, forms, pages) | `70%` |
-| Narrow UI fragment (toggle, field, small control) | `50%` |
-| Wide diagram or architecture overview | `100%` |
+**Wrong — style prop is unnecessary and inconsistent with the rest of the repo:**
+```mdx
+<Frame>
+  <img src="/images/docs/..." alt="Alt text" style={{width: "70%"}}/>
+</Frame>
+```
 
 When in doubt, use `70%`.
 

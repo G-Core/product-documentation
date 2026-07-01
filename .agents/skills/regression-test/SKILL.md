@@ -219,13 +219,32 @@ screenshots taken in Phase 2 and Phase 4.
 - If something the article describes does not exist or works differently — do not skip it.
   Explore what the portal actually shows now and document the divergence as a FINDING.
 - If a step requires a prerequisite resource (a network, a cluster, an SSH key,
-  a volume, etc.) that does not yet exist:
-  - Do not create it silently — note it as a finding.
-  - Check whether a documentation article exists for creating that resource.
-  - Record: `PREREQUISITE: [resource type] — covered in [article path or "no article found"]`
-  - Do not proceed to test that other article — only note the dependency.
-- If a feature is unavailable in this region or account — note it as a finding,
-  describe how far you got, and mark related findings as UNVERIFIED.
+  a volume, a load balancer, etc.) that does not yet exist:
+
+  **MANDATORY: Create the resource before proceeding. Do NOT skip or note as UNVERIFIED.**
+
+  The test account has all necessary quotas in **Luxembourg-3**. There is no valid
+  reason to skip portal testing because a resource does not exist yet.
+
+  - Create the required resource in Luxembourg-3 using the portal.
+  - Name it using the standard naming pattern (`my-lb-1`, `my-vm-1`, etc.).
+  - Then continue testing the article from the step that requires it.
+  - Note the resource creation as "test environment setup" — not a finding.
+
+  This applies to: Load Balancers, Virtual Machines, Networks, Routers, Subnetworks,
+  Volumes, SSH Keys, Security Groups, Floating IPs, Reserved IPs, Kubernetes clusters,
+  Secrets, Container Registries, and any other prerequisite.
+
+  **The only valid reason to mark something UNVERIFIED is if the feature is gated
+  (requires a special plan, a support ticket, or is physically unavailable in the
+  portal UI). Absence of a test resource is never a valid reason.**
+
+  After the test is complete, delete the resources created during testing
+  (or leave them if they will be needed for subsequent articles in the same batch).
+
+- If a feature is genuinely unavailable in this region or account (gated by plan,
+  requires support enablement, or does not appear in the portal) — note it as a
+  finding, describe how far you got, and mark related findings as UNVERIFIED.
 
 ### FINDING format
 
