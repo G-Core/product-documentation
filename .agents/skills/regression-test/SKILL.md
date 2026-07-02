@@ -21,13 +21,14 @@ Phases to track:
 - Phase 0: Find and read the article; claim in plan
 - Phase 1: Open the portal and log in
 - Phase 2: Regression test (follow steps, record FINDINGs)
-- Phase 3: Findings summary + create Jira ticket
-- Phase 4: Apply fixes
-- Phase 5: Style guide check
-- Phase 6: MDX rules check
-- Phase 7: LLM quality review
-- Phase 8: Present for review (pre-commit checklist + commit + push)
-- Phase 9: Send to review (Jira transition + plan update + changelog)
+- Phase 3: Screenshot audit (retake all screenshots)
+- Phase 4: Findings summary + create Jira ticket
+- Phase 5: Apply fixes
+- Phase 6: Style guide check
+- Phase 7: MDX rules check
+- Phase 8: LLM quality review
+- Phase 9: Present for review (pre-commit checklist + commit + push)
+- Phase 10: Send to review (Jira transition + plan update + changelog)
 
 If a phase is not `completed`, do not move to the next one.
 If you are unsure whether a phase is done, re-read its section below and verify.
@@ -46,7 +47,7 @@ When a phase is done:
 - Report what was completed
 - Immediately start the next phase without asking for permission
 
-**EXCEPTION — after Phase 9 (article fully complete):**
+**EXCEPTION — after Phase 10 (article fully complete):**
 Stop completely. Do NOT move to the next article.
 Wait for explicit user instruction to proceed to the next article.
 The auto-progression rule applies only to phases within a single article.
@@ -60,11 +61,11 @@ deep work within each phase. This is forbidden.
 
 1. This SKILL.md
 2. The article file identified in Phase 0
-3. `.agents/references/style-guide.md` — Phase 5 only
-4. `.agents/references/procedures.md` — Phase 5 only (numbered steps check)
-5. `.agents/references/content-types.md` — Phase 4 only (before rewriting any section)
-6. `.agents/references/mdx-rules.md` — Phase 4 (if MDX structure is changed) and Phase 6
-7. `.agents/references/mcp-tools/playwright.md` — Phase 1 and Phase 2
+3. `.agents/references/style-guide.md` — Phase 6 only
+4. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
+5. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
+6. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
+7. `.agents/references/mcp-tools/playwright.md` — Phase 1, Phase 2, and Phase 3
 
 Do not read other articles for context unless they are directly linked from the
 article being tested.
@@ -207,7 +208,7 @@ Names like `my-cluster-1` read as the customer's own work and make the article
 immediately relatable.
 
 This rule applies to all resources created during Phase 2 testing and to all
-screenshots taken in Phase 2 and Phase 4.
+screenshots taken in Phase 2, Phase 3, and Phase 5.
 
 ### Execution rules
 
@@ -297,45 +298,96 @@ Do not add this note to the published article. It belongs only in the Jira ticke
 description (Phase 3) and the changelog (Phase 9). The published text stays as-is
 until an SME confirms or corrects the procedure.
 
-### Screenshot audit
+### Screenshots during Phase 2
 
-For every `<Frame>` in the article:
+If a portal state that is transient and cannot be reproduced later (a mid-wizard dialog,
+a resource-dependent state, an error message triggered by a specific action) differs
+from the article screenshot — capture it NOW and note both the old filename and the
+new filename as a FINDING with category `Outdated screenshot`.
 
-1. Navigate to the same screen in the portal.
-2. Use `browser_snapshot` to read the actual current UI.
-3. Compare what the article screenshot is supposed to show vs. what the portal shows now.
-4. If they differ — record a FINDING with category `Outdated screenshot`.
-5. Decide whether to capture now or defer:
-
-**Capture NOW (during Phase 2)** — only when the portal state is transient and cannot
-be reproduced later without repeating the full flow:
-- A dialog that appears only mid-wizard (e.g., "Create resource" confirmation screen)
-- A state that depends on a resource you just created during this test run
-- An error message or validation state that requires a specific trigger
-
-**Defer to Phase 4** — for all static UI screenshots that can be retaken at any time:
-- Page views, filter panels, table lists, graph tabs
-- Any screen reachable by navigation without prerequisites
-
-For deferred screenshots, note the FINDING with the portal URL and the
-navigation path needed to reach the screen again. The screenshot will be taken
-in Phase 4 after all text fixes are applied.
-
-For screenshots captured now, save to:
-```
-C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
-```
-Use a new filename — never overwrite the old file directly (CDN caching).
-Note both the old filename and the new filename in the FINDING.
+For all other screenshots, record a FINDING with category `Outdated screenshot` if
+the UI has changed, and note the portal URL and navigation path. All static screenshots
+will be retaken systematically in Phase 3.
 
 **Do not apply any fixes during this phase. Collect all findings first.**
 
-After completing all steps and the screenshot audit, clean up any test resources
-created during testing (instances, networks, etc.).
+After completing all steps, clean up any test resources created during testing
+(instances, networks, etc.).
 
 ---
 
-## Phase 3 — Findings summary and Jira ticket
+## Phase 3 — Screenshot audit
+
+**Retake every screenshot in the article.** Do not skip screenshots that look
+correct — portal UI changes subtly over time and the only way to guarantee
+accuracy is to retake all of them. No screenshot should remain from before
+this regression run.
+
+### Checklist
+
+Before starting, list every `<Frame>` in the article with the following table:
+
+| # | Filename | Screen to reach | Status |
+|---|----------|-----------------|--------|
+| 1 | `filename.png` | Navigation path or step | pending |
+
+Mark each row `done` after the screenshot is saved and the article updated.
+Do not mark Phase 3 as completed until every row is `done`.
+
+### How to take each screenshot
+
+For each screenshot in the article:
+
+1. Navigate to the correct screen in the portal using the existing article
+   text as a guide — it describes what each screenshot should show.
+2. Use `playwright_screenshot` with `fullPage: false`. Set the viewport to
+   1400×900 before capturing:
+   ```javascript
+   // browser_evaluate
+   window.resizeTo(1400, 900)
+   ```
+3. Save to:
+   ```
+   C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
+   ```
+   Use a **new filename** — never overwrite the old file directly (CDN caching).
+   Append `-2` or a short date suffix if the content is the same
+   (e.g., `bare-metal-page-2.png`).
+
+4. Update the `<Frame>` in the article to reference the new filename.
+5. Update the alt text if the UI shown has changed.
+6. Delete the old file:
+   ```powershell
+   cd C:\Projects\product-documentation
+   git rm images/docs/{product}/{article-slug}/{old-filename}.png
+   ```
+
+### Resource names in screenshots
+
+All portal resources visible in screenshots must follow the `my-*-1` naming
+pattern: `my-instance-1`, `my-cluster-1`, `my-network-1`, etc.
+Never show internal or automation names (`test-*`, `docs-*`, `regression-*`,
+Jira IDs, article slugs).
+
+### No duplicate screenshots
+
+After all screenshots are saved:
+
+1. Compare file sizes — identical byte counts before cropping indicate reuse.
+2. For each duplicate, determine which filename has the correct semantic meaning
+   and retake the other.
+3. List all files in the images folder and confirm every file is referenced in
+   the article. Remove unreferenced files with `git rm`.
+
+### Transient screenshots (already captured in Phase 2)
+
+If a screenshot was captured during Phase 2 (mid-wizard dialog, resource-dependent
+state), skip retaking it here. Verify it is already saved with the correct filename
+and that the `<Frame>` reference and alt text are updated.
+
+---
+
+## Phase 4 — Findings summary and Jira ticket
 
 After completing Phase 2, present all findings to the user as a numbered list
 grouped by category.
@@ -441,7 +493,7 @@ Immediately proceed to Phase 4 without asking for confirmation.
 
 ---
 
-## Phase 4 — Apply fixes
+## Phase 5 — Apply fixes
 
 Before rewriting any section, load `.agents/references/content-types.md` and identify
 the article's content type (how-to, conceptual, reference, or combined). Keep the
@@ -530,7 +582,7 @@ The rule depends on whether the article uses `<MethodSwitch>`:
 
 ---
 
-## Phase 5 — Style guide check
+## Phase 6 — Style guide check
 
 Load `.agents/references/style-guide.md` and `.agents/references/procedures.md` now.
 
@@ -604,7 +656,7 @@ Fix every violation found. If a fix requires rewriting a paragraph, do it.
 
 ---
 
-## Phase 6 — MDX rules check
+## Phase 7 — MDX rules check
 
 Load `.agents/references/mdx-rules.md` now.
 
@@ -657,7 +709,7 @@ StrReplace is explicit, auditable, and safe.
 
 ---
 
-## Phase 7 — LLM quality review
+## Phase 8 — LLM quality review
 
 Before presenting the article to the user, run the automated quality review script.
 This must happen after Phase 6 and before Phase 8 — never skip it.
@@ -750,9 +802,9 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 8 — Present for review
+## Phase 9 — Present for review
 
-After completing Phase 7, scan every tab (Portal, API, Terraform, CLI) for
+After completing Phase 8, scan every tab (Portal, API, Terraform, CLI) for
 template-language issues before presenting the report:
 
 **Template language check (all tabs):**
@@ -766,7 +818,7 @@ template-language issues before presenting the report:
 - [ ] Portal tab: same check — no dictionary-card paragraphs, no consecutive sections
   with identical opening patterns.
 
-After completing Phase 7, present the article to the user for review.
+After completing Phase 8, present the article to the user for review.
 
 Report:
 
@@ -896,11 +948,11 @@ Run all three checks before committing:
 
 ---
 
-## Phase 9 — Send to review
+## Phase 10 — Send to review
 
 Run this phase immediately after the commit has been pushed — do not wait for separate user confirmation.
 
-The Jira ticket was already created in Phase 3. This phase only transitions it
+The Jira ticket was already created in Phase 4. This phase only transitions it
 to In Review and records the completion.
 
 ### Step 1 — Transition to In Review and post comment
@@ -909,7 +961,7 @@ Open `c:\Projects\docops-agent2\scripts\send_to_review.py` and fill in the
 three constants:
 
 ```python
-TICKET = "DOC-XXXX"           # the key created in Phase 3
+TICKET = "DOC-XXXX"           # the key created in Phase 4
 
 BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1514
 
@@ -974,7 +1026,7 @@ Use this template:
 **Branch:** `{branch name}`
 **Jira ticket:** [{key}](https://jira.gcore.lu/browse/{key})
 **Regression date:** {YYYY-MM-DD}
-**Agent:** regression-test skill, phases 0-8
+**Agent:** regression-test skill, phases 0-9
 
 ---
 

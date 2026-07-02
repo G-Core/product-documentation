@@ -11,22 +11,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>In the [Gcore Customer Portal](https://portal.gcore.com), upgrade a Managed Kubernetes cluster to a newer Kubernetes version. The rolling update replaces worker nodes one at a time.</p>
 
-## Implications for cluster APIs
+## Before upgrading
 
-<p>Kubernetes version upgrades may change the Kubernetes API and available features. Check the official Kubernetes documentation for changes in the target version.</p>
+<p>Gcore uses a rolling update — worker nodes are replaced one at a time, so the cluster stays available but performance may be impacted when spare capacity is limited. The upgrade may also change available Kubernetes APIs, so confirm that deprecated APIs are removed in the target version before proceeding.</p>
 
-## Implications for applications
-
-<p>Gcore uses a rolling update that terminates existing worker nodes one by one and creates new worker nodes. Rolling upgrades do not stop all nodes at once, but performance may be impacted when spare capacity is limited.</p>
-
-## Best practices
-
-  * Plan upgrades and confirm whether deprecated APIs are removed in the target version.
-  * Test upgrades in a non-production environment before upgrading production clusters.
-  * Use [Managed Logging](/cloud/logging-as-a-service/configure-logging-and-view-your-logs) to monitor activity during an upgrade.
+- Test the upgrade in a non-production environment first.
+- Use [Managed Logging](/cloud/logging-as-a-service/configure-logging-and-view-your-logs) to monitor activity during the upgrade.
 
 <Info>
-A running cluster is required. To create one, see [Create a Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster).
+A running [Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) is required.
 </Info>
 
 ## Step 1. Select a cluster
@@ -70,13 +63,13 @@ Downgrade is only supported for one patch version down (for example, from 1.24.9
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-Upgrading replaces worker nodes one by one via a rolling update. Before triggering the upgrade, fetch the list of available target versions - Gcore only allows upgrading one minor version at a time, and the list reflects what is currently permitted for the cluster.
+<p>Upgrading replaces worker nodes one by one via a rolling update. Before triggering the upgrade, fetch the list of available target versions — Gcore only allows upgrading one minor version at a time, and the list reflects what is currently permitted for the cluster.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
-Open a terminal and set these environment variables before running the examples:
+<p>Open a terminal and set these environment variables before running the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -86,12 +79,12 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 ```
 
 <Info>
-**CLUSTER\_NAME** is the name of the Kubernetes cluster to upgrade (the user-defined string set at creation, not the UUID). To create a cluster or find its name, see [Create a Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster).
+`CLUSTER_NAME` is the cluster name set at creation — find it in the [Kubernetes clusters](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) list.
 </Info>
 
 ## Quickstart
 
-The scripts below list available upgrade versions and upgrade the cluster to the permitted next version, then verify the result. The cluster name is the user-defined string passed at creation time, not the UUID.
+<p>The scripts below list available upgrade versions and upgrade the cluster to the permitted next version, then verify the result.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -182,7 +175,7 @@ The scripts below list available upgrade versions and upgrade the cluster to the
 
 ### Step 1. List available versions for upgrade
 
-This call returns the versions currently permitted for the cluster. Check this before submitting the upgrade request.
+<p>This call returns the versions currently permitted for the cluster. Check this before submitting the upgrade request.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -228,11 +221,11 @@ This call returns the versions currently permitted for the cluster. Check this b
   </Tab>
 </Tabs>
 
-Select a `version` value from the returned list and pass it to the upgrade call. The [upgrade versions](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpdateVersionViewSet.get) endpoint accepts only path parameters - no request body is required.
+<p>Select a `version` value from the returned list and pass it to the upgrade call. The [upgrade versions](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpdateVersionViewSet.get) endpoint accepts only path parameters — no request body is required.</p>
 
 ### Step 2. Upgrade the cluster
 
-Submit the target version to the [upgrade](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpgradeActionViewSetV2.post) endpoint to start the rolling update. The API returns a task ID immediately; the actual node replacement takes several minutes.
+<p>Submit the target version to the [upgrade](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpgradeActionViewSetV2.post) endpoint to start the rolling update. The API returns a task ID immediately; the actual node replacement takes several minutes.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -310,7 +303,7 @@ Submit the target version to the [upgrade](/api-reference/cloud#tag/Managed-Kube
   </Tab>
 </Tabs>
 
-After the task finishes, the cluster returns to `"Provisioned"` status with the new version.
+<p>After the task finishes, the cluster returns to `"Provisioned"` status with the new version.</p>
 
 </Accordion>
 

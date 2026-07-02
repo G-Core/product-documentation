@@ -4,17 +4,13 @@ sidebarTitle: Add users with limited rights to a Kubernetes cluster
 ai-navigation: Create Kubernetes service accounts with namespace-scoped RBAC permissions and generate kubeconfig files for limited user access via kubectl and Role bindings.
 ---
 
-To follow this guide, install kubectl first. For instructions, see [Install kubectl and connect to a Kubernetes cluster](/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster).
-
-## Basics you need to know
-
-**What are service accounts?** Service accounts allow pods to read and use Kubernetes API objects, and can also be used to create a kubeconfig file that grants namespace-scoped access to Kubernetes objects for any user or service. For more information, refer to the Kubernetes documentation: [Managing Service Accounts](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin).
-
-**What is a namespace?** A namespace is a method of organizing and isolating groups of resources within a single cluster. This enables multiple teams, projects, or customers to share a Kubernetes cluster. For more information, refer to the Kubernetes documentation: [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces).
+Creating a namespace-scoped ServiceAccount with a dedicated kubeconfig grants limited cluster access without exposing admin credentials — [kubectl](/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster) and the cluster's kubeconfig are required. Download the kubeconfig by clicking **Kubernetes config** on the cluster overview page in the [Gcore Customer Portal](https://portal.gcore.com).
 
 ## Add users with limited rights
 
-1\. Create a namespace:
+The following procedure creates a ServiceAccount in a dedicated namespace and generates a kubeconfig that authenticates as that ServiceAccount.
+
+1\. Create a namespace that will contain both the ServiceAccount and the resources it can access:
 
 ```sh
 kubectl create ns test-namespace
@@ -46,7 +42,7 @@ roleRef:
 EOF
 ```
 
-3\. Create a long-lived token Secret for the service account. Save the following manifest to a file or apply it directly:
+3\. The ServiceAccount itself cannot be used directly for authentication. Create a token that will be embedded into the kubeconfig in the next step:
 
 ```sh
 cat <<EOF | kubectl apply -f -
@@ -67,22 +63,28 @@ Retrieve the decoded token:
 kubectl -n test-namespace get secret test-serviceaccount-token -o jsonpath="{.data.token}" | base64 -d
 ```
 
-4\. Edit the kubeconfig file for the service account. In the `users` section, replace the admin certificate credentials with the service account token obtained in step 3:
+4\. The token from the previous step authenticates the ServiceAccount. Copy the cluster kubeconfig to a new file (do not overwrite the admin kubeconfig), then update it as follows:
 
-Before:
+- Replace `client-certificate-data` and `client-key-data` in `users` with `token: <token-from-step-3>`
+- Rename the user entry from `admin` to `test-serviceaccount`
+- Update the `user` reference in `contexts` to `test-serviceaccount`
 
-<Frame>![image1.jpg](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/image1.jpg)</Frame>
+**Before:**
 
-After:
+<Frame>![Kubeconfig showing admin user with client-certificate-data and client-key-data credentials](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/kubeconfig-before.png)</Frame>
 
-<Frame>![image2.jpg](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762472647441.png)</Frame>
+**After:**
 
-5\. Verify the service account and kubeconfig by connecting to the cluster using the new kubeconfig file:
+<Frame>![Kubeconfig showing test-serviceaccount user with token credential](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/kubeconfig-after.png)</Frame>
 
-<Frame>![image3.png](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762462520977.png)</Frame>
+5\. Switch kubectl to use the new kubeconfig and verify that the assigned permissions behave as expected:
+
+```sh
+export KUBECONFIG=<path-to-your-new-kubeconfig.yaml>
+```
 
 Test access across the assigned namespace and other namespaces. Operations in the assigned namespace should succeed (S) and operations in other namespaces should fail (F):
 
-<Frame>![image4.png](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762462523537.png)</Frame>
+<Frame>![kubectl commands showing access test results: success in test-namespace and failure in default namespace](/images/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/kubectl-access-test.png)</Frame>
 
 If access behaves as expected, the service account and kubeconfig are correctly configured.
