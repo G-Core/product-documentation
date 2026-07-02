@@ -330,6 +330,30 @@ no curly braces, no URL paths, no colons followed by space.
 
 ## Phase 7 — Review
 
+### Standalone tab test (run this first)
+
+Each tab must work as a complete standalone article. The user reads only one tab —
+never both. Apply this test before any other check:
+
+**Mentally delete the Portal tab. Can the API tab reader:**
+
+1. Understand what this feature/resource is and why they would manage it?
+2. Find the right resource, ID, or identifier without switching tabs?
+3. Understand the consequence of each action (what enabling/disabling/creating/deleting does)?
+4. Complete the full task end-to-end?
+
+If any answer is **no** — the API tab is incomplete. Fix before proceeding.
+
+**Common failures:**
+- Feature description exists only in the Portal tab intro → add a one-sentence context to the API tab opener
+- Reference table (IDs, names, states) exists only in the Portal tab → add a compact version to the API tab (accordion is fine)
+- Policy/resource descriptions exist only in the Portal tab → add a Purpose column to the API reference table
+- Portal tab explains "what each option does", API tab only shows the call → API tab user can't make an informed decision
+
+**The goal is not two complementary tabs — it is two independent implementations of the same task.**
+
+---
+
 Run these checks before showing the result:
 
 **Structure:**

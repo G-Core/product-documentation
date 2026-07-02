@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: a86182e33895
+  version: a41613cd4a9e
 servers:
 - url: https://api.gcore.com
 tags:
@@ -39,11 +39,11 @@ paths:
 
 
         How to use:
-        - Create an AI task, specify algoritm to use
+        - Create an AI task, specify algorithm to use
         - Get `task_id`
         - Check a result using ```.../ai/tasks/{task_id}``` method
 
-        For more detailed information, see the description of each method separately.
+        For more detailed information, see the algorithm-specific sections below.
 
           
 
@@ -54,7 +54,7 @@ paths:
 
         Categories:
         - ```transcription``` – to create subtitles/captions from audio in the original language.
-        - ```translation``` – to transate subtitles/captions from the original language to 99+ other languages. 
+        - ```translation``` – to translate subtitles/captions from the original language to 99+ other languages.
 
         AI subtitle transcription and translation tools are highly efficient, processing large volumes of audio-visual content quickly and providing accurate transcriptions and translations with minimal human intervention. Additionally, AI-driven solutions can significantly reduce costs and turnaround times compared to traditional methods, making them an invaluable resource for content creators and broadcasters aiming to reach global audiences.
 
@@ -89,14 +89,14 @@ paths:
 
         Categories:
         - ```nsfw```: Quick algorithm to detect pornographic material, ensuring content is "not-safe-for-work" or normal.
-        - ```hard_nudity```: Detailed analisys of video which detects explicit nudity involving genitalia.
+        - ```hard_nudity```: Detailed analysis of video which detects explicit nudity involving genitalia.
         - ```soft_nudity```: Detailed video analysis that reveals both explicit and partial nudity, including the presence of male and female faces and other uncovered body parts.
         - ```sport```: Recognizes various sporting activities.
 
         The AI Content Moderation API is an invaluable tool for managing and controlling the type of content being shared or streamed on your platform. By implementing this API, you can ensure compliance with community guidelines and legal requirements, as well as provide a safer environment for your users.
 
         Important notes:
-        - It's allowed to analyse still images too (where applicable). Format of image: JPEG, PNG. In that case one image is the same as video of 1 second duration.
+        - It's allowed to analyze still images too (where applicable). Format of image: JPEG, PNG. In that case one image is the same as video of 1 second duration.
         - Not all frames in the video are used for analysis, but only key frames (Iframe). For example, if a key frame in a video is set every ±2 seconds, then detection will only occur at these timestamps. If an object appears and disappears between these time stamps, it will not be detected. We are working on a version to analyze more frames, please contact your manager or our support team to enable this method.
 
 
@@ -137,157 +137,13 @@ paths:
 
 
         Read more detailed information about our solution, and architecture, and benefits in the knowledge base and blog.
-      operationId: post_ai_tasks_create
-      tags:
-      - AI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ai_task'
-      parameters: []
-      responses:
-        '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_post_response'
-        '400':
-          description: |-
-            Bad request:
-            - "url" is not specified
-            - Queue limit reached (100), try later
-            - etc
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-        '429':
-          description: Too many requests, try later
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-    get:
-      summary: Get list of AI tasks
-      description: |-
-        Returns a list of previously created and processed AI tasks.
+          
 
 
-        The list contains brief information about the task and its execution status. Data is displayed page by page.
-      parameters:
-      - name: task_id
-        in: query
-        description: The task unique identifier to fiund
-        required: false
-        schema:
-          type: string
-          format: uuid
-      - name: task_name
-        in: query
-        description: Type of the AI task. Reflects the original API method that was used to create the AI task.
-        required: false
-        schema:
-          type: string
-          enum:
-          - transcription
-          - content-moderation
-      - name: status
-        in: query
-        description: Task status
-        required: false
-        schema:
-          type: string
-          enum:
-          - FAILURE
-          - PENDING
-          - RECEIVED
-          - RETRY
-          - REVOKED
-          - STARTED
-          - SUCCESS
-      - name: date_created
-        in: query
-        description: Time when task was created. Datetime in ISO 8601 format.
-        required: false
-        schema:
-          type: string
-      - name: ordering
-        in: query
-        description: |-
-          Which field to use when ordering the results: `task_id`, status, and `task_name`.
-          Sorting is done in ascending (ASC) order. 
+        **Algorithm-specific details**
 
-          If parameter is omitted then "started_at DESC" is used for ordering by default.
-        required: false
-        schema:
-          type: string
-          enum:
-          - task_id
-          - status
-          - task_name
-          - started_at
-      - name: search
-        in: query
-        description: |-
-          This is an field for combined text search in the following fields: `task_id`, `task_name`, status, and `task_data`. 
+        Create AI ASR task
 
-          Both full and partial searches are possible inside specified above fields. For example, you can filter tasks of a certain category, or tasks by a specific original file.
-
-          Example:
-          - To filter tasks of Content Moderation NSFW method: ```GET /streaming/ai/tasks?search=nsfw```
-          - To filter tasks of processing video from a specific origin: ```GET /streaming/ai/tasks?search=s3.eu-west-1.amazonaws.com```
-        required: false
-        schema:
-          type: string
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          default: 1
-        description: Page to view from task list, starting from 1
-      - name: limit
-        in: query
-        description: Number of results to return per page.
-        required: false
-        schema:
-          type: integer
-          default: 10
-      operationId: get_ai_tasks_list
-      tags:
-      - AI
-      responses:
-        '200':
-          description: List of AI tasks
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_tasks_list'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/notfound'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-  /streaming/ai/tasks#transcribe:
-    post:
-      summary: Create AI ASR task
-      description: |-
         Transcribing is the process of writing down the words you hear in an audio.
         Our solution allows you to transcribe audio from your video and get subtitles automatically. To do this, we use modern AI models.
 
@@ -297,8 +153,8 @@ paths:
 
         **How to use?**
 
-        - Explicit call to this AI method. Applicapbe for any file stored with us or located on the Internet.
-        - Standard video upload but with automatic subtitle generation. Look at ["VOD uploading"](../videos/create-video).
+        - Explicit call to this AI method. Applicable for any file stored with us or located on the Internet.
+        - Standard video upload but with automatic subtitle generation. Look at ["VOD uploading"](/api-reference/streaming/videos/create-video).
 
 
         **What language will the subtitles be in?**
@@ -347,7 +203,7 @@ paths:
           
 
 
-        Example of modes to transcibe and/or translate:
+        Example of modes to transcribe and/or translate:
         - Auto language detection: `{ "url":"..." }`
         - From German language explicitly : `{ "url":"...", "audio_language":"ger" }`
         - From any auto-detected to English language explicitly: `{ "url":"...", "subtitles_language":"eng" }`
@@ -356,7 +212,7 @@ paths:
         Example of setting a task to process MP4 file (animated gif from above):
 
         ```
-        curl -L 'https://api.gcore.com/streaming/ai/transcribe' \
+        curl -L 'https://api.gcore.com/streaming/ai/tasks' \
         -H 'Content-Type: application/json' \
         -H 'Authorization: APIKey 1234$abcd...' \
         -d '{
@@ -379,47 +235,13 @@ paths:
           
 
 
-        The heart for transcribing is the AI model Whisper from OpenAI, with additional optimisations and services. The AI models run on our own infrastructure, so the files/data are not transferred anywhere to external services. After processing, origianl files are also deleted from local storage of AI.
+        The heart for transcribing is the AI model Whisper from OpenAI, with additional optimizations and services. The AI models run on our own infrastructure, so the files/data are not transferred anywhere to external services. After processing, original files are also deleted from local storage of AI.
 
         Read more detailed information about our solution, and architecture, and benefits in the knowledge base and blog.
-      operationId: post_ai_transcribe
-      tags:
-      - AI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ai_transcribe'
-      parameters: []
-      responses:
-        '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_post_response'
-        '400':
-          description: |-
-            Bad request:
-            - "url" is not specified,
-            - Queue limit reached (100), try later,
-            - etc
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-  /streaming/ai/tasks#cm_nsfw:
-    post:
-      summary: Create AI CM:nsfw task
-      description: |-
-        This algorithm allows to quickly detect inappropriate content, determining that the content is NSFW ("Not Safe For Work") or normal. Generic info about all capabilities and limits see in the generic ["Content Moderation"](create-ai-task) method.
+
+        Create AI CM:nsfw task
+
+        This algorithm allows to quickly detect inappropriate content, determining that the content is NSFW ("Not Safe For Work") or normal. Generic info about all capabilities and limits see in the generic ["Content Moderation"](/api-reference/streaming/ai/create-ai-task) method.
 
 
         **What is "Not Safe For Work"?**
@@ -468,44 +290,11 @@ paths:
 
 
         Please note that the API only provides a set of data (json) about the objects found, so no video is generated. The demo video video (above ^) was specially created based on json from the API for visual demonstration and better perception of the possibilities.
-      operationId: post_ai_contentmoderation_nsfw
-      tags:
-      - AI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ai_contentmoderation_nsfw'
-      parameters: []
-      responses:
-        '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_post_response'
-        '400':
-          description: |-
-            Bad request:
-            - "url" is not specified,
-            - Queue limit reached (100), try later,
-            - etc
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-  /streaming/ai/tasks#cm_hard_nudity:
-    post:
-      summary: Create AI CM:hard_nudity task
-      description: |-
-        This algorithm allows to detect explicit nudity of the human body (involving genitals) in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](create-ai-task) method.
+
+
+        Create AI CM:`hard_nudity` task
+
+        This algorithm allows to detect explicit nudity of the human body (involving genitals) in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](/api-reference/streaming/ai/create-ai-task) method.
 
 
         **What is Hard nudity detection?**
@@ -579,44 +368,11 @@ paths:
 
 
         Please note that the API only provides a set of data (json) about the objects found, so no video is generated. The demo video video (above ^) was specially created based on json from the API for visual demonstration and better perception of the possibilities.
-      operationId: post_ai_contentmoderation_hardnudity
-      tags:
-      - AI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ai_contentmoderation_hardnudity'
-      parameters: []
-      responses:
-        '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_post_response'
-        '400':
-          description: |-
-            Bad request:
-            - "url" is not specified,
-            - Queue limit reached (100), try later,
-            - etc
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-  /streaming/ai/tasks#cm_soft_nudity:
-    post:
-      summary: Create AI CM:soft_nudity task
-      description: |-
-        This algorithm allows to identify explicit nudity and partial nudity too (including the presence of male and female faces and other uncovered body parts) in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](create-ai-task) method.
+
+
+        Create AI CM:`soft_nudity` task
+
+        This algorithm allows to identify explicit nudity and partial nudity too (including the presence of male and female faces and other uncovered body parts) in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](/api-reference/streaming/ai/create-ai-task) method.
 
 
         **What is Soft nudity detection?**
@@ -702,44 +458,11 @@ paths:
 
 
         Please note that the API only provides a set of data (json) about the objects found, so no video is generated. The demo video video (above ^) was specially created based on json from the API for visual demonstration and better perception of the possibilities.
-      operationId: post_ai_contentmoderation_softnudity
-      tags:
-      - AI
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ai_contentmoderation_softnudity'
-      parameters: []
-      responses:
-        '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ai_post_response'
-        '400':
-          description: |-
-            Bad request:
-            - "url" is not specified,
-            - Queue limit reached (100), try later,
-            - etc
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-        '422':
-          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/upgraderequired'
-  /streaming/ai/tasks#cm_sport:
-    post:
-      summary: Create AI CM:sport task
-      description: |-
-        This algorithm allows to identify various sporting activities in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](create-ai-task) method.
+
+
+        Create AI CM:sport task
+
+        This algorithm allows to identify various sporting activities in a video. Generic info about all capabilities and limits see in the generic ["Content Moderation"](/api-reference/streaming/ai/create-ai-task) method.
 
 
         **What is Sports activity detection?**
@@ -804,7 +527,7 @@ paths:
 
         **How to use?**
 
-        The information is returned with the video frame number where it was found and probability of the detected activty.
+        The information is returned with the video frame number where it was found and probability of the detected activity.
         Identification is done using AI, so for each activity a probability percentage is applied; activities with a probability of at least 30% are included in the response.
 
         Video processing speed is approximately 1:5.
@@ -840,7 +563,7 @@ paths:
 
 
         Please note that the API only provides a set of data (json) about the objects found, so no video is generated. The demo video video (above ^) was specially created based on json from the API for visual demonstration and better perception of the possibilities.
-      operationId: post_ai_contentmoderation_sport
+      operationId: post_ai_tasks_create
       tags:
       - AI
       requestBody:
@@ -848,11 +571,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ai_contentmoderation_sport'
+              $ref: '#/components/schemas/ai_task'
       parameters: []
       responses:
         '201':
-          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/results method.
+          description: Response returns ID of the created AI task. Using this AI task ID, you can check the status and get the video processing result. Look at GET /ai/tasks/{`task_id`} method.
           content:
             application/json:
               schema:
@@ -860,13 +583,127 @@ paths:
         '400':
           description: |-
             Bad request:
-            - "url" is not specified,
-            - Queue limit reached (100), try later,
+            - "url" is not specified
+            - Queue limit reached (100), try later
             - etc
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
+        '422':
+          description: This is advanced functionality; to enable it, contact your manager or the Support Team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/upgraderequired'
+        '429':
+          description: Too many requests, try later
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      summary: Get list of AI tasks
+      description: |-
+        Returns a list of previously created and processed AI tasks.
+
+
+        The list contains brief information about the task and its execution status. Data is displayed page by page.
+      parameters:
+      - name: task_id
+        in: query
+        description: The task unique identifier to find
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: task_name
+        in: query
+        description: Type of the AI task. Reflects the original API method that was used to create the AI task.
+        required: false
+        schema:
+          type: string
+          enum:
+          - transcription
+          - content-moderation
+      - name: status
+        in: query
+        description: Task status
+        required: false
+        schema:
+          type: string
+          enum:
+          - FAILURE
+          - PENDING
+          - RECEIVED
+          - RETRY
+          - REVOKED
+          - STARTED
+          - SUCCESS
+      - name: date_created
+        in: query
+        description: Time when task was created. Datetime in ISO 8601 format.
+        required: false
+        schema:
+          type: string
+      - name: ordering
+        in: query
+        description: |-
+          Which field to use when ordering the results: `task_id`, status, and `task_name`.
+          Sorting is done in ascending (ASC) order.
+
+          If parameter is omitted then "started_at DESC" is used for ordering by default.
+        required: false
+        schema:
+          type: string
+          enum:
+          - task_id
+          - status
+          - task_name
+          - started_at
+      - name: search
+        in: query
+        description: |-
+          This is an field for combined text search in the following fields: `task_id`, `task_name`, status, and `task_data`.
+
+          Both full and partial searches are possible inside specified above fields. For example, you can filter tasks of a certain category, or tasks by a specific original file.
+
+          Example:
+          - To filter tasks of Content Moderation NSFW method: ```GET /streaming/ai/tasks?search=nsfw```
+          - To filter tasks of processing video from a specific origin: ```GET /streaming/ai/tasks?search=s3.eu-west-1.amazonaws.com```
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+        description: Page to view from task list, starting from 1
+      - name: limit
+        in: query
+        description: Number of results to return per page.
+        required: false
+        schema:
+          type: integer
+          default: 10
+      operationId: get_ai_tasks_list
+      tags:
+      - AI
+      responses:
+        '200':
+          description: List of AI tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ai_tasks_list'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notfound'
         '422':
           description: This is advanced functionality; to enable it, contact your manager or the Support Team.
           content:
@@ -896,6 +733,7 @@ paths:
         A queue is used to process videos. The waiting time depends on the total number of requests in the system, so sometimes you will have to wait.
 
         Statuses:
+        - RECEIVED – the task is accepted by the system
         - PENDING – the task is received and it is pending for available resources
         - STARTED – processing has started
         - SUCCESS – processing has completed successfully
@@ -1442,7 +1280,7 @@ paths:
           
 
 
-        There are can be more that 1 overlay over a stream, which are small or stretched over full frame. Overlays can have transparent areas. Frequency of update is 1 FPS. Automatic size scaling for Adaptative Bitrate qualities is applied. 
+        There are can be more that 1 overlay over a stream, which are small or stretched over full frame. Overlays can have transparent areas. Frequency of update is 1 FPS. Automatic size scaling for Adaptive Bitrate qualities is applied.
 
         ![HTML Overlays](https://demo-files.gvideo.io/apidocs/coffee_run_overlays.gif)
 
@@ -1480,7 +1318,7 @@ paths:
         - If feature is disabled, you will receive HTTP code: 422. Error text: Feature disabled. Contact support to enable.
 
 
-        Please, pay attention to the content of HTML widges you use. If you don't trust them, then you shouldn't use them, as their result will be displayed in live stream to all users. 
+        Please, pay attention to the content of HTML widgets you use. If you don't trust them, then you shouldn't use them, as their result will be displayed in live stream to all users.
 
 
         **Will there be a widget in the recording?**
@@ -1888,7 +1726,7 @@ paths:
 
         **Looped video playback**
 
-        It can be used to simulate TV channel pre-programmed behaviour.
+        It can be used to simulate TV channel pre-programmed behavior.
 
         - Selection: Choose a series of videos, such as TV show episodes, movies, tutorials, or any other relevant content.
         - Order: Arrange the selected videos in the desired sequence, much like setting a broadcast schedule.
@@ -2039,7 +1877,7 @@ paths:
         Our experts have selected the optimal parameters for transcoding, to ensure maximum video/audio quality with the best compression. Default quality sets are described in the [documentation](/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/output-parameters-and-codecs#custom-quality-sets). These values are the default for everyone. There is no need to configure anything additional.
 
 
-        Read more about qiality in our blog [How we lowered the bitrate for live and VOD streaming by 32.5% without sacrificing quality](https://gcore.com/blog/how-we-lowered-the-bitrate-for-live-and-vod-streaming-by-32-5-without-sacrificing-quality).
+        Read more about quality in our blog [How we lowered the bitrate for live and VOD streaming by 32.5% without sacrificing quality](https://gcore.com/blog/how-we-lowered-the-bitrate-for-live-and-vod-streaming-by-32-5-without-sacrificing-quality).
 
         ![Quality ladder](https://demo-files.gvideo.io/apidocs/encoding_ladder.png)
 
@@ -2298,7 +2136,7 @@ paths:
       - Statistics
       operationId: getCDNUniqs
       description: |-
-        Сounts the number of unique viewers of a video entity over CDN. It doesn't matter what player you used.
+        Counts the number of unique viewers of a video entity over CDN. It doesn't matter what player you used.
 
         All unique viewers for the specified period of time are counted.
 
@@ -2732,12 +2570,12 @@ paths:
           $ref: '#/components/responses/error_internal_server'
   /streaming/statistics/embeds:
     get:
-      summary: Get referer in built-in player
+      summary: Get referrers in built-in player
       tags:
       - Statistics
       operationId: getEmbeds
       description: |-
-        Aggregates the number of views, grouping them by "referer" URL of pages the built-in player was embeded to.
+        Aggregates the number of views, grouping them by "referrer" URL of pages the built-in player was embedded to.
 
         Note. This method operates only on data collected by the built-in HTML player. It will not show statistics if you are using another player or viewing in native OS players through direct .m3u8/.mpd/.mp4 links. For such cases, use calculations through CDN (look at method /statistics/cdn/uniqs) or statistics of the players you have chosen.
       parameters:
@@ -2773,7 +2611,7 @@ paths:
       - Statistics
       operationId: getHosts
       description: |-
-        Aggregates the number of views, grouping them by "host" domain name the built-in player was embeded to.
+        Aggregates the number of views, grouping them by "host" domain name the built-in player was embedded to.
 
         Note. This method operates only on data collected by the built-in HTML player. It will not show statistics if you are using another player or viewing in native OS players through direct .m3u8/.mpd/.mp4 links. For such cases, use calculations through CDN (look at method /statistics/cdn/uniqs) or statistics of the players you have chosen.
       parameters:
@@ -3062,7 +2900,7 @@ paths:
       tags:
       - Statistics
       operationId: getResellerStreamChart
-      description: Calculates the time series of transcoding minutes of all streams of all subclients. The data is updated near realtime.
+      description: Calculates the time series of transcoding minutes of all streams of all reseller's clients. The data is updated near realtime.
       parameters:
       - name: from
         in: query
@@ -3646,6 +3484,7 @@ paths:
         - `active`: Whether the stream is enabled in your account.
         - `live`: `true` if the primary ingest point is receiving a signal.
         - Backup fields like `backup_live` show if the redundant ingest is active.
+        - `active_ingest_region_primary` and `active_ingest_region_backup`: actual ingest regions currently receiving the primary and backup streams. These values are `null` when the corresponding ingest is not active.
 
         Ingestion URLs
         The response includes URLs for various ingestion protocols to start your broadcast:
@@ -3938,7 +3777,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/searchVideo'
+                $ref: '#/components/schemas/videoDetails'
         '404':
           description: Not found
           content:
@@ -4132,7 +3971,7 @@ paths:
         **Add already exist subtitles**
 
         Subtitles must be in one of the following formats:
-        - SRT – SubRip Text is described on [wikipedia.org](https://en.wikipedia.org/wiki/SubRip#SubRip_file_format). Must start from integer for sequence number. Use calidators to check the subtitles, like [srt-validator](https://taoning2014.github.io/srt-validator-website/index.html).
+        - SRT – SubRip Text is described on [wikipedia.org](https://en.wikipedia.org/wiki/SubRip#SubRip_file_format). Must start from integer for sequence number. Use validators to check the subtitles, like [srt-validator](https://taoning2014.github.io/srt-validator-website/index.html).
         - WebVTT – Web Video Text Tracks Format is described on
         [developer.mozilla.org](https://developer.mozilla.org/en-US/docs/Web/API/WebVTT_API). Must start from "WEBVTT" header. Use validators to check the subtitles, like [W3C](https://w3c.github.io/webvtt.js/parser.html).
 
@@ -4390,7 +4229,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/searchVideo'
+                  $ref: '#/components/schemas/videoListItem'
     post:
       tags:
       - Videos
@@ -4405,7 +4244,7 @@ paths:
 
         To upload the original video file to the server, there are several possible scenarios:
 
-        - **Copy from another server** – If your video is accessable via "http://", "https://", or "sftp://" public link, then you can use this method to copy a file from an external server. Set ```origin_url``` parameter with the link to the original video file (i.e. "https://domain.com/video.mp4"). After method execution file will be uploaded and will be sent to transcoding automatically, you don't have to do anything else. Use extra field ```origin_http_headers``` if authorization is required on the external server. 
+        - **Copy from another server** – If your video is accessible via "http://", "https://", or "sftp://" public link, then you can use this method to copy a file from an external server. Set ```origin_url``` parameter with the link to the original video file (i.e. "https://domain.com/video.mp4"). After method execution file will be uploaded and will be sent to transcoding automatically, you don't have to do anything else. Use extra field ```origin_http_headers``` if authorization is required on the external server.
         - **Direct upload from a local device** – If you need to upload video directly from your local device or from a mobile app, then use this method. Keep ```origin_url``` empty and use TUS protocol ([tus.io](https://tus.io)) to upload file. More details are here ["Get TUS' upload"](get-tus-parameters-for-direct-upload)
 
 
@@ -4458,7 +4297,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/searchVideo'
+                  $ref: '#/components/schemas/videoDetails'
         '422':
           description: |-
             Possible error messages:   
@@ -4512,7 +4351,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/searchVideo'
+                  $ref: '#/components/schemas/videoDetails'
         '400':
           description: One or more parameters were specified incorrectly, check the request
           content:
@@ -4577,7 +4416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/searchVideo'
+                $ref: '#/components/schemas/videoDetails'
     patch:
       tags:
       - Videos
@@ -4613,7 +4452,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/searchVideo'
+                $ref: '#/components/schemas/videoDetails'
         '422':
           description: |-
             Possible error messages:   
@@ -4712,11 +4551,30 @@ components:
           description: Error message
       example:
         error: Invalid config type
-    ai_contentmoderation_general:
+    ai_contentmoderation_frame:
+      type: object
+      required:
+      - label
+      - frame_number
+      - confidence
+      properties:
+        label:
+          type: string
+          description: Type of detected object or activity
+        frame_number:
+          type: integer
+          description: Video frame number where object or activity was found
+        confidence:
+          type: number
+          format: decimal
+          description: Probability of identifying the object or activity
+    ai_contentmoderation_hardnudity:
+      title: AI Content Moderation hard nudity task data
       type: object
       required:
       - url
       - task_name
+      - category
       properties:
         task_name:
           type: string
@@ -4725,15 +4583,69 @@ components:
           - content-moderation
         url:
           type: string
-          description: URL to the MP4 file to analyse. File must be publicly accessible via HTTP/HTTPS.
+          description: URL to the MP4 file to analyze. File must be publicly accessible via HTTP/HTTPS.
+        client_id:
+          type: integer
+          readOnly: true
+          description: Client ID associated with the task.
         category:
           type: string
-          description: Model for analysis (content-moderation only). Determines what exactly needs to be found in the video.
           enum:
-          - sport
-          - nsfw
           - hard_nudity
-          - soft_nudity
+          description: AI content moderation with "hard_nudity" algorithm
+        stop_objects:
+          type: string
+          enum:
+          - ANUS_EXPOSED
+          - BUTTOCKS_EXPOSED
+          - FEMALE_BREAST_EXPOSED
+          - FEMALE_GENITALIA_EXPOSED
+          - MALE_BREAST_EXPOSED
+          - MALE_GENITALIA_EXPOSED
+          description: Comma separated objects, and probabilities, that will cause the processing to stop immediately after finding.
+        client_user_id:
+          type: string
+          maxLength: 256
+          default: null
+          description: Meta parameter, designed to store your own identifier. Can be used by you to tag requests from different end-users. It is not used in any way in video processing.
+        client_entity_data:
+          type: string
+          maxLength: 4096
+          default: null
+          description: |-
+            Meta parameter, designed to store your own extra information about a video entity: video source, video id, etc. It is not used in any way in video processing.
+
+            For example, if an AI-task was created automatically when you uploaded a video with the AI auto-processing option (nudity detection, etc), then the ID of the associated video for which the task was performed will be explicitly indicated here.
+      example:
+        url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
+        task_name: content-moderation
+        category: hard_nudity
+        stop_objects: FEMALE_GENITALIA_EXPOSED,FEMALE_BREAST_EXPOSED:0.50,BUTTOCKS_EXPOSED:0.90
+    ai_contentmoderation_nsfw:
+      title: AI Content Moderation NSFW task data
+      type: object
+      required:
+      - url
+      - task_name
+      - category
+      properties:
+        task_name:
+          type: string
+          description: Name of the task to be performed
+          enum:
+          - content-moderation
+        url:
+          type: string
+          description: URL to the MP4 file to analyze. File must be publicly accessible via HTTP/HTTPS.
+        client_id:
+          type: integer
+          readOnly: true
+          description: Client ID associated with the task.
+        category:
+          type: string
+          enum:
+          - nsfw
+          description: AI content moderation with NSFW detection algorithm
         client_user_id:
           type: string
           maxLength: 256
@@ -4751,53 +4663,26 @@ components:
         url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
         task_name: content-moderation
         category: nsfw
-    ai_contentmoderation_hardnudity:
-      allOf:
-      - $ref: '#/components/schemas/ai_contentmoderation_general'
-      required:
-      - category
-      properties:
-        category:
-          type: string
-          enum:
-          - hard_nudity
-          description: AI content moderation with "hard_nudity" algorithm
-        stop_objects:
-          type: string
-          enum:
-          - ANUS_EXPOSED
-          - BUTTOCKS_EXPOSED
-          - FEMALE_BREAST_EXPOSED
-          - FEMALE_GENITALIA_EXPOSED
-          - MALE_BREAST_EXPOSED
-          - MALE_GENITALIA_EXPOSED
-          description: Comma separated objects, and probabilities, that will cause the processing to stop immediatelly after finding.
-      example:
-        url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
-        task_name: content-moderation
-        category: hard_nudity
-        stop_objects: FEMALE_GENITALIA_EXPOSED,FEMALE_BREAST_EXPOSED:0.50,BUTTOCKS_EXPOSED:0.90
-    ai_contentmoderation_nsfw:
-      allOf:
-      - $ref: '#/components/schemas/ai_contentmoderation_general'
-      required:
-      - category
-      properties:
-        category:
-          type: string
-          enum:
-          - nsfw
-          description: AI content moderation with NSFW detection algorithm
-      example:
-        url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
-        task_name: content-moderation
-        category: nsfw
     ai_contentmoderation_softnudity:
-      allOf:
-      - $ref: '#/components/schemas/ai_contentmoderation_general'
+      title: AI Content Moderation soft nudity task data
+      type: object
       required:
+      - url
+      - task_name
       - category
       properties:
+        task_name:
+          type: string
+          description: Name of the task to be performed
+          enum:
+          - content-moderation
+        url:
+          type: string
+          description: URL to the MP4 file to analyze. File must be publicly accessible via HTTP/HTTPS.
+        client_id:
+          type: integer
+          readOnly: true
+          description: Client ID associated with the task.
         category:
           type: string
           enum:
@@ -4824,23 +4709,63 @@ components:
           - FEMALE_GENITALIA_EXPOSED
           - MALE_BREAST_EXPOSED
           - MALE_GENITALIA_EXPOSED
-          description: Comma separated objects, and probabilities, that will cause the processing to stop immediatelly after finding.
+          description: Comma separated objects, and probabilities, that will cause the processing to stop immediately after finding.
+        client_user_id:
+          type: string
+          maxLength: 256
+          default: null
+          description: Meta parameter, designed to store your own identifier. Can be used by you to tag requests from different end-users. It is not used in any way in video processing.
+        client_entity_data:
+          type: string
+          maxLength: 4096
+          default: null
+          description: |-
+            Meta parameter, designed to store your own extra information about a video entity: video source, video id, etc. It is not used in any way in video processing.
+
+            For example, if an AI-task was created automatically when you uploaded a video with the AI auto-processing option (nudity detection, etc), then the ID of the associated video for which the task was performed will be explicitly indicated here.
       example:
         url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
         task_name: content-moderation
         category: soft_nudity
         stop_objects: BELLY_COVERED:0.9,FEMALE_GENITALIA_COVERED
     ai_contentmoderation_sport:
-      allOf:
-      - $ref: '#/components/schemas/ai_contentmoderation_general'
+      title: AI Content Moderation sport task data
+      type: object
       required:
+      - url
+      - task_name
       - category
       properties:
+        task_name:
+          type: string
+          description: Name of the task to be performed
+          enum:
+          - content-moderation
+        url:
+          type: string
+          description: URL to the MP4 file to analyze. File must be publicly accessible via HTTP/HTTPS.
+        client_id:
+          type: integer
+          readOnly: true
+          description: Client ID associated with the task.
         category:
           type: string
           enum:
           - sport
           description: AI content moderation with types of sports activity detection
+        client_user_id:
+          type: string
+          maxLength: 256
+          default: null
+          description: Meta parameter, designed to store your own identifier. Can be used by you to tag requests from different end-users. It is not used in any way in video processing.
+        client_entity_data:
+          type: string
+          maxLength: 4096
+          default: null
+          description: |-
+            Meta parameter, designed to store your own extra information about a video entity: video source, video id, etc. It is not used in any way in video processing.
+
+            For example, if an AI-task was created automatically when you uploaded a video with the AI auto-processing option (nudity detection, etc), then the ID of the associated video for which the task was performed will be explicitly indicated here.
       example:
         url: https://demo-files.gvideo.io/ai_demo_soccer_players_passing_the_ball.mp4
         task_name: content-moderation
@@ -4888,45 +4813,52 @@ components:
     ai_results:
       allOf:
       - $ref: '#/components/schemas/ai_task_base'
-      properties:
-        processing_time:
-          type: object
-          properties:
-            started_at:
-              type: string
-              description: Video processing start time. Format is date time in ISO 8601
-            completed_at:
-              type: string
-              description: Video processing end time. Format is date time in ISO 8601
-              default: null
-            total_time_sec:
-              type: number
-              format: decimal
-              description: Duration of video processing in seconds
-              default: null
-        result:
-          oneOf:
-          - $ref: '#/components/schemas/ai_results_transcribe'
-          - $ref: '#/components/schemas/ai_results_contentmoderation_sport'
-          - $ref: '#/components/schemas/ai_results_contentmoderation_nsfw'
-          - $ref: '#/components/schemas/ai_results_contentmoderation_hardnudity'
-          - $ref: '#/components/schemas/ai_results_contentmoderation_softnudity'
-          - $ref: '#/components/schemas/ai_results_failure'
-          default: null
+      - type: object
+        properties:
+          result:
+            type: object
+            anyOf:
+            - $ref: '#/components/schemas/ai_results_transcribe'
+            - $ref: '#/components/schemas/ai_results_contentmoderation_sport'
+            - $ref: '#/components/schemas/ai_results_contentmoderation_nsfw'
+            - $ref: '#/components/schemas/ai_results_contentmoderation_hardnudity'
+            - $ref: '#/components/schemas/ai_results_contentmoderation_softnudity'
+            - $ref: '#/components/schemas/ai_results_failure'
+            nullable: true
+            default: null
       example:
         task_id: aafe70c6-0000-0000-0000-327b65f7670f
-        task_data: {}
+        task_data:
+          url: https://demo-public.gvideo.io/videos/2675_TVKIqpTO7tEFoFg/qid5774v1_h264_450_360.mp4
+          category: sport
+          client_id: 2675
+          task_name: content-moderation
         progress: 100
         status: SUCCESS
         processing_time:
           started_at: '2024-07-13T12:30:00.000Z'
           completed_at: '2024-07-13T12:31:02.900Z'
           total_time_sec: 62.901
-        result: {}
+        result:
+          sport_detected: true
+          detection_results:
+          - shooting goal (soccer)
+          - playing cricket
+          frames:
+          - label: shooting goal (soccer)
+            frame_number: 68
+            confidence: 1
+          - label: playing cricket
+            frame_number: 728
+            confidence: 0.99
     ai_results_contentmoderation_hardnudity:
       type: object
+      required:
+      - nudity_detected
+      - detection_results
+      - frames
       properties:
-        porn_detected:
+        nudity_detected:
           type: boolean
           description: A boolean value whether any nudity was detected
         detection_results:
@@ -4944,32 +4876,25 @@ components:
         frames:
           type: array
           items:
-            type: object
-            properties:
-              frame-number:
-                type: integer
-                description: Video frame number where object was found
-              label:
-                type: string
-                description: Type of detected object
-              confidence:
-                type: number
-                format: decimal
-                description: Percentage of probability of identifying the object
+            $ref: '#/components/schemas/ai_contentmoderation_frame'
       example:
-        porn_detected: true
+        nudity_detected: true
         detection_results:
         - FEMALE_BREAST_EXPOSED
         - MALE_GENITALIA_EXPOSED
         frames:
-        - frame-number: 4
+        - frame_number: 6
           label: FEMALE_BREAST_EXPOSED
-          score: 0.95
-        - frame-number: 100
+          confidence: 0.84
+        - frame_number: 13
           label: MALE_GENITALIA_EXPOSED
-          score: 0.51
+          confidence: 0.58
     ai_results_contentmoderation_nsfw:
       type: object
+      required:
+      - nsfw_detected
+      - detection_results
+      - frames
       properties:
         nsfw_detected:
           type: boolean
@@ -4984,33 +4909,26 @@ components:
         frames:
           type: array
           items:
-            type: object
-            properties:
-              frame-number:
-                type: integer
-                description: Video frame number where object was found
-              label:
-                type: string
-                description: Type of detected object
-              confidence:
-                type: number
-                format: decimal
-                description: Percentage of probability of identifying the object
+            $ref: '#/components/schemas/ai_contentmoderation_frame'
       example:
-        porn_detected: true
+        nsfw_detected: true
         detection_results:
         - nsfw
         frames:
-        - frame-number: 4
+        - frame_number: 6
           label: nsfw
-          score: '1.0'
-        - frame-number: 100
+          confidence: 1
+        - frame_number: 100
           label: nsfw
-          score: 0.51
+          confidence: 0.51
     ai_results_contentmoderation_softnudity:
       type: object
+      required:
+      - nudity_detected
+      - detection_results
+      - frames
       properties:
-        porn_detected:
+        nudity_detected:
           type: boolean
           description: A boolean value whether any nudity and other body part was detected
         detection_results:
@@ -5040,32 +4958,25 @@ components:
         frames:
           type: array
           items:
-            type: object
-            properties:
-              frame-number:
-                type: integer
-                description: Video frame number where object was found
-              label:
-                type: string
-                description: Type of detected object
-              confidence:
-                type: number
-                format: decimal
-                description: Percentage of probability of identifying the object
+            $ref: '#/components/schemas/ai_contentmoderation_frame'
       example:
-        porn_detected: true
+        nudity_detected: true
         detection_results:
         - FACE_FEMALE
-        - FACE_MALE
+        - BELLY_EXPOSED
         frames:
-        - frame-number: 4
+        - frame_number: 6
           label: FACE_FEMALE
-          score: 0.95
-        - frame-number: 100
-          label: FACE_MALE
-          score: 0.51
+          confidence: 0.82
+        - frame_number: 6
+          label: BELLY_EXPOSED
+          confidence: 0.71
     ai_results_contentmoderation_sport:
       type: object
+      required:
+      - sport_detected
+      - detection_results
+      - frames
       properties:
         sport_detected:
           type: boolean
@@ -5125,30 +5036,19 @@ components:
         frames:
           type: array
           items:
-            type: object
-            properties:
-              frame-number:
-                type: integer
-                description: Video frame number where activity was found
-              label:
-                type: string
-                description: Type of detected activity
-              confidence:
-                type: number
-                format: decimal
-                description: Percentage of probability of identifying the activity
+            $ref: '#/components/schemas/ai_contentmoderation_frame'
       example:
         sport_detected: true
         detection_results:
-        - football
-        - playing tennis
+        - shooting goal (soccer)
+        - playing cricket
         frames:
-        - frame-number: 4
-          label: football
-          score: 0.95
-        - frame-number: 100
-          label: playing tennis
-          score: 0.5
+        - label: shooting goal (soccer)
+          frame_number: 68
+          confidence: 1
+        - label: playing cricket
+          frame_number: 728
+          confidence: 0.99
     ai_results_failure:
       type: object
       required:
@@ -5160,6 +5060,8 @@ components:
         error: 'Unsupported file type: https://domain.com/video.zip'
     ai_results_transcribe:
       type: object
+      required:
+      - speech_detected
       properties:
         speech_detected:
           type: boolean
@@ -5202,41 +5104,34 @@ components:
         - start_time: '00:00:04.129'
           end_time: '00:00:08.169'
           text: I was thinking, we should call our class project, Fungi in a Forest!
-        vttContent: |+
-          WEBVTT
-
-          1
-          00:00:00.009 --> 00:00:03.689
-          Come on team, we mustn't dilly dally when there's so much nature to see!
-
-          2
-          00:00:04.129 --> 00:00:08.169
-          I was thinking, we should call our class project, Fungi in a Forest!
-
+        vttContent: |-
+          WEBVTT 1 00:00:00.009 --> 00:00:03.689 Come on team, we mustn't dilly dally when there's so much nature to see!
+          2 00:00:04.129 --> 00:00:08.169 I was thinking, we should call our class project, Fungi in a Forest!
         languages:
         - eng
     ai_task:
-      type: object
-      properties:
-        task_name:
-          type: string
-          description: Name of the task to be performed
-          enum:
-          - transcription
-          - content-moderation
-      required:
-      - task_name
-      - url
-      example:
-        task_name: transcription|content-moderation
-        url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
-        audio_language: ger
-        category: nsfw
-      allOf:
+      oneOf:
       - $ref: '#/components/schemas/ai_transcribe'
-      - $ref: '#/components/schemas/ai_contentmoderation_general'
+      - $ref: '#/components/schemas/ai_contentmoderation_nsfw'
+      - $ref: '#/components/schemas/ai_contentmoderation_hardnudity'
+      - $ref: '#/components/schemas/ai_contentmoderation_softnudity'
+      - $ref: '#/components/schemas/ai_contentmoderation_sport'
+      description: |-
+        AI task creation request. The request body must match exactly one task type:
+        transcription, NSFW content moderation, hard nudity content moderation,
+        soft nudity content moderation, or sport content moderation.
+      example:
+        task_name: content-moderation
+        url: https://demo-files.gvideo.io/ai_demo_subtitles_nudity_detection.mp4
+        category: nsfw
     ai_task_base:
       type: object
+      required:
+      - task_id
+      - task_data
+      - progress
+      - status
+      - processing_time
       properties:
         task_id:
           type: string
@@ -5244,24 +5139,21 @@ components:
           description: ID of the AI task
         status:
           type: string
-          description: Status of processing the AI task. See GET /ai/results method for description.
+          description: Status of processing the AI task. See GET /ai/tasks/{`task_id`} method for description.
           enum:
           - PENDING
           - STARTED
           - SUCCESS
           - FAILURE
+          - RECEIVED
           - REVOKED
           - RETRY
         progress:
           type: integer
           default: null
           description: Percentage of task completed. A value greater than 0 means that it has been taken into operation and is being processed.
-        task_name:
-          type: string
-          description: Type of AI task
-          enum:
-          - content-moderation
-          - transcription
+        processing_time:
+          $ref: '#/components/schemas/ai_task_processing_time'
         task_data:
           oneOf:
           - $ref: '#/components/schemas/ai_transcribe'
@@ -5270,7 +5162,27 @@ components:
           - $ref: '#/components/schemas/ai_contentmoderation_softnudity'
           - $ref: '#/components/schemas/ai_contentmoderation_sport'
           description: The object will correspond to the task type that was specified in the original request. There will be one object for transcription, another for searching for nudity, and so on.
+    ai_task_processing_time:
+      type: object
+      properties:
+        started_at:
+          type: string
+          format: date-time
+          description: Video processing start time. Format is date time in ISO 8601
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Video processing end time. Format is date time in ISO 8601
+          default: null
+        total_time_sec:
+          type: number
+          format: decimal
+          nullable: true
+          description: Duration of video processing in seconds
+          default: null
     ai_tasks_list:
+      type: object
       properties:
         count:
           type: integer
@@ -5294,16 +5206,30 @@ components:
         previous: null
         results:
         - task_id: aafe70c6-0000-0000-0000-327b65f7670f
-          task_name: content-moderation
-          task_data: {}
+          task_data:
+            url: https://demo-public.gvideo.io/videos/2675_MEvf8mREA5Sy0AKF/qid5774v1_h264_450_360.mp4
+            category: sport
+            client_id: 2675
+            task_name: content-moderation
           progress: 100
           status: SUCCESS
+          processing_time:
+            started_at: '2026-06-26T16:26:29.25Z'
+            completed_at: '2026-06-26T16:26:32.97Z'
+            total_time_sec: 3.71
         - task_id: aafe70c6-0000-0000-0000-d3bcebebf37c
-          task_name: transcription
-          task_data: {}
+          task_data:
+            url: https://demo-public.gvideo.io/videos/2675_SYdKNfV8dYLVhEdC/qid5765v1_av1_225_360.mp4
+            client_id: 2675
+            task_name: transcription
           progress: 50
           status: STARTED
+          processing_time:
+            started_at: '2026-06-26T13:02:23.93Z'
+            completed_at: null
+            total_time_sec: null
     ai_transcribe:
+      title: AI transcription task data
       type: object
       required:
       - url
@@ -5316,7 +5242,11 @@ components:
           - transcription
         url:
           type: string
-          description: URL to the MP4 file to analyse. File must be publicly accessible via HTTP/HTTPS.
+          description: URL to the MP4 file to analyze. File must be publicly accessible via HTTP/HTTPS.
+        client_id:
+          type: integer
+          readOnly: true
+          description: Client ID associated with the task.
         audio_language:
           type: string
           description: |-
@@ -5437,7 +5367,7 @@ components:
 
             Please note that:
             - transcription into the original language is a free procedure,
-            - and translation from the original language into any other languages is a "translation" procedure and is paid. More details in [POST /streaming/ai/tasks#transcribe](/api-reference/streaming/ai/create-ai-task).
+            - and translation from the original language into any other languages is a "translation" procedure and is paid. More details in [POST /streaming/ai/tasks](/api-reference/streaming/ai/create-ai-task).
             Language is set by 3-letter language code according to ISO-639-2 (bibliographic code).
           default: null
         client_user_id:
@@ -5452,7 +5382,7 @@ components:
           description: |-
             Meta parameter, designed to store your own extra information about a video entity: video source, video id, etc. It is not used in any way in video processing.
 
-            For example, if an AI-task was created automatically when you uploaded a video with the AI auto-processing option (transcribing, translationing), then the ID of the associated video for which the task was performed will be explicitly indicated here.
+            For example, if an AI-task was created automatically when you uploaded a video with the AI auto-processing option (transcribing, translation), then the ID of the associated video for which the task was performed will be explicitly indicated here.
       example:
         url: https://demo-files.gvideo.io/apidocs/spritefright-blender-cut30sec.mp4
         task_name: transcription
@@ -5581,7 +5511,7 @@ components:
             - Less than the specified value if there is less data in the DVR than the requested segment.
             - Greater than the specified value, because segment is aligned to the first and last key frames of already stored fragment in DVR, this way -1 and +1 chunks can be added to left and right.
 
-            Duration of cutted segment cannot be greater than DVR duration for this stream. Therefore, to change the maximum, use "dvr_duration" parameter of this stream.
+            Duration of cut segment cannot be greater than DVR duration for this stream. Therefore, to change the maximum, use "dvr_duration" parameter of this stream.
         expiration:
           type: integer
           description: |-
@@ -5841,7 +5771,7 @@ components:
             When using PULL method, this is the URL to pull a stream from. 
 
             You can specify multiple addresses separated by a space (" "), so you can organize a backup plan. In this case, the specified addresses will be selected one by one using round robin scheduling. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle.
-            Also, if the sucessfully working stream stops sending data, then the next one will be selected according to the same scheme.
+            Also, if the successfully working stream stops sending data, then the next one will be selected according to the same scheme.
 
             After 2 hours of inactivity of your original stream, the system stops PULL requests and the stream is deactivated (the "active" field switches to "false").
 
@@ -5850,7 +5780,7 @@ components:
           type: boolean
           default: false
           description: |-
-            Enables autotomatic recording of the stream when it started. So you don't need to call recording manually.
+            Enables automatic recording of the stream when it started. So you don't need to call recording manually.
 
             Result of recording is automatically added to video hosting. For details see the /streams/`start_recording` method and in knowledge base
 
@@ -5867,7 +5797,7 @@ components:
             Method of recording a stream. Specifies the source from which the stream will be recorded: original or transcoded.
 
             Types:
-            - "origin" – To record RMTP/SRT/etc original clean media source.
+            - "origin" – To record RTMP/SRT/etc original clean media source.
             - "transcoded" – To record the output transcoded version of the stream, including overlays, texts, logos, etc. additional media layers.
         hls_mpegts_endlist_tag:
           type: boolean
@@ -5998,7 +5928,7 @@ components:
         clip_start_seconds:
           type: integer
           default: null
-          description: If you want to transcode only a trimmed segment of a video instead of entire length if the video, then you can provide timecodes of starting point and duration of a segment to process. Start encoding from is a number in seconds.
+          description: If you want to transcode only a trimmed segment of a video instead of entire length if the video, then you can provide time codes of starting point and duration of a segment to process. Start encoding from is a number in seconds.
         clip_duration_seconds:
           type: integer
           default: null
@@ -6033,7 +5963,7 @@ components:
             Poster is your own static image which can be displayed before the video starts.
 
             After uploading the video, the system will automatically create several screenshots (they will be stored in "screenshots" attribute) from which you can select an default screenshot.
-            This "poster" field is for uploading your own image. Also use attribute "screenshot_id" to select poster as a default screnshot.
+            This "poster" field is for uploading your own image. Also use attribute "screenshot_id" to select poster as a default screenshot.
 
             Attribute accepts single image as base64-encoded string [(RFC 2397 – The "data" URL scheme)](https://www.rfc-editor.org/rfc/rfc2397). In format: ```data:[<mediatype>];base64,<data>```
 
@@ -6157,8 +6087,8 @@ components:
             Custom URL of IFrame for video player to be used in share panel in
             player. Auto generated IFrame URL provided by default
       example:
-        name: IBC 2025 - International Broadcasting Convention
-        description: We look forward to welcoming you at IBC2025, which will take place 12-15 September 2025.
+        name: IBC 2026 - International Broadcasting Convention
+        description: We look forward to welcoming you at IBC2026, which will take place 11-14 September 2026.
         origin_url: https://www.googleapis.com/drive/v3/files/...?alt=media
         origin_http_headers: 'Authorization: Bearer ...'
         priority: 0
@@ -6353,7 +6283,7 @@ components:
           enum:
           - Video
       allOf:
-      - $ref: '#/components/schemas/searchVideo'
+      - $ref: '#/components/schemas/videoListItem'
       example:
         item_type: Video
     embeds:
@@ -6812,7 +6742,7 @@ components:
           description: |-
             Enables/Disables playlist. Has two possible values:
             - true – Playlist can be played.
-            - false – Playlist is disabled. No broadcast while it's desabled.
+            - false – Playlist is disabled. No broadcast while it's disabled.
         start_time:
           type: string
           default: null
@@ -7027,472 +6957,6 @@ components:
     restream:
       allOf:
       - $ref: '#/components/schemas/createRestream'
-    searchVideo:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Video ID
-        name:
-          type: string
-          description: |-
-            Title of the video.
-
-            Often used as a human-readable name of the video, but can contain any text you wish. The values are not unique and may be repeated.
-            Examples:
-            - Educational training 2024-03-29
-            - Series X S3E14, The empire strikes back
-            - 480fd499-2de2-4988-bc1a-a4eebe9818ee
-        description:
-          type: string
-          description: Additional text field for video description
-        client_id:
-          type: integer
-          description: Client ID
-        origin_size:
-          type: integer
-          description: Size of original file
-        origin_video_duration:
-          type: integer
-          description: Original video duration in milliseconds
-        origin_url:
-          type: string
-          description: |-
-            URL to an original file from which the information for transcoding was taken. 
-
-            May contain a link for scenarios:
-            - If the video was downloaded from another origin
-            - If the video is a recording of a live stream
-            - Otherwise it is "null"
-
-            **Copy from another server**
-            URL to an original file that was downloaded. Look at method "Copy from another server" in POST /videos.
-            **Recording of an original live stream** 
-
-            URL to the original non-transcoded stream recording with original quality, saved in MP4 format. File is created immediately after the completion of the stream recording. The stream from which the recording was made is reflected in "stream_id" field.
-
-            Can be used for internal operations when a recording needs to be received faster than the transcoded versions are ready. But this version is not intended for public distribution. Views and downloads occur in the usual way, like viewing an MP4 rendition.
-
-            The MP4 file becomes available for downloading when the video entity "status" changes from "new" to "pending". 
-
-            Format of URL is ```/videos/<cid>_<slug>/origin_<bitrate>_<height>.mp4```
-            Where:
-            - ```<bitrate>``` – Encoding bitrate in Kbps.
-            - ```<height>``` – Video height.
-
-            The original file is stored for up to 7 days, after which it is deleted automatically. By default, the retention policy for original recorded files cannot be changed. For enterprise customers, it can be adjusted individually upon request.
-
-            This is a premium feature, available only upon request through your manager or support team.
-          default: null
-        duration:
-          type: integer
-          description: Video duration in milliseconds. May differ from "origin_video_duration" value if the video was uploaded with clipping through the parameters "clip_start_seconds" and "clip_duration_seconds"
-        slug:
-          type: string
-          description: |-
-            A unique alphanumeric identifier used in public URLs to retrieve and view the video. It is unique for each video, generated randomly and set automatically by the system.
-
-            Format of usage in URL is *.../videos/{`client_id`}_{slug}/...*
-
-            Example:
-            - Player: /videos/`12345_neAq1bYZ2`
-            - Manifest: /videos/`12345_neAq1bYZ2`/master.m3u8
-            - Rendition: /videos/`12345_neAq1bYZ2`/`qid90v1_720`.mp4
-        stream_id:
-          type: integer
-          description: If the video was saved from a stream, then ID of that stream is saved here
-        recording_started_at:
-          type: string
-          description: If the video was saved from a stream, then start time of the stream recording is saved here. Format is date time in ISO 8601
-        share_url:
-          type: string
-          description: Custom URL or iframe displayed in the link field when a user clicks on a sharing button in player. If empty, the link field and social network sharing is disabled
-        poster:
-          type: string
-          default: null
-          description: |-
-            Poster is your own static image which can be displayed before the video begins playing. This is often a frame of the video or a custom title screen.
-
-            Field contains a link to your own uploaded image.
-
-            Also look at "screenshot" attribute.
-        poster_thumb:
-          type: string
-          default: null
-          description: Field contains a link to minimized poster image. Original "poster" image is proportionally scaled to a size of 200 pixels in height.
-        screenshot:
-          type: string
-          description: |-
-            A URL to the default screenshot is here. The image is selected from an array of all screenshots based on the “`screenshot_id`” attribute. If you use your own "poster", the link to it will be here too.
-
-            Our video player uses this field to display the static image before the video starts playing. As soon as the user hits "play" the image will go away.
-            If you use your own external video player, then you can use the value of this field to set the poster/thumbnail in your player.
-
-            Example:
-            - `video_js`.poster: ```api.screenshot```
-            - clappr.poster: ```api.screenshot```
-        screenshots:
-          type: array
-          items:
-            type: string
-          description: |-
-            Array of auto generated screenshots from the video. By default 5 static screenshots are taken from different places in the video. If the video is short, there may be fewer screenshots.
-
-            Screenshots are created automatically, so they may contain not very good frames from the video. To use your own image look at "poster" attribute.
-        screenshot_id:
-          type: integer
-          description: |-
-            ID of auto generated screenshots to be used for default screenshot.
-
-            Counting from 0. A value of -1 sets the "screenshot" attribute to the URL of your own image from the "poster" attribute.
-          default: null
-        sprite:
-          type: string
-          description: Link to picture with video storyboard. Image in JPG format. The picture is a set of rectangles with frames from the video. Typically storyboard is used to show preview images when hovering the video's timeline.
-          default: null
-        sprite_vtt:
-          type: string
-          description: Storyboard in VTT format. This format implies an explicit indication of the timing and frame area from a large sprite image.
-          default: null
-        ad_id:
-          type: integer
-          description: ID of ad that should be shown. If empty the default ad is show. If there is no default ad, no ad is shownю
-        hls_url:
-          type: string
-          description: |-
-            A URL to a master playlist HLS (master.m3u8).
-            Chunk type will be selected automatically:
-            - TS if your video was encoded to H264 only.
-            - CMAF if your video was encoded additionally to H265 and/or AV1 codecs (as Apple does not support these codecs over MPEG TS, and they are not standardized in TS-container).
-
-              
-
-
-            You can also manually specify suffix-options that will allow you to change the manifest to your request:
-
-            ```
-            /videos/{client_id}_{video_slug}/master[-cmaf][-min-N][-max-N][-img][-(h264|hevc|av1)].m3u8
-            ```
-
-            List of suffix-options:
-            - [-cmaf] – getting HLS CMAF version of the manifest. Look at the ```hls_cmaf_url``` field.
-            - [-min-N] – ABR soft limitation of qualities from below.
-            - [-max-N] – ABR soft limitation of qualities from above.
-            - [-img] – Roku trick play: to add tiles directly into .m3u8 manifest. Read the Product Documentation for details.
-            - [-(h264|hevc|av1) – Video codec soft limitation. Applicable if the video was transcoded into multiple codecs H264, H265 and AV1 at once, but you want to return just 1 video codec in a manifest. Read the Product Documentation for details.
-              
-            ABR soft-limiting: Soft limitation of the list of qualities allows you to return not the entire list of transcoded qualities for a video, but only those you need.
-            For example, the video is available in 7 qualities from 360p to 4K, but you want to return not more than 480p only due to the conditions of distribution of content to a specific end-user (i.e. free account):
-            ABR soft-limiting examples:
-            - To a generic ```.../master.m3u8``` manifest
-            - Add a suffix-option to limit quality ```.../master-max-480.m3u8```
-            - Add a suffix-option to limit quality and codec ```.../master-min-320-max-320-h264.m3u8```
-            For more details look at the Product Documentation.
-              
-            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
-        hls_cmaf_url:
-          type: string
-          description: |-
-            A URL to a master playlist HLS (master-cmaf.m3u8) with CMAF-based chunks. Chunks are in fMP4 container. It's a code-agnostic container, which allows to use any like H264, H265, AV1, etc.
-              
-
-
-            It is possible to use the same suffix-options as described in the "hls_url" attribute.
-              
-
-
-            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
-        dash_url:
-          type: string
-          description: |-
-            A URL to a master playlist MPEG-DASH (master.mpd) with CMAF or WebM based chunks.
-
-            Chunk type will be selected automatically for each quality:
-            - CMAF for H264 and H265 codecs.
-            - WebM for AV1 codec.
-
-              
-
-
-            This URL is a link to the main manifest. But you can also manually specify suffix-options that will allow you to change the manifest to your request:
-
-            ```
-            /videos/{client_id}_{slug}/master[-min-N][-max-N][-(h264|hevc|av1)].mpd
-            ```
-
-            List of suffix-options:
-            - [-min-N] – ABR soft limitation of qualities from below.
-            - [-max-N] – ABR soft limitation of qualities from above.
-            - [-(h264|hevc|av1) – Video codec soft limitation. Applicable if the video was transcoded into multiple codecs H264, H265 and AV1 at once, but you want to return just 1 video codec in a manifest. Read the Product Documentation for details.
-
-            Read more what is ABR soft-limiting in the "hls_url" field above.
-
-              
-
-
-            Caution. Solely master.mpd is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
-        iframe_url:
-          type: string
-          description: |-
-            A URL to a built-in HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
-
-            The player can be opened or shared via this direct link. Also the video player can be integrated into your web pages using the Iframe tag.
-
-            Example of usage on a web page:
-            <iframe width="100%" height="100%" src="https://player.gvideo.co/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-              
-
-
-            There are some link modificators you can specify and add manually:
-            - ?`no_low_latency` – player is forced to use non-low-latency streams HLS MPEG-TS, instead of MPEG-DASH CMAF or HLS/LL-HLS CMAF.
-            - ?t=(integer) – time to start playback from specified point in the video. Applicable for VOD only.
-            - ?`sub_lang`=(language) – force subtitles to specific language (2 letters ISO 639 code of a language).
-            - Read more in the Product Documentation.
-        custom_iframe_url:
-          type: string
-          description: Custom URL of Iframe for video player to be used in share panel in player. Auto generated Iframe URL provided by default.
-        views:
-          type: integer
-          description: Number of video views through the built-in HTML video player of the Streaming Platform only. This attribute does not count views from other external players and native OS players, so here may be less number of views than in "cdn_views".
-        cdn_views:
-          type: integer
-          description: Total number of video views. It is calculated based on the analysis of all views, no matter in which player.
-        client_user_id:
-          type: integer
-          default: null
-          description: 'Custom meta field for storing the Identifier in your system. We do not use this field in any way when processing the stream. Example: ```client_user_id = 1001```'
-        status:
-          type: string
-          description: |-
-            Video processing status:
-            - empty – initial status, when video-entity is created, but video-file has not yet been fully uploaded (TUS uploading, or downloading from an origin is not finished yet)
-            - pending – video is in queue to be processed
-            - viewable – video has at least 1 quality and can already be viewed via a link, but not all qualities are ready yet
-            - ready – video is completely ready, available for viewing with all qualities
-            - error – error while processing a video, look at "error" field
-          enum:
-          - empty
-          - pending
-          - viewable
-          - ready
-          - error
-        error:
-          type: string
-          description: 'Video processing error text will be saved here if "status: error"'
-        projection:
-          type: string
-          description: |-
-            Regulates the video format:
-
-            - **regular** — plays the video as usual
-            - **vr360** — plays the video in 360 degree mode
-            - **vr180** — plays the video in 180 degree mode
-            - **vr360tb** — plays the video in 3D 360 degree mode Top-Bottom.
-
-              
-             Default is regular
-        converted_videos:
-          type: array
-          description: Array of data about each transcoded quality
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: ID of the converted file of the specific quality
-              name:
-                type: string
-                description: Specific quality name
-              width:
-                type: integer
-                description: Width in pixels of the converted video file of the specified quality. Can be ```null``` for audio files.
-                default: null
-              height:
-                type: integer
-                description: Height in pixels of the converted video file of the specific quality. Can be ```null``` for audio-only files.
-                default: null
-              size:
-                type: integer
-                description: Size in bytes of the converted file of the specific quality. Can be ```null``` until transcoding is fully completed.
-                default: null
-              progress:
-                type: integer
-                description: Status of transcoding into the specific quality, from 0 to 100
-              status:
-                type: string
-                description: |-
-                  Status of transcoding:
-                  - processing – video is being transcoded to this quality,
-                  - complete – quality is fully processed,
-                  - error – quality processing error, see parameter "error".
-                enum:
-                - processing
-                - complete
-                - error
-              error:
-                type: string
-                description: Video processing error text in this quality
-                default: null
-              mp4_url:
-                type: string
-                description: |-
-                  A URL to a rendition file of the specified quality in MP4 format for downloading.
-                    
-
-
-                  **Download methods**
-
-                  For each converted video, additional download endpoints are available under `converted_videos`/`mp4_urls`.
-                  An MP4 download enpoints:
-                  1. `/videos/{client_id}_{slug}/{filename}.mp4`
-                  2. `/videos/{client_id}_{slug}/{filename}.mp4/download`
-                  3. `/videos/{client_id}_{slug}/{filename}.mp4/download={custom_filename}`
-
-                  The first option returns the file as is.
-                  Response will be:
-
-                  ```
-                  GET .mp4
-                  ...
-                  content-type: video/mp4
-                  ```
-
-                  The second option with `/download` will respond with HTTP response header that directly tells browsers to download the file instead of playing it in the browser:
-
-                  ``` 
-                  GET .mp4/download
-                  ...
-                  content-type: video/mp4
-                  content-disposition: attachment
-                  access-control-expose-headers: Content-Disposition
-                  ```
-
-                  The third option allows you to set a custom name for the file being downloaded. You can optionally specify a custom filename (just name excluding the .mp4 extension) using the download= query.
-
-                  Filename constraints:
-                  - Length: 1-255 characters
-                  - Must NOT include the .mp4 extension (it is added automatically)
-                  - Allowed characters: a-z, A-Z, 0-9, _(underscore), -(dash), .(dot)
-                  - First character cannot be .(dot)
-                  - Example valid filenames: ```holiday2025```, ```_backup.final```, ```clip-v1.2```
-
-                  ```
-                  GET .mp4/download={custom_filename}
-                  ...
-                  content-type: video/mp4
-                  content-disposition: attachment; filename="{custom_filename}.mp4"
-                  access-control-expose-headers: Content-Disposition                    
-                  ```
-
-                  Examples:
-                  - MP4: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download```
-                  - MP4 with custom download filename: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30```
-
-                    
-
-
-                  **Default MP4 file name structure**
-
-                  Link to the file {filename} contains information about the encoding method using format:
-
-                  ```<quality_version>_<codec>_<bitrate>_<height>.mp4```
-                  - ```<quality_version>``` – Internal quality identifier and file version. Please do not use it, can be changed at any time without any notice.
-                  - ```<codec>``` – Codec name that was used to encode the video, or audio codec if it is an audio-only file.
-                  - ```<bitrate>``` – Encoding bitrate in Kbps.
-                  - ```<height>``` – Video height, or word "audio" if it is an audio-only file.
-
-                  Note that this link format has been applied since 14.08.2024. If the video entity was uploaded earlier, links may have old simplified format.
-
-                  Example: ``` /videos/{client_id}_{slug}/qid3567v1_h264_4050_1080.mp4 ```
-
-                    
-
-
-                  **Dynamic speed limiting**
-                  This mode sets different limits for different users or for different types of content. The speed is adjusted based on requests with the “speed” and “buffer” arguments.
-
-                  Example: ``` ?speed=50k&buffer=500k ```
-
-                  Read more in Product Documentation in CDN section "Network limits". 
-
-                    
-
-
-                  **Secure token authentication for MP4 (updated)**
-
-                  Access to MP4 download links only can be protected using advanced secure tokens passed as query parameters.
-
-                  Token generation uses the entire MP4 path, which ensures the token only grants access to a specific quality/version of the video. This prevents unintended access to other bitrate versions of an ABR stream.
-
-                  Token Query Parameters:
-                  - token: The generated hash
-                  - expires: Expiration timestamp
-                  - speed: (optional) Speed limit in bytes/sec, or empty string
-                  - buffer: (optional) Buffer size in bytes, or empty string
-
-                  Optional (for IP-bound tokens):
-                  - ip: The user’s IP address
-                  Example: ``` ?md5=QX39c77lbQKvYgMMAvpyMQ&expires=1743167062 ```
-
-                  Read more in Product Documentation in Streaming section "Protected temporarily link".
-      example:
-        id: 70575
-        name: Coffee Run - Blender Open Movie 720p
-        description: Fueled by caffeine, a young woman runs through the bittersweet memories of her past relationship. Coffee Run was directed by Hjalti Hjalmarsson and produced by the team at Blender Studio.
-        client_id: 1
-        duration: 184669
-        slug: FnlHXwA16ZMxmUr
-        status: ready
-        origin_size: 29260881
-        origin_video_duration: 184669
-        origin_audio_channels: 2
-        origin_height: 804
-        origin_width: 1920
-        created_at: '2024-06-13T12:15:25.000Z'
-        updated_at: '2024-07-26T15:30:50.000Z'
-        clip_start_seconds: null
-        clip_duration_seconds: null
-        hls_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8
-        hls_cmaf_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8
-        dash_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd
-        iframe_url: https://player.gvideo.co/videos/2675_FnlHXwA16ZMxmUr
-        poster: https://static.gvideo.co/videoplatform/posters/video/10507272/f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
-        poster_thumb: https://static.gvideo.co/videoplatform/posters/video/10507272/thumb_f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
-        screenshot: https://static.gvideo.co/videoplatform/posters/video/10507272/f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
-        screenshots:
-        - https://static.gvideo.co/videoplatform/thumbnails/2675/2474723_FnlHXwA16ZMxmUr.mp4_2_1080.jpg
-        - https://static.gvideo.co/videoplatform/thumbnails/2675/2474723_FnlHXwA16ZMxmUr.mp4_3_1080.jpg
-        screenshot_id: -1
-        views: 2000001
-        cdn_views: 30000003
-        projection: regular
-        sprite: https://static.gvideo.co/videoplatform/sprites/2675/10507272_sNOwd4luk5mGGf9M.mp4_sprite.jpg
-        sprite_vtt: |
-          1
-          00:00:00,000 --> 00:00:05,000
-          xMbWbUSuvJ8NX2_sprite.jpg#xywh=0,0,100,42
-
-          2
-          00:00:05,000 --> 00:00:10,000
-          xMbWbUSuvJ8NX2_sprite.jpg#xywh=100,0,100,42
-          ...
-        converted_videos:
-        - id: 25889825
-          name: vod720p
-          width: 1719
-          height: 720
-          size: 37651798
-          progress: 100
-          status: complete
-          mp4_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4
-        - id: 25889828
-          name: vod480p
-          width: 1146
-          height: 480
-          size: 20255892
-          progress: 100
-          status: complete
-          mp4_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3573v3_h264_800_468.mp4
     startRecordingStream:
       type: object
       properties:
@@ -7581,6 +7045,26 @@ components:
               State of receiving and transcoding master stream from source by backup server if you pushing stream to "backup_push_url" or "backup_push_url_srt".
 
               Displays the backup server status of PUSH method only. For PULL a "live" field is always used, even when origin servers are switched using round robin scheduling (look "uri" field for details).
+          active_ingest_region_primary:
+            type: string
+            nullable: true
+            readOnly: true
+            default: null
+            example: ed2
+            description: |-
+              Read-only actual ingest region currently receiving the primary stream.
+
+              This field cannot be changed in the request body. The value is `null` when the primary ingest is not active.
+          active_ingest_region_backup:
+            type: string
+            nullable: true
+            readOnly: true
+            default: null
+            example: anx1
+            description: |-
+              Read-only actual ingest region currently receiving the backup stream.
+
+              This field cannot be changed in the request body. The value is `null` when the backup ingest is not active.
           stream_source_type:
             type: string
             description: |-
@@ -7599,7 +7083,7 @@ components:
 
               To use RTMPS just manually change the protocol name from "rtmp://" to "rtmps://".
 
-              Use only 1 protocol of sending a master stream: eitheronly RTMP/S (`push_url`), or only SRT (`push_url_srt`).
+              Use only 1 protocol of sending a master stream: either only RTMP/S (`push_url`), or only SRT (`push_url_srt`).
 
                 
 
@@ -7621,7 +7105,7 @@ components:
                 
 
 
-              For advanced customers only: For your complexly distributed broadcast systems, it is also possible to additionally output an array of multi-regional ingestion points for manual selection from them. To activate this mode, contact your manager or the Support Team to activate the "multi_region_push_urls" attibute.
+              For advanced customers only: For your complexly distributed broadcast systems, it is also possible to additionally output an array of multi-regional ingestion points for manual selection from them. To activate this mode, contact your manager or the Support Team to activate the "multi_region_push_urls" attribute.
               But if you clearly don’t understand why you need this, then it’s best to use the default single URL in the "push_url" attribute.
           backup_push_url:
             type: string
@@ -7638,7 +7122,7 @@ components:
             description: |-
               URL to PUSH master stream to our main server using SRT protocol. 
 
-              Use only 1 protocol of sending a master stream: eitheronly RTMP/S (`push_url`), or only SRT (`push_url_srt`).
+              Use only 1 protocol of sending a master stream: either only RTMP/S (`push_url`), or only SRT (`push_url_srt`).
 
                 
               **Setup SRT latency on your sender side**
@@ -7681,7 +7165,7 @@ components:
             description: URL to PUSH master stream to our backup server using SRT protocol with the same logic of backup-streams
           push_url_whip:
             type: string
-            description: |-
+            description: |+
               URL to PUSH WebRTC stream to our server using WHIP protocol.
 
                 
@@ -7689,7 +7173,7 @@ components:
 
               **WebRTC WHIP to LL-HLS and DASH**
 
-              Video Streaming supports WebRTC HTTP Ingest Protocol (WHIP), and WebRTC to HLS/DASH converter. As a result you can stream from web broswers natively.
+              Video Streaming supports WebRTC HTTP Ingest Protocol (WHIP), and WebRTC to HLS/DASH converter. As a result you can stream from web browsers natively.
 
 
 
@@ -7708,29 +7192,45 @@ components:
               - Video must be encoded with H.264.
               - Audio must be encoded with OPUS.
 
-              Note. Specifically for WebRTC mode a method of constant transcoding with an initial given resolution is used. This means that if WebRTC in the end-user's browser decides to reduce the quality or resolution of the master stream (to let say 360p) due to restrictions on the end-user's device (network conditions, CPU consumption, etc.), the transcoder will still continue to transcode the reduced stream to the initial resolution (let say 1080p ABR). When the restrictions on the end-user's device are removed, quiality will improve again.
+              Note. Specifically for WebRTC mode a method of constant transcoding with an initial given resolution is used. This means that if WebRTC in the end-user's browser decides to reduce the quality or resolution of the master stream (to let say 360p) due to restrictions on the end-user's device (network conditions, CPU consumption, etc.), the transcoder will still continue to transcode the reduced stream to the initial resolution (let say 1080p ABR). When the restrictions on the end-user's device are removed, quality will improve again.
 
 
               **WebRTC WHIP Client**
 
-              We provide a convenient WebRTC WHIP library for working in browsers. You can use our library, or any other you prefer.
-              Simple example of usage is here: https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html 
+              To start a broadcast, your client application must push a WebRTC WHIP stream to this `push_url_whip` URL.
 
-              Also try to use the feature in UI of the Customer Portal. In the Streaming section inside the settings of a specific live stream, a new section "Quick start in browser" has been added.
+              Other WHIP-compatible clients and tools:
+              - [JS WebRTC WHIP client](https://github.com/G-Core/gcore-webrtc-sdk-js). Simple example of usage is here: https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html
+              - [@eyevinn/whip-web-client](https://web.whip.eyevinn.technology/).
+              - [whip-go](https://github.com/ggarber/whip-go).
+              - [OBS](https://obsproject.com/) (Open Broadcaster Software).
+              - Larix Broadcaster, free apps for iOS and Android with WebRTC.
+
+              More details are available in the Product Documentation on our website.
+
+              **WHIP ingest rejection reasons**
+
+              Pushing to the WHIP URL can return 200 OK, then its normal work.
+
+                
+              However, sometimes it can return a non-200 HTTP response. In that case, check the HTTP response status code and the extra `X-Reason-Code` response header.
+              Possible reject reasons:
+              - Stream does not exist: HTTP 401, `X-Reason-Code: 2001`.
+              - Stream token is invalid: HTTP 403, `X-Reason-Code: 2002`.
+              - Someone else is already streaming: HTTP 403, `X-Reason-Code: 2003`.
+              - Stream disabled: HTTP 403, `X-Reason-Code: 2004`.
+              - Client's live streams limit reached: HTTP 403, `X-Reason-Code: 2005`.
+              - Client's status is not "active": HTTP 403, `X-Reason-Code: 2006`.
 
                 
 
 
-              Please note that 1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests into the single `push_url_whip`, or 2+ protocols at once will not lead to a result.
+              Please note that only 1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests into the single `push_url_whip`, or 2+ protocols at once will not lead to a result.
 
               For example, transcoding process will fail if:
               - you are pushing primary and backup WHIP to the same single `push_url_whip` simultaneously
               - you are pushing WHIP to `push_url_whip` and RTMP to `push_url` simultaneously
 
-                
-               
-
-              More information in the Product Documentation on the website.
           created_at:
             type: string
             description: Datetime of creation in ISO 8601
@@ -7753,13 +7253,13 @@ components:
 
               After restarting the stream, this value is not reset to "null", and the time of the last/previous end is always displayed here. That is, when the start time is greater than the end time, it means the current session is still ongoing and the stream has not ended yet.
 
-              If you want to see all information about acitivity of the stream, you can get it from another method /streaming/statistics/ffprobe. This method shows aggregated activity parameters during a time, when stream was alive and transcoded. Also you can create graphs to see the activity. For example /streaming/statistics/ffprobe?interval=6000&`date_from`=2023-10-01&`date_to`=2023-10-11&`stream_id`=12345
+              If you want to see all information about activity of the stream, you can get it from another method /streaming/statistics/ffprobe. This method shows aggregated activity parameters during a time, when stream was alive and transcoded. Also you can create graphs to see the activity. For example /streaming/statistics/ffprobe?interval=6000&`date_from`=2023-10-01&`date_to`=2023-10-11&`stream_id`=12345
           iframe_url:
             type: string
             description: |-
               A URL to a built-in HTML web player with the stream inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
 
-              Please, remember that transcoded streams from "hls_cmaf_url" with .m3u8 at the end, and from "dash_url" with .mpd at the end are to be played inside video players only. For example: AVplayer on iOS, Exoplayer on Android, HTML web player in browser, etc. General bowsers like Chrome, Firefox, etc cannot play transcoded streams with .m3u8 and .mpd at the end. The only exception is Safari, which can only play Apple's HLS .m3u8 format with limits.
+              Please, remember that transcoded streams from "hls_cmaf_url" with .m3u8 at the end, and from "dash_url" with .mpd at the end are to be played inside video players only. For example: AVplayer on iOS, Exoplayer on Android, HTML web player in browser, etc. General browsers like Chrome, Firefox, etc cannot play transcoded streams with .m3u8 and .mpd at the end. The only exception is Safari, which can only play Apple's HLS .m3u8 format with limits.
 
               That's why you may need to use this HTML web player. Please, look Knowledge Base for details. 
 
@@ -7891,6 +7391,8 @@ components:
           created_at: '2023-10-01T00:01:01.000Z'
           started_at_primary: '2023-10-03T00:01:01.000Z'
           started_at_backup: null
+          active_ingest_region_primary: anx2
+          active_ingest_region_backup: null
           finished_at_primary: '2023-10-01T23:59:59.000Z'
           dvr_duration: 3600
           iframe_url: https://demo-public.gvideo.io/streams/2675_19146
@@ -8013,15 +7515,8 @@ components:
           name: German (AI-generated)
           language: ger
           vtt: |-
-            WEBVTT
-
-            1
-            00:00:07.154 --> 00:00:12.736
-            Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
-
-            2
-            00:00:13.236 --> 00:00:20.198
-            Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
+            WEBVTT 1 00:00:07.154 --> 00:00:12.736 Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
+            2 00:00:13.236 --> 00:00:20.198 Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
     subtitleBase:
       type: object
       properties:
@@ -8045,15 +7540,8 @@ components:
           name: German (AI-generated)
           language: ger
           vtt: |-
-            WEBVTT
-
-            1
-            00:00:07.154 --> 00:00:12.736
-            Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
-
-            2
-            00:00:13.236 --> 00:00:20.198
-            Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
+            WEBVTT 1 00:00:07.154 --> 00:00:12.736 Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
+            2 00:00:13.236 --> 00:00:20.198 Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
     subtitleBodyPatch:
       allOf:
       - $ref: '#/components/schemas/subtitleBase'
@@ -8118,15 +7606,8 @@ components:
           name: German (AI-generated)
           language: ger
           vtt: |-
-            WEBVTT
-
-            1
-            00:00:07.154 --> 00:00:12.736
-            Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
-
-            2
-            00:00:13.236 --> 00:00:20.198
-            Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
+            WEBVTT 1 00:00:07.154 --> 00:00:12.736 Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
+            2 00:00:13.236 --> 00:00:20.198 Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
     subtitlePatched:
       allOf:
       - $ref: '#/components/schemas/subtitleBase'
@@ -8134,15 +7615,8 @@ components:
           name: German (AI-generated)
           language: ltz
           vtt: |-
-            WEBVTT
-
-            1
-            00:00:07.154 --> 00:00:12.736
-            Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
-
-            2
-            00:00:13.236 --> 00:00:20.198
-            Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
+            WEBVTT 1 00:00:07.154 --> 00:00:12.736 Wir haben 100 Millionen registrierte Benutzer oder aktive Benutzer, die mindestens einmal pro Woche spielen.
+            2 00:00:13.236 --> 00:00:20.198 Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
     subtitleerror422:
       allOf:
       - $ref: '#/components/schemas/badrequest'
@@ -8222,6 +7696,519 @@ components:
     video:
       allOf:
       - $ref: '#/components/schemas/createVideo'
+    videoDetails:
+      allOf:
+      - $ref: '#/components/schemas/videoListItem'
+      - type: object
+        properties:
+          sprite:
+            type: string
+            description: Link to picture with video storyboard. Image in JPG format. The picture is a set of rectangles with frames from the video. Typically storyboard is used to show preview images when hovering the video's timeline.
+            default: null
+          sprite_vtt:
+            type: string
+            description: Storyboard in VTT format. This format implies an explicit indication of the timing and frame area from a large sprite image.
+            default: null
+          iframe_url:
+            type: string
+            description: |-
+              A URL to a built-in HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
+
+              The player can be opened or shared via this direct link. Also the video player can be integrated into your web pages using the Iframe tag.
+
+              Example of usage on a web page:
+              <iframe width="100%" height="100%" src="https://player.gvideo.co/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+                
+
+
+              There are some link modifiers you can specify and add manually:
+              - ?`no_low_latency` – player is forced to use non-low-latency streams HLS MPEG-TS, instead of MPEG-DASH CMAF or HLS/LL-HLS CMAF.
+              - ?t=(integer) – time to start playback from specified point in the video. Applicable for VOD only.
+              - ?`sub_lang`=(language) – force subtitles to specific language (2 letters ISO 639 code of a language).
+              - Read more in the Product Documentation.
+      example:
+        id: 70575
+        name: Coffee Run - Blender Open Movie 720p
+        iframe_url: https://player.gvideo.co/videos/2675_FnlHXwA16ZMxmUr
+        sprite: https://static.gvideo.co/videoplatform/sprites/2675/10507272_sNOwd4luk5mGGf9M.mp4_sprite.jpg
+        sprite_vtt: |
+          WEBVTT
+
+          1
+          00:00:00,000 --> 00:00:05,000
+          xMbWbUSuvJ8NX2_sprite.jpg#xywh=0,0,100,42
+
+          2
+          00:00:05,000 --> 00:00:10,000
+          xMbWbUSuvJ8NX2_sprite.jpg#xywh=100,0,100,42
+          ...
+    videoListItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Video ID
+        name:
+          type: string
+          description: |-
+            Title of the video.
+
+            Often used as a human-readable name of the video, but can contain any text you wish. The values are not unique and may be repeated.
+            Examples:
+            - Educational training 2024-03-29
+            - Series X S3E14, The empire strikes back
+            - 480fd499-2de2-4988-bc1a-a4eebe9818ee
+        description:
+          type: string
+          description: Additional text field for video description
+        client_id:
+          type: integer
+          description: Client ID
+        origin_size:
+          type: integer
+          description: Size of original file
+        origin_video_duration:
+          type: integer
+          description: Original video duration in milliseconds
+        created_at:
+          type: string
+          description: Time of creation. Datetime in ISO 8601 format.
+        updated_at:
+          type: string
+          description: Time of last update of the video entity. Datetime in ISO 8601 format.
+        origin_url:
+          type: string
+          description: |-
+            URL to an original file from which the information for transcoding was taken. 
+
+            May contain a link for scenarios:
+            - If the video was downloaded from another origin
+            - If the video is a recording of a live stream
+            - Otherwise it is "null"
+
+            **Copy from another server**
+            URL to an original file that was downloaded. Look at method "Copy from another server" in POST /videos.
+            **Recording of an original live stream** 
+
+            URL to the original non-transcoded stream recording with original quality, saved in MP4 format. File is created immediately after the completion of the stream recording. The stream from which the recording was made is reflected in "stream_id" field.
+
+            Can be used for internal operations when a recording needs to be received faster than the transcoded versions are ready. But this version is not intended for public distribution. Views and downloads occur in the usual way, like viewing an MP4 rendition.
+
+            The MP4 file becomes available for downloading when the video entity "status" changes from "new" to "pending". 
+
+            Format of URL is ```/videos/<cid>_<slug>/origin_<bitrate>_<height>.mp4```
+            Where:
+            - ```<bitrate>``` – Encoding bitrate in Kbps.
+            - ```<height>``` – Video height.
+
+            The original file is stored for up to 7 days, after which it is deleted automatically. By default, the retention policy for original recorded files cannot be changed. For enterprise customers, it can be adjusted individually upon request.
+
+            This is a premium feature, available only upon request through your manager or support team.
+          default: null
+        duration:
+          type: integer
+          description: Video duration in milliseconds. May differ from "origin_video_duration" value if the video was uploaded with clipping through the parameters "clip_start_seconds" and "clip_duration_seconds"
+        slug:
+          type: string
+          description: |-
+            A unique alphanumeric identifier used in public URLs to retrieve and view the video. It is unique for each video, generated randomly and set automatically by the system.
+
+            Format of usage in URL is *.../videos/{`client_id`}_{slug}/...*
+
+            Example:
+            - Player: /videos/`12345_neAq1bYZ2`
+            - Manifest: /videos/`12345_neAq1bYZ2`/master.m3u8
+            - Rendition: /videos/`12345_neAq1bYZ2`/`qid90v1_720`.mp4
+        stream_id:
+          type: integer
+          description: If the video was saved from a stream, then ID of that stream is saved here
+        recording_started_at:
+          type: string
+          description: If the video was saved from a stream, then start time of the stream recording is saved here. Format is date time in ISO 8601
+        record_type:
+          type: string
+          nullable: true
+          enum:
+          - null
+          - origin
+          - transcoded
+          description: |-
+            Method of recording a stream. Specifies the source from which the stream will be recorded: original or transcoded.
+
+            Types:
+            - null – indicates that the video was uploaded in the standard way (and not recorded from a stream).
+            - "origin" – To record RMTP/SRT/etc original clean media source.
+            - "transcoded" – To record the output transcoded version of the stream, including overlays, texts, logos, etc. additional media layers.
+        share_url:
+          type: string
+          description: Custom URL or iframe displayed in the link field when a user clicks on a sharing button in player. If empty, the link field and social network sharing is disabled
+        poster:
+          type: string
+          default: null
+          description: |-
+            Poster is your own static image which can be displayed before the video begins playing. This is often a frame of the video or a custom title screen.
+
+            Field contains a link to your own uploaded image.
+
+            Also look at "screenshot" attribute.
+        poster_thumb:
+          type: string
+          default: null
+          description: Field contains a link to minimized poster image. Original "poster" image is proportionally scaled to a size of 200 pixels in height.
+        screenshot:
+          type: string
+          description: |-
+            A URL to the default screenshot is here. The image is selected from an array of all screenshots based on the “`screenshot_id`” attribute. If you use your own "poster", the link to it will be here too.
+
+            Our video player uses this field to display the static image before the video starts playing. As soon as the user hits "play" the image will go away.
+            If you use your own external video player, then you can use the value of this field to set the poster/thumbnail in your player.
+
+            Example:
+            - `video_js`.poster: ```api.screenshot```
+            - clappr.poster: ```api.screenshot```
+        screenshots:
+          type: array
+          items:
+            type: string
+          description: |-
+            Array of auto generated screenshots from the video. By default 5 static screenshots are taken from different places in the video. If the video is short, there may be fewer screenshots.
+
+            Screenshots are created automatically, so they may contain not very good frames from the video. To use your own image look at "poster" attribute.
+        screenshot_id:
+          type: integer
+          description: |-
+            ID of auto generated screenshots to be used for default screenshot.
+
+            Counting from 0. A value of -1 sets the "screenshot" attribute to the URL of your own image from the "poster" attribute.
+          default: null
+        ad_id:
+          type: integer
+          description: ID of ad that should be shown. If empty the default ad is show. If there is no default ad, no ad is shown.
+        hls_url:
+          type: string
+          description: |-
+            A URL to a master playlist HLS (master.m3u8).
+            Chunk type will be selected automatically:
+            - TS if your video was encoded to H264 only.
+            - CMAF if your video was encoded additionally to H265 and/or AV1 codecs (as Apple does not support these codecs over MPEG TS, and they are not standardized in TS-container).
+
+              
+
+
+            You can also manually specify suffix-options that will allow you to change the manifest to your request:
+
+            ```
+            /videos/{client_id}_{video_slug}/master[-cmaf][-min-N][-max-N][-img][-(h264|hevc|av1)].m3u8
+            ```
+
+            List of suffix-options:
+            - [-cmaf] – getting HLS CMAF version of the manifest. Look at the ```hls_cmaf_url``` field.
+            - [-min-N] – ABR soft limitation of qualities from below.
+            - [-max-N] – ABR soft limitation of qualities from above.
+            - [-img] – Roku trick play: to add tiles directly into .m3u8 manifest. Read the Product Documentation for details.
+            - [-(h264|hevc|av1) – Video codec soft limitation. Applicable if the video was transcoded into multiple codecs H264, H265 and AV1 at once, but you want to return just 1 video codec in a manifest. Read the Product Documentation for details.
+              
+            ABR soft-limiting: Soft limitation of the list of qualities allows you to return not the entire list of transcoded qualities for a video, but only those you need.
+            For example, the video is available in 7 qualities from 360p to 4K, but you want to return not more than 480p only due to the conditions of distribution of content to a specific end-user (i.e. free account):
+            ABR soft-limiting examples:
+            - To a generic ```.../master.m3u8``` manifest
+            - Add a suffix-option to limit quality ```.../master-max-480.m3u8```
+            - Add a suffix-option to limit quality and codec ```.../master-min-320-max-320-h264.m3u8```
+            For more details look at the Product Documentation.
+              
+            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
+        hls_cmaf_url:
+          type: string
+          description: |-
+            A URL to a master playlist HLS (master-cmaf.m3u8) with CMAF-based chunks. Chunks are in fMP4 container. It's a code-agnostic container, which allows to use any like H264, H265, AV1, etc.
+              
+
+
+            It is possible to use the same suffix-options as described in the "hls_url" attribute.
+              
+
+
+            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
+        dash_url:
+          type: string
+          description: |-
+            A URL to a master playlist MPEG-DASH (master.mpd) with CMAF or WebM based chunks.
+
+            Chunk type will be selected automatically for each quality:
+            - CMAF for H264 and H265 codecs.
+            - WebM for AV1 codec.
+
+              
+
+
+            This URL is a link to the main manifest. But you can also manually specify suffix-options that will allow you to change the manifest to your request:
+
+            ```
+            /videos/{client_id}_{slug}/master[-min-N][-max-N][-(h264|hevc|av1)].mpd
+            ```
+
+            List of suffix-options:
+            - [-min-N] – ABR soft limitation of qualities from below.
+            - [-max-N] – ABR soft limitation of qualities from above.
+            - [-(h264|hevc|av1) – Video codec soft limitation. Applicable if the video was transcoded into multiple codecs H264, H265 and AV1 at once, but you want to return just 1 video codec in a manifest. Read the Product Documentation for details.
+
+            Read more what is ABR soft-limiting in the "hls_url" field above.
+
+              
+
+
+            Caution. Solely master.mpd is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
+        custom_iframe_url:
+          type: string
+          description: Custom URL of Iframe for video player to be used in share panel in player. Auto generated Iframe URL provided by default.
+        views:
+          type: integer
+          description: Number of video views through the built-in HTML video player of the Streaming Platform only. This attribute does not count views from other external players and native OS players, so here may be less number of views than in "cdn_views".
+        cdn_views:
+          type: integer
+          description: Total number of video views. It is calculated based on the analysis of all views, no matter in which player.
+        client_user_id:
+          type: integer
+          default: null
+          description: 'Custom meta field for storing the Identifier in your system. We do not use this field in any way when processing the stream. Example: ```client_user_id = 1001```'
+        directory_id:
+          type: integer
+          default: null
+          description: ID of the directory where the video is stored.
+        quality_set_id:
+          type: integer
+          default: null
+          description: Custom quality set ID used for transcoding.
+        priority:
+          type: integer
+          default: 0
+          description: This value indicates the priority with which the transcoding task was assigned. After transcoding is complete, this value no longer has any effect and simply displays historical data.
+        status:
+          type: string
+          description: |-
+            Video processing status:
+            - empty – initial status, when video-entity is created, but video-file has not yet been fully uploaded (TUS uploading, or downloading from an origin is not finished yet)
+            - pending – video is in queue to be processed
+            - viewable – video has at least 1 quality and can already be viewed via a link, but not all qualities are ready yet
+            - ready – video is completely ready, available for viewing with all qualities
+            - error – error while processing a video, look at "error" field
+          enum:
+          - empty
+          - pending
+          - viewable
+          - ready
+          - error
+        error:
+          type: string
+          description: 'Video processing error text will be saved here if "status: error"'
+        projection:
+          type: string
+          description: |-
+            Regulates the video format:
+
+            - **regular** — plays the video as usual
+            - **vr360** — plays the video in 360 degree mode
+            - **vr180** — plays the video in 180 degree mode
+            - **vr360tb** — plays the video in 3D 360 degree mode Top-Bottom.
+
+              
+             Default is regular
+        converted_videos:
+          type: array
+          description: Array of data about each transcoded quality
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: ID of the converted file of the specific quality
+              name:
+                type: string
+                description: Specific quality name
+              width:
+                type: integer
+                description: Width in pixels of the converted video file of the specified quality. Can be ```null``` for audio files.
+                default: null
+              height:
+                type: integer
+                description: Height in pixels of the converted video file of the specific quality. Can be ```null``` for audio-only files.
+                default: null
+              size:
+                type: integer
+                description: Size in bytes of the converted file of the specific quality. Can be ```null``` until transcoding is fully completed.
+                default: null
+              progress:
+                type: integer
+                description: Status of transcoding into the specific quality, from 0 to 100
+              status:
+                type: string
+                description: |-
+                  Status of transcoding:
+                  - processing – video is being transcoded to this quality,
+                  - complete – quality is fully processed,
+                  - error – quality processing error, see parameter "error".
+                enum:
+                - processing
+                - complete
+                - error
+              error:
+                type: string
+                description: Video processing error text in this quality
+                default: null
+              mp4_url:
+                type: string
+                description: |-
+                  A URL to a rendition file of the specified quality in MP4 format for downloading.
+                    
+
+
+                  **Download methods**
+
+                  For each converted video, additional download endpoints are available under `converted_videos`/`mp4_urls`.
+                  An MP4 download endpoints:
+                  1. `/videos/{client_id}_{slug}/{filename}.mp4`
+                  2. `/videos/{client_id}_{slug}/{filename}.mp4/download`
+                  3. `/videos/{client_id}_{slug}/{filename}.mp4/download={custom_filename}`
+
+                  The first option returns the file as is.
+                  Response will be:
+
+                  ```
+                  GET .mp4
+                  ...
+                  content-type: video/mp4
+                  ```
+
+                  The second option with `/download` will respond with HTTP response header that directly tells browsers to download the file instead of playing it in the browser:
+
+                  ``` 
+                  GET .mp4/download
+                  ...
+                  content-type: video/mp4
+                  content-disposition: attachment
+                  access-control-expose-headers: Content-Disposition
+                  ```
+
+                  The third option allows you to set a custom name for the file being downloaded. You can optionally specify a custom filename (just name excluding the .mp4 extension) using the download= query.
+
+                  Filename constraints:
+                  - Length: 1-255 characters
+                  - Must NOT include the .mp4 extension (it is added automatically)
+                  - Allowed characters: a-z, A-Z, 0-9, _(underscore), -(dash), .(dot)
+                  - First character cannot be .(dot)
+                  - Example valid filenames: ```holiday2025```, ```_backup.final```, ```clip-v1.2```
+
+                  ```
+                  GET .mp4/download={custom_filename}
+                  ...
+                  content-type: video/mp4
+                  content-disposition: attachment; filename="{custom_filename}.mp4"
+                  access-control-expose-headers: Content-Disposition                    
+                  ```
+
+                  Examples:
+                  - MP4: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download```
+                  - MP4 with custom download filename: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30```
+
+                    
+
+
+                  **Default MP4 file name structure**
+
+                  Link to the file {filename} contains information about the encoding method using format:
+
+                  ```<quality_version>_<codec>_<bitrate>_<height>.mp4```
+                  - ```<quality_version>``` – Internal quality identifier and file version. Please do not use it, can be changed at any time without any notice.
+                  - ```<codec>``` – Codec name that was used to encode the video, or audio codec if it is an audio-only file.
+                  - ```<bitrate>``` – Encoding bitrate in Kbps.
+                  - ```<height>``` – Video height, or word "audio" if it is an audio-only file.
+
+                  Note that this link format has been applied since 14.08.2024. If the video entity was uploaded earlier, links may have old simplified format.
+
+                  Example: ``` /videos/{client_id}_{slug}/qid3567v1_h264_4050_1080.mp4 ```
+
+                    
+
+
+                  **Dynamic speed limiting**
+                  This mode sets different limits for different users or for different types of content. The speed is adjusted based on requests with the “speed” and “buffer” arguments.
+
+                  Example: ``` ?speed=50k&buffer=500k ```
+
+                  Read more in Product Documentation in CDN section "Network limits". 
+
+                    
+
+
+                  **Secure token authentication for MP4 (updated)**
+
+                  Access to MP4 download links only can be protected using advanced secure tokens passed as query parameters.
+
+                  Token generation uses the entire MP4 path, which ensures the token only grants access to a specific quality/version of the video. This prevents unintended access to other bitrate versions of an ABR stream.
+
+                  Token Query Parameters:
+                  - token: The generated hash
+                  - expires: Expiration timestamp
+                  - speed: (optional) Speed limit in bytes/sec, or empty string
+                  - buffer: (optional) Buffer size in bytes, or empty string
+
+                  Optional (for IP-bound tokens):
+                  - ip: The user’s IP address
+                  Example: ``` ?md5=QX39c77lbQKvYgMMAvpyMQ&expires=1743167062 ```
+
+                  Read more in Product Documentation in Streaming section "Protected temporarily link".
+      example:
+        id: 70575
+        name: Coffee Run - Blender Open Movie 720p
+        description: Fueled by caffeine, a young woman runs through the bittersweet memories of her past relationship. Coffee Run was directed by Hjalti Hjalmarsson and produced by the team at Blender Studio.
+        client_id: 1
+        duration: 184669
+        slug: FnlHXwA16ZMxmUr
+        status: ready
+        origin_size: 29260881
+        origin_video_duration: 184669
+        origin_audio_channels: 2
+        origin_height: 804
+        origin_width: 1920
+        created_at: '2024-06-13T12:15:25.000Z'
+        updated_at: '2024-07-26T15:30:50.000Z'
+        record_type: null
+        directory_id: 800
+        quality_set_id: null
+        priority: 0
+        clip_start_seconds: null
+        clip_duration_seconds: null
+        hls_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8
+        hls_cmaf_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8
+        dash_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd
+        poster: https://static.gvideo.co/videoplatform/posters/video/10507272/f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
+        poster_thumb: https://static.gvideo.co/videoplatform/posters/video/10507272/thumb_f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
+        screenshot: https://static.gvideo.co/videoplatform/posters/video/10507272/f55b7db5f7a1ea48d713d7e6806bb9c5.jpeg
+        screenshots:
+        - https://static.gvideo.co/videoplatform/thumbnails/2675/2474723_FnlHXwA16ZMxmUr.mp4_2_1080.jpg
+        - https://static.gvideo.co/videoplatform/thumbnails/2675/2474723_FnlHXwA16ZMxmUr.mp4_3_1080.jpg
+        screenshot_id: -1
+        views: 2000001
+        cdn_views: 30000003
+        projection: regular
+        converted_videos:
+        - id: 25889825
+          name: vod720p
+          width: 1719
+          height: 720
+          size: 37651798
+          progress: 100
+          status: complete
+          mp4_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4
+        - id: 25889828
+          name: vod480p
+          width: 1146
+          height: 480
+          size: 20255892
+          progress: 100
+          status: complete
+          mp4_url: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3573v3_h264_800_468.mp4
     views:
       type: object
       properties:

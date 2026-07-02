@@ -1,21 +1,26 @@
 ﻿---
 title: "Known Bots"
 sidebarTitle: "Known Bots"
-ai-navigation: Configure Known Bots policy in WAAP Bot Management to allow or block traffic from legitimate automated services including Google, Microsoft, Slack, Facebook, Twitter crawlers, SEO tools, and PayPal IPN requests by setting policy mode to Allow or Policy-based.
+ai-navigation: Configure Known Bots policies in Gcore WAAP via Customer Portal or REST API to set Allow or Policy-based mode for search engine crawlers, monitoring tools, and payment processor bots.
 ---
 
-This policy group functions uniquely in WAAP. Instead of challenging or blocking incoming traffic like other policy groups, it's designed to recognize and allow traffic from legitimate automated services.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-These services include:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>This policy group functions uniquely in WAAP. Instead of challenging or blocking incoming traffic like other policy groups, it's designed to recognize and allow traffic from legitimate automated services.</p>
+
+<p>These services include:</p>
 
 - Common web crawlers like Google and Microsoft bots
 - Preview fetch bots like Slack, Facebook, or Twitter
 - SEO and monitoring tools
 - Other tools like Instant Payment Notification (IPN) requests from PayPal or HiPay
 
-All these automation services often access your domain to gather some information and are considered beneficial or necessary for normal web activities. Note that some policies are set to **Policy-based** mode by default, and you can set them to **Allow** to fully permit traffic from the relevant services.
+<p>All these automation services often access your domain to gather some information and are considered beneficial or necessary for normal web activities. Note that some policies are set to **Policy-based** mode by default, and you can set them to **Allow** to fully permit traffic from the relevant services.</p>
 
-In some cases, you might want to restrict automation tools from accessing your domain. For instance, you can do so to enforce specific data protection requirements on a domain, protect it from potentially harmful services, or restrict paid content from unauthorized use. In this case, adjust the mode for particular bots in the Known Bots section.
+<p>In some cases, you might want to restrict automation tools from accessing your domain. For instance, you can do so to enforce specific data protection requirements on a domain, protect it from potentially harmful services, or restrict paid content from unauthorized use. In this case, adjust the mode for particular bots in the Known Bots section.</p>
 
 <Info>
   **Info**
@@ -25,7 +30,7 @@ In some cases, you might want to restrict automation tools from accessing your d
 
 ## Configure Known Bots
 
-You can review and configure relevant bots in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard):
+<p>You can review and configure relevant bots in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard):</p>
 
 1. Navigate to **WAAP** \> **Bot Management**.
 
@@ -33,3 +38,173 @@ You can review and configure relevant bots in the [Gcore Customer Portal](https:
 
 
 3. Click the **Known Bots** tab to view and adjust the list of allowed bots.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Known Bots policies control how WAAP handles traffic from 136 recognized automated services — search engine crawlers, social media preview bots, monitoring tools, and payment processors. Each bot can be set to **Allow** (bypass WAF inspection) or **Policy-based** (subject to other active WAF rules).</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. This policy group is available on the Pro and Enterprise WAAP plans.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View bot modes
+
+<p>Retrieve the full list of Known Bots policies and their current modes for a domain.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    bot_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "common-automated-services"
+    )
+
+    for bot in bot_set.rules:
+        mode = "Allow" if bot.mode else "Policy-based"
+        print(f"{bot.name}: {mode} ({bot.id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "common-automated-services" {
+                for _, bot := range rs.Rules {
+                    mode := "Policy-based"
+                    if bot.Mode {
+                        mode = "Allow"
+                    }
+                    fmt.Printf("%s: %s (%s)\n", bot.Name, mode, bot.ID)
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      | jq '.[] | select(.resource_slug == "common-automated-services") | .rules[] | {name, id, mode}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns all policies in the group. `mode: true` means Allow; `mode: false` means Policy-based.</p>
+
+## Toggle a bot mode
+
+<p>Switch a bot between Allow and Policy-based. Each call flips the current mode. Use the View bot modes response to find the bot ID.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Find the bot ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    bot_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "common-automated-services"
+    )
+    bot = next(r for r in bot_set.rules if r.name == "Google Bot")
+
+    result = client.waap.domains.policies.toggle(bot.id, domain_id=domain_id)
+    mode = "Allow" if result.mode else "Policy-based"
+    print(f"Google Bot is now {mode}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Find the bot ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var botID string
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "common-automated-services" {
+                for _, bot := range rs.Rules {
+                    if bot.Name == "Google Bot" {
+                        botID = bot.ID
+                    }
+                }
+            }
+        }
+
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), botID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        mode := "Policy-based"
+        if result.Mode {
+            mode = "Allow"
+        }
+        fmt.Printf("Google Bot is now %s\n", mode)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Set BOT_POLICY_ID to the bot ID from the View bot modes response
+    export BOT_POLICY_ID="{BOT_POLICY_ID}"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${BOT_POLICY_ID}/toggle" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {"mode": true}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the updated mode. `mode: true` means Allow; `mode: false` means Policy-based.</p>
+
+</MethodSection>
+</MethodSwitch>

@@ -40,6 +40,29 @@ only in the Mintlify runtime. Always verify the import when an article renders e
 </MethodSwitch>
 ```
 
+**Wrong — first MethodSection at column 0 (no indent):**
+```jsx
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+...
+</MethodSection>
+```
+
+**Why this breaks:** Mintlify's cloud renderer requires the first child of `<MethodSwitch>` to
+be indented 2 spaces. When it is at column 0, the renderer does not recognize it as a child
+element, `MethodSwitch` receives no children, and the entire article body renders empty —
+only the page title is visible. The MDX compiler (`@mdx-js/mdx`) and local `mintlify dev`
+do NOT catch this; it only fails in the deployed Mintlify build.
+
+**Wrong — blank line between `<MethodSwitch>` and first `<MethodSection>`:**
+```jsx
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
+```
+
+Same result: empty page on deploy.
+
 **Wrong — self-closing MethodSwitch with MethodSection outside:**
 ```jsx
 <MethodSwitch methods={[...]} />
@@ -349,6 +372,36 @@ $c = $c -replace ' \? ', ' — '
 ```
 
 This is safe because URL query strings use `?` without surrounding spaces.
+
+### CRITICAL: Never simplify method-switch.jsx
+
+`snippets/method-switch.jsx` must NOT be refactored or simplified. The child-resolution
+logic in `MethodSwitch` is intentionally defensive:
+
+```javascript
+const tabs = React.Children.toArray(children).map((c) => {
+  if (!c || !c.props) return null;
+  if (c.props.id) return c;
+  const inner = c.props.children;
+  if (inner && inner.props && inner.props.id) return inner;
+  return null;
+}).filter(Boolean);
+```
+
+**Why it must stay this way:** Mintlify's runtime wraps `<MethodSection>` children in an
+intermediate element before passing them to `MethodSwitch`. The simplified `.filter(c => c.props.id)`
+does NOT see `id` on the wrapper — it returns `tabs = []` — and the entire article renders
+as a blank page (only the title and ToC appear).
+
+**Symptom:** deployed article shows only title + ToC; empty `<div role="tablist">` in DOM.
+
+**Root cause confirmed by DOM inspection:** `document.querySelector('[role=tablist]').parentElement.childElementCount === 1`
+(only the tablist div, no content divs — because `tabs.map(...)` produces nothing).
+
+The simplified version works locally (`mintlify dev`) and passes the MDX compiler — the
+blank page appears ONLY on Mintlify deploy. Do not "fix" this code.
+
+---
 
 ### UTF-8 BOM at the start of a file
 

@@ -1,16 +1,21 @@
 ---
 title: "Events"
 sidebarTitle: Events
-ai-navigation: Investigate HTTP requests and security events in WAAP using Events filters by time range, event type, decision (Blocked, Monitored, Allowed, Passed), optional action (CAPTCHA, JS Challenge), country, IP address, path, HTTP method, response code, request ID, reference ID, and session ID with 30-day retention.
+ai-navigation: Investigate HTTP requests and security events in WAAP via Customer Portal using filters for time range, event type, decision, optional action, country, IP address, path, HTTP method, and request identifiers, or via REST API using the analytics requests endpoint.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## Purpose
 
-The **Events** section provides detailed visibility into HTTP requests and security events processed by WAAP. It serves as the primary workspace for traffic investigation, security analysis, and policy validation.
+<p>The **Events** section provides detailed visibility into HTTP requests and security events processed by WAAP. It serves as the primary workspace for traffic investigation, security analysis, and policy validation.</p>
 
-Events allow teams to move from high-level attack patterns to individual requests, sessions, and security signals.
+<p>Events allow teams to move from high-level attack patterns to individual requests, sessions, and security signals.</p>
 
-Request history is retained for 30 days.
+<p>Request history is retained for 30 days.</p>
 
 <Frame>
   ![Events page in the Customer Portal](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events.png)
@@ -18,9 +23,9 @@ Request history is retained for 30 days.
 
 ## Why filtering matters
 
-In production environments, raw request logs are too large to analyze manually. The Events interface is designed around flexible, filter-driven investigation, allowing analysts to quickly reduce large traffic volumes to a meaningful investigative scope.
+<p>In production environments, raw request logs are too large to analyze manually. The Events interface is designed around flexible, filter-driven investigation, allowing analysts to quickly reduce large traffic volumes to a meaningful investigative scope.</p>
 
-By default, only the most commonly used filters are displayed in the toolbar, including:
+<p>By default, only the most commonly used filters are displayed in the toolbar, including:</p>
 
 - **Time range** — isolate the exact period when suspicious activity occurred.  
 - **Domain** — focus the investigation on traffic targeting all domains, or a specific domain.  
@@ -39,13 +44,13 @@ By default, only the most commonly used filters are displayed in the toolbar, in
 
   **Optional Action** filters can be combined with **Decision** filters. For example, selecting **Decision**: **Blocked** and **Optional Action**: **CAPTCHA** returns requests that were blocked after failing a CAPTCHA challenge.
 
-Additional filters can be added dynamically using the **Add filter** button.
+<p>Additional filters can be added dynamically using the **Add filter** button.</p>
 
 <Frame>
   ![Add filter button in Events](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-add-filter.png)
 </Frame>
 
-Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.
+<p>Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.</p>
 
 - **Countries** — analyze traffic based on geographic origin.  
 - **IP address** — investigate activity from a specific client.  
@@ -55,18 +60,19 @@ Filters can be combined to progressively narrow the dataset and focus on the exa
 - **Request ID** — inspect one or more specific requests. Multiple request IDs can be provided as a comma-separated list.  
 - **Reference IDs** — group repeated requests that triggered the same security rule. Multiple reference IDs can be provided as a comma-separated list.  
 - **Session IDs** — analyze sequences of requests generated within one client session. Multiple session IDs can be provided as a comma-separated list.
+- **JA3** — filter by the [JA3 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. Useful for identifying botnets that share a common network stack regardless of IP address.
 
-Because filters can be combined, analysts can move from broad analysis to highly precise investigations — for example isolating POST requests to `/login` from a specific country that were blocked during a five-minute attack window.
+<p>Because filters can be combined, analysts can move from broad analysis to highly precise investigations — for example isolating POST requests to `/login` from a specific country that were blocked during a five-minute attack window.</p>
 
-Filtered datasets are immediately reflected in the Events analytics view. Graphs dynamically update to display:
+<p>Filtered datasets are immediately reflected in the Events analytics view. Graphs dynamically update to display:</p>
 
 - the volume of requests over time within the selected scope.  
 - the distribution of decisions (Blocked, Monitored, Allowed, Passed) and optional actions (CAPTCHA, JS Challenge).  
 - the relationship between suspicious and legitimate traffic for the selected filters.  
 
-This dynamic filtering makes Events a practical investigation workspace rather than a static log viewer. Analysts can quickly test hypotheses, validate rule behavior, and understand how attacks evolve over time.
+<p>This dynamic filtering makes Events a practical investigation workspace rather than a static log viewer. Analysts can quickly test hypotheses, validate rule behavior, and understand how attacks evolve over time.</p>
 
-Security analysts, SREs, and DevSecOps engineers typically use Events to:
+<p>Security analysts, SREs, and DevSecOps engineers typically use Events to:</p>
 
 - investigate suspicious traffic.  
 - validate enforcement actions.  
@@ -76,24 +82,24 @@ Security analysts, SREs, and DevSecOps engineers typically use Events to:
 
 ## Inspecting an individual event
 
-Filtering narrows the dataset, but the deepest context lives inside each request. Clicking an event in the list expands the event row to reveal additional detail beyond the columns shown in the table, helping analysts understand why a request was flagged and where it originated.
+<p>Filtering narrows the dataset, but the deepest context lives inside each request. Clicking an event in the list expands the event row to reveal additional detail beyond the columns shown in the table, helping analysts understand why a request was flagged and where it originated.</p>
 
-Two of the most security-relevant fields in the expanded view are:
+<p>Two of the most security-relevant fields in the expanded view are:</p>
 
 - **Organization** — the name of the organization that owns the client IP address, sourced from WHOIS data. This helps analysts attribute traffic to a hosting provider, cloud platform, ISP, or corporate network, which is often a strong signal when distinguishing legitimate users from automated or malicious infrastructure.
 - **Tags** — threat category labels assigned by WAAP, such as *Injection Attack* or *SQL Injection*. Tags reflect the high-level threat classification detected for the request, giving analysts an immediate understanding of the type of threat behind a security event without inspecting the raw payload.
 
-Together, these fields turn a single event into actionable context: Organization indicates *who* the request came from, while Tags explain *why* WAAP considered it suspicious.
+<p>Together, these fields turn a single event into actionable context: Organization indicates *who* the request came from, while Tags explain *why* WAAP considered it suspicious.</p>
 
 ## Exporting events
 
-WAAP provides multiple ways to export security events for reporting, long-term storage, or integration with external security systems.
+<p>WAAP provides multiple ways to export security events for reporting, long-term storage, or integration with external security systems.</p>
 
 ### Export from the Events page
 
-Events visible in the Events interface can be exported directly as a report. When filters are applied, the exported dataset contains only the filtered results, allowing analysts to generate focused reports for investigations or incident documentation.
+<p>Events visible in the Events interface can be exported directly as a report. When filters are applied, the exported dataset contains only the filtered results, allowing analysts to generate focused reports for investigations or incident documentation.</p>
 
-Typical use cases include:
+<p>Typical use cases include:</p>
 
 - sharing traffic samples with SOC or incident response teams.  
 - attaching evidence to security incident records.  
@@ -104,52 +110,52 @@ Typical use cases include:
   ![WAAP Events export](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-export-csv.png)
 </Frame>
 
-Exports from the Events page are typically provided in CSV format, making them easy to process in spreadsheets, SIEM platforms, or analytical tools.
+<p>Exports from the Events page are typically provided in CSV format, making them easy to process in spreadsheets, SIEM platforms, or analytical tools.</p>
 
 ### Continuous export via Log Uploader
 
-For automated pipelines and long-term retention, WAAP supports continuous event delivery using Log Uploader.
+<p>For automated pipelines and long-term retention, WAAP supports continuous event delivery using Log Uploader.</p>
 
-Log Uploader allows teams to stream WAAP events to external storage or processing systems. Supported destinations include:
+<p>Log Uploader allows teams to stream WAAP events to external storage or processing systems. Supported destinations include:</p>
 
 - Amazon S3 — for centralized log storage and integration with data lakes or analytics pipelines.  
 - FTP — for compatibility with legacy log ingestion systems.  
 - SFTP — for secure file transfer to security or compliance infrastructure.  
 - HTTP endpoints — for integration with SIEM platforms, log collectors, or custom processing services.   
 
-This capability allows organizations to integrate WAAP telemetry into broader security monitoring, DevSecOps, and observability pipelines, enabling correlation with application logs, infrastructure metrics, and threat intelligence systems.
+<p>This capability allows organizations to integrate WAAP telemetry into broader security monitoring, DevSecOps, and observability pipelines, enabling correlation with application logs, infrastructure metrics, and threat intelligence systems.</p>
 
 ## Real-world investigation scenarios
 
 ### Investigating an API attack
 
-A backend team notices abnormal behavior on `/api/login`. A security analyst opens Events and filters traffic by time range, path, and HTTP method.
+<p>A backend team notices abnormal behavior on `/api/login`. A security analyst opens Events and filters traffic by time range, path, and HTTP method.</p>
 
-The filtered dataset reveals a burst of POST requests from a limited set of IP addresses, triggering authentication-related rules. The analyst confirms that WAAP blocked the majority of these requests and identifies the activity as credential-stuffing automation.
+<p>The filtered dataset reveals a burst of POST requests from a limited set of IP addresses, triggering authentication-related rules. The analyst confirms that WAAP blocked the majority of these requests and identifies the activity as credential-stuffing automation.</p>
 
 ### Distinguishing legitimate automation from malicious bots
 
-Some services rely on legitimate automated traffic from partners or internal integrations. However, malicious bots may produce similar patterns.
+<p>Some services rely on legitimate automated traffic from partners or internal integrations. However, malicious bots may produce similar patterns.</p>
 
-By filtering events by country, session ID, and decision, analysts can distinguish legitimate automation from abusive scripts attempting to scrape content or overload endpoints.
+<p>By filtering events by country, session ID, and decision, analysts can distinguish legitimate automation from abusive scripts attempting to scrape content or overload endpoints.</p>
 
 ### Validating a new security rule
 
-After deploying a new custom rule, a DevSecOps engineer reviews Events to confirm that the rule correctly identifies malicious requests without affecting legitimate traffic.
+<p>After deploying a new custom rule, a DevSecOps engineer reviews Events to confirm that the rule correctly identifies malicious requests without affecting legitimate traffic.</p>
 
-The analyst filters by time range and decision to review blocked versus allowed requests and confirm that the policy change behaves as intended.
+<p>The analyst filters by time range and decision to review blocked versus allowed requests and confirm that the policy change behaves as intended.</p>
 
 ### Investigating repeated attacker behavior
 
-Automated attacks often generate sequences of requests rather than isolated events.
+<p>Automated attacks often generate sequences of requests rather than isolated events.</p>
 
-By pivoting from an IP address to a session ID or reference ID, analysts can observe the full sequence of requests generated by a single automated workflow. This helps determine whether the attacker is scanning, probing authentication flows, or attempting exploitation.
+<p>By pivoting from an IP address to a session ID or reference ID, analysts can observe the full sequence of requests generated by a single automated workflow. This helps determine whether the attacker is scanning, probing authentication flows, or attempting exploitation.</p>
 
 ### Exporting evidence for incident response
 
-Once relevant traffic is isolated, analysts can export the filtered dataset in CSV format.
+<p>Once relevant traffic is isolated, analysts can export the filtered dataset in CSV format.</p>
 
-This allows teams to:
+<p>This allows teams to:</p>
 
 - attach traffic samples to incident reports.  
 - share evidence with SOC teams.  
@@ -158,7 +164,7 @@ This allows teams to:
 
 ## Recommended investigation workflow
 
-A typical investigation process in Events includes:
+<p>A typical investigation process in Events includes:</p>
 
 1. Narrow the timeframe of the incident.  
 2. Identify the affected endpoint or domain.  
@@ -166,4 +172,196 @@ A typical investigation process in Events includes:
 4. Pivot to source indicators such as IP address or session ID.  
 5. Export relevant events for documentation or response.
 
-This structured approach allows teams to transform raw request telemetry into actionable security insight.
+<p>This structured approach allows teams to transform raw request telemetry into actionable security insight.</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Query the request log and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs cover the list endpoint. Response examples include only the fields used in each step.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. To retrieve details for a specific event, the domain ID is also needed — use `GET /waap/v1/domains` to list available domains and their IDs.
+</Info>
+
+<p>Set the API token before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## List events
+
+<p>The `GET /waap/v1/analytics/requests` endpoint returns the request log across all domains in the account. Each record includes the client IP address, triggered rule, decision, and request metadata. Results older than 30 days are not available.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from datetime import datetime, timedelta, timezone
+
+    import gcore
+    from dotenv import load_dotenv
+
+    load_dotenv()
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    end = datetime.now(timezone.utc)
+    start = end - timedelta(hours=24)
+
+    events = client.waap.analytics.get_requests(
+        start=start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        end=end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        decision=["blocked"],
+        limit=50,
+    )
+
+    print(f"Total: {events.count}")
+    for event in events.results:
+        print(f"id={event.id} path={event.path!r} rule={event.rule_name!r} ip={event.client_ip}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"time"
+
+    	"github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/option"
+    	"github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	end := time.Now().UTC()
+    	start := end.Add(-24 * time.Hour)
+
+    	page, err := client.Waap.Analytics.GetRequests(context.Background(), waap.AnalyticsGetRequestsParams{
+    		Start:    start.Format(time.RFC3339),
+    		End:      gcore.String(end.Format(time.RFC3339)),
+    		Decision: []string{"blocked"},
+    		Limit:    gcore.Int(50),
+    	})
+    	if err != nil {
+    		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+    		os.Exit(1)
+    	}
+
+    	fmt.Printf("Total: %d\n", page.Count)
+    	for _, event := range page.Results {
+    		fmt.Printf("id=%s path=%q rule=%q ip=%s\n", event.ID, event.Path, event.RuleName, event.ClientIP)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/analytics/requests?start=2026-06-24T00:00:00Z&decision=blocked&limit=50" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 127,
+      "limit": 50,
+      "offset": 0,
+      "results": [
+        {
+          "id": "01jfad3x...",
+          "decision": "blocked",
+          "action": "block",
+          "client_ip": "203.0.113.45",
+          "country": "US",
+          "domain": "example.com",
+          "domain_id": 12345,
+          "method": "POST",
+          "path": "/api/login",
+          "rule_name": "SQL Injection",
+          "status_code": 403,
+          "request_time": 1750726800000
+          // ...
+        }
+        // ...
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `start` | Yes | Start of the time range in ISO 8601 format. |
+| `end` | No | End of the time range. Defaults to the current time when omitted. |
+| `domains` | No | Filter by domain IDs. Omit to query all domains. |
+| `decision` | No | One or more of: `blocked`, `monitored`, `allowed`, `passed`. |
+| `optional_action` | No | One or more of: `captcha`, `challenge`. The value `challenge` corresponds to JS Challenge in the Customer Portal. |
+| `ips` | No | One or more client IP addresses. |
+| `countries` | No | Country codes in ISO 3166-1 alpha-2 format. |
+| `path` | No | URL path with glob-like pattern matching. |
+| `http_methods` | No | One or more HTTP methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`. |
+| `status_codes` | No | One or more HTTP response status codes. |
+| `request_ids` | No | One or more request IDs. |
+| `reference_ids` | No | One or more reference IDs. |
+| `session_ids` | No | One or more session IDs. |
+
+## Event details
+
+<p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, and the threat category tags that explain why the request was flagged.</p>
+
+<p>The `request_id` value comes from the `id` field in the events list response. The `domain_id` is also present in each list result.</p>
+
+```bash
+curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST_ID}/details" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "id": "01jfad3x...",
+  "path": "/api/login",
+  "method": "POST",
+  "action": "block",
+  "decision": "blocked",
+  "optional_action": "",
+  "rule_id": "rule-4821",
+  "rule_name": "SQL Injection",
+  "pattern_matched_tags": ["Injection Attack", "SQL Injection"],
+  "common_tags": [],
+  "traffic_types": ["malicious"],
+  "user_agent": {
+    "raw": "python-requests/2.31.0",
+    "device": "Other",
+    "client": "Python Requests"
+  },
+  "network": {
+    "ip": "203.0.113.45",
+    "organization": "Example Hosting LLC"
+  },
+  "request_time": "2026-06-24T10:30:00Z",
+  "reference_id": "ref-abc123",
+  "session_id": "sess-xyz789",
+  "query_string": "user=admin&pass=1%27+OR+1%3D1",
+  "http_status_code": 403,
+  "http_version": "HTTP/1.1",
+  "scheme": "https",
+  "content_type": "application/json",
+  "response_time": "12ms",
+  "incident_id": "",
+  "request_headers": {
+    "Host": "example.com",
+    "Content-Type": "application/json"
+  }
+}
+```
+
+  </MethodSection>
+</MethodSwitch>

@@ -1,24 +1,29 @@
 ---
 title: "Manage insight status"
 sidebarTitle: Manage insight status
-ai-navigation: Manage WAAP security insight status by marking as read, silencing for custom periods at entity or rule level, closing with 30-day auto-deletion, and reopening closed insights via Status dropdown.
+ai-navigation: Manage WAAP security insight status via Customer Portal or REST API - mark as read, close, reopen insights, and create silence rules to suppress notifications.
 ---
 
-When an insight is selected, its status can be changed using the **Mark as read**, **Silence**, and **Close** buttons.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>When an insight is selected, its status can be changed using the **Mark as read**, **Silence**, and **Close** buttons.</p>
 
 <Frame>
-  ![Manage security insights](/images/docs/waap/security-insights/security-insights-manage.png)
+  ![Manage security insights](/images/docs/waap/threat-intelligence/security-insights/manage-insights/security-insights-manage.png)
 </Frame>
 
 ## Mark insights as read
 
-Insights are not automatically marked as read when viewed. To mark an insight as read, click **Mark as read**. To keep an insight as a reminder for later action or review, leave it unread.
+<p>Insights are not automatically marked as read when viewed. To mark an insight as read, click **Mark as read**. To keep an insight as a reminder for later action or review, leave it unread.</p>
 
-## Silence insights  
+## Silence insights
 
-An insight can be silenced if it has been viewed, but no action is taken, or it is not closed. Silencing an insight means pausing all notifications for a specific period (e.g., a week, month, custom period, or indefinitely).  
+<p>An insight can be silenced if it has been viewed, but no action is taken, or it is not closed. Silencing an insight means pausing all notifications for a specific period (e.g., a week, month, custom period, or indefinitely).</p>
 
-The available silence options depend on the [insight types](/waap/threat-intelligence/security-insights/view-insights#insight-types). You can silence insights at different levels:
+<p>The available silence options depend on the [insight types](/waap/threat-intelligence/security-insights/view-insights#insight-types). You can silence insights at different levels:</p>
 
 - For a specific entity (for example, a particular IP address or policy).
 - For a specific entity and rule combination (for example, an IP address or policy with a specific rule).
@@ -30,9 +35,9 @@ The available silence options depend on the [insight types](/waap/threat-intelli
   To stop silencing an insight, see the [Manage Silence Rules](/waap/threat-intelligence/security-insights/manage-silence-rules) guide.
 </Tip>
 
-## Close insights 
+## Close insights
 
-After reviewing an insight, it can be removed from the list by clicking the **Close** button.
+<p>After reviewing an insight, it can be removed from the list by clicking the **Close** button.</p>
 
 <Info>
   **Info**
@@ -40,18 +45,233 @@ After reviewing an insight, it can be removed from the list by clicking the **Cl
   Closed insights are automatically deleted after 30 days unless reopened.
 </Info>
 
-## Reopen insights 
+## Reopen insights
 
-To reopen a closed insight for further investigation, reassessment, or verification of mitigation effectiveness, in the **Status** dropdown, select **Closed**.
-
-<Frame>
-  ![Filter the insights with the Status dropdown](/images/docs/waap/security-insights/security-insights-status-closed.png)
-</Frame>
-
-Select the insight to reopen, and click the **Reopen** button.
+<p>To reopen a closed insight for further investigation, reassessment, or verification of mitigation effectiveness, in the **Status** dropdown, select **Closed**.</p>
 
 <Frame>
-  ![Select Reopen](/images/docs/waap/security-insights/security-insights-reopen.png)
+  ![Filter the insights with the Status dropdown](/images/docs/waap/threat-intelligence/security-insights/manage-insights/security-insights-status-closed.png)
 </Frame>
 
-The insight will reappear in the list on the **Security Insights** view. 
+<p>Select the insight to reopen, and click the **Reopen** button.</p>
+
+<Frame>
+  ![Select Reopen](/images/docs/waap/threat-intelligence/security-insights/manage-insights/security-insights-reopen.png)
+</Frame>
+
+<p>The insight will reappear in the list on the **Security Insights** view.</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The [Security Insights](/api-reference/waap#security-insights) endpoints cover updating insight status and creating silence rules to suppress notifications. Response examples include only the fields used in each step.</p>
+
+<p>Set the following environment variables before running any examples:</p>
+
+```bash
+export GCORE_API_KEY="your_api_key"
+export WAAP_DOMAIN_ID=your_domain_id
+```
+
+<p>To retrieve available insight IDs, use <code>GET /waap/v1/domains/{domain_id}/insights</code>.</p>
+
+## Update insight status
+
+<p>Changes the status of an insight. Use `ACKED` to mark as read, `CLOSED` to close it, and `OPEN` to reopen a closed insight. The call returns the updated insight object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    insight_id = "a1b2c3d4-0000-0000-0000-111122223333"
+
+    # Mark as read
+    insight = client.waap.domains.insights.replace(
+        insight_id,
+        domain_id=domain_id,
+        status="ACKED",
+    )
+    print(f"Status: {insight.status}")
+
+    # Close
+    client.waap.domains.insights.replace(insight_id, domain_id=domain_id, status="CLOSED")
+
+    # Reopen
+    client.waap.domains.insights.replace(insight_id, domain_id=domain_id, status="OPEN")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        insightID := "a1b2c3d4-0000-0000-0000-111122223333"
+
+        // Mark as read
+        insight, err := client.Waap.Domains.Insights.Replace(
+            context.Background(),
+            insightID,
+            waap.DomainInsightReplaceParams{
+                DomainID: domainID,
+                Status:   waap.DomainInsightReplaceParamsStatusAcked,
+            },
+        )
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Status: %s\n", insight.Status)
+
+        // Close
+        client.Waap.Domains.Insights.Replace(context.Background(), insightID,
+            waap.DomainInsightReplaceParams{DomainID: domainID, Status: waap.DomainInsightReplaceParamsStatusClosed})
+
+        // Reopen
+        client.Waap.Domains.Insights.Replace(context.Background(), insightID,
+            waap.DomainInsightReplaceParams{DomainID: domainID, Status: waap.DomainInsightReplaceParamsStatusOpen})
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    INSIGHT_ID="a1b2c3d4-0000-0000-0000-111122223333"
+
+    # Mark as read
+    curl -X PUT "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/insights/${INSIGHT_ID}" \
+         -H "Authorization: APIKey ${GCORE_API_KEY}" \
+         -H "Content-Type: application/json" \
+         -d '{"status": "ACKED"}'
+    ```
+
+    Response (`200 OK`):
+
+    ```json
+    {
+      "id": "a1b2c3d4-0000-0000-0000-111122223333",
+      "insight_type": "allowed-high-risk-ip",
+      "status": "ACKED",
+      "labels": {"ip": "198.51.100.42", "rule_id": "12345", "rule_name": "block-internal"}
+      // ...
+    }
+    ```
+
+    <p>Replace `ACKED` with `CLOSED` to close the insight, or `OPEN` to reopen a closed one.</p>
+  </Tab>
+</Tabs>
+
+## Silence an insight
+
+<p>Creates a silence rule that suppresses notifications for a specific insight type. Use `labels` to target a specific entity — an IP address for `allowed-high-risk-ip`, or a policy ID for `attack-on-disabled-policy`. An empty `labels` object silences all insights of that type.</p>
+
+<p>Set `expire_at` to an ISO 8601 timestamp for a time-limited silence, or `null` for indefinite. To manage existing silences, see [Manage silence rules](/waap/threat-intelligence/security-insights/manage-silence-rules).</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Silence alerts for a specific high-risk IP for 30 days
+    silence = client.waap.domains.insight_silences.create(
+        domain_id,
+        insight_type="allowed-high-risk-ip",
+        author="security-team",
+        comment="Trusted internal scanner — suppress for 30 days",
+        labels={"ip": "198.51.100.42"},
+        expire_at="2026-07-25T00:00:00Z",
+    )
+    print(f"Created: {silence.id}  expires: {silence.expire_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        expiry := time.Now().AddDate(0, 0, 30)
+
+        // Silence alerts for a specific high-risk IP for 30 days
+        silence, err := client.Waap.Domains.InsightSilences.New(
+            context.Background(),
+            domainID,
+            waap.DomainInsightSilenceNewParams{
+                InsightType: "allowed-high-risk-ip",
+                Author:      "security-team",
+                Comment:     "Trusted internal scanner — suppress for 30 days",
+                Labels:      map[string]string{"ip": "198.51.100.42"},
+                ExpireAt:    gcore.Time(expiry),
+            },
+        )
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Created: %s  expires: %s\n", silence.ID, silence.ExpireAt)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/insight-silences" \
+         -H "Authorization: APIKey ${GCORE_API_KEY}" \
+         -H "Content-Type: application/json" \
+         -d '{
+           "insight_type": "allowed-high-risk-ip",
+           "author": "security-team",
+           "comment": "Trusted internal scanner — suppress for 30 days",
+           "labels": {"ip": "198.51.100.42"},
+           "expire_at": "2026-07-25T00:00:00Z"
+         }'
+    ```
+
+    Response (`201 Created`):
+
+    ```json
+    {
+      "id": "fb319cd9-2291-47db-8695-c6637811a059",
+      "insight_type": "allowed-high-risk-ip",
+      "labels": {"ip": "198.51.100.42"},
+      "expire_at": "2026-07-25T00:00:00Z"
+      // ...
+    }
+    ```
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>

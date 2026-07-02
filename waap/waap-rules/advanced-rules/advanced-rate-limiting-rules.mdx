@@ -1,28 +1,28 @@
 ﻿---
 title: "Rate-Limiting"
 sidebarTitle: "Rate-Limiting"
-ai-navigation: Configure rate-limiting rules in WAAP using the request.limit_rate method to control request counts by time window, IP origin, URL patterns, request methods, response status codes, aggregation scope, and tags in the Gcore Customer Portal or via the Gcore WAAP API.
+ai-navigation: Configure rate-limiting rules in WAAP using the request.limit_rate method to control request counts by time window, IP origin, URL patterns, request methods, response status codes, aggregation scope, and tags via REST API or Python and Go SDKs.
 ---
 
-Advanced rate limiting rules allow you to control the number of specific requests accepted by your domain within a defined time window. This functionality is part of [WAAP advanced rules](/waap/waap-rules/advanced-rules).
+Advanced rate limiting rules allow you to control the number of specific requests accepted by your domain within a defined time window. This functionality is part of [WAAP advanced rules](/waap/waap-rules/advanced-rules).
 
-Advanced rate limiting rules can be created in the [Gcore Customer Portal](https://portal.gcore.com/) (as advanced rules) or via the [Gcore WAAP API](/api-reference/waap/advanced-rules/retrieve-advanced-rules). Rate limiting conditions are evaluated as part of a rule’s condition logic and can be combined with other request attributes to precisely control when an action is triggered.
+Advanced rate limiting rules are fully defined and managed through the [Gcore WAAP API](https://api.gcore.com/docs/waap). Rate limiting conditions are evaluated as part of a rule's condition logic and can be combined with other request attributes to precisely control when an action is triggered.
 
 In addition to request thresholds and time intervals, advanced rate limiting conditions support multiple parameters, including request origin, URL patterns, request methods, response status codes, aggregation scope, and tags, enabling flexible and targeted traffic control.
 
 ## Rate limiting method
 
-Use the request.limit_rate method to implement rate limiting:
+Use the `request.limit_rate` method to implement rate limiting:
 
-**limit_rate method signature**
+**limit_rate fixed method signature**
 
 ```js
 request.limit_rate(
     requests = <int>,
     interval = <int>,
     url = <string>,
-	ip_list = [<string>, ...],
-	method_list = [<string>, ...],
+    ip_list = [<string>, ...],
+    method_list = [<string>, ...],
     status_list = [<int>, ...],
     content_type = <string>,
     scope = <string>,
@@ -32,179 +32,630 @@ request.limit_rate(
 
 Specify the `tag` parameter when configuring tag-based rate limiting rules.
 
-The method returns `true` , and the enclosing rule condition is satisfied when the request count (4), under the granularity (8), exceeds the configured threshold within the specified time window (3), using the configured filters (1, 2, 5, 6, 7, 9).
+The method returns `true`, and the enclosing rule condition is satisfied when the request count (4), under the granularity (8), exceeds the configured threshold within the specified time window (3), using the configured filters (1, 2, 5, 6, 7, 9).
 
-| # | Parameter name        | Required                                                                                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                | |
-| --- | --------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| 1 | `ip_list`             | False                                                                                                   | List of IP addresses that the rule applies to.<br />If there are no IPs in the list, counting will be done for all IPs.                                                                                                                                                                                                                                                                                                                                    | |
-| 2 | `url`                 | True                                                                                                    | A regex pattern used to match the request's URI (URL + query_params).                                                                                                                                                                                                                                                                                                                                                                                      | |
-| 3 | `interval`            | True                                                                                                    | The time limit, in seconds, within which we only allow **n** number of requests to URI matching the pattern.                                                                                                                                                                                                                                                                                                                                               | |
-| 4 | `requests`            | True                                                                                                    | The maximum number of requests **accepted** within the given period before an action is taken (minimum value is 20 requests).                                                                                                                                                                                                                                                                                                                              | |
-| 5 | `method_list`         | False                                                                                                   | List of method types the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
-| 6 | `status_list`         | False                                                                                                   | List of status codes the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
-| 7 | `content_type`        | False                                                                                                   | Regex pattern to match request content_type against.                                                                                                                                                                                                                                                                                                                                                                                                       | |
-| 8 | `scope` (granularity) | True | When protecting the origin, you can configure rate limit rules that apply to either IPs or all requests that come through the cluster.<br />- If you set it to `IP`, once the IP exceeds the threshold, the rule is triggered. This helps against individual attackers<br />- If you set it to `cluster`, once the total requests (from any IP) exceed the threshold, the rule is triggered. This helps protect the origin from getting too many requests. | |
-| 9 | `tag`                 | False                                                                                                   | Aggregation of tagged ([user-defined tags](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules)) requests will be applied for each IP.                                                                                                                                                                                                                                                                                                            | |
+| # | Parameter name        | Required                                                                                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| --- | --------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | `ip_list`             | False                                                                                                   | List of IP addresses that the rule applies to. If there are no IPs in the list, counting will be done for all IPs.                                                                                                                                                                                                                                                                                                                                    |
+| 2 | `url`                 | True                                                                                                    | A regex pattern used to match the request's URI (URL + query_params).                                                                                                                                                                                                                                                                                                                                                                                      |
+| 3 | `interval`            | True                                                                                                    | The time limit, in seconds, within which we only allow **n** number of requests to URI matching the pattern.                                                                                                                                                                                                                                                                                                                                               |
+| 4 | `requests`            | True                                                                                                    | The maximum number of requests **accepted** within the given period before an action is taken (minimum value is 21 requests).                                                                                                                                                                                                                                                                                                                              |
+| 5 | `method_list`         | False                                                                                                   | List of method types the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           |
+| 6 | `status_list`         | False                                                                                                   | List of status codes the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           |
+| 7 | `content_type`        | False                                                                                                   | Regex pattern to match request content_type against.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| 8 | `scope` (granularity) | False. If the granularity isn't set to `cluster`, the default aggregation will be set to `cluster`. | When protecting the origin, you can configure rate limit rules that apply to either IPs or all requests that come through the cluster. If you set it to `ip`, once the IP exceeds the threshold, the rule is triggered ΓÇö this helps against individual attackers. If you set it to `cluster`, once the total requests from any IP exceed the threshold, the rule is triggered ΓÇö this helps protect the origin from getting too many requests. |
+| 9 | `tag`                 | False                                                                                                   | Aggregation of tagged ([user-defined tags](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules)) requests will be applied for each IP.                                                                                                                                                                                                                                                                                                            |
 
 ## Implementation
 
-### Advanced rules via API
+An [API token](/account-settings/api-tokens) is required along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). For SDK examples, install the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK. Set these as environment variables before running any of the examples:
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
-    }
-  },
-  "phase": "access",
-  "name": "Block Scrappers",
-  "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
-  "enabled": false,
-  "source": "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']"
-}'
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 ```
+
+To list, update, enable, disable, or delete rules, see [Advanced Rules](/waap/waap-rules/advanced-rules).
+
+### Rate limiting with exclusions
+
+Rate-limit IPs that exceed 200 requests in 5 seconds on any `/events` path, while excluding requests from known mobile and web clients that carry session cookies.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Block Scrapers",
+        description="Block IPs that hit more than 200 requests per 5 seconds for any events paths",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403, "action_duration": "10m"}},
+        source=(
+            "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')"
+            " and not ('mb-web-ui' in request.headers['Cookie']"
+            " or 'mb-mobile-ios' in request.headers['Cookie']"
+            " or 'mobile-android' in request.headers['Cookie']"
+            " or 'mb-mobile-android' in request.headers['Cookie']"
+            " or 'session-token' in request.headers['Cookie'])"
+            " and not request.headers['session']"
+        ),
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        source := "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')" +
+            " and not ('mb-web-ui' in request.headers['Cookie']" +
+            " or 'mb-mobile-ios' in request.headers['Cookie']" +
+            " or 'mobile-android' in request.headers['Cookie']" +
+            " or 'mb-mobile-android' in request.headers['Cookie']" +
+            " or 'session-token' in request.headers['Cookie'])" +
+            " and not request.headers['session']"
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Block Scrapers",
+                Description: gcore.String("Block IPs that hit more than 200 requests per 5 seconds for any events paths"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action: waap.DomainAdvancedRuleNewParamsAction{
+                    Block: waap.DomainAdvancedRuleNewParamsActionBlock{
+                        StatusCode:     403,
+                        ActionDuration: gcore.String("10m"),
+                    },
+                },
+                Source: source,
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block Scrapers",
+        "description": "Block IPs that hit more than 200 requests per 5 seconds for any events paths",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403, "action_duration": "10m"}},
+        "source": "request.limit_rate(url='\''.*events'\'', interval=5, requests=200, scope='\''ip'\'') and not ('\''mb-web-ui'\'' in request.headers['\''Cookie'\''] or '\''mb-mobile-ios'\'' in request.headers['\''Cookie'\''] or '\''session-token'\'' in request.headers['\''Cookie'\'']) and not request.headers['\''session'\'']"
+      }'
+    ```
+
+    The API returns the created rule with its assigned ID:
+
+    ```json
+    {
+      "id": 269012,
+      "name": "Block Scrapers",
+      "enabled": false,
+      "action": {"block": {"status_code": 403, "action_duration": "10m"}},
+      "source": "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip') ...",
+      "phase": "access"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### Best practices
 
 #### Block IPs that exceed request limit for any URL
 
-Each request will be counted individually for each IP. For example, if the IP address 1.2.3.4 sends more than 200 requests within a 5-second timeframe, it will be blocked.
+Each request is counted individually per IP. If `1.2.3.4` sends more than 200 requests within 5 seconds, it is blocked. Another IP, `1.2.3.5`, is only blocked when it independently exceeds the same threshold.
 
-Another IP address, such as 1.2.3.5, will only be blocked if it exceeds the allowed threshold of 200 requests in the same time interval.
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Limit Certain IPs",
+        description="Limit Certain IPs",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source="request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Limit Certain IPs",
+                Description: gcore.String("Limit Certain IPs"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      "request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Limit Certain IPs",
-  "description": "Limit Certain IPs",
-  "enabled": false,
-  "source": "request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Limit Certain IPs",
+        "description": "Limit Certain IPs",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.limit_rate(ip_list=['\''1.2.3.4'\'','\''1.2.3.5'\''], url='\''.*events'\'', interval=5, requests=200, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 #### Embed additional conditions
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+Combine rate limiting with other request attributes. In this example, the block action is applied only to `Firefox` user-agent requests from specific IPs that exceed the rate limit. The rate limit itself still aggregates across all configured IPs regardless of user-agent.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Rate limit Firefox on events",
+        description="Embedding additional condition to rate limit feature",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source=(
+            "request.headers['User-Agent'] == 'Firefox'"
+            " and request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')"
+        ),
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Rate limit Firefox on events",
+                Description: gcore.String("Embedding additional condition to rate limit feature"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      "request.headers['User-Agent'] == 'Firefox' and request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Embedding additional condition to rate limit feature",
-  "description": "Embedding additional condition to rate limit feature",
-  "enabled": false,
-  "source": "request.headers['User-Agent'] == 'Firefox' and request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Rate limit Firefox on events",
+        "description": "Embedding additional condition to rate limit feature",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.headers['\''User-Agent'\''] == '\''Firefox'\'' and request.limit_rate(ip_list=['\''1.2.3.4'\'','\''1.2.3.5'\''], url='\''.*events'\'', interval=5, requests=200, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 #### Rate limit complex URL regex
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+Block requests to any URL that does not end in a known static asset extension ΓÇö images, fonts, scripts, archives. Requests to dynamic paths are rate-limited at 20 per 120 seconds per IP.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    url_pattern = (
+        r".*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd"
+        r"|exe|flv|gcf|gff|gif|grv|hdmt|hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct"
+        r"|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc"
+        r"|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot)$"
+    )
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Rate limit dynamic paths",
+        description="Rate limit complex URL regex",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source=f"request.limit_rate(url='{url_pattern}', interval=120, requests=20, scope='ip')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        urlPattern := `.*(?<!aif|aiff|au|avi|bin|bmp|cab|css|doc|exe|gif|jpg|js|mp3|pdf|png|svg|txt|zip|webp|mp4|woff)$`
+        source := "request.limit_rate(url='" + urlPattern + "', interval=120, requests=20, scope='ip')"
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Rate limit dynamic paths",
+                Description: gcore.String("Rate limit complex URL regex"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      source,
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Rate limit complex URL regex",
-  "description": "Rate limit complex URL regex",
-  "enabled": false,
-  "source": "request.limit_rate(url='.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv hdmt hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff|woff)$', interval=120, requests=20, scope='ip')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Rate limit dynamic paths",
+        "description": "Rate limit complex URL regex",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.limit_rate(url='\''.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv|hdmt|hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff|woff)'\'', interval=120, requests=20, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 #### Embed IP range to the condition
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+Rate-limit JPEG requests from a specific private IP range. The `request.ip_in_range` condition acts as a filter ΓÇö the rate limit aggregation still counts per IP within the range.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Rate limit IP range on jpg",
+        description="Embedding IP range to the condition",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source="request.ip_in_range('10.0.0.0', '10.255.255.255') and request.limit_rate(url='.*[.]jpg', interval=120, requests=20, scope='ip')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Rate limit IP range on jpg",
+                Description: gcore.String("Embedding IP range to the condition"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.limit_rate(url='.*[.]jpg', interval=120, requests=20, scope='ip')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Embedding IP range to the condition",
-  "description": "Embedding IP range to the condition",
-  "enabled": false,
-  "source": "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.limit_rate(url='.*[.]jpg', interval=120, requests=20, scope='ip')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Rate limit IP range on jpg",
+        "description": "Embedding IP range to the condition",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.ip_in_range('\''10.0.0.0'\'', '\''10.255.255.255'\'') and request.limit_rate(url='\''.*[.]jpg'\'', interval=120, requests=20, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 #### Cluster (PoP) granularity
 
-Rate limit all GET or HEAD redirected (302) requests with specific content type:
+Rate-limit all `GET` or `HEAD` requests that return a `302` redirect with a specific content type. The `cluster` scope counts requests globally across all IPs rather than per individual IP ΓÇö useful for protecting origin from aggregate traffic spikes.
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="RL GET or HEAD redirected requests cluster",
+        description="Rate limit all GET or HEAD redirected requests with specific content type on Cluster granularity",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source="request.limit_rate(url='.*url', interval=120, requests=20, method_list=['GET','HEAD'], status_list=[302], content_type='text/html; charset=utf-8', scope='cluster')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "RL GET or HEAD redirected requests cluster",
+                Description: gcore.String("Rate limit all GET or HEAD redirected requests with specific content type on Cluster granularity"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      "request.limit_rate(url='.*url', interval=120, requests=20, method_list=['GET','HEAD'], status_list=[302], content_type='text/html; charset=utf-8', scope='cluster')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "RL GET or HEAD redirected requests with specific content type on Cluster granularity",
-  "description": "Rate limit all GET or HEAD redirected requests with specific content type on Cluster granularity",
-  "enabled": false,
-  "source": "request.limit_rate(url='.*url', interval=120, requests=20, method_list=['GET','HEAD'], status_list=[302], content_type='text/html; charset=utf-8', scope='cluster')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "RL GET or HEAD redirected requests cluster",
+        "description": "Rate limit all GET or HEAD redirected requests with specific content type on Cluster granularity",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.limit_rate(url='\''.*url'\'', interval=120, requests=20, method_list=['\''GET'\'','\''HEAD'\''], status_list=[302], content_type='\''text/html; charset=utf-8'\'', scope='\''cluster'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 #### Rate limit by tag filter
 
-This functionality allows embedding [user-defined tags](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules) into the rate limit condition so only tagged IPs requests will be aggregated into the rate limit mechanism.
+Apply rate limiting only to requests that carry a specific [user-defined tag](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules). The tag must be assigned by a separate tag rule that runs before this one. This allows targeting specific sessions or clients identified by earlier rules.
 
-Note that my tag is a [user-defined tag](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules) that should be defined in a separate rule.
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-  "action": {
-    "block": {
-      "status_code": 403
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Rate limit by tag filter",
+        description="Embedding tag to the condition",
+        enabled=False,
+        phase="access",
+        action={"block": {"status_code": 403}},
+        source="request.limit_rate(tag='my tag', ip_list=['2.3.4.5'], url='/my_url/.*', interval=10, requests=120, scope='ip')",
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:        "Rate limit by tag filter",
+                Description: gcore.String("Embedding tag to the condition"),
+                Enabled:     false,
+                Phase:       waap.DomainAdvancedRuleNewParamsPhaseAccess,
+                Action:      waap.DomainAdvancedRuleNewParamsAction{Block: waap.DomainAdvancedRuleNewParamsActionBlock{StatusCode: 403}},
+                Source:      "request.limit_rate(tag='my tag', ip_list=['2.3.4.5'], url='/my_url/.*', interval=10, requests=120, scope='ip')",
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
     }
-  },
-  "phase": "access",
-  "name": "Embedding tag to the condition",
-  "enabled": false,
-  "source": "request.limit_rate(tag='my tag', ip_list=['2.3.4.5'], url='/my_url/.*', interval=10, requests=120, scope='ip')"
-}'
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Rate limit by tag filter",
+        "description": "Embedding tag to the condition",
+        "enabled": false,
+        "phase": "access",
+        "action": {"block": {"status_code": 403}},
+        "source": "request.limit_rate(tag='\''my tag'\'', ip_list=['\''2.3.4.5'\''], url='\''/my_url/.*'\'', interval=10, requests=120, scope='\''ip'\'')"
+      }'
+    ```
+
+    The API returns 201 with the created rule object.
+  </Tab>
+</Tabs>
 
 ### Clarification: rate limit aggregation and rule triggering
 
@@ -212,6 +663,6 @@ Rate limit aggregation is defined exclusively by the parameters of the `request.
 
 When `request.limit_rate(...)` is combined with additional conditions in the same rule, those additional conditions control when the rule action is applied, not how requests are aggregated.
 
-For example, if a rate limit condition is configured without an IP list and combined with a condition such as `request.ip == '1.2.3.4'`, request aggregation will still occur according to the rate limit definition. However, the rule action will only be triggered when the full rule condition evaluates to true, in this case, only for requests originating from `1.2.3.4`.
+For example, if a rate limit condition is configured without an IP list and combined with a condition such as `request.ip == '1.2.3.4'`, request aggregation will still occur according to the rate limit definition. However, the rule action will only be triggered when the full rule condition evaluates to true ΓÇö in this case, only for requests originating from `1.2.3.4`.
 
 This distinction is important when combining rate limiting with other conditions to help ensure the rule behaves as expected.

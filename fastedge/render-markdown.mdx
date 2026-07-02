@@ -1,0 +1,60 @@
+---
+title: Render Markdown at the edge
+sidebarTitle: Markdown renderer
+ai-navigation: Deploy the FastEdge Markdown renderer template to fetch Markdown files from a remote URL and return them as rendered HTML pages via the Customer Portal.
+---
+
+The Markdown renderer is a built-in FastEdge application that turns Markdown files into HTML pages — no custom code, no binary build, no rendering backend required.
+
+A common use case: documentation stored on GitHub or any static file server, served as a fully rendered site directly from the edge.
+
+The application maps incoming request paths to a configurable root URL. Set `BASE` to the root of the Markdown source — such as a GitHub raw content URL — and requests to the application automatically fetch and render the corresponding files.
+
+## Create the application
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge** > **HTTP Applications** > **Applications** and click **Create new application**.
+
+2. Scroll to **Create from a template** and click **Markdown renderer**.
+
+   <Frame>![Create an application page showing Upload binary and Create from a template sections with Geolocation-based redirect and Markdown renderer cards](/images/docs/fastedge/geolocation-redirect/create-from-template-overview.png)</Frame>
+
+3. Enter a **Name** for the application. The name becomes part of the deployment URL.
+
+4. Fill in the **Template environment variables**:
+
+   - **BASE** (required): The root URL of the Markdown source. The application appends the incoming request's path to this value. Set it to the directory URL where the Markdown files live, with a trailing slash. Example: `https://raw.githubusercontent.com/G-Core/FastEdge-sdk-js/main/`
+
+   - **HEAD** (optional): Raw HTML inserted verbatim into the `<head>` tag of every rendered page. Use it to apply a stylesheet or add other head-level markup. Example: `<style>body{font-family:sans-serif;max-width:800px;margin:2rem auto;padding:0 1rem}</style>`
+
+   <Frame>![Markdown renderer form with BASE required field and optional HEAD field](/images/docs/fastedge/geolocation-redirect/markdown-renderer-form.png)</Frame>
+
+5. (Optional) Configure response headers, environment variables, secrets, or [Edge&nbsp;Storage](/fastedge/kv-stores/manage-kv-store) — see [app management](/fastedge/manage-apps) for details on each option.
+
+6. Click **Save and deploy**.
+
+The application details page opens with the deployment URL in the format `https://<app-name>-<id>.fastedge.app`.
+
+## Test the application
+
+Request any Markdown file path from the app URL and inspect the response:
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/README.md
+```
+
+The response is an HTML document with `Content-Type: text/html`:
+
+```
+HTTP/1.1 200 OK
+content-type: text/html; charset=utf-8
+
+<!DOCTYPE html><html><head>...</head><body><h1>README</h1>...</body></html>
+```
+
+Opening the URL directly in a browser shows the rendered page. If the source file does not exist at the constructed URL, the application returns the upstream HTTP error code.
+
+To verify the source URL the application constructs, confirm that `BASE` + path returns HTTP 200 directly before deploying.
+
+<Info>
+`BASE`, `HEAD`, and all other environment variables can be updated from the application management page without rebuilding or redeploying the application.
+</Info>

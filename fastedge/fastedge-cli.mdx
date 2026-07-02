@@ -1,94 +1,113 @@
 ---
 title: FastEdge CLI
 sidebarTitle: FastEdge CLI
-ai-navigation: Install FastEdge CLI from the FastEdge-lib repository, build the Rust-based tool, and execute local HTTP applications with commands supporting environment variables, geo headers, and request/response inspection.
+ai-navigation: Install fastedge-run to test FastEdge Wasm applications locally before deploying. Available as a pre-built binary for macOS, Linux, and Windows, or bundled with the FastEdge VS Code extension. Supports HTTP server mode, environment variables, and geo header simulation.
 ---
 
-Run and test your FastEdge HTTP applications locally with the Gcore [FastEdge CLI tool](https://github.com/G-Core/FastEdge-lib). The following instructions will help you install, build, and execute some basic commands with FastEdge CLI. 
+During FastEdge application development, deploying to the edge on every change is slow. `fastedge-run` eliminates that step: it runs the compiled Wasm binary locally and serves it over HTTP, so the application can be tested from the terminal without a new deployment.
 
-<Tip>
-**Tip**
+<Info>
+The CLI is also bundled with the [FastEdge VS Code extension](https://github.com/G-Core/FastEdge-vscode). If you use VS Code, no separate installation is needed.
+</Info>
 
-We are actively developing [FastEdge CLI](https://github.com/G-Core/FastEdge-lib) and recommend regularly checking the FastEdge-lib repository for updates and new versions.
-</Tip>
+## Install
 
-## Install and set up FastEdge CLI
+### Download a pre-built binary
 
-1\. Clone the [FastEdge-lib](https://github.com/G-Core/FastEdge-lib) repository. 
+Pre-built binaries are available for all major platforms on the [FastEdge-lib releases page](https://github.com/G-Core/FastEdge-lib/releases).
 
-2\. Install Rust by running the following command: 
+| Platform | File |
+| -------- | ---- |
+| macOS (Apple Silicon) | `fastedge-run-{version}-aarch64-apple-darwin.tar.gz` |
+| Linux (x86\_64) | `fastedge-run-{version}-x86_64-unknown-linux-gnu.tar.gz` |
+| Windows (x86\_64) | `fastedge-run-{version}-x86_64-pc-windows-msvc.zip` |
 
-`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh source "$HOME/.cargo/env"`
+Download and extract the archive, then move the `fastedge-run` binary to a directory on your `PATH`.
 
-3\. In the directory where you cloned the repository, run the following command to initialize and update all submodules: `git submodule update --init --recursive -f`
+### Build from source
 
-4\. Build the CLI tool and all required dependencies: `cargo build –release`
+If no pre-built binary is available for your platform, build from source:
 
-5\. Compile and run the binary with the `help` flag to view the full list of available CLI commands and parameters: `cargo run --bin cli -- --help`
+1. Install Rust:
 
-## Run FastEdge CLI
-
-To run the compiled CLI tool, use the following command:
-
-```sh
-./target/release/fastedge-run [command]
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source "$HOME/.cargo/env"
 ```
 
-For example, if you want to open help and view the list of supported commands, run: `./target/release/fastedge-run http --help`.
+2. Clone the repository and initialize submodules:
 
-## Example commands
-
-This section provides some basic examples of how to work with FastEdge CLI. The sample commands use a test application from the [FastEdge-examples](https://github.com/G-Core/FastEdge-examples) repository. 
-
-### Run a FastEdge application and print all its headers
-
-Execute the following command: 
-
-```sh
-./target/release/fastedge-run http –w [path-to-your-application] –-port [port number]
+```bash
+git clone https://github.com/G-Core/FastEdge-lib
+cd FastEdge-lib
+git submodule update --init --recursive -f
 ```
 
-For example: `./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-port 8080`
+3. Build the CLI:
 
-To view the list of all printed headers, run `curl http://localhost:8080`
-
-### Run a FastEdge application with environment variables
-
-Execute the following command: 
-
-```sh
-./target/release/fastedge-run http –w [path-to-your-application] –-env [variables] --port [port number] 
+```bash
+cargo build --release
 ```
 
-For example, to set the BASE variable to the URL of the repository's README: 
+The binary is at `./target/release/fastedge-run`.
 
-`./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/markdown.wasm env BASE=https://raw.githubusercontent.com/G-Core/FastEdge-lib/main --port 8080`
+## Run a Wasm application
 
-After executing the command, you can run the FastEdge application, which will output the contents of the README: `http://localhost:8080/README.md`
+Start a local HTTP server that executes your compiled Wasm binary:
 
-### Run an application with sample geo headers
-
-FastEdge CLI can add sample geo headers to your application without using a real IP address: 
-
-```sh
-./target/release/fastedge-run http -w [path-to-your-application] –geo –port [port number] 
+```bash
+fastedge-run http -w ./app.wasm --port 8080
 ```
 
-For example: `./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-geo --port 8081`
+Then send requests to test the application:
 
-To view the list of sample geo headers, run `curl http://localhost:8081`. You should see an output similar to the following: 
-
-```yaml
-Headers:
-  host: localhost:8081
-  user-agent: curl/8.6.0
-  accept: */*
-  pop-country-name: luxembourg
-  pop-city: luxembourg
-  pop-country-code: au
-  server_name: test.localhost
-  pop-continent: eu
-  pop-lat: 49.6113
-  pop-long: 6.1294
-  pop-reg: lu%
+```bash
+curl http://localhost:8080
 ```
+
+## Pass environment variables
+
+Set environment variables the same way they would be configured in the Customer Portal:
+
+```bash
+fastedge-run http -w ./app.wasm --env BASE=https://example.com --port 8080
+```
+
+Multiple variables can be passed by repeating `--env`:
+
+```bash
+fastedge-run http -w ./app.wasm --env KEY1=value1 --env KEY2=value2 --port 8080
+```
+
+## Simulate geo headers
+
+### Inject sample geo data
+
+Use `--geo` to add a fixed set of sample geo headers to every incoming request:
+
+```bash
+fastedge-run http -w ./app.wasm --geo --port 8080
+```
+
+The following headers are added to the request:
+
+```
+pop-continent: eu
+pop-country-code: au
+pop-country-name: luxembourg
+pop-city: luxembourg
+pop-reg: lu
+pop-lat: 49.6113
+pop-long: 6.1294
+server_name: test.localhost
+```
+
+### Inject specific headers
+
+Use `--headers` to set individual headers with exact values. This is useful when testing logic that depends on a specific country code or region:
+
+```bash
+fastedge-run http -w ./app.wasm --headers pop-country-code=DE --headers pop-country-name=Germany --port 8080
+```
+
+Use `fastedge-run http --help` to see all available options.
