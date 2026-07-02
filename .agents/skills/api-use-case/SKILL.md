@@ -125,8 +125,8 @@ Bad: `"The steps below create a subnet and configure DNS."` ← starts with "The
 ```mdx
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a
-[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
-and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
+[project ID](/api-reference/cloud/projects/list-projects)
+and a [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 ```
 If the flow requires an existing resource (e.g. a network), add it:
