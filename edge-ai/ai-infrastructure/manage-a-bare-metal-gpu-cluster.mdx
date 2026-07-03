@@ -1,7 +1,7 @@
 ﻿---
 title: "Manage a Bare Metal GPU cluster"
 sidebarTitle: "Manage a Bare Metal GPU cluster"
-ai-navigation: Manage Bare Metal GPU cluster nodes, resize, control power states, rebuild, replace, and delete nodes via Customer Portal or REST API; list and filter clusters via curl using name, flavor, node count, image IDs, tags, and date range filters.
+ai-navigation: Manage Bare Metal GPU cluster nodes, resize, control power states, reconfigure cluster specifications, apply settings to outdated nodes, rebuild, replace, and delete nodes via Customer Portal or REST API; list and filter clusters via curl using name, flavor, node count, image IDs, tags, and date range filters.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-After creating a GPU cluster, use the cluster details page to monitor nodes, resize the cluster, manage power state, configure network interfaces, and delete cluster resources.
+After creating a GPU cluster, use the cluster details page to monitor nodes, manage cluster and node lifecycle, configure network interfaces, and access administration tools.
+
+Cluster management operates at two levels: **cluster-wide operations** (resize, reconfigure, delete) that affect all nodes at once, and **per-node operations** (rebuild, replace, power, apply settings) that target individual nodes independently.
 
 ## Access cluster details
 
@@ -39,14 +41,14 @@ The page is organized into tabs: **Overview**, **Power**, **Networking**, **Tags
 The **Overview** tab lists all nodes (servers) in the cluster. Each node entry shows the node name, flavor, assigned IP addresses, status, timestamps, cost, and other metadata. The table supports filtering by name, date range, and status.
 
 <Info>
-All nodes in a cluster share the same configuration (image, network settings, file shares) defined at cluster creation. Network interfaces and file shares cannot be changed at the node level after creation. The OS image and SSH key can be updated cluster-wide using the Rebuild operation.
+Each node inherits its **cluster configuration** — image, SSH key, and user data — from the cluster. Network interfaces and file shares cannot be changed at the node level after creation. To update the cluster configuration, use **Reconfigure Cluster**; to sync a specific outdated node, use **Apply settings**.
 </Info>
 
-## Resize a cluster
+## Cluster lifecycle
+
+### Manage cluster size
 
 Cluster size can be adjusted after creation by adding or removing nodes.
-
-To resize a cluster:
 
 1. On the **Overview** tab, click **Resize Cluster**.
 2. Adjust the instance count using the **+** and **-** buttons.
@@ -54,23 +56,94 @@ To resize a cluster:
 
 <Frame>![Resize cluster dialog with instance count controls](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-resize-dialog.png)</Frame>
 
-New nodes inherit the cluster's original configuration defined at creation time. The maximum number of nodes is limited by the current stock availability in the selected region.
-
-<Info>
-While a cluster is in the Resizing state, most management actions are unavailable. Bare Metal GPU nodes, especially H100 configurations, may take 15–40 minutes to provision.
-</Info>
+New nodes inherit the current cluster configuration. The maximum number of nodes is limited by the current stock availability in the selected region. While resizing, most management actions are unavailable; Bare Metal H100 nodes may take 15–40 minutes to provision.
 
 <Warning>
-Scaling down to zero nodes is not allowed and returns an error. A cluster must contain at least one node. To remove the cluster entirely, use the **Delete** tab.
+Scaling down to zero nodes is not allowed. When scaling down, the system removes a random node — to target a specific node, use **Delete node** in [Node management](#node-management) instead.
 </Warning>
+
+### Reconfigure cluster
+
+The **Reconfigure Cluster** button in the top-right corner of the cluster details page opens a two-step flow for changing the cluster configuration and choosing how to apply it.
+
+**Step 1 — Update settings**
+
+The form shows the current **Image**, **SSH Key**, and **User data**. Click **Change** next to any field to select a new value. Click **Next** to proceed.
+
+**Step 2 — Choose update method**
+
+<Frame>![Reconfigure cluster page step 2 showing update method options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-reconfigure-step2.png)</Frame>
+
+| Option | Description |
+|--------|-------------|
+| **Save only** | Save the new configuration for future nodes only. Existing nodes are unaffected. |
+| **Apply settings now** | Apply to all or selected nodes immediately. |
+| **Schedule for later** | Apply at a specified time. Coming soon. |
+
+Under **Apply to**, choose **All Instances in Cluster** or **Selected Instances**. Click **Reconfigure** to confirm.
 
 <Warning>
-When scaling down, the system removes a random node from the cluster. To delete a specific node, use the per-node delete action instead of resize.
+Changes that require a node rebuild permanently delete all data on the system volume of affected nodes. IP addresses, hostname, and attached volumes are preserved.
 </Warning>
 
-### Delete a specific node
+### Delete cluster
 
-To remove a specific node without random selection:
+When a cluster is deleted, local NVMe storage is permanently erased; file shares and object storage remain intact.
+
+1. Navigate to the **Delete** tab on the cluster details page.
+2. Click **Delete Cluster**.
+3. Confirm the deletion.
+
+<Frame>![Delete tab with warning message and delete button](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-delete-tab.png)</Frame>
+
+<Warning>
+Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered.
+</Warning>
+
+## Node management
+
+### Power actions
+
+To control a single node:
+
+1. Locate the node in the cluster list.
+2. Click the actions menu (three dots) on the node row.
+3. Select the desired action: **Power on**, **Power off**, **Soft reboot**, or **Hard reboot**.
+
+<Frame>![Node actions menu showing power and management options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-actions-menu.png)</Frame>
+
+To apply power actions to multiple nodes at once, select them using the checkboxes, click **Group actions**, and choose the action. Alternatively, use the **Power** tab to soft or hard reboot all cluster nodes simultaneously.
+
+<Frame>![Power tab with soft and hard reboot options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-power-tab.png)</Frame>
+
+### Rebuild node
+
+Rebuild reinstalls the OS on a node. The dialog shows the currently running **Image**, **SSH Key**, and **User data** — click **Change** next to any of them to use different values for this rebuild. All data on local storage is deleted.
+
+1. Click the actions menu (three dots) on the node row.
+2. Select **Rebuild**.
+3. In the dialog, change **Image**, **SSH Key**, or **User data** as needed, or leave them to keep current values.
+4. Type `Rebuild` to confirm and click **Rebuild**.
+
+<Frame>![Rebuild node dialog showing current Image, SSH Key and User data with Change buttons](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-rebuild-dialog.png)</Frame>
+
+To rebuild multiple nodes at once, select them using checkboxes, click **Group actions**, and select **Rebuild**. The dialog offers two modes: **Apply same settings to all Instances** or **Per Instance configuration**.
+
+<Warning>
+Rebuild deletes all data on the node's local storage. Node identity is preserved — IP addresses, hostname, and attached volumes remain unchanged.
+</Warning>
+
+### Replace node
+
+Replace deletes the current node and provisions a new one with the same configuration (flavor, image, network settings). Use this to recover a node stuck in a failed state without changing the cluster setup.
+
+1. Click the actions menu (three dots) on the node row.
+2. Select **Replace**.
+3. Confirm the operation.
+
+Replace is also available via the [Replace bare metal GPU cluster server](/api-reference/cloud/gpu-bare-metal/replace-bare-metal-gpu-cluster-server) API endpoint.
+
+### Delete node
 
 1. Locate the node in the cluster list.
 2. Click the actions menu (three dots) on the node row.
@@ -81,45 +154,26 @@ To remove a specific node without random selection:
 Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API/Terraform operations. When using the API or Terraform to delete nodes, no warning is displayed before the cluster is removed. Leave at least one node in the cluster to preserve it.
 </Warning>
 
-## Power actions
+### Apply settings
 
-Power actions control the running state of cluster nodes. Actions can be applied to individual nodes or in bulk.
+When a node's cluster configuration is outdated — because the cluster was reconfigured but that node was not yet updated — a warning appears in the node details panel.
 
-### Individual node actions
+1. Click on a node name in the **Overview** tab to open its details panel.
+2. Click **Apply settings**.
+3. Review the diff table: each row shows the **Setting**, **Current** value, and **After Apply** value. Settings that require a rebuild are marked.
 
-To control a single node:
+<Frame>![Apply new configuration settings dialog with diff table showing current and after-apply values](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-apply-settings-diff.png)</Frame>
 
-1. Locate the node in the cluster list.
-2. Click the actions menu (three dots) on the node row.
-3. Select the desired action:
-   - **Power on**: Start the node
-   - **Power off**: Shut down the node
-   - **Soft reboot**: Graceful restart of the operating system
-   - **Hard reboot**: If soft reboot fails, force restart the node
-   - **Rebuild**: Reinstall the OS on the node using the image configured for the cluster. All data on local storage is deleted. To rebuild with a different image or SSH key, use the [GPU Bare Metal API](/api-reference/cloud/gpu-bare-metal/rebuild-bare-metal-gpu-cluster-server): first update the cluster server settings, then trigger the rebuild.
-   - **Replace**: Delete the current node and provision a new one with the same configuration (flavor, image, network settings). Available in the UI and via the [Replace bare metal GPU cluster server](/api-reference/cloud/gpu-bare-metal/replace-bare-metal-gpu-cluster-server) API endpoint. Use this to recover a node stuck in a failed state without changing the cluster setup.
+4. Select or deselect nodes to include.
+5. Type `Apply` and click **Apply**.
 
-<Frame>![Node actions menu showing power and management options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-actions-menu.png)</Frame>
+<Frame>![Node details panel showing Apply settings and Rebuild buttons with outdated configuration warning](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-details-panel.png)</Frame>
 
-### Bulk actions
+## Networking
 
-To apply actions to multiple nodes simultaneously:
+### View interfaces
 
-1. Select nodes using the checkboxes in the nodes table.
-2. Click **Group actions** in the toolbar.
-3. Select the action to apply to all selected nodes.
-
-Alternatively, use the **Power** tab to perform soft or hard reboot on all cluster nodes at once.
-
-<Frame>![Power tab with soft and hard reboot options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-power-tab.png)</Frame>
-
-## Network interfaces
-
-The **Networking** tab displays network interfaces for each node.
-
-Click on a node name to expand its interface details.
-
-Interface types include:
+The **Networking** tab displays network interfaces for each node. Click on a node name to expand its interface details.
 
 | Type | Description |
 |------|-------------|
@@ -129,13 +183,11 @@ Interface types include:
 
 <Frame>![Networking tab showing node and interface list](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-networking-tab.png)</Frame>
 
-For flavors with InfiniBand, multiple InfiniBand interfaces are created automatically (by default, 8 for H100 configurations). These appear as "GPU-cluster ib-subnet" entries in the interface list.
-
-Click on an interface to expand its details, including IP address, network configuration, and other network information.
+For flavors with InfiniBand, multiple InfiniBand interfaces are created automatically (by default, 8 for H100 configurations). These appear as "GPU-cluster ib-subnet" entries in the interface list. Click on an interface to expand its details, including IP address and network configuration.
 
 <Frame>![Node with expanded interface showing network details](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-network-interfaces.png)</Frame>
 
-### Modify network interfaces
+### Modify interfaces
 
 To add network interfaces on a specific node:
 
@@ -145,14 +197,14 @@ To add network interfaces on a specific node:
 4. Configure the interface type (public or private) and IP allocation settings as supported by the service.
 
 <Info>
-Only network interfaces can be modified on individual nodes after cluster creation. Image and storage configuration cannot be changed at the node level. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
+Only network interfaces can be modified on individual nodes after cluster creation. Image and storage configuration cannot be changed independently at the node level. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
 </Info>
 
-## Tags
+## Administration
+
+### Tags
 
 Tags are key-value pairs used to organize and categorize clusters. Tags are applied at the cluster level and inherited by all nodes.
-
-To manage tags:
 
 1. Navigate to the **Tags** tab on the cluster details page.
 2. Enable the **Add custom tags** checkbox.
@@ -161,23 +213,15 @@ To manage tags:
 
 <Frame>![Tags tab with custom tags toggle](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-tags-tab.png)</Frame>
 
-Use tags for billing allocation, environment identification, or organizational purposes.
+Use tags for billing allocation, environment identification, or organizational purposes. Tags can be modified even while the cluster is in the Resizing state.
 
-<Info>
-Tags can be modified even while the cluster is in the Resizing state, unlike most other management actions.
-</Info>
+### User actions
 
-## User actions
-
-The **User Actions** tab displays a log of all operations performed on the cluster, including creation, deletion, resize, power, and network actions.
-
-Use the date and action type filters to narrow results.
-
-This log is useful for auditing and troubleshooting.
+The **User Actions** tab displays a log of all operations performed on the cluster — creation, deletion, resize, power, and network actions. Use the date and action type filters to narrow results.
 
 <Frame>![User Actions tab showing audit log of cluster operations](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-user-actions-tab.png)</Frame>
 
-## Console access
+### Console
 
 For troubleshooting or when SSH access is unavailable, use the browser-based console.
 
@@ -189,22 +233,6 @@ For troubleshooting or when SSH access is unavailable, use the browser-based con
 <Frame>![Browser-based noVNC console with login prompt](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-console.png)</Frame>
 
 The console provides direct terminal access to the node, useful when network connectivity issues prevent SSH access.
-
-## Delete a cluster
-
-When a cluster is deleted, local NVMe storage is permanently erased; file shares and object storage remain intact.
-
-To delete a cluster:
-
-1. Navigate to the **Delete** tab on the cluster details page.
-2. Click **Delete Cluster**.
-3. Confirm the deletion.
-
-<Frame>![Delete tab with warning message and delete button](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-delete-tab.png)</Frame>
-
-<Warning>
-Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered.
-</Warning>
 
 <p>The Customer Portal is suitable for managing individual clusters. For automated workflows — CI/CD pipelines, infrastructure-as-code, or batch provisioning — use the [GPU&nbsp;Bare Metal API](/api-reference/cloud/gpu-bare-metal) instead.</p>
 
@@ -227,6 +255,10 @@ export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
+<Info>
+Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes for provisioning operations.
+</Info>
+
 ## List bare metal GPU clusters
 
 <p>The list endpoint returns all clusters in a project and region. Use query filters to narrow results — multiple filters are ANDed, so a cluster must match all specified conditions.</p>
@@ -246,9 +278,6 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 | `tags` | `[key]=value` | Exact tag key-value pair. Multiple pairs are ANDed; values match case-insensitively |
 | `tag_key` | `contains`, `exact`, `prefix`, `suffix` | Match tag key regardless of value |
 | `tag_value` | `contains`, `exact`, `prefix`, `suffix` | Match tag value regardless of key |
-
-<Info>
-</Info>
 
 <Info>
 The Python and Go SDKs support `limit` and `offset` for pagination only. Name, flavor, node count, tag, image, and date filters are available via curl only.
@@ -503,8 +532,6 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes to provision.
   </Tab>
 </Tabs>
 
@@ -539,8 +566,6 @@ The Python and Go SDKs (v0.48.0) do not expose the cluster action endpoint direc
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -614,8 +639,6 @@ To rebuild with a different image or SSH key, first update the cluster server se
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Rebuilding all nodes may take 15–40 minutes.
   </Tab>
 </Tabs>
 
@@ -687,8 +710,6 @@ To rebuild with a different image or SSH key, first update the cluster server se
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -760,8 +781,6 @@ To rebuild with a different image or SSH key, first update the cluster server se
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -833,8 +852,6 @@ To rebuild with a different image or SSH key, first update the cluster server se
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -912,8 +929,6 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
     ```json
     { "tasks": ["task-uuid"] }
     ```
-
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
