@@ -4,56 +4,60 @@ sidebarTitle: "Configure GPU autoscaling for Kubernetes"
 ai-navigation: Configure Kubernetes Event-Driven Autoscaling (KEDA) to automatically scale GPU resources in Gcore Managed Kubernetes clusters based on GPU utilization, using Bare Metal worker pools with GPU-optimized flavors and minimum/maximum node specifications.
 ---
 
-For GPU-intensive workloads with fluctuating traffic in a Kubernetes cluster, configure the Kubernetes Event-Driven Autoscaling (KEDA) component to automatically scale GPU resources based on real-time demand. This approach ensures optimal performance and cost efficiency.
+GPU autoscaling in a Kubernetes cluster combines four components: NVIDIA GPU Operator for resource management, KEDA for event-driven pod scaling, Prometheus for metrics collection, and Gcore Cluster Autoscaler for node provisioning. When GPU utilization exceeds the configured threshold, KEDA creates additional pods — Cluster Autoscaler then provisions new GPU Bare Metal nodes to meet the demand.
 
 <Info>
-  Gcore Managed Kubernetes includes native autoscaling based on CPU and memory only.  To scale your workloads based on GPU utilization, you must manually install and configure [KEDA](https://keda.sh/).
+  Gcore Managed Kubernetes includes native autoscaling based on CPU and memory only. To scale workloads based on GPU utilization, [KEDA](https://keda.sh/) must be manually installed and configured.
 </Info>
 
-## Step 1. Create a Kubernetes cluster
+## Prepare the cluster
+
+Create a Kubernetes cluster with a GPU Bare Metal worker pool and verify that nodes are ready before installing GPU software.
+
+### Step 1. Create a Kubernetes cluster
 
 Add a new Managed Kubernetes cluster with a Bare Metal worker pool:
 
-1. In the Gcore Customer Portal, navigate to **Cloud** \> **Kubernetes**.
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** \> **Kubernetes**.
 
 2. Click **Create Cluster**.
 
-3. Select a region: the location of the data center where your cluster will be deployed.
+3. Select a region — the location of the data center where the cluster will be deployed.
 
 4. Select the Kubernetes cluster version: v1.28.6 or higher.
 
 5. Configure Bare Metal pools:
 
-- **Pool name** : Enter a unique and descriptive name for your resource pool.
-- **Minimum nodes** and **Maximum nodes** : Specify how many nodes can be allocated to the pool during traffic fluctuations. The maximum number of nodes must be greater than the minimum to allow the cluster to scale up in response to increased demand.
-- **Type** : Choose **GPU Bare metal instances**.
-- **Infrastructure** : Select the needed GPU-optimized flavor. You need to add at least one node with GPU support to the worker pool.
+- **Pool name**: Enter a unique and descriptive name for the resource pool.
+- **Minimum nodes** and **Maximum nodes**: Specify how many nodes can be allocated to the pool during traffic fluctuations. The maximum number of nodes must be greater than the minimum to allow the cluster to scale up in response to increased demand.
+- **Type**: Select **GPU Bare metal instances**.
+- **Infrastructure**: Select the needed GPU-optimized flavor. At least one node with GPU support must be added to the worker pool.
 
 <Frame>
   ![Pools configuration section on the Create Kubernetes cluster page](/images/docs/cloud/kubernetes/clusters/autoscaling/configure-gpu-autoscaling-for-kubernetes/configure-pools.png)
 </Frame>
 
-6. (Optional) Add labels to include additional information about nodes. Taints can also be specified to define which Kubernetes pods can run on these nodes.
+6. (Optional) Add labels to include additional node metadata. Add taints to define which Kubernetes pods can be scheduled on these nodes.
 
 7. Disable the **Autohealing nodes** toggle.
 
 8. (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.
 
-9. If you need to add more pools, click **Add pool** and configure it according to the previous steps.
+9. To add more pools, click **Add pool** and configure each according to the previous steps.
 
 <Frame>
   ![A list of toggles with configurations for steps 6-9](/images/docs/cloud/kubernetes/clusters/autoscaling/configure-gpu-autoscaling-for-kubernetes/configure-toggles.png)
 </Frame>
 
-10. Continue configuring the cluster by following the instructions from [Step 5: Select the CNI provider](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-5-select-the-cni-provider) in the [Create a Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) guide.
+10. Complete the remaining cluster settings starting from [step 5](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-5-select-the-cni-provider) in the [cluster creation guide](/cloud/kubernetes/clusters/create-a-kubernetes-cluster).
 
-## Step 2. Verify your Kubernetes configuration
+### Step 2. Verify the Kubernetes configuration
 
-1. In the Gcore Customer Portal, navigate to **Cloud** \> **Kubernetes**.
+1. In the Customer Portal, navigate to **Cloud** \> **Kubernetes**.
 
 2. Find the cluster created in the previous step and click its name to open it.
 
-3. Check the pool status: it should be **Running**. If you see **Scaling up**, wait until all resources are allocated and the cluster is ready to use.
+3. Check the pool status: it should be **Running**. If the status shows **Scaling up**, wait until all resources are allocated and the cluster is ready to use.
 
 4. Download the .config file by clicking **Kubernetes config** in the top-right corner of the screen.
 
@@ -67,7 +71,7 @@ Add a new Managed Kubernetes cluster with a Bare Metal worker pool:
 export KUBECONFIG=/path/to/your/k8sConfig.yml
 ```
 
-6. Verify that the node is ready by running:
+6. Verify that the node is ready:
 
 ```sh
 kubectl get nodes
@@ -80,46 +84,35 @@ NAME                STATUS   ROLES    AGE     VERSION
 ed-b16-82-160-248   Ready    <none>   3h26m   v1.28.6  
 ```
 
-## Step 3. Install GPU Operator
+## Install dependencies
 
-Use Helm package manager to install the GPU Operator that'll manage your resources. If you don't have Helm, install it according to the [official instructions](https://helm.sh/docs/intro/install/).
+Install the GPU Operator to expose GPU resources, then KEDA and Prometheus to drive utilization-based scaling decisions.
 
-To install the GPU Operator:
+### Step 3. Install GPU Operator
 
-1. Add the NVIDIA Helm repository and update it as follows:
+Use Helm to install the GPU Operator — the [official Helm docs](https://helm.sh/docs/intro/install/) cover installation for all platforms.
+
+1. Add the NVIDIA Helm repository and update it:
 
 ```sh
 helm repo add nvidia https://helm.ngc.nvidia.com/nvidia && helm repo update
 ```
 
-2. Install the GPU Operator with the required configurations for your Kubernetes version:
-
-- For Kubernetes 1.28.x:
+2. Install the GPU Operator. Use version `v23.9.1` for Kubernetes 1.28.x or `v23.9.2` for Kubernetes 1.29.x:
 
 ```sh
-    helm install gpu-operator nvidia/gpu-operator --version v23.9.1  --wait \
-        -n gpu-operator --create-namespace \
-        --set driver.enabled=false \
-        --set operator.defaultRuntime=crio \
-        --set operator.logging.level=debug
-
+helm install gpu-operator nvidia/gpu-operator --version v23.9.1 --wait \
+    -n gpu-operator --create-namespace \
+    --set driver.enabled=false \
+    --set operator.defaultRuntime=crio \
+    --set operator.logging.level=debug
 ```
 
-- For Kubernetes 1.29.x:
+Once installation completes, verify that GPUs are visible to Kubernetes before continuing.
 
-```sh
-    helm install gpu-operator nvidia/gpu-operator --version v23.9.2  --wait \
-        -n gpu-operator --create-namespace \
-        --set driver.enabled=false \
-        --set operator.defaultRuntime=crio \
-        --set operator.logging.level=debug
+### Step 4. Verify GPU allocation
 
-
-```
-
-## Step 4. Verify GPU allocation
-
-1. Verify that GPUs have been allocated correctly. The number of GPU nodes in `nvidia.com/gpu` should comply with the number specified in the Bare Metal flavor.
+1. Run `kubectl describe node <node-name>` and check the **Allocatable** section. The `nvidia.com/gpu` value must match the GPU count specified in the Bare Metal flavor.
 
 ```sh
 Allocatable:
@@ -132,7 +125,7 @@ Allocatable:
   pods:               110
 ```
 
-2. Check the status of the Kubernetes pods: it should be **READY**.
+2. Check that all GPU Operator pods have **READY** status:
 
 ```sh
 kubectl get pods -n gpu-operator
@@ -155,13 +148,11 @@ nvidia-mig-manager-rqnsq                                     1/1     Running    
 nvidia-operator-validator-n9rpz                              1/1     Running     0          3m9s
 ```
 
-## Step 5. Run test CUDA pod
+3. Run a test GPU application using the NVIDIA [CUDA vectorAdd](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#cuda-vectoradd) example. Deploy the example workload and confirm it completes successfully before continuing.
 
-Run a test GPU application to verify that the GPU resources in your Kubernetes cluster are properly configured and accessible. Follow the instructions from the official NVIDIA guide: [Verification: running sample GPU application](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#cuda-vectoradd).
+### Step 5. Install KEDA
 
-## Step 6. Install KEDA for GPU autoscaling
-
-Install and configure the Kubernetes Event-Driven Autoscaling (KEDA) component for your Managed Kubernetes cluster.
+With GPU resources confirmed, install KEDA — it reads Prometheus metrics to determine when to create additional pods.
 
 1. Add the KEDA Helm repository:
 
@@ -169,7 +160,7 @@ Install and configure the Kubernetes Event-Driven Autoscaling (KEDA) component f
 helm repo add kedacore https://kedacore.github.io/charts
 ```
 
-2. Update the repository to include any new Helm charts:
+2. Update the repository:
 
 ```sh
 helm repo update
@@ -181,17 +172,19 @@ helm repo update
 helm install keda kedacore/keda --namespace keda --create-namespace
 ```
 
-## Step 7. Install kube-prometheus-stack
+### Step 6. Install kube-prometheus-stack
 
 KEDA relies on Prometheus metrics to trigger GPU-based scaling decisions. Install the [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) to collect and expose those metrics.
 
-1. Add the Prometheus Helm repository: `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
+1. Add the Prometheus Helm repository, update it, and save the default values:
 
-2. Update the repository: `helm repo update`
+```sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm inspect values prometheus-community/kube-prometheus-stack > values.yaml
+```
 
-3. Inspect the default values for the kube-prometheus-stack: `helm inspect values prometheus-community/kube-prometheus-stack > values.yaml`
-
-4. Create the values-overrides.yaml file that contains additional configurations for the GPU operator:
+2. Create the `values-overrides.yaml` file with the following content:
 
 ```yaml
 serviceMonitorSelectorNilUsesHelmValues: false
@@ -215,7 +208,7 @@ additionalScrapeConfigs:
     target_label: kubernetes_node
 ```
 
-5. Install kube-prometheus-stack with the specified configurations:
+3. Install kube-prometheus-stack:
 
 ```sh
 helm install prometheus-community/kube-prometheus-stack \
@@ -224,19 +217,23 @@ helm install prometheus-community/kube-prometheus-stack \
    -f values.yaml -f values-overrides.yaml
 ```
 
-To enable GPU metric scraping in Prometheus, you must override some default configurations and explicitly define a `job` that scrapes DCGM metrics from the `gpu-operator` namespace.
+The `values-overrides.yaml` overrides the default Prometheus configuration to define a scrape job that collects DCGM metrics from the `gpu-operator` namespace.
 
-## Step 8. Create autoscaling configuration
+## Configure autoscaling
 
-Define your GPU workload and configure autoscaling using KEDA with Prometheus-based GPU utilization metrics.
+With metrics collection in place, create the workload and the ScaledObject that tells KEDA how to scale it.
 
-Here is an example configuration:
+### Step 7. Deploy the workload and ScaledObject
+
+Deploy the GPU workload and the KEDA ScaledObject that controls its scaling. Apply both manifests to the cluster.
+
+**Workload Deployment**
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <span style="color:#FF5913">workload-name</span>
+  name: gpu-workload
 spec:
   replicas: 1
   selector:
@@ -248,115 +245,127 @@ spec:
         app: gpu
     spec:
       containers:
-        - name: <span style="color:#FF5913">workload-name</span>
-          image: <span style="color:#FF5913">app-URL</span>
-          command: <span style="color:#FF5913">["--argument-1", "-argument-2"]</span>
-          args: <span style="color:#FF5913">app-URL</span>
+        - name: gpu-workload
+          image: registry.example.com/gpu-app:latest
+          command: ["/usr/bin/your-command"]
+          args: ["--argument-1", "--argument-2"]
           resources:
             limits:
-              nvidia.com/gpu: <span style="color:#FF5913">allocated-number-of-GPUs</span>
----
+              nvidia.com/gpu: 8
+```
+
+**ScaledObject**
+
+```yaml
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: gpu-dcgmproftester-deployment-scaledobject
+  name: gpu-workload-scaledobject
 spec:
   scaleTargetRef:
-    name: <span style="color:#FF5913">workload-name</span>
-  minReplicaCount: <span style="color:#FF5913">number-of-replicas</span>
-  maxReplicaCount: <span style="color:#FF5913">number-of-replicas</span>
+    name: gpu-workload
+  minReplicaCount: 1
+  maxReplicaCount: 16
   triggers:
   - type: prometheus
     metadata:
       serverAddress: http://prometheus-operated.prometheus:9090
-      metricName: <span style="color:#FF5913">metrics-name</span>
-      threshold: "<span style="color:#FF5913">threshold-number</span>"
-      query: sum(avg_over_time(DCGM_FI_DEV_GPU_UTIL{pod=~"<span style="color:#FF5913">workload-name</span>.*"}[30s])) # <- HPA will divide it for number of replicas due to AVG strategy
+      metricName: gpu-utilization
+      threshold: "60"
+      query: sum(avg_over_time(DCGM_FI_DEV_GPU_UTIL{pod=~"gpu-workload.*"}[30s]))
 ```
 
-The metric `DCGM_FI_DEV_GPU_UTIL` measures real-time GPU core utilization and is collected by the `nvidia-dcgm-exporter` installed in Step 3.
-
-Adjust the `query` expression or use other available DCGM metrics depending on the use case.
+The `DCGM_FI_DEV_GPU_UTIL` metric measures real-time GPU core utilization and is collected by the `nvidia-dcgm-exporter` installed in Step 3. Any metric from the [DCGM exporter](https://docs.nvidia.com/datacenter/dcgm/latest/dcgm-api/dcgm-api-field-ids.html) can be used in the `query` field instead.
 
 <Tip>
-  This autoscaling configuration is based on the `DCGM_FI_DEV_GPU_UTIL` metric (GPU utilization). Any available metric from the [DCGM exporter](https://docs.nvidia.com/datacenter/dcgm/latest/dcgm-api/dcgm-api-field-ids.html) can be used instead.
+  The `{pod=~"gpu-workload.*"}` selector in the query filters metrics by pod name prefix. Update `gpu-workload` to match the actual workload name.
 </Tip>
 
-Customize the highlighted values:
+#### Parameters
 
-- **workload-name**: Enter a unique name that identifies the workload. Use the same value in all name fields.
-- **app-URL**: Specify the location of your application. For example, a Docker image.
-- **allocated-number-of-GPUs**: Specify how many GPUs you need. For example, 8.
-- **["/usr/bin/sample-command"]**: Enter the command your container should run at startup.
-- **["--argument-1", "-argument-2"]**: Provide any arguments that should be passed to the command.
-- **number-of-replicas**: Provide the minimum and maximum number of workload copies the system will create during traffic fluctuation.
-- **metrics-name**: Enter a unique-phrase-that-distinguishes-your-metrics
-- **threshold-number**: If the number is reached, the system creates a new workload. For instance, "60".
+Replace the example values in both manifests:
 
-## Step 9. Check the results
+| Parameter | Description |
+|-----------|-------------|
+| `gpu-workload` | Unique name for the workload. Use the same value in `metadata.name` (Deployment), `spec.containers[].name`, and `spec.scaleTargetRef.name` (ScaledObject). |
+| `registry.example.com/gpu-app:latest` | Container image URL. |
+| `8` | Number of GPUs to allocate per container. |
+| `1` / `16` | Minimum and maximum number of replicas. |
+| `60` | GPU utilization percentage at which KEDA triggers scaling. |
+| `gpu-utilization` | Unique identifier for the metrics series. |
 
-After the GPU workload is deployed, KEDA creates a Horizontal Pod Autoscaler (HPA) and injects GPU utilization metrics from Prometheus as an external metric source.
+## Verify scaling
 
-1. To get real-time information about the HPA, run `kubectl get hpa -w`.
+Deploy the workload and confirm that KEDA, Cluster Autoscaler, and new GPU nodes respond correctly to GPU utilization changes.
+
+### Step 8. Verify autoscaling
+
+The autoscaling sequence has three phases: KEDA monitors GPU utilization and scales pods via the HPA, Cluster Autoscaler provisions new nodes when GPU capacity runs out, then new nodes join the cluster.
+
+1. Monitor HPA in real time:
+
+```sh
+kubectl get hpa -w
+```
 
 The expected output looks similar to this:
 
 ```sh
-NAME                                                  REFERENCE                                  TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
-keda-hpa-gpu-dcgmproftester-deployment-scaledobject   Deployment/gpu-dcgmproftester-deployment   <unknown>/60 (avg)   1         16        0          0s
-keda-hpa-gpu-dcgmproftester-deployment-scaledobject   Deployment/gpu-dcgmproftester-deployment   0/60 (avg)           1         16        1          16s
-keda-hpa-gpu-dcgmproftester-deployment-scaledobject   Deployment/gpu-dcgmproftester-deployment   23/60 (avg)          1         16        1          76s
+NAME                               REFERENCE                TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+keda-hpa-gpu-workload-scaledobject Deployment/gpu-workload  <unknown>/60 (avg)   1         16        0          0s
+keda-hpa-gpu-workload-scaledobject Deployment/gpu-workload  0/60 (avg)           1         16        1          16s
+keda-hpa-gpu-workload-scaledobject Deployment/gpu-workload  23/60 (avg)          1         16        1          76s
 ....
-keda-hpa-gpu-dcgmproftester-deployment-scaledobject   Deployment/gpu-dcgmproftester-deployment   67750m/60 (avg)      1         16        8          10m
+keda-hpa-gpu-workload-scaledobject Deployment/gpu-workload  67750m/60 (avg)      1         16        8          10m
 ```
 
-The system created 8 pods to match the 8 GPUs available on the server.
+The system created eight pods to match the eight GPUs available on the server.
 
-After scaling by the number of GPUs, some pending pods are created by the HPA. The autoscaler triggers the addition of new nodes because the cluster has no free GPUs.
+2. When pods exceed GPU capacity, Cluster Autoscaler requests new nodes. Run `kubectl get events -w` to observe provisioning events — node provisioning takes up to 20–25 minutes.
 
-2. Fetch the events: `kubectl get events -w`.
+```sh
+....
+0s    Warning   FailedScheduling   pod/gpu-workload-...-dnzns   0/1 nodes are available: 1 Insufficient nvidia.com/gpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod..
+
+....
+kube-system   69s   Normal   ScaledUpGroup   configmap/cluster-autoscaler-status   Scale-up: setting group MachineDeployment/.../gpu-workload-machine-deployment size to 2 instead of 1 (max: 2)
+kube-system   69s   Normal   ScaledUpGroup   configmap/cluster-autoscaler-status   Scale-up: group MachineDeployment/.../gpu-workload-machine-deployment size set to 2 instead of 1 (max: 2)
+```
+
+3. Once the new node is ready, check pod status:
+
+```sh
+kubectl get pods
+```
 
 The expected output looks similar to this:
 
 ```sh
-....
-0s          Warning   FailedScheduling      pod/gpu-dcgmproftester-deployment-9f866ff47-dnzns                             0/1 nodes are available: 1 Insufficient nvidia.com/gpu. preemption: 0/1 nodes are available: 1 No preemption victims found for incoming pod..
-
-....
-kube-system    69s         Normal    ScaledUpGroup         configmap/cluster-autoscaler-status                                           Scale-up: setting group MachineDeployment/76-320426/gpu-autoscale-h100-h100-machine-deployment size to 2 instead of 1 (max: 2)
-kube-system    69s         Normal    ScaledUpGroup         configmap/cluster-autoscaler-status                                           Scale-up: group MachineDeployment/76-320426/gpu-autoscale-h100-h100-machine-deployment size set to 2 instead of 1 (max: 2)
+NAME                                   READY   STATUS    RESTARTS   AGE
+apiserver-bridge-j7jk6                 1/1     Running   0          141m
+gpu-workload-9f866ff47-57zmg           1/1     Running   0          11m
+gpu-workload-9f866ff47-5wxxb           1/1     Running   0          15m
+gpu-workload-9f866ff47-8gkm8           1/1     Running   0          14m
+gpu-workload-9f866ff47-9t4bv           1/1     Running   0          7m57s
+gpu-workload-9f866ff47-dnzns           0/1     Pending   0          6m57s
+gpu-workload-9f866ff47-fb5cs           0/1     Pending   0          6m57s
+gpu-workload-9f866ff47-qthzr           1/1     Running   0          10m
+gpu-workload-9f866ff47-rxm2c           1/1     Running   0          17m
+gpu-workload-9f866ff47-tc8pq           1/1     Running   0          8m58s
+gpu-workload-9f866ff47-zbt8d           1/1     Running   0          12m
 ```
 
-Wait until the node is provisioned, which might take up to 20-25 minutes.
-
-3. Check all pods within the cluster: `kubectl get pods`.
-
-The expected output looks similar to this:
-
-```sh
-NAME                                            READY   STATUS    RESTARTS   AGE
-apiserver-bridge-j7jk6                          1/1     Running   0          141m
-gpu-dcgmproftester-deployment-9f866ff47-57zmg   1/1     Running   0          11m
-gpu-dcgmproftester-deployment-9f866ff47-5wxxb   1/1     Running   0          15m
-gpu-dcgmproftester-deployment-9f866ff47-8gkm8   1/1     Running   0          14m
-gpu-dcgmproftester-deployment-9f866ff47-9t4bv   1/1     Running   0          7m57s
-gpu-dcgmproftester-deployment-9f866ff47-dnzns   0/1     Pending   0          6m57s
-gpu-dcgmproftester-deployment-9f866ff47-fb5cs   0/1     Pending   0          6m57s
-gpu-dcgmproftester-deployment-9f866ff47-qthzr   1/1     Running   0          10m
-gpu-dcgmproftester-deployment-9f866ff47-rxm2c   1/1     Running   0          17m
-gpu-dcgmproftester-deployment-9f866ff47-tc8pq   1/1     Running   0          8m58s
-gpu-dcgmproftester-deployment-9f866ff47-zbt8d   1/1     Running   0          12m
-```
-
-8 pods are running and several pods have a Pending status while waiting for a new node to be provisioned.
-
-After the new node is provisioned, the system creates new pods up to the `maxReplicaCount` value specified in Step 8.
+Eight pods are running, and several have a `Pending` status while the new node initializes. After it is ready, the system scales up to the `maxReplicaCount` value.
 
 <Info>
-  After provisioning nodes, it might take up to five minutes for the Nvidia GPU resources to be distributed and managed in the Kubernetes cluster.
+  After provisioning, it might take up to five minutes for NVIDIA GPU resources to become available in the cluster.
 </Info>
 
-4. Check the list of nodes and their statuses: `kubectl get nodes`.
+4. Check that the new node has joined the cluster:
+
+```sh
+kubectl get nodes
+```
 
 ```sh
 NAME                STATUS   ROLES    AGE    VERSION
@@ -364,18 +373,17 @@ ed-b16-78-161-160   Ready    <none>   166m   v1.28.6
 ed-b16-78-161-169   Ready    <none>   12m    v1.28.6
 ```
 
-5. Verify the HPA status: `kubectl get hpa`.
+5. Verify the final HPA status:
+
+```sh
+kubectl get hpa
+```
 
 The expected output looks similar to this:
 
 ```sh
-NAME                                                  REFERENCE                                  TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
-keda-hpa-gpu-dcgmproftester-deployment-scaledobject   Deployment/gpu-dcgmproftester-deployment   71463m/60 (avg)   1         16        16         41m
+NAME                               REFERENCE                TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
+keda-hpa-gpu-workload-scaledobject Deployment/gpu-workload  71463m/60 (avg)   1         16        16         41m
 ```
 
-When the utilization metric crosses the threshold (e.g. 60%), KEDA creates new pods up to the `maxReplicaCount` limit.
-
-If all GPUs are in use, and there are not enough available resources, Kubernetes will keep the pods in `Pending` state.\
-Cluster Autoscaler (enabled by default in Gcore Managed Kubernetes) will then provision new nodes based on resource demand.
-
-Once the new node is ready and GPUs are initialized (which might take 5 to 10 minutes), the pending pods will start running.
+When the utilization metric crosses the configured threshold — 60% in the example above — KEDA creates new pods up to the `maxReplicaCount` limit. If all GPUs are in use and no free resources are available, Kubernetes keeps the pods in `Pending` state, and Cluster Autoscaler provisions new nodes. Once new nodes are ready and GPUs are initialized (which might take 5 to 10 minutes), the pending pods start running.
