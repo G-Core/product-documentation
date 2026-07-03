@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 9fe8828db019
+  version: 5ef57c94b74e
 servers:
 - url: https://api.gcore.com
 paths:
@@ -6963,26 +6963,42 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 7
+          examples:
+          - 7
+          title: Region Id
           type: integer
       - in: path
         name: cluster_id
         required: true
-        description: Cluster ID
+        description: Cluster unique identifier
         schema:
+          description: Cluster unique identifier
+          example: 1aaaab48-10d0-46d9-80cc-85209284ceb4
+          examples:
+          - 1aaaab48-10d0-46d9-80cc-85209284ceb4
+          format: uuid4
+          title: Cluster Id
           type: string
       responses:
         '200':
-          description: List of network interfaces
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceInterfaceTrunkCollectionSerializer'
+                $ref: '#/components/schemas/InstanceInterfaceMixedCollectionSerializer'
       tags:
       - GPU Bare Metal
   /cloud/v1/ai/clusters/{project_id}/{region_id}/{cluster_id}/ports:
@@ -12976,41 +12992,53 @@ paths:
       - Instances
   /cloud/v1/instances/{project_id}/{region_id}/{instance_id}/available_flavors:
     get:
-      operationId: InstanceFlavorHandler.get
+      operationId: InstanceFlavorViewSet.get
       summary: List suitable flavors for instance resize
-      description: ''
+      description: |-
+        List all flavors suitable for resizing the specified instance.
+        When `include_prices` is specified, the list includes pricing information.
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          format: uuid4
+          title: Instance Id
           type: string
       - in: query
         name: include_prices
         required: false
-        description: Set to true if flavor listing should include flavor prices
+        description: Set to true if flavor listing should include flavor prices.
         schema:
+          default: false
+          description: Set to true if flavor listing should include flavor prices.
+          title: Include Prices
           type: boolean
       responses:
         '200':
-          description: List of available flavors
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceFlavorExtendedCollectionSerializer'
+                $ref: '#/components/schemas/InstanceFlavorExtendedV1CollectionSerializer'
       tags:
       - Instances
   /cloud/v1/instances/{project_id}/{region_id}/{instance_id}/changeflavor:
@@ -13432,40 +13460,55 @@ paths:
       - Instances
   /cloud/v1/instances/{project_id}/{region_id}/available_flavors:
     post:
-      operationId: InstanceAvailableFlavorsHandler.post
+      operationId: InstanceAvailableFlavorsViewSet.post
       summary: List flavors matching volume requirements
-      description: List all flavors that are suitable for instance creation based on volume requirements.
+      description: |-
+        List all flavors that are suitable for instance creation based on volume requirements.
+        When `include_prices` is specified, the list includes pricing information.
       parameters:
       - in: path
         name: project_id
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: query
         name: include_prices
         required: false
-        description: Set to true if flavor listing should include flavor prices
+        description: Set to true if flavor listing should include flavor prices.
         schema:
+          default: false
+          description: Set to true if flavor listing should include flavor prices.
+          title: Include Prices
           type: boolean
       responses:
         '200':
-          description: List of available flavors
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceFlavorExtendedCollectionSerializer'
+                $ref: '#/components/schemas/InstanceFlavorExtendedV1CollectionSerializer'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateInstanceVolumeListSchema'
+              $ref: '#/components/schemas/CheckFlavorVolumeListPydanticSerializer'
       tags:
       - Instances
   /cloud/v2/instances/{project_id}/{region_id}/check_limits:
@@ -14188,7 +14231,7 @@ paths:
       - Instances
   /cloud/v1/instances/{project_id}/{region_id}/available_names:
     get:
-      operationId: InstanceAvailableNamesHandler.get
+      operationId: InstanceAvailableNamesViewSet.get
       summary: Get instance naming restrictions
       description: |-
         Get the naming restrictions applied to instances in the specified project and region.
@@ -14199,20 +14242,30 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Instance naming restrictions
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AvailableInstanceNamesSchema'
+                $ref: '#/components/schemas/AvailableInstanceNamesPydanticSerializer'
       deprecated: true
       tags:
       - Instances
@@ -31251,50 +31304,71 @@ components:
           type: string
       title: AvailableBaremetalFlavorsBodySerializer
       type: object
-    AvailableInstanceNamesSchema:
-      type: object
+    AvailableInstanceNamesPydanticSerializer:
       properties:
         allowed_bm_name_templates:
-          type: array
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
           description: Clients will only be able to use these strings as bare metal server "bm_name_templates".
-          items:
-            type: string
+          examples:
+          - - ed-b9-{ip_octets}
+          title: Allowed Bm Name Templates
         allowed_bm_name_win_templates:
-          type: array
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
           description: Clients will only be able to use these strings as bare metal server "bm_name_templates".
-          items:
-            type: string
+          examples:
+          - - ed-c4-{two_ip_octets}
+          title: Allowed Bm Name Win Templates
         allowed_name_templates:
-          type: array
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
           description: If "name_templates_limited" is True, this is the list of allowed instance name templates.
-          items:
-            type: string
+          examples:
+          - - ed-c4-{ip_octets}
+          title: Allowed Name Templates
         allowed_name_win_templates:
-          type: array
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
           description: If "name_templates_limited" is True, this is the list of allowed windows instance name templates.
-          items:
-            type: string
+          examples:
+          - - ed-b9-{one_ip_octet}
+          title: Allowed Name Win Templates
         custom_name_allowed:
-          type: boolean
           description: If true, instances can be created using "names" field.
-        name_templates_limited:
+          example: false
+          examples:
+          - false
+          title: Custom Name Allowed
           type: boolean
+        name_templates_limited:
           description: If true, only specific strings are allowed in "name_templates" fields.
+          example: true
+          examples:
+          - true
+          title: Name Templates Limited
+          type: boolean
       required:
       - custom_name_allowed
       - name_templates_limited
-      description: Instance naming restrictions.
-      example:
-        allowed_bm_name_templates:
-        - ed-b9-{ip_octets}
-        allowed_name_templates:
-        - ed-c4-{ip_octets}
-        custom_name_allowed: false
-        name_templates_limited: true
-        allowed_name_win_templates:
-        - ed-b9-{one_ip_octet}
-        allowed_bm_name_win_templates:
-        - ed-c4-{two_ip_octets}
+      - allowed_name_templates
+      - allowed_bm_name_templates
+      - allowed_name_win_templates
+      - allowed_bm_name_win_templates
+      title: Instance available names schema
+      type: object
     AwsIamData:
       properties:
         aws_access_key_id:
@@ -34085,53 +34159,83 @@ components:
       - direction
       title: ChangeSecurityGroupRuleSerializer
       type: object
-    CheckFlavorVolumeSchema:
-      type: object
+    CheckFlavorVolumeItemPydanticSerializer:
       properties:
         apptemplate_id:
-          type: string
-          description: App template ID. Mandatory if volume is created from marketplace template
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: App template ID. Mandatory if source is 'apptemplate'.
+          title: Apptemplate Id
         boot_index:
-          type: integer
-          description: 0 should be set for primary boot device Unique positive values for other bootable devices.Negative - boot prohibited
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: 0 should be set for primary boot device; Unique positive values for other bootable devices; negative - boot prohibited.
+          title: Boot Index
         image_id:
-          type: string
-          description: Image ID. Mandatory if volume is created from image
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Image ID. Mandatory if volume is created from image.
+          title: Image Id
         name:
-          type:
-          - string
-          - 'null'
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Volume name. Non-important, may be omitted.
+          title: Name
         size:
-          type: integer
-          minimum: 1
+          anyOf:
+          - minimum: 1
+            type: integer
+          - type: 'null'
+          default: null
           description: Volume size. Must be specified when source is 'new-volume' or 'image'. If specified for source 'snapshot' or 'existing-volume', value must be equal to respective snapshot or volume size
+          title: Size
         snapshot_id:
-          type: string
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
           description: Volume snapshot ID. Mandatory if volume is created from a snapshot
+          title: Snapshot Id
         source:
-          type: string
-          enum:
-          - apptemplate
-          - existing-volume
-          - image
-          - new-volume
-          - snapshot
+          $ref: '#/components/schemas/VolumeSource'
           description: Volume source
         type_name:
-          type: string
-          enum:
-          - cold
-          - ssd_hiiops
-          - ssd_local
-          - ssd_lowlatency
-          - standard
-          - ultra
+          anyOf:
+          - $ref: '#/components/schemas/VolumeTypeName'
+          - type: 'null'
+          default: null
           description: One of 'standard', 'ssd_hiiops', 'ssd_local', 'ssd_lowlatency', 'cold', 'ultra'
         volume_id:
-          type: string
-          description: Volume ID. Mandatory if volume is pre-existing volume
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Volume ID. Mandatory if source is 'existing-volume'.
+          title: Volume Id
       required:
       - source
+      title: CheckFlavorVolumeItemPydanticSerializer
+      type: object
+    CheckFlavorVolumeListPydanticSerializer:
+      properties:
+        volumes:
+          description: Volumes details. Non-important info such as names may be omitted.
+          items:
+            $ref: '#/components/schemas/CheckFlavorVolumeItemPydanticSerializer'
+          title: Volumes
+          type: array
+      required:
+      - volumes
+      title: CheckFlavorVolumeListPydanticSerializer
+      type: object
     CheckQuotaBeforeBMCreationSerializer:
       properties:
         flavor:
@@ -38755,26 +38859,6 @@ components:
       - volumes
       title: CreateInstanceSerializerV2
       type: object
-    CreateInstanceVolumeListSchema:
-      type: object
-      properties:
-        volumes:
-          type: array
-          description: Volumes details. Non-important info such as names may be omitted.
-          items:
-            $ref: '#/components/schemas/CheckFlavorVolumeSchema'
-      required:
-      - volumes
-      description: CreateInstanceVolumeList schema
-      example:
-        volumes:
-        - attachment_tag: root
-          boot_index: 0
-          image_id: f01fd9a0-9548-48ba-82dc-a8c8b2d6f2f1
-          name: TestVM5 Ubuntu boot image
-          size: 10
-          source: image
-          type_name: ssd_hiiops
     CreateInstanceVolumeSerializer:
       discriminator:
         mapping:
@@ -48085,151 +48169,6 @@ components:
       - interface_name
       title: Fixed IP Address (short)
       type: object
-    InstanceFlavorExtendedCollectionSerializer:
-      properties:
-        count:
-          description: Number of objects
-          example: 1
-          examples:
-          - 1
-          minimum: 0
-          title: Count
-          type: integer
-        results:
-          description: Objects
-          items:
-            $ref: '#/components/schemas/InstanceFlavorExtendedSerializer'
-          title: Results
-          type: array
-      required:
-      - count
-      - results
-      title: InstanceFlavorExtendedCollectionSerializer
-      type: object
-    InstanceFlavorExtendedSerializer:
-      description: Instances flavor schema
-      properties:
-        architecture:
-          description: Flavor architecture type
-          example: x86_64
-          examples:
-          - x86_64
-          title: Architecture
-          type: string
-        capacity:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: null
-          description: Number of available instances of given configuration
-          examples:
-          - 1
-          title: Capacity
-        currency_code:
-          anyOf:
-          - type: string
-          - type: 'null'
-          default: null
-          description: Currency code. Shown if the `include_prices` query parameter if set to true
-          examples:
-          - USD
-          title: Currency Code
-        disabled:
-          description: Disabled flavor flag
-          example: false
-          examples:
-          - false
-          title: Disabled
-          type: boolean
-        flavor_id:
-          description: Flavor ID is the same as name
-          example: g2-standard-32-64
-          examples:
-          - g2-standard-32-64
-          title: Flavor Id
-          type: string
-        flavor_name:
-          description: Flavor name
-          example: g2-standard-32-64
-          examples:
-          - g2-standard-32-64
-          title: Flavor Name
-          type: string
-        hardware_description:
-          additionalProperties:
-            type: string
-          default: {}
-          description: Additional hardware description
-          title: Hardware Description
-          type: object
-        os_type:
-          description: Flavor operating system
-          example: linux
-          examples:
-          - linux
-          title: Os Type
-          type: string
-        price_per_hour:
-          anyOf:
-          - type: number
-          - type: integer
-          - type: 'null'
-          default: null
-          description: Price per hour. Shown if the `include_prices` query parameter if set to true
-          examples:
-          - 1
-          title: Price Per Hour
-        price_per_month:
-          anyOf:
-          - type: number
-          - type: integer
-          - type: 'null'
-          default: null
-          description: Price per month. Shown if the `include_prices` query parameter if set to true
-          examples:
-          - 720
-          title: Price Per Month
-        price_status:
-          anyOf:
-          - $ref: '#/components/schemas/PriceDisplayStatus'
-          - type: 'null'
-          default: null
-          description: Price status for the UI
-          examples:
-          - show
-        ram:
-          description: RAM size in MiB
-          example: 2048
-          examples:
-          - 2048
-          title: Ram
-          type: integer
-        reserved_capacity:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          default: null
-          description: Number of available instances of given flavor from reservations
-          examples:
-          - 5
-          title: Reserved Capacity
-        vcpus:
-          description: Virtual CPU count. For bare metal flavors, it's a physical CPU count
-          example: 1
-          examples:
-          - 1
-          title: Vcpus
-          type: integer
-      required:
-      - flavor_id
-      - flavor_name
-      - vcpus
-      - ram
-      - disabled
-      - os_type
-      - architecture
-      title: Instances flavor schema
-      type: object
     InstanceFlavorExtendedSerializerWithPrice:
       description: Instances flavor schema with price information
       properties:
@@ -48700,6 +48639,29 @@ components:
       - region_id
       - project_id
       title: InstanceInFloatingSerializer
+      type: object
+    InstanceInterfaceMixedCollectionSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/InstanceInterfaceTrunkSerializer'
+            - $ref: '#/components/schemas/InstanceInterfaceSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: InstanceInterfaceMixedCollectionSerializer
       type: object
     InstanceInterfaceSerializer:
       properties:
