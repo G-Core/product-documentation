@@ -438,6 +438,42 @@ These headings must never appear:
 - Prerequisites go in the opening paragraph as plain text, not a separate section
 - Every article opens with its own unique sentence — never a template sentence that could appear in three different articles
 
+### Article must open with a prose paragraph
+
+The `title:` field in the frontmatter renders as the page H1. The first element in the article body must be a prose paragraph — never a heading, list, table, or code block.
+
+Jumping from the page title straight to a `##` section heading gives the reader no context. The opening paragraph must establish what the feature does, what problem the article addresses, or what situation the reader is in — without meta-preamble (see [No meta-preamble openers](#no-meta-preamble-openers)).
+
+**Forbidden opening patterns for the paragraph:**
+- `This article covers...`
+- `This guide explains the following scenarios...`
+- `The sections below describe...`
+- `Here you will find...`
+
+These are still meta-preamble, just placed in a paragraph instead of a heading.
+
+**Bad — body opens with a heading:**
+```
+---
+title: Troubleshoot issues with an SSH connection
+---
+
+## Recommended SSH connection method
+```
+
+**Good — prose paragraph before the first heading:**
+```
+---
+title: Troubleshoot issues with an SSH connection
+---
+
+SSH connections to Gcore Virtual Machines use key-based authentication by default. Most failures trace back to a misconfigured key, the wrong default username, a missing floating IP, or a blocked firewall port.
+
+## Recommended SSH connection method
+```
+
+The opening paragraph must be specific to this article. A reader skimming the page title and the first two sentences should understand both the topic and the scope — without reading a single heading.
+
 ---
 
 ## Links
