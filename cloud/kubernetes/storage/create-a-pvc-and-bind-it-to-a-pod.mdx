@@ -4,11 +4,13 @@ sidebarTitle: "Create a PVC and bind it to a pod"
 ai-navigation: Create PersistentVolumeClaim (PVC) resources in Gcore Managed Kubernetes by defining StorageClass with disk types (standard, ssd_highiops, ssd_lowlatency), then binding PVC to pods using kubectl with accessModes, storage capacity, and volumeBindingMode parameters.
 ---
 
+Persistent storage in Kubernetes is provided through PersistentVolumes (PVs) and PersistentVolumeClaims (PVCs). This article shows how to create a PVC backed by a custom StorageClass, bind it to a pod, and resize it when additional storage is needed.
+
 ## PV and PVC overview
 
 A PV (PersistentVolume) in Managed Kubernetes is a resource used to store data. It is attached to pods but has a separate lifecycle, specified by its reclaim policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
 
-A PV represents a piece of available storage. To use a PV, create a PersistentVolumeClaim (PVC), which is a request for storage. Kubernetes passes this request to a storage class, which creates PVs automatically in response.
+A PV represents available storage in the cluster. Applications don't use PVs directly — instead, they request storage by creating a PersistentVolumeClaim (PVC). Kubernetes forwards that request to a StorageClass, which provisions a matching PV automatically.
 
 ## Create a PVC
 
@@ -26,7 +28,7 @@ Before creating a PVC, create a storage class with the required disk type. Gcore
   ![Volume type dropdown in Kubernetes cluster creation showing High IOPS SSD, Standard, and SSD Low-Latency options](/images/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod/1-available-volumes.png)
 </Frame>
 
-A storage class configured with a disk type unavailable in the target region will fail to provision PVs.
+A storage class configured with a disk type unavailable in the target region will fail to provision PVs. Choose one of the available volume types and use its identifier in the StorageClass manifest.
 
 2\. Create a YAML file to create a storage class with the required disk type:
 
@@ -43,7 +45,7 @@ parameters:
 allowVolumeExpansion: true
 ```
 
-Replace the placeholder values:
+The manifest defines a StorageClass that provisions volumes of the selected disk type. Replace the placeholder values:
 
 - `csi-sc-cinderplugin-hiiops`: Storage class name
 - `ssd_hiiops`: Disk type (`standard`, `ssd_hiiops`, or `ssd_lowlatency`)
@@ -59,6 +61,8 @@ The expected output:
 ```sh
 storageclass.storage.k8s.io/<name of the created storage class> created
 ```
+
+Once the StorageClass exists, create a PersistentVolumeClaim that requests storage from it.
 
 4\. Create a YAML file to configure a PVC:
 
@@ -98,7 +102,7 @@ The PVC is now created with a storage class of the required disk type.
 
 ## Bind a PVC to a pod
 
-1\. Create a YAML file to bind the created PVC to a pod.
+1\. Reference the PVC from the pod manifest to mount the volume inside the container.
 
 ```yaml
 apiVersion: v1  
@@ -142,7 +146,7 @@ The PVC is now connected to the pod. Its containers can access the storage at th
 
 ## Resize a PVC
 
-Gcore Managed Kubernetes provides predefined storage classes for PVs. When a PVC is created, Managed Kubernetes provisions a dynamic PV that matches its specs. To increase the size of a PV, update the PVC that was used to create it.
+To increase the size of a volume, update the PersistentVolumeClaim that was used to provision it. When a PVC is created, Managed Kubernetes provisions a dynamic PV that matches its specs — resizing the PVC triggers a corresponding resize of the underlying PV.
 
 <Info>Only increasing PVC storage size is supported. Reducing the size of a PV is not possible.</Info>
 
