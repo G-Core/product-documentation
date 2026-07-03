@@ -4,98 +4,98 @@ sidebarTitle: Install nginx controller
 ai-navigation: Deploy nginx Ingress Controller on Gcore Managed Kubernetes using Helm, which automatically provisions a Load Balancer resource for routing external traffic to cluster services via Ingress manifests.
 ---
 
-Installing the nginx Ingress Controller automatically creates a [Load Balancer](https://gcore.com/cloud/load-balancers). This Load Balancer acts as an entry point for incoming traffic. When traffic arrives, the Load Balancer forwards it to the Ingress Controller. The Ingress Controller routes traffic to the appropriate services in the Managed Kubernetes cluster based on the rules defined in Ingress manifests.
+Installing the nginx Ingress Controller automatically creates a [Load Balancer](https://gcore.com/cloud/load-balancers) that acts as an entry point for incoming traffic. The Load Balancer forwards requests to the Ingress Controller, which routes them to the appropriate services based on Ingress manifest rules.
 
 ## Step 1. Install Helm
 
-Using [Helm](https://helm.sh/) package manager simplifies the process of deploying, managing, and scaling applications on Kubernetes.
+[Helm](https://helm.sh/) is a package manager that simplifies deploying and managing applications on Kubernetes.
 
-The following sections cover Helm installation on the most common operating systems. For additional options, refer to the official [installing Helm](https://helm.sh/docs/intro/install/) guide.
+The following tabs cover installation on the most common operating systems. For other platforms, the Helm [installation guide](https://helm.sh/docs/intro/install/) lists additional methods.
 
 <Tabs>
     <Tab title="On Linux">
-        1\. In the Terminal, run the official Helm installation script:
+        1\. In the terminal, run the official Helm installation script:
 
         ```sh
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
         ```
 
-        This command downloads and installs the latest version of Helm and places the binary in `/usr/local/bin/helm` (or another location depending on the system configuration).
+        This downloads and installs the latest version of Helm to `/usr/local/bin/helm`.
 
-        2\. Verify the installation by checking the Helm version: `helm version`. The installed version is displayed.
+        2\. Verify the installation: `helm version`
     </Tab>
     <Tab title="On macOS">
-        If you have [Homebrew](https://brew.sh/) installed, run `brew install helm`.
+        With [Homebrew](https://brew.sh/) installed, run:
 
-        Verify the installation by running `helm version`. This command returns the installed Helm version.
+        ```sh
+        brew install helm
+        ```
 
-        If Homebrew is not installed, follow the installation steps for Linux.
+        Without Homebrew, use the Linux installation method.
+
+        Verify the installation: `helm version`
     </Tab>
     <Tab title="On Windows">
-        Download the latest Helm release from the [Helm GitHub releases](https://github.com/helm/helm/releases) page and extract the ZIP file to a local directory, for example `C:\Program Files\Helm`.
+        Download the latest Helm release from the [Helm GitHub releases](https://github.com/helm/helm/releases) page and extract the ZIP file to a local directory.
 
-        Add Helm binary to the `PATH`:
+        Add the directory containing `helm.exe` to the system `PATH`:
 
-        1\. Open the **Start** menu and search for **Environment Variables**.
+        1\. Open **Start** and search for **Edit the system environment variables**.
 
-        2\. Click **Edit** the system environment variables.
+        2\. In the **System properties** window, click **Environment variables**.
 
-        3\. In the **System properties** window, click **Environment variables**.
+        3\. Under **System variables**, select **Path** and click **Edit**.
 
-        4\. In the **System variables** section, click **New**.
+        4\. Click **New** and enter the full path to the directory containing `helm.exe`.
 
-        5\. Provide a variable name and set the full path to the directory where `helm.exe` is located (e.g., `C:\Program Files\Helm`).
+        5\. Click **OK** to save.
 
-        6\. Click **OK** to save the changes.
-
-        7\. Verify the installation. In the Terminal, run `helm version`. The latest release version downloaded from the GitHub repository in step 1 is displayed.
+        Verify the installation by running `helm version` in the terminal.
     </Tab>
 </Tabs>
 
-## Step 2. Create a namespace
+## Step 2. Deploy the nginx Ingress Controller
 
-Run the following kubectl command to create a namespace:
+The following commands create a dedicated namespace, register the Helm repository, and install the controller.
+
+1\. Create a namespace for the controller:
 
 ```sh
 kubectl create namespace ingress-nginx
- ```
+```
 
-## Step 3. Add Helm repository for the nginx controller
-
-Run the following command to add the helm repository for the nginx Ingress Controller:
+2\. Add the nginx Ingress Controller Helm repository:
 
 ```sh
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
- ```
+```
 
-## Step 4. Update helm repository
-
-Update data in the helm repository:
+3\. Update the repository index:
 
 ```sh
 helm repo update
- ```
+```
 
-## Step 5. Install nginx Ingress controller
-
-Run the following command:
+4\. Install the nginx Ingress Controller:
 
 ```sh
 helm install ingress-nginx ingress-nginx/ingress-nginx \
 \--namespace ingress-nginx \
 \--set controller.ingressClassResource.name=nginx
- ```
+```
 
-After the nginx Ingress Controller is installed, a Load Balancer is automatically created.
+Once installed, the controller provisions a Load Balancer automatically.
 
-## Step 6. Get an IP of a load balancer
+## Step 3. Get the Load Balancer IP address
 
-To get the IP address of the created Load Balancer, execute the command below:
+Run the following command to watch the service until an external IP is assigned:
 
 ```sh
 watch kubectl -n ingress-nginx get svc
- ```
+```
 
-Wait until the `<pending>` state of the `EXTERNAL-IP` column changes to an IP address.
+Wait until the `EXTERNAL-IP` column changes from `<pending>` to an IP address.
 
-The Load Balancer appears in the Gcore Customer Portal on the **Load Balancers** page and routes all incoming traffic to the nginx Ingress Controller.
+The Load Balancer also appears in the [Gcore Customer Portal](https://portal.gcore.com) under **Networking** > **Load Balancers**, where it routes all incoming traffic to the nginx Ingress Controller.
+
+<Frame>![Load Balancers page showing the load balancer created by the nginx Ingress Controller](/images/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller/load-balancers-page.png)</Frame>
