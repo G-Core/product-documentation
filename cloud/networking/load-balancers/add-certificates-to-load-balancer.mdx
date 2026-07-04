@@ -9,27 +9,25 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>Multiple TLS (Transport Layer Security) certificates can be configured for a single Load Balancer, enabling several secure websites on a single IP address.</p>
-
-<p>Instead of deploying separate Load Balancers for each website, a single Load Balancer can be configured with multiple TLS certificates. The Load Balancer serves the correct certificate based on the requested domain name.</p>
+<p>A single Load Balancer supports multiple TLS (Transport Layer Security) certificates, enabling several secure websites on one IP address. The Load Balancer selects the correct certificate based on the requested domain name.</p>
 
 ## SNI certificate selection
 
 <p>Load balancer listeners support the Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate to encrypt the connection. Once the TLS connection is terminated at the listener, the Load Balancer inspects the decrypted traffic and routes it to the proper server.</p>
 
-<p>Each listener can also be configured with its own TLS certificate, corresponding to a specific hostname or domain.</p>
+<p>Each listener supports its own TLS certificate, mapped to a specific hostname or domain.</p>
 
-## Add multiple certificates
+## Multiple TLS certificates
 
-<p>Multiple certificates can be added to listeners that use the Terminated HTTPS and Prometheus protocols.</p>
+<p>Listeners using the Terminated HTTPS and Prometheus protocols support multiple TLS certificates.</p>
 
-### 1\. Add certificates to the Secrets Manager
+### Step 1. Add certificates to Secrets Manager
 
-<p>Add the required certificates to Gcore Secrets Manager. If no certificates exist yet, follow the [upload guide](/cloud/secrets-manager/upload-a-pkcs12-file) to configure secrets for HTTPS Load Balancers.</p>
+<p>Add the required certificates to Gcore Secrets Manager. If no certificates exist yet, the [upload guide](/cloud/secrets-manager/upload-a-pkcs12-file) covers PKCS12 configuration for HTTPS Load Balancers.</p>
 
-### 2\. Add certificates to a listener
+### Step 2. Add certificates to a listener
 
-<p>After configuring the certificates, add them to the relevant listener. This can be done during Load Balancer creation or in the settings of an existing Load Balancer.</p>
+<p>After uploading the certificates, add them to a listener — during Load Balancer creation or from the settings of an existing one.</p>
 
 <Info>
 Secrets in use by a listener cannot be deleted, ensuring the Load Balancer can fail over successfully when needed. To remove a secret, first delete the listener that uses it, then delete the secret and recreate the listener if needed.
@@ -39,87 +37,75 @@ Secrets in use by a listener cannot be deleted, ensuring the Load Balancer can f
   <Tab title="During Load Balancer creation">
     <p>Create a new Load Balancer following the [setup guide](/cloud/networking/create-and-configure-a-load-balancer). In step 5, configure the listener as follows:</p>
 
-    1\. Enter a name for the listener.
+    1. Enter a name for the listener.
 
-    2\. Select a protocol with the supported TLS encryption: **Terminated HTTPS** or **Prometheus**.
+    2. Select a protocol with the supported TLS encryption: **Terminated HTTPS** or **Prometheus**.
 
-    3\. Use a default port or specify a custom port from 1 to 65535.
+    3. Use a default port or specify a custom port from 1 to 65535.
 
-    <Frame>
-      ![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-name-port.png)
-    </Frame>
+    4. (Optional) To identify the origin of the user's IP address connecting to a web server via a Load Balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
 
-    4\. (Optional) To identify the origin of the user's IP address connecting to a web server via a Load balancer, select the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** checkbox.
+    5. Select the **Default TLS Certificate** — the certificate used when no SNI-matching certificate is configured for the requested domain.
 
-    5\. Select the default TLS Certificate — the certificate used when no SNI-matching certificate is configured for the requested domain.
+    6. Select the SNI Certificates stored in Secrets Manager.
 
-    6\. Select the SNI Certificates stored in Secrets Manager.
+    7. Set the **Connection limit** — the maximum number of simultaneous connections the listener can handle.
 
-    7\. Set the connection limit — the maximum number of simultaneous connections the listener can handle.
+    8. (Optional) In the **Allowed CIDRs** field, specify the IP addresses allowed to access the content. The load balancer blocks requests from any IP outside the specified range.
 
-    <Frame>
-      ![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-headers-cni.png)
-    </Frame>
-
-    8\. (Optional) In the **Allowed CIDRs** field, specify the IP addresses that can access the content. IP addresses outside the specified range will be denied access.
-
-    9\. (Optional) Configure basic authentication for HTTP traffic to restrict unauthorized access. Click **Add user** and specify the following credentials:
+    9. (Optional) Configure basic authentication for HTTP traffic to restrict unauthorized access. Click **Add user** and specify the following credentials:
 
       * **Enter username**: the username required to access the resource.
 
       * **Password**: specify a plain-text password or provide an encrypted password.
 
 
-    10\. Click **Create Listener**.
-
-    <p>After configuring the listener, proceed with the remaining steps in the [Create a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) guide to complete the creation.</p>
+    10. Click **Create Listener**.
 
     <Frame>
-      ![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/create-listener.png)
+      ![Add Listener dialog with Terminated HTTPS protocol and certificate fields](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-dialog.png)
     </Frame>
   </Tab>
   <Tab title="From the Load Balancer settings">
     <p>To add TLS termination to an existing Load Balancer without creating a new one, update it as follows:</p>
 
-    1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to the **Cloud** page and click **Networking**.
+    1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to the **Cloud** page and click **Networking**.
 
-    2\. Open the **Load Balancers** page.
+    2. Open the **Load Balancers** page.
 
     <Frame>
       ![Load Balancers page in Customer Portal](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/load-balancers-page.png)
     </Frame>
 
-    3\. Find the Load Balancer to configure and click its name to open it.
+    3. Find the Load Balancer to configure and click its name to open it.
 
-    4\. Navigate to the **Listeners** tab and click **Add listener**.
+    4. Navigate to the **Listeners** tab and click **Add Listener**.
 
     <Frame>
       ![Listener tab in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/listeners-tab.png)
     </Frame>
 
-    5\. To configure the listener, follow the same steps as in the **During Load Balancer creation** tab.
+    5. To configure the listener, follow the same steps as in the **During Load Balancer creation** tab.
   </Tab>
 </Tabs>
 
-## Create an encrypted password
+## Encrypted password
 
-<p>When configuring basic authentication, an encrypted password can be specified instead of a plain-text password.</p>
+<p>When configuring basic authentication, specify an encrypted password instead of plain text. To generate a hash using the [MKPasswd](https://www.unix.com/man-page/linux/1/mkpasswd/) utility:</p>
 
-<p>Any preferred encryption method can be used. To generate a hashed password with the [MKPasswd](https://www.unix.com/man-page/linux/1/mkpasswd/) utility (dockerized version):</p>
-
-1\. Check the available encryption types:
+1. Check the available encryption types:
 
 ```sh
 docker run --rm yardalgedal/mkpasswd -m help
  ```
 
-2\. Select an encryption method and generate the password hash. For example, to create a bcrypt hash, run:
+2. Select an encryption method and generate the password hash. To create a bcrypt hash, run:
 
 ```sh
 docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword
  ```
 
-3\. Insert the hash into the **Encrypted password** field:
+3. Insert the hash into the **Encrypted password** field:
 
 
 <Frame>
@@ -145,7 +131,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 ```
 
 <Info>
-**LB\_ID** is the UUID of an existing load balancer. To create one or find its ID, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).
+`LB_ID` is the UUID of an existing [load balancer](/cloud/networking/create-and-configure-a-load-balancer).
 </Info>
 
 ## Quickstart
@@ -159,7 +145,7 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     from gcore import Gcore
     from gcore.types.cloud import secret_upload_tls_certificate_params
 
-    client = Gcore()
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
     lb_id = os.environ["LB_ID"]
 
     # Step 1. Upload the default TLS certificate to Secrets Manager
@@ -199,6 +185,7 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     	"os"
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
     )
 
     func readFile(path string) string {
@@ -212,7 +199,7 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     func main() {
     	lbID := os.Getenv("LB_ID")
 
-    	client := gcore.NewClient()
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
     	ctx := context.Background()
 
     	// Step 1. Upload the default TLS certificate to Secrets Manager
@@ -249,7 +236,7 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
 
 ## Step-by-step
 
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+<p>Steps 1–4 below upload a certificate to Secrets Manager, list existing certificates, attach the certificate to a new listener, and add SNI certificates for multi-domain support.</p>
 
 <Accordion title="Show all steps">
 
@@ -272,7 +259,7 @@ Certificates are stored in Gcore Secrets Manager before being referenced by a lo
     from gcore import Gcore
     from gcore.types.cloud import secret_upload_tls_certificate_params
 
-    client = Gcore()
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     cert_pem = open("/path/to/certificate.pem").read()
     key_pem = open("/path/to/private-key.pem").read()
@@ -410,7 +397,7 @@ The [secrets API](/api-reference/cloud#tag/Secrets/operation/SecretListViewSet.g
 
 ### Step 3. Create a listener with the TLS certificate
 
-A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forwards plain HTTP to backend pool members. The `secret_id` sets the default certificate - the one used when no SNI match is found.
+A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forwards plain HTTP to backend pool members. The `secret_id` optionally sets the default certificate — the one used when no SNI certificate matches the requested domain.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -418,7 +405,7 @@ A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forw
 | `name` | Yes | Listener name |
 | `protocol` | Yes | Must be `TERMINATED_HTTPS` for TLS termination |
 | `protocol_port` | Yes | Port number (1-65535); use `443` for standard HTTPS |
-| `secret_id` | Yes | ID of the default TLS certificate from Secrets Manager |
+| `secret_id` | No | ID of the default TLS certificate from Secrets Manager; pass `""` to use only SNI certificates with no fallback |
 | `sni_secret_id` | No | List of additional certificate IDs for SNI-based selection |
 
 <Tabs>
@@ -598,13 +585,13 @@ SNI certificates let a single listener serve different TLS certificates for diff
   </Tab>
 </Tabs>
 
-To add more SNI certificates later, include all existing IDs plus the new ones in `sni_secret_id` - the field replaces the full list, not appends to it. The [update listener](/api-reference/cloud#tag/Load-Balancer-Listeners/operation/LoadBalancerListenerUpdateViewSet.patch) endpoint also accepts `secret_id` to replace the default certificate.
+To add more SNI certificates later, include all existing IDs plus the new ones in `sni_secret_id` — the field replaces the full list, not appends to it. The [update listener](/api-reference/cloud#tag/Load-Balancer-Listeners/operation/LoadBalancerListenerUpdateViewSet.patch) endpoint also accepts `secret_id` to replace the default certificate.
 
 </Accordion>
 
 ## Clean up
 
-Delete the listener before the secret. A secret that is in use by a listener cannot be deleted - the API returns a `ValidationError`.
+Delete the listener before the secret. A secret that is in use by a listener cannot be deleted — the API returns a `ValidationError`.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -675,9 +662,9 @@ An [API token](/account-settings/api-tokens) is required, along with a [project 
 </Info>
 
 
-## Create a TERMINATED_HTTPS listener
+## TERMINATED_HTTPS listener
 
-<p>The listener requires a default certificate in `secret_id` (set to `""` to omit) and one or more SNI certificates in `sni_secret_id`. The load balancer matches the client's requested hostname against the Subject Alternative Names of each SNI certificate; the default falls back to `secret_id` when no match is found.</p>
+<p>Specify the default certificate in `secret_id` — the fallback used when no SNI certificate matches the requested domain. Pass `""` to omit the default; connections without a matching SNI certificate will fail. Add one or more SNI certificates in `sni_secret_id`; the load balancer matches the client's requested hostname against the Subject Alternative Names of each SNI certificate.</p>
 
 ```hcl
 resource "gcore_cloud_secret" "tls" {
@@ -709,9 +696,9 @@ output "listener_id" {
 }
 ```
 
-<p>Set `var.load_balancer_id` to the ID of an existing load balancer. To create a load balancer with Terraform, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).</p>
+<p>Set `var.load_balancer_id` to the ID of an existing [load balancer](/cloud/networking/create-and-configure-a-load-balancer).</p>
 
-## Add more SNI certificates
+## Additional SNI certificates
 
 <p>Pass all certificate IDs together — `sni_secret_id` replaces the full list on each apply:</p>
 
@@ -738,7 +725,7 @@ resource "gcore_cloud_load_balancer_listener" "https" {
 }
 ```
 
-## Rotate a certificate
+## Certificate rotation
 
 <p>To replace a certificate, increment `payload_wo_version` on the corresponding `gcore_cloud_secret` resource — Terraform destroys the old secret and creates a new one. The listener re-reads the new ID via the reference.</p>
 
