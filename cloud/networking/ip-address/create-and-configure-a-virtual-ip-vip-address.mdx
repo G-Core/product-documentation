@@ -1,4 +1,4 @@
-﻿---
+---
 title: Create and configure a virtual IP address
 sidebarTitle: Virtual IP address
 ai-navigation: Reserve a virtual IP address (VIP) via Customer Portal, REST API, or Terraform, connect VM ports to share the address, enable or disable VIP mode on existing reserved IPs, and configure VRRP-based failover using Keepalived.
@@ -14,11 +14,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>A virtual IP address (VIP) is an IP address that can be assigned to multiple Virtual Machines or serve as a secondary IP address for a network interface.</p>
 
-## How it works
+## VIP use cases
 
-<p>**To use a VIP to create a fault-tolerant system**, install and configure Keepalived, which is a system daemon for Linux. Keepalived uses the Virtual Router Redundancy Protocol (VRRP) to manage the VIP. This protocol allows multiple machines to share a common IP address, and Keepalived uses VRRP to pass the VIP address between the primary machine and the backup machines. When the primary machine fails, the VRRP protocol detects the failure and passes the VIP to one of the backup machines, ensuring that the network service remains available.</p>
+<p>To use a VIP for fault tolerance, install and configure Keepalived, a Linux daemon that uses the Virtual Router Redundancy Protocol (VRRP) to manage the address. VRRP allows multiple machines to share a common IP address. Keepalived passes the VIP between a primary machine and backup machines. When the primary fails, the VRRP detects the failure and assigns the VIP to the highest-priority backup, keeping the service available.</p>
 
-<p>**To use a VIP as a secondary address** for a network interface, reserve a VIP and assign it to a Virtual Machine — first in the Gcore Cloud settings, then in the machine's network configuration. As a result, the VIP becomes an address of the Virtual Machine, working in conjunction with its regular IP address, allowing the machine to receive and transmit data on behalf of both addresses.</p>
+<p>To use a VIP as a secondary address for a network interface, reserve a VIP and assign it to a Virtual Machine — first in the Gcore Cloud settings, then in the machine's network configuration. The VIP then works alongside the machine's regular IP address, and the machine can receive and send traffic on both addresses.</p>
 
 ## Billing
 
@@ -34,80 +34,57 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Create a virtual IP address
 
-<p>1\. In the Cloud menu, go to **Networking** → **Reserved IPs** and click **Reserve new IP**.</p>
+1. In the Cloud menu, go to **Networking** → **Reserved IPs** and click **Reserve new IP**.
 
+<Frame>![Reserved IPs page with Reserve new IP button](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-reserved-ips-list.png)</Frame>
 
-<Frame>![Screenshot_2023-02-07_at_14.59_1.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896827624209.png)</Frame>
+2. In the dialog, set **Network type** to **Public**, **Private**, or **Dedicated public**. For a private IP, also select the network and subnet. In the **IP address to reserve** section, leave **Any available IP** selected or choose **Custom** to specify an address from the subnet CIDR. Select an **IP Family** and click **Reserve IP**.
 
+<Frame>![Reserve IP dialog showing Network type and IP Family options](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-create-dialog.png)</Frame>
 
+3. In the list of reserved IPs, find the new address, click **⋯** next to it, and select **Set as VIP**.
 
-<p>2\. In the new window, select the type of an IP address depending on the required network interface: public or private.</p>
+<Frame>![Reserved IPs row context menu with Set as VIP option](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-set-as-vip-menu.png)</Frame>
 
-<p>If **Private** is selected, specify the network and subnetwork. In the **IP address to reserve** section, select **Custom** to specify a particular IP address from the valid CIDR, or leave **Any available IP** selected to have one assigned automatically.</p>
+4. In the confirmation dialog, click **Set as VIP**.
 
-
-<Frame>![Screenshot_2023-02-07_at_15.28.15.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896898220817.png)</Frame>
-
-
-
-<p>3\. Go back to the list of reserved IP addresses, find the required IP address, click **⋯** next to it and select **VIP settings**.</p>
-
-
-<Frame>![Screenshot_2023-02-07_at_15.53_1.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896925225233.png)</Frame>
-
-
-
-<p>4\. In the pop-up window, turn on the **Is VIP** toggle and click **Save**.</p>
-
-<p>The virtual IP address is now reserved and can be assigned to multiple machines to create a fault-tolerant system, or added as a secondary address for a network interface.</p>
+<p>The IP status changes to **VIP** and the **VIP settings** dialog opens. Instance interfaces can be added immediately or at any time later.</p>
 
 ## Assign a virtual IP address to multiple VMs
 
-<p>1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.</p>
+1. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **⋯** next to it, and select **VIP settings**.
 
+<Frame>![Reserved IPs row context menu showing VIP settings option](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-manage-menu.png)</Frame>
 
-<Frame>![Screenshot_2023-02-13_at_11.27_1.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png)</Frame>
+2. In the **VIP settings** dialog, click **+ Add Instance Interface**. Select the VM from the **Select VM** dropdown and choose its network port from **Select Port**. Add more VMs using **+ Add Instance Interface** again, then click **Save**.
 
+<Frame>![VIP settings dialog with Select VM and Select Port dropdowns](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-settings-add-instance.png)</Frame>
 
+3. Install and configure Keepalived on the Virtual Machines using the [Keepalived documentation](https://keepalived.readthedocs.io/en/latest/installing_keepalived.html).
 
-<p>2\. In the pop-up window, add the required Virtual Machines, specify their ports and click **Save**.</p>
+4. Change the Keepalived configuration file to set the "MASTER" machine and "BACKUP" machines. Additionally, set the priority to determine the order in which the VIP will be transferred between devices. If the master server fails, the IP address will be transferred to the backup machine with the highest priority. If the second machine fails, the VIP will be transferred to the backup machine with the second-highest priority.
 
-
-<Frame>![Screenshot_2023-02-08_at_17.11.42.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png)</Frame>
-
-
-
-<p>3\. Install and configure Keepalived on the Virtual Machines using [the official Keepalived documentation](https://keepalived.readthedocs.io/en/latest/installing_keepalived.html).</p>
-
-<p>4\. Change the Keepalived configuration file to set the "MASTER" machine and "BACKUP" machines. Additionally, set the priority to determine the order in which the VIP will be transferred between devices. If the master server fails, the IP address will be transferred to the backup machine with the highest priority. If the second machine fails, the VIP will be transferred to the backup machine with the second-highest priority.</p>
-
-<p>5\. Run Keepalived on the Virtual Machine and add it to the autostart list.</p>
+5. Run Keepalived on the Virtual Machine and add it to the autostart list.
 
 <p>The VIP is now configured and the fault-tolerant system is operational.</p>
 
 ## Assign a virtual IP address as a secondary address
 
-<p>1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.</p>
+1. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **⋯** next to it, and select **VIP settings**.
 
+<Frame>![Reserved IPs row context menu showing VIP settings option](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-manage-menu.png)</Frame>
 
-<Frame>![Screenshot_2023-02-13_at_11.27_1.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png)</Frame>
+2. In the **VIP settings** dialog, click **+ Add Instance Interface**. Select the VM and its port, then click **Save**.
 
-
-
-<p>2\. In the pop-up window, add the required Virtual Machine, specify its port and click **Save**.</p>
-
-
-<Frame>![Screenshot_2023-02-08_at_17.11.42.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png)</Frame>
-
-
+<Frame>![VIP settings dialog with Select VM and Select Port dropdowns](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-settings-add-instance.png)</Frame>
 
 <p>Next, configure the VIP in the Virtual Machine settings. The sections below cover non-Windows and Windows VMs.</p>
 
 ## Configure a virtual IP address for non-Windows Virtual Machines
 
-<p>1\. Connect to the Virtual Machine.</p>
+1. Connect to the Virtual Machine.
 
-<p>2\. Run the following command as an administrator:</p>
+2. Run the following command as an administrator:
 
 ```sh
 ip addr add [VIP]/[mask] dev [interface name]
@@ -125,34 +102,34 @@ ip addr
 <p>The interface name will appear on the left below the loopback interface.</p>
 
 
-<Frame>![Screenshot_2023-02-08_at_13.30_1.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946900210833.png)</Frame>
+<Frame>![Terminal output of ip addr showing interface names](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946900210833.png)</Frame>
 
 
 
 <p>For example, to add the virtual IP address _192.168.1.200_ with a subnet mask of _24_ to the _eth0_ interface, use the following command:</p>
 
 
-<Frame>![Screenshot_2023-02-08_at_14.04.13.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946938150161.png)</Frame>
+<Frame>![Terminal showing ip addr add command example](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946938150161.png)</Frame>
 
 
 
-<p>Note: **the command assigns the VIP to the machine until it restarts**. After rebooting, run the command again to re-assign the VIP. To permanently assign a VIP, refer to the official documentation of the OS to add the IP address to the system network settings.</p>
+<p>The assignment lasts until the machine restarts. To make it permanent, add the IP address to the OS network configuration files.</p>
 
-<p>The VIP is now configured. To verify it, [connect to the Virtual Machine via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
+<p>The VIP is now configured. To verify it, connect to the Virtual Machine [via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
 
 ### Configure a virtual IP address for Windows Virtual Machines
 
-<p>1\. Open the **Control Panel**.
-2\. Go to the **Network and Sharing Center**.
-3\. Right-click the network connection to which the virtual IP address will be added and select **Properties**.
-4\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.</p>
+1. Open the **Control Panel**.
+2. Go to the **Network and Sharing Center**.
+3. Right-click the network connection to which the virtual IP address will be added and select **Properties**.
+4. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
 
 
-<Frame>![18.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946990237457.png)</Frame>
+<Frame>![Windows TCP/IPv4 Properties dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946990237457.png)</Frame>
 
 
 
-<p>5\. Click **Use the following IP address** option and enter the virtual IP address, subnet mask, and default gateway in the appropriate fields. To find these parameters, run the following command:</p>
+5. Click **Use the following IP address** option and enter the virtual IP address, subnet mask, and default gateway in the appropriate fields. To find these parameters, run the following command:
 
 ```sh
 ipconfig 
@@ -161,34 +138,34 @@ ipconfig
 <p>The output will be similar to:</p>
 
 
-<Frame>![16.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947005842961.png)</Frame>
+<Frame>![Windows ipconfig output showing IP details](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947005842961.png)</Frame>
 
 
 
-<p>Go back to the **Control Panel**, make sure the values are correct and click **Advanced ....**</p>
+<p>Go back to the **Control Panel**, verify the values are correct, and click **Advanced ....**</p>
 
 
-<Frame>![19.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947053843345.png)</Frame>
-
-
-
-<p>6\. In the **IP Settings** tab, find the **IP addresses** section and click **Add ....**</p>
-
-
-<Frame>![20.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/20.png)</Frame>
+<Frame>![Windows Advanced TCP/IP settings button](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947053843345.png)</Frame>
 
 
 
-<p>7\. In the next window, enter the VIP and the subnet mask from the command line. Then click **Add**.</p>
+6. In the **IP Settings** tab, find the **IP addresses** section and click **Add ....**
 
 
-<Frame>![21.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/21.png)</Frame>
+<Frame>![Windows IP Settings tab with Add button](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/20.png)</Frame>
 
 
 
-<p>8\. Click **OK**.</p>
+7. In the next window, enter the VIP and the subnet mask from the command line. Then click **Add**.
 
-<p>The VIP is now configured. To verify it, [connect to the Virtual Machine via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
+
+<Frame>![Windows Add IP address dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/21.png)</Frame>
+
+
+
+8. Click **OK**.
+
+<p>The VIP is now configured. To verify it, connect to the Virtual Machine [via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
 
 </MethodSection>
 
@@ -218,7 +195,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     import os
     from gcore import Gcore
 
-    client = Gcore()
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     port_id = os.environ["PORT_ID"]  # Port ID of an existing VM's network interface; see Step 2
 
@@ -272,6 +249,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/packages/param"
         "github.com/G-Core/gcore-go/shared/constant"
     )
@@ -279,7 +257,9 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     func main() {
         portID := os.Getenv("PORT_ID") // Port ID of an existing VM's network interface; see Step 2
 
-        client := gcore.NewClient()
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        )
         ctx := context.Background()
 
         // Step 1. Reserve a public virtual IP address
@@ -377,7 +357,7 @@ Reserving a public IP with `is_vip: true` creates a port that can be shared acro
     import os
     from gcore import Gcore
 
-    client = Gcore()
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     vip = client.cloud.reserved_fixed_ips.create_and_poll(
         type="external",
@@ -418,7 +398,7 @@ Reserving a public IP with `is_vip: true` creates a port that can be shared acro
     }
     ```
 
-    Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Save `created_resources.ports[0]` as `VIP_PORT_ID`.
+    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Save `created_resources.ports[0]` as `VIP_PORT_ID`.
 
     ```json
     {
@@ -496,7 +476,7 @@ export PORT_ID="{port_id}"
 ```
 
 <Info>
-**PORT\_ID** is the UUID of the VM's network interface port on the same network as the VIP. You can find it in the response from Step 2 above, or by listing instances via `GET /cloud/v2/instances/{project_id}/{region_id}` and reading the `addresses` field.
+`PORT_ID` is the UUID of the VM's network interface port on the same network as the VIP. The value appears in the response from Step 2 above, or by listing instances via `GET /cloud/v2/instances/{project_id}/{region_id}` and reading the `addresses` field.
 </Info>
 
 ### Step 3. Connect a VM to the VIP
@@ -645,7 +625,7 @@ Listing connected VMs confirms which ports share the VIP and returns the instanc
     import os
     from gcore import Gcore
 
-    client = Gcore()
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     vip_port_id = "..."  # port_id from Step 1 or from listing reserved IPs
 
@@ -784,7 +764,7 @@ Listing connected VMs confirms which ports share the VIP and returns the instanc
     }
     ```
 
-    Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -871,7 +851,7 @@ resource "gcore_cloud_reserved_fixed_ip" "vip" {
 terraform import gcore_cloud_reserved_fixed_ip.vip '{PROJECT_ID}/{REGION_ID}/{PORT_ID}'
 ```
 
-<p>Replace <code>{PROJECT_ID}</code>, <code>{REGION_ID}</code>, and <code>{PORT_ID}</code> with the values from the Customer Portal or from the reserved IPs API response.</p>
+<p>Replace `{PROJECT_ID}`, `{REGION_ID}`, and `{PORT_ID}` with the values from the Customer Portal or from the reserved IPs API response.</p>
 
 </MethodSection>
 
