@@ -466,3 +466,47 @@ compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message
 
 **Note:** the compiler does NOT catch the missing `.jsx` extension in the MethodSwitch
 import — that error appears only in the Mintlify runtime.
+
+---
+
+## Steps component
+
+Use `<Steps>` with `<Step>` for any multi-step procedural content. This renders numbered UI blocks with a title and body, which is clearer than a plain ordered list.
+
+### When to use
+
+Use `<Steps>` whenever a procedure has 2 or more discrete actions the reader must perform in order: enabling a feature, creating a resource, configuring settings.
+
+Do **not** use `<Steps>` for conceptual lists, reference tables, or a single action.
+
+### Basic structure
+
+```mdx
+<Steps>
+  <Step title="Open the settings">
+    In the **Cloud** menu, select **Networking** and then **Load Balancers**. Click the name.
+  </Step>
+  <Step title="Configure the option">
+    Toggle **Enable Feature** and select a value from the dropdown.
+
+    <Frame>
+      ![Alt text describing the screenshot](/images/docs/.../screenshot.png)
+    </Frame>
+  </Step>
+  <Step title="Save">
+    Click **Save changes**.
+  </Step>
+</Steps>
+```
+
+### Rules
+
+- `<Step title="...">` — the `title` attribute is required; it renders as the bold heading next to the number.
+- Keep the title in **sentence case**: `"Open the Load Balancer settings"`, not `"Open The Load Balancer Settings"`.
+- Body content inside `<Step>` follows all normal MDX rules: prose, `<Frame>`, code blocks, nested lists.
+- A `<Frame>` screenshot goes **inside** the relevant `<Step>`, after the instructions that describe the UI state being shown.
+- Do not number the steps manually — the component handles numbering.
+
+### Sections that should use Steps
+
+Convert plain numbered lists to `<Steps>` when the article covers a portal procedure. This applies to sections titled "Enable X", "Create X", "Configure X", "Disable X", and similar action headings.
