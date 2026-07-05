@@ -8,506 +8,326 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>After a Load Balancer is created, it appears on the **Load Balancers** page in the [Gcore Customer Portal](https://portal.gcore.com). To access the page:</p>
-
-1\. Navigate to **Cloud** > **Networking**. 
-
-2\. Open the **Load Balancers** page. 
-
+<p>After a Load Balancer is created, it appears on the **Load Balancers** page in the [Gcore Customer Portal](https://portal.gcore.com). Navigate to **Cloud** > **Networking** > **Load Balancers** to open the page.</p>
 
 <Frame>
   ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
 </Frame>
 
+<p>The page lists each Load Balancer with the following columns:</p>
 
-
-<p>The page displays all available information about each Load Balancer:</p>
-
-  * **Name** : The name and brief summary of its configuration. 
-  * **IP Address** : Address assigned to the Load Balancer. 
-  * **Listeners** : The number of configured listening ports that define how incoming network traffic is received and distributed. 
-  * **Region** : The geographical location of a data center where the Load Balancer is deployed. 
-  * **Tags** : [Metadata](/cloud/networking/load-balancers/manage-load-balancers#custom-tags) used to label and categorize Load Balancer within a cloud environment. 
-  * **Created** : The date and time when it was deployed. 
-  * **Operating status**, **Provisioning status** : Check the [statuses of Load Balancer and its components](/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components) for a detailed overview of each one.
-
-
-
-<p>The following sections cover each setting in detail, including performance metrics and configuration options.</p>
+- **Name**: display name and brief configuration summary
+- **IP Address**: address assigned to the Load Balancer
+- **Listeners**: number of configured listening ports
+- **Region**: data center location
+- **Tags**: metadata labels assigned to the Load Balancer
+- **Created**: deployment date and time
+- **Operating status**, **Provisioning status**: see [Statuses](#statuses-of-load-balancers-and-their-components)
 
 <Tip>
-When managing a significant number of Load Balancers, use the **Search by name** feature to find a specific one quickly.
+Use the **Search by name** field to filter the list when managing a large number of Load Balancers.
 </Tip>
 
 ## Statuses of load balancers and their components
 
-<p>A Load Balancer and its components (listener, pool, and pool member) can have two types of statuses:</p>
+<p>A Load Balancer and its components (listener, pool, and pool member) each carry two types of statuses.</p>
 
-  * **Operating status** : The current observed operational state of a resource. The status reflects whether the resource is functioning as expected or if there are any issues with its operation. 
+<p>**Operating status** — the current observed state:</p>
 
-  * **Provisioning status** : The lifecycle stage of a resource, from creation through any changes to potential deletion.
+| Status | Meaning |
+|--------|---------|
+| **Online** | Operating normally; all pool members are healthy |
+| **Draining** | Pool members are no longer accepting new connections |
+| **Offline** | Load Balancer is not accepting new connections |
+| **Degraded** | One or more pool members are in an error state |
+| **Error** | Load Balancer has failed, or all pool members are failing health checks |
+| **No_monitor** | No health monitor is configured; status unknown |
 
+<p>**Provisioning status** — the lifecycle stage:</p>
 
-
-
-<p>The **operating** status of a resource can change to:</p>
-
-  * **Online** : It's operating normally, and all pool members are healthy. 
-  * **Draining** : Pool members are no longer accepting new connections. 
-  * **Offline** : Load Balancer isn't accepting new connections. 
-  * **Degraded** : One or more pool members are in an error state. 
-  * **Error** : This status indicates that the Load Balancer has failed, one or more pool members are failing health checks, or all pool members are in an error state. 
-  * **No_monitor** : No health monitor is configured for a resource. Thus, its status is unknown.
-
-
-
-<p>During the resource's lifetime, its **provisioning** status can signal the following:</p>
-
-  * **Active** : It's been successfully created. 
-  * **Deleted** : It's been successfully deleted. 
-  * **Updating** : It's currently being updated. 
-  * **Deleting** : It's currently being deleted. 
-  * **Error** : The system failed to create a balancer. If an error occurs during the update or deletion of a balancer, [initiate a failover](/cloud/networking/load-balancers/manage-load-balancers#initiate-a-failover). Load Balancers that fail to be created will be automatically deleted.
+| Status | Meaning |
+|--------|---------|
+| **Active** | Successfully created |
+| **Deleted** | Successfully deleted |
+| **Updating** | Currently being updated |
+| **Deleting** | Currently being deleted |
+| **Error** | Creation failed. If an error occurs during update or deletion, [initiate a failover](#failover). Load Balancers that fail to be created are automatically deleted. |
 
 <Info>
-Updating the name, description, or tags of a Load Balancer does not cause any connection interruptions or downtime.
+Updating the name, description, or tags does not interrupt connections or cause downtime.
 </Info>
 
 ### Load balancer impact on availability
 
-<p>Most operations, such as adding or modifying listeners and pools, do not disrupt active traffic. However, changing the load balancer's flavor or initiating a failover will terminate existing connections, while all other operations have no effect on active connections.</p>
+<p>Adding or removing listeners and pools, and modifying listener properties, do not affect active connections. Two operations terminate all existing connections: changing the flavor and initiating a failover.</p>
 
-<p>The table below outlines the effect of each operation:</p>
+| Operation | Terminates connections |
+|-----------|----------------------|
+| Adding a listener | No |
+| Modifying listener properties | No |
+| Adding a pool | No |
+| Removing a listener | No |
+| Changing flavor | Yes |
+| Initiating failover | Yes |
 
-Operation | Impact  
----|---  
-Adding a listener | No  
-Modifying listener properties | No  
-Adding a pool | No  
-Changing flavor | Terminates connections  
-Initiating failover | Terminates connections  
-Removing a listener | No  
-  
-<p>Scheduling updates during low-traffic periods reduces disruptions for critical operations such as changing the flavor or initiating a failover.</p>
+<p>Schedule flavor changes and failover operations during a maintenance window to minimize disruption.</p>
 
 ## Load balancer settings
 
-<p>The **Overview** page displays the Load Balancer configuration details, routing scheme, listener list, and logging settings. To open the page:</p>
-
-1\. Navigate to **Cloud** > **Networking**. 
-
-2\. On the **Load Balancers** page, find the required Load Balancer and click its name to open the settings.
-
+<p>Click a Load Balancer's name on the list page to open its detail view. The top section always shows the routing scheme, VIP address, Floating IP (if configured), and current statuses. The lower section is organized into tabs.</p>
 
 <Frame>
   ![Load Balancers overview page](/images/docs/cloud/networking/load-balancers/manage-load-balancers/balancer-overview.png)
 </Frame>
 
+<p>Top-section fields:</p>
 
-
-The **Overview** page features the following information:
-
-  * **Routing scheme** : Visualization of traffic flow as it passes through a Load Balancer. The scheme demonstrates what's happening as traffic is received (ingress) and sent out (egress) by the balancer. 
-  * **Type** : Network distribution by a Load Balancer—external (public) or private. 
-  * **VIPs** : Virtual IP address of a Load Balancer. 
-  * **Floating IP** : The Floating IP assigned to the Load Balancer, if configured during creation. 
-  * **Operating status**, **Provisioning status** : Check the [statuses of Load Balancer and its components](/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components) for a detailed overview of each one.
-
-
-
-<p>The Load Balancer settings are organized into tabs, each dedicated to a specific functionality. The following sections provide a description of each tab.</p>
-
-### Limits
-
-Component | Limit  
----|---  
-Load Balancers | Managed by Quotas  
-Listeners* | 50 (excluding Prometheus)  
-Prometheus Listener* | 1  
-Pools* | 50  
-Members* | 2500  
-  
-\* - per Load Balancer
-
-<Info>
-
-  * Large pools are supported, allowing configurations such as a single pool with 1000–2000 members. The total member count cannot exceed 2500.
-
-  * Pools must be attached directly to either a listener or a Load Balancer, with a maximum of one pool connected to each listener.
-
-</Info>
-
-
-
+- **Routing scheme**: visualization of traffic flow through the Load Balancer — ingress and egress paths
+- **Type**: network distribution type — external (public) or private
+- **VIPs**: virtual IP address of the Load Balancer
+- **Floating IP**: Floating IP assigned during creation, if configured
+- **Operating status**, **Provisioning status**: see [Statuses](#statuses-of-load-balancers-and-their-components)
 
 ### Flavor
 
+<p>The **Flavor** tab shows the load balancer's current configuration and real-time resource metrics.</p>
+
 <Warning>
-Changing the flavor terminates all current connections, causing temporary disconnects. Schedule resize operations during a maintenance window.
+Changing the flavor terminates all current connections. Schedule resize operations during a maintenance window.
 </Warning>
-
-<p>This tab features a summary of the load balancer's configuration and its resources.</p>
-
 
 <Frame>
   ![Flavor tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/flavor-tab.png)
 </Frame>
 
-
-
-  * **Flavor** : A name for the specific configuration that defines the combination of vCPU and RAM resources allocated for the Load Balancer. 
-  * **vCPU** : The number of allocated virtual CPU cores. 
-  * **RAM** : The amount of allocated RAM, expressed in Gibibytes (GiB). 
-  * **ID** : A unique identifier of the Load Balancer used for management and tracking within the cloud environment. 
-  * **Active connections** : The number of current, ongoing connections being handled by the load balancer. 
-  * **Bytes in** : The total amount of data received by the balancer. 
-  * **Bytes out** : The total amount of data sent out by the balancer. 
-  * **Request errors** : The number of errors that occurred during the handling of requests. 
-  * **Total connections** : The total number of connections that have been made to the Load Balancer.
-
-
+- **Flavor**: configuration name defining the vCPU and RAM allocation
+- **vCPU**: number of virtual CPU cores
+- **RAM**: RAM in Gibibytes (GiB)
+- **ID**: unique Load Balancer identifier
+- **Active connections**: ongoing connections currently handled
+- **Bytes in**: total data received
+- **Bytes out**: total data sent
+- **Request errors**: errors encountered during request handling
+- **Total connections**: cumulative connections since creation
 
 ### Monitoring
 
-<p>This tab provides an overview of the Load Balancer's performance metrics that are crucial for tracking its health and performance.</p>
-
-<p>These metrics help determine whether current resources are sufficient or if scaling is needed to optimize Load Balancer performance.</p>
-
-<p>Monitoring data is available in hourly and weekly views:</p>
-
-  * Hourly options: 1, 6, or 24 hours 
-  * Weekly options: 1 or 2 weeks
-
-
-
-<p>The auto-refresh cadence can also be configured: in minutes (1, 5, 15, or 30) or for one hour.</p>
-
+<p>The **Monitoring** tab shows performance metrics for assessing health and capacity. Data is available in hourly views (1, 6, or 24 hours) and weekly views (1 or 2 weeks). The auto-refresh interval can be set to 1, 5, 15, or 30 minutes, or one hour.</p>
 
 <Frame>
   ![Monitoring tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/monitoring-tab.png)
 </Frame>
 
-
-
-  * **CPU Utilization**, %: The percentage of the Load Balancer's CPU currently in use. High values indicate that the Load Balancer is nearing its capacity limits, typically caused by a large number of connections or high traffic volumes.
-
-  * **RAM Utilization**, %: The percentage of total available memory currently used by the Load Balancer. High RAM utilization indicates that the Load Balancer is handling a large number of connections or running memory-intensive processes, which is common with terminated HTTPS traffic. Other types of traffic generally consume less RAM. 
-
-  * **Network traffic** : The rate of incoming (ingress) and outgoing (egress) network traffic measured in kilobits per second (kbit/s). These metrics reflect the network load on the Load Balancer.
-
-  * **Network packets** : Network packets per second (PPS) measure the rate of network packets being received (ingress) and sent out (egress) by the balancer.
-
-
-
+- **CPU Utilization, %**: percentage of CPU currently in use. High values indicate the Load Balancer is nearing capacity, typically from high connection volume or traffic.
+- **RAM Utilization, %**: percentage of memory in use. Terminated HTTPS traffic consumes more RAM than other traffic types.
+- **Network traffic**: ingress and egress traffic rate in kbit/s.
+- **Network packets**: packet rate (PPS) for ingress and egress.
 
 ### Listeners
 
-<p>A listener is a process that checks for connection requests using the configured protocol and port. It contains a pool — a list of virtual machines or Bare Metal servers that receive traffic from the listener.</p>
-
-<p>Listener configuration:</p>
-
-  * **Name** : Name of the listener. 
-  * **Protocol** : The network protocol that defines what type of traffic will be handled by the listener. 
-  * **Port** : The network port that the listener monitors for incoming connections. 
-  * **Pools** : The number of backend server pools (often called members or backends) that handle the traffic received by the listener.  
-**Operating status** : The current operational state of the listener. "Online" means it is functioning and can receive traffic. 
-  * **Provisioning status** : The status of the configuration process for the listener. "Active" suggests that it has been fully configured and is operational.
-
+<p>A listener is a process that monitors a configured protocol and port for incoming connections and forwards traffic to an assigned pool.</p>
 
 <Frame>
   ![Listeners tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab.png)
 </Frame>
 
+<p>Each listener shows:</p>
+
+- **Name**: listener name
+- **Protocol**: network protocol handled by the listener
+- **Port**: port monitored for incoming connections
+- **Pools**: number of attached backend pools
+- **Operating status**: current operational state
+- **Provisioning status**: configuration lifecycle state
+
 <Info>
-Multiple listeners with the same L4 type and port number cannot be added. For example, a listener with TCP 80 and UDP 80 can be created, but not two listeners with TCP 80. It is also not possible to use both TCP 80 and HTTP 80 — HTTP is an L7 protocol based on L4 TCP, so it is treated as TCP 80 + TCP 80.
+Multiple listeners with the same L4 type and port cannot coexist. TCP 80 and UDP 80 can run together, but two TCP 80 listeners cannot. HTTP 80 and TCP 80 also conflict because HTTP operates over TCP.
 </Info>
 
-**Pool settings**
+#### Pool settings
 
 <Tip>
-For optimized performance, make batch updates of pool settings. To perform comprehensive simultaneous updates, use the [Gcore API](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerPoolInstanceViewSet.patch).
+To apply multiple pool changes in one operation, use the [Gcore API](/api-reference/cloud#tag/Load-Balancers/operation/LoadBalancerPoolInstanceViewSet.patch).
 </Tip>
 
-<p>A pool is the list of VMs or Bare Metal servers to which the listener redirects incoming traffic. Each pool in the listener has the following configuration:</p>
-
-  * **Name** : The name of the pool. 
-
-  * **Algorithm** : The load-balancing method used to distribute traffic among instances in the pool. Check available algorithms in [pool settings](/cloud/networking/create-and-configure-a-load-balancer#pool). 
-
-  * **Instance count** : The number of Virtual Machines whose traffic is managed by a Load Balancer. 
-
-  * **Health Check** : The method used to determine the health of the instances in the pool. 
-
-  * **Operating status** : The current operational state of the pool. "Online" indicates that the pool can handle traffic. 
-
-  * **Provisioning status** : The status of the configuration process for the pool. "Active" means the pool is fully set up and ready for use. 
-
-  * **Protocol** : The protocol the pool uses to communicate with backend instances. Available options: HTTP, HTTPS, TCP, PROXY (Proxy Protocol v1), and PROXY V2 (Proxy Protocol v2). Selecting PROXY or PROXY V2 causes the Load Balancer to prepend a Proxy Protocol header to each connection, allowing backend servers to read the original client IP address. Requires a TCP listener and backend applications configured to parse Proxy Protocol headers.
-
-
+<p>A pool is the set of Virtual Machines or Bare Metal servers to which a listener forwards traffic.</p>
 
 <Frame>
   ![Listeners tab with pool settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-pool.png)
 </Frame>
 
+<p>Each pool shows:</p>
 
+- **Name**: pool name
+- **Algorithm**: traffic distribution method — see [pool settings](/cloud/networking/create-and-configure-a-load-balancer#pool) for available options
+- **Instance count**: number of backend instances
+- **Health Check**: health monitoring method
+- **Operating status**: current operational state
+- **Provisioning status**: configuration lifecycle state
 
-<p>Instances:</p>
-
-  * **State** : Whether the instance is enabled or disabled within the pool. "Enabled" means that the instance is active and can receive traffic from the Load Balancer. 
-  * **Type** : The category of the instance. It can be an instance (Virtual Machine), Bare Metal, or any custom IP. 
-  * **Instance** : Unique identifier of the instance. 
-  * **Address** : IP address of the instance that's used by the Load Balancer to forward traffic to this instance. 
-  * **Port** : The network port on which the instance listens. 
-  * **Weight** : Distribution of traffic among Virtual Machines or Bare Metal servers in the pool. A weight can be assigned to each VM or Bare Metal to influence how much traffic it should handle compared to other instances. A higher weight means that more traffic will be directed to that particular resource.
-
+<p>Instances in each pool:</p>
 
 <Frame>
   ![Listeners tab with instance settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-instances.png)
 </Frame>
 
+- **State**: whether the instance is enabled or disabled within the pool
+- **Address**: IP address the Load Balancer uses to forward traffic to this instance
+- **Port**: port the instance listens on
+- **Operating status**: current operational state
+- **Provisioning status**: configuration lifecycle state
 
-
-<p>Health check:</p>
-
-  * **Protocol** : The method used by a Load Balancer to check the health of the pool members. 
-  * **Check interval** : The frequency of performing health checks. Typically, the optimal time is less than 10 seconds. 
-  * **Response time** : The maximum time a Load Balancer will wait for a response to a health check. A response time of "5 sec" means that if a server doesn't respond to a ping within 5 seconds, it is considered unresponsive for this health check instance. 
-  * **Unhealthy thresholds** : This is the number of consecutive failed health checks required before a server is considered unhealthy and removed from the pool for traffic distribution. 
-  * **Healthy thresholds** : The number of consecutive successful health checks required for a server to be considered healthy and added back to the pool.
-
+<p>Health check configuration:</p>
 
 <Frame>
   ![Listeners tab with health check settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-health-check.png)
 </Frame>
 
+- **State**: whether health monitoring is enabled for the pool
+- **Type**: health check method (TCP, HTTP, HTTPS, PING, TLS-HELLO, UDP-CONNECT)
+- **Operating status**: current operational state of the health monitor
+- **Provisioning status**: configuration lifecycle state
 
+#### L7 policies
 
-<p>Timeouts:</p>
+<p>An L7 policy specifies how to route incoming traffic at the application layer (Layer 7 of the [OSI model](https://en.wikipedia.org/wiki/OSI_model)).</p>
 
-  * **Client Data (timeout client)** : The maximum amount of time a Load Balancer will wait for a client to send data. After that, the connection will be closed. 
-  * **Member Connect (timeout connect)** : The maximum amount of time a Load Balancer will wait to establish a connection with a pool member. If the connection is not established within that timeframe, it's considered a failed attempt. 
-  * **Member Data (timeout server)** : The maximum amount of time a Load Balancer will wait for a pool member to send data once a connection has been established. If no data is sent within this timeframe, the connection times out.
-
-
-<Frame>
-  ![Listeners tab with timeouts settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-timeouts.png)
-</Frame>
-
-
-
-**L7 policies**
-
-<p>L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the [OSI model](https://en.wikipedia.org/wiki/OSI_model)).</p>
-
-**Listener statistics**
-
-  * **Name** : Name of each listener. 
-  * **Active connections** : Number of ongoing connections to each listener. 
-  * **Bytes in** : Total amount of data received by the listener. 
-  * **Bytes out** : Total amount of data sent from the listener. 
-  * **Request errors** : Total number of request errors encountered by the listener. 
-  * **Total connections** : The cumulative number of connections handled by the listener since it was started.
-
+#### Listener statistics
 
 <Frame>
   ![Listeners tab with listener statistics](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listener-stats.png)
 </Frame>
 
-
+- **Name**: listener name
+- **Active connections**: ongoing connections to the listener
+- **Bytes in**: total data received
+- **Bytes out**: total data sent
+- **Request errors**: total request errors
+- **Total connections**: cumulative connections since listener creation
 
 ### Configuration
 
-<p>This tab allows changing the Load Balancer flavor based on workload requirements, expected traffic, and computing resource needs.</p>
-
+<p>The **Configuration** tab sets the Load Balancer flavor. Select a different flavor to resize the Load Balancer.</p>
 
 <Frame>
   ![Configuration tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/configuration-tab.png)
 </Frame>
 
-
-
 ### Logging
 
-<p>Records detailed information about the traffic processed by a Load Balancer. This data is useful for debugging, monitoring, and analyzing application behavior.</p>
-
-<p>The [Logging for Load Balancers](/cloud/networking/load-balancers/logging-for-load-balancers) guide covers all available settings and configuration steps.</p>
-
+<p>The **Logging** tab records detailed traffic information for debugging, monitoring, and analysis. The [Logging for Load Balancers](/cloud/networking/load-balancers/logging-for-load-balancers) article covers all available settings.</p>
 
 <Frame>
   ![Logging tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/logging-tab.png)
 </Frame>
 
+### Tags
 
-
-### Custom tags
-
-<p>This tab displays and manages metadata assigned to a Load Balancer.</p>
-
-<p>Tags can be used to group resources that belong to the same functionality. For example, in a project with separate services — an authentication service, a shop service, and a cart service — each service can have its own Load Balancer. Tagging these resources makes them easy to organize and manage as a group.</p>
-
+<p>The **Tags** tab displays and manages metadata assigned to a Load Balancer. Tags group related resources — for example, Load Balancers belonging to the same service (authentication, shop, cart) can share a tag to make them easy to identify and manage together.</p>
 
 <Frame>
   ![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/custom-tags-tab.png)
 </Frame>
 
+### Advanced DDoS Protection
 
+<p>The **Advanced DDoS Protection** tab configures DDoS mitigation policies for the Load Balancer.</p>
 
-<p>Adding the "test" custom tag to a Load Balancer labels it as "test:LB", making it easy to identify the resource's purpose, environment, owner, or any other relevant characteristic.</p>
+## Limits
 
-## Initiate a failover
+<p>The following limits apply per Load Balancer:</p>
+
+| Component | Limit |
+|-----------|-------|
+| Load Balancers | Managed by Quotas |
+| Listeners | 50 (excluding Prometheus) |
+| Prometheus Listener | 1 |
+| Pools | 50 |
+| Members | 2500 |
+
+<Info>
+- Large pools are supported; a single pool can contain 1000–2000 members. The total member count per Load Balancer cannot exceed 2500.
+- Pools attach directly to either a listener or a Load Balancer, with a maximum of one pool per listener.
+</Info>
+
+## Failover
+
+<p>Use failover to redirect traffic from a degraded or failed Load Balancer to a standby instance. The switchover completes in a few minutes.</p>
 
 <Warning>
-During failover or resize operations, all current connections are terminated, causing temporary disconnects.
+Failover terminates all current connections. Schedule it during a maintenance window for production Load Balancers.
 </Warning>
 
-<p>The failover mechanism automatically detects Load Balancers that have failed or demonstrate degraded performance.</p>
+1. Navigate to **Cloud** > **Networking** > **Load Balancers**.
 
-<p>When a failover is initiated, traffic is redirected to an alternate Load Balancer within the network infrastructure. The standby balancer immediately takes over without interrupting application availability.</p> 
+2. Click the Load Balancer name to open it.
 
-<p>To initiate a failover:</p>
-
-1\. Navigate to **Cloud** > **Networking**. 
-
-2\. Open the **Load Balancers** page. 
-
+3. Click **Actions** > **Failover**.
 
 <Frame>
-  ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
+  ![Actions dropdown with Failover option](/images/docs/cloud/networking/load-balancers/manage-load-balancers/failover.png)
 </Frame>
 
+4. (Optional) To force failover regardless of provisioning status, enable **Ignore Load Balancer provisioning status**.
 
-
-3\. Find the needed balancer and click its name to open it. 
-
-4\. In the top-right corner of the screen, click **Actions** > **Failover**.
-
+5. Click **Initiate Failover**.
 
 <Frame>
-  ![Load Balancers page with initiate failover settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/failover.png)
+  ![Failover confirmation dialog](/images/docs/cloud/networking/load-balancers/manage-load-balancers/initiating-failover.png)
 </Frame>
 
-
-
-5\. (Optional) Enable force failover. To failover the primary Load Balancer regardless of its provisioning status, select the **Ignore Load Balancer provisioning status** checkbox. After the failover completes, traffic is handled by the standby balancer.
-
-6\. Click **Initiate Failover**. 
-
-
-<Frame>
-  ![Initiate failover dialog asking whether to procceed with failover](/images/docs/cloud/networking/load-balancers/manage-load-balancers/initiating-failover.png)
-</Frame>
-
-
-
-<p>The failover might take a few minutes to complete. During this time, the Load Balancer provisioning status will change to **Updating**.</p>
+<p>The failover takes a few minutes. The provisioning status changes to **Updating** during this time.</p>
 
 ## Rename a load balancer
 
-1\. Navigate to **Cloud** > **Networking**. 
+1. Navigate to **Cloud** > **Networking** > **Load Balancers**.
 
-2\. Open the **Load Balancers** page. 
+2. Click the three-dot icon next to the Load Balancer to rename.
 
-
-<Frame>
-  ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
-</Frame>
-
-
-
-3\. Find the Load Balancer to rename and click the three-dot icon next to it.
-
-4\. Select **Rename**. 
-
+3. Select **Rename**.
 
 <Frame>
-  ![Rename button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename.png)
+  ![Three-dot menu showing Rename option](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename.png)
 </Frame>
 
-
-
-5\. Enter a new name and click **Save** to apply the changes. 
-
-
-<Frame>
-  ![Rename dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename-confirmation.png)
-</Frame>
-
-
+4. Enter a new name and click **Save**.
 
 ## Edit tags
 
-To update [metadata](/cloud/networking/load-balancers/manage-load-balancers#custom-tags) assigned to a Load Balancer: 
+1. Navigate to **Cloud** > **Networking** > **Load Balancers**.
+2. Click the Load Balancer name to open its settings.
 
-1\. Navigate to **Cloud** > **Networking**. 
-
-2\. Open the **Load Balancers** page. 
-
-
-<Frame>
-  ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
-</Frame>
-
-
-
-3\. Find the Load Balancer to update and click its name to open the settings. 
-
-4\. Navigate to the **Tags** tab to view and modify the metadata.
-
+3. Navigate to the **Tags** tab.
 
 <Frame>
   ![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/custom-tags-tab.png)
 </Frame>
 
-
-
-5\. Update tags as required and click **Save**. 
+4. Update tags and click **Save**.
 
 ## Delete a load balancer
 
-1\. Navigate to **Cloud** > **Networking**. 
+1. Navigate to **Cloud** > **Networking** > **Load Balancers**.
+2. Click the three-dot icon next to the Load Balancer to delete.
 
-2\. Open the **Load Balancers** page. 
-
-
-<Frame>
-  ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
-</Frame>
-
-
-
-3\. Find the Load Balancer to delete and click the three-dot icon next to it.
-
-4\. Select **Delete**. 
-
+3. Select **Delete**.
 
 <Frame>
-  ![Delete button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-three-dot-icon.png)
+  ![Three-dot menu showing Delete option](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-three-dot-icon.png)
 </Frame>
 
-
-
-5\. Click **Delete** to confirm.
-
-
-<Frame>
-  ![Delete dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-confirmation.png)
-</Frame>
-
-
-
-<p>The Load Balancer has been successfully removed.</p>
+4. Click **Delete** to confirm.
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-After a load balancer is deployed, you can inspect its configuration, update metadata, initiate a failover, or remove it. The examples below cover each of these day-two operations.
+<p>After a load balancer is deployed, you can inspect its configuration, update metadata, initiate a failover, or remove it. The examples below cover each of these day-two operations.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects), a [region ID](/api-reference/cloud/regions/list-regions), and the ID of an existing [load balancer](/cloud/networking/create-and-configure-a-load-balancer).
 </Info>
 
-Open a bash terminal and set these as environment variables before running the examples:
+<p>Open a bash terminal and set these as environment variables before running the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -518,7 +338,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 
 ## List load balancers
 
-Listing returns all load balancers in the region with their operating status, provisioning status, and VIP address.
+<p>Listing returns all load balancers in the region with their operating status, provisioning status, and VIP address.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -587,7 +407,7 @@ Listing returns all load balancers in the region with their operating status, pr
 
 ## Get load balancer details
 
-Fetching a single load balancer returns the full configuration including flavor, VRRP IPs, listener list, tags, and logging settings.
+<p>Fetching a single load balancer returns the full configuration including flavor, VRRP IPs, listener list, tags, and logging settings.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -654,7 +474,7 @@ Fetching a single load balancer returns the full configuration including flavor,
 
 ## Rename a load balancer and update tags
 
-A single PATCH request accepts any combination of `name` and `tags` — omitted fields remain unchanged. The operation returns a task ID and completes in under 30 seconds.
+<p>A single PATCH request accepts any combination of `name` and `tags` — omitted fields remain unchanged. The operation returns a task ID and completes in under 30 seconds.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -720,7 +540,7 @@ A single PATCH request accepts any combination of `name` and `tags` — omitted 
 
 ## Initiate a failover
 
-Failover redirects traffic to a standby load balancer instance when the active one fails or degrades. All active connections are terminated during the switchover, which takes 1-2 minutes.
+<p>Failover redirects traffic to a standby load balancer instance when the active one fails or degrades. All active connections are terminated during the switchover, which takes 1-2 minutes.</p>
 
 <Warning>
 Failover terminates all existing connections. Schedule it during a maintenance window for production load balancers.
@@ -777,7 +597,7 @@ Failover terminates all existing connections. Schedule it during a maintenance w
 
 ## Delete a load balancer
 
-Deleting a load balancer removes it and its configuration permanently. The operation is asynchronous and takes about 30 seconds.
+<p>Deleting a load balancer removes it and its configuration permanently. The operation is asynchronous and takes about 30 seconds.</p>
 
 <Tabs>
   <Tab title="Python SDK">
