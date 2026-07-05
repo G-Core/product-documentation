@@ -53,19 +53,26 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 3. Configure network
 
-<p>Configure the network interface:</p>
+<p>Configure the network interface for the Load Balancer.</p>
 
-1. Select the **Network type**: **Public** or **Private**.
+<Steps>
+  <Step title="Select the network type">
+    Select **Public** or **Private** in the **Network type** field.
+  </Step>
+  <Step title="Select the IP version">
+    In the **IP Family** section, select **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
+  </Step>
+  <Step title="(Optional) Assign a reserved IP">
+    Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the Load Balancer.
+  </Step>
+  <Step title="Configure preferred connectivity">
+    Select **L2** or **L3** in the **Preferred connectivity** field. This option is explained in detail in Step 4.
 
-2. In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
-
-3. (Optional) Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the Load Balancer.
-
-4. Configure **Preferred connectivity** (L2 or L3) as described in the next step.
-
-<Frame>
-  ![Network configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-network-section.png)
-</Frame>
+    <Frame>
+      ![Network section showing public network type, IPv4 IP family, and L2 preferred connectivity](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-network-section.png)
+    </Frame>
+  </Step>
+</Steps>
 
 ## Step 4. Configure preferred connectivity
 
@@ -104,61 +111,65 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Add listeners that will check for connection requests using the protocol and port specified. Multiple listeners are supported per Load Balancer.</p>
 
-<p>To configure a listener:</p>
+<Steps>
+  <Step title="Add a listener">
+    In the **Listeners** section, click **Add Listener**.
 
-1. In the **Listeners** section, click **Add Listener**.
+    <Frame>
+      ![Listeners section with Add Listener button, and Load Balancer Name, Logging, and Tags sections below](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listeners-name-logging.png)
+    </Frame>
+  </Step>
+  <Step title="Enter the listener name">
+    Enter the listener's name.
+  </Step>
+  <Step title="Select the protocol">
+    Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. Multiple TLS certificates are configurable for Terminated HTTPS and Prometheus.
+  </Step>
+  <Step title="Specify the port">
+    Specify a port the Load Balancer will listen on for incoming traffic. Keep the default port for protocols that provide one, or enter a custom port from 1 to 65535.
+  </Step>
+  <Step title="(Optional) Enable X-Forwarded headers">
+    To identify the origin of the client IP address when a request passes through the load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
+  </Step>
+  <Step title="(Optional) Configure TLS certificates">
+    For Terminated HTTPS and Prometheus protocols, [TLS certificates](/cloud/networking/load-balancers/add-certificates-to-load-balancer) are configurable.
+  </Step>
+  <Step title="Set the connection limit">
+    Set the connection limit — the maximum number of simultaneous connections handled by this listener. The default value is 100,000. Setting the value to -1 sets the limit to the default.
+  </Step>
+  <Step title="(Optional) Add allowed CIDR ranges">
+    Add allowed CIDR ranges to define which IP addresses can access the content. All IP addresses outside the specified ranges will be denied access. Up to 100 CIDR ranges can be specified per listener.
 
-<Frame>
-  ![Listeners section with Add Listener button and Name, Logging, Tags sections below](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listeners-name-logging.png)
-</Frame>
+    The IP version of Allowed CIDRs must match the IP version of the Load Balancer's Virtual IPs (VIPs):
 
-2. Enter the listener's name.
+    - VIPs with both IPv4 and IPv6 support CIDRs of both versions.
+    - VIPs with only IPv4 allow only IPv4 CIDRs.
+    - VIPs with only IPv6 allow only IPv6 CIDRs.
 
-3. Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. Multiple TLS certificates are configurable for Terminated HTTPS and Prometheus.
+    If the provided CIDRs do not match the VIP's IP version, the API will return a validation error.
 
-4. Specify a port the Load Balancer will listen on for incoming traffic. Keep the default port for protocols that provide one, or enter a custom port from 1 to 65535.
+    <Frame>
+      ![Listener form showing Allowed CIDRs field with an IPv4 example](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png)
+    </Frame>
+  </Step>
+  <Step title="(Optional) Configure user authentication">
+    For HTTP-based listeners, configure basic user authentication to protect the resource from unauthorized access. Click **+ Add user** to enable authentication:
 
-5. (Optional) To identify the origin of the user's IP address connecting to a web server via a load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
+    - **Enter username**: specify a username.
+    - **Password**: specify a password or choose the **Encrypted password** option to store the password as a hash — [encrypted passwords](/cloud/networking/load-balancers/add-certificates-to-load-balancer#create-an-encrypted-password) are stored as bcrypt hashes.
 
-6. For Terminated HTTPS and Prometheus protocols, [TLS certificates](/cloud/networking/load-balancers/add-certificates-to-load-balancer) are configurable.
+    <Info>
+      A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character. The maximum password length is 128 symbols.
+    </Info>
+  </Step>
+  <Step title="Create the listener">
+    Click **Create Listener**.
 
-7. Set the connection limit: the maximum number of simultaneous connections that can be handled by this listener. The default value is 100,000. Setting the value to -1 sets the limit to the default.
-
-8. (Optional) Add allowed CIDR ranges to define which IP addresses can access the content. All IP addresses outside the specified ranges will be denied access. Up to 100 CIDR ranges can be specified per listener.
-
-<p>The IP version of Allowed CIDRs must match the IP version of the Load Balancer's Virtual IPs (VIPs).</p>
-
-<p>Rules:</p>
-
-- VIPs with both IPv4 and IPv6 support CIDRs of both versions.
-
-<p>VIPs: 62.112.222.52 (IPv4), 2a03:90c0:4d6:1::2e8 (IPv6)</p>
-
-<p>Allowed CIDRs: 10.0.0.0/8, fe00::/7</p>
-
-<Frame>
-  ![Listener edit form showing Allowed CIDRs field with IPv4 and IPv6 examples](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png)
-</Frame>
-
-- VIPs with only IPv4 allow only IPv4 CIDRs
-- VIPs with only IPv6 allow only IPv6 CIDRs
-
-<p>If the provided CIDRs do not match the VIP's IP version, the API will return a validation error.</p>
-
-9. (Optional) For HTTP-based listeners, configure basic user authentication to protect the resource from unauthorized access. Click **+ Add user** to enable authentication:
-
-- **Enter username** : specify a username.
-- **Password** : specify a password or choose the **Encrypted password** option to store the password as a hash — [encrypted passwords](/cloud/networking/load-balancers/add-certificates-to-load-balancer#create-an-encrypted-password) are stored as bcrypt hashes.
-
-<Info>
-  A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character. The maximum password length is 128 symbols.
-</Info>
-
-10. Click **Create Listener**.
-
-<Frame>
-  ![Add Listener dialog with Name, Protocol, Port, and other settings](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listener-dialog.png)
-</Frame>
+    <Frame>
+      ![Add Listener dialog with name, protocol, port, connection limit, and allowed CIDRs fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listener-dialog.png)
+    </Frame>
+  </Step>
+</Steps>
 
 <p>Listener configuration options differ depending on the selected protocol. HTTP and Terminated HTTPS protocols allow additional settings — headers and authentication — while TCP and UDP listeners focus on specifying ports and connection limits.</p>
 
@@ -170,35 +181,42 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   ![Add pools](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png)
 </Frame>
 
-1. Specify the pool name.
+<Steps>
+  <Step title="Name the pool">
+    Specify the pool name.
+  </Step>
+  <Step title="Select the balancing algorithm">
+    Select one of the following:
 
-2. Select the balancing algorithm:
+    - **Round robin** — requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second to the second, and so on in a circle.
+    - **Least Connection** — new requests are sent to a server with the fewest active connections.
+    - **Source IP** — a client's IP address is used to determine which server receives the request.
+  </Step>
+  <Step title="Select the pool protocol">
+    Select the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
 
-- **Round robin** — requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle.
-- **Least Connection** — new requests are sent to a server with the fewest active connections.
-- **Source IP** — a client's IP address is used to determine which server receives the request.
+    <Frame>
+      ![Pool protocol dropdown showing HTTP, HTTPS, TCP, UDP, PROXY, and PROXY V2 options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/pool-protocol-dropdown.png)
+    </Frame>
 
-3. Select a pool protocol — the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
+    To preserve the original client IP address on the backend, select **PROXY** (Proxy Protocol v1, text-based) or **PROXY V2** (Proxy Protocol v2, binary). When either option is selected, the Load Balancer prepends a Proxy Protocol header to each TCP connection, allowing backend servers to read the real client IP instead of the Load Balancer's IP.
 
-<Frame>
-  ![Pool protocol dropdown showing PROXY and PROXY V2 options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/pool-protocol-dropdown.png)
-</Frame>
+    <Info>
+      PROXY and PROXY V2 require the listener to use the TCP protocol. The backend application must be configured to parse Proxy Protocol headers. Selecting PROXY or PROXY V2 on a pool whose members do not expect these headers will cause connection failures.
+    </Info>
+  </Step>
+  <Step title="(Optional) Configure sticky sessions">
+    In the **Sticky Sessions** dropdown, select the session persistence method:
 
-   <p>To preserve the original client IP address on the backend, select **PROXY** (Proxy Protocol v1, text-based) or **PROXY V2** (Proxy Protocol v2, binary). When either option is selected, the Load Balancer prepends a Proxy Protocol header to each TCP connection, allowing backend servers to read the real client IP instead of the Load Balancer's IP.</p>
+    - **None** — no session persistence, requests are distributed according to the selected algorithm.
+    - **App Cookie** — the Load Balancer reads an existing cookie set by the backend application and uses it to route subsequent requests from the same client to the same server. Fill in the **Cookie** field with the cookie name.
+    - **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
 
-   <Info>
-     PROXY and PROXY V2 require the listener to use the TCP protocol. The backend application must be configured to parse Proxy Protocol headers. Selecting PROXY or PROXY V2 on a pool whose members do not expect these headers will cause connection failures.
-   </Info>
-
-4. (Optional) Configure **Sticky Sessions** to route repeated requests from the same client to the same backend instance. In the **Sticky Sessions** dropdown, select the session persistence method:
-
-- **None** — no session persistence, requests are distributed according to the selected algorithm.
-- **App Cookie** — the Load Balancer reads an existing cookie set by the backend application and uses it to route subsequent requests from the same client to the same server. Fill in the **Cookie** field with the cookie name.
-- **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
-
-<Frame>
-  ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
-</Frame>
+    <Frame>
+      ![Pool configuration showing name, algorithm, protocol, and sticky sessions fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
 **Sharing a pool across multiple listeners**
 
@@ -222,31 +240,44 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Click **Add Instance** to add Virtual Machines that will participate in the traffic distribution for the configured listener.</p>
 
-1. Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations.
+<Steps>
+  <Step title="Select the instance type">
+    Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations.
+  </Step>
+  <Step title="Specify port and weight">
+    Specify the port and weight in the distribution.
 
-2. Specify its port and weight in the distribution.
-
-<Frame>
-  ![Add Virtual Machine](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
-</Frame>
+    <Frame>
+      ![Instance row with type selector, IP target, subnet, port, weight, and backup toggle](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
 ### Health check
 
 <p>Configure a health check to monitor backend instance availability. The Load Balancer stops sending traffic to instances that fail the configured threshold.</p>
 
-1. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations.
+<Steps>
+  <Step title="Select the check protocol">
+    Select the protocol for checking — TCP, Ping, or HTTP — and configure the appropriate settings.
+  </Step>
+  <Step title="Set check interval">
+    Specify check interval (sec) — time between sent requests.
+  </Step>
+  <Step title="Set response time">
+    Specify response time (sec) — the time to wait for a response from a server.
+  </Step>
+  <Step title="Set unhealthy threshold">
+    Specify unhealthy threshold — the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
+  </Step>
+  <Step title="Set healthy threshold">
+    Specify healthy threshold — the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
 
-2. Specify check interval (sec) — time between sent requests.
-
-3. Specify response time (sec) — the time to wait for a response from a server.
-
-4. Specify unhealthy threshold — the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
-
-5. Specify healthy threshold — the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
-
-<Frame>
-  ![Configure Health Check](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
-</Frame>
+    <Frame>
+      ![Health check configuration with protocol, check interval, response time, and threshold fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
 ### Timeouts
 
