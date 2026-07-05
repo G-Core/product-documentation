@@ -4,7 +4,7 @@ sidebarTitle: Annotations
 ai-navigation: Configure Load Balancer annotations in Gcore Managed Kubernetes to set load balancer type (internal or external), flavor, shared name, floating IP address, fixed IP address, listener connection limits, and pool node selectors via kubectl or service manifest.
 ---
 
-Annotations add custom metadata to Kubernetes objects to configure behavior beyond the standard settings. For Gcore Load Balancers in [Managed Kubernetes clusters](/cloud/kubernetes/clusters/create-a-kubernetes-cluster), annotations control type, flavor, IP addressing, listener limits, pool routing, logging, and DDoS protection. For a general introduction, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/).
+Annotations are Kubernetes [metadata fields](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/) attached to objects to configure behavior beyond the standard spec. For Gcore Load Balancers in [Managed Kubernetes clusters](/cloud/kubernetes/clusters/create-a-kubernetes-cluster), annotations control type, flavor, IP addressing, listener limits, pool routing, logging, and DDoS protection.
 
 All Gcore Load Balancer annotations use the `loadbalancer.gcore.com/` prefix. When an annotation is not set, the value falls back to the cluster configuration defaults.
 
@@ -20,43 +20,51 @@ metadata:
 
 The following annotations apply to Load Balancers created in Gcore Managed Kubernetes.
 
-### Load balancer configuration
+### Load Balancer configuration
+
+These annotations set the Load Balancer type, flavor, shared name, and custom metadata.
 
 | Annotation | Value | Description |
 |------------|-------|-------------|
-| `loadbalancer.gcore.com/type` | `internal`, `external` | Configures the type of load balancer. Determines whether the load balancer is created in a private or public network. Default is `internal`. Changing load balancer type is not supported. |
-| `loadbalancer.gcore.com/flavor` | `lb1-1-2`, `lb1-4-8` | The load balancer flavor name. |
-| `loadbalancer.gcore.com/shared-load-balancer-name` | String | Shared load balancer name. Allows sharing a single load balancer instance between multiple Service resources. |
-| `metadata.loadbalancer.gcore.com/<key>` | String | Sets custom metadata key-value pairs on the load balancer. |
+| `loadbalancer.gcore.com/type` | `internal`, `external` | Configures the Load Balancer type. Determines whether the Load Balancer is created in a private or public network. Default is `internal`. Changing Load Balancer type is not supported. |
+| `loadbalancer.gcore.com/flavor` | `lb1-1-2`, `lb1-4-8` | The Load Balancer flavor name. |
+| `loadbalancer.gcore.com/shared-load-balancer-name` | String | Shared Load Balancer name. Allows sharing a single Load Balancer instance between multiple Service resources. |
+| `metadata.loadbalancer.gcore.com/<key>` | String | Sets custom metadata key-value pairs on the Load Balancer. |
 
 ### IP address configuration
 
+These annotations assign and manage floating and reserved IP addresses for the Load Balancer.
+
 | Annotation | Value | Description |
 |------------|-------|-------------|
-| `loadbalancer.gcore.com/floating-ip` | IP address or `""` | Specifies a floating IP address for a private load balancer. The value can be an existing floating IP address to assign, or `""` to create a new one. Only supported for load balancers on internal network. |
-| `loadbalancer.gcore.com/floating-ip-cleanup` | `true`, `false` | When set to `true`, the floating IP assigned to the load balancer is cleaned up after the Service is deleted. |
-| `loadbalancer.gcore.com/reserved-ip` | IP address | Specifies the reserved fixed IP address of a load balancer. The value must be an existing reserved fixed IP address. For backwards compatibility, `.spec.loadBalancerIP` field is consulted if this annotation is not present. |
-| `loadbalancer.gcore.com/reserved-ip-cleanup` | `true`, `false` | When set to `true`, the reserved fixed IP assigned to the load balancer is cleaned up after the Service is deleted. Default is `false`. |
+| `loadbalancer.gcore.com/floating-ip` | IP address or `""` | Specifies a floating IP address for a private Load Balancer. The value can be an existing floating IP address to assign, or `""` to create a new one. Only supported for Load Balancers on internal network. |
+| `loadbalancer.gcore.com/floating-ip-cleanup` | `true`, `false` | When set to `true`, the floating IP assigned to the Load Balancer is cleaned up after the Service is deleted. |
+| `loadbalancer.gcore.com/reserved-ip` | IP address | Specifies the reserved fixed IP address of a Load Balancer. The value must be an existing reserved fixed IP address. For backwards compatibility, `.spec.loadBalancerIP` field is consulted if this annotation is not present. |
+| `loadbalancer.gcore.com/reserved-ip-cleanup` | `true`, `false` | When set to `true`, the reserved fixed IP assigned to the Load Balancer is cleaned up after the Service is deleted. Default is `false`. |
 
 ### Listener configuration
+
+These annotations set connection limits and timeout values for Load Balancer listeners.
 
 | Annotation | Value | Description |
 |------------|-------|-------------|
 | `loadbalancer.gcore.com/listener-connection-limit` | Integer | Sets the listener connection limit. When the annotation is removed, the previously set value persists. |
-| `loadbalancer.gcore.com/listener-timeout-client-data` | Duration (`30s`, `1m`) | Sets the `timeout-client-data` value for load balancer listeners. When removed, the previously set value persists. |
-| `loadbalancer.gcore.com/listener-timeout-member-connect` | Duration (`30s`, `1m`) | Sets the `timeout-member-connect` value for load balancer listeners. When removed, the previously set value persists. |
-| `loadbalancer.gcore.com/listener-timeout-member-data` | Duration (`30s`, `1m`) | Sets the `timeout-member-data` value for load balancer listeners. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/listener-timeout-client-data` | Duration (`30s`, `1m`) | Sets the `timeout-client-data` value for Load Balancer listeners. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/listener-timeout-member-connect` | Duration (`30s`, `1m`) | Sets the `timeout-member-connect` value for Load Balancer listeners. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/listener-timeout-member-data` | Duration (`30s`, `1m`) | Sets the `timeout-member-data` value for Load Balancer listeners. When removed, the previously set value persists. |
 
 ### Pool configuration
 
+These annotations control node selection, proxy protocol, and timeout settings for Load Balancer pools.
+
 | Annotation | Value | Description |
 |------------|-------|-------------|
-| `loadbalancer.gcore.com/node-selector` | Label selector | Restricts which Nodes are added to load balancer pools. Accepts a Kubernetes [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) string in set-based or equality-based format. |
-| `loadbalancer.gcore.com/pool-proxy-protocol` | Port names | Enables [Proxy Protocol](/cloud/networking/create-and-configure-a-load-balancer#pool) (v1) on load balancer pools. Accepts a list of comma-separated service port names for which PROXY protocol should be used. Service ports with UDP and other unsupported protocols are ignored. |
-| `loadbalancer.gcore.com/pool-proxyv2-protocol` | Port names | Enables [Proxy Protocol](/cloud/networking/create-and-configure-a-load-balancer#pool) (v2) on load balancer pools. Accepts a list of comma-separated service port names for which PROXYV2 protocol should be used. Service ports with UDP and other unsupported protocols are ignored. |
-| `loadbalancer.gcore.com/pool-timeout-client-data` | Duration (`30s`, `1m`) | Sets the `timeout-client-data` value for load balancer pools. When removed, the previously set value persists. |
-| `loadbalancer.gcore.com/pool-timeout-member-connect` | Duration (`30s`, `1m`) | Sets the `timeout-member-connect` value for load balancer pools. When removed, the previously set value persists. |
-| `loadbalancer.gcore.com/pool-timeout-member-data` | Duration (`30s`, `1m`) | Sets the `timeout-member-data` value for load balancer pools. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/node-selector` | Label selector | Restricts which Nodes are added to Load Balancer pools. Accepts a Kubernetes [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) string in set-based or equality-based format. |
+| `loadbalancer.gcore.com/pool-proxy-protocol` | Port names | Enables [Proxy Protocol](/cloud/networking/create-and-configure-a-load-balancer#pool) (v1) on Load Balancer pools. Accepts a list of comma-separated service port names for which PROXY protocol should be used. Service ports with UDP and other unsupported protocols are ignored. |
+| `loadbalancer.gcore.com/pool-proxyv2-protocol` | Port names | Enables [Proxy Protocol](/cloud/networking/create-and-configure-a-load-balancer#pool) (v2) on Load Balancer pools. Accepts a list of comma-separated service port names for which PROXYV2 protocol should be used. Service ports with UDP and other unsupported protocols are ignored. |
+| `loadbalancer.gcore.com/pool-timeout-client-data` | Duration (`30s`, `1m`) | Sets the `timeout-client-data` value for Load Balancer pools. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/pool-timeout-member-connect` | Duration (`30s`, `1m`) | Sets the `timeout-member-connect` value for Load Balancer pools. When removed, the previously set value persists. |
+| `loadbalancer.gcore.com/pool-timeout-member-data` | Duration (`30s`, `1m`) | Sets the `timeout-member-data` value for Load Balancer pools. When removed, the previously set value persists. |
 
 ### Logging configuration
 
@@ -70,15 +78,19 @@ To enable pushing logs to [Logging as a Service](/cloud/logging-as-a-service/abo
 
 ### DDoS protection
 
+This annotation attaches an Advanced DDoS Protection profile to the Load Balancer.
+
 | Annotation | Value | Description |
 |------------|-------|-------------|
-| `loadbalancer.gcore.com/ddos-profile` | JSON string | An Advanced DDoS Protection profile configuration. The value format is the same as supported by the [DDoS Protection API.](/api-reference/cloud#tag/DDOS-Protection) Only `profile_template` and `fields` parameters are required. The `profile_template_name` parameter is optional, while `ip_address`, `resource_id`, and `resource_type` are inferred automatically. |
+| `loadbalancer.gcore.com/ddos-profile` | JSON string | An Advanced DDoS Protection profile configuration. The value format is the same as supported by the [DDoS Protection API](/api-reference/cloud#tag/DDOS-Protection). Only `profile_template` and `fields` parameters are required. The `profile_template_name` parameter is optional, while `ip_address`, `resource_id`, and `resource_type` are inferred automatically. |
 
 ## Examples
 
+The following manifests illustrate common annotation configurations.
+
 ### DDoS protection profile
 
-To assign an Advanced DDoS Protection profile to the cluster, add the `ddos-profile` annotation:
+To assign an Advanced DDoS Protection profile to the Load Balancer, add the `ddos-profile` annotation to the Service manifest:
 
 ```yaml
 apiVersion: v1
@@ -105,7 +117,7 @@ Replace the sample values (`65`, `272`, and `40`) with the appropriate values fo
 
 ### Logging configuration
 
-To enable logging for the cluster, add both logging annotations:
+Enable Load Balancer logging by adding both logging annotations to the Service manifest:
 
 ```yaml
 apiVersion: v1
@@ -130,9 +142,9 @@ spec:
 
 Replace `my-logs` and `15` with the appropriate LaaS topic name and destination region ID for the project.
 
-### Internal load balancer with floating IP
+### Internal Load Balancer with floating IP
 
-To create an internal load balancer with automatic floating IP assignment:
+This manifest creates an internal Load Balancer and assigns a new floating IP automatically:
 
 ```yaml
 apiVersion: v1
