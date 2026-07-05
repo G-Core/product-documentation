@@ -1,4 +1,4 @@
----
+﻿---
 title: "Create and manage a subnetwork"
 sidebarTitle: "Subnetwork"
 ai-navigation: Create, update, and delete subnetworks in Gcore Cloud via the Customer Portal, REST API, or Terraform.
@@ -25,25 +25,23 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </Frame>
 
 2. Find the network and click its name to open it.
-3. Click **Create subnet**. The **Create Subnet** dialog opens.
+3. Click **Create subnet**.
 
 <Frame>
   ![Network settings section with the highlighted Create subnet button](/images/docs/cloud/networking/create-and-manage-a-subnetwork/network-settings-create-subnet.png)
 </Frame>
 
+4. The **Create Subnet** dialog opens.
+
 ### Step 2. Set name and CIDR
 
-1. Enter the subnetwork name.
-2. Set a CIDR within one of the supported ranges:
+5. Enter the subnetwork name.
+6. Set a CIDR within one of the supported ranges:
 
 - 10.0.0.0/8
 - 172.16.0.0/12
 - 192.168.0.0/16
 - fc00::/7
-
-<Frame>
-  ![Create a subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png)
-</Frame>
 
 #### CIDR requirements
 
@@ -52,15 +50,25 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - The prefix length must stay within the range of its base: /8–/32 for 10.0.0.0/8, /12–/32 for 172.16.0.0/12, and /16–/32 for 192.168.0.0/16.
 - Subnets with a /31 or /32 mask require the gateway to be disabled.
 
-### Step 3. Configure DHCP and router
+<Frame>
+  ![Create a subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png)
+</Frame>
 
-1. (Optional) Select the **Enable DHCP** checkbox to assign IP addresses to machines in the subnet automatically.
+### Step 3. Configure DHCP
+
+7. (Optional) Select the **Enable DHCP** checkbox to assign IP addresses to machines in the subnet automatically.
+
+#### DHCP behavior
+
+<p>IPv6 subnetworks have a restriction that does not apply to IPv4.</p>
 
 <Warning>
   For IPv6 networks, DHCP can only be enabled or disabled during subnetwork creation. Changing this setting later requires recreating the IPv6 subnetwork.
 </Warning>
 
-2. (Optional) Select the **Connect to network router** checkbox to automatically connect this subnet to the network router if one exists. This gives VMs internet access through the router and enables L3 routing between subnets connected to the same router. When selected, specify a custom **Gateway IP** address or leave it set to **Automatically** to assign one automatically.
+### Step 4. Configure router and gateway
+
+8. (Optional) Select the **Connect to network router** checkbox to automatically connect this subnet to the network router if one exists. This gives VMs internet access through the router and enables L3 routing between subnets connected to the same router. When selected, specify a custom **Gateway IP** address or leave it set to **Automatically** to assign one automatically.
 
 <Frame>
   ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png)
@@ -82,13 +90,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   ![Gateway IP validation error](/images/docs/cloud/networking/create-and-manage-a-subnetwork/gateway-ip-validation-error.png)
 </Frame>
 
-<Warning>
-  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist).
-</Warning>
-
-<p>When a private interface is added after creating a server, some operating systems may not activate it automatically — this is especially common for Bare Metal servers. In such cases, configure the interface manually.</p>
-
 #### Routing behavior
+
+<p>Subnet connectivity depends on whether a router is attached.</p>
 
 - All subnets within the same network have L2 access to each other regardless of whether a router is present.
 - When subnets are connected to a router, L3 routing is available between those subnets, and VMs can reach external networks through the router's public interface.
@@ -98,16 +102,25 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   ![Create subnetwork dialog showing non-routable option](/images/docs/cloud/networking/create-and-manage-a-subnetwork/enable-non-routable-subnetwork.png)
 </Frame>
 
-### Step 4. Configure DNS, host routes, and tags
+#### Warnings
 
-1. (Optional) Specify custom DNS servers for the subnetwork. If left blank, DNS servers are assigned automatically based on the subnet configuration.
-2. (Optional) Define host routes to control how traffic is distributed within the network:
+<p>Gateway changes can affect connectivity in two scenarios.</p>
+
+<Warning>
+  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist).
+</Warning>
+
+<p>When a private interface is added after creating a server, some operating systems may not activate it automatically — this is especially common for Bare Metal servers. In such cases, configure the interface manually.</p>
+
+### Step 5. Configure DNS and host routes
+
+9. (Optional) Specify custom DNS servers for the subnetwork. If left blank, DNS servers are assigned automatically based on the subnet configuration.
+10. (Optional) Define host routes to control how traffic is distributed within the network:
 
 - **Destination:** Specify the network or host where the traffic is intended to go.
 - **Nexthop:** Choose the intermediate device — a router or gateway — through which traffic must pass to reach the destination.
 
-3. (Optional) Select **Add tags** to add metadata to the subnetwork.
-4. Click **Create subnet**.
+11. (Optional) Select **Add tags** to add metadata to the subnetwork.
 
 <Frame>
   ![Custom DNS and host routes fields in the Create Subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-custom-dns.png)
@@ -126,11 +139,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Each subnetwork supports up to 20 host routes. If the next-hop IP is unreachable from the subnet, traffic to that destination will fail.</p>
 
+### Step 6. Create the subnet
+
+12. Click **Create subnet**.
+
 ## Manage subnetworks
 
 <p>Subnetworks are managed from the **Networking** page of the Customer Portal.</p>
 
-### Rename a subnetwork
+<p>To open the target subnetwork:</p>
 
 1. In the Customer Portal, navigate to **Cloud** > **Networking**.
 
@@ -139,6 +156,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </Frame>
 
 2. Find the network containing the subnetwork and click its name to open it.
+
+### Rename a subnetwork
+
 3. Click the three-dot icon next to the subnetwork, then click **Edit**.
 
 <Frame>
@@ -154,8 +174,6 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>A subnetwork cannot be deleted if any of its IP addresses are in use — for example, if a Virtual Machine, load balancer, or other resource still has a port in that subnet.</p>
 
-1. In the Customer Portal, navigate to **Cloud** > **Networking**.
-2. Find the network containing the subnetwork and click its name to open it.
 3. Click the three-dot icon next to the subnetwork, then click **Delete**.
 4. Click **Delete** again to confirm.
 
@@ -183,13 +201,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSection id="api" label="REST API">
 
-<p>Create a subnet inside an existing network and customize its DHCP and DNS settings to match the required connectivity configuration.</p>
+Create a subnet inside an existing network and customize its DHCP and DNS settings to match the required connectivity configuration.
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
-<p>Set these variables before running the examples:</p>
+Set these variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -212,7 +230,7 @@ export NETWORK_ID="{YOUR_NETWORK_ID}"
 import os
 from gcore import Gcore
 
-client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+client = Gcore()
 
 # Step 1. Create a subnet.
 task = client.cloud.networks.subnets.create(
@@ -254,11 +272,10 @@ import (
 
     gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/cloud"
-    "github.com/G-Core/gcore-go/option"
 )
 
 func main() {
-    client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    client := gcore.NewClient()
     ctx := context.Background()
 
     // Step 1. Create a subnet.
@@ -319,7 +336,7 @@ func main() {
 import os
 from gcore import Gcore
 
-client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+client = Gcore()
 
 task = client.cloud.networks.subnets.create(
     cidr="192.168.10.0/24",
@@ -482,7 +499,7 @@ Response:
   </Tab>
 </Tabs>
 
-## Delete a subnet
+## Clean up
 
 <p>Delete a subnet that has no active ports — deletion fails if any Virtual Machine, load balancer, or other resource still has a port in the subnet. The delete operation is asynchronous — poll the task until it reaches `FINISHED`.</p>
 
@@ -527,6 +544,7 @@ Response:
 <Info>
 Declare `var.network_id` with the ID of an existing [network](/cloud/networking/create-and-manage-a-network) before applying.
 </Info>
+
 
 ## Create a subnet
 
