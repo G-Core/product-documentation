@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: fc753b05a102
+  version: bc4f338e35f7
 servers:
 - url: https://api.gcore.com
 tags:
@@ -558,6 +558,13 @@ paths:
       - $ref: '#/components/parameters/shield_dc'
       - $ref: '#/components/parameters/suspend'
       - $ref: '#/components/parameters/status'
+      - $ref: '#/components/parameters/active'
+      - $ref: '#/components/parameters/name'
+      - $ref: '#/components/parameters/originProtocol'
+      - $ref: '#/components/parameters/suspended'
+      - $ref: '#/components/parameters/is_primary'
+      - $ref: '#/components/parameters/min_updated'
+      - $ref: '#/components/parameters/max_updated'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/offset'
       responses:
@@ -2889,6 +2896,17 @@ components:
         enum:
         - application/json
         - text/plain
+    active:
+      in: query
+      name: active
+      schema:
+        type: boolean
+      description: |-
+        Defines whether a CDN resource is activated.
+
+        Possible values:
+        - **true** - CDN resource is activated.
+        - **false** - CDN resource is deactivated.
     cache_status__eq:
       in: query
       name: cache_status__eq
@@ -3131,6 +3149,19 @@ components:
 
         Possible value:
         - **resource** - Data is grouped by CDN resources.
+    is_primary:
+      in: query
+      name: is_primary
+      schema:
+        type: boolean
+      description: |-
+        Filters CDN resources by their primary/alternate relationship. Standalone
+        resources — those not linked to another resource, which is the default —
+        match neither value and are returned by neither `true` nor `false`.
+
+        Possible values:
+        - **true** - CDN resource is a primary resource for one or more alternate resources.
+        - **false** - CDN resource is an alternate resource linked to a primary resource.
     limit:
       in: query
       name: limit
@@ -3158,6 +3189,12 @@ components:
         Examples:
         - &`max_requested_at`=2021-05-05 12:00:00
         - &`max_requested_at`=2021-05-05
+    max_updated:
+      in: query
+      name: max_updated
+      schema:
+        type: string
+      description: Most recent date of CDN resource update for which CDN resources should be returned (ISO 8601/RFC 3339 format, UTC.)
     method:
       name: method
       in: query
@@ -3280,6 +3317,18 @@ components:
         Examples:
         - &`min_requested_at`=2021-05-05 12:00:00
         - &`min_requested_at`=2021-05-05
+    min_updated:
+      in: query
+      name: min_updated
+      schema:
+        type: string
+      description: Earliest date of CDN resource update for which CDN resources should be returned (ISO 8601/RFC 3339 format, UTC.)
+    name:
+      in: query
+      name: name
+      schema:
+        type: string
+      description: Name of the CDN resource. Matches partially and is case-insensitive.
     object_id:
       in: path
       name: object_id
@@ -3325,6 +3374,16 @@ components:
       schema:
         type: integer
       description: Origin group ID.
+    originProtocol:
+      in: query
+      name: originProtocol
+      schema:
+        type: string
+        enum:
+        - HTTP
+        - HTTPS
+        - MATCH
+      description: Protocol used by CDN servers to request content from an origin source.
     parameters_query-limit:
       in: query
       name: limit
@@ -3682,6 +3741,19 @@ components:
         Possible values:
         - **true** - CDN resource is selected for automatic suspension in the next 7 days.
         - **false** - CDN resource is not selected for automatic suspension.
+    suspended:
+      in: query
+      name: suspended
+      schema:
+        type: boolean
+      description: |-
+        Defines whether a CDN resource is currently suspended. This reflects the
+        resource's suspended state, unlike the `suspend` parameter, which selects
+        resources that have a scheduled automatic suspension date.
+
+        Possible values:
+        - **true** - CDN resource is currently suspended.
+        - **false** - CDN resource is not suspended.
     to:
       in: query
       name: to
