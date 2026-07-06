@@ -250,3 +250,88 @@ compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message
 
 The compiler reports exact line and column numbers for JSX/MDX errors.
 It does NOT catch missing `.jsx` import extensions or BOM issues.
+
+---
+
+## Encoding corruption in article content
+
+### Root cause G: U+FFFD replacement characters inside content
+
+**Symptom:** Characters like em-dash `—` or other non-ASCII symbols render as `?` (diamond with question mark) on the published site. The file opens and saves normally — the corruption is not visible in most editors.
+
+**Root cause:** The file was saved with a wrong encoding at some point (e.g. Windows-1252 instead of UTF-8, or ANSI via PowerShell `Set-Content` without `-Encoding UTF8`). Non-ASCII bytes were decoded incorrectly and stored as U+FFFD (`\xEF\xBF\xBD`) — the Unicode replacement character.
+
+**How to find affected files across the entire repo:**
+```python
+import pathlib
+REPL = chr(0xfffd)
+root = pathlib.Path('.')
+hits = {}
+for f in sorted(root.rglob('*.mdx')):
+    try:
+        text = f.read_text(encoding='utf-8')
+    except Exception:
+        continue
+    lines = [(i+1, ln) for i, ln in enumerate(text.splitlines()) if REPL in ln]
+    if lines:
+        hits[str(f)] = lines
+
+print(f'Files with U+FFFD: {len(hits)}')
+for path, lines in hits.items():
+    print(f'\n{path}')
+    for lineno, ln in lines:
+        print(f'  L{lineno}: {ln[:120]}')
+```
+
+**How to identify what character was lost:** Look at the surrounding context. In Gcore docs the most common corrupted character is the em-dash `—` (used as ` — ` per style guide). Binary data in code blocks (e.g. raw encryption keys) is unrecoverable — replace with a hex or descriptive placeholder.
+
+**How to fix (em-dash case):**
+```python
+import pathlib
+REPL = chr(0xfffd)
+EM_DASH = '\u2014'
+f = pathlib.Path('path/to/article.mdx')
+text = f.read_text(encoding='utf-8')
+text = text.replace(REPL, EM_DASH)
+f.write_text(text, encoding='utf-8')
+```
+
+**Prevention:** Always write files with `encoding='utf-8'` in Python. In PowerShell use `-Encoding UTF8`. The `sanitize-ai-navigation.yml` GitHub Action now strips BOM automatically on every push.
+
+---
+
+### Root cause H: Literal `?` used as navigation separator
+
+**Symptom:** Navigation paths in steps render as `**Section** ? **Subsection**` instead of `**Section** > **Subsection**` on the published site.
+
+**Root cause:** The `?` character (U+003F) was written literally instead of `>` as a path separator. This is a content authoring error, not an encoding issue.
+
+**How to find across the entire repo:**
+```python
+import pathlib, re
+root = pathlib.Path('.')
+hits = []
+for f in sorted(root.rglob('*.mdx')):
+    try:
+        text = f.read_text(encoding='utf-8')
+    except Exception:
+        continue
+    for i, ln in enumerate(text.splitlines(), 1):
+        if re.search(r'\*\*[^*]+\*\* \? \*\*', ln):
+            hits.append((str(f), i, ln[:120]))
+
+print(f'Navigation ? separators: {len(hits)}')
+for path, lineno, ln in hits:
+    print(f'  {path}:L{lineno}: {ln}')
+```
+
+**How to fix:**
+```python
+import pathlib, re
+f = pathlib.Path('path/to/article.mdx')
+text = f.read_text(encoding='utf-8')
+text = re.sub(r'(\*\*[^*]+\*\*) \? (\*\*)', r'\1 > \2', text)
+f.write_text(text, encoding='utf-8')
+```
+
+**Rule:** Navigation paths always use `>` as separator: `navigate to **Section** > **Subsection**`.
