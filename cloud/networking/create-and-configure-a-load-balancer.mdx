@@ -1003,19 +1003,21 @@ resource "gcore_cloud_load_balancer" "example" {
 | `name` | Yes | Display name of the listener. |
 | `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
 | `protocol_port` | Yes | Port number the listener binds to. |
+| `secret_id` | Required for `TERMINATED_HTTPS` | ID of the default TLS certificate from Secrets Manager. Used as fallback when no SNI match is found. |
+| `sni_secret_id` | No | List of additional certificate IDs for SNI-based domain matching. |
 
-<p>For HTTP and TCP listeners, use `gcore_cloud_load_balancer_listener` directly. For `TERMINATED_HTTPS`, set `secret_id = ""` and pass the certificate ID via `sni_secret_id`:</p>
+<p>For `TERMINATED_HTTPS`, set `secret_id` to the ID of the default TLS certificate. Add `sni_secret_id` to serve different certificates for different domains — the default certificate from `secret_id` is used when no SNI match is found:</p>
 
 ```hcl
-resource "gcore_cloud_load_balancer_listener" "example" {
+resource "gcore_cloud_load_balancer_listener" "https" {
   project_id       = var.project_id
   region_id        = var.region_id
   load_balancer_id = gcore_cloud_load_balancer.example.id
   name             = "https-listener"
   protocol         = "TERMINATED_HTTPS"
   protocol_port    = 443
-  secret_id        = ""
-  sni_secret_id    = [var.tls_secret_id]  # ID of a gcore_cloud_secret resource
+  secret_id        = var.tls_secret_id    # ID of a gcore_cloud_secret resource
+  # sni_secret_id = [var.sni_cert_id]     # optional: additional certs for multi-domain
 }
 ```
 
