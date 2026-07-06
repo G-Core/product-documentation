@@ -1,4 +1,4 @@
-﻿---
+---
 title: Configure secrets for HTTPS load balancer
 sidebarTitle: Configure secrets
 ai-navigation: Create SSL/TLS secrets in Gcore Secrets Manager by uploading PKCS12 files or manually entering certificate, certificate chain, and private key for HTTPS Load Balancer listeners via Customer Portal, REST API, or Terraform.
@@ -9,186 +9,152 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>Secrets Manager is a dedicated tab where you can manage SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Depending on your setup, you can either upload a PKCS12 file or add certificate details manually.</p>
+<p>Secrets Manager is a dedicated section for managing SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Secrets can be added either as a base64-encoded PKCS12 file or as individual certificate fields.</p>
 
 ## Upload a PKCS12 file
 
-<p>If you already have a PKCS12 file containing your SSL/TLS certificate, certificate chain, and private key, you can quickly upload it to the Secrets Manager.</p>
+<p>If a PKCS12 file is already available, paste its base64-encoded content directly into Secrets Manager — no manual certificate fields needed.</p>
 
-<p>To upload a secret as a PKCS12 file:</p>
+<Steps>
+<Step title="Open Secrets Manager">
 
-  1. In the Gcore Customer Portal, navigate to Cloud.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** and click **Secrets Manager** in the left menu. Click **Create Secret**.</p>
 
-  2. Open the **Secrets Manager** page.
+<Frame>![Secrets Manager page with Create Secret button](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png)</Frame>
 
-  3. Click **Create Secret**.
+</Step>
+<Step title="Enable PKCS12 upload">
 
+<p>Enable the **Upload as PKCS12 file** toggle.</p>
 
+<Frame>![Create Secret form with Upload as PKCS12 file toggle enabled](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/upload-as-pkcs12-file.png)</Frame>
 
-<Frame>![Upload a PKCS12 file](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png)</Frame>
+</Step>
+<Step title="Enter secret details">
 
+1. In the **Name** field, enter a name for the secret.
+2. In the **Secret content** field, paste the base64-encoded PKCS12 content.
+3. Click **Save**.
 
-
-  4. Enable **Upload as PKCS12 file**.
-
-
-<Frame>![Enable Upload as PKCS12 file](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/upload-as-pkcs12-file.png)</Frame>
-
-
-
-  6. Enter a name for your secret and choose your file.
-
-  7. Click **Save**.
-
-
-
+</Step>
+</Steps>
 
 ## Add certificates directly
 
-<p>If you don't have a PKCS12 file or prefer to add the certificate details individually, you can enter them directly in the Secrets Manager.</p>
+<p>If no PKCS12 file is available, certificate details can be entered individually in Secrets Manager.</p>
 
-<p>To add a secret manually:</p>
+<Steps>
+<Step title="Open Secrets Manager">
 
-  1. In the Gcore Customer Portal, navigate to Cloud.
+<p>In the Customer Portal, navigate to **Cloud** and click **Secrets Manager** in the left menu. Click **Create Secret**.</p>
 
-  2. Open the **Secrets Manager** page.
+</Step>
+<Step title="Fill in the certificate fields">
 
-  3. Click **Create Secret**.
+<p>In the form that opens, complete the following fields and click **Save**:</p>
 
+1. In the **Name** field, enter a name for the secret.
+2. In the **Private key** field, paste the private key file content.
+3. In the **Certificate** field, paste the SSL/TLS certificate file content.
+4. Optionally, in the **Certificate chain** field, paste the intermediate CA certificate content. If the CA provides multiple intermediate certificates, include them all.
 
+<Frame>![Create Secret form with Private key, Certificate, and Certificate chain fields](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-certificates-directly.png)</Frame>
 
-<Frame>![Add certificates directly](/images/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-certificates-directly.png)</Frame>
-
-
-
-  4. In the form that opens, fill in the following fields:
-
-     * Enter a name for your secret.
-     * Paste the content of your private key file.
-     * Paste the content of your main SSL/TLS certificate file.
-     * If required, paste the content of the certificate chain file. This should include root and intermediate certificates in the correct order.
-  5. Click **Save**.
-
-
-
+</Step>
+</Steps>
 
 ## Create a PKCS12 file
 
-<p>PKCS12 (Public-Key Cryptography Standards) is a binary format for storing SSL/TLS certificate, certificate chain, and private key in one encrypted file.</p>
+<p>PKCS12 (Public-Key Cryptography Standards) is a binary format for storing an SSL/TLS certificate, certificate chain, and private key in one encrypted file. The three elements are combined so they can be transported and loaded together. Each is essential for an HTTPS connection:</p>
 
-<p>Basically, you "pack" the main SSL/TLS certificate, the certificate chain, and the private key into the PKCS12 file to transfer them easily. Each element is essential for establishing an HTTPS connection:</p>
+- The main certificate is a digital signature of the site that confirms the domain belongs to its registered owner.
+- The certificate chain contains the certificate authorities (CAs) that issued and validated the certificate.
+- The private key is the cryptographic key used to encrypt data exchanged between the server and clients.
 
-  * The main certificate is a digital signature of the site, which confirms that the resource actually belongs to you and not to criminals who impersonate you.
-  * The certificate chain is information about the CAs (certificate authorities) that participated in the issuance of your certificate and confirm its authenticity.
-  * The private key is a unique set of letters and numbers (key), using which the cryptographic algorithm will encrypt all data exchanged between the resource and a user.
+<p>Once the PKCS12 file is ready, encode its contents to base64 and paste the result into the **Secret content** field when creating a secret in Secrets Manager.</p>
 
+### 1. Prepare certificate files
 
+<p>Three files are needed: the SSL/TLS certificate for the domain, the certificate chain, and the private key. The domain must point to the virtual IP address of the Load Balancer via a DNS A record — Gcore [DNS records](/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing) support load-balanced A record configurations.</p>
 
-<p>After receiving the PKCS12 file, our system will be able to open an HTTPS connection. You only need to put the files associated with the certificate in base64 encoded PKCS12 file and upload it to the Secrets Manager.</p>
+<p>A CA does not always include the certificate chain with the main certificate — sometimes only the main certificate is provided, as browsers can often validate a domain name without the full chain. To obtain the certificate chain separately:</p>
 
-### 1\. Prepare certificate files
+1. Download the root and intermediate certificates from the CA that issued the certificate.
+2. Create a new file in any text editor.
+3. If the CA provides a certificate chain separately, create a chain file containing only the intermediate and root CA certificates — not the domain certificate. Place them in the following order:
 
-<p>You need the SSL/TLS certificate for the domain, the chain of certificates, and the private key. The domain must be configured with a DNS A record with the virtual IP address of the Load Balancer (the IP is specified in the Load Balancers tab). If you are using our DNS zone, you can create an A record according to the [instructions](/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing). Your domain will send requests to the IP of the balancer and it will distribute them among the machines.</p>
+- Content of the root certificate (for example, `CARoot.crt`)
+- Content of intermediate certificate no. 1 (for example, `Intermediate1.crt`)
+- Content of intermediate certificate no. 2 (for example, `Intermediate2.crt`)
 
-<p>CA does not always send a client a chain of certificates along with the main certificate — sometimes it only sends the main one, because often it is enough for browsers to confirm the domain name. In this case, you can get the certificate chain yourself:</p>
+### 2. Merge certificate files into PKCS12
 
-  1. Download the root and intermediate certificates from the site of the CA that issued you the certificate.
-  2. Create the file in any text editor.
-  3. Inside the created file, place the contents of the certificates in the following order: root certificate, then intermediate certificates in order, the certificate for the domain in the end. Like this:
+<p>With all files available, merge them into PKCS12 format. The steps below cover the most common case — creating a PKCS12 file from PEM-format inputs.</p>
 
+1. Install [OpenSSL](https://openssl.org) — a library for working with SSL/TLS protocols.
+2. Check that the certificate files are in PEM format. PEM files have the extension `.pem`, `.crt`, `.cer`, or `.key`, and begin with `-----BEGIN CERTIFICATE-----`, ending with `-----END CERTIFICATE-----`.
+3. If any files are not in PEM format, convert them using OpenSSL. Replace the text in square brackets with the actual file names.
 
-  * Content of the root certificate (for example, CARoot.crt) 
-  * Content of the intermediate certificate no. 1 (for example, Intermediate1.crt) 
-  * Content of the intermediate certificate no. 2 (for example, Intermediate2.crt) 
-  * Content of the certificate for the domain (for example, domain.crt)
-
-
-
-### 2\. Merge certificate files into PKCS12
-
-<p>Now you have all the files needed. There are several ways to merge them into PKCS12 format. Below we describe a common case — creating PKCS12 from PEM files.</p>
-
-<p>1\. Install OpenSSL. This is a library containing tools for working with SSL/TLS protocols. You can find installation links and instructions for working with OpenSSL on its [official website](https://openssl.org). 2\. Check if your certificate files are in PEM format. Such files must have the extension .pem, .crt, .cer or .key, begin with the line `----- BEGIN CERTIFICATE -----` and end with the line `----- END CERTIFICATE -----`. To see the beginning and the end of a file, open it in a text editor. 3\. If some files are not in PEM, convert them using OpenSSL. Enter the command in OpenSSL, replacing the text in square brackets with your names:</p>
-
-<p>_For a .crt, .cer or .der file_</p>
+**For `.crt`, `.cer`, or `.der` files:**
 
 ```sh
-openssl x509 - inform der - in [name of your file, including extension] - out [name for the future generated PEM file].pem
- ```
+openssl x509 -inform der -in [filename.ext] -out [output].pem
+```
 
-<p>If your file is named "example.der" and you want to name the new PEM file "PEMcertificate", then the command would be: openssl x509 -inform der -in example.der -out PEMcertificate.pem</p>
-
-<p>_For a .p7b or .p7c file_</p>
+**For `.p7b` or `.p7c` files:**
 
 ```sh
-openssl pkcs7 -print_certs -in [name of your file, including extension] -out [name for the future generated PEM file].cer
- ```
+openssl pkcs7 -print_certs -in [filename.ext] -out [output].cer
+```
 
-<p>If your file is named "example.pb7" and you want to name the new PEM file "PEMcertificate", then the command would be:</p>
-
-```sh
-openssl pkcs7 -print_certs -in example.pb7 -out PEMcertificate.cer
- ```
-
-<p>4\. Place the main certificate, key, and intermediate certificate chain (three PEM files in total) in the current directory.</p>
-
-<p>5\. To merge files into PKCS12, open OpenSSL and enter the command:</p>
+4. Place the main certificate, private key, and certificate chain (three PEM files) in the working directory.
+5. Merge the files into PKCS12:
 
 ```sh
-openssl pkcs12 -export -inkey [name of the file with the private key, including the extension] -in [name of the file with the certificate, including the extension] -certfile [name of the file with the certificate chain, including the extension] -passout pass: -out [name for the future created file].p12
- ```
+openssl pkcs12 -export -inkey [private-key.key] -in [certificate.crt] -certfile [chain.crt] -passout pass: -out [output].p12
+```
 
-<p>If your files are server.crt (main certificate), server.key (private key) and ca-chain.crt (certificate chain), and you want to name the new PKCS 12 file "server", then the command would be:</p>
+<p>With files `server.crt` (certificate), `server.key` (private key), and `ca-chain.crt` (certificate chain):</p>
 
 ```sh
 openssl pkcs12 -export -inkey server.key -in server.crt -certfile ca-chain.crt -passout pass: -out server.p12
- ```
+```
 
-<p>As a result, you will merge the key, certificate, and intermediate certificate chain into one PKCS12 file.</p>
+### 3. Base64 encode
 
-### 3\. Base64 encode
+<p>Encode the PKCS12 file contents to base64.</p>
 
-<p>Encode the contents of PKCS12 file to base64. This can be done by entering the command in the console:</p>
-
-<p>_For Windows OS_</p>
+**Windows:**
 
 ```sh
-certutil.exe -encode [full path to PKCS12 file] [new file name].b64
- ```
+certutil.exe -encode [path\to\file.p12] [output].b64
+```
 
-<p>If the path to your file is "C:\Users\Myname\server.p12" and you want to name the new file "code64", then the command will be: certutil.exe -encode C:\Users\Myname\server.p12 code64.b64</p>
+<p>Open the resulting `.b64` file in a text editor and delete the first and last lines (`-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`). The remaining text is the Secret content.</p>
 
-<p>A new base64 encoded file will be created. Open it in a text editor and delete the first and the last lines: `----- BEGIN CERTIFICATE -----` and `----- END CERTIFICATE -----`. They are generated automatically and you don't need them. The rest of the text will be the content of the Secret.</p>
-
-<p>_For Mac OS_</p>
+**macOS:**
 
 ```sh
-openssl base64 -in [full path to PKCS12 file] -out [new file name].txt
- ```
+openssl base64 -in [path/to/file.p12] -out [output].txt
+```
 
-<p>If the path to your file is "Users/admin/Downloads/server.p12" and you want to name the new file "code64", then the command will be: openssl base64 -in Users/admin/Downloads/server.p12 -out code64.txt</p>
+<p>The resulting `.txt` file contains the base64-encoded PKCS12 content to paste into **Secret content**.</p>
 
-<p>A new .txt file will be created with the base64 encoded contents of the PKCS12 file. This is the content of the Secret.</p>
-
-<p>_For Linux (must be executed in the directory of PKCS12 file)_</p>
+**Linux** (run in the directory containing the PKCS12 file):
 
 ```sh
-base64 [PKCS12 file name] > [new file name]
- ```
+base64 [filename.p12] > [output]
+```
 
-<p>If your file is named "server.p12" and you want to name the new file "code64" then the command will be: base64 server.p12 > code64</p>
+<p>The output file contains the base64-encoded content. Open it with `nano [output]` to copy the content.</p>
 
-<p>A new code64 file with the contents of the base64 encoded PKCS12 file will be created. This is the content of the Secret. The file can be opened using the command: nano code64.</p>
-
-## How to create a load balancer with an HTTPS listener
+## HTTPS listener setup
 
 <Info>
-**Info**
-
-You cannot delete a secret that is currently used by a Load Balancer's listener. To remove a secret, first delete the associated listener, then remove the secret. If needed, recreate the listener afterward.
+A secret in use by a Load Balancer listener cannot be deleted. To remove a secret, delete the associated listener first, then delete the secret. Recreate the listener afterward if needed.
 </Info>
 
-<p>For detailed instructions on configuring a Load Balancer with an HTTPS listener, including adding TLS certificates, refer to the documentation on [adding TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
+<p>An HTTPS Load Balancer listener with TLS termination references the secret by ID — the [HTTPS listener guide](/cloud/networking/load-balancers/add-certificates-to-load-balancer) covers listener creation and SNI configuration.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -196,7 +162,7 @@ You cannot delete a secret that is currently used by a Load Balancer's listener.
 <p>Use the Gcore API to create TLS certificate secrets for HTTPS load balancer listeners — PEM-formatted certificate files are accepted directly, without PKCS12 conversion.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a [region ID](/api-reference/cloud/regions/list-regions).
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 <p>Set the following environment variables before running the examples:</p>
@@ -299,7 +265,7 @@ func main() {
 
 ### Step 1. Create a TLS certificate secret
 
-<p>The [create secret](/api-reference/cloud/secrets/create-secret) endpoint accepts PEM-formatted certificate data directly — no PKCS12 packaging or base64 encoding required.</p>
+<p>The [create secret](/api-reference/cloud#tag/Secrets/operation/SecretsViewSetV2.post) endpoint accepts PEM-formatted certificate data directly — no PKCS12 packaging or base64 encoding required.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -379,7 +345,7 @@ Response:
 }
 ```
 
-Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The created secret ID is in `created_resources.secrets[0]`.
+Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The created secret ID is in `created_resources.secrets[0]`.
   </Tab>
 </Tabs>
 
@@ -387,15 +353,13 @@ Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 
 
 <p>Pass `SECRET_ID` as the `secret_id` parameter when creating an HTTPS load balancer listener. The `secret_id` is returned from the create call above.</p>
 
-<p>For a step-by-step walkthrough including listener creation and certificate attachment, see [Add TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
-
 </Accordion>
 
 ## Additional operations
 
 <Accordion title="List secrets">
 
-<p>The [list secrets](/api-reference/cloud/secrets/list-secrets) endpoint returns all secrets in the region — useful for finding the ID of an existing secret before attaching it to a load balancer.</p>
+<p>The [list secrets](/api-reference/cloud#tag/Secrets/operation/SecretsViewSet.get) endpoint returns all secrets in the region — useful for finding the ID of an existing secret before attaching it to a load balancer.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -448,7 +412,7 @@ Response:
 
 <Accordion title="Get secret details">
 
-<p>The [get secret](/api-reference/cloud/secrets/get-secret) endpoint returns full metadata for a single secret by ID, including its status, type, and expiration date.</p>
+<p>The [get secret](/api-reference/cloud#tag/Secrets/operation/SecretViewSet.get) endpoint returns full metadata for a single secret by ID, including its status, type, and expiration date.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -541,7 +505,7 @@ Response:
 }
 ```
 
-Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
@@ -552,7 +516,7 @@ Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until 
 <p>Import a PEM certificate into Secrets Manager. The secret ID from [`gcore_cloud_secret`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_secret) can then be referenced in load balancer listeners for TLS termination.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+An API token is required, along with a project ID and region ID.
 </Info>
 
 
@@ -621,8 +585,6 @@ resource "gcore_cloud_load_balancer_listener" "https" {
   sni_secret_id    = [gcore_cloud_secret.tls.id]
 }
 ```
-
-<p>For the full workflow including listener creation and SNI configuration, see [Add TLS certificates to a load balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
 
 ## Import
 

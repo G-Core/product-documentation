@@ -1,29 +1,29 @@
 ---
-title: Build and deploy containers to CaaS via GitHub actions
-sidebarTitle: Deploy via GitHub actions
+title: Build and deploy containers to CaaS via GitHub Actions
+sidebarTitle: Deploy via GitHub Actions
 ai-navigation: Deploy containers to Gcore Container as a Service via GitHub Actions workflow using the deploy-container action with required fields - API token, project ID, region ID, container name, image name, and optional parameters for port, description, environment variables, flavor, scale-down duration, minimum/maximum instances.
 ---
 
 ## Overview
 
-We've developed a public GitHub action that allows you to deploy your containers to [Gcore Container as a Service](/cloud/caas) directly via GitHub workflows. This action can be found in the [deploy-container repository](https://github.com/gcore-github-actions/deploy-container) repository and in the Marketplace under [GitHub Actions](https://github.com/marketplace/actions/deploy-to-gcore-container-as-a-service).
+Gcore provides a public GitHub action for deploying containers to [Gcore Container as a Service](/cloud/caas) directly via GitHub workflows. The action is available in the [deploy-container repository](https://github.com/gcore-github-actions/deploy-container) and in the GitHub Marketplace under [GitHub Actions](https://github.com/marketplace/actions/deploy-to-gcore-container-as-a-service).
 
 ## GitHub Actions
 
-The principle of Actions is described in the [detailed GitHub documentation](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions). You create a YAML file in your repository's _.github/workflows_ directory. This YAML file contains the code that is executed during a workflow run. Other key components of GitHub Actions include:
+The principle of Actions is described in the [detailed GitHub documentation](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions). Workflows are defined in a YAML file in the repository's _.github/workflows_ directory. The YAML file contains the code that is executed during a workflow run. Other key components of GitHub Actions include:
 
   * **Events**, which trigger workflows (e.g., pull_request)
   * **Jobs**, which define the steps that will be executed on the runner or actions that will be run
-  * **Actions**, which allow you to automate, customize, and execute your software development workflows directly in your repository
+  * **Actions**, which automate, customize, and execute software development workflows in a repository
   * **Runners**, which are servers where workflows are executed
 
 
 
-## How to use the Gcore action
+## Gcore action setup
 
 1\. In the _.github/workflows/_ directory, create a file with the _.yml_ extension.
 
-2\. Add the following content to your _.yml_ file: 
+2\. Add the following content to the _.yml_ file:
 
 ```yaml
 name: Deploy
@@ -50,19 +50,19 @@ jobs:
         run: echo "${{ steps.deploy.outputs.address }}"
  ```
 
-Complete the required and optional fields per the below.
+Complete the required and optional fields as described below.
 
-**Required fields** :
+**Required fields:**
 
   * `api-token` is an [API token](/account-settings/api-tokens) that authenticates the GitHub action to Gcore API.
-  * `project-id` is the ID of the Gcore project where the container should be deployed. You can use the [list projects](/api-reference/cloud/projects/list-projects) API request to retrieve this.
-  * `region-id` is the ID of the region where the container should be deployed. This can be obtained using the [list regions](/api-reference/cloud/regions/list-regions) API request.
+  * `project-id` is the ID of the Gcore project where the container should be deployed. Use the [list projects](/api-reference/cloud/projects/list-projects) API request to retrieve it.
+  * `region-id` is the ID of the region where the container should be deployed. Use the [list regions](/api-reference/cloud/regions/list-regions) API request to obtain it.
   * `name` is the name of the container to be deployed.
-  * `image` in the name of the container image to be deployed (e.g., _docker.io/nginx:latest_.)
+  * `image` is the name of the container image to be deployed. Specify the full registry path (e.g., `docker.io/nginx:latest`) or the short form (e.g., `nginx:latest`).
 
 
 
-**Optional fields** :
+**Optional fields:**
 
   * `listening-port` is the port on which the container will be listening for network connections. The default value is `80`.
   * `description` is a custom description of the container.
@@ -82,17 +82,17 @@ with:
   * `scale-min` is the minimum number of instances to run. When set to `0`, the container will scale down to zero running instances when it receives no traffic for the duration of `timeout`. The default value is `1`.
   * `scale-max` is the maximum number of instances to run. The value must be greater than or equal to scale-min. The default value is `1`.
   * `is-disabled` is the field (boolean) that controls the state of the container (on or off.) When `true` is set, the container is disabled; any running instances are shut down. The default value is `false`.
-  * `is-api-key-auth` is the field (boolean) that enables API key authentication for the container endpoint address. You can create and assign API keys to the container in the Gcore Customer Portal. When `true` is set, API keys are enabled. The default value is `false`.
-  * `pull-secret` is the name of the private registry credentials to use when fetching the container image. The credentials must already be configured in the Gcore Customer Portal.
+  * `is-api-key-auth` is the field (boolean) that enables API key authentication for the container endpoint address. API keys are created and assigned to the container in the [Gcore Customer Portal](https://portal.gcore.com). When `true` is set, API keys are enabled. The default value is `false`.
+  * `pull-secret` is the name of the private registry credentials to use when fetching the container image. The credentials must already be configured in the Customer Portal.
 
 
 
-3\. Create a _.secrets_ file with your `GCLOUD_API_TOKEN` value obtained from the [Customer Portal](https://portal.gcore.com/accounts/profile/api-tokens).
+3\. In the GitHub repository settings, go to **Secrets and variables** > **Actions** and add `GCLOUD_API_TOKEN` as a repository secret with the value of the [API token](https://portal.gcore.com/accounts/profile/api-tokens).
 
-4\. Create a _.vars_ file with your `GCLOUD_API_URL`, `GCLOUD_PROJECT` and `GCLOUD_REGION` values.
+4\. In the same **Variables** tab, add `GCLOUD_PROJECT` with the Gcore project ID and `GCLOUD_REGION` with the Gcore region ID.
 
 The Gcore action has the following output elements:
 
-  * `address` is the endpoint address of your container.
-  * `status` is the status of your container (e.g., _Pending_, _Deploying_, _Ready_, or _Error_.)
-  * `status-message` is the last message associated with the current container status. This can be useful for troubleshooting deployment issues.
+  * `address` is the endpoint address of the deployed container.
+  * `status` is the container status (e.g., _Pending_, _Deploying_, _Ready_, or _Error_).
+  * `status-message` is the last message associated with the current container status, which can help with troubleshooting deployment issues.

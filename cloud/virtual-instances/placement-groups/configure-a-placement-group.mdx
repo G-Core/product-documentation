@@ -1,7 +1,7 @@
-﻿---
+---
 title: Configure a placement group
 sidebarTitle: Configure
-ai-navigation: Create and manage Virtual Machine placement groups via the Customer Portal, REST API, or Terraform, covering affinity and anti-affinity policies, VM assignment during creation, and moving VMs between groups.
+ai-navigation: Create and manage Virtual Machine placement groups via the Customer Portal, REST API, or Terraform, covering Affinity, Anti-Affinity, and Soft Anti-Affinity policies, VM assignment during creation, and moving VMs between groups.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -10,47 +10,89 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSection id="portal" label="Customer Portal">
 
+<p>Placement groups control how Virtual Machines are distributed across physical hosts — co-locate VMs for low-latency communication or spread them across hosts for fault tolerance.</p>
+
 ## Create a placement group
 
-<p>In the "Placement Groups" section, create a new group. Give it a name and select a policy — affinity or anti-affinity — and click Create Placement Group.</p>
+<p>The policy selected at creation is permanent — it cannot be changed afterwards. Choose Affinity to co-locate VMs on the same host, Anti-Affinity to spread them across different hosts, or Soft Anti-Affinity to prefer separation while allowing sharing when resources are limited.</p>
 
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** and select the target region.
 
-<Accordion title="Types of placement groups">
-You can place your Virtual Machine in one of three types of groups:
+2. In the left sidebar, open **Virtual Instances** and select **Placement Groups**.
 
- * **Affinity** groups assemble Virtual Machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
+3. Click **Create Placement Group**.
 
- * **Anti-affinity** groups work the opposite way: All Virtual Machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something happens to one server, machines on the other(s) will remain available.
+4. Enter a **Name** for the group.
 
- * **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of Virtual Machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host was not found.
-</Accordion>
+5. Select a **Policy** — **Affinity**, **Anti-Affinity**, or **Soft Anti-Affinity**.
 
+6. In the dialog, click **Create**.
 
-<Frame>![Additional options](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-6.png)</Frame>
+<Frame>
+  ![Create Placement Group dialog with Name and Policy fields](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/create-placement-group-dialog.png)
+</Frame>
 
+## Create a Virtual Machine in a placement group
 
-## Create a Virtual Machine included in a placement group
+<p>Assign a VM to a placement group during instance creation by selecting the group in the **Additional options** section.</p>
 
-<p>When creating a Virtual Machine, in the "Additional options" section, move the "Add to placement group" slider and select a group or create a new one — the machine will be a member of it.</p>
+1. In the left sidebar, open **Virtual Instances** and click **Create Instance**.
 
-<Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-8.png)</Frame>
+2. Configure the Virtual Instance as described in [Create](/cloud/virtual-instances/create-an-instance).
 
+3. In the **Additional options** section, select the **Add to placement group** checkbox.
 
-## Add a previously created Virtual Machine to a group
+4. Select an existing group from the **Placement Group** dropdown, or click **Add placement group** to create one.
 
-<p>In the Virtual Machine menu, open the "Placement Group" tab. Select the previously created group where you want to add the VM to, or create a new one. Click "Add".</p>
+5. Complete the remaining configuration and click **Create Instance**.
 
+<Frame>
+  ![Add to placement group checkbox and Placement Group dropdown on the create instance form](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/create-instance-placement-group.png)
+</Frame>
 
-<Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-9.png)</Frame>
+## Add an existing Virtual Machine to a group
 
-## Move a Virtual Machine from one group to another
+<p>The Virtual Machine must already exist in the same region as the placement group.</p>
 
-<p>In the Virtual Machine menu, open the "Placement Group" tab. Remove a machine from one group and add it to another —you can add it to a new one or to a previously created one.</p>
+1. In the left sidebar, open **Virtual Instances** and select the target instance.
 
-<Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-10.png)</Frame>
+2. Open the **Placement Group** tab.
 
-<Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-11.png)</Frame>
+3. Select a group from the **Placement Group** dropdown, or click **Add placement group** to create one.
 
+4. Click **Add**.
+
+5. In the confirmation dialog, click **Yes, add**.
+
+## Move a Virtual Machine between groups
+
+<p>Moving a VM between groups requires two operations: first remove it from the current group, then assign it to the new one. Between the two steps the VM has no placement constraint.</p>
+
+1. In the left sidebar, open **Virtual Instances** and select the target instance.
+
+2. Open the **Placement Group** tab.
+
+3. Click **Remove**.
+
+<Frame>
+  ![Placement Group tab with group selector and Add button](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/placement-group-selector.png)
+</Frame>
+
+4. In the confirmation dialog, click **Yes, remove**.
+
+5. Select the new group from the **Placement Group** dropdown.
+
+6. Click **Add**.
+
+7. In the confirmation dialog, click **Yes, add**.
+
+<Frame>
+  ![Placement Group tab showing assigned group and Remove button](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/placement-group-assigned.png)
+</Frame>
+
+<Frame>
+  ![Placement Group dropdown after removal, ready to select a new group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/placement-group-selector.png)
+</Frame>
 </MethodSection>
 
 <MethodSection id="api" label="REST API">
@@ -74,7 +116,7 @@ export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 <Info>
 To find the values for each variable:
 - **IMAGE\_ID**: the UUID of a public or private image. Use `GET /cloud/v1/images/{project_id}/{region_id}` to list available images.
-- **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in your region.
+- **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in the region.
 </Info>
 
 ## Quickstart
@@ -210,8 +252,6 @@ To find the values for each variable:
 </Tabs>
 
 ## Step-by-step
-
-<p>Each step below explains what the call does and what to expect in the response.</p>
 
 <Accordion title="Show all steps">
 

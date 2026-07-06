@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Create and configure a floating IP address"
 sidebarTitle: "Floating IP address"
 ai-navigation: Reserve a floating IP address in Gcore Cloud and assign it to a Virtual Machine, Bare Metal server, or Load Balancer using the Customer Portal, REST API, or Terraform.
@@ -9,134 +9,134 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-## What is a floating IP address?
-
-<p>A Floating IP is a public, static IP address that can be assigned to Virtual Machines (VMs), Bare Metal servers, and Load Balancers, allowing them to receive external connections without having a public network interface. This means that these products don't have a public network interface, but they can still receive incoming connections from the Internet.</p>
-
-<Info>
-  **Info**
-
-  The private subnet of the VM must be [routable](/cloud/networking/create-and-manage-a-subnetwork#network-routing). Routing can be enabled in the subnet settings.
-</Info>
-
-## What is it used for?
-
-<p>A floating IP allows you to quickly provide access from an external network to a Virtual Machine that doesn't have a public network interface. By assigning an address to the VM you will be able to connect to it.</p>
-
-<p>Another method for providing access is by creating a public interface for the device. However, this can cause conflicts with the private routed interface as both are used for accessing the internet. You would have to configure the routing manually. A Floating IP is a convenient solution if you only need temporary access to an external network or prefer not to deal with routing configuration.</p>
-
-## How does it work?
-
-<p>When you reserve a floating IP and assign it to your Virtual Machine, the router directs incoming traffic to your device by forwarding packets intended for that IP. Outgoing traffic from your instance will still use its private IP, while incoming traffic will be forwarded through the Floating IP.</p>
-
-<p>If your instance has multiple private IPv4 addresses within a routable private subnet, you can assign a unique floating IP to each of these private addresses. Multiple private subnets from one network can be grouped to a single port, allowing the client to attach a Floating IP to any of the routable addresses.</p>
-
-## Check if your subnet is routable
+## Floating IP address overview
 
 <Warning>
-  **Warning**
-
-  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist). 
+  Floating IPs are not recommended for high traffic workloads. Using one for sustained traffic may impact network stability.
 </Warning>
 
-1. Open the **Networking** section, select the required network, and navigate to your equipment's subnet settings.
+<p>A Floating IP is a public, static IP address that can be assigned to Virtual Machines (VMs), Bare Metal servers, and Load Balancers, allowing them to receive external connections without having a public network interface. These products do not have a public network interface, but they can still receive incoming connections from the Internet.</p>
+
+## Use cases
+
+<p>A Floating IP provides quick access from an external network to a Virtual Machine that does not have a public network interface. Assigning the address to the VM enables external connectivity.</p>
+
+<p>Another method for providing access is by creating a public interface for the device. However, this can cause conflicts with the private routed interface as both are used for accessing the internet. Manual routing configuration is required in that case. A Floating IP is a convenient solution when only temporary access to an external network is needed or routing configuration is not desired.</p>
+
+## Floating IP routing
+
+<p>When a floating IP is reserved and assigned to a Virtual Machine, the router directs incoming traffic to the device by forwarding packets intended for that IP. The VM is not aware of the floating IP � its network stack uses the private IP. Incoming connections addressed to the floating IP are forwarded to the VM's private interface by the router.</p>
+
+<p>If the instance has multiple private IPv4 addresses within a routable private subnet, a unique floating IP can be assigned to each of these private addresses. Multiple private subnets from one network can be grouped to a single port, allowing the client to attach a Floating IP to any of the routable addresses.</p>
+
+## Verify subnet routability
+
+<p>Before assigning a floating IP, confirm that the target subnet has a gateway configured. The steps below show how to check and update this setting.</p>
+
+<Info>
+  The private subnet of the VM must be [routable](/cloud/networking/create-and-manage-a-subnetwork#network-routing). Routing is controlled by the **Gateway IP** setting in the subnet.
+</Info>
+
+<Warning>
+  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the floating IP.
+</Warning>
+
+1. Navigate to **Networking** ? **Networks**, open the required network, and find the subnet in the **Subnets** list.
 
 <Frame>
-  ![floating-ip-01.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391415662737.png)
+  ![Subnets list in a network](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-subnet-list-v2.png)
 </Frame>
 
-2. Click the three-dot menu, then select **Edit**.
+2. Click ... next to the subnet, then select **Edit**.
 
 <Frame>
-  ![floating-ip-02.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391621674513.png)
+  ![Subnet context menu with Edit option](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-subnet-context-menu-v2.png)
 </Frame>
 
-3. Ensure the **Enable router gateway** slider is enabled, making the subnet routable, and allowing servers within the subnet to access the Internet and receive incoming connections.
+3. Under **Gateway IP**, confirm that **Specific** is selected. If **No gateway** is selected, switch to **Specific**, enter a gateway IP address, and click **Save**.
 
 <Frame>
-  ![floating-ip-03.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391738930705.png)
+  ![Edit Subnet form showing Gateway IP options](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-edit-subnet-gateway-v2.png)
 </Frame>
 
 ## Reserve a floating IP from the menu
 
 <p>A floating IP is assigned by a specific data center, and its address is linked to that location. It can only be transferred to a Virtual Machine within the exact location.</p>
 
-1. Select the Region where your machine is located to assign a floating IP and navigate to the **Networking** section.
+1. Select the region where the VM is located and navigate to **Networking** ? **Floating IPs**.
 
 <Frame>
-  ![floating-ip-04.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391851006353.png)
+  ![Floating IPs page with region selector in sidebar](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-floating-ips-page-v2.png)
 </Frame>
 
-2. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new floating IP.**
+2. A floating IP can be reserved without assigning it to a VM by clicking **Create a new floating IP**.
 
 <Frame>
-  ![floating-ip-05.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392006241425.png)
+  ![Floating IPs page with Create button](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-create-button-v2.png)
 </Frame>
 
-3. Additionally, you can create a floating IP and immediately assign it to a specific Virtual Machine. To do this, enable the "Assign to existing instance" slider, select the machine and interface, and click **Create a new floating IP.**
+3. To reserve a floating IP and immediately assign it to a VM, enable the **Attach to existing instance** toggle, select the instance and interface, and click **Create a new floating IP**.
 
 <Frame>
-  ![floating-ip-06.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392182782993.png)
+  ![Floating IPs page with Attach to existing instance toggle enabled](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-attach-toggle-v2.png)
 </Frame>
 
 ## Reserve a floating IP when creating a Virtual Machine
 
-<p>When creating a VM, in the "Network settings" section, select the "**Private** " network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the "**Use floating IP** " slider, click "**Create a new floating IP** ", and save the settings using the "**Add Interface** " button.</p>
+<p>In the **Network settings** section, select **Private** as the network type. Select the network and subnet for the interface. Enable the **Use floating IP** toggle, click **Create a new floating IP**, and click **Add Interface** to save.</p>
 
 <Frame>
-  ![floating-ip-07.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392462274833.png)
+  ![VM creation Network settings with Use floating IP toggle](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-vm-creation-network-v2.png)
 </Frame>
 
 <p>The Virtual Machine will be created with a private interface and a new floating IP assigned to it.</p>
 
 <Info>
-  **Info**
-
-  A Floating IP can only be added after creating the network interface. A subnet must be created before assigning the floating IP if you add a new interface.
+  A Floating IP can only be added after creating the network interface. A subnet must be created before assigning the floating IP when adding a new interface.
 </Info>
 
 ## Assign a floating IP to a Virtual Machine
 
-<p>Next to the free IP, click "Assign to instance" or select this option from the selector on the right.</p>
+<p>In the **Floating IPs** list, click **Attach to Instance** in the **Attached to** column, or click ... and select **Attach to Instance**.</p>
 
 <Frame>
-  ![floating-ip-08.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392603351313.png)
+  ![Floating IPs list showing Attach to links for an unassigned IP](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-assign-links-v2.png)
 </Frame>
 
-<p>Select the Virtual Machine in the pop-up window, and the floating IP's network interface will be assigned. Click **Assign floating IP**.</p>
+<p>Select the Virtual Machine in the **Attach floating IP** modal and click **Attach floating IP**.</p>
 
 <Frame>
-  ![floating-ip-09.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392628635793.png)
+  ![Attach floating IP modal with instance selector](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-attach-modal-v2.png)
 </Frame>
 
 ## Detach a floating IP from a Virtual Machine
 
-<p>You can detach a floating IP address in the "Floating IPs" section or in the Virtual Machine menu. In the "Floating IP" section, click the selector next to the address and select **Detach from Instance**, and the IP will no longer be assigned to the machine.</p>
+<p>A floating IP can be detached from the **Floating IPs** section or from the Virtual Machine's interface. In the **Floating IPs** section, click ... next to the address and select **Detach from source** � the IP is released from the VM.</p>
 
 <Frame>
-  ![floating-ip-10.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392631295505.png)
+  ![Floating IP context menu showing Detach from source option](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-detach-menu-v2.png)
 </Frame>
 
-<p>In the Virtual Machine menu, open the "Networking" tab and select the private interface. Open the selector and click "**Detach Floating IP** ". The IP will no longer be assigned to this machine.</p>
+<p>In the Virtual Machine menu, open the **Networking** tab and select the private interface. Click ... and select **Detach floating IP**. The IP will no longer be assigned to this machine.</p>
 
-<p>Floating IPs are freely available for Virtual Machines, Bare Metal servers, and Load Balancers. Once detached, they remain ready for reassignment. You can transfer it to another Virtual Machine within the same data center by selecting the target instance and linking the IP. This helps maintain a stable external address even as your infrastructure evolves.</p>
+<p>Floating IPs are not tied to a single resource. Once detached, they remain reserved and available for reassignment to any VM, Bare Metal server, or Load Balancer within the same data center. This makes it straightforward to maintain a stable external address across infrastructure changes.</p>
 
 <Frame>
-  ![floating-ip-11.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392664056465.png)
+  ![VM Networking tab showing network interfaces](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-vm-networking-tab-v2.png)
 </Frame>
 
 ## Delete a floating IP
 
-<p>In the "Floating IPs" section, click the selector next to the desired address and select **Delete**. The IP will be removed, and you will no longer be charged.</p>
+<p>In the **Floating IPs** section, click ... next to the address and select **Delete**. The address is removed and billing stops.</p>
 
 <Frame>
-  ![floating-ip-12.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392700821393.png)
+  ![Floating IP context menu with Delete option](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/fip-delete-menu-v2.png)
 </Frame>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Keep services reachable even when infrastructure changes by assigning and reassigning a floating IP address to a Virtual Machine. A floating IP is a static public address — it stays the same when moved between instances, so DNS records and client configurations remain valid.</p>
+<p>Keep services reachable even when infrastructure changes by assigning and reassigning a floating IP address to a Virtual Machine. A floating IP is a static public address � it stays the same when moved between instances, so DNS records and client configurations remain valid.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a [region ID](/api-reference/cloud/regions/list-regions).
@@ -148,6 +148,8 @@ An [API token](/account-settings/api-tokens) is required, along with a [project 
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"  # UUID of the target VM
+export PORT_ID="{YOUR_PORT_ID}"          # UUID of the VM's private interface; see Step 2 below
 ```
 
 ## Quickstart
@@ -164,7 +166,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
     PORT_ID = os.environ["PORT_ID"]
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
 
     # Step 1. Reserve a floating IP
     fip = client.cloud.floating_ips.create_and_poll(
@@ -211,6 +213,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -268,7 +271,7 @@ Allocating a floating IP reserves a public address from the region pool without 
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
 
     fip = client.cloud.floating_ips.create_and_poll(
         project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
@@ -314,13 +317,13 @@ Allocating a floating IP reserves a public address from the region pool without 
     }
     ```
 
-    Save `created_resources.floatingips[0]` as `FIP_ID`. A newly reserved floating IP has `status: DOWN` — it becomes `ACTIVE` after assignment to a Virtual Machine.
+    Save `created_resources.floatingips[0]` as `FIP_ID`. A newly reserved floating IP has `status: DOWN` � it becomes `ACTIVE` after assignment to a Virtual Machine.
   </Tab>
 </Tabs>
 
 ### Step 2. Find the port ID of the VM's interface
 
-The port ID is the UUID of the Virtual Machine's private network interface — required for assignment in the next step.
+The port ID is the UUID of the Virtual Machine's private network interface � required for assignment in the next step.
 
 Retrieve it from the instance details:
 
@@ -345,7 +348,7 @@ In the response, look for `addresses.{network_name}[].port_id`:
 }
 ```
 
-Save the `port_id` value as `PORT_ID`. The VM's subnet must have **Enable router gateway** turned on — without it, the assignment succeeds but traffic does not reach the VM.
+Save the `port_id` value as `PORT_ID`. The VM's subnet must have a gateway configured � without it, the assignment succeeds but traffic does not reach the VM.
 
 ### Step 3. Assign to a Virtual Machine
 
@@ -492,7 +495,7 @@ Detaching releases the floating IP from the port; the address remains reserved a
 <p>Reserve a public IP from the region pool and bind it to a VM's private interface. The [`gcore_cloud_floating_ip`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_floating_ip) resource manages both reservation and assignment in a single configuration.</p>
 
 <Info>
-The VM's subnet must have **Enable router gateway** turned on — without it, assignment succeeds but traffic does not reach the VM. Configure routing in [subnet settings](/cloud/networking/create-and-manage-a-subnetwork#network-routing).
+The VM's subnet must have a gateway configured � without it, assignment succeeds but traffic does not reach the VM. Configure routing in [subnet settings](/cloud/networking/create-and-manage-a-subnetwork#network-routing).
 </Info>
 
 
@@ -547,7 +550,7 @@ curl "https://api.gcore.com/cloud/v1/instances/{PROJECT_ID}/{REGION_ID}/{INSTANC
 resource "gcore_cloud_floating_ip" "example" {
   project_id = var.project_id
   region_id  = var.region_id
-  # port_id removed — Terraform detaches the floating IP on next apply
+  # port_id removed � Terraform detaches the floating IP on next apply
 }
 ```
 
@@ -557,7 +560,7 @@ terraform apply
 
 ## Delete a floating IP
 
-<p>Remove the resource block — Terraform detects the missing declaration and releases the address on the next `terraform apply`.</p>
+<p>Remove the resource block � Terraform detects the missing declaration and releases the address on the next `terraform apply`.</p>
 
 ```hcl
 # Remove or comment out this block:

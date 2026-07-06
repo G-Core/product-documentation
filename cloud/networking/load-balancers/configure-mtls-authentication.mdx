@@ -4,14 +4,14 @@ sidebarTitle: Configure mutual TLS authentication
 ai-navigation: Configure mutual TLS authentication between Gcore Load Balancers and backend servers using PKCS12 listener certificates, PEM CA certificates, and optional client certificates for mTLS pool configuration via API endpoints.
 ---
 
-Gcore Load Balancers support mutual TLS (mTLS) authentication between the Load Balancer and backend servers. This configuration enables the Load Balancer to verify backend server certificates and allows backend servers to verify the Load Balancer identity.
+Gcore Load Balancers support mutual TLS (mTLS) — both the Load Balancer and backend servers verify each other's certificates, preventing connections from unauthorized endpoints in either direction.
 
 ## Supported configurations
 
-Gcore Load Balancers support two types of TLS configurations:
+TLS can be configured for two different communication paths:
 
-- **Client to Load Balancer (TLS)**: Standard TLS termination using `TERMINATED_HTTPS` protocol. The Load Balancer presents a server certificate to clients.
-- **Load Balancer to backend servers (mTLS)**: Mutual TLS where both the Load Balancer and backend servers exchange and verify certificates.
+- Client to Load Balancer (TLS): Standard TLS termination using `TERMINATED_HTTPS` protocol. The Load Balancer presents a server certificate to clients.
+- Load Balancer to backend servers (mTLS): Mutual TLS where both the Load Balancer and backend servers exchange and verify certificates.
 
 <Info>
 mTLS between clients and the Load Balancer is not supported. For client-facing connections, use standard TLS with the `TERMINATED_HTTPS` protocol.
@@ -19,27 +19,21 @@ mTLS between clients and the Load Balancer is not supported. For client-facing c
 
 ## Certificate parameters
 
-**Listener parameters (TLS termination):**
+Each path uses different certificate parameters stored via different API endpoints. Listener certificates use `/v2/secrets`, which supports PKCS12 binary format; pool CA certificates and CRLs use `/v1/secrets` for PEM text format. The split is intentional — the endpoints store different certificate formats.
 
-- **`secret_id`**: PKCS12 certificate bundle for `TERMINATED_HTTPS` protocol
-- **`sni_secret_id`**: (Optional) Additional SNI PKCS12 certificate bundles for multi-domain support
+| Parameter | Applies to | Purpose | Endpoint | Format |
+|-----------|------------|---------|----------|--------|
+| `secret_id` | Listener | Server certificate presented to clients | `/v2/secrets` | PKCS12 |
+| `sni_secret_id` | Listener | Additional SNI certificates for multi-domain support | `/v2/secrets` | PKCS12 |
+| `secret_id` | Pool | Client certificate the Load Balancer presents to backends | `/v2/secrets` | PKCS12 or PEM |
+| `ca_secret_id` | Pool | CA certificate for verifying backend server certificates | `/v1/secrets` | PEM |
+| `crl_secret_id` | Pool | Certificate revocation list | `/v1/secrets` | PEM |
 
-**Pool parameters (mTLS with backends):**
+## TLS termination
 
-- **`secret_id`**: PKCS12 or PEM certificate bundle that the Load Balancer presents to backend servers for verification
-- **`ca_secret_id`**: PEM CA certificate used by the Load Balancer to verify backend server certificates
-- **`crl_secret_id`**: (Optional) Certificate Revocation List to check if backend certificates are revoked
+The steps below configure a new load balancer with a `TERMINATED_HTTPS` listener.
 
-## Prerequisites
-
-- Active Gcore account with Load Balancer access
-- TLS certificates in PKCS12 format for listener configuration
-- CA certificates in PEM format for backend verification
-- (Optional) Client certificate in PKCS12 or PEM format for Load Balancer authentication to backends
-
-## Configure TLS termination (Client to Load Balancer)
-
-### 1\. Create server certificate secret
+### Step 1. Create server certificate secret
 
 Create a PKCS12 certificate bundle using the `/v2/secrets` endpoint:
 
@@ -61,9 +55,9 @@ POST /v2/secrets/{project_id}/{region_id}
 Using `payload_content_type: "text/plain"` with base64 encoding causes secret creation to fail. Use `application/octet-stream` instead.
 </Warning>
 
-### 2\. Create listener with TLS termination
+### Step 2. Create listener with TLS termination
 
-Create a listener with `TERMINATED_HTTPS` protocol:
+Create a load balancer with a `TERMINATED_HTTPS` listener referencing the server certificate:
 
 ```
 POST /v1/loadbalancers/{project_id}/{region_id}
@@ -98,9 +92,11 @@ POST /v1/loadbalancers/{project_id}/{region_id}
 }
 ```
 
-## Configure mTLS (Load Balancer to backend servers)
+## mTLS for backend connections
 
-### 1\. Create CA certificate secret
+The steps below create the certificate secrets and a pool with mTLS parameters for an existing load balancer.
+
+### Step 1. Create CA certificate secret
 
 Create a PEM CA certificate using the `/v1/secrets` endpoint:
 
@@ -118,7 +114,7 @@ POST /v1/secrets/{project_id}/{region_id}
 }
 ```
 
-### 2\. (Optional) Create Load Balancer client certificate
+### Step 2. (Optional) Create Load Balancer client certificate
 
 If backend servers require client authentication, create a certificate that the Load Balancer presents to backends:
 
@@ -136,12 +132,12 @@ POST /v2/secrets/{project_id}/{region_id}
 }
 ```
 
-### 3\. Create pool with mTLS configuration
+### Step 3. Create pool with mTLS configuration
 
 Create a pool with `HTTPS` protocol and mTLS parameters:
 
 ```
-POST /v1/loadbalancers/{project_id}/{region_id}/{loadbalancer_id}/pools
+POST /v1/lbpools/{project_id}/{region_id}
 ```
 
 ```json
@@ -149,6 +145,7 @@ POST /v1/loadbalancers/{project_id}/{region_id}/{loadbalancer_id}/pools
   "name": "secure-backend-pool",
   "protocol": "HTTPS",
   "lb_algorithm": "ROUND_ROBIN",
+  "load_balancer_id": "<loadbalancer-id>",
   "ca_secret_id": "<ca-certificate-secret-id>",
   "secret_id": "<lb-client-certificate-secret-id>",
   "members": [
@@ -162,35 +159,20 @@ POST /v1/loadbalancers/{project_id}/{region_id}/{loadbalancer_id}/pools
 
 The `ca_secret_id` parameter enables the Load Balancer to verify backend server certificates. The `secret_id` parameter provides the client certificate for mutual authentication.
 
-## Add mTLS to existing Load Balancer
+## mTLS on an existing load balancer
 
-### 1\. Create required secrets
-
-Follow the steps above to create certificate secrets.
-
-### 2\. Update pool with mTLS configuration
+An existing pool's mTLS configuration can be updated without recreating the load balancer. Create the required CA certificate via `POST /v1/secrets` and, if needed, the client certificate via `POST /v2/secrets`, then send a PATCH request with the certificate secret IDs:
 
 ```
-PUT /v1/lbpools/{project_id}/{region_id}/{pool_id}
+PATCH /v2/lbpools/{project_id}/{region_id}/{pool_id}
 ```
 
 ```json
 {
-  "protocol": "HTTPS",
   "ca_secret_id": "<ca-certificate-secret-id>",
   "secret_id": "<lb-client-certificate-secret-id>"
 }
 ```
-
-## Secret creation endpoints
-
-| Certificate type | Endpoint | Format |
-|------------------|----------|--------|
-| Listener server certificate | `/v2/secrets` | PKCS12 |
-| Listener SNI certificates | `/v2/secrets` | PKCS12 |
-| Pool client certificate | `/v2/secrets` | PKCS12 or PEM |
-| Pool CA certificate | `/v1/secrets` | PEM |
-| Pool CRL | `/v1/secrets` | PEM |
 
 <Info>
 Each API call returns a `task_id`. Wait for task completion before proceeding to the next step.

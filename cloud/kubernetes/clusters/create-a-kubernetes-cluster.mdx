@@ -1,7 +1,7 @@
-﻿---
+---
 title: Create a Kubernetes cluster
 sidebarTitle: Create
-ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal). Includes REST API, Python SDK, Go SDK, and Terraform examples.
+ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor, volume type, volume size, autoscaling limits, and worker node type (Virtual instances, Bare metal instances, or GPU Bare metal instances). Includes REST API, Python SDK, Go SDK, and Terraform examples.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,235 +9,131 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-## Step 1. Initiate the process
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), create a Managed Kubernetes cluster by configuring region, version, node pools, CNI provider, network, SSH key, and optional logging or advanced settings.</p>
 
-Open the "Kubernetes" tab and click **Create Cluster**.
+## Step 1. Open the create form
 
+1. Navigate to **Cloud** > **Managed Kubernetes**.
+2. Click **Create Cluster**.
 
-<Frame>![Start Kubernetes container creation](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster.png)</Frame>
+<Frame>![Kubernetes Clusters page with the Create Cluster button](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/managed-kubernetes-clusters-list.png)</Frame>
 
-
-
-A new page will open. Perform the remaining steps there. 
+<p>The create cluster form opens on a single page. Complete the remaining steps on that page.</p>
 
 ## Step 2. Select the region
 
-Select a **region** —the location of the data center where your cluster will be deployed. 
+<p>Select a **region** — the location of the data center where the cluster will be deployed.</p>
 
-
-<Frame>![Kubernetes region](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/region-k8s.png)</Frame>
-
-
+<Frame>![Region selector on the create cluster form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-region.png)</Frame>
 
 ## Step 3. Select the version
 
-Select your Kubernetes cluster version from the dropdown menu.
+<p>Select the Kubernetes cluster version from the dropdown menu.</p>
 
-
-<Frame>![Kubernetes cluster version](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/version-k8s.png)</Frame>
-
-
+<Frame>![Kubernetes cluster version dropdown on the create form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-version.png)</Frame>
 
 ## Step 4. Configure pools
 
-Under the **Pools** block, configure a pool. A pool is a set of cluster nodes with the same specifications. 
+<p>Under the **Pools** section, configure a pool. A pool is a set of cluster nodes with the same specifications.</p>
 
-  * Enter the Pool name.
-  * Set the minimum nodes and maximum nodes for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling).
-  * Select the type of a worker node: Virtual Machine or Bare Metal. 
-  * (Optional) Configure advanced pool settings. For an overview of advanced settings, check out the Create and configure a pool guide.
+- Enter the **Pool name**.
+- Set **Minimum nodes** and **Maximum nodes** for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling).
+- Under **Type**, select **Virtual instances**, **Bare metal instances**, or **GPU Bare metal instances**.
+- For **Virtual instances**, select a flavor, **Volume type**, and **Size** in GiB.
+- Select a **Placement policy**: anti-affinity soft, anti-affinity hard, or affinity.
+- (Optional) Enable **Add labels**, **Add taints**, **Autohealing nodes**, or **Public IPv4 address**.
+- (Optional) Click **Configure settings** under **Advanced pool settings** for additional [pool configuration](/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster) options.
+- Add as many pools as needed using the **Add pool** button.
 
-<Tabs>
-  <Tab title="Virtual Machine">
-    Select the flavor, disk size in GiB, and disk type.
+<p>Available **Volume type** options for Virtual instances:</p>
 
-The following Virtual Machine flavors are available:
+| Type | Best for | IOPS limit | Bandwidth |
+|---|---|---|---|
+| **High IOPS SSD** | Latency-sensitive transactional workloads (60 IOPS/GiB; 2.5 MB/s per GiB) | 9,000 | 500 MB/s |
+| **Standard** | General-purpose workloads with stable random I/O (6 IOPS/GiB; 0.4 MB/s per GiB) | 4,500 | 300 MB/s |
+| **SSD Low-Latency** | Real-time data processing requiring sub-millisecond latency (avg. 300 µs) | 50,000 | — |
 
-  * **Standard.** 2–4 times the memory of vCPUs
-  * **vCPU.** The number of vCPUs equals the amount of memory in GB
-  * **Memory.** Much higher memory than that of vCPUs-up to 8x more
-  * **High Frequency.** High CPU clock speed starting at 3.7 GHz in the basic configuration
+<p>For **Bare metal instances**, select a flavor from the [available configurations](/cloud/kubernetes/bare-metal-kubernetes#available-configurations).</p>
 
-
-
-
-The following disk types are available:
-
-  * **High IOPS SSD.** A high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB.) The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
-  * **Standard.** A network SSD disk that provides stable and high random I/O performance and high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB.) The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
-  * **Cold (deprecated).** A network HDD disk suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
-  * **Ultra (deprecated).** The recommended network block storage option for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
-  * **SSD Low Latency.** An SSD block storage designed for applications that require low-latency storage and real-time data processing. The IOPS performance limit is 50,00, with an average latency of 300 µs.
-  </Tab>
-  <Tab title="Bare Metal">
-    The following Bare Metal flavors are available:
-
-  * **High-frequency.** Single-socket servers equipped with 2288G/2388 CPUs, suitable for hosting applications requiring high processor frequency.
-  * **Infrastructure.** Multi-core, multi-socket configurations designed for hosting applications that demand a high number of cores. These servers are optimized for multithreading.
-  </Tab>
-</Tabs>
-
-
-
-  * Ensure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. When toggled on, this feature monitors node statuses. Upon detecting a non-working node, the autohealer initiates its replacement. If one of the machines fails, the application will not stand idle: The node(s) will be replaced on a working machine, and the app will keep working.
-
-  * (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.
-
+<Frame>![Pools section with worker node type, flavor, volume, and placement policy fields](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-pools.png)</Frame>
 
 <Info>
-**Info**
-
-If you want to [enable an IPv6 dual-stack](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) for your cluster, at least one of the pools must have a public IPv4 address.
+If [IPv6 dual-stack](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) is required, at least one pool must have a public IPv4 address.
 </Info>
-  * Add as many pools as you need using the **Add pool** button.
-
-
-<Frame>![Pools](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-k8s.png)</Frame>
-
-
 
 ## Step 5. Select the CNI provider
 
-Choose either the Cilium or Calico network stack. These provide networking and network security solutions for containers.
+<p>Select **Calico** or **Cilium**. These network stacks provide networking and network security for containers.</p>
 
-  * Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. You can add additional functions as required by checking the relevant box for DSR, tunneling, Load Balancer acceleration, and encryption.
+- **Cilium** uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, and more) than Calico.
+- **Calico** uses a more conservative stack based on iptables.
 
-  * Calico uses a more conservative stack based on iptables.
+<p>Configure **Pod CIDR** and **Service CIDR** as needed. Default ranges:</p>
 
+| | Calico | Cilium |
+|---|---|---|
+| Pods | 172.16.0.0/18 | 172.16.0.0/17 |
+| Services | 172.24.0.0/18 | 172.24.0.0/17 |
 
+<p>The CIDR range cannot overlap with 10.255.255.0/24 or 192.168.128.0/17. These ranges are reserved for internal usage.</p>
 
-
-You can also enable [Hubble UI](https://github.com/cilium/hubble-ui) for the Cilium and use the graphical interface to check your cluster's network traffic. 
-
-
-<Frame>![Enable CNI provider section](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png)</Frame>
-
-
-
-(Optional) Set up the CIDR range for pods in a cluster. The default ranges are: 
-
-Calico:
-
-  * For pods: 172.16.0.0/18 
-
-  * For services: 172.24.0.0/18
-
-
-
-
-Cilium:
-
-  * For pods: 172.16.0.0/17 
-
-  * For services: 172.24.0.0/17
-
-
-
-
-Your CIRD range can't overlap with the following ranges: 10.255.255.0/24, 192.168.128.0/17. These ranges are reserved for internal usage. 
+<p>(Optional) Adjust **Node mask size** or enable **Hubble for network monitoring** when using Cilium.</p>
 
 <Warning>
-**Warning**
+The CNI provider cannot be changed after the cluster has been created.
+</Warning>
 
-You cannot change the network stack after the cluster has been created.
-</Warning> 
-<Frame>![Network stack](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png)</Frame>
-
-
+<Frame>![CNI Provider section with Calico and Cilium options and CIDR fields](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-cni.png)</Frame>
 
 ## Step 6. Configure network settings
 
-<Tabs>
-  <Tab title="Configure a network">
-    Add one or multiple network interfaces to your cluster. 
+<p>Under **Network settings**, configure **Interface 1** for the cluster.</p>
 
-If you have previously [created networks](/cloud/networking/create-and-manage-a-network), select the correct network from the dropdown. 
+<p>If a [network](/cloud/networking/create-and-manage-a-network) already exists, select it from the **Network** dropdown and select a [subnetwork](/cloud/networking/create-and-manage-a-subnetwork) from the **Subnet** dropdown.</p>
 
+<Frame>![Network settings section with network and subnet dropdowns](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network.png)</Frame>
 
-<Frame>![Network settings for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png)</Frame>
+<p>To add a new network, click **Add a new network** and configure the dialog:</p>
 
+1. Enter the **Network name**.
+2. (Optional) Enable **Bare Metal Network** to connect Bare Metal servers to the network.
+3. (Optional) Enable **Create router** to connect subnets through a router.
+4. (Optional) Enable **Add tags** to add metadata to the network.
+5. Click **Create & Proceed**.
 
+<Frame>![Create network dialog with network name, Bare Metal Network, and Create router options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network-dialog.png)</Frame>
 
-To add a new network, click **Add a new network** radio button and configure the network as follows: 
+<p>(Optional) Enable **Enable IPv6 dual-stack** to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the toggle is unavailable, at least one pool must have a public IPv4 address. If the cluster connects only to a private network, configure and add an IPv6 subnetwork.</p>
 
-1\. Enter the network name. 
-
-2\. (optional) Turn on the **Bare Metal network** toggle to connect Bare Metal servers to the network. 
-
-3\. (optional) Turn on the **Add tags** toggle to add metadata to the network. 
-
-4\. Click **Create network**. 
-
-
-<Frame>![create network dialog](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-network-dialog.png)</Frame>
-
-
-
-5\. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the **Enable IPv6 dual-stack** toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork.
-  </Tab>
-  <Tab title="Configure a subnetwork">
-    If you have previously [created subnetworks](/cloud/networking/create-and-manage-a-subnetwork), select the correct subnetwork from the dropdown. 
-
-To add a new subnetwork, click **Add a new subnetwork** and configure it according to the following instructions: [Create a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork). 
-  </Tab>
-</Tabs>
-
-By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses used by malicious actors. For a higher level of protection, we recommend enabling Advanced DDoS Protection. 
-
-
-<Accordion title="Advanced DDoS Protection">
-You can enable **Advanced DDoS Protection** for your private network. To do so, activate the **Enable Advanced DDoS Protection** toggle, open the drop-down menu, and select the desired template from the list. We currently support the following templates: CS:GO, Rust, ARK, Basic L3/L4, or TCP protection. 
-
-The settings offered depend on the selected template. For example, for the Basic L3/L4 specify the uppermost threshold of attack in Gbps that our DDoS Protection can mitigate in the "Mitigation capacity" field.
-
-
-<Frame>![Configure profile template](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ddos-k8s.png)</Frame>
-
-
-</Accordion>
-
+<p>Basic DDoS Protection is included for the cluster network.</p>
 
 ## Step 7. Add an SSH key
 
-Configure an SSH key to enable a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on [how to connect to your VM via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh).
+<p>Configure an [SSH key](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) to enable remote SSH connections to all nodes. Select an existing key or create a new one.</p>
 
-
-<Frame>![SSH settings for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png)</Frame>
-
-
+<Frame>![SSH key section with key selection dropdown](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-ssh.png)</Frame>
 
 ## Step 8. Specify a cluster name
 
-Name the cluster in the field as shown below.
+<p>Enter the cluster name in the **Cluster name** field.</p>
 
-
-<Frame>![Name for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png)</Frame>
-
-
+<Frame>![Cluster name field on the create form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-name.png)</Frame>
 
 ## Step 9. (Optional) Configure logging
 
-Managed Logging is a paid feature that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read our [dedicated guide](/cloud/logging-as-a-service/configure-logging-and-view-your-logs). To configure Managed Logging in the Gcore Customer Portal, choose one of two options:
+<p>Under **Logging**, enable **Logging** to stream cluster logs to [Managed Logging](/cloud/logging-as-a-service/configure-logging-and-view-your-logs). Select an existing topic or create a new one.</p>
 
-  * **Select an existing topic.** If you already use Managed Logging, select this option. 
-  * **Create new topic.** If you haven't used Managed Logging before, choose this option and specify the required information.
-
-
-<Frame>![Logging for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png)</Frame>
-
-
+<Frame>![Logging section with Enable Logging checkbox and topic options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-logging.png)</Frame>
 
 ## Step 10. (Optional) Configure advanced settings
 
-Enable OIDC authentication for your cluster. Follow instructions from the [Secure Kubernetes cluster with OIDC authentication](/cloud/kubernetes/clusters/secure-cluster-with-oidc) guide. 
-
-You can also configure cluster autoscaler settings that will apply to the entire Kubernetes cluster and affect all nodes. For detailed overview of each configuration, check out [Advanced Cluster Autoscaler settings](/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings). 
+<p>Under **Advanced settings**, expand [OIDC authentication](/cloud/kubernetes/clusters/secure-cluster-with-oidc) or [Cluster Autoscaler](/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings) to configure optional cluster-wide settings.</p>
 
 ## Step 11. Finalize
 
-Check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
+<p>Review the **Estimated cost** summary on the right side of the screen. If the configuration is correct, click **Create Cluster**.</p>
 
-The cluster will be created in just a few minutes!
+<p>Cluster creation typically takes several minutes.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -260,13 +156,13 @@ export K8S_FLAVOR_ID="{YOUR_K8S_FLAVOR_ID}"
 
 <Info>
 To find the values for each variable:
-- **SSH\_KEY\_NAME**: the name of an SSH key uploaded to the project. See [Connect to an instance via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) for instructions on creating and uploading SSH keys.
+- **SSH\_KEY\_NAME**: the name of an SSH key in the project.
 - **K8S\_FLAVOR\_ID**: the flavor identifier for the Kubernetes node pool. Use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list flavors available for Kubernetes in your region.
 </Info>
 
 ## Quickstart
 
-The scripts below create a private network and subnet, provision a single-node Kubernetes cluster, and save the kubeconfig to a local file. Cluster creation takes approximately 5-20 minutes.
+The scripts below create a private network and subnet, provision a single-node Kubernetes cluster, and save the kubeconfig to a local file. Cluster creation takes approximately 5–20 minutes.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -468,7 +364,6 @@ The available K8s versions change as Gcore adds new releases and retires old one
   </Tab>
 </Tabs>
 
-A [K8s versions](/api-reference/cloud/managed-kubernetes/list-k8s-cluster-versions) list is also available in the API reference.
 
 ### Step 2. Create a network
 
@@ -514,7 +409,7 @@ Kubernetes clusters require a private network and subnet for inter-node communic
     }
     ```
 
-    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Extract `created_resources.networks[0]` as `NETWORK_ID`.
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Extract `created_resources.networks[0]` as `NETWORK_ID`.
   </Tab>
 </Tabs>
 
@@ -585,7 +480,7 @@ A cluster requires a node pool with at least one node. The pool defines the VM f
 | `keypair` | Yes | SSH key name for node access |
 | `fixed_network` | Yes | Network ID from Step 2 |
 | `fixed_subnet` | Yes | Subnet ID from Step 3 |
-| `pools[].flavor_id` | Yes | Node VM flavor. Flavor IDs are region-specific - use <code>GET&nbsp;/cloud/v1/k8s/{project_id}/{region_id}/flavors</code> to list available options |
+| `pools[].flavor_id` | Yes | Node VM flavor. Flavor IDs are region-specific — use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list available options |
 | `pools[].min_node_count` | Yes | Minimum nodes for autoscaling |
 | `pools[].servergroup_policy` | Yes | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
 | `pods_ip_pool` | No | CIDR for pod IPs. Default for Calico: `172.16.0.0/18`. Cannot overlap with `10.255.255.0/24` or `192.168.128.0/17` |
@@ -675,7 +570,7 @@ A cluster requires a node pool with at least one node. The pool defines the VM f
     }
     ```
 
-    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Cluster creation takes approximately 5-20 minutes. When complete:
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Cluster creation takes approximately 5–20 minutes. When complete:
 
     ```json
     {
@@ -690,7 +585,6 @@ A cluster requires a node pool with at least one node. The pool defines the VM f
   </Tab>
 </Tabs>
 
-The full [create cluster](/api-reference/cloud/managed-kubernetes/create-k8s-cluster) and [list flavors](/api-reference/cloud/managed-kubernetes/list-k8s-cluster-flavors) references are in the API docs.
 
 ### Step 5. Get the kubeconfig
 
@@ -746,13 +640,12 @@ export KUBECONFIG=./kubeconfig.yaml
 kubectl get nodes
 ```
 
-The [kubectl guide](/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster) covers installing kubectl and configuring access from the kubeconfig file.
 
 </Accordion>
 
 ## Clean up
 
-To delete the cluster and the network resources created for it, run the following. Delete the cluster first - it holds references to the subnet and network.
+To delete the cluster and the network resources created for it, run the following. Delete the cluster first — it holds references to the subnet and network.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -857,7 +750,7 @@ output "cluster_status" { value = gcore_cloud_k8s_cluster.example.status }
 The cluster `name` is immutable — changing it in the resource block forces a full replacement (destroy + recreate).
 </Warning>
 
-**Key pool fields:**
+**Common pool fields:**
 
 | Field | Required | Description |
 |-------|----------|-------------|
