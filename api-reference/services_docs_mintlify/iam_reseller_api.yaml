@@ -4,7 +4,7 @@ info:
   license:
     name: Proprietary
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 6de24210333a
+  version: 8a3f138ee1a7
 servers:
 - url: https://api.gcore.com
 tags:
@@ -210,10 +210,13 @@ paths:
           $ref: '#/components/responses/401'
   /iam/users/{userId}:
     delete:
+      operationId: iamDeleteUser
       tags:
       - Users
       summary: Delete user
-      description: Deletes user from current account. If a user has access to multiple accounts, you must [revoke access](/docs/api-reference/iam/users/revoke-user-s-access-to-account) to other accounts before deleting.
+      description: |-
+        Deletes user from current account. If a user has access to multiple accounts,
+        you must revoke their access to the other accounts before deleting.
       parameters:
       - $ref: '#/components/parameters/UserID'
       responses:
@@ -222,11 +225,9 @@ paths:
         '401':
           $ref: '#/components/responses/401'
         '403':
-          description: You do not have permission to perform this action.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DeleteUserForbiddenError'
+          description: |-
+            You do not have permission to perform this action, or the user has access to
+            multiple accounts and that access must be revoked before the user can be deleted.
         '404':
           description: User not found.
   /iam/clients/{clientId}/client-users/create:
@@ -2075,19 +2076,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceName'
-    DeleteUserForbiddenError:
-      oneOf:
-      - title: The specified user has access to multiple accounts.
-        type: object
-        properties:
-          errors:
-            type: object
-            description: The specified user has access to multiple accounts. Please [revoke access](/api-reference/iam/users/revoke-user-s-access-to-account) to other accounts before deleting.
-        example:
-          message: |
-            Cannot delete user with multiple accounts.
-            Use /clients/:client_id/client-users/:user_id to delete the user from a specific account.
-      - $ref: '#/components/schemas/TokenConstrainsDeletion'
     Deleted:
       type: boolean
       description: Deletion flag. If `true` then entity was deleted.
@@ -2534,10 +2522,8 @@ components:
               example: null
     RefreshToken:
       type: string
-      description: |-
-        Use this token to refresh the access token via
-        [`/auth/jwt/refresh`](/api-reference/iam/account/refresh-token) method.
-      example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.C-RuHDWLpu1bd0_SoZgbkqSqA65egSBigKikeEKXkdK-PRVx4ZUIMdkJd-L4ebeydDHgeq3AwXbDBSqPuXZMTKTFKe1HTvpLycTNkTKa-dp9nTq0VwfUlf3G7QajEJA1UiQ7IhSDZJK5NBkEzs_-PFtPOQjeE2u2AbKKJ_SK3hNi1BVU3uVjfWsMVwGDkVnPIa0aLtYDTYd2QKN5InBGh06XITFD_P_IETfwhw7yG4PvLWGejGQO9jJx1ViFYCQi-O8vLR9-mjwaD8Ngc5O8v3mnzRkkxeWoukSW1p8eWiGf7QaLg-zSI6pNFO3_LO-ILHcJ394GJzW2rSpaAgvxwRHDIulDxJtAbqyxykLgnDSHUZbKq8mgQqkeshbmQ-BUT_nkYj1LcQisNTGp4QsDRdi095QQIXLntJiGC59BxpZQ5y3j67AZHG9qiVuHQSlHBaQKBAFdA_d7CRqV7TzsT4p3cHVXF_VccBM06pItkYYY5Xj0bQPU6qWf26bONnYh1FHOlaejw2mGc_FsPpi0soGUh-1v_Qs6C4N086VJ5uYSHw_M3MNcGBjAahnUdrKNX_8gmbTDwYNw7h1ELPYfBAFeQJrdTOOQPfUHzkt9g67DHdxRDHMQxz933Wxmfl_5fiHWoWE82n5ZA110BZB9JQoP7Tqtg4qIZoE1M6Knh14
+      description: Use this token to refresh the access token.
+      example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.dummy_signature
     RenewInvitationError:
       oneOf:
       - $ref: '#/components/schemas/ValidationError'
@@ -2794,17 +2780,6 @@ components:
           $ref: '#/components/schemas/RefreshToken'
         access:
           $ref: '#/components/schemas/AccessToken'
-    TokenConstrainsDeletion:
-      title: The specified user has API tokens.
-      type: object
-      properties:
-        message:
-          type: string
-          description: |-
-            The specified user has API tokens.
-            Please [delete API tokens](/api-reference/iam/api-tokens/delete-api-token) before the user deleting.
-      example:
-        message: You can't remove the user as they have active tokens
     UpdateClientRequest:
       type: object
       properties:

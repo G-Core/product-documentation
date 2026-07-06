@@ -1,12 +1,17 @@
 ﻿---
 title: "IP reputation"
 sidebarTitle: IP reputation
-ai-navigation: Configure IP Reputation rules in Gcore WAAP to block, challenge, or allow traffic from malicious IPs, TOR networks, proxy networks, hosting services, VPNs, bot traffic, suspicious NAT ranges, and external reputation blocklists using JavaScript validation policies.
+ai-navigation: Configure IP Reputation policies in Gcore WAAP via Customer Portal or REST API to enable or disable traffic filtering for TOR networks, proxies, hosting services, VPNs, bots, suspicious NAT ranges, external blocklists, and CDNs.
 ---
 
-Gcore WAAP protects your web application by blocking traffic from well-known malicious IP addresses. 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-We constantly collect, update, and validate these IP addresses, adding malicious IPs to the blocklist. This allows you to block, challenge, or allow traffic from highly suspected entities. 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Gcore WAAP protects your web application by blocking traffic from well-known malicious IP addresses. </p>
+
+<p>We constantly collect, update, and validate these IP addresses, adding malicious IPs to the blocklist. This allows you to block, challenge, or allow traffic from highly suspected entities. </p>
 
 <Info>
 **Info**
@@ -16,13 +21,13 @@ This policy group is available in the **Pro** and **Enterprise** plans. More det
 
 ## Configure IP Reputation rules
 
-You can review and configure IP Reputation rules in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard): 
+<p>You can review and configure IP Reputation rules in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard): </p>
 
-1\. Navigate to **WAAP** > **Firewall**. 
+<p>1\. Navigate to **WAAP** > **Firewall**. </p>
 
-2\. In the domain dropdown at the top of the page, select the needed domain.
+<p>2\. In the domain dropdown at the top of the page, select the needed domain.</p>
 
-3\. Click the **IP Reputation** tab to view and adjust the rules.
+<p>3\. Click the **IP Reputation** tab to view and adjust the rules.</p>
 
  <Info>
 **Info**
@@ -32,42 +37,230 @@ Most IP reputation policies are enabled by default, except for **Traffic via TOR
 
 ### Traffic via TOR network
 
-TOR nodes are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. 
+<p>TOR nodes are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. </p>
 
-Enabling this policy will block traffic from IP addresses associated with the TOR network.
+<p>Enabling this policy will block traffic from IP addresses associated with the TOR network.</p>
 
 ### Traffic via proxy networks
 
-Proxy networks are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. 
+<p>Proxy networks are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. </p>
 
-Use JavaScript validation to verify traffic from known proxy networks. This provides enhanced visibility and security against potential risks associated with proxy usage within web applications. 
+<p>Use JavaScript validation to verify traffic from known proxy networks. This provides enhanced visibility and security against potential risks associated with proxy usage within web applications. </p>
 
 ### Traffic from hosting services
 
-Organic human traffic is unlikely to come from IP spaces belonging to hosting providers. Instead, this traffic typically comes from infected servers controlled by hackers. 
+<p>Organic human traffic is unlikely to come from IP spaces belonging to hosting providers. Instead, this traffic typically comes from infected servers controlled by hackers. </p>
 
-Use JavaScript validation to verify traffic from hosting services and commercial cloud providers. This enhances your application security by mitigating potential risks associated with such services within web applications. 
+<p>Use JavaScript validation to verify traffic from hosting services and commercial cloud providers. This enhances your application security by mitigating potential risks associated with such services within web applications. </p>
 
 ### Traffic via VPNs
 
-Virtual Private Networks (VPNs) are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. 
+<p>Virtual Private Networks (VPNs) are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. </p>
 
-Validate traffic originating from VPNs using JavaScript. This provides increased visibility and security against potential risks associated with VPN usage within web applications. 
+<p>Validate traffic originating from VPNs using JavaScript. This provides increased visibility and security against potential risks associated with VPN usage within web applications. </p>
 
 ### Bot traffic
 
-Use JavaScript validation to verify traffic coming from IP addresses associated with malicious automated agents (bots). 
+<p>Use JavaScript validation to verify traffic coming from IP addresses associated with malicious automated agents (bots). </p>
 
 ### Traffic from suspicious NAT ranges
 
-Validate traffic coming from high-risk NAT ranges using JavaScript. These ranges are calculated based on historical web behavior detected by a machine learning classifier. 
+<p>Validate traffic coming from high-risk NAT ranges using JavaScript. These ranges are calculated based on historical web behavior detected by a machine learning classifier. </p>
 
 ### External reputation block list
 
-The IPs on this list are known to be malicious or spam. When an IP with a negative reputation is detected, validate the incoming traffic using JavaScript. 
+<p>The IPs on this list are known to be malicious or spam. When an IP with a negative reputation is detected, validate the incoming traffic using JavaScript. </p>
 
 ### Traffic via CDNs
 
 
-Organic human traffic is unlikely to originate from IP spaces belonging to CDN companies. When such traffic is detected, validate it using JavaScript.
+<p>Organic human traffic is unlikely to originate from IP spaces belonging to CDN companies. When such traffic is detected, validate it using JavaScript.</p>
 
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>The [Policies](/api-reference/waap#policies) endpoints manage IP Reputation rules — filtering traffic based on source IP reputation across categories including TOR exit nodes, proxies, VPNs, hosting services, CDNs, bots, suspicious NAT ranges, and external blocklists. Most policies are enabled by default; Traffic via TOR network is disabled. Response examples include only the fields used in each step.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. This policy group is available on the Pro and Enterprise WAAP plans.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View policy states
+
+<p>Retrieve the current mode of all IP Reputation policies for a domain.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    ip_rep = next(
+        rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
+    )
+
+    for policy in ip_rep.rules:
+        status = "enabled" if policy.mode else "disabled"
+        print(f"{policy.name}: {status} ({policy.id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "ip-reputation" {
+                for _, policy := range rs.Rules {
+                    status := "disabled"
+                    if policy.Mode {
+                        status = "enabled"
+                    }
+                    fmt.Printf("%s: %s (%s)\n", policy.Name, status, policy.ID)
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      | jq '.[] | select(.resource_slug == "ip-reputation") | .rules[] | {name, id, mode}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The response includes each policy in the group with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
+
+## Toggle a policy
+
+<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Find the policy ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    ip_rep = next(
+        rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
+    )
+    policy = next(r for r in ip_rep.rules if r.name == "Traffic via TOR network")
+
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
+    status = "enabled" if result.mode else "disabled"
+    print(f"Traffic via TOR network is now {status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Find the policy ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var policyID string
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "ip-reputation" {
+                for _, p := range rs.Rules {
+                    if p.Name == "Traffic via TOR network" {
+                        policyID = p.ID
+                    }
+                }
+            }
+        }
+
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        status := "disabled"
+        if result.Mode {
+            status = "enabled"
+        }
+        fmt.Printf("Traffic via TOR network is now %s\n", status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Set POLICY_ID to the policy ID from the View policy states response
+    export POLICY_ID="{POLICY_ID}"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {"mode": true}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the updated policy object. `mode: true` confirms the policy is now enabled; `mode: false` confirms disabled.</p>
+
+## Policy reference
+
+<Accordion title="All IP Reputation policies">
+
+The table lists all 8 policies in the IP Reputation group with their default states.
+
+| Policy | Purpose | Default state |
+|---|---|---|
+| Traffic via TOR network | Blocks traffic from TOR exit nodes, commonly used to anonymize malicious activity. | Disabled |
+| Traffic via proxy networks | Challenges traffic from known proxy providers via JavaScript validation. | Enabled |
+| Traffic from hosting services | Challenges traffic from hosting and commercial cloud provider IP ranges via JavaScript validation. | Enabled |
+| Traffic via VPNs | Challenges traffic from VPN provider IP ranges via JavaScript validation. | Enabled |
+| Bot traffic | Challenges traffic from IP addresses associated with malicious automated activity via JavaScript validation. | Enabled |
+| Traffic from suspicious NAT ranges | Challenges traffic from high-risk NAT ranges identified by machine learning via JavaScript validation. | Enabled |
+| External reputation block list | Challenges traffic from IPs on external malicious and spam reputation lists via JavaScript validation. | Enabled |
+| Traffic via CDNs | Challenges traffic originating from CDN provider IP ranges via JavaScript validation. | Enabled |
+
+</Accordion>
+
+</MethodSection>
+</MethodSwitch>

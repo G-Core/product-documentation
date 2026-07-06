@@ -1,21 +1,26 @@
 ---
 title: "Manage Silence Rules"
 sidebarTitle: Manage Silence Rules
-ai-navigation: Manage Silence Rules in WAAP Security Insights to modify silence duration, delete rules, or unsilence alerts for Attack on disabled policy and Allowed high-risk IP insight types via Gcore Customer Portal.
+ai-navigation: Update and delete WAAP security insight silence rules via Customer Portal or REST API to change expiry, comment, or re-enable suppressed notifications.
 ---
 
-To adjust notifications for a particular insight or remove any configured Silence Rules, open the [Gcore Customer Portal](https://portal.gcore.com/) and navigate to **WAAP** > **Security Insights**, then select the required domain.
-The **Silence Rules** tab shows all configured rules to silence irrelevant alerts. To learn how to create them, refer to [Silence insights](/waap/threat-intelligence/security-insights/manage-insights#silence-insights).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Find the rule you want to modify or remove, then open the action menu on the right side.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>To adjust notifications for a particular insight or remove any configured Silence Rules, open the [Gcore Customer Portal](https://portal.gcore.com/) and navigate to **WAAP** > **Security Insights**, then select the required domain.
+The **Silence Rules** tab shows all configured rules to silence irrelevant alerts. To learn how to create them, refer to [Silence insights](/waap/threat-intelligence/security-insights/manage-insights#silence-insights).</p>
+
+<p>Find the rule you want to modify or remove, then open the action menu on the right side.</p>
 
 <Frame>
   ![Modify or remove silence rules](/images/docs/waap/threat-intelligence/security-insights/manage-insights/security-insights-silence-rules.png)
 </Frame>
 
-To unsilence it, click **Delete**.
+<p>To unsilence it, click **Delete**.</p>
 
-To change the silence duration, select **Edit**, and the new silence duration, then click the **Save** button.
+<p>To change the silence duration, select **Edit**, and the new silence duration, then click the **Save** button.</p>
 
 <Frame>
   ![Select the new silence duration](/images/docs/waap/threat-intelligence/security-insights/manage-insights/edit-silence-rule.png)
@@ -27,3 +32,274 @@ To change the silence duration, select **Edit**, and the new silence duration, t
   To stop receiving security insights, silence both Insight types: **Attack on disabled policy** and **Allowed high-risk IP**. Insights can be enabled at any time, but it may take up to one hour to resume receiving them.
 </Info>
 
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The [Security Insights](/api-reference/waap#security-insights) endpoints let you list, update, and delete silence rules for a domain. Response examples include only the fields used in each step.</p>
+
+<Info>
+  An [API token](/account-settings/api-tokens) and a domain ID are required. To find silence rule IDs, use the List operation below.
+</Info>
+
+<p>Set the following environment variables before running any examples:</p>
+
+```bash
+export GCORE_API_KEY="your_api_key"
+export WAAP_DOMAIN_ID=your_domain_id
+```
+
+## List silence rules
+
+<p>Returns all silence rules configured for the domain, including their IDs, expiry dates, and labels. Use the returned `id` field to identify a rule for update or delete.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    silences = client.waap.domains.insight_silences.list(domain_id)
+    for s in silences.results:
+        print(f"{s.id}  {s.insight_type}  expires: {s.expire_at}  labels: {s.labels}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        result, err := client.Waap.Domains.InsightSilences.List(
+            context.Background(),
+            domainID,
+            waap.DomainInsightSilenceListParams{},
+        )
+        if err != nil {
+            panic(err)
+        }
+        for _, s := range result.Results {
+            fmt.Printf("%s  %s  expires: %s\n", s.ID, s.InsightType, s.ExpireAt)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/insight-silences" \
+         -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "86905266-3f32-4a1e-845c-23d3188182e8",
+          "insight_type": "allowed-high-risk-ip",
+          "labels": {"ip": "198.51.100.42"},
+          "expire_at": "2026-07-25T00:00:00Z"
+          // ...
+        }
+        // ...
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a silence rule
+
+<p>Changes the expiry date or comment of an existing silence rule. All fields — `author`, `comment`, `expire_at`, and `labels` — are required in the request body. Set `expire_at` to `null` to make the silence indefinite.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    silence_id = "86905266-3f32-4a1e-845c-23d3188182e8"
+
+    # Extend expiry by one month
+    updated = client.waap.domains.insight_silences.update(
+        silence_id,
+        domain_id=domain_id,
+        author="security-team",
+        comment="Trusted internal scanner — extended",
+        expire_at="2026-08-25T00:00:00Z",
+        labels={"ip": "198.51.100.42"},
+    )
+    print(f"New expiry: {updated.expire_at}")
+
+    # Make silence indefinite
+    client.waap.domains.insight_silences.update(
+        silence_id,
+        domain_id=domain_id,
+        author="security-team",
+        comment="Trusted internal scanner — no expiry",
+        expire_at=None,
+        labels={"ip": "198.51.100.42"},
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        silenceID := "86905266-3f32-4a1e-845c-23d3188182e8"
+        newExpiry := time.Now().AddDate(0, 1, 0)
+
+        // Extend expiry by one month
+        updated, err := client.Waap.Domains.InsightSilences.Update(
+            context.Background(),
+            silenceID,
+            waap.DomainInsightSilenceUpdateParams{
+                DomainID: domainID,
+                Author:   "security-team",
+                Comment:  "Trusted internal scanner — extended",
+                ExpireAt: param.NewOpt(newExpiry),
+                Labels:   map[string]string{"ip": "198.51.100.42"},
+            },
+        )
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("New expiry: %s\n", updated.ExpireAt)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    SILENCE_ID="86905266-3f32-4a1e-845c-23d3188182e8"
+
+    # Extend expiry by one month
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/insight-silences/${SILENCE_ID}" \
+         -H "Authorization: APIKey ${GCORE_API_KEY}" \
+         -H "Content-Type: application/json" \
+         -d '{
+           "author": "security-team",
+           "comment": "Trusted internal scanner — extended",
+           "expire_at": "2026-08-25T00:00:00Z",
+           "labels": {"ip": "198.51.100.42"}
+         }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "86905266-3f32-4a1e-845c-23d3188182e8",
+      "insight_type": "allowed-high-risk-ip",
+      "labels": {"ip": "198.51.100.42"},
+      "expire_at": "2026-08-25T00:00:00Z"
+      // ...
+    }
+    ```
+
+    <p>To make the silence indefinite, set `"expire_at": null` in the request body.</p>
+  </Tab>
+</Tabs>
+
+## Delete a silence rule
+
+<p>Removes a silence rule and re-enables notifications for the silenced insight type. The operation returns no body on success.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    silence_id = "86905266-3f32-4a1e-845c-23d3188182e8"
+
+    client.waap.domains.insight_silences.delete(silence_id, domain_id=domain_id)
+    print("Silence rule deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        silenceID := "86905266-3f32-4a1e-845c-23d3188182e8"
+
+        err := client.Waap.Domains.InsightSilences.Delete(
+            context.Background(),
+            silenceID,
+            waap.DomainInsightSilenceDeleteParams{DomainID: domainID},
+        )
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("Silence rule deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    SILENCE_ID="86905266-3f32-4a1e-845c-23d3188182e8"
+
+    curl -X DELETE "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/insight-silences/${SILENCE_ID}" \
+         -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    A `204 No Content` response confirms the rule was deleted.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>

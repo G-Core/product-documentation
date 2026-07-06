@@ -930,17 +930,22 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
   name             = "backend-pool"
   lb_algorithm     = "ROUND_ROBIN"
   protocol         = "HTTP"
+}
 
-  members = [
-    {
-      address       = "192.0.2.10"  # VM1's IP address
-      protocol_port = 80
-    },
-    {
-      address       = "192.0.2.11"  # VM2's IP address
-      protocol_port = 80
-    }
-  ]
+resource "gcore_cloud_load_balancer_pool_member" "vm1" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  pool_id       = gcore_cloud_load_balancer_pool.backend.id
+  address       = "192.0.2.10"
+  protocol_port = 80
+}
+
+resource "gcore_cloud_load_balancer_pool_member" "vm2" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  pool_id       = gcore_cloud_load_balancer_pool.backend.id
+  address       = "192.0.2.11"
+  protocol_port = 80
 }
 
 output "vip_address" {
@@ -1034,9 +1039,9 @@ resource "gcore_cloud_load_balancer_listener" "http" {
 }
 ```
 
-### Step 3. Create a pool with backend members
+### Step 3. Create a pool
 
-<p>A pool groups backend VMs and defines how traffic is distributed among them. Members are declared inline using the `members` attribute.</p>
+<p>A pool groups backend VMs and defines how traffic is distributed among them.</p>
 
 | Attribute | Required | Description |
 |-----------|----------|-------------|
@@ -1045,17 +1050,6 @@ resource "gcore_cloud_load_balancer_listener" "http" {
 | `name` | Yes | Display name of the pool. |
 | `lb_algorithm` | Yes | Distribution algorithm. Values: `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. |
 | `protocol` | Yes | Backend protocol. Must match the listener protocol (use `HTTP` for both `HTTP` and `TERMINATED_HTTPS` listeners). |
-
-<p>Each entry in the `members` list supports the following fields:</p>
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `address` | Yes | IP address of the backend VM. |
-| `protocol_port` | Yes | Port the application listens on inside the VM. |
-| `weight` | No | Relative weight for traffic distribution. Range: 1–256, default 1. |
-| `backup` | No | Set to `true` to mark as a backup member. Traffic goes to backup members only when all primary members are unreachable. |
-
-<p>Example pool with weighted members:</p>
 
 ```hcl
 resource "gcore_cloud_load_balancer_pool" "backend" {
@@ -1066,23 +1060,41 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
   name             = "backend-pool"
   lb_algorithm     = "ROUND_ROBIN"
   protocol         = "HTTP"
-
-  members = [
-    {
-      address       = "192.0.2.10"
-      protocol_port = 80
-      weight        = 3
-    },
-    {
-      address       = "192.0.2.11"
-      protocol_port = 80
-      weight        = 1
-    }
-  ]
 }
 ```
 
-### Step 4. (Optional) Add a health monitor
+### Step 4. Add backend members
+
+<p>Each `gcore_cloud_load_balancer_pool_member` resource registers one backend VM in the pool. Declare one resource per member.</p>
+
+|| Attribute | Required | Description |
+||-----------|----------|-------------|
+|| `pool_id` | Yes | ID of the pool created in step 3. |
+|| `address` | Yes | IP address of the backend VM. |
+|| `protocol_port` | Yes | Port the application listens on inside the VM. |
+|| `weight` | No | Relative weight for traffic distribution. Range: 1–256, default 1. |
+|| `backup` | No | Set to `true` to mark as a backup member — traffic reaches it only when all primary members are unreachable. |
+
+```hcl
+resource "gcore_cloud_load_balancer_pool_member" "vm1" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  pool_id       = gcore_cloud_load_balancer_pool.backend.id
+  address       = "192.0.2.10"
+  protocol_port = 80
+}
+
+resource "gcore_cloud_load_balancer_pool_member" "vm2" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  pool_id       = gcore_cloud_load_balancer_pool.backend.id
+  address       = "192.0.2.11"
+  protocol_port = 80
+  weight        = 2
+}
+```
+
+### Step 5. (Optional) Add a health monitor
 
 <p>A health monitor probes each pool member on a schedule and removes unreachable members from rotation automatically. Define it inline in the pool resource using the `healthmonitor` attribute.</p>
 
@@ -1127,7 +1139,7 @@ terraform import gcore_cloud_load_balancer_pool.backend PROJECT_ID:REGION_ID:POO
 
 ## Clean up
 
-<p>Terraform removes the pool, listener, and load balancer in the correct dependency order.</p>
+<p>Terraform removes pool members, the pool, listener, and load balancer in dependency order. If destroy fails with a 409 Conflict error — the API locks the pool while deleting one member and rejects the concurrent request — re-run `terraform destroy` to complete the cleanup.</p>
 
 ```bash
 terraform destroy
