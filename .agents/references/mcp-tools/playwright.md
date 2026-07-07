@@ -12,7 +12,7 @@ mcp__playwright__browser_navigate   — open a URL
 mcp__playwright__browser_click      — click a UI element
 mcp__playwright__browser_type       — type into a field
 mcp__playwright__browser_snapshot   — get DOM/accessibility tree (read UI labels)
-mcp__playwright__browser_screenshot — capture the current page visually
+mcp__playwright__browser_take_screenshot — capture the current page visually
 mcp__playwright__browser_evaluate   — run JavaScript (scroll, zoom, collapse sidebar)
 mcp__playwright__browser_select     — select from a dropdown
 mcp__playwright__browser_hover      — hover over an element
@@ -20,10 +20,10 @@ mcp__playwright__browser_hover      — hover over an element
 
 **Key distinction:**
 - Use `browser_snapshot` to **read** current UI element names, labels, button text
-- Use `browser_screenshot` to **capture** a visual for comparison or saving
+- Use `browser_take_screenshot` to **capture** a visual for comparison or saving
 
 When verifying that UI matches an article — always `browser_snapshot` first to read
-the actual labels, then `browser_screenshot` to capture if a new screenshot is needed.
+the actual labels, then `browser_take_screenshot` to capture if a new screenshot is needed.
 
 ---
 
@@ -122,7 +122,7 @@ When the audit or screenshot workflow requires creating a resource (instance, ne
 
 Do not submit a full-page screenshot when the subject is a small part of the page.
 
-- **Crop to the dialog or form:** use the `clip` parameter in `browser_screenshot`
+- **Crop to the dialog or form:** use the `clip` parameter in `browser_take_screenshot`
 - **Zoom in** when controls or labels would otherwise be too small to read
 - **Zoom out** when a wide table would cause horizontal scrolling artifacts
 - Be dynamic — adjust zoom, scroll position, and clip per screenshot
@@ -221,7 +221,7 @@ will not display in browsers.
 
 ## Screenshot file path limitation
 
-`browser_screenshot` with a `filename` parameter can only save files inside the
+`browser_take_screenshot` with a `filename` parameter can only save files inside the
 **current working directory** of the active project. It cannot write directly to
 `C:\Projects\product-documentation`.
 
@@ -270,7 +270,7 @@ When executing an article step-by-step:
 1. Open the portal and navigate to the section the article describes
 2. Follow the article's steps in order, as a real user would
 3. At each step, use `browser_snapshot` to read actual current UI labels
-4. Use `browser_screenshot` to capture screens that have a corresponding screenshot
+4. Use `browser_take_screenshot` to capture screens that have a corresponding screenshot
 5. Record every divergence in FINDING format:
 
 ```
