@@ -517,6 +517,10 @@ Also present:
 Do not wait for the user to ask. Create the ticket now, while the findings are
 fresh and before any fixes are applied.
 
+**If a Jira ticket already exists for this article** (e.g. the article is being
+redone after a partial run), do NOT create a duplicate ticket. Use the existing
+ticket number and continue directly to Phase 5.
+
 Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
 and fill in `SUMMARY` and `DESCRIPTION` with the article name and the findings
 list collected in Phase 2.
