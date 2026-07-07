@@ -4,93 +4,95 @@ sidebarTitle: Generate a presigned URL
 ai-navigation: Generate presigned URLs for temporary S3 Object Storage file access using AWS CLI or S3cmd with configurable expiration time.
 ---
 
-## Presigned URL overview
+Presigned URLs provide temporary, credential-free access to private files in Gcore Object Storage. The file owner generates a URL with a configurable expiry time — anyone who receives it can download the file during the URL's lifetime without storage credentials.
 
-A presigned URL is a temporary link that grants access to a private file in Object Storage. Only those with valid [access keys](/storage/create-an-s3-or-sftp-storage#s3) — an Access key and a Secret key — can generate such links.
+Only those with valid [access keys](/storage/create-an-s3-or-sftp-storage#s3) (Access key and Secret key) can generate presigned URLs.
 
-The workflow for presigned URLs is as follows:
+## Presigned URL workflow
 
-1. A storage owner sets the link expiry time and generates a presigned URL.
+<Steps>
+  <Step title="Generate the URL">
+    The storage owner sets an expiry time and generates a presigned URL.
+  </Step>
+  <Step title="Share the URL">
+    The owner sends the URL to users who need temporary access to the file.
+  </Step>
+  <Step title="Recipients receive the URL">
+    Recipients receive a URL in the following format:
 
-2. The owner sends the generated link to users who need temporary access to the file.
+    ```text
+    https://<hostname>/bucket/image.jpg
+      ?X-Amz-Algorithm=AWS4-HMAC-SHA256
+      &X-Amz-Credential=...
+      &X-Amz-Date=...
+      &X-Amz-Expires=3600
+      &X-Amz-SignedHeaders=host
+      &X-Amz-Signature=...
+    ```
 
-3. The users receive a link in this format:
+    | Parameter | Description |
+    |-----------|-------------|
+    | `https://<hostname>/bucket/image.jpg` | Path to the file in the bucket. |
+    | `X-Amz-Algorithm=AWS4-HMAC-SHA256` | Encryption algorithm used for the link signature. |
+    | `X-Amz-Credential=...` | Additional info about the request (AWS region and time). |
+    | `X-Amz-Date=...` | Timestamp of the link creation (format `YYYYMMDDTHHmmssZ`). |
+    | `X-Amz-Expires=3600` | Link lifespan in seconds. |
+    | `X-Amz-SignedHeaders=host` | HTTP headers included in the signature. |
+    | `X-Amz-Signature=...` | Signature that authorizes access to the file. |
+  </Step>
+  <Step title="File access">
+    During the link's lifespan, anyone with the URL can view and download the file.
+  </Step>
+  <Step title="Link expiry">
+    When the link expires, the file becomes inaccessible. Clicking the link returns an `UnknownError` response:
 
-<Frame>![Presigned URL structure](/images/docs/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd/link-explanation-10.png)</Frame>
+    <Frame>![Access denied error for expired presigned URL](/images/docs/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd/access-denied-error-20.png)</Frame>
+  </Step>
+</Steps>
 
-where:
+To restrict access by IP address, add an [IP policy](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd#ip-based-access-via-policy) to the bucket.
 
-- `https://<hostname>/bucket/image.jpg` — path to the file in the bucket,
-- `X-Amz-Algorithm=AWS4-HMAC-SHA256` — encryption algorithm used for the link signature,
-- `X-Amz-Credential=...` — additional info about the request (AWS region and time),
-- `X-Amz-Date=...` — timestamp of the link creation (format `YYYYMMDD'T'HHMMSS'Z'`),
-- `X-Amz-Expires=3600` — link lifespan in seconds,
-- `X-Amz-SignedHeaders=host` — HTTP headers included in the signature,
-- `X-Amz-Signature=...` — signature that authorizes access to the file.
+## Presigned URL generation
 
-4. During the link's lifespan, anyone with the link can view and download the file.
+AWS CLI and S3cmd both support presigned URL generation.
 
-5. When the link expires, access is revoked. Clicking the link returns an `UnknownError` response:
+### AWS CLI
 
-<Frame>![Access denied error for expired presigned URL](/images/docs/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd/access-denied-error-20.png)</Frame>
-
-A presigned URL does not require authentication. Anyone who receives a valid link — including people it is forwarded to — can access the file.
-
-To restrict access by IP address, add an IP-based Access Policy — see [access control](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd) for the required policy JSON.
-
-## Generate a presigned URL
-
-Presigned URLs can be generated using two utilities: AWS CLI and S3cmd.
-
-### Generate a presigned URL with AWS CLI
-
-The following command generates a presigned URL for a file in a Gcore Object Storage bucket.
-
-1. Open a terminal.
-
-2. Run the following command, replacing the placeholder values:
+Run the following command, replacing the placeholder values:
 
 ```sh
 aws s3 presign s3://example-bucket/image.jpg --expires-in 60480 --endpoint-url https://<storage-hostname>
 ```
 
-where:
-
-- `example-bucket` — the name of the bucket that contains the file,
-- `image.jpg` — the file to share,
-- `60480` — link lifespan in seconds; the maximum is 604800 (7 days),
-- `<storage-hostname>` — the hostname of the storage, available in the **Details** section of the Object Storage in the Gcore Customer Portal.
-
-3. Press Enter.
+| Parameter | Description |
+|-----------|-------------|
+| `example-bucket` | The name of the bucket that contains the file. |
+| `image.jpg` | The file to share. |
+| `60480` | Link lifespan in seconds; the maximum is 604800 (7 days). |
+| `<storage-hostname>` | The storage hostname from the **Details** section in the [Gcore Customer Portal](https://portal.gcore.com). |
 
 The command outputs a presigned URL. Copy and send it to the intended recipients.
 
-### Generate a presigned URL with S3cmd
+### S3cmd
 
 The S3cmd `signurl` command takes a bucket path and an expiry timestamp rather than a duration in seconds.
 
-1. Open a terminal.
-
-2. Run the following command, replacing the placeholder values:
+Run the following command, replacing the placeholder values:
 
 ```sh
 s3cmd signurl s3://example-bucket/image.jpg 1657457538
 ```
 
-where:
+| Parameter | Description |
+|-----------|-------------|
+| `example-bucket` | The name of the bucket that contains the file. |
+| `image.jpg` | The file to share. |
+| `1657457538` | Link expiry time as a Unix timestamp; use a [converter](https://epochconverter.com) to convert a date and time to Unix timestamp format. |
 
-- `example-bucket` — the name of the bucket that contains the file,
-- `image.jpg` — the file to share,
-- `1657457538` — link expiry time as a Unix timestamp; use a [converter](https://epochconverter.com) to convert a date and time to the Unix timestamp format.
-
-Alternatively, set the expiry time using a shell expression. For example, to set a lifespan of 7 days:
+Alternatively, set the expiry using a shell expression — this example sets a 7-day lifespan:
 
 ```sh
 s3cmd signurl s3://example-bucket/image.jpg $(echo "`date +%s` + 3600 * 24 * 7" | bc)
 ```
 
-where the shell expression computes a Unix timestamp 7 days from the current time.
-
-3. Press Enter.
-
-The command outputs a presigned URL. Copy and send it to the intended recipients.
+The shell expression computes a Unix timestamp 7 days from the current time. The command outputs a presigned URL — copy and send it to the intended recipients.
