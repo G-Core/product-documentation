@@ -1,4 +1,4 @@
-﻿---
+---
 title: Add and configure a firewall
 sidebarTitle: Firewall
 ai-navigation: Create and configure security groups and firewall rules for Virtual Machines via Customer Portal, REST API, or Terraform.
@@ -22,7 +22,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
    - In the Cloud menu, go to **Networking** > **Security Groups** > **Create Security Group**.
    - When creating a Virtual Machine, go to **Network settings**, expand an interface, and configure **Security Groups** for that interface.
 
-<Frame>![Security Groups list with Create Security Group button](/images/docs/cloud/networking/add-and-configure-a-firewall/security-groups-list.png)</Frame>
+<Frame>![Security Groups list with Create Security Group button](/images/docs/cloud/networking/add-and-configure-a-firewall/security-groups-list-v2.png)</Frame>
 
 2. Enter a name for the security group.
 
@@ -30,13 +30,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>Click **Add rule** and select one of the template rules, or choose **Custom** to apply custom settings. A security group supports up to 250 rules total across inbound and outbound directions.</p>
 
    - Template rules (All TCP/All UDP/SSH/HTTP/HTTPS/MySQL/DNS TCP/DNS UDP/PostgreSQL/RDP TCP/RDP UDP): template rules come with pre-configured protocols and ports for typical connections
-   - Custom rule: if you select a custom rule, specify the protocol, port, and optionally a description.
+   - Custom rule: for a custom rule, specify the protocol, port, Ethernet type (IPv4 or IPv6), and optionally a description.
 
-<Frame>![Add rule dropdown showing template options including RDP TCP and RDP UDP](/images/docs/cloud/networking/add-and-configure-a-firewall/firewall-add-rule-templates.png)</Frame>
+<Frame>![Add rule dropdown showing template options including RDP TCP and RDP UDP](/images/docs/cloud/networking/add-and-configure-a-firewall/firewall-add-rule-templates-v2.png)</Frame>
 
 <p>For **Sources**, specify the allowed sources for inbound traffic:</p>
 
-- **IP with mask**: Specify an IP address range in CIDR format (for example, 192.168.1.0/24). If left empty with "All IPv4" selected, the rule applies to all IP addresses.
+- **IP with mask**: Specify an IP address range in CIDR format (192.168.1.0/24). If left empty with "All IPv4" selected, the rule applies to all IP addresses.
 - **Select security groups**: Choose existing security groups to allow traffic from the instances associated with those groups.
 
 <p>Both options can be combined. If neither is specified, the rule applies to all IP addresses.</p>
@@ -46,19 +46,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 4. Set **Outbound rules** to define the allowed outgoing traffic.
 
 <Info>
-By default, all outbound traffic is allowed. Add outbound rules only if you need to restrict specific destinations or protocols.
+By default, all outbound traffic is allowed except port 25 (TCP/UDP), which is restricted. Add outbound rules only if specific destinations or protocols need to be restricted.
 </Info>
 
 <p>Click **Add rule** and select one of the template rules, or choose **Custom** to apply custom settings.</p>
 
    - Template rules (All TCP/All UDP/SSH/HTTP/HTTPS/MySQL/DNS TCP/DNS UDP/PostgreSQL/RDP TCP/RDP UDP): template rules come with pre-configured protocols and ports for typical connections
-   - Custom rule: if you select a custom rule, specify the protocol, port, and optionally a description.
+   - Custom rule: for a custom rule, specify the protocol, port, Ethernet type (IPv4 or IPv6), and optionally a description.
 
-<Frame>![Add firewall rule dialog showing protocol, port, and sources configuration](/images/docs/cloud/networking/add-and-configure-a-firewall/firewall-add-rule-sources.png)</Frame>
+<Frame>![Add firewall rule dialog showing protocol, port, and sources configuration](/images/docs/cloud/networking/add-and-configure-a-firewall/firewall-add-rule-sources-v2.png)</Frame>
 
 <p>For **Destinations**, specify the allowed destinations for outbound traffic:</p>
 
-- **IP with mask**: Specify an IP address range in CIDR format (for example, 192.168.1.0/24). If left empty with "All IPv4" selected, the rule applies to all IP addresses.
+- **IP with mask**: Specify an IP address range in CIDR format (192.168.1.0/24). If left empty with "All IPv4" selected, the rule applies to all IP addresses.
 - **Select security groups**: Choose existing security groups to allow traffic to the instances associated with those groups.
 
 <p>Both options can be combined. If neither is specified, the rule applies to all IP addresses.</p>
@@ -83,14 +83,14 @@ By default, all outbound traffic is allowed. Add outbound rules only if you need
 <p><strong>Outbound rules</strong> — all traffic is allowed.</p>
 
 <Info>
-Instances in the same security group no longer communicate with each other automatically. The self-referential rule that previously allowed intra-group traffic has been removed. If your setup relies on it, add an inbound rule that allows traffic from the security group itself.
+Instances in the same security group no longer communicate with each other automatically. The self-referential rule that previously allowed intra-group traffic has been removed. If the setup relies on it, add an inbound rule that allows traffic from the security group itself.
 </Info>
 
 <p>Some operating systems also have an internal firewall that adds an additional layer of protection. To prevent misconfiguration, configure either the cloud security group or the OS firewall, but not both.</p>
 
 ## Manage a firewall
 
-<p>Security groups protect cloud infrastructure by filtering network traffic based on defined rules. The steps below cover configuring rules, assigning security groups to Virtual Machines, and deleting them.</p>
+<p>Security groups protect cloud infrastructure by filtering network traffic based on defined rules. The sections below cover configuring rules, assigning security groups to Virtual Machines, and deleting them.</p>
 
 ### Add, change, and delete rules
 
@@ -98,19 +98,23 @@ Instances in the same security group no longer communicate with each other autom
 
 1. Go to **Networking** > **Security Groups**.
 
-2. Find the required security group, click the Γï» menu on the right and select **Rules**.
+2. Find the required security group, click the **...** menu on the right and select **Rules**.
 
-<Frame>![Security group context menu showing Duplicate, Rules, and Instances options](/images/docs/cloud/networking/add-and-configure-a-firewall/security-group-context-menu.png)</Frame>
+<Frame>![Security group context menu showing Duplicate, Rules, and Instances options](/images/docs/cloud/networking/add-and-configure-a-firewall/security-group-context-menu-v2.png)</Frame>
 
-### Assign to a Virtual Machine and detach from it
+### Assign and detach from Virtual Machines
 
-<p>Security groups can be duplicated, assigned to Virtual Machines, or detached when no longer needed. To copy an existing security group with all its rules, click the Γï» menu and select **Duplicate**. If the target security group is already applied to the Virtual Machine, no changes are made: the system automatically detects the current state and skips unnecessary updates.</p>
+<p>Security groups can be duplicated, assigned to Virtual Machines, or detached when no longer needed. To copy an existing security group with all its rules, click the **...** menu and select **Duplicate**. If the target security group is already applied to the Virtual Machine, no changes are made: the system automatically detects the current state and skips unnecessary updates.</p>
 
 1. Go to **Networking** > **Security Groups**.
 
-2. Find the required security group, click the Γï» menu on the right and select **Instances**.
+2. Find the required security group, click the **...** menu on the right and select **Instances**.
 
-<Frame>![Security group instances list showing assigned Virtual Machines](/images/docs/cloud/networking/add-and-configure-a-firewall/security-group-instances.png)</Frame>
+3. To assign the security group, click **Add Instances** and select one or more Virtual Machines from the list.
+
+4. To detach the security group, select the checkbox next to the Virtual Machine and click **Delete**.
+
+<Frame>![Security group instances list showing assigned Virtual Machines](/images/docs/cloud/networking/add-and-configure-a-firewall/security-group-instances-v2.png)</Frame>
 
 ### Delete a security group
 
@@ -118,15 +122,21 @@ Instances in the same security group no longer communicate with each other autom
 
 1. Go to **Networking** > **Security Groups**.
 
-2. Find the required security group, click the Γï» menu on the right and select **Delete**.
+2. Find the required security group, click the **...** menu on the right and select **Delete**.
+
+### Manage tags
+
+<p>Tags assigned at creation can be viewed and edited after the security group is created. Open the security group and switch to the **Tags** tab.</p>
 
 ### Restore a default security group
 
 <p>To restore the original rules, click **Restore Default** in the security group Rules view or use the API. This resets any custom changes to the current default rule set: inbound ICMP, ICMPv6, SSH (TCP/22), and RDP (TCP/3389 and UDP/3389); outbound unrestricted.</p>
 
-<Frame>![Restore Default option for resetting firewall settings](/images/docs/cloud/networking/add-and-configure-a-firewall/restore-default-option.png)</Frame>
+<Frame>![Restore Default option for resetting firewall settings](/images/docs/cloud/networking/add-and-configure-a-firewall/restore-default-option-v2.png)</Frame>
 
-## Firewall feature not supported for Bare Metal servers
+## Firewall on Bare Metal servers
+
+<p>The firewall feature available for Virtual Machines is not supported for Bare Metal servers.</p>
 
 <Info>
 The Firewall feature is not supported for Bare Metal servers. Unlike Virtual Machines or other cloud services that integrate with cloud-native firewalls, Bare Metal servers operate directly on physical hardware and are not subject to the same level of firewall management.
@@ -134,7 +144,7 @@ The Firewall feature is not supported for Bare Metal servers. Unlike Virtual Mac
 
 <p>For network security, Bare Metal servers can use the following alternatives:</p>
 
-- Configure network security manually using `iptables`, `nftables`, or similar tools at the OS level. For example, to allow SSH, HTTP, and HTTPS traffic while blocking everything else:
+- Configure network security manually using `iptables`, `nftables`, or similar tools at the OS level. The following commands allow SSH, HTTP, and HTTPS traffic while blocking everything else:
 
 ```sh
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
@@ -169,9 +179,9 @@ export SG_ID="{YOUR_SECURITY_GROUP_ID}"
 
 <Info>
 To find the values for each variable:
-- **INSTANCE\_ID**: the UUID of a virtual machine in your region. To create one, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
+- **INSTANCE\_ID**: the UUID of a virtual machine in the region. To create one, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
 - **IMAGE\_ID**: the UUID of a public or private image. Use `GET /cloud/v1/images/{project_id}/{region_id}` to list available images.
-- **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in your region.
+- **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in the region.
 - **SG\_ID**: the UUID of an existing security group. Created in the [Create a security group](#create-a-security-group) section below, or use `GET /cloud/v2/security_groups/{project_id}/{region_id}` to list existing ones.
 </Info>
 
@@ -477,7 +487,7 @@ At VM creation, pass the security group UUID in the `security_groups` field:
   </Tab>
 </Tabs>
 
-To a running instance, use the group name:
+If the VM already exists, attach the security group by name:
 
 <Tabs>
   <Tab title="Python SDK">

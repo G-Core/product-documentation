@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Configuring file shares"
 sidebarTitle: "Configure"
 ai-navigation: Create NFS-based file shares and mount them to Virtual Machines via Customer Portal, REST API, or Terraform.
@@ -9,12 +9,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-Create NFS-based file shares and mount them to Linux virtual machines, bare metal servers, or GPU clusters.
+<p>Create NFS-based file shares and mount them to Linux virtual machines, bare metal servers, or GPU clusters.</p>
 
-Two types of file shares are available:
+<p>Two types of file shares are available:</p>
 
 - **Standard** are general-purpose file shares using a Ceph-based backend.
-- **VAST** are high-performance type file shares, available in selected GPU-enabled regions.
+- **VAST** are high-performance file shares, available in selected GPU-enabled regions only.
 
 <Info>
   File share types are mutually exclusive — each region has either Standard or VAST file shares, but not both.
@@ -24,21 +24,21 @@ Two types of file shares are available:
   Create VAST shares when creating [GPU clusters](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) or before provisioning [compute resources](/cloud/virtual-instances/types-of-virtual-machines) — VMs, Bare Metal servers, and GPU clusters.
 </Tip>
 
-The creation flow for both types starts the same. Follow the instructions for the selected file share type.
+<p>The creation flow for both types starts the same. Follow the instructions for the selected file share type.</p>
 
 <Info>
-  Verify that quotas are sufficient for the file share. To increase quotas, send us a request according to our guide. The quotas for File Shares are located on the Storage tab and include File Share count and File Share size (GiB).
+  Verify that quotas are sufficient for the file share. The quotas for File Shares are in the **Storage** section under **Cloud Management** > **Quotas Viewer** and include **Number of File Shares** and **Total File Share Storage**. To increase quotas, contact Gcore support.
 </Info>
 
 <Frame>
-  ![Storage tab ](/images/docs/cloud/file-shares/configure-file-shares/1.png)
+  ![Account Quotas Storage section showing file share limits](/images/docs/cloud/file-shares/configure-file-shares/1.png)
 </Frame>
 
 ## Prepare the network for Bare Metal
 
-To mount the file share on a bare-metal server, the network must support bare-metal, and these servers require a dedicated VLAN.
+<p>To mount the file share on a Bare Metal server, the network must support Bare Metal, and these servers require a dedicated VLAN.</p>
 
-If needed, create a new network and enable the **Bare Metal Network** toggle during configuration.
+<p>If needed, create a new network and enable the **Bare Metal Network** toggle during configuration.</p>
 
 <Frame>
   ![Bare Metal Network toggle](/images/docs/cloud/file-shares/configure-file-shares/2-1.png)
@@ -50,42 +50,42 @@ If needed, create a new network and enable the **Bare Metal Network** toggle dur
 
 ## Configure file shares for Linux VMs and Bare Metal
 
-A Standard NFS file share connects to a private network and can be mounted on Linux Virtual Machines or Bare Metal servers.
+<p>A Standard NFS file share connects to a private network and can be mounted on Linux Virtual Machines or Bare Metal servers.</p>
 
-### Step 1. Create a file share
-
+<Steps>
+  <Step title="Create a file share">
 1. In the **Cloud** menu, click **Storage**, select **File Shares**, and click **Create File Share** on the right.
 
 <Frame>
-  ![File Shares](/images/docs/cloud/file-shares/configure-file-shares/3-1.png)
+  ![File Shares list page](/images/docs/cloud/file-shares/configure-file-shares/3-1.png)
 </Frame>
 
-2. In the **Basic settings** panel, enter _File Share name_, specify _Size_, and select **Standard** as the _File Share type_.
+2. In the **Basic settings** panel, enter the **File Share name**, specify **Size**, and select **Standard** as the **File Share type**.
 
-![Create file share form - Basic settings with Standard type](/images/docs/cloud/file-shares/configure-file-shares/file-shares-standard-4.png)
+<Frame>
+  ![Create File Share form with Standard type selected](/images/docs/cloud/file-shares/configure-file-shares/4.png)
+</Frame>
 
-3. In the **Network settings** panel, select the private _Network_ and _Subnetwork_ to use for the file share.
-4. In the **Access** panel, click **Add rule** and specify the IP addresses of the resources that should have access to the file share, and their access modes.
+3. In the **Network settings** panel, select the **Network** and **Subnet** to use for the file share.
+4. In the **Access** panel, the default **Accessible for the selected subnet** option grants read/write access to all addresses on the allocated network. To restrict access by IP address, select **Custom access rules**, click **+ Add rule**, enter the **Source IP or subnet address**, and select the **Access rule mode**.
 5. Set **Additional options**, if required.
+  </Step>
+  <Step title="Set up NFS client support">
+<p>Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and set up NFS client support.</p>
 
-### Step 2. Set up NFS client support
-
-Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and set up NFS client support.
-
-For Ubuntu and Debian:
+<p>For Ubuntu and Debian:</p>
 
 ```bash
 sudo apt -y install nfs-common
 ```
 
-For CentOS:
+<p>For CentOS:</p>
 
 ```bash
 sudo yum install nfs-utils
 ```
-
-### Step 3. Mount the file share
-
+  </Step>
+  <Step title="Mount the file share">
 1. Use an existing directory for mounting the share, or create a new one:
 
    ```bash
@@ -95,59 +95,64 @@ sudo yum install nfs-utils
 2. Copy the mount command from the file share **Overview** tab.
 
 <Frame>
-  ![Mount the file share](/images/docs/cloud/file-shares/configure-file-shares/4-1.jpg)
+  ![File share Overview tab with mount command](/images/docs/cloud/file-shares/configure-file-shares/4-1.png)
 </Frame>
 
-Mount the file share:
+<p>Mount the file share:</p>
 
 ```bash
 mount 0.0.0.0:/shares/share-d54589b8-132f-4de4-ae99-af5c6cdfdb9c /mount/path
 ```
 
-Replace `/mount/path` with the absolute local directory path where the file share should be mounted.
+<p>Replace `/mount/path` with the absolute local directory path where the file share should be mounted.</p>
+  </Step>
+</Steps>
 
 ## VAST file shares
 
+<p>VAST file shares attach to compute resources (VMs, Bare Metal servers, and GPU clusters) using a dedicated network that is assigned automatically at creation.</p>
+
 <Info>
-  VAST-based file shares are only available in regions with GPU support and use a high-performance backend designed for intensive data workloads.
+  VAST-based file shares are only available in regions with GPU support.
 </Info>
 
-<Tip>
-  Create VAST shares when creating GPU clusters or before provisioning compute resources — VMs, Bare Metal servers, and GPU clusters.
-</Tip>
-
-### Step 1. Create a VAST share
-
+<Steps>
+  <Step title="Create a VAST share">
 1. In the **Cloud** menu, click **Storage**, select **File Shares**, and click **Create File Share** on the right.
-2. In the **Basic settings** panel, enter _File Share name_, specify _Size_, and select **VAST** as the _File Share type_.
+2. In the **Basic settings** panel, enter the **File Share name**, specify **Size**, and select **VAST** as the **File Share type**.
 3. Set **Additional options**, if required.
 
-When VAST share type is selected, controls in **Network settings** and **Access** panels are disabled, and the network is assigned automatically.
+<Frame>
+  ![Create VAST file share form](/images/docs/cloud/file-shares/configure-file-shares/vast-create.png)
+</Frame>
 
-The access rules cannot be configured manually — the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
+<p>When VAST share type is selected, controls in **Network settings** and **Access** panels are disabled, and the network is assigned automatically.</p>
 
-VAST file shares always use read/write access; access rules are not supported.
+<p>The access rules cannot be configured manually — the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).</p>
 
-### Step 2. Add VAST network interface to a compute resource
-
-Once the VAST file share is created, it is best to add the VAST network interface while provisioning the corresponding GPU cluster or compute resource.
+<p>VAST file shares always use read/write access; access rules are not supported.</p>
+  </Step>
+  <Step title="Add VAST network interface to a compute resource">
+<p>Once the VAST file share is created, it is best to add the VAST network interface while provisioning the compute resource.</p>
 
 **Adding VAST interface while creating a compute resource**
 
-While provisioning a compute resource:
+<p>While provisioning a compute resource:</p>
 
 1. Scroll down to the **Network settings** panel.
 2. Click **Add interface**.
 3. Click the interface to configure, and select the **VAST network**.
 4. Continue with provisioning the compute resource.
 
+<p>The VAST network only becomes available after the file share has been created. It is a third, dedicated network, separate and distinct from public and private networks.</p>
+
+<Frame>
+  ![VAST network interface added to compute resource](/images/docs/cloud/file-shares/configure-file-shares/vast-details.png)
+</Frame>
+
 **Adding VAST interface to an existing compute resource**
 
-While the VAST interface can be attached to an already-provisioned GPU cluster or compute resource, this requires additional manual network configuration and is not the standard workflow.
-
-<Tip>
-  Create VAST shares when creating GPU clusters or before provisioning compute resources — VMs, Bare Metal servers, and GPU clusters.
-</Tip>
+<p>While the VAST interface can be attached to an already-provisioned compute resource, this requires additional manual network configuration and is not the standard workflow.</p>
 
 **Attach VAST network interface**
 
@@ -173,11 +178,11 @@ DHCP is now enabled on VAST subnets. This automatically provides IP address, CID
 
 </Info>
 
-When attaching a VAST subnet to an existing compute resource, use DHCP to automatically configure the network interface. This is the recommended method as it eliminates the need for manual network configuration.
+<p>When attaching a VAST subnet to an existing compute resource, use DHCP to automatically configure the network interface. This is the recommended method as it eliminates the need for manual network configuration.</p>
 
 **DHCP configuration for VMs and GPU clusters**
 
-Run the DHCP client on the VAST interface. Replace `enp8s0` with the actual interface name:
+<p>Run the DHCP client on the VAST interface. Replace `enp8s0` with the actual interface name:</p>
 
 ```bash
 sudo dhclient enp8s0
@@ -203,42 +208,44 @@ sudo dhclient enp8s0
   </Accordion>
 </AccordionGroup>
 
-The DHCP client automatically configures the IP address, subnet mask, gateway, and routing information, following the same [network configuration](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) approach used across Gcore Cloud.
+<p>The DHCP client automatically configures the IP address, subnet mask, gateway, and routing information, following the same [network configuration](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) approach used across Gcore Cloud.</p>
 
 **Manual configuration (alternative method)**
 
-For custom network settings, configure the interface manually instead.
+<p>For custom network settings, configure the interface manually instead.</p>
 
-Connect to the server via the Customer Portal or SSH and configure the attached VAST network interface.
+<p>Connect to the server via the Customer Portal or SSH and configure the attached VAST network interface.</p>
 
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
-3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
+3. Note the **interface name** for use in the following steps. Interface names follow the format `enp8s0` or `enp4s0`.
 4. Configure the interface as described below for the relevant instance type.
+
+<p>In all commands below, replace `198.51.100.25` with the IP address from step 2, and replace `198.51.100.1` with the gateway IP — take the first three octets of the CIDR range from step 2 and append `.1`.</p>
 
 **Configuring VAST interface for VMs and GPU clusters**
 
-Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
+<p>Replace `enp8s0` with the interface name from step 3.</p>
 
-Set interface MTU:
+<p>Set interface MTU:</p>
 
 ```bash
 sudo ip link set enp8s0 mtu 9000
 ```
 
-Activate the interface:
+<p>Activate the interface:</p>
 
 ```bash
 sudo ip link set enp8s0 up
 ```
 
-Set interface CIDR:
+<p>Set interface CIDR:</p>
 
 ```bash
 sudo ip addr add 198.51.100.25/22 dev enp8s0
 ```
 
-Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+<p>Add static route to the VAST network:</p>
 
 ```bash
 sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
@@ -246,11 +253,11 @@ sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
 
 **Configuring VAST interface for Bare Metal servers**
 
-Bare Metal servers require different configuration depending on the network hardware.
+<p>Bare Metal servers require different configuration depending on the network hardware.</p>
 
 <AccordionGroup>
   <Accordion title="Bluefield DPU">
-    In the commands below, replace `198.51.100.25` with the IP address from Step 2, and replace `ens10f0v0` with the interface name identified above.
+    Replace `ens10f0v0` with the interface name from step 3.
 
     Set interface MTU:
 
@@ -270,7 +277,7 @@ Bare Metal servers require different configuration depending on the network hard
     sudo ip addr add 198.51.100.25/22 dev ens10f0v0
     ```
 
-    Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+    Add static route to the VAST network:
 
     ```bash
     sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev ens10f0v0
@@ -279,7 +286,7 @@ Bare Metal servers require different configuration depending on the network hard
   <Accordion title="Arista (Trunks)">
     For Bare Metal servers with Arista switches (Trunks), create a VLAN interface on the bond. A bond (link aggregation) combines multiple physical network interfaces into a single logical interface, providing higher throughput and redundancy.
 
-    In the commands below, replace `100` with the VLAN ID shown in the **Networking** tab of the server details page, and replace `198.51.100.25` with the IP address from Step 2.
+    Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page.
 
     Create VLAN interface on a bond:
 
@@ -299,22 +306,20 @@ Bare Metal servers require different configuration depending on the network hard
     sudo ip addr add 198.51.100.25/22 dev bond0.100
     ```
 
-    Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+    Add static route to the VAST network:
 
     ```bash
     sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev bond0.100
     ```
   </Accordion>
 </AccordionGroup>
-
-
-### Step 3. Set up VAST NFS client support
-
+  </Step>
+  <Step title="Set up VAST NFS client support">
 <Info>
   This step is always required for VAST file shares, regardless of whether they are added during or after resource provisioning.
 </Info>
 
-Connect to the server via the Customer Portal or SSH and set up VAST NFS client support.
+<p>Connect to the server via the Customer Portal or SSH and set up VAST NFS client support.</p>
 
 1. Install NFS client tools:
 
@@ -333,16 +338,15 @@ Connect to the server via the Customer Portal or SSH and set up VAST NFS client 
    ```bash
    curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --
    ```
-
-### Step 4. Mount the file share
-
-Use an existing directory for mounting the share, or create a new one:
+  </Step>
+  <Step title="Mount the file share">
+<p>Use an existing directory for mounting the share, or create a new one:</p>
 
 ```bash
 sudo mkdir -p /mount/path
 ```
 
-Mount the VAST file share:
+<p>Mount the VAST file share:</p>
 
 - Replace `ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef` with the connection point from the VAST file share overview tab.
 - Replace `/mount/path` with the absolute local directory path where the file share should be mounted.
@@ -351,11 +355,17 @@ Mount the VAST file share:
 sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /mount/path
 ```
 
-The contents of the VAST file share are now accessible in the specified directory.
+<p>The contents of the VAST file share are now accessible in the specified directory.</p>
 
 <Info>
   Always use NFS version 3 (vers=3) when mounting VAST file shares. If the system does not support the `nconnect` option, install the [VAST Enhanced NFS Client](https://vastnfs.vastdata.com/docs/4.0/download.html).
 </Info>
+
+<Frame>
+  ![VAST file share Overview tab with mount command](/images/docs/cloud/file-shares/configure-file-shares/vast-mount.png)
+</Frame>
+  </Step>
+</Steps>
 
 ## Resizing file shares
 
@@ -372,19 +382,25 @@ The contents of the VAST file share are now accessible in the specified director
 
 ### Resize file share
 
-This process is the same for both Standard and VAST-based file shares:
+<p>This process is the same for both Standard and VAST-based file shares:</p>
 
-1. In the **Cloud** menu, go to the **Storage** tab, select **File Shares**, and click the file share to be resized.
-2. In the **Overview** tab, click **Resize** and enter the new share size:
+<Steps>
+  <Step title="Open the file share">
+In the **Cloud** menu, go to **Storage**, select **File Shares**, and click the file share to be resized.
+  </Step>
+  <Step title="Resize">
+In the **Overview** tab, click **Resize** and enter the new share size:
 
 <Frame>
-  ![Overview tab](/images/docs/cloud/file-shares/configure-file-shares/5-1.png)
+  ![File share Overview tab with Resize button active](/images/docs/cloud/file-shares/configure-file-shares/5-1.png)
 </Frame>
+  </Step>
+</Steps>
 
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. Each step below creates one resource — network, subnet, file share — and ends with the connection point used in the mount command.
+<p>NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. Each step below creates one resource — network, subnet, file share — and ends with the connection point used in the mount command.</p>
 
 <p>Before picking a region, check that file shares are available there — look for `has_sfs: true` in the regions response:</p>
 

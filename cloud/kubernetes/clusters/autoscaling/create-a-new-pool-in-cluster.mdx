@@ -1,113 +1,92 @@
 ---
 title: Create and configure a pool
 sidebarTitle: Create and configure a pool
-ai-navigation: Create and configure Kubernetes pools with node count autoscaling limits, worker node type selection (VM or Bare Metal), flavor, volume size, volume type, placement policy (affinity, anti-affinity soft, anti-affinity hard), labels, taints, tolerations, autohealing, and public IPv4 address assignment.
+ai-navigation: Create and configure Kubernetes node pool settings, including autoscaling limits, node type, flavor, volume, placement policy, labels, taints, autohealing, and advanced Kubelet and CRI-O options.
 ---
 
-A pool is a set of nodes in your Kubernetes cluster that share the same technical characteristics. You can configure multiple pools for the same cluster, adjusting their configuration to better organize and manage your cluster resources more efficiently. 
+A pool is a set of nodes in a Kubernetes cluster that share the same technical characteristics. Multiple pools can be configured for the same cluster, adjusting their configuration to better organize and manage cluster resources more efficiently.
 
 ## Create a new pool in a cluster
 
-You can create a pool [during cluster creation](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-4-configure-pools) or add a new pool to an existing cluster in the cluster settings. The latter approach is described in the following steps: 
+A pool can be created [at cluster creation](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-4-configure-pools) or added to an existing cluster in the cluster settings. The following steps describe adding a pool to an existing cluster:
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Managed Kubernetes**. 
+1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Managed Kubernetes**.
 
-2\. Find the required cluster and click its name to open the settings. 
+2\. Find the required cluster and click its name to open the settings.
 
+<Frame>![Managed Kubernetes clusters list showing cluster names, versions, and status](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/mkaas-page-existing-cluster.png)</Frame>
 
-<Frame>![Managed Kubernetes page](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/mkaas-page-existing-cluster.png)</Frame>
+3\. Open the **Pools** section and click **Add pool**.
 
+<Frame>![Cluster overview page with the Pools tab and Add pool button](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/add-pool-existing-cluster.png)</Frame>
 
+4\. Configure the pool:
 
-3\. Go to the **Pools** section and click **Add pool**. 
+- Enter the pool name.
 
+- Set the minimum nodes and maximum nodes for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling). Autoscaling regulates the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 
-<Frame>![Managed Kubernetes cluster with add pool button highlighted](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/add-pool-existing-cluster.png)</Frame>
+- Select the worker node type: **Virtual instances** (VM), **Bare metal instances**, or **GPU Bare metal instances**. For VMs, select a flavor, volume size in GiB, and the [volume type](/cloud/virtual-instances/volumes/about-volumes#available-volume-types).
 
+- Choose the relevant [placement policy](/cloud/virtual-instances/placement-groups/configure-a-placement-group): affinity, anti-affinity soft, or anti-affinity hard.
 
+<Frame>![Add pool form showing pool name, autoscaling limits, node type, flavor, volume, and placement policy fields](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool.png)</Frame>
 
-4\. Configure the pool: 
+- Adjust the optional settings:
 
-  * Enter the pool name 
+  - **Add labels**: Provide [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) with extra information about the pool.
 
-  * Set the minimum nodes and maximum nodes for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling). Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads. 
+  - **Add taints**: Taints define which pods can be scheduled on nodes. A pool can only be scheduled on a node that has a matching [toleration](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/). Applying taints to a pool affects all nodes within that pool.
 
-  * Select the type of a worker node: a [Virtual Machine](/cloud/virtual-instances/types-of-virtual-machines) (VM) or a [Bare Metal server](/cloud/bare-metal-servers/create-a-bare-metal-server). For VMs, you should select a flavor, volume size in GiB, and the [volume type](/cloud/virtual-instances/volumes/about-volumes#available-volume-types). 
+  - **Autohealing nodes**: Automatically replace failed nodes with working ones.
 
-  * Choose the relevant [placement policy](/cloud/virtual-instances/placement-groups/configure-a-placement-group): affinity, anti-affinity soft, or anti-affinity hard.
+  - **Public IPv4 address**: Assign a public IPv4 address to the pool. This option cannot be changed after pool creation.
 
+- To configure advanced settings, expand the **Advanced pool settings** section. Advanced settings cannot be adjusted after pool creation.
 
+<Frame>![Add pool form showing optional settings: Add labels, Add taints, Autohealing nodes, Public IPv4 address, and Advanced pool settings](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool-toggles.png)</Frame>
 
-<Frame>![Pools configuration section on the Create Kubrnetes cluster page](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool.png)</Frame>
-
-
-
-  * Adjust the optional settings: 
-
-    * **Add labels** : Provide [labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) with extra information about the pool. 
-
-    * **Add taints** : Taints define which pods can be scheduled on nodes. A pool can only be scheduled on a node that has a [matching toleration](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/). If you apply taints to a pool, it'll affect all nodes within that pool. 
-
-    * **Autohealing nodes** : Automatically replace failed nodes with working ones. 
-
-    * **Public IPv4 address** : Assing a public address to the pool. You can assign a public IPv4 address during cluster creation and it can't be configured for the existing cluster.
-
-  * If you want to configure advanced settings, check out the **Configure advanced pool settings** section for detailed instructions. Note that you can't adjust advanced settings for an already created pool.
-
-
-
-<Frame>![Pools configuration section on the Create Kubrnetes cluster page](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool-toggles.png)</Frame>
-
-
-
-5\. Click **Save** to create the pool. 
+5\. Click **Add pool** to create the pool.
 
 ## Configure advanced pool settings
 
 <Warning>
-**Warning**
-
-After you create a cluster, you can't change advanced settings for its pools. If you need to adjust advanced settings, create a new pool and configure it accordingly.
+After a pool is created, its advanced settings cannot be changed. To adjust advanced settings, create a new pool and configure it accordingly.
 </Warning>
 
-If your cluster contains several pools, you can configure different combinations of settings for those pools. This gives you more granular control over cluster subsets and recourse usage. 
+If a cluster contains several pools, different combinations of settings can be configured for those pools. This provides more granular control over cluster subsets and resource usage.
 
-You can add a pool with advanced configuration [during cluster creation](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-4-configure-pools) or in the settings of an existing cluster. To do so, find the **Advanced pool settings** section and click the **Configure settings** link. 
+A pool with advanced configuration can be added during cluster creation or in the settings of an existing cluster. To do so, find the **Advanced pool settings** section and click the **Configure settings** link.
 
-The advanced pool settings are divided into two parts: Kubelet configuration and Container runtime interface configuration (CRI-O). 
+The advanced pool settings are divided into two parts: Kubelet configuration and Container runtime interface configuration (CRI-O).
 
 ### Kubelet configuration
 
-Customize how Kubelet manages pod scheduling and execution on every node. You can read more about these settings in the [official Kubernetes documentation](https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration). 
+Kubelet manages pod scheduling and execution on every node according to the [KubeletConfiguration](https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration) API.
 
-
-<Frame>![Kubelet configuration in the advanced settings for Kubrnetes cluster](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-kubelet-settings.png)</Frame>
-
-
+<Frame>![Kubelet configuration in the advanced settings for Kubernetes cluster](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-kubelet-settings.png)</Frame>
 
 #### Max container log files
 
-The maximum number of log files retained for a container. Once the limit is reached, the system will automatically delete the oldest log files to free up space for new ones. 
+The maximum number of log files retained for a container. Once the limit is reached, the system automatically deletes the oldest log files to free up space for new ones.
 
 #### Max container log size
 
-The maximum size a log file can reach before it's rotated.
+The maximum size a log file can reach before it is rotated.
 
 #### Image cleanup threshold (high)
 
-When the disk usage exceeds the threshold, Kubelet will start deleting unused images until the percentage drops below the low cleanup threshold. 
+When disk usage exceeds the threshold, Kubelet starts deleting unused images until the percentage drops below the low cleanup threshold.
 
 #### Image cleanup threshold (low)
 
-When this threshold is reached, Kubelet will stop deleting unused images.
+When this threshold is reached, Kubelet stops deleting unused images.
 
 #### Max pods per node
 
-The maximum number of pods that can be scheduled on a node to prevent overcommitting of resources. 
+The maximum number of pods that can be scheduled on a node to prevent overcommitting of resources.
 
 <Info>
-**Info**
-
 The maximum allowed limit for **Max pods per node** is 110.
 </Info>
 
@@ -117,83 +96,64 @@ The maximum number of process IDs (PIDs) that can be used within a pod. This hel
 
 #### Topology management policy
 
-Determines how Kubelet will coordinate the Container Runtime Interface (CRI) to allocate the resources: 
+Determines how Kubelet coordinates the Container Runtime Interface (CRI) to allocate resources:
 
-  * **none** (default). Apply no topology arrangement. This policy can be used for workloads where performance isn't significantly affected by the placement of resources. 
+- **none** (default): No topology arrangement is applied. Use this policy for workloads where performance is not significantly affected by the placement of resources.
 
-  * **best-effort** : Kubelet will try to allocate the pod's resources from the same NUMA (Non-Uniform Memory Access) node. If that's not possible, the resources will be allocated from multiple nodes. This policy can be used for workloads that require a balance of performance and flexibility. 
+- **best-effort**: Kubelet tries to allocate the pod's resources from the same NUMA (Non-Uniform Memory Access) node. If that is not possible, the resources are allocated from multiple nodes. Use this policy for workloads that require a balance of performance and flexibility.
 
-  * **restricted** : A pod is only allowed to run on a node if its resources can be allocated on a single NUMA node. Otherwise, the pod won't start in that node. This policy is used for workloads where performance is important, and the cost of accessing memory or devices across NUMA nodes might negatively affect the workload's efficiency. 
+- **restricted**: A pod is only allowed to run on a node if its resources can be allocated on a single NUMA node. Otherwise, the pod will not start on that node. Use this policy for workloads where performance is important and the cost of accessing memory or devices across NUMA nodes might negatively affect efficiency.
 
-  * **single-numa-node** : Kubelet will only allow pods with a single NUMA alignment of CPU and device resources. This is applicable when the performance is critical and all the resources have to be as close together as possible.
-
-
-
+- **single-numa-node**: Kubelet only allows pods with a single NUMA alignment of CPU and device resources. Use this policy when performance is critical and all resources must be as close together as possible.
 
 #### Enable CPU quota (optional)
 
-Sets limits on much memory and CPU the workload can use. You might disable this toggle in cases when you run a single application on a node and don't need to limit its CPU usage. 
+Sets limits on the amount of memory and CPU a workload can use. Disable this toggle when running a single application on a node and CPU usage limits are not required.
 
-  * **CPU quota period** : The frequency, in milliseconds, at which Kubernetes checks for CPU quota usage. If the allocated CPU quota is exceeded during this interval, Kubernetes will throttle CPU resources for the workload. 
+- **CPU quota period**: The frequency, in milliseconds, at which Kubernetes checks for CPU quota usage. If the allocated CPU quota is exceeded during this interval, Kubernetes throttles CPU resources for the workload.
 
-  * **CPU management policy** : Defines how CPU resources are allocated and managed for pods. 
+- **CPU management policy**: Defines how CPU resources are allocated and managed for pods.
 
-    * none (default): The system has no strategy for allocating CPU resources, which lan be less effcient for workloads with frequently changing CPU demands. 
+  - **none** (default): The system has no strategy for allocating CPU resources, which can be less efficient for workloads with frequently changing CPU demands.
 
-    * static: Distribution of allocated resources is predefined. Certain pods get dedicated CPU resources, and other pods share the remaining CPU.
-
-
+  - **static**: Distribution of allocated resources is predefined. Certain pods get dedicated CPU resources, and other pods share the remaining CPU.
 
 <Accordion title="Resource reservation for static policy">
-When you enable the static policy, we reserve part of available CPUs and memory resources for Kubernetes components that run on each node. 
+When the static policy is enabled, part of available CPUs and memory resources is reserved for Kubernetes components that run on each node.
 
-CPU resource reservation: 
+CPU resource reservation:
 
- * 6% of the first core 
+- 6% of the first core
+- 1% of the next core (up to 2 cores)
+- 0.5% of the next 2 cores (up to 4 cores)
+- 0.25% of any cores above 4 cores
 
- * 1% of the next core (up to 2 cores) 
+Memory resource reservation:
 
- * 0.5% of the next 2 cores (up to 4 cores) 
-
- * 0.25% of any cores above 4 cores
-
-
-
-
-Memory resource reservation: 
-
- * 25% of the first 4 GiB of memory 
-
- * 20% of the next 4 GiB of memory (up to 8 GiB) 
-
- * 10% of the next 8 GiB of memory (up to 16 GiB) 
-
- * 6% of the next 112 GiB of memory (up to 128 GiB) 
-
- * 2% of any memory above 128 GiB
+- 25% of the first 4 GiB of memory
+- 20% of the next 4 GiB of memory (up to 8 GiB)
+- 10% of the next 8 GiB of memory (up to 16 GiB)
+- 6% of the next 112 GiB of memory (up to 128 GiB)
+- 2% of any memory above 128 GiB
 </Accordion>
-
 
 #### Fail if swap enabled
 
-Determines whether the Kubelet should start if the Linux kernel swap space is enabled on the host machine.
+Determines whether Kubelet should start if the Linux kernel swap space is enabled on the host machine.
 
 ### Container runtime interface configuration
 
-Adjust container runtime settings (CRI-O) and specify how containers are executed and managed within the Kubernetes environment.
+Adjust container runtime settings (CRI-O) to specify how containers are executed and managed within the Kubernetes environment.
 
-
-<Frame>![Cri-O configuration in the advanced settings for Kubrnetes cluster](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/crio-settings.png)</Frame>
-
-
+<Frame>![CRI-O configuration in the advanced settings for Kubernetes cluster](/images/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/crio-settings.png)</Frame>
 
 #### Container capabilities
 
-We provide a list of default required capabilities. If one of them is removed/if you start deleting those, the cluster may stop working. If you want to add more capabilities, use the official Linux kernel docs. 
+A list of default required capabilities is provided. Removing any of these capabilities may cause the cluster to stop working. Additional capabilities can be added from the Linux kernel [capabilities list](https://man7.org/linux/man-pages/man7/capabilities.7.html).
 
 #### Set environment variables
 
-Add metadata to provide more context about the configuration. 
+Add metadata to provide more context about the configuration.
 
 #### Set default ulimits
 

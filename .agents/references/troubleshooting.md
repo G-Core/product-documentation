@@ -26,25 +26,51 @@ no content panels.
 ### Root cause A: `{identifier}` inside a `<code>` HTML element
 
 MDX treats `{...}` as a JSX expression even inside lowercase HTML elements like `<code>`.
-When the identifier (`task_id`, `project_id`, etc.) is not defined in scope, compilation
-fails silently. The MethodSwitch component receives `undefined` children → `tabs = []`.
+When the identifier (`task_id`, `project_id`, etc.) is not defined in scope, MDX fails.
+
+**Two failure modes depending on context:**
+
+- **Inside `<MethodSection>`:** compilation fails silently. The MethodSwitch component
+  receives `undefined` children → `tabs = []` → blank page.
+- **Outside `<MethodSection>` (top-level or in a plain article):** `mintlify dev` fails
+  to start with an explicit parse error pointing to the file and line:
+  ```
+  parsing error .\cloud\path\article.mdx:91:8 - Expected a closing tag for `<code>`
+  (91:207-91:213) before the end of `paragraph`
+  ```
+  Mintlify reports the error at the `<code>` opening tag position. If the `<code>` tag
+  is inside a `<MethodSection>`, the error may be reported at the `<MethodSection>`
+  opening line instead of the actual `{identifier}` location — scan the entire section.
 
 **Find:**
-```
+```powershell
+# Scan one file
 rg "<code>[^<]*\{[^}]+\}[^<]*</code>" path/to/article.mdx
+
+# Scan all changed files
+git diff --name-only HEAD | ForEach-Object { rg "<code>[^<]*\{[^}]+\}[^<]*</code>" $_ }
 ```
 
 **Fix — replace `<code>` with backtick inline code:**
 ```
-# Wrong
+# Wrong — API path with placeholder
 Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 
-# Correct
+# Wrong — Windows path with placeholder
+The default directory is <code>C:\Users\{username}\.ssh\</code> for Windows.
+
+# Correct — backtick code spans treat {…} as literal text
 Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
+The default directory is `C:\Users\{username}\.ssh\` for Windows.
 ```
 
+Note: `&nbsp;` inside `<code>` becomes a regular space in backtick code — this is fine.
+
 Files fixed: `cloud/virtual-instances/create-an-instance.mdx`,
-`cloud/networking/add-and-configure-a-firewall.mdx` (PR #2208, June 2026).
+`cloud/networking/add-and-configure-a-firewall.mdx` (PR #2208, June 2026),
+`cloud/kubernetes/clusters/upgrade.mdx` line 286,
+`cloud/virtual-instances/connect/connect-to-your-instance-via-ssh.mdx` line 91
+(branch DOC-1544, June 2026).
 
 ### Root cause B: `{identifier}` inside `ai-navigation` frontmatter
 
@@ -224,3 +250,88 @@ compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message
 
 The compiler reports exact line and column numbers for JSX/MDX errors.
 It does NOT catch missing `.jsx` import extensions or BOM issues.
+
+---
+
+## Encoding corruption in article content
+
+### Root cause G: U+FFFD replacement characters inside content
+
+**Symptom:** Characters like em-dash `—` or other non-ASCII symbols render as `?` (diamond with question mark) on the published site. The file opens and saves normally — the corruption is not visible in most editors.
+
+**Root cause:** The file was saved with a wrong encoding at some point (e.g. Windows-1252 instead of UTF-8, or ANSI via PowerShell `Set-Content` without `-Encoding UTF8`). Non-ASCII bytes were decoded incorrectly and stored as U+FFFD (`\xEF\xBF\xBD`) — the Unicode replacement character.
+
+**How to find affected files across the entire repo:**
+```python
+import pathlib
+REPL = chr(0xfffd)
+root = pathlib.Path('.')
+hits = {}
+for f in sorted(root.rglob('*.mdx')):
+    try:
+        text = f.read_text(encoding='utf-8')
+    except Exception:
+        continue
+    lines = [(i+1, ln) for i, ln in enumerate(text.splitlines()) if REPL in ln]
+    if lines:
+        hits[str(f)] = lines
+
+print(f'Files with U+FFFD: {len(hits)}')
+for path, lines in hits.items():
+    print(f'\n{path}')
+    for lineno, ln in lines:
+        print(f'  L{lineno}: {ln[:120]}')
+```
+
+**How to identify what character was lost:** Look at the surrounding context. In Gcore docs the most common corrupted character is the em-dash `—` (used as ` — ` per style guide). Binary data in code blocks (e.g. raw encryption keys) is unrecoverable — replace with a hex or descriptive placeholder.
+
+**How to fix (em-dash case):**
+```python
+import pathlib
+REPL = chr(0xfffd)
+EM_DASH = '\u2014'
+f = pathlib.Path('path/to/article.mdx')
+text = f.read_text(encoding='utf-8')
+text = text.replace(REPL, EM_DASH)
+f.write_text(text, encoding='utf-8')
+```
+
+**Prevention:** Always write files with `encoding='utf-8'` in Python. In PowerShell use `-Encoding UTF8`. The `sanitize-ai-navigation.yml` GitHub Action now strips BOM automatically on every push.
+
+---
+
+### Root cause H: Literal `?` used as navigation separator
+
+**Symptom:** Navigation paths in steps render as `**Section** ? **Subsection**` instead of `**Section** > **Subsection**` on the published site.
+
+**Root cause:** The `?` character (U+003F) was written literally instead of `>` as a path separator. This is a content authoring error, not an encoding issue.
+
+**How to find across the entire repo:**
+```python
+import pathlib, re
+root = pathlib.Path('.')
+hits = []
+for f in sorted(root.rglob('*.mdx')):
+    try:
+        text = f.read_text(encoding='utf-8')
+    except Exception:
+        continue
+    for i, ln in enumerate(text.splitlines(), 1):
+        if re.search(r'\*\*[^*]+\*\* \? \*\*', ln):
+            hits.append((str(f), i, ln[:120]))
+
+print(f'Navigation ? separators: {len(hits)}')
+for path, lineno, ln in hits:
+    print(f'  {path}:L{lineno}: {ln}')
+```
+
+**How to fix:**
+```python
+import pathlib, re
+f = pathlib.Path('path/to/article.mdx')
+text = f.read_text(encoding='utf-8')
+text = re.sub(r'(\*\*[^*]+\*\*) \? (\*\*)', r'\1 > \2', text)
+f.write_text(text, encoding='utf-8')
+```
+
+**Rule:** Navigation paths always use `>` as separator: `navigate to **Section** > **Subsection**`.

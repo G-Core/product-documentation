@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: fc753b05a102
+  version: e3341e3a31fa
 servers:
 - url: https://api.gcore.com
 tags:
@@ -545,6 +545,7 @@ paths:
       - $ref: '#/components/parameters/deleted'
       - $ref: '#/components/parameters/enabled'
       - $ref: '#/components/parameters/originGroup'
+      - $ref: '#/components/parameters/originGroup__in'
       - $ref: '#/components/parameters/sslEnabled'
       - $ref: '#/components/parameters/sslData'
       - $ref: '#/components/parameters/sslData_in'
@@ -558,6 +559,13 @@ paths:
       - $ref: '#/components/parameters/shield_dc'
       - $ref: '#/components/parameters/suspend'
       - $ref: '#/components/parameters/status'
+      - $ref: '#/components/parameters/active'
+      - $ref: '#/components/parameters/name'
+      - $ref: '#/components/parameters/originProtocol'
+      - $ref: '#/components/parameters/suspended'
+      - $ref: '#/components/parameters/is_primary'
+      - $ref: '#/components/parameters/min_updated'
+      - $ref: '#/components/parameters/max_updated'
       - $ref: '#/components/parameters/limit'
       - $ref: '#/components/parameters/offset'
       responses:
@@ -2889,6 +2897,17 @@ components:
         enum:
         - application/json
         - text/plain
+    active:
+      in: query
+      name: active
+      schema:
+        type: boolean
+      description: |-
+        Defines whether a CDN resource is activated.
+
+        Possible values:
+        - **true** - CDN resource is activated.
+        - **false** - CDN resource is deactivated.
     cache_status__eq:
       in: query
       name: cache_status__eq
@@ -3131,6 +3150,19 @@ components:
 
         Possible value:
         - **resource** - Data is grouped by CDN resources.
+    is_primary:
+      in: query
+      name: is_primary
+      schema:
+        type: boolean
+      description: |-
+        Filters CDN resources by their primary/alternate relationship. Standalone
+        resources — those not linked to another resource, which is the default —
+        match neither value and are returned by neither `true` nor `false`.
+
+        Possible values:
+        - **true** - CDN resource is a primary resource for one or more alternate resources.
+        - **false** - CDN resource is an alternate resource linked to a primary resource.
     limit:
       in: query
       name: limit
@@ -3158,6 +3190,12 @@ components:
         Examples:
         - &`max_requested_at`=2021-05-05 12:00:00
         - &`max_requested_at`=2021-05-05
+    max_updated:
+      in: query
+      name: max_updated
+      schema:
+        type: string
+      description: Most recent date of CDN resource update for which CDN resources should be returned (ISO 8601/RFC 3339 format, UTC.)
     method:
       name: method
       in: query
@@ -3280,6 +3318,18 @@ components:
         Examples:
         - &`min_requested_at`=2021-05-05 12:00:00
         - &`min_requested_at`=2021-05-05
+    min_updated:
+      in: query
+      name: min_updated
+      schema:
+        type: string
+      description: Earliest date of CDN resource update for which CDN resources should be returned (ISO 8601/RFC 3339 format, UTC.)
+    name:
+      in: query
+      name: name
+      schema:
+        type: string
+      description: Name of the CDN resource. Matches partially and is case-insensitive.
     object_id:
       in: path
       name: object_id
@@ -3325,6 +3375,26 @@ components:
       schema:
         type: integer
       description: Origin group ID.
+    originGroup__in:
+      in: query
+      name: originGroup__in
+      schema:
+        type: string
+      description: |-
+        Origin group IDs. Values should be separated by a comma.
+
+        Example:
+        - ?`originGroup__in`=1,2,3
+    originProtocol:
+      in: query
+      name: originProtocol
+      schema:
+        type: string
+        enum:
+        - HTTP
+        - HTTPS
+        - MATCH
+      description: Protocol used by CDN servers to request content from an origin source.
     parameters_query-limit:
       in: query
       name: limit
@@ -3682,6 +3752,19 @@ components:
         Possible values:
         - **true** - CDN resource is selected for automatic suspension in the next 7 days.
         - **false** - CDN resource is not selected for automatic suspension.
+    suspended:
+      in: query
+      name: suspended
+      schema:
+        type: boolean
+      description: |-
+        Defines whether a CDN resource is currently suspended. This reflects the
+        resource's suspended state, unlike the `suspend` parameter, which selects
+        resources that have a scheduled automatic suspension date.
+
+        Possible values:
+        - **true** - CDN resource is currently suspended.
+        - **false** - CDN resource is not suspended.
     to:
       in: query
       name: to
@@ -4037,31 +4120,40 @@ components:
     AdvancedMetricsResponseGroups:
       type: object
       minProperties: 1
-      properties:
-        group:
-          description: Grouped metrics in accordance to "group_by" parameter.
-          oneOf:
-          - $ref: '#/components/schemas/AdvancedMetricsResponseValues'
+      additionalProperties:
+        description: |-
+          Grouped metrics in accordance to "group_by" parameter. Holds either the
+          array of metric values for the innermost group, or a nested group object
+          when "group_by" specifies more than one field.
+        oneOf:
+        - $ref: '#/components/schemas/AdvancedMetricsResponseValues'
+        - $ref: '#/components/schemas/AdvancedMetricsResponseGroups'
       example:
-        data:
-          test.domain.com:
-          - edge_status_2xx: 21095299
-            timestamp: 1623159320
-          - edge_status_2xx: 62616980
-            timestamp: 1623159380
+        test.domain.com:
+        - edge_status_2xx: 21095299
+          timestamp: 1623159320
+        - edge_status_2xx: 62616980
+          timestamp: 1623159380
     AdvancedMetricsResponseValues:
       type: array
       description: List of requested metrics sorted by timestamp in ascending order.
       items:
+        type: object
         minProperties: 2
         properties:
           timestamp:
             type: integer
             format: int64
             description: Start timestamp of interval.
-          metric:
-            type: number
-            description: Metrics value.
+        additionalProperties:
+          description: |-
+            Metric value keyed by the requested metric name. A scalar for simple
+            metrics, or an object of bucketed values for distribution metrics.
+          oneOf:
+          - type: number
+          - type: object
+            additionalProperties:
+              type: string
       example:
       - edge_status_2xx: 21095299
         timestamp: 1623159320
@@ -4469,10 +4561,10 @@ components:
         properties:
           auth:
             $ref: '#/components/schemas/AzureBlobAuthConfig'
-        required:
-        - container_name
-        - account_name
-        - auth
+      required:
+      - container_name
+      - account_name
+      - auth
     AzureBlobConfigResponse:
       title: Azure Blob Config
       allOf:
@@ -5209,8 +5301,6 @@ components:
         format_type: json
         tags: {}
         log_sample_rate: 1
-        related_uploader_configs:
-        - 123
     CreateLogsUploaderTarget:
       type: object
       properties:
@@ -5451,10 +5541,10 @@ components:
         properties:
           password:
             type: string
-        required:
-        - user
-        - password
-        - hostname
+      required:
+      - user
+      - password
+      - hostname
     FTPConfigResponse:
       title: FTP Config
       allOf:
@@ -5825,6 +5915,9 @@ components:
       items:
         type: object
         properties:
+          id:
+            type: integer
+            description: Identifier of the paid feature usage record.
           active_from:
             type: string
             description: Date and time when paid feature was enabled (ISO 8601/RFC 3339 format, UTC.)
@@ -7827,8 +7920,6 @@ components:
         format_type: json
         tags: {}
         log_sample_rate: 0.5
-        related_uploader_configs:
-        - 123
     PatchLogsUploaderTarget:
       type: object
       properties:
@@ -8557,12 +8648,11 @@ components:
       title: S3 Amazon Config
       allOf:
       - $ref: '#/components/schemas/BaseS3Config'
-      - type: object
-        required:
-        - access_key_id
-        - secret_access_key
-        - bucket_name
-        - region
+      required:
+      - access_key_id
+      - secret_access_key
+      - bucket_name
+      - region
     S3AmazonConfigResponse:
       title: S3 Amazon Config
       properties:
@@ -8694,12 +8784,12 @@ components:
           use_path_style:
             type: boolean
             default: true
-        required:
-        - access_key_id
-        - secret_access_key
-        - bucket_name
-        - endpoint
-        - region
+      required:
+      - access_key_id
+      - secret_access_key
+      - bucket_name
+      - endpoint
+      - region
     S3GcoreConfigResponse:
       title: S3 Gcore Config
       properties:
@@ -8728,10 +8818,10 @@ components:
           endpoint:
             type: string
             nullable: true
-        required:
-        - access_key_id
-        - secret_access_key
-        - bucket_name
+      required:
+      - access_key_id
+      - secret_access_key
+      - bucket_name
     S3OSSConfigResponse:
       title: S3 OSS Config
       allOf:
@@ -8799,9 +8889,9 @@ components:
           key_passphrase:
             type: string
             nullable: true
-        required:
-        - user
-        - hostname
+      required:
+      - user
+      - hostname
     SFTPConfigResponse:
       title: SFTP Config
       allOf:
@@ -8864,11 +8954,11 @@ components:
         properties:
           auth:
             $ref: '#/components/schemas/SLSAuthConfig'
-        required:
-        - region
-        - project
-        - log_store
-        - auth
+      required:
+      - region
+      - project
+      - log_store
+      - auth
     SLSConfigResponse:
       title: SLS Config
       allOf:
