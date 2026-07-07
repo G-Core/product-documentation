@@ -11,7 +11,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>After creating a GPU cluster, use the cluster details page to monitor nodes, manage cluster and node lifecycle, configure network interfaces, and access administration tools.</p>
 
-<p>Cluster management operates at two levels: **cluster-wide operations** (resize, reconfigure, delete) that affect all nodes at once, and **per-node operations** (rebuild, replace, power, apply settings) that target individual nodes independently.</p>
+<p>Cluster management operates at two levels: cluster-wide operations (resize, reconfigure, delete) that affect all nodes at once, and per-node operations (rebuild, replace, power, apply settings) that target individual nodes independently.</p>
 
 ## Access cluster details
 
@@ -19,14 +19,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
 3. Click on a cluster name to open the details page.
 
-<p>The cluster details page displays summary information in the header panel:</p>
+<p>The cluster details page shows the cluster name, current status badge, and cluster ID at the top. Below that, a header panel displays the following fields:</p>
 
 | Field | Description |
 |-------|-------------|
-| Cluster ID | Unique identifier for the cluster |
 | Pkey ID | InfiniBand Partition Key ID. Displayed as "-" if InfiniBand is not configured or during cluster provisioning |
 | OS Distro | Operating system image installed on all nodes |
-| Status | Current cluster state |
 | Region | Data center location |
 | Plan | Monthly pricing plan for the cluster |
 
@@ -43,6 +41,8 @@ Each node inherits its **cluster configuration** — image, SSH key, and user da
 </Info>
 
 ## Cluster lifecycle
+
+<p>Cluster lifecycle operations control the cluster as a whole — adjusting its size, updating the shared configuration, and deleting it when no longer needed.</p>
 
 ### Manage cluster size
 
@@ -66,7 +66,7 @@ Scaling down to zero nodes is not allowed. When scaling down, the system removes
 
 <p>**Step 1 — Update settings**</p>
 
-<p>The form shows the current **Image**, **SSH Key**, and **User data**. Click **Change** next to any field to select a new value. Click **Next** to proceed.</p>
+<p>The form shows the current **Image**, **SSH Key**, and **User data**, each with a dropdown labeled **Current**. Use the dropdown to select a new value, or leave it unchanged to keep the current setting. Click **Next** to proceed.</p>
 
 <p>**Step 2 — Choose update method**</p>
 
@@ -74,11 +74,11 @@ Scaling down to zero nodes is not allowed. When scaling down, the system removes
 
 | Option | Description |
 |--------|-------------|
-| **Save only** | Save the new configuration for future nodes only. Existing nodes are unaffected. |
-| **Apply settings now** | Apply to all or selected nodes immediately. |
-| **Schedule for later** | Apply at a specified time. Coming soon. |
+| **Save only** | The new configuration will be used for future scale-ups or the next rebuild. Existing nodes are unaffected. |
+| **Apply settings now** | Apply changes immediately to selected nodes or the entire cluster. |
+| **Schedule for later** | Apply updates automatically at a specific time. Coming soon. |
 
-<p>Under **Apply to**, choose **All Instances in Cluster** or **Selected Instances**. Click **Reconfigure** to confirm.</p>
+<p>When **Apply settings now** is selected, select **All Instances in Cluster** or **Selected Instances** under **Apply to**. Click **Reconfigure** to confirm.</p>
 
 <Warning>
 Changes that require a node rebuild permanently delete all data on the system volume of affected nodes. IP addresses, hostname, and attached volumes are preserved.
@@ -100,6 +100,8 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
 
 ## Node management
 
+<p>Node management operations target individual servers in the cluster independently — controlling power state, reinstalling the OS, swapping out failed nodes, and syncing updated cluster configuration to specific nodes.</p>
+
 ### Power actions
 
 <p>To control a single node:</p>
@@ -116,7 +118,7 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
 
 ### Rebuild node
 
-<p>Rebuild reinstalls the OS on a node. The dialog shows the currently running **Image**, **SSH Key**, and **User data** — click **Change** next to any of them to use different values for this rebuild. All data on local storage is deleted.</p>
+<p>Rebuild reinstalls the OS on a node. The dialog shows the current **Image**, **SSH Key**, and **User data**. Use the dropdown next to any field to select a new value for this rebuild, or leave it unchanged to keep the current setting. All data on local storage is deleted.</p>
 
 1. Click the actions menu (three dots) on the node row.
 2. Select **Rebuild**.
@@ -137,9 +139,9 @@ Rebuild deletes all data on the node's local storage. Node identity is preserved
 2. Select **Replace**.
 3. Confirm the operation.
 
-<p>Replace is also available via the [Replace bare metal GPU cluster server](/api-reference/cloud/gpu-bare-metal/replace-bare-metal-gpu-cluster-server) API endpoint.</p>
-
 ### Delete node
+
+<p>To permanently remove a single node from the cluster:</p>
 
 1. Locate the node in the cluster list.
 2. Click the actions menu (three dots) on the node row.
@@ -154,19 +156,23 @@ Deleting the last node in a cluster automatically deletes the entire cluster. Th
 
 <p>When a node's cluster configuration is outdated — because the cluster was reconfigured but that node was not yet updated — a warning appears in the node details panel.</p>
 
-1. Click on a node name in the **Overview** tab to open its details panel.
+1. Click a node name in the **Overview** tab to open its details panel.
 2. Click **Apply settings**.
 3. Review the diff table: each row shows the **Setting**, **Current** value, and **After Apply** value.
 4. Select or deselect nodes to include.
 5. Type `Apply` and click **Apply**.
 
+<p>To apply settings to multiple outdated nodes at once, select them using checkboxes in the **Overview** tab, click **Group actions**, and select **Apply settings**.</p>
+
 <Frame>![Node details panel showing Apply settings and Rebuild buttons with outdated configuration warning](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-details-panel.png)</Frame>
 
 ## Networking
 
+<p>Network interfaces are assigned to each node at cluster creation. The Networking tab provides visibility into each node's interfaces and supports adding new ones after creation.</p>
+
 ### View interfaces
 
-<p>The **Networking** tab displays network interfaces for each node. Click on a node name to expand its interface details.</p>
+<p>The **Networking** tab displays network interfaces for each node. Click a node name to expand its interface details.</p>
 
 | Type | Description |
 |------|-------------|
@@ -185,7 +191,7 @@ Deleting the last node in a cluster automatically deletes the entire cluster. Th
 <p>To add network interfaces on a specific node:</p>
 
 1. Navigate to the **Networking** tab.
-2. Click on a node to expand its details.
+2. Click a node to expand its details.
 3. Click **Add Interface** or **Add Sub-Interface**.
 4. Configure the interface type (public or private) and IP allocation settings as supported by the service.
 
@@ -194,6 +200,8 @@ Only network interfaces can be modified on individual nodes after cluster creati
 </Info>
 
 ## Administration
+
+<p>Administrative tools for organizing clusters with tags, tracking operations through the audit log, and accessing nodes for troubleshooting via the browser console.</p>
 
 ### Tags
 
@@ -247,7 +255,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 <Info>
-Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes for provisioning operations.
+Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. Poll <code>GET&nbsp;/cloud/v1/tasks/&#123;task_id&#125;</code> every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes for provisioning operations.
 </Info>
 
 ## List bare metal GPU clusters
@@ -631,22 +639,66 @@ The Python and Go SDKs (v0.48.0) do not expose the cluster action endpoint direc
 
 ## Rebuild a specific node
 
-<p>Reinstalls the OS on a single node without affecting other nodes in the cluster. All local storage on the node is erased. Pass `image_id`, `ssh_key_name`, or `user_data` to use different values for this rebuild; omit any field to keep the cluster's current setting.</p>
+<p>Reinstalls the OS on a single node without affecting other nodes in the cluster. All local storage on the node is erased. The rebuild uses the image, SSH key, and user data currently configured in the cluster's server settings — to use different values, first update the server settings via <code>PATCH&nbsp;/cloud/v3/gpu/baremetal/&#123;project_id&#125;/&#123;region_id&#125;/clusters/&#123;cluster_id&#125;/servers_settings</code>, then trigger the rebuild.</p>
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    task_id_list = client.cloud.gpu_baremetal.clusters.servers.rebuild(
+        server_id="{SERVER_ID}",
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(task_id_list.tasks)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Servers.Rebuild(context.TODO(),
+            "{SERVER_ID}",
+            cloud.GPUBaremetalClusterServerRebuildParams{
+                ClusterID: "{CLUSTER_ID}",
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v4/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}/rebuild" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "image_id": "{IMAGE_ID}",
-        "ssh_key_name": "{SSH_KEY_NAME}"
-      }'
+      "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}/rebuild" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
-
-    <p>All body fields are optional. Omit any field to keep the cluster's current value.</p>
 
     Response:
 
