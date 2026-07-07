@@ -78,7 +78,7 @@ Same result: empty page on deploy.
 |------|---------|--------|
 | `portal` | `Customer Portal` | Active |
 | `api` | `REST API` | Active |
-| `terraform` | `Terraform` | Planned |
+| `terraform` | `Terraform` | Active |
 | `cli` | `CLI` | Planned |
 
 - `portal` always comes first — it is the default tab
