@@ -4,229 +4,248 @@ sidebarTitle: Connect external command lines
 ai-navigation: Install and configure AWS CLI, S3cmd, and AWS JavaScript SDK v2 to connect to Gcore Object Storage using S3-compatible credentials and region endpoints.
 ---
 
-[Gcore Object Storage](https://gcore.com/storage) is compatible with S3-based tools including AWS CLI and S3cmd. The sections below cover installing and configuring each tool to connect to Gcore Object Storage.
+AWS CLI, S3cmd, and the AWS JavaScript SDK all use the same credentials to connect to Gcore Object Storage: an access key, a secret key, and an [endpoint URL](/storage/manage-object-storage/s3-service-urls-and-default-region-names). The setup format differs by tool — select a tab for the specific steps.
 
-## AWS CLI
+<Tabs>
+  <Tab title="AWS CLI">
+    AWS CLI integrates with Gcore Object Storage for bucket management using commands from the [Amazon documentation](https://docs.aws.amazon.com/cli/latest/reference).
 
-AWS CLI, or the AWS Command Line Interface, is the software for managing AWS services. It integrates with Gcore Object Storage for bucket management using commands from [Amazon's official documentation](https://docs.aws.amazon.com/cli/latest/reference).
+    ### Installation
 
-### Install AWS CLI
+    <Steps>
+      <Step title="Install AWS CLI">
+        Follow the [installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to install the latest version.
+      </Step>
+      <Step title="Verify installation">
+        Run the following command to confirm the installation succeeded:
 
-1. Follow the instructions in the [Amazon article](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) to install the latest version of the AWS CLI.
+        ```sh
+        aws --version
+        ```
 
-2. To verify that the installation was successful, run the `aws --version` command in the terminal.
+        The output shows the installed version and operating system:
 
-```sh
-aws --version
-```
+        ```sh
+        aws-cli/2.7.24 Python/3.8.8 Windows/10 exe/AMD64 prompt/off
+        ```
 
-The output shows the installed version and operating system. For example:
+        If the terminal cannot find the `aws` command, consult the [troubleshooting guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-troubleshooting.html).
+      </Step>
+    </Steps>
 
-```sh
-aws-cli/2.7.24 Python/3.8.8 Windows/10 exe/AMD64 prompt/off
-```
+    ### Configuration
 
-If the terminal cannot find the `aws` command, refer to the [Troubleshooting AWS CLI errors](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-troubleshooting.html) guide.
+    <Steps>
+      <Step title="Launch the configuration wizard">
+        Run `aws configure`.
+      </Step>
+      <Step title="Enter storage credentials">
+        Provide the following values:
 
-### Configure your storage for use with AWS CLI
+        - **Access Key**: the access key from the storage Details dialog.
+        - **Secret Key**: the secret key from the storage Details dialog.
+        - **Default region name**: the [region name](/storage/manage-object-storage/s3-service-urls-and-default-region-names) for the storage location — `s-ed1` for Luxembourg-2.
+        - Leave all other parameters at their default values.
+      </Step>
+      <Step title="Verify the connection">
+        Run the following command, replacing the endpoint with the actual value from the [service URLs](/storage/manage-object-storage/s3-service-urls-and-default-region-names) reference:
 
-1. Run the `aws configure` command to launch the configuration wizard.
+        ```sh
+        aws s3 ls --endpoint-url=https://s-ed1.cloud.gcore.lu
+        ```
 
-2. Provide the following information:
+        Correct credentials produce no errors and list any existing buckets. An empty output with exit code 0 is expected for new storage with no buckets.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="S3cmd">
+    S3cmd is a free command-line tool for uploading, retrieving, and managing objects in S3-compatible storage. The full command reference is in the [S3cmd documentation](https://s3tools.org/usage).
 
-  * **Access Key**: Enter the access key from the storage Details dialog.
-  * **Secret Key**: Enter the secret key from the storage Details dialog.
-  * **Default region name**: Enter your [storage region](/storage/manage-object-storage/s3-service-urls-and-default-region-names), for example, `s-ed1`.
-  * Leave all other parameters at their default values.
+    ### Installation
 
-3. To verify the configuration, run the following command:
+    <Steps>
+      <Step title="Download S3cmd">
+        Go to the [Download](https://s3tools.org/download) page in the S3cmd documentation.
+      </Step>
+      <Step title="Install the package">
+        Download and install the package for the operating system.
+      </Step>
+    </Steps>
 
-```sh
-aws s3 ls --endpoint-url=https://s-ed1.cloud.gcore.lu
-```
+    ### Configuration
 
-Replace `s-ed1.cloud.gcore.lu` with the actual storage endpoint from the [S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names) article.
+    Two methods are available: the interactive wizard and direct command-line input for automated environments.
 
-If the credentials are correct, the command exits without errors and lists any existing buckets. An empty output with exit code 0 is expected for a new storage with no buckets.
+    <Accordion title="With wizard">
+      <Steps>
+        <Step title="Launch the wizard">
+          Run the following command:
 
-## S3cmd
+          ```sh
+          s3cmd --configure
+          ```
+        </Step>
+        <Step title="Enter storage credentials">
+          Provide the following values:
 
-S3cmd is a free command line tool for uploading, retrieving, and managing data in Amazon S3 and other cloud storage services. For the full command reference, see the [official S3cmd documentation](https://s3tools.org/usage).
+          - **Access Key**: the access key from the storage Details dialog.
+          - **Secret Key**: the secret key from the storage Details dialog.
+          - **S3 Endpoint**: the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names) — `s-ed1.cloud.gcore.lu` for Luxembourg-2.
+          - **DNS-style bucket+hostname**: the same endpoint — `s-ed1.cloud.gcore.lu`. Optionally append the port: `s-ed1.cloud.gcore.lu:80`.
+          - Leave all other parameters at their default values.
+        </Step>
+      </Steps>
 
-### Install S3cmd
+      S3cmd verifies the credentials and reports a success message:
 
-1. Go to the [Download](https://s3tools.org/download) section in the S3cmd documentation.
+      ```sh
+      Success. Your access key and secret key worked fine :-)
+      ```
 
-2. Download the package for your operating system.
+      The configuration is saved to `~/.s3cfg`:
 
-3. Install the latest version of S3cmd.
+      ```toml
+      [default]
+      access_key = 123ABC456DEF...
+      secret_key = EXAMPLE...
+      host_base = s-ed1.cloud.gcore.lu
+      host_bucket = s-ed1.cloud.gcore.lu
+      ```
+    </Accordion>
 
-### Configure your storage for use with S3cmd
+    <Accordion title="Without wizard">
+      For scripted or automated environments that cannot accept interactive input, write the configuration directly to `~/.s3cfg`:
 
-#### Configure with the wizard
+      ```sh
+      s3cmd --access_key 12*****6DEF --secret_key EX***** --host s-ed1.cloud.gcore.lu --host-bucket s-ed1.cloud.gcore.lu
+      ```
 
-1. Run the following command to launch the configuration wizard:
+      Where:
 
-```sh
-s3cmd --configure
-```
+      - `12*****6DEF` is the access key from the storage Details dialog.
+      - `EX*****` is the secret key from the storage Details dialog.
+      - `s-ed1.cloud.gcore.lu` is the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
+    </Accordion>
+  </Tab>
+  <Tab title="AWS JavaScript SDK">
+    <Note>The code examples use AWS SDK for JavaScript v2 (`aws-sdk`), which is in maintenance mode but remains functional. The [migration guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/migrating-to-v3.html) covers the path to SDK v3 (`@aws-sdk/client-s3`), which AWS recommends for new projects.</Note>
 
-2. Specify the following information:
+    ### SDK setup
 
-  * **Access Key**: Enter the access key from the storage Details dialog.
-  * **Secret Key**: Enter the secret key from the storage Details dialog.
-  * **S3 Endpoint**: Enter the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names), for example, `s-ed1.cloud.gcore.lu`.
-  * **DNS-style bucket+hostname**: Enter the storage endpoint again, for example, `s-ed1.cloud.gcore.lu`. Optionally append the port: `s-ed1.cloud.gcore.lu:80`.
-  * Leave all other parameters at their default values.
+    Add the AWS SDK script to the HTML page:
 
-S3cmd will attempt to connect to the storage. If the credentials are correct, the output shows:
+    ```html
+    <html>
+        <head>
+            <script src="https://sdk.amazonaws.com/js/aws-sdk-2.742.0.min.js"></script>
+            <script src="./js/index2.js"></script>
+        </head>
+        <body>
+            <h1>List of files</h1>
+            <ul id="list">
+            </ul>
+        </body>
+    </html>
+    ```
 
-```sh
-Success. Your access key and secret key worked fine :-)
-```
+    ### Storage operations
 
-S3cmd saves the configuration to `~/.s3cfg` in the following format:
+    #### Credentials and bucket name
 
-```toml
-[default]
-access_key = 123ABC456DEF...
-secret_key = EXAMPLE...
-host_base = s-ed1.cloud.gcore.lu
-host_bucket = s-ed1.cloud.gcore.lu
-```
+    Open the configuration file (`./js/index2.js`) and specify the storage credentials and bucket name:
 
-#### Configure without the wizard
+    ```js
+    var s3BucketName = "test";
+    var host = "https://s-ed1.cloud.gcore.lu";
+    var access_key = "1234";
+    var secret_key = "5678";
 
-Use this method for scripted or automated environments where interactive input is not available. The command writes the configuration directly to `~/.s3cfg`:
+    AWS.config.accessKeyId = access_key;
+    AWS.config.secretAccessKey = secret_key;
+    AWS.config.endpoint = host;
 
-```sh
-s3cmd --access_key 12*****6DEF --secret_key EX***** --host s-ed1.cloud.gcore.lu --host-bucket s-ed1.cloud.gcore.lu
-```
-
-Where:
-
-  * `12*****6DEF` is the access key from the storage Details dialog.
-  * `EX*****` is the secret key from the storage Details dialog.
-  * `s-ed1.cloud.gcore.lu` is the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
-
-## AWS JavaScript SDK
-
-<Note>The examples below use AWS SDK for JavaScript v2 (`aws-sdk`). AWS has released SDK v3 (`@aws-sdk/client-s3`) as the current recommended version. The v2 SDK is in maintenance mode but still functional. For new projects, see the [AWS SDK for JavaScript v3 migration guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/migrating-to-v3.html).</Note>
-
-### Connect AWS JavaScript SDK
-
-To connect the interface with your storage, add the AWS SDK to your HTML page:
-
-```html
-<html>
-    <head>
-        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.742.0.min.js"></script>
-        <script src="./js/index2.js"></script>
-    </head>
-    <body>
-        <h1>List of files</h1>
-        <ul id="list">
-        </ul>
-    </body>
-</html>
-```
-
-### Manage storage with AWS JavaScript SDK
-
-#### Configure storage and create an S3 bucket
-
-Open the configuration file (`./js/index2.js`) and specify the storage credentials and bucket name:
-
-```js
-var s3BucketName = "test";
-var host = "https://s-ed1.cloud.gcore.lu";
-var access_key = "1234";
-var secret_key = "5678";
-
-AWS.config.accessKeyId = access_key;
-AWS.config.secretAccessKey = secret_key;
-AWS.config.endpoint = host;
-
-var s3 = new AWS.S3({
-    sslEnabled: true
-});
-```
-
-Where:
-
-  * `test` is the bucket name;
-  * `https://s-ed1.cloud.gcore.lu` is the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names);
-  * `1234` is the access key from the Gcore Customer Portal.
-  * `5678` is the secret key from the Gcore Customer Portal.
-
-#### Set CORS policy on a bucket
-
-Below is a wildcard CORS policy that allows cross-origin GET, HEAD, PUT, POST, and DELETE requests from all sources.
-
-<Note>This configuration is permissive and may be insecure for production environments.</Note>
-
-```xml
-<CORSConfiguration>
-<CORSRule>
-    <ID>Allow everything</ID>
-    <AllowedOrigin>*</AllowedOrigin>
-    <AllowedMethod>GET</AllowedMethod>
-    <AllowedMethod>HEAD</AllowedMethod>
-    <AllowedMethod>PUT</AllowedMethod>
-    <AllowedMethod>POST</AllowedMethod>
-    <AllowedMethod>DELETE</AllowedMethod>
-    <AllowedHeader>*</AllowedHeader>
-    <MaxAgeSeconds>30</MaxAgeSeconds>
-</CORSRule>
-</CORSConfiguration>
-```
-
-After creating the policy file, apply it to the bucket:
-
-```sh
-s3cmd setcors cors.xml s3://<bucket_name>
-```
-
-#### Add objects to a bucket
-
-The example adds two objects (`test_file1` and `test_file2`) to the `s3test` bucket.
-
-```js
-var params1 = {
-   Bucket: "s3test", Key: "test_file1",
-   Body: "test"
-};
-var params2 = {
-   Bucket: "s3test", Key: "test_file2",
-   Body: "test"
-};
-var request = s3.putObject(params1);
-request.send(function (err, data) {
-   if (err) console.log("Error:", err.code, err.message);
-   else console.log(data);
-});
-var request = s3.putObject(params2);
-request.send(function (err, data) {
-   if (err) console.log("Error:", err.code, err.message);
-   else console.log(data);
-});
-```
-
-#### Get a list of objects
-
-The example retrieves a list of objects in the `test_2` bucket.
-
-```js
-params = {
-    Bucket: "test_2"
-};
-s3.listObjects(params, function(err, data) {
-    if (err) return;
-    data.Contents.map(function(info) {
-        var ul = document.getElementById("list");
-        var li = document.createElement("li");
-        li.innerText = info.Key + " " + info.LastModified;
-        ul.append(li);
+    var s3 = new AWS.S3({
+        sslEnabled: true
     });
-});
-```
+    ```
+
+    Where:
+
+    - `test` is the bucket name.
+    - `https://s-ed1.cloud.gcore.lu` is the [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
+    - `1234` is the access key from the Customer Portal.
+    - `5678` is the secret key from the Customer Portal.
+
+    #### CORS policy
+
+    A wildcard CORS policy allows cross-origin GET, HEAD, PUT, POST, and DELETE requests from all sources:
+
+    <Note>This configuration is permissive and may be insecure for production environments.</Note>
+
+    ```xml
+    <CORSConfiguration>
+    <CORSRule>
+        <ID>Allow everything</ID>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>GET</AllowedMethod>
+        <AllowedMethod>HEAD</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <AllowedHeader>*</AllowedHeader>
+        <MaxAgeSeconds>30</MaxAgeSeconds>
+    </CORSRule>
+    </CORSConfiguration>
+    ```
+
+    Apply the policy to the bucket:
+
+    ```sh
+    s3cmd setcors cors.xml s3://<bucket_name>
+    ```
+
+    #### Add objects to a bucket
+
+    The following example adds two objects (`test_file1` and `test_file2`) to the `s3test` bucket:
+
+    ```js
+    var params1 = {
+       Bucket: "s3test", Key: "test_file1",
+       Body: "test"
+    };
+    var params2 = {
+       Bucket: "s3test", Key: "test_file2",
+       Body: "test"
+    };
+    var request = s3.putObject(params1);
+    request.send(function (err, data) {
+       if (err) console.log("Error:", err.code, err.message);
+       else console.log(data);
+    });
+    var request = s3.putObject(params2);
+    request.send(function (err, data) {
+       if (err) console.log("Error:", err.code, err.message);
+       else console.log(data);
+    });
+    ```
+
+    #### List objects in a bucket
+
+    The following example retrieves all objects in the `test_2` bucket:
+
+    ```js
+    params = {
+        Bucket: "test_2"
+    };
+    s3.listObjects(params, function(err, data) {
+        if (err) return;
+        data.Contents.map(function(info) {
+            var ul = document.getElementById("list");
+            var li = document.createElement("li");
+            li.innerText = info.Key + " " + info.LastModified;
+            ul.append(li);
+        });
+    });
+    ```
+  </Tab>
+</Tabs>
