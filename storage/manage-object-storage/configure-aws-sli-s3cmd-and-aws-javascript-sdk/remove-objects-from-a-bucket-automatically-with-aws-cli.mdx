@@ -1,16 +1,14 @@
 ---
-title: Remove objects from a bucket automatically with AWS CLI
-sidebarTitle: Set the Lifecycle policy
+title: Automatic object removal via AWS CLI
+sidebarTitle: Lifecycle policy
 ai-navigation: Configure S3 lifecycle policies in Gcore Object Storage using AWS CLI to automatically expire and delete bucket objects after a specified number of days.
 ---
 
-## Lifecycle policy overview
-
-A lifecycle policy is an XML or JSON file containing rules that automate object removal based on the object's age and other parameters, following the [lifecycle configuration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html) standard. Gcore supports lifecycle policies where an expiration time can be set; objects are automatically deleted from the bucket once that time is reached.
+Lifecycle policies in Gcore Object Storage automatically delete objects after a configured number of days, following the [AWS S3 lifecycle configuration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html) standard.
 
 ## Lifecycle policy logic
 
-Object removal runs around midnight UTC. Three states determine when an object is removed:
+Object removal runs around midnight UTC. Three conditions govern deletion timing:
 
 1. **Lifecycle policy set before upload.** If the policy is set for 1 day and the object is uploaded on January 2, it is removed on January 4.
 
@@ -18,87 +16,92 @@ Object removal runs around midnight UTC. Three states determine when an object i
 
 3. **Lifecycle policy removed.** Deleting the lifecycle policy from the bucket stops automatic removal — objects already in the bucket are kept.
 
-## Gcore lifecycle configuration elements
+## Lifecycle configuration elements
 
-A Gcore lifecycle configuration file looks like this:
-
-```xml
-<LifecycleConfiguration>
-  <Rule>
-    <ID>...</ID>
-    <Prefix/>
-    <Status>Enabled</Status>
-    <Expiration>
-      <Days>...</Days>
-    </Expiration>
-  </Rule>
-</LifecycleConfiguration>
-```
-
-| Element | Description |
-|---------|-------------|
-| `<Rule>` | Wraps all settings for one rule. |
-| `<ID>` | Unique rule identifier — up to 255 characters, letters, digits, and underscores. |
-| `<Prefix/>` | Leave empty to apply the rule to the entire bucket; specify a folder name to scope the rule to that folder only. |
-| `<Status>` | `Enabled` activates the rule; `Disabled` suspends it without deleting it. |
-| `<Expiration><Days>` | Number of days after which objects are automatically deleted. |
-
-## Manage a lifecycle policy with AWS CLI
-
-AWS CLI provides three commands for managing lifecycle policies: `put-bucket-lifecycle` to apply a policy, `get-bucket-lifecycle-configuration` to verify it, and `delete-bucket-lifecycle` to remove it.
-
-### Add a lifecycle policy
-
-The following steps apply a lifecycle policy to an Object Storage bucket using a JSON configuration file.
-
-1. Create a `lifecycle.json` file with the following content:
+AWS CLI uses a JSON configuration file. The file structure is:
 
 ```json
 {
   "Rules": [
     {
-      "ID": "one_day",
+      "ID": "...",
       "Prefix": "",
       "Status": "Enabled",
       "Expiration": {
-        "Days": 1
+        "Days": ...
       }
     }
   ]
 }
 ```
 
-where:
+| Field | Description |
+|-------|-------------|
+| `ID` | Unique rule identifier — up to 255 characters, letters, digits, and underscores. |
+| `Prefix` | Leave empty to apply the rule to the entire bucket; specify a folder name to scope the rule to that folder only. |
+| `Status` | `"Enabled"` activates the rule; `"Disabled"` suspends it without deleting it. |
+| `Expiration.Days` | Number of days after which objects are automatically deleted. |
 
-- `one_day` — rule ID,
-- `""` (empty prefix) — the rule applies to the entire bucket,
-- `"Enabled"` — the rule is active,
-- `1` — objects are deleted after 1 day.
+## AWS CLI lifecycle management
 
-<Note>
-To apply the rule to a specific folder, set `"Prefix"` to the folder name — for example, `"Prefix": "deleteme/"`.
-</Note>
+AWS CLI provides three commands for managing lifecycle policies: `put-bucket-lifecycle` to apply a policy, `get-bucket-lifecycle-configuration` to verify it, and `delete-bucket-lifecycle` to remove it.
 
-2. Run the following command from the directory containing `lifecycle.json`, replacing the placeholder values:
+### Applying a lifecycle policy
 
-```sh
-aws s3api put-bucket-lifecycle --bucket my-bucket --lifecycle-configuration file://lifecycle.json --endpoint-url=https://<storage-hostname>
-```
+<Steps>
+  <Step title="Create the configuration file">
+    Create a `lifecycle.json` file with the following content:
 
-where:
+    ```json
+    {
+      "Rules": [
+        {
+          "ID": "one_day",
+          "Prefix": "",
+          "Status": "Enabled",
+          "Expiration": {
+            "Days": 1
+          }
+        }
+      ]
+    }
+    ```
 
-- `my-bucket` — the name of the bucket,
-- `<storage-hostname>` — the storage endpoint hostname, found in the **Details** section of the storage in the [Gcore Customer Portal](https://portal.gcore.com); see [S3 URLs](/storage/manage-object-storage/s3-service-urls-and-default-region-names) for all available hostnames.
+    | Parameter | Description |
+    |-----------|-------------|
+    | `one_day` | Rule ID. |
+    | `""` (empty prefix) | The rule applies to the entire bucket. |
+    | `"Enabled"` | The rule is active. |
+    | `1` | Objects are deleted after 1 day. |
 
-3. Verify the policy was applied:
+    <Note>
+    To apply the rule to a specific folder, set `"Prefix"` to the folder name: `"Prefix": "deleteme/"`.
+    </Note>
+  </Step>
+  <Step title="Apply the policy">
+    Run the following command from the directory containing `lifecycle.json`, replacing the placeholder values:
 
-```sh
-aws s3api get-bucket-lifecycle-configuration --bucket my-bucket --endpoint-url=https://<storage-hostname>
-```
+    ```sh
+    aws s3api put-bucket-lifecycle --bucket my-bucket --lifecycle-configuration file://lifecycle.json --endpoint-url=https://<storage-hostname>
+    ```
 
-The response contains the applied policy as JSON.
+    | Parameter | Description |
+    |-----------|-------------|
+    | `my-bucket` | The name of the bucket. |
+    | `<storage-hostname>` | The storage endpoint hostname from the **Details** section in the [Gcore Customer Portal](https://portal.gcore.com) — all hostnames are listed in [S3 URLs](/storage/manage-object-storage/s3-service-urls-and-default-region-names). |
+  </Step>
+  <Step title="Verify the configuration">
+    Run the following command to check the current lifecycle configuration:
 
-### Delete a lifecycle policy
+    ```sh
+    aws s3api get-bucket-lifecycle-configuration --bucket my-bucket --endpoint-url=https://<storage-hostname>
+    ```
+
+    The response contains the applied policy as JSON.
+  </Step>
+</Steps>
+
+### Deleting a lifecycle policy
 
 Run the following command to remove the lifecycle policy from the bucket:
 
@@ -106,8 +109,7 @@ Run the following command to remove the lifecycle policy from the bucket:
 aws s3api delete-bucket-lifecycle --bucket my-bucket --endpoint-url=https://<storage-hostname>
 ```
 
-where `my-bucket` and `<storage-hostname>` are the same values used when applying the policy.
-
-## Manage a lifecycle policy via the Customer Portal
-
-For S3 storage in Luxembourg, lifecycle policies can also be managed in the Customer Portal — see [lifecycle policy](/storage/manage-object-storage/manage-buckets-via-the-control-panel#adding-lifecycle-policy-for-s3-in-luxembourg-only) in the bucket management guide.
+| Parameter | Description |
+|-----------|-------------|
+| `my-bucket` | The name of the bucket. |
+| `<storage-hostname>` | The storage endpoint hostname. |
