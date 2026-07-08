@@ -1,7 +1,7 @@
 ---
 title: Getting started with managed DNS
 sidebarTitle: Getting started (Create a DNS zone)
-ai-navigation: Create DNS zones in Gcore Managed DNS by specifying domain or subdomain names in the Customer Portal or API, updating NS records to Gcore nameservers, and managing zone records, TTL settings, and zone status through the All zones interface.
+ai-navigation: Create DNS zones in Gcore Managed DNS by specifying domain or subdomain names in the Customer Portal or API, updating NS records to Gcore nameservers, and managing zone records, TTL settings, and zone status through the All zones interface. Verify zone delegation status via the portal or the Check Delegation Status API endpoint, which returns gcore_authorized_count and zone_exists to confirm correct NS configuration.
 ---
 
 To use Managed DNS, you need to create a DNS zone for your domain or subdomain in the Gcore Customer Portal or via API and specify Gcore's NS servers for your domain. You can then use Gcore's DNS infrastructure features.
@@ -60,3 +60,32 @@ You can manage a DNS zone in the [All zones](https://portal.gcore.com/dns/zones)
 
 
 <Frame>![Manage DNS zones](/images/docs/dns/manage-a-dns-zone/getting-started-dns-60.png)</Frame>
+
+## Verify zone delegation
+
+Two methods are available to check whether a DNS zone is correctly delegated to Gcore.
+
+**Customer Portal:** In the [All zones](https://portal.gcore.com/dns/zones) section, check the status indicator next to the zone. A disabled zone will show a turned-off state — records added in the portal will not be active until the zone is re-enabled.
+
+**Delegation Status API:** Use the [Check Delegation Status](/api-reference/dns/analyze/check-delegation-status) endpoint to verify delegation programmatically:
+
+```bash
+curl -s "https://api.gcore.com/dns/v2/analyze/{zone_name}/delegation-status" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The response confirms whether the zone exists and how many Gcore nameservers are currently authoritative:
+
+```json
+{
+  "zone_exists": true,
+  "gcore_authorized_count": 2,
+  "non_gcore_authorized_count": 0,
+  "authoritative_name_servers": [
+    { "name": "ns1.gcorelabs.net", "ipv4Addresses": ["..."] },
+    { "name": "ns2.gcdn.services", "ipv4Addresses": ["..."] }
+  ]
+}
+```
+
+If `gcore_authorized_count` is `0`, the NS records at the registrar have not been updated to point to Gcore nameservers yet, or propagation is still in progress (up to 24 hours).
