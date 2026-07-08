@@ -1,7 +1,7 @@
 ---
 title: Getting started with Managed DNS
 sidebarTitle: Getting started (Create a DNS zone)
-ai-navigation: Create and manage DNS zones in Gcore Managed DNS - add a zone, update NS records to Gcore nameservers, and manage records, TTL, and zone status.
+ai-navigation: Create and manage DNS zones in Gcore Managed DNS, add a zone, update NS records, and verify zone delegation status.
 ---
 
 To use Managed DNS, create a DNS zone for a domain or subdomain in the [Gcore Customer Portal](https://portal.gcore.com) and point the domain to Gcore's nameservers. The zone can then serve DNS queries through Gcore's global network.
@@ -54,3 +54,32 @@ DNS zones are managed in the [All&nbsp;zones](https://portal.gcore.com/dns/zones
 - **Delete zone.** Delete the zone.
 
 <Frame>![Manage DNS zones](/images/docs/dns/manage-a-dns-zone/getting-started-dns-60.png)</Frame>
+
+## Verify zone delegation
+
+Two methods confirm whether a DNS zone is correctly delegated to Gcore.
+
+In the All zones section of the Customer Portal, check the status indicator next to the zone. A disabled zone shows a turned-off state, so records added in the portal are not active until the zone is re-enabled.
+
+The [Delegation status](/api-reference/dns/analyze/check-delegation-status) endpoint verifies delegation programmatically:
+
+```bash
+curl -s "https://api.gcore.com/dns/v2/analyze/{zone_name}/delegation-status" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The response confirms whether the zone exists and how many Gcore nameservers are currently authoritative:
+
+```json
+{
+  "zone_exists": true,
+  "gcore_authorized_count": 2,
+  "non_gcore_authorized_count": 0,
+  "authoritative_name_servers": [
+    { "name": "ns1.gcorelabs.net", "ipv4Addresses": ["..."] },
+    { "name": "ns2.gcdn.services", "ipv4Addresses": ["..."] }
+  ]
+}
+```
+
+If `gcore_authorized_count` is `0`, the NS records at the registrar have not been updated to point to Gcore nameservers, or propagation is still in progress (up to 24 hours).
