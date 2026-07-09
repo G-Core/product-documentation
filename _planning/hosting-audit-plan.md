@@ -19,7 +19,7 @@ Statuses: `todo` | `in_progress` | `done` | `blocked` | `reopen`
 
 | Status | Ticket | File |
 |--------|--------|------|
-| done        | DOC-1701 | `hosting/virtual-servers/order-a-virtual-server.mdx` |
+| done        | DOC-1704 | `hosting/virtual-servers/order-a-virtual-server.mdx` |
 | done        | DOC-1705 | `hosting/virtual-servers/upgrade-your-virtual-server.mdx` |
 | done       | DOC-1706 | `hosting/virtual-servers/delete-a-virtual-server.mdx` |
 
