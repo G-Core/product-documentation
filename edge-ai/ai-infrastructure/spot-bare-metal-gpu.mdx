@@ -1,10 +1,17 @@
 ---
 title: "Spot Bare Metal GPU"
 sidebarTitle: "Spot Bare Metal GPU"
-ai-navigation: Deploy Spot Bare Metal GPU clusters with discounted pricing for interruptible workloads like batch processing and testing, understanding reclamation with 24-hour notice, data persistence on file shares and object storage, and availability by region.
+ai-navigation: Deploy Spot Bare Metal GPU clusters with discounted pricing for interruptible workloads via Customer Portal or REST API - check availability, create clusters when capacity allows, and understand reclamation with 24-hour notice.
 ---
 
-Spot Bare Metal GPU clusters are discounted GPU servers that utilize unused capacity at reduced pricing. They provide the same hardware specifications and functionality as standard Bare Metal GPU clusters, with one key difference: they can be reclaimed with 24 hours' notice.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Spot Bare Metal GPU clusters are discounted GPU servers running on unused capacity at reduced pricing. They provide the same hardware specifications and functionality as standard Bare Metal GPU clusters, with one key difference: they can be reclaimed with 24 hours' notice.</p>
+
+<p>This makes them a good fit for batch processing, experiments, testing, and development — workloads that can tolerate interruption. Production inference, time-critical tasks, and long-running jobs without checkpoints should run on standard Bare Metal GPU instead.</p>
 
 ## Spot vs On-demand
 
@@ -15,23 +22,19 @@ Spot Bare Metal GPU clusters are discounted GPU servers that utilize unused capa
 | Use case | Production workloads, critical applications | Cost-sensitive workloads that tolerate interruption |
 | Capacity source | Dedicated capacity | Unused/excess capacity |
 
-## When to use Spot clusters
-
-Spot clusters are ideal for interruptible workloads, such as batch processing, experiments, testing, and development. They should not be used for production inference, time-critical tasks, long-running jobs without checkpoints, or any workload where unexpected reclamation could have serious consequences.
-
 ## Availability
 
-Spot Bare Metal GPU availability depends on region and current stock. When available, a **Spot Bare Metal GPU** option appears alongside the standard **Bare Metal GPU** in the cluster type selector:
+<p>Spot Bare Metal GPU availability depends on region and current stock. When available, a <strong>Spot Bare Metal GPU</strong> option appears alongside the standard <strong>Bare Metal GPU</strong> in the cluster type selector:</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/step-gpu-cluster-type.png" alt="GPU Cluster type selector" />
 </Frame>
 
-If only **Bare Metal GPU** appears in the selector, Spot is not currently available in that region. In some regions, Spot may appear but show "Out of Stock"—this indicates the option exists, but no capacity is currently available.
+<p>If only <strong>Bare Metal GPU</strong> appears in the selector, Spot is not currently available in that region. In some regions, Spot may appear but show "Out of Stock" — this indicates the option exists, but no capacity is currently available.</p>
 
 ## Reclamation process
 
-Spot clusters can be reclaimed when Gcore needs the capacity for on-demand workloads or other operational requirements. The reclamation process follows a fixed timeline:
+<p>Spot clusters can be reclaimed when Gcore needs the capacity for on-demand workloads or other operational requirements. The reclamation process follows a fixed timeline:</p>
 
 1. An email notification is sent to the account owner.
 2. A 24-hour window begins to save data, transfer workloads, and prepare for cluster deletion.
@@ -43,7 +46,7 @@ The notice period is fixed and starts when the email is sent. After 24 hours, th
 
 ## Data preservation
 
-When a Spot cluster is deleted, data is handled as follows:
+<p>When a Spot cluster is deleted, data is handled as follows:</p>
 
 | Resource | What happens |
 |----------|--------------|
@@ -51,30 +54,329 @@ When a Spot cluster is deleted, data is handled as follows:
 | File shares | Not affected (independent resource) |
 | Object storage | Not affected (independent resource) |
 
-To protect critical data, use [file shares](/cloud/file-shares/configure-file-shares) for datasets, checkpoints, and model weights. Save outputs and backups to [object storage](/storage/manage-object-storage/manage-buckets-via-the-control-panel). Implement regular checkpointing in training scripts every 1-4 hours. When a reclamation notice is received, prioritize transferring any data not already on persistent storage.
+<p>To protect critical data, use [file&nbsp;shares](/cloud/file-shares/configure-file-shares) for datasets, checkpoints, and model weights. Save outputs and backups to [object&nbsp;storage](/storage/manage-object-storage/manage-buckets-via-the-control-panel). Implement regular checkpointing in training scripts every 1–4 hours. When a reclamation notice is received, prioritize transferring any data not already on persistent storage.</p>
 
 ## Pricing and billing
 
-Spot clusters are billed at a discounted rate compared to standard Bare Metal GPU. The exact discount varies by region and GPU model. The flavor selection card displays both hourly and monthly rates.
+<p>Spot clusters are billed at a discounted rate compared to standard Bare Metal GPU. The exact discount varies by region and GPU model. The flavor selection card displays both hourly and monthly rates.</p>
 
-Billing is per entire node (all GPUs on the server), calculated per minute, and aggregated hourly. Billing stops when the cluster is deleted, whether by user action or reclamation.
+<p>Billing is per entire node (all GPUs on the server), calculated per minute, and aggregated hourly. Billing stops when the cluster is deleted, whether by user action or reclamation.</p>
 
-A minimum account balance is required before provisioning. If the balance is insufficient, provisioning will fail. For details, see [GPU Cloud billing.](/edge-ai/billing)
+<p>A minimum account balance is required before provisioning; if the balance is insufficient, provisioning fails. Discount percentages and minimum balance requirements are listed on the [billing](/edge-ai/billing) page.</p>
 
 ## Creating a Spot cluster
 
-The creation process is identical to standard Bare Metal GPU clusters, with one additional step: acknowledging the Spot terms.
+<p>The creation process is identical to standard Bare Metal GPU clusters, with one additional step: acknowledging the Spot terms.</p>
 
-1. Navigate to **GPU Cloud** > **GPU Clusters** > **Bare Metal GPU Clusters**.
-2. Click **Create Cluster**.
-3. Select a region where Spot is available.
+<Steps>
+  <Step title="Navigate to GPU Clusters">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud** > **GPU Clusters** > **Bare Metal GPU Clusters**.
+  </Step>
+  <Step title="Open the creation form">
+    Click **Create Cluster**.
+  </Step>
+  <Step title="Select a region">
+    Select a region where Spot is available.
 
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/step-region.png" alt="Region selector" />
-</Frame>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/step-region.png" alt="Region selector" />
+    </Frame>
+  </Step>
+  <Step title="Select the cluster type">
+    In **GPU Cluster type**, select **Spot Bare Metal GPU**. A warning banner displays the terms and conditions.
+  </Step>
+  <Step title="Configure the cluster">
+    Select a GPU flavor and configure network, SSH key, and cluster name. GPU flavor, image, network, SSH key, and cluster name options are covered in the [cluster&nbsp;creation](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) article.
+  </Step>
+  <Step title="Create the cluster">
+    Click **Create Cluster**.
+  </Step>
+</Steps>
 
-4. In **GPU Cluster type**, select **Spot Bare Metal GPU**. A warning banner displays the terms and conditions.
-5. Select a GPU flavor and configure network, SSH key, and cluster name.
-6. Click **Create Cluster**.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-For detailed configuration, see [Create a Bare Metal GPU cluster.](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster)
+<p>Spot Bare Metal GPU capacity varies by region and time — Spot flavors appear in the same flavor list as standard Bare Metal GPU, distinguished by `spot` in the flavor name, with a `capacity` field that reflects current availability. Once created, provisioning, IP retrieval, and SSH connection follow the same flow as a standard Bare Metal GPU cluster, documented in the [cluster&nbsp;creation](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) REST API tab.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+Spot Bare Metal GPU is available in select regions only — check the flavor list to confirm.
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Check Spot availability
+
+<p>Returns all Bare Metal GPU flavors in the region. Filter by `spot` in the flavor name and check `capacity` before creating — a value of `0` means no Spot nodes are available right now.</p>
+
+| Field | Description |
+|-------|-------------|
+| `name` | Flavor identifier — contains `spot` for Spot flavors, e.g. `bm3-ai-ndp2-spot-1xlarge-h100-80-8` |
+| `capacity` | Available node count. `0` means no Spot capacity in this region at this time |
+| `hardware_description.gpu` | GPU model name and VRAM |
+| `hardware_properties.gpu_count` | Number of GPUs per node |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+
+    spot_flavors = [f for f in flavors.results if "spot" in f.name.lower()]
+    for f in spot_flavors:
+        print(f.name, f"capacity={f.capacity}", f.hardware_description.gpu)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "strings"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(context.TODO(),
+            cloud.GPUBaremetalClusterFlavorListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+
+        for _, f := range flavorList.Results {
+            if strings.Contains(f.Name, "spot") {
+                fmt.Printf("%s  capacity=%d  gpu=%s\n",
+                    f.Name, f.Capacity, f.HardwareDescription.GPU)
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/flavors" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "name": "bm3-ai-ndp2-1xlarge-h100-80-8",
+      "capacity": 0,
+      "hardware_description": { "gpu": "NVIDIA H100-8GPU (80GB)", "network": "8 x 400G Infiniband" },
+      "hardware_properties": { "gpu_model": "h100", "gpu_count": 8, "nic_ib": "8x400" }
+    },
+    {
+      "name": "bm3-ai-ndp2-spot-1xlarge-h100-80-8",
+      "capacity": 0,
+      "hardware_description": { "gpu": "NVIDIA H100-8GPU (80GB)", "network": "8 x 400G Infiniband" },
+      "hardware_properties": { "gpu_model": "h100", "gpu_count": 8, "nic_ib": "8x400" }
+    }
+  ]
+}
+```
+
+<p>A Spot flavor is present in the results when the option exists in the region. The `capacity` field shows how many nodes are available right now — check this value before submitting a creation request.</p>
+
+## Create a Spot cluster
+
+<p>Creating a Spot cluster uses the same API endpoint as a standard Bare Metal GPU cluster. The only difference is the `flavor` field: pass a flavor name that contains `spot`, obtained from the availability check above.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `flavor` | Yes | Spot flavor name from the availability check — contains `spot` in the name |
+| `image_id` | Yes | Image UUID from `GET /cloud/v3/gpu/baremetal/{project_id}/{region_id}/images` |
+| `servers_count` | Yes | Number of Spot nodes to provision |
+| `servers_settings.interfaces` | Yes | At least one interface — use `"type": "external"` for internet access |
+| `servers_settings.credentials.ssh_key_name` | Yes | Name of an existing SSH key in the project |
+
+<Warning>
+If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"Not enough available resources to create requested server(s)"`. Check the `capacity` field from the availability call before creating.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    # Get the first available Spot flavor
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    spot = next(
+        (f for f in flavors.results if "spot" in f.name.lower() and f.capacity > 0),
+        None,
+    )
+    if spot is None:
+        raise RuntimeError("No Spot capacity available in this region right now.")
+
+    # Get the latest image
+    images = client.cloud.gpu_baremetal.clusters.images.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+
+    task_id_list = client.cloud.gpu_baremetal.clusters.create(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        name="my-spot-cluster",
+        flavor=spot.name,
+        image_id=images.results[0].id,
+        servers_count=1,
+        servers_settings={
+            "interfaces": [{"type": "external"}],
+            "credentials": {"ssh_key_name": os.environ["GCORE_SSH_KEY_NAME"]},
+        },
+    )
+    print(task_id_list.tasks)  # save as TASK_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "strings"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        // Find an available Spot flavor
+        flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
+            cloud.GPUBaremetalClusterFlavorListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+
+        var spotFlavor string
+        for _, f := range flavorList.Results {
+            if strings.Contains(f.Name, "spot") && f.Capacity > 0 {
+                spotFlavor = f.Name
+                break
+            }
+        }
+        if spotFlavor == "" {
+            panic("no Spot capacity available in this region right now")
+        }
+
+        // Get the latest image
+        imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
+            cloud.GPUBaremetalClusterImageListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+
+        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
+            cloud.GPUBaremetalClusterNewParams{
+                ProjectID:    gcore.Int(projectID),
+                RegionID:     gcore.Int(regionID),
+                Name:         "my-spot-cluster",
+                Flavor:       spotFlavor,
+                ImageID:      imageList.Results[0].ID,
+                ServersCount: 1,
+                ServersSettings: cloud.GPUBaremetalClusterNewParamsServersSettings{
+                    Interfaces: []cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceUnion{{
+                        OfExternal: &cloud.GPUBaremetalClusterNewParamsServersSettingsInterfaceExternal{},
+                    }},
+                    Credentials: cloud.GPUBaremetalClusterNewParamsServersSettingsCredentials{
+                        SSHKeyName: gcore.String(sshKeyName),
+                    },
+                },
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)  // save as TASK_ID
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-spot-cluster",
+        "flavor": "{SPOT_FLAVOR_NAME}",
+        "image_id": "{IMAGE_ID}",
+        "servers_count": 1,
+        "servers_settings": {
+          "interfaces": [{"type": "external"}],
+          "credentials": {"ssh_key_name": "{YOUR_SSH_KEY_NAME}"}
+        }
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{ "tasks": ["e4cecbfc-5258-40bb-b78f-3cd92621c3b2"] }
+```
+
+<p>Once the task is submitted, provisioning, IP retrieval, and SSH connection proceed identically to a standard Bare Metal GPU cluster.</p>
+
+</MethodSection>
+</MethodSwitch>
