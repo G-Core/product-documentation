@@ -93,11 +93,7 @@ rg "keyword" --glob "*.mdx" -l
 
 ### Claim the article before doing any work
 
-Before reading the article, open the plan file and mark the article as `in_progress`:
-
-```
-C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
-```
+Before reading the article, open the plan file specified in the task and mark the article as `in_progress`.
 
 Find the row for this article and change its status from `pending` to `in_progress`.
 
@@ -460,9 +456,9 @@ For each screenshot in the article:
    // browser_evaluate
    window.resizeTo(1400, 900)
    ```
-3. Save to:
+3.    Save to:
    ```
-   C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
+   C:\Projects\product-documentation_2\images\docs\{product}\{article-slug}\{filename}.png
    ```
    Use a **new filename** — never overwrite the old file directly (CDN caching).
    Append `-2` or a short date suffix if the content is the same
@@ -472,7 +468,7 @@ For each screenshot in the article:
 5. Update the alt text if the UI shown has changed.
 6. Delete the old file:
    ```powershell
-   cd C:\Projects\product-documentation
+   cd C:\Projects\product-documentation_2
    git rm images/docs/{product}/{article-slug}/{old-filename}.png
    ```
 
@@ -704,6 +700,31 @@ The rule depends on whether the article uses `<MethodSwitch>`:
 
 Load `.agents/references/style-guide.md` and `.agents/references/procedures.md` now.
 
+### Step 1 — Run the automated style linter
+
+Run the style linter first. It catches mechanical violations automatically so the manual
+checklist can focus on things the script cannot detect (flow, headings, structure, logic).
+
+```powershell
+cd C:\Projects\product-documentation_2
+python .agents/tools/style_check.py {relative/path/to/article.mdx}
+```
+
+Replace `{relative/path/to/article.mdx}` with the actual path, for example:
+```
+python .agents/tools/style_check.py hosting/virtual-servers/order-a-virtual-server.mdx
+```
+
+For every violation the script reports:
+1. Read the line it flagged.
+2. Fix the violation if it is real.
+3. If it is a false positive (e.g. a term matched inside a URL or a technical name
+   that must stay as-is), note it and move on — do not change correct text.
+
+Re-run the script after fixing until it reports **OK — no violations found**.
+
+### Step 2 — Manual checklist
+
 Work through the article section by section and verify each rule. Do not skim.
 For each checklist item: read the article, verify the rule, then mark the item with `[V]`.
 Only mark `[V]` after you have actually checked — not as a placeholder.
@@ -924,7 +945,19 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Commit and push
+## Phase 9 — Create branch, commit, and push
+
+**One article = one branch.** Create a dedicated branch for this article before
+committing. The branch name uses the Jira ticket created in Phase 4.
+
+```powershell
+cd C:\Projects\product-documentation_2
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key from Phase 4.
 
 Run the pre-commit checklist below, then commit and push.
 
@@ -1024,10 +1057,10 @@ three constants:
 ```python
 TICKET = "DOC-XXXX"           # the key created in Phase 4
 
-BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1684
+BRANCH = "DOC-XXXX"           # branch created in Phase 9, same as ticket key
 
-ARTICLE_PATH = "cloud/..."    # path from docs.json, no leading slash, no .mdx
-                               # e.g. cloud/getting-started/view-statistics-on-expenses
+ARTICLE_PATH = "hosting/..."  # path from docs.json, no leading slash, no .mdx
+                               # e.g. hosting/virtual-servers/order-a-virtual-server
 ```
 
 The script will:
@@ -1060,11 +1093,11 @@ script is ready for the next article.
 
 ### Step 2 — Mark the article as done in the plan
 
-Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
-find the article's row, and add the Jira ticket key to the status column:
+Open `_planning/hosting-audit-plan.md` in `C:\Projects\product-documentation_2`,
+find the article's row, and update it:
 
 ```
-done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
+| done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX) | DOC-XXXX | `hosting/...` |
 ```
 
 ### Step 3 — Write the changelog entry
@@ -1072,7 +1105,7 @@ done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
 Create a file at:
 
 ```
-C:\Projects\docops-agent2\docs\changelogs\{article-slug}.md
+C:\Projects\product-documentation_2\_planning\changelogs\{article-slug}.md
 ```
 
 Where `{article-slug}` matches the MDX filename without the extension

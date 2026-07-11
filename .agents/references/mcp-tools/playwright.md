@@ -122,10 +122,44 @@ When the audit or screenshot workflow requires creating a resource (instance, ne
 
 Do not submit a full-page screenshot when the subject is a small part of the page.
 
-- **Crop to the dialog or form:** use the `clip` parameter in `browser_take_screenshot`
+`browser_take_screenshot` does NOT support a `clip` parameter. Use these methods instead:
+
+**Method 1 — Element screenshot (preferred):**
+Use the `element` + `target` parameters to capture a specific DOM element. The tool automatically crops to the element's bounding box, cutting out white borders, sidebar, and browser chrome.
+
+```
+browser_take_screenshot(
+  element="main content area",
+  target="[class*='isp-content'], main, .main-content",
+  filename="C:\\Users\\...\\screenshot.png"
+)
+```
+
+For the Gcore Hosting portal (`hosting.gcore.com/billmgr`), the main content wrapper is typically `[class*='isp-content']` or the inner panel — get the exact selector from a snapshot first.
+
+**Method 2 — Zoom + full viewport:**
+```javascript
+// browser_evaluate before screenshot
+document.body.style.zoom = '0.85'  // zoom out to fit wide content
+```
+
+Then reset after:
+```javascript
+document.body.style.zoom = '1'
+```
+
+**Method 3 — Hide whitespace with CSS:**
+```javascript
+// browser_evaluate — removes body margin/padding that creates white borders
+document.body.style.margin = '0';
+document.body.style.padding = '0';
+```
+
 - **Zoom in** when controls or labels would otherwise be too small to read
 - **Zoom out** when a wide table would cause horizontal scrolling artifacts
-- Be dynamic — adjust zoom, scroll position, and clip per screenshot
+- Be dynamic — adjust zoom, scroll position, and element target per screenshot
+
+**Hosting portal note:** The `hosting.gcore.com/billmgr` portal has no sidebar collapse button. Always use element screenshot (Method 1) or hide the sidebar with CSS before capturing.
 
 ### File format
 
