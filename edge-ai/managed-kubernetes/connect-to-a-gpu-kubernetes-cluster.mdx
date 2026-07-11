@@ -1,0 +1,356 @@
+---
+title: Connect to a GPU Kubernetes cluster
+sidebarTitle: Connect to a cluster
+ai-navigation: Connect to a Gcore GPU Kubernetes cluster via Customer Portal or REST API - download kubeconfig, configure kubectl, and list or inspect clusters.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Download the kubeconfig file from the cluster overview page and configure kubectl to connect.</p>
+
+## Download kubeconfig
+
+<p>The kubeconfig file contains the cluster endpoint and credentials for kubectl.</p>
+
+<Steps>
+  <Step title="Navigate to the cluster overview page">
+  </Step>
+  <Step title="Click Kubernetes config">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/cluster-kubeconfig.png" alt="Cluster overview page with the Kubernetes config button highlighted" />
+    </Frame>
+  </Step>
+  <Step title="Save the downloaded k8sConfig.yml file">
+  </Step>
+</Steps>
+
+<Info>
+Kubeconfig certificates are renewed automatically every two years. A notification appears in the portal and is sent by email two weeks before expiry. Download a fresh kubeconfig after renewal.
+</Info>
+
+## Configure kubectl
+
+<p>Point kubectl at the downloaded configuration file:</p>
+
+```bash
+export KUBECONFIG=/path/to/k8sConfig.yml
+```
+
+<p>Verify the connection:</p>
+
+```bash
+kubectl cluster-info
+```
+
+<p>Expected output:</p>
+
+```
+Kubernetes control plane is running at https://<cluster-endpoint>:443
+CoreDNS is running at https://<cluster-endpoint>:443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+<p>Check node status:</p>
+
+```bash
+kubectl get nodes
+```
+
+<p>Expected output:</p>
+
+```
+NAME                STATUS   ROLES    AGE   VERSION
+ndp1-c3-168-10-78   Ready    <none>   12d   v1.35.3
+```
+
+<p>Nodes show Ready status when fully provisioned. kubectl must be within one minor version of the cluster — kubectl v1.34 or v1.36 both work with a v1.35 cluster.</p>
+
+## Cluster overview
+
+<p>The cluster overview page shows the cluster name, status, Kubernetes version, and network configuration, and provides access to management tabs.</p>
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/cluster-overview.png" alt="Cluster overview page showing status, networking info, and management tabs" />
+</Frame>
+
+| Tab | Description |
+|-----|-------------|
+| Pools | View and manage node pools, add new pools |
+| Logging | Configure log collection to OpenSearch Dashboards (paid feature) |
+| Advanced DDoS Protection | Enable Advanced DDoS Protection for cluster nodes (requires Public IPv4; not available in all regions) |
+| Advanced settings | OIDC authentication and Cluster Autoscaler configuration |
+| User Actions | Audit log of cluster operations |
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>List clusters in a project, inspect a specific cluster, and download the kubeconfig programmatically.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## List clusters
+
+<p>Returns all clusters in the project and region with their status, version, and network configuration.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    clusters = client.cloud.k8s.clusters.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for c in clusters.results:
+        print(c.name, c.status, c.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	clusters, err := client.Cloud.K8S.Clusters.List(context.TODO(), cloud.K8SClusterListParams{
+    		ProjectID: gcore.Int(projectID),
+    		RegionID:  gcore.Int(regionID),
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, c := range clusters.Results {
+    		fmt.Println(c.Name, c.Status, c.Version)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "1935449d-e2b9-4360-aaeb-bf927187aef6",
+          "name": "my-cluster",
+          "status": "Provisioned",
+          "version": "v1.35.3",
+          "cni": {"provider": "calico"},
+          "fixed_network": "75c521eb-5b77-49d2-a2b3-31e426e7f46a",
+          "fixed_subnet": "224f85e5-1eef-4784-b10c-337dec453567"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Get cluster details
+
+<p>Returns the full configuration of a single cluster, including network settings, CNI provider, and authentication metadata.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    cluster = client.cloud.k8s.clusters.get(
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(cluster.id, cluster.status, cluster.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	cluster, err := client.Cloud.K8S.Clusters.Get(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterGetParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Println(cluster.ID, cluster.Status, cluster.Version)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "1935449d-e2b9-4360-aaeb-bf927187aef6",
+      "name": "my-cluster",
+      "status": "Provisioned",
+      "version": "v1.35.3",
+      "cni": {"provider": "calico"},
+      "fixed_network": "75c521eb-5b77-49d2-a2b3-31e426e7f46a",
+      "fixed_subnet": "224f85e5-1eef-4784-b10c-337dec453567",
+      "keypair": "my-key",
+      "authentication": {
+        "kubeconfig_created_at": "2026-07-11T10:57:08Z",
+        "kubeconfig_expires_at": "2028-07-10T10:57:08Z"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Download kubeconfig
+
+<p>Returns the kubeconfig file content and the cluster API endpoint. Save the config to a file and point kubectl at it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    kc = client.cloud.k8s.clusters.kubeconfig.get(
+        os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    with open("k8sConfig.yml", "w") as f:
+        f.write(kc.config)
+    print(f"Saved kubeconfig. Cluster endpoint: {kc.host}")
+    print(f"Expires: {kc.expires_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterKubeconfigGetParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	os.WriteFile("k8sConfig.yml", []byte(kc.Config), 0600)
+    	fmt.Printf("Saved kubeconfig. Cluster endpoint: %s\n", kc.Host)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/config" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "config": "apiVersion: v1\nclusters:\n- cluster:\n    ...",
+      "host": "https://176-1186668-my-cluster.mkaas.k1.sines-3.cloud.gcore.dev:443",
+      "expires_at": "2028-07-10T10:57:08Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Configure kubectl to use the saved file:</p>
+
+```bash
+export KUBECONFIG=/path/to/k8sConfig.yml
+kubectl cluster-info
+```
+
+</MethodSection>
+</MethodSwitch>

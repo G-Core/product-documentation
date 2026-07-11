@@ -1,0 +1,775 @@
+---
+title: Manage node pools
+sidebarTitle: Node pools
+ai-navigation: Manage GPU Kubernetes node pools via Customer Portal or REST API - view, scale, add, replace nodes, and delete pools.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Node pools group worker nodes with identical configuration. Each pool can have a different instance type, enabling mixed workloads within a single cluster.</p>
+
+## View pool details
+
+<p>The expanded pool card shows the pool name, autoscaling status, instance flavor, volume configuration, node list, and current status.</p>
+
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Click a pool to expand its details">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/pool-details-expanded.png" alt="Pool details showing node configuration, status, and node list" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Scale node pools
+
+<p>Node pools scale automatically within the configured min/max limits. Autoscaling is active when **Maximum nodes** is greater than **Minimum nodes**. When they are equal, the pool maintains a fixed size.</p>
+
+<Info>
+A single node pool supports up to 100 nodes. To increase this limit, contact support. The number of pools per cluster is not limited. A single region supports up to 100 clusters.
+</Info>
+
+<p>To adjust the limits:</p>
+
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Expand the target pool">
+  </Step>
+  <Step title="Open Edit Pool Settings">
+    Click the **...** menu next to the pool header and select **Edit Pool Settings**.
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/pool-actions-menu.png" alt="Pool actions menu showing Edit Pool Settings and Delete options" />
+    </Frame>
+  </Step>
+  <Step title="Adjust Minimum nodes or Maximum nodes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/edit-pool-settings.png" alt="Edit pool settings dialog showing minimum and maximum nodes, labels, taints, and autohealing options" />
+    </Frame>
+  </Step>
+  <Step title="Click Save">
+  </Step>
+</Steps>
+
+<Warning>
+When reducing the minimum node count, the cluster removes nodes at random. There is no control over which specific nodes are terminated.
+</Warning>
+
+<Warning>
+Scaling a pool to zero nodes is not supported. The minimum node count must be at least one. A cluster cannot exist without nodes.
+</Warning>
+
+## Replace a node
+
+<p>The replace action deletes a node and provisions a new one with the same configuration. Use it to recover a node that is stuck, degraded, or behaving unexpectedly without modifying the pool settings.</p>
+
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Expand the target pool">
+  </Step>
+  <Step title="Select Replace from the node menu">
+    Click the **...** menu next to the node and select **Replace**.
+  </Step>
+  <Step title="Confirm the replacement">
+  </Step>
+</Steps>
+
+<p>The node is terminated and a new node is provisioned in its place. Running pods are evicted before termination and rescheduled to other available nodes.</p>
+
+## Add a GPU node pool
+
+<p>To add GPU nodes to an existing cluster:</p>
+
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Click Add pool">
+  </Step>
+  <Step title="Enter a Pool name">
+  </Step>
+  <Step title="Set Minimum nodes and Maximum nodes">
+  </Step>
+  <Step title="Select GPU Bare metal instances as the node type">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/add-gpu-pool.png" alt="Add GPU pool dialog showing GPU Bare metal instances selection and available flavor options" />
+    </Frame>
+  </Step>
+  <Step title="Select a GPU flavor">
+    Select a GPU flavor from the dropdown. Available flavors depend on the region.
+  </Step>
+  <Step title="(Optional) Add labels">
+    Add Kubernetes labels to all nodes in the pool.
+  </Step>
+  <Step title="(Optional) Add taints">
+    Dedicate the pool to specific workloads.
+  </Step>
+  <Step title="Click Add pool">
+  </Step>
+</Steps>
+
+<Info>
+GPU node pools may take several minutes to provision. Monitor the pool status in the **Pools** tab.
+</Info>
+
+<Warning>
+GPU bare metal nodes are stateless. Kubernetes may delete and recreate them during autoscaling, node failures, or cluster upgrades. Do not store critical data on node-local storage. Use an external storage service — Gcore Object Storage, File Shares, NFS, or a managed database — for any data that must persist across node replacements.
+</Warning>
+
+## Schedule workloads on GPU nodes
+
+<p>Use node selectors or affinity rules to schedule pods on GPU nodes. The `nodeSelector` field targets nodes by their pool label:</p>
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gpu-workload
+spec:
+  containers:
+  - name: training
+    image: nvidia/cuda:12.0-base
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+  nodeSelector:
+    pool: gpu-pool
+```
+
+<p>GPU bare metal nodes require the NVIDIA device plugin to expose GPU resources to the Kubernetes scheduler. The plugin runs as a DaemonSet on GPU nodes; verify it is running before scheduling GPU workloads:</p>
+
+```bash
+kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
+```
+
+## Use persistent storage
+
+<p>Gcore clusters include CSI-based storage classes backed by Cinder volumes. List available storage classes:</p>
+
+```bash
+kubectl get storageclass
+```
+
+<p>Expected output:</p>
+
+```
+NAME                            PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+csi-sc-cinderplugin (default)   cinder.csi.gcorelabs.com   Delete          Immediate           true                   12d
+ssd-hiiops                      cinder.csi.gcorelabs.com   Delete          Immediate           true                   12d
+ssd-lowlatency                  cinder.csi.gcorelabs.com   Delete          Immediate           true                   12d
+standard                        cinder.csi.gcorelabs.com   Delete          Immediate           true                   12d
+```
+
+<p>Create a PersistentVolumeClaim to provision storage for a workload:</p>
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-storage
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: ssd-hiiops
+```
+
+<p>Apply it and verify the volume binds:</p>
+
+```bash
+kubectl apply -f pvc.yaml
+kubectl get pvc model-storage
+```
+
+<p>Expected output:</p>
+
+```
+NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+model-storage   Bound    pvc-56a60388-c19a-47fb-a87a-430246609cb4   100Gi      RWO            ssd-hiiops     5s
+```
+
+<Warning>
+The node flavor — including CPU, RAM, and storage — cannot be changed after pool creation. To use a different flavor, create a new pool with the required configuration, migrate workloads, then delete the old pool.
+</Warning>
+
+## Delete a node pool
+
+<p>Removing a pool terminates all nodes in that pool. Running pods are evicted and rescheduled to other available nodes if resources permit.</p>
+
+<Warning>
+Pool deletion is irreversible. All nodes in the pool are terminated. Migrate workloads or confirm they are no longer needed before proceeding. Deleting the last pool in a cluster deletes the entire cluster.
+</Warning>
+
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Select Delete from the pool menu">
+    Click the **...** menu next to the pool and select **Delete**.
+  </Step>
+  <Step title="Confirm the deletion">
+  </Step>
+</Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>List, create, update, and delete node pools, and replace individual nodes via the API.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## List node pools
+
+<p>Returns all pools in the cluster with their flavor, node counts, and current status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    pools = client.cloud.k8s.clusters.pools.list(
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for p in pools.results:
+        print(p.name, p.flavor_id, p.min_node_count, p.max_node_count, p.status)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	pools, err := client.Cloud.K8S.Clusters.Pools.List(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterPoolListParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, p := range pools.Results {
+    		fmt.Println(p.Name, p.FlavorID, p.MinNodeCount, p.MaxNodeCount, p.Status)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "name": "gpu-pool",
+          "flavor_id": "g2a-gpu-1-24-1",
+          "min_node_count": 1,
+          "max_node_count": 2,
+          "node_count": 1,
+          "status": "Running"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add a node pool
+
+<p>Adds a new pool of nodes to the cluster. The pool can use a GPU Bare Metal flavor or a standard VM flavor.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Pool name, unique within the cluster |
+| `flavor_id` | Yes | Instance flavor for all nodes in the pool |
+| `min_node_count` | Yes | Minimum number of nodes (autoscaler lower bound) |
+| `max_node_count` | No | Maximum number of nodes; defaults to `min_node_count` for fixed-size pools |
+| `servergroup_policy` | VM pools only | Node anti-affinity policy; use `soft-anti-affinity` |
+| `boot_volume_type` | VM pools only | Boot volume type, e.g. `ssd_hiiops` |
+| `boot_volume_size` | VM pools only | Boot volume size in GB (minimum 50) |
+
+<Info>
+GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or `boot_volume_size`. VM type pools require all three.
+</Info>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # GPU Bare Metal pool
+    task_list = client.cloud.k8s.clusters.pools.create(
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+        name="gpu-pool",
+        flavor_id="g2a-gpu-1-24-1",    # select a GPU flavor for the region
+        min_node_count=1,
+        max_node_count=2,
+    )
+    task_id = task_list.tasks[0]
+    print(f"Pool creation started: {task_id}")
+
+    # Poll until provisioned
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print(f"Pool created: {task.created_resources}")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Pool creation failed: {task}")
+        time.sleep(10)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	// GPU Bare Metal pool
+    	taskList, err := client.Cloud.K8S.Clusters.Pools.New(
+    		context.TODO(),
+    		clusterName,
+    		cloud.K8SClusterPoolNewParams{
+    			ProjectID:    gcore.Int(projectID),
+    			RegionID:     gcore.Int(regionID),
+    			Name:         "gpu-pool",
+    			FlavorID:     "g2a-gpu-1-24-1",    // select a GPU flavor for the region
+    			MinNodeCount: 1,
+    			MaxNodeCount: gcore.Int(2),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+    	fmt.Printf("Pool creation started: %s\n", taskID)
+
+    	// Poll until provisioned
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Printf("Pool created: %+v\n", task.CreatedResources)
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Pool creation failed: %+v", task))
+    		}
+    		time.Sleep(10 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # GPU Bare Metal pool
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "gpu-pool",
+        "flavor_id": "g2a-gpu-1-24-1",
+        "min_node_count": 1,
+        "max_node_count": 2
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 10 seconds until `state` is `FINISHED`.</p>
+  </Tab>
+</Tabs>
+
+## Update pool settings
+
+<p>Updates the minimum and maximum node counts for a pool, which controls autoscaling boundaries. Reducing the minimum may trigger node removal — nodes are removed at random.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    pool = client.cloud.k8s.clusters.pools.update(
+        pool_name="gpu-pool",
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        max_node_count=3,
+    )
+    print(f"min={pool.min_node_count}  max={pool.max_node_count}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	pool, err := client.Cloud.K8S.Clusters.Pools.Update(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolUpdateParams{
+    			ProjectID:    gcore.Int(projectID),
+    			RegionID:     gcore.Int(regionID),
+    			ClusterName:  os.Getenv("GCORE_CLUSTER_NAME"),
+    			MaxNodeCount: gcore.Int(3),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("min=%d  max=%d\n", pool.MinNodeCount, pool.MaxNodeCount)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"max_node_count": 3}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "name": "gpu-pool",
+      "min_node_count": 1,
+      "max_node_count": 3,
+      "node_count": 1,
+      "status": "Running"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Replace a node
+
+<p>Deletes a specific node and lets the pool provision a replacement. Use this to recover a stuck or degraded node without modifying pool settings.</p>
+
+<p>Get the node ID by listing pool nodes first:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # Step 1. Find the node ID
+    nodes = client.cloud.k8s.clusters.pools.nodes.list(
+        pool_name="gpu-pool",
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    for n in nodes.results:
+        print(n.id, n.name, n.status)
+
+    # Step 2. Delete the node to trigger replacement
+    node_id = nodes.results[0].id
+    client.cloud.k8s.clusters.pools.nodes.delete(
+        instance_id=node_id,
+        cluster_name=CLUSTER,
+        pool_name="gpu-pool",
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    print(f"Node {node_id} deleted — replacement will provision automatically.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	// Step 1. Find the node ID
+    	nodes, err := client.Cloud.K8S.Clusters.Pools.Nodes.List(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolNodeListParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, n := range nodes.Results {
+    		fmt.Println(n.ID, n.Name, n.Status)
+    	}
+
+    	// Step 2. Delete the node to trigger replacement
+    	nodeID := nodes.Results[0].ID
+    	err = client.Cloud.K8S.Clusters.Pools.Nodes.Delete(
+    		context.TODO(),
+    		nodeID,
+    		cloud.K8SClusterPoolNodeDeleteParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    			PoolName:    "gpu-pool",
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Node %s deleted — replacement will provision automatically.\n", nodeID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Step 1. List nodes to get the instance ID
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool/instances" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {"id": "16af5716-0e10-4b7d-9d22-1a7827ed3445", "name": "ndp1-c3-168-10-33", "status": "ACTIVE"}
+      ]
+    }
+    ```
+
+    ```bash
+    # Step 2. Delete the node — the pool provisions a replacement automatically
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool/instances/16af5716-0e10-4b7d-9d22-1a7827ed3445" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>Returns `204 No Content`. The pool automatically provisions a replacement node.</p>
+  </Tab>
+</Tabs>
+
+## Delete a node pool
+
+<p>Removes a pool and terminates all its nodes. Pods running on those nodes are evicted and rescheduled if other pools have capacity. Deleting the last pool also deletes the cluster.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    task_list = client.cloud.k8s.clusters.pools.delete(
+        pool_name="gpu-pool",
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    task_id = task_list.tasks[0]
+
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print("Pool deleted.")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Pool deletion failed: {task}")
+        time.sleep(10)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	taskList, err := client.Cloud.K8S.Clusters.Pools.Delete(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolDeleteParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Println("Pool deleted.")
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Pool deletion failed: %+v", task))
+    		}
+    		time.Sleep(10 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 10 seconds until `state` is `FINISHED`.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
