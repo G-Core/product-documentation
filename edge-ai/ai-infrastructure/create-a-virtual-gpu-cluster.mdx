@@ -1,7 +1,7 @@
 ---
 title: Create a Virtual GPU cluster
 sidebarTitle: Create a Virtual GPU cluster
-ai-navigation: Create Virtual GPU clusters with configurable node count, GPU models, flavors, volumes, and network settings via Customer Portal or REST API using the GPU Virtual API.
+ai-navigation: Create Virtual GPU clusters with configurable node count, GPU models, flavors, volumes, and network settings via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,17 +9,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>A Virtual GPU cluster is a group of one or more virtual machines with dedicated GPU access. It provides a managed environment for AI training, inference, and other GPU workloads without provisioning bare metal servers. Virtual GPU is one of the [GPU cluster types](/edge-ai/ai-infrastructure/about-gpu-cloud) available in GPU Cloud, alongside Bare Metal and Spot options.</p>
+<p>A Virtual GPU cluster is a group of one or more virtual machines with dedicated GPU access. It provides a managed environment for AI training, inference, and other GPU workloads without provisioning bare metal servers. Virtual GPU is one of the [cluster&nbsp;types](/edge-ai/ai-infrastructure/about-gpu-cloud) available in GPU Cloud, alongside [Bare&nbsp;Metal](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster) and [Spot](/edge-ai/ai-infrastructure/spot-bare-metal-gpu) options.</p>
 
-<Frame>![Virtual GPU Clusters page with cluster list and Create Cluster button](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-clusters-list.png)</Frame>
-
-## Before you start
-
-<p>Before creating a Virtual GPU cluster, confirm that the following are in place:</p>
-
-- A Gcore account with [GPU Cloud](https://portal.gcore.com) access
-- An SSH key added to the project — required to connect to cluster nodes after creation
-- A target region — not all GPU models are available in every region
+<Info>
+An SSH key must be added to the project before creating a cluster — it's required to connect to nodes. GPU model availability varies by region.
+</Info>
 
 ## Cluster architecture
 
@@ -48,178 +42,133 @@ Use this disk only for temporary data. Store all important data on network disks
 
 ## Create a Virtual GPU cluster
 
-<p>Creating a cluster consists of the following steps:</p>
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**, select the target region, open **GPU Clusters** > **Virtual GPU Clusters**, and click **Create Cluster**.</p>
 
-1. Choosing a GPU model and flavor
-2. Setting the number of nodes
-3. Selecting an image
-4. Configuring storage and networking
-5. Clicking **Create** and connecting via SSH
+<Frame>![Virtual GPU Clusters page with cluster list and Create Cluster button](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-clusters-list.png)</Frame>
 
-<p>To start:</p>
+<Steps>
+  <Step title="Configure cluster capacity">
+    Select the GPU model and flavor for each cluster node.
 
-1. Open the [Gcore Customer Portal](https://portal.gcore.com) and go to **GPU Cloud**.
-2. Select the target region.
-3. Navigate to **GPU Clusters** > **Virtual GPU Clusters**.
-4. Click **Create Cluster**.
+    1. Select the **GPU Model**. Available models depend on the region.
+    2. Enable or disable **Show out of stock** to filter available flavors.
+    3. Select a flavor. Each flavor card displays GPU configuration, vCPU count, RAM capacity, and pricing.
 
-### Step 1. Configure cluster capacity
+    <Frame>![Cluster capacity section with GPU cluster type selection and available flavors](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-capacity-config.png)</Frame>
+  </Step>
+  <Step title="Set the number of instances">
+    In the **Number of Instances** section, specify how many virtual machines to provision. Each instance has the selected flavor configuration; the minimum is one, the maximum depends on regional availability.
 
-<p>Select the GPU model and flavor for each cluster node.</p>
+    <Frame>![Number of Instances section with plus/minus controls and selected flavor summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/number-of-instances.png)</Frame>
+  </Step>
+  <Step title="Select image">
+    The image defines the operating system and pre-installed software for cluster nodes.
 
-1. Select the **GPU Model**. Available models depend on the region.
+    Select the operating system in the **Image** section:
 
-2. Enable or disable **Show out of stock** to filter available flavors.
+    - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit
+    - **Custom**: Custom images uploaded to the account
 
-3. Select a flavor. Each flavor card displays GPU configuration, vCPU count, RAM capacity, and pricing.
+    Images with the `eni` suffix are configured for InfiniBand interconnect.
 
-<Frame>![Cluster capacity section with GPU cluster type selection and available flavors](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-capacity-config.png)</Frame>
+    <Frame>![Image section with Public and Custom tabs and Ubuntu image dropdown](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/image-selector.png)</Frame>
+  </Step>
+  <Step title="Configure volumes">
+    Each instance includes a **System volume** (required boot disk), a **Local volume** (temporary non-replicated storage, added automatically), and optional **Additional network volumes**.
 
-### Step 2. Set the number of instances
+    <Frame>![Volumes section with System and Local volumes configuration](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/volumes-config.png)</Frame>
 
-<p>In the **Number of Instances** section, specify how many virtual machines to provision in the cluster.</p>
+    Configure the **System** volume:
 
-<p>Each instance is a separate virtual machine with the selected flavor configuration. When created, all instances have identical configurations. The minimum is 1 instance, maximum depends on regional availability.</p>
+    - **Name**: Enter a name for the volume
+    - **Size**: Minimum size depends on the selected image (default: 120 GiB)
+    - **Type**: Select from available storage types in the region
 
-<Frame>![Number of Instances section with plus/minus controls and selected flavor summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/number-of-instances.png)</Frame>
+    To add additional storage, click **Add Volume**. All configured volumes are attached to every instance in the cluster.
 
-### Step 3. Select image
+    <Warning>
+    Store important data on network volumes or file shares, not on the local volume. The local volume is wiped when the instance is shelved, reconfigured, or deleted, resulting in permanent data loss.
+    </Warning>
+  </Step>
+  <Step title="Configure file share integration (optional)">
+    The **File share integration** section connects [file&nbsp;shares](/cloud/file-shares/configure-file-shares) to all instances, making shared storage accessible across nodes. Use it for distributed training, shared datasets, or any workload that reads the same files from multiple nodes.
 
-<p>The image defines the operating system and pre-installed software for cluster nodes.</p>
+    1. Enable the **File Share integration** toggle.
+    2. Select an existing file share or create a new one.
 
-<p>In the **Image** section, choose the operating system:</p>
+    <Frame>![File share integration section with toggle and file share selector](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/file-share-integration.png)</Frame>
+  </Step>
+  <Step title="Configure network settings">
+    Network settings control how cluster nodes access external services and other cloud resources. At least one interface is required.
 
-- **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit
-- **Custom**: Custom images uploaded to the account
+    <Info>
+    Virtual GPU clusters support a maximum of three network interfaces (Public and Private combined) per instance. If file share integration is enabled, the limit is reduced to two interfaces, because one interface is reserved for NFS connectivity. InfiniBand interfaces are not counted toward this limit.
+    </Info>
 
-<p>The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix are configured for InfiniBand interconnect.</p>
+    In the **Network settings** section, select the [interface&nbsp;type](/cloud/networking/create-and-manage-a-network) for cluster nodes:
 
-<Frame>![Image section with Public and Custom tabs and Ubuntu image dropdown](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/image-selector.png)</Frame>
+    | Type | Access | Use case |
+    |------|--------|----------|
+    | Public | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
+    | Private | Internal network only, no external access | Production workloads, security-sensitive environments |
+    | Dedicated public | Reserved static public IP | Production APIs, services requiring stable endpoints |
 
-### Step 4. Configure volumes
+    To add more interfaces, click **Add Interface**. Each interface can be expanded to configure [security&nbsp;groups](/cloud/networking/add-and-configure-a-firewall). The `default` security group is pre-selected.
 
-<p>Each Virtual GPU cluster instance has the following storage:</p>
+    <Frame>![Security Groups field with default group selected per interface](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/network-settings-security-groups.png)</Frame>
+  </Step>
+  <Step title="Configure SSH key">
+    In the **SSH key** section, select an existing key from the dropdown or create a new one. If generating a new key pair, save the private key immediately as it cannot be retrieved later.
 
-- **System volume** (required): The boot volume for the operating system. This network disk persists across power cycles.
-- **Local volume**: Added automatically to every instance. This non-replicated disk is dedicated to temporary storage only. It cannot be edited, removed, or used as a boot volume. Data on this disk is deleted when the instance is shelved, reconfigured, or deleted.
-- **Additional network volumes** (optional): Additional persistent storage that survives power cycles.
+    <Frame>![SSH key section with key dropdown selector](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/ssh-key.png)</Frame>
+  </Step>
+  <Step title="Set additional options">
+    The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
 
-<Frame>![Volumes section with System and Local volumes configuration](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/volumes-config.png)</Frame>
+    <Frame>![Additional options section with User data and Add tags toggles](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/additional-options.png)</Frame>
+  </Step>
+  <Step title="Name and create the cluster">
+    In the **GPU Cluster Name** section, enter a name or use the auto-generated one. Review the estimated cost in the right panel, then click **Create Cluster**.
 
-<p>Configure the **System** volume:</p>
+    The cluster appears in the list with **Creating** status. Provisioning typically takes 3–8 minutes.
 
-- **Name**: Enter a name for the volume
-- **Size**: Minimum size depends on the selected image (default: 120 GiB)
-- **Type**: Select from available storage types in the region
+    <Frame>![Virtual GPU Clusters list showing a newly created cluster with Creating status](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-creating-status.png)</Frame>
 
-<p>To add additional storage, click **Add Volume** and configure the name, size, and type for each volume. All configured volumes are attached to every instance in the cluster.</p>
+    Once all instances reach **Power on** status, the cluster is ready for use.
 
-<Warning>
-**Warning**
-
-Store important data on network volumes or file shares, not on the local volume. The local volume is wiped when the instance is shelved, reconfigured, or deleted, resulting in permanent data loss.
-</Warning>
-
-<p>After cluster creation, network volumes can be managed individually per instance.</p>
-
-### Step 5. Configure file share integration (optional)
-
-<p>The **File share integration** section connects a [shared file system](/cloud/file-shares/configure-file-shares) to all instances in the cluster, making it accessible across nodes.</p>
-
-<p>Use file share integration for workflows that require shared data access — distributed training, shared datasets, or any workload that reads the same files from multiple nodes.</p>
-
-<p>To enable file share integration:</p>
-
-1. Enable the **File Share integration** toggle.
-2. Select an existing file share or create a new one.
-
-<Frame>![File share integration section with toggle and file share selector](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/file-share-integration.png)</Frame>
-
-### Step 6. Configure network settings
-
-<p>Network settings control how cluster nodes access external services and other cloud resources. At least one interface is required.</p>
-
-<Info>
-**Info**
-
-Virtual GPU clusters support a maximum of 3 network interfaces (Public and Private combined) per instance. If file share integration is enabled, the limit is reduced to 2 interfaces, because one interface is reserved for NFS connectivity.
-
-InfiniBand interfaces are not counted toward this limit; they are configured automatically based on the selected flavor.
-</Info>
-
-<p>In the **Network settings** section, select an [interface type](/cloud/networking/create-and-manage-a-network):</p>
-
-| Type | Access | Use case |
-|------|--------|----------|
-| Public | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
-| Private | Internal network only, no external access | Production workloads, security-sensitive environments |
-| Dedicated public | Reserved static public IP | Production APIs, services requiring stable endpoints |
-
-<p>To add additional interfaces, click **Add Interface**.</p>
-
-<Frame>![Network settings section with Public and Private interfaces configured](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/network-settings.png)</Frame>
-
-<p>Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.</p>
-
-<Frame>![Security Groups field with default group selected per interface](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/network-settings-security-groups.png)</Frame>
-
-<p>To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.</p>
-
-### Step 7. Configure SSH key
-
-<p>In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the Customer Portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.</p>
-
-<Frame>![SSH key section with key dropdown selector](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/ssh-key.png)</Frame>
-
-### Step 8. Set additional options
-
-<p>The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.</p>
-
-<Frame>![Additional options section with User data and Add tags toggles](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/additional-options.png)</Frame>
-
-### Step 9. Name and create the cluster
-
-<p>Before clicking **Create Cluster**, review the estimated cost shown in the right panel.</p>
-
-1. In the **GPU Cluster Name** section, enter a name or use the auto-generated one.
-
-2. Click **Create Cluster**.
-
-<p>The cluster appears in the list with **Creating** status. Provisioning typically takes 3–8 minutes.</p>
-
-<Frame>![Virtual GPU Clusters list showing a newly created cluster with Creating status](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-creating-status.png)</Frame>
-
-<p>Once all instances reach **Power on** status, the cluster is ready for use.</p>
-
-<Warning>
-**Warning**
-
-Cluster-level settings (image, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
-</Warning>
+    <Warning>
+    Cluster-level settings (image, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
+    </Warning>
+  </Step>
+</Steps>
 
 ## Connect to the cluster
 
 <p>After the cluster is created, connect to a node via SSH and verify that GPUs are available.</p>
 
-1. Open a terminal and connect using the default username `ubuntu`:
+<Steps>
+  <Step title="Connect via SSH">
+    Open a terminal and connect using the default username `ubuntu`:
 
-   ```bash
-   ssh ubuntu@<node-ip-address>
-   ```
+    ```bash
+    ssh ubuntu@<node-ip-address>
+    ```
 
-   Replace `<node-ip-address>` with the public or floating IP shown in the cluster details.
+    Replace `<node-ip-address>` with the public or floating IP shown in the cluster details.
+  </Step>
+  <Step title="Verify GPU detection">
 
-2. Verify that GPUs are detected:
+    ```bash
+    nvidia-smi
+    ```
 
-   ```bash
-   nvidia-smi
-   ```
+    A successful output shows the list of available GPUs, driver version, and CUDA version. If the command fails or no GPUs appear, the image may be missing the correct drivers.
+  </Step>
+</Steps>
 
-   A successful output shows the list of available GPUs, driver version, and CUDA version. If the command fails or no GPUs appear, the image may be missing the correct drivers.
+<p>For nodes with only private interfaces, connect through a bastion host, VPN, or the Customer Portal [web&nbsp;console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
 
-<p>For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
-
-<p>Clusters can also be created programmatically using the [GPU Virtual API](/api-reference/cloud/gpu-virtual/create-virtual-gpu-cluster).</p>
+<p>Clusters can also be created programmatically using the [REST&nbsp;API](/api-reference/cloud/gpu-virtual/create-virtual-gpu-cluster).</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -227,10 +176,10 @@ Cluster-level settings (image, default networks) cannot be changed after creatio
 <p>Create a virtual GPU cluster by selecting a flavor and image, then provisioning the cluster with a single API call.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a
-[project ID](/api-reference/cloud/projects/list-projects)
-and a [region ID](/api-reference/cloud/regions/list-regions).
-Virtual GPU clusters are available in select regions — use the [List flavors](#step-1-list-available-flavors) call to confirm availability.
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+Virtual GPU clusters are available in select regions — confirm availability with the [List&nbsp;flavors](#step-1-list-available-flavors) call before creating a cluster.
 </Info>
 
 <p>Open a terminal and set these environment variables before running the examples:</p>
@@ -607,7 +556,7 @@ The API returns:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Cluster name (2–63 chars, alphanumeric, hyphens, underscores) |
+| `name` | Yes | Cluster name (2–63 characters, alphanumeric, hyphens, underscores) |
 | `flavor` | Yes | Flavor name from Step 1 |
 | `servers_count` | Yes | Number of nodes to provision |
 | `servers_settings.interfaces` | Yes | At least one interface — use `"type": "external"` for public internet access |
@@ -834,6 +783,71 @@ nvidia-smi
 ```
 
 <p>A successful output shows the list of GPUs, driver version, and CUDA version. For nodes with only private interfaces, connect through a bastion host or VPN.</p>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare a Virtual GPU cluster as code using the [`gcore_cloud_gpu_virtual_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_gpu_virtual_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create a Virtual GPU cluster
+
+<p>Provisions one node with a public interface and an `ssd_hiiops` boot volume. Use the flavors and images endpoints from the REST&nbsp;API tab to identify the right `flavor` and `image_id` for the target region before applying.</p>
+
+```hcl
+resource "gcore_cloud_gpu_virtual_cluster" "example" {
+  name          = "my-gpu-cluster"
+  flavor        = "g3-ai-24-232-1250-h100-80-1"  # 1× H100 80 GB; list available flavors via the flavors API
+  servers_count = 1
+  project_id    = var.project_id
+  region_id     = var.region_id
+
+  # servers_settings is an attribute (nested type), not a block — use = assignment
+  servers_settings = {
+    interfaces = [
+      { type = "external" }
+    ]
+    volumes = [
+      {
+        boot_index = 0
+        name       = "boot-disk"
+        size       = 50     # minimum 50 GiB; increase as needed
+        source     = "image"
+        type       = "ssd_hiiops"
+        image_id   = "2a818d08-a9d3-4477-9966-2663d46f6a27"  # Ubuntu 24.04, CUDA 13.0, driver 580 — Sines-3; list current images via the images API
+      }
+    ]
+    credentials = {
+      ssh_key_name = "my-ssh-key"  # name of an existing SSH key in the project
+    }
+  }
+}
+
+output "cluster_id" {
+  value = gcore_cloud_gpu_virtual_cluster.example.id
+}
+
+output "cluster_status" {
+  value = gcore_cloud_gpu_virtual_cluster.example.status
+}
+```
+
+<p>After `terraform apply` completes, the cluster status is `active`. Connect via SSH using the public IP from the cluster's network interfaces.</p>
+
+## Delete the cluster
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the cluster on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_gpu_virtual_cluster" "example" {
+#   name          = "my-gpu-cluster"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
