@@ -718,6 +718,10 @@ Deleting the last node in a cluster automatically deletes the entire cluster —
 
 <p>Edit the `name` field in the resource block and run `terraform apply`. The change applies in-place without replacing the cluster or its nodes.</p>
 
+<Warning>
+If the cluster was created without an explicit `security_groups` value, add the default security group ID to the interface block before running `terraform apply`. Retrieve the ID from the portal under **Network** > **Security Groups**, or via the API. Omitting it causes a provider consistency error on update.
+</Warning>
+
 ```hcl
 resource "gcore_cloud_gpu_virtual_cluster" "example" {
   name          = "my-gpu-cluster-renamed"  # updated name
@@ -727,7 +731,10 @@ resource "gcore_cloud_gpu_virtual_cluster" "example" {
   region_id     = var.region_id
 
   servers_settings = {
-    interfaces = [{ type = "external" }]
+    interfaces = [{
+      type            = "external"
+      security_groups = [{ id = "<default-security-group-id>" }]  # required when updating
+    }]
     volumes = [{
       boot_index = 0
       name       = "boot-disk"
@@ -747,6 +754,10 @@ resource "gcore_cloud_gpu_virtual_cluster" "example" {
 
 <p>Edit `servers_count` and run `terraform apply`. Terraform calls the cluster action endpoint to adjust node count without recreating the cluster. Scaling up requires sufficient quota for the additional nodes — each node consumes volume storage equal to the boot disk size.</p>
 
+<Warning>
+If the cluster was created without an explicit `security_groups` value, add the default security group ID to the interface block before running `terraform apply`. Omitting it causes a provider consistency error on update.
+</Warning>
+
 ```hcl
 resource "gcore_cloud_gpu_virtual_cluster" "example" {
   name          = "my-gpu-cluster"
@@ -756,7 +767,10 @@ resource "gcore_cloud_gpu_virtual_cluster" "example" {
   region_id     = var.region_id
 
   servers_settings = {
-    interfaces = [{ type = "external" }]
+    interfaces = [{
+      type            = "external"
+      security_groups = [{ id = "<default-security-group-id>" }]  # required when updating
+    }]
     volumes = [{
       boot_index = 0
       name       = "boot-disk"
