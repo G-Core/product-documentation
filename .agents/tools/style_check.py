@@ -182,7 +182,10 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
             href = m.group(2)
 
             words = link_text.replace("&nbsp;", " ").split()
-            if len(words) > 2:
+            # "Gcore Customer Portal" is an explicit exception — proper product name,
+            # must never be shortened (style-guide.md: link text rules).
+            is_portal_link = link_text.strip() == "Gcore Customer Portal"
+            if len(words) > 2 and not is_portal_link:
                 violations.append(Violation(
                     line=lineno,
                     rule="Link text length",
