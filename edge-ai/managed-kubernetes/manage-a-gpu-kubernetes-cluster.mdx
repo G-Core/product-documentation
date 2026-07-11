@@ -1,55 +1,65 @@
 ---
 title: Manage a GPU Kubernetes cluster
 sidebarTitle: Manage a cluster
+ai-navigation: Manage GPU Kubernetes clusters via Customer Portal or REST API - download kubeconfig, add node pools, replace nodes, upgrade version, and delete the cluster.
 ---
 
-Day-to-day operations covered here include connecting with kubectl, managing node pools and autoscaling, configuring storage and logging, setting up OIDC authentication, upgrading the cluster version, and deleting the cluster.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Day-to-day operations covered here include connecting with kubectl, managing node pools and autoscaling, configuring storage and logging, setting up OIDC authentication, upgrading the cluster version, and deleting the cluster.</p>
 
 ## Connect to the cluster
 
-The kubeconfig file enables kubectl connections to the cluster. Download it from the cluster overview page:
+<p>The kubeconfig file enables kubectl connections to the cluster. Download it from the cluster overview page:</p>
 
-1. Navigate to the cluster overview page.
-2. Click **Kubernetes config**.
-3. Save the downloaded `k8sConfig.yml` file.
+<Steps>
+  <Step title="Navigate to the cluster overview page">
+  </Step>
+  <Step title="Click Kubernetes config">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/cluster-kubeconfig.png" alt="Cluster overview page with the Kubernetes config button highlighted" />
+    </Frame>
+  </Step>
+  <Step title="Save the downloaded k8sConfig.yml file">
+  </Step>
+</Steps>
 
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/cluster-kubeconfig.png" alt="Cluster overview page with the Kubernetes config button highlighted" />
-</Frame>
-
-Configure kubectl to use the downloaded configuration:
+<p>Configure kubectl to use the downloaded configuration:</p>
 
 ```bash
 export KUBECONFIG=/path/to/k8sConfig.yml
 ```
 
-Verify the connection:
+<p>Verify the connection:</p>
 
 ```bash
 kubectl cluster-info
 ```
 
-Expected output:
+<p>Expected output:</p>
 
 ```
 Kubernetes control plane is running at https://<cluster-endpoint>:443
 CoreDNS is running at https://<cluster-endpoint>:443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
 ```
 
-Check node status:
+<p>Check node status:</p>
 
 ```bash
 kubectl get nodes
 ```
 
-Expected output:
+<p>Expected output:</p>
 
 ```
 NAME                STATUS   ROLES    AGE   VERSION
 ndp1-c3-168-10-78   Ready    <none>   12d   v1.35.3
 ```
 
-Nodes show Ready status when fully provisioned. kubectl must be within one minor version of the cluster — for example, kubectl v1.34 or v1.36 works with a v1.35 cluster. A version mismatch beyond that range produces a warning but commands still execute.
+<p>Nodes show Ready status when fully provisioned. kubectl must be within one minor version of the cluster — kubectl v1.34 or v1.36 both work with a v1.35 cluster. A version mismatch beyond that range produces a warning but commands still execute.</p>
 
 <Info>
 Kubeconfig certificates are renewed automatically every two years. A notification appears in the portal and is sent by email two weeks before expiry. Download a fresh kubeconfig after renewal.
@@ -57,7 +67,7 @@ Kubeconfig certificates are renewed automatically every two years. A notificatio
 
 ## Cluster overview
 
-The cluster overview page shows the cluster name, status, Kubernetes version, networking configuration (network, subnetwork, CNI provider), and provides access to management tabs.
+<p>The cluster overview page shows the cluster name, status, Kubernetes version, networking configuration (network, subnetwork, CNI provider), and provides access to management tabs.</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/cluster-overview.png" alt="Cluster overview page showing status, networking info, and management tabs" />
@@ -73,11 +83,11 @@ The cluster overview page shows the cluster name, status, Kubernetes version, ne
 
 ## Manage node pools
 
-Node pools group worker nodes with identical configuration. Each pool can have a different instance type, enabling mixed workloads within a single cluster.
+<p>Node pools group worker nodes with identical configuration. Each pool can have a different instance type, enabling mixed workloads within a single cluster.</p>
 
 ### View pool details
 
-The expanded pool card shows the pool name, autoscaling status, instance flavor, volume configuration, node list, and current status.
+<p>The expanded pool card shows the pool name, autoscaling status, instance flavor, volume configuration, node list, and current status.</p>
 
 1. Navigate to the **Pools** tab.
 2. Click a pool to expand its details.
@@ -88,28 +98,33 @@ The expanded pool card shows the pool name, autoscaling status, instance flavor,
 
 ### Scale node pools
 
-Node pools scale automatically within the configured min/max limits. Autoscaling is active when **Maximum nodes** is greater than **Minimum nodes**. When they are equal, the pool maintains a fixed size.
+<p>Node pools scale automatically within the configured min/max limits. Autoscaling is active when **Maximum nodes** is greater than **Minimum nodes**. When they are equal, the pool maintains a fixed size.</p>
 
 <Info>
 A single node pool supports up to 100 nodes. To increase this limit, contact support. The number of pools per cluster is not limited. A single region supports up to 100 clusters.
 </Info>
 
-To adjust the limits:
+<p>To adjust the limits:</p>
 
-1. Navigate to the **Pools** tab.
-2. Expand the target pool.
-3. Click the **...** menu next to the pool header and select **Edit Pool Settings**.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/pool-actions-menu.png" alt="Pool actions menu showing Edit Pool Settings and Delete options" />
-</Frame>
-
-4. Adjust **Minimum nodes** or **Maximum nodes**.
-5. Click **Save**.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/edit-pool-settings.png" alt="Edit pool settings dialog showing minimum and maximum nodes, labels, taints, and autohealing options" />
-</Frame>
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Expand the target pool">
+  </Step>
+  <Step title="Open Edit Pool Settings">
+    Click the **...** menu next to the pool header and select **Edit Pool Settings**.
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/pool-actions-menu.png" alt="Pool actions menu showing Edit Pool Settings and Delete options" />
+    </Frame>
+  </Step>
+  <Step title="Adjust Minimum nodes or Maximum nodes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/edit-pool-settings.png" alt="Edit pool settings dialog showing minimum and maximum nodes, labels, taints, and autohealing options" />
+    </Frame>
+  </Step>
+  <Step title="Click Save">
+  </Step>
+</Steps>
 
 <Warning>
 When reducing the minimum node count, the cluster removes nodes at random. There is no control over which specific nodes are terminated.
@@ -121,32 +136,52 @@ Scaling a pool to zero nodes is not supported. The minimum node count must be at
 
 ### Replace a node
 
-The replace action deletes a node and provisions a new one with the same configuration. Use it to recover a node that is stuck, degraded, or behaving unexpectedly without modifying the pool settings.
+<p>The replace action deletes a node and provisions a new one with the same configuration. Use it to recover a node that is stuck, degraded, or behaving unexpectedly without modifying the pool settings.</p>
 
-1. Navigate to the **Pools** tab.
-2. Expand the target pool.
-3. Click the **...** menu next to the node and select **Replace**.
-4. Confirm the replacement.
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Expand the target pool">
+  </Step>
+  <Step title="Select Replace from the node menu">
+    Click the **...** menu next to the node and select **Replace**.
+  </Step>
+  <Step title="Confirm the replacement">
+  </Step>
+</Steps>
 
-The node is terminated and a new node is provisioned in its place. Running pods are evicted before termination and rescheduled to other available nodes.
+<p>The node is terminated and a new node is provisioned in its place. Running pods are evicted before termination and rescheduled to other available nodes.</p>
 
 ### Add a GPU node pool
 
-To add GPU nodes to an existing cluster:
+<p>To add GPU nodes to an existing cluster:</p>
 
-1. Navigate to the **Pools** tab.
-2. Click **Add pool**.
-3. Enter a **Pool name**.
-4. Set **Minimum nodes** and **Maximum nodes**.
-5. Select **GPU Bare metal instances** as the node type.
-6. Choose a GPU flavor from the dropdown. Available flavors depend on the region.
-7. (Optional) Add **labels** for node selection in pod specs.
-8. (Optional) Add **taints** to dedicate nodes to GPU workloads.
-9. Click **Add pool**.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/add-gpu-pool.png" alt="Add GPU pool dialog showing GPU Bare metal instances selection and available flavor options" />
-</Frame>
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Click Add pool">
+  </Step>
+  <Step title="Enter a Pool name">
+  </Step>
+  <Step title="Set Minimum nodes and Maximum nodes">
+  </Step>
+  <Step title="Select GPU Bare metal instances as the node type">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/add-gpu-pool.png" alt="Add GPU pool dialog showing GPU Bare metal instances selection and available flavor options" />
+    </Frame>
+  </Step>
+  <Step title="Select a GPU flavor">
+    Select a GPU flavor from the dropdown. Available flavors depend on the region.
+  </Step>
+  <Step title="(Optional) Add labels">
+    Add Kubernetes labels to all nodes in the pool.
+  </Step>
+  <Step title="(Optional) Add taints">
+    Dedicate the pool to specific workloads.
+  </Step>
+  <Step title="Click Add pool">
+  </Step>
+</Steps>
 
 <Info>
 GPU node pools may take several minutes to provision. Monitor the pool status in the **Pools** tab.
@@ -158,7 +193,7 @@ GPU bare metal nodes are stateless. Kubernetes may delete and recreate them duri
 
 ### Schedule workloads on GPU nodes
 
-Use node selectors or affinity rules to schedule pods on GPU nodes. The `nodeSelector` field targets nodes by their pool label:
+<p>Use node selectors or affinity rules to schedule pods on GPU nodes. The `nodeSelector` field targets nodes by their pool label:</p>
 
 ```yaml
 apiVersion: v1
@@ -176,7 +211,7 @@ spec:
     pool: gpu-pool
 ```
 
-GPU bare metal nodes require the NVIDIA device plugin to expose GPU resources to the Kubernetes scheduler. The plugin runs as a DaemonSet on GPU nodes; verify it is running before scheduling GPU workloads:
+<p>GPU bare metal nodes require the NVIDIA device plugin to expose GPU resources to the Kubernetes scheduler. The plugin runs as a DaemonSet on GPU nodes; verify it is running before scheduling GPU workloads:</p>
 
 ```bash
 kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
@@ -184,13 +219,13 @@ kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
 
 ### Use persistent storage
 
-Gcore clusters include CSI-based storage classes backed by Cinder volumes. List available storage classes:
+<p>Gcore clusters include CSI-based storage classes backed by Cinder volumes. List available storage classes:</p>
 
 ```bash
 kubectl get storageclass
 ```
 
-Expected output:
+<p>Expected output:</p>
 
 ```
 NAME                            PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
@@ -200,7 +235,7 @@ ssd-lowlatency                  cinder.csi.gcorelabs.com   Delete          Immed
 standard                        cinder.csi.gcorelabs.com   Delete          Immediate           true                   12d
 ```
 
-Create a PersistentVolumeClaim to provision storage for a workload:
+<p>Create a PersistentVolumeClaim to provision storage for a workload:</p>
 
 ```yaml
 apiVersion: v1
@@ -217,14 +252,14 @@ spec:
   storageClassName: ssd-hiiops
 ```
 
-Apply it and verify the volume binds:
+<p>Apply it and verify the volume binds:</p>
 
 ```bash
 kubectl apply -f pvc.yaml
 kubectl get pvc model-storage
 ```
 
-Expected output:
+<p>Expected output:</p>
 
 ```
 NAME            STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
@@ -237,33 +272,43 @@ The node flavor — including CPU, RAM, and storage — cannot be changed after 
 
 ### Delete a node pool
 
-Removing a pool terminates all nodes in that pool. Running pods are evicted and rescheduled to other available nodes if resources permit.
+<p>Removing a pool terminates all nodes in that pool. Running pods are evicted and rescheduled to other available nodes if resources permit.</p>
 
 <Warning>
 Pool deletion is irreversible. All nodes in the pool are terminated. Migrate workloads or confirm they are no longer needed before proceeding. Deleting the last pool in a cluster deletes the entire cluster.
 </Warning>
 
-1. Navigate to the **Pools** tab.
-2. Click the **...** menu next to the pool and select **Delete**.
-3. Confirm the deletion.
+<Steps>
+  <Step title="Navigate to the Pools tab">
+  </Step>
+  <Step title="Select Delete from the pool menu">
+    Click the **...** menu next to the pool and select **Delete**.
+  </Step>
+  <Step title="Confirm the deletion">
+  </Step>
+</Steps>
 
 ## Configure cluster autoscaling
 
-The Cluster Autoscaler adjusts cluster size based on workload demand. When pods are pending due to insufficient resources, the autoscaler adds nodes. When nodes are underutilized, it removes them. Autoscaling operates within the min/max limits set per pool.
+<p>The Cluster Autoscaler adjusts cluster size based on workload demand. When pods are pending due to insufficient resources, the autoscaler adds nodes. When nodes are underutilized, it removes them. Autoscaling operates within the min/max limits set per pool.</p>
 
 <Info>
 The Cluster Autoscaler scales based on CPU and memory utilization only. GPU utilization is not used as a scaling signal.
 </Info>
 
-To configure autoscaling behavior:
+<p>To configure autoscaling behavior:</p>
 
-1. Navigate to the **Advanced settings** tab.
-2. Expand **Cluster Autoscaler**.
-3. Configure the parameters and click **Save changes**.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/autoscaler-settings.png" alt="Cluster Autoscaler settings showing scan interval, expander, and scale-down parameters" />
-</Frame>
+<Steps>
+  <Step title="Navigate to the Advanced settings tab">
+  </Step>
+  <Step title="Expand Cluster Autoscaler">
+  </Step>
+  <Step title="Configure the parameters and click Save changes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/autoscaler-settings.png" alt="Cluster Autoscaler settings showing scan interval, expander, and scale-down parameters" />
+    </Frame>
+  </Step>
+</Steps>
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
@@ -278,28 +323,39 @@ To configure autoscaling behavior:
 | Max bulk deletion of empty nodes | Maximum empty nodes deleted at once | 10 |
 | Max graceful termination time | Time allowed for pods to terminate gracefully | 600 seconds |
 
-If the autoscaler cannot provision enough capacity, increase the maximum node count for the affected pool.
+<p>If the autoscaler cannot provision enough capacity, increase the maximum node count for the affected pool.</p>
 
 ## Configure logging
 
-Cluster logging collects container and system logs, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature.
+<p>Cluster logging collects container and system logs, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature.</p>
 
-1. Navigate to the **Logging** tab.
-2. Toggle **Enable Logging**.
-3. Select an existing log topic or create a new one.
-4. Click **Save**.
+<Steps>
+  <Step title="Navigate to the Logging tab">
+  </Step>
+  <Step title="Toggle Enable Logging">
+  </Step>
+  <Step title="Select a log topic">
+    Select an existing log topic or create a new one.
+  </Step>
+  <Step title="Click Save">
+  </Step>
+</Steps>
 
 ## Configure OIDC authentication
 
-OIDC authentication enables Single Sign-On (SSO) for Kubernetes API access through an external identity provider such as Okta, Azure AD, or Keycloak.
+<p>OIDC authentication enables Single Sign-On (SSO) for Kubernetes API access through an external identity provider — Okta, Azure AD, Keycloak, or any OIDC-compatible service.</p>
 
-1. Navigate to the **Advanced settings** tab.
-2. Expand **OIDC authentication**.
-3. Configure the identity provider settings and click **Save changes**.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/oidc-settings.png" alt="OIDC authentication settings showing issuer URL, client ID, and claim configuration" />
-</Frame>
+<Steps>
+  <Step title="Navigate to the Advanced settings tab">
+  </Step>
+  <Step title="Expand OIDC authentication">
+  </Step>
+  <Step title="Configure the identity provider settings and click Save changes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/oidc-settings.png" alt="OIDC authentication settings showing issuer URL, client ID, and claim configuration" />
+    </Frame>
+  </Step>
+</Steps>
 
 | Field | Description |
 |-------|-------------|
@@ -314,104 +370,1187 @@ OIDC authentication enables Single Sign-On (SSO) for Kubernetes API access throu
 
 ## Upgrade Kubernetes version
 
-Kubernetes upgrades use a rolling update strategy: a new node on the target version is provisioned, workloads migrate to it, and the old node is removed. This repeats until all nodes run the new version, minimizing downtime.
+<p>Kubernetes upgrades use a rolling update strategy: a new node on the target version is provisioned, workloads migrate to it, and the old node is removed. This repeats until all nodes run the new version, minimizing downtime.</p>
 
 <Warning>
-Upgrades are one minor version at a time. For example, upgrading from v1.33 to v1.35 requires two separate upgrades: v1.33 → v1.34, then v1.34 → v1.35. Downgrade is not supported.
+Upgrades are one minor version at a time. To move from v1.33 to v1.35, run two separate upgrades: v1.33 → v1.34, then v1.34 → v1.35. Downgrade is not supported.
 </Warning>
 
 ### Before upgrading
 
-Check that the cluster control plane version and node versions match:
+<p>Check that the cluster control plane version and node versions match:</p>
 
 ```bash
 kubectl version
 kubectl get nodes
 ```
 
-Verify that all nodes show the same version as the control plane before starting the upgrade. Review the [changelog](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/) for deprecated APIs that may affect running workloads.
+<p>Verify that all nodes show the same version as the control plane before starting the upgrade. Review the [changelog](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/) for deprecated APIs that may affect running workloads.</p>
 
-Rolling upgrades require quota for one additional node of the same flavor during the process. For a 10-node pool, quota for 11 nodes is needed temporarily. To avoid requesting extra quota, scale the pool down by one node before starting the upgrade, then scale it back up after the upgrade completes.
+<p>Rolling upgrades require quota for one additional node of the same flavor during the process. For a 10-node pool, quota for 11 nodes is needed temporarily. To avoid requesting extra quota, scale the pool down by one node before starting the upgrade, then scale it back up after the upgrade completes.</p>
 
 ### Start the upgrade
 
-When a newer Kubernetes version is available, an upgrade prompt appears in the cluster overview next to the **Kubernetes Version** field:
+<p>When a newer Kubernetes version is available, an upgrade prompt appears in the cluster overview next to the **Kubernetes Version** field:</p>
 
-1. In the cluster overview, click the upgrade prompt next to **Kubernetes Version**.
-2. Select the target version (next minor version only).
-3. Confirm the upgrade.
+<Steps>
+  <Step title="Click the upgrade prompt next to Kubernetes Version">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/kubernetes-version-upgrade.png" alt="Kubernetes version upgrade prompt on the cluster overview page" />
+    </Frame>
+  </Step>
+  <Step title="Select the target version (next minor version only)">
+  </Step>
+  <Step title="Confirm the upgrade">
+  </Step>
+</Steps>
 
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/kubernetes-version-upgrade.png" alt="Kubernetes version upgrade prompt on the cluster overview page" />
-</Frame>
-
-The upgrade cannot be paused or cancelled once started.
+<p>The upgrade cannot be paused or cancelled once started.</p>
 
 ### After upgrading
 
-After the control plane upgrades, update the local kubectl client if the version skew exceeds one minor version:
+<p>After the control plane upgrades, update the local kubectl client if the version skew exceeds one minor version:</p>
 
 ```bash
 kubectl version
 ```
 
-#### Update the Cluster Autoscaler
+**Update the Cluster Autoscaler**
 
-The Cluster Autoscaler image must match the cluster's Kubernetes minor version. Find the latest release for the new version on the [releases page](https://github.com/kubernetes/autoscaler/releases), then update the image:
+<p>The Cluster Autoscaler image must match the cluster's Kubernetes minor version. Find the latest release for the new version on the [releases&nbsp;page](https://github.com/kubernetes/autoscaler/releases), then update the image:</p>
 
 ```bash
 kubectl -n kube-system set image deployment.apps/cluster-autoscaler \
   cluster-autoscaler=registry.k8s.io/autoscaling/cluster-autoscaler:v<X.XX.X>
 ```
 
-Replace `<X.XX.X>` with the release that matches the upgraded cluster version. For example, if the cluster is now v1.35, use the latest `1.35.x` Cluster Autoscaler release. A version mismatch causes the autoscaler to stop scaling correctly.
+<p>Replace `<X.XX.X>` with the release that matches the upgraded cluster version. If the cluster is now v1.35, use the latest `1.35.x` Cluster Autoscaler release. A version mismatch causes the autoscaler to stop scaling correctly.</p>
 
-Verify the rollout completed:
+<p>Verify the rollout completed:</p>
 
 ```bash
 kubectl -n kube-system rollout status deployment/cluster-autoscaler
 ```
 
-#### Update the NVIDIA device plugin (GPU bare metal pools only)
+**Update the NVIDIA device plugin (GPU bare metal pools only)**
 
-The NVIDIA device plugin DaemonSet must be updated after a cluster upgrade to maintain GPU resource scheduling. Find the latest compatible release on the [releases page](https://github.com/NVIDIA/k8s-device-plugin/releases), then apply it:
+<p>The NVIDIA device plugin DaemonSet must be updated after a cluster upgrade to maintain GPU resource scheduling. Find the latest compatible release on the [releases&nbsp;page](https://github.com/NVIDIA/k8s-device-plugin/releases), then apply it:</p>
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v<X.X.X>/deployments/static/nvidia-device-plugin.yml
 ```
 
-Replace `<X.X.X>` with the target plugin version. Verify the DaemonSet is running on all GPU nodes:
+<p>Replace `<X.X.X>` with the target plugin version. Verify the DaemonSet is running on all GPU nodes:</p>
 
 ```bash
 kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
 ```
 
-All pods in the DaemonSet should show `READY` equal to `DESIRED` before scheduling GPU workloads.
+<p>All pods in the DaemonSet should show `READY` equal to `DESIRED` before scheduling GPU workloads.</p>
 
 ## View audit log
 
-The **User Actions** tab provides an audit log of all cluster operations: creation, pool changes, configuration updates, and upgrades. Each entry shows the timestamp, action type, affected resource, event description, and the account that performed the action.
+<p>The **User Actions** tab provides an audit log of all cluster operations: creation, pool changes, configuration updates, and upgrades. Each entry shows the timestamp, action type, affected resource, event description, and the account that performed the action.</p>
 
-1. Navigate to the **User Actions** tab.
-2. Use filters to narrow results by resource name, action type, resource type, or date range.
-
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/user-actions-tab.png" alt="User Actions audit log showing date, action, resource, event, and changed by columns" />
-</Frame>
+<Steps>
+  <Step title="Navigate to the User Actions tab">
+  </Step>
+  <Step title="Use filters to narrow results">
+    Filter by resource name, action type, resource type, or date range.
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/user-actions-tab.png" alt="User Actions audit log showing date, action, resource, event, and changed by columns" />
+    </Frame>
+  </Step>
+</Steps>
 
 ## Delete the cluster
 
-Cluster deletion removes all nodes, pools, and associated resources. External resources such as Object Storage buckets and Persistent Volumes created outside the cluster are not affected.
+<p>Cluster deletion removes all nodes, pools, and associated resources. External resources — Object Storage buckets and Persistent Volumes created outside the cluster — are not affected.</p>
 
 <Warning>
 Cluster deletion is irreversible. Export the kubeconfig and back up any required data before proceeding.
 </Warning>
 
-1. Navigate to the cluster overview.
-2. Click **Delete cluster**.
-3. Type `Delete` in the confirmation field.
-4. Click **Yes, delete**.
+<Steps>
+  <Step title="Navigate to the cluster overview">
+  </Step>
+  <Step title="Click Delete cluster">
+  </Step>
+  <Step title="Type Delete in the confirmation field">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/delete-cluster-dialog.png" alt="Delete cluster confirmation dialog requiring 'Delete' text input" />
+    </Frame>
+  </Step>
+  <Step title="Click Yes, delete">
+  </Step>
+</Steps>
 
-<Frame>
-  <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/delete-cluster-dialog.png" alt="Delete cluster confirmation dialog requiring 'Delete' text input" />
-</Frame>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Manage an existing GPU Kubernetes cluster — download the kubeconfig, add and configure node pools, replace unhealthy nodes, upgrade the Kubernetes version, and delete the cluster.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+Open a terminal and set these environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## List clusters
+
+<p>Returns all clusters in the project and region, with their status, version, and network configuration.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    clusters = client.cloud.k8s.clusters.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for c in clusters.results:
+        print(c.name, c.status, c.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	clusters, err := client.Cloud.K8S.Clusters.List(context.TODO(), cloud.K8SClusterListParams{
+    		ProjectID: gcore.Int(projectID),
+    		RegionID:  gcore.Int(regionID),
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, c := range clusters.Results {
+    		fmt.Println(c.Name, c.Status, c.Version)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "1935449d-e2b9-4360-aaeb-bf927187aef6",
+          "name": "my-cluster",
+          "status": "Provisioned",
+          "version": "v1.35.3",
+          "cni": {"provider": "calico"},
+          "fixed_network": "75c521eb-5b77-49d2-a2b3-31e426e7f46a",
+          "fixed_subnet": "224f85e5-1eef-4784-b10c-337dec453567"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Get cluster details
+
+<p>Returns the full configuration of a single cluster, including network settings, CNI provider, and pool list.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    cluster = client.cloud.k8s.clusters.get(
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(cluster.id, cluster.status, cluster.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	cluster, err := client.Cloud.K8S.Clusters.Get(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterGetParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Println(cluster.ID, cluster.Status, cluster.Version)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "1935449d-e2b9-4360-aaeb-bf927187aef6",
+      "name": "my-cluster",
+      "status": "Provisioned",
+      "version": "v1.35.3",
+      "cni": {"provider": "calico"},
+      "fixed_network": "75c521eb-5b77-49d2-a2b3-31e426e7f46a",
+      "fixed_subnet": "224f85e5-1eef-4784-b10c-337dec453567",
+      "keypair": "my-key",
+      "authentication": {
+        "kubeconfig_created_at": "2026-07-11T10:57:08Z",
+        "kubeconfig_expires_at": "2028-07-10T10:57:08Z"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Download kubeconfig
+
+<p>Returns the kubeconfig file content and the cluster API endpoint. Save the config to a file and point kubectl at it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    kc = client.cloud.k8s.clusters.kubeconfig.get(
+        os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    with open("k8sConfig.yml", "w") as f:
+        f.write(kc.config)
+    print(f"Saved kubeconfig. Cluster endpoint: {kc.host}")
+    print(f"Expires: {kc.expires_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterKubeconfigGetParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	os.WriteFile("k8sConfig.yml", []byte(kc.Config), 0600)
+    	fmt.Printf("Saved kubeconfig. Cluster endpoint: %s\n", kc.Host)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/config" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "config": "apiVersion: v1\nclusters:\n- cluster:\n    ...",
+      "host": "https://176-1186668-my-cluster.mkaas.k1.sines-3.cloud.gcore.dev:443",
+      "expires_at": "2028-07-10T10:57:08Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Configure kubectl to use the saved file:</p>
+
+```bash
+export KUBECONFIG=/path/to/k8sConfig.yml
+kubectl cluster-info
+```
+
+## List node pools
+
+<p>Returns all pools in the cluster with their flavor, node counts, and current status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    pools = client.cloud.k8s.clusters.pools.list(
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for p in pools.results:
+        print(p.name, p.flavor_id, p.min_node_count, p.max_node_count, p.status)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	pools, err := client.Cloud.K8S.Clusters.Pools.List(
+    		context.TODO(),
+    		os.Getenv("GCORE_CLUSTER_NAME"),
+    		cloud.K8SClusterPoolListParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, p := range pools.Results {
+    		fmt.Println(p.Name, p.FlavorID, p.MinNodeCount, p.MaxNodeCount, p.Status)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "name": "gpu-pool",
+          "flavor_id": "g2a-gpu-1-24-1",
+          "min_node_count": 1,
+          "max_node_count": 2,
+          "node_count": 1,
+          "status": "Running"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add a node pool
+
+<p>Adds a new pool of nodes to the cluster. The pool can use a GPU Bare Metal flavor or a standard VM flavor.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Pool name, unique within the cluster |
+| `flavor_id` | Yes | Instance flavor for all nodes in the pool |
+| `min_node_count` | Yes | Minimum number of nodes (autoscaler lower bound) |
+| `max_node_count` | No | Maximum number of nodes; defaults to `min_node_count` for fixed-size pools |
+| `servergroup_policy` | VM pools only | Node anti-affinity policy; use `soft-anti-affinity` |
+| `boot_volume_type` | VM pools only | Boot volume type, e.g. `ssd_hiiops` |
+| `boot_volume_size` | VM pools only | Boot volume size in GB (minimum 50) |
+
+<Info>
+GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or `boot_volume_size`. VM type pools require all three.
+</Info>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # GPU Bare Metal pool
+    task_list = client.cloud.k8s.clusters.pools.create(
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+        name="gpu-pool",
+        flavor_id="g2a-gpu-1-24-1",    # select a GPU flavor for the region
+        min_node_count=1,
+        max_node_count=2,
+    )
+    task_id = task_list.tasks[0]
+    print(f"Pool creation started: {task_id}")
+
+    # Poll until provisioned
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print(f"Pool created: {task.created_resources}")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Pool creation failed: {task}")
+        time.sleep(10)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	// GPU Bare Metal pool
+    	taskList, err := client.Cloud.K8S.Clusters.Pools.New(
+    		context.TODO(),
+    		clusterName,
+    		cloud.K8SClusterPoolNewParams{
+    			ProjectID:    gcore.Int(projectID),
+    			RegionID:     gcore.Int(regionID),
+    			Name:         "gpu-pool",
+    			FlavorID:     "g2a-gpu-1-24-1",    // select a GPU flavor for the region
+    			MinNodeCount: 1,
+    			MaxNodeCount: gcore.Int(2),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+    	fmt.Printf("Pool creation started: %s\n", taskID)
+
+    	// Poll until provisioned
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Printf("Pool created: %+v\n", task.CreatedResources)
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Pool creation failed: %+v", task))
+    		}
+    		time.Sleep(10 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # GPU Bare Metal pool
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "gpu-pool",
+        "flavor_id": "g2a-gpu-1-24-1",
+        "min_node_count": 1,
+        "max_node_count": 2
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 10 seconds until `state` is `FINISHED`.</p>
+  </Tab>
+</Tabs>
+
+## Update pool settings
+
+<p>Updates the minimum and maximum node counts for a pool, which controls autoscaling boundaries. Reducing the minimum may trigger node removal — nodes are removed at random.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    pool = client.cloud.k8s.clusters.pools.update(
+        pool_name="gpu-pool",
+        cluster_name=os.environ["GCORE_CLUSTER_NAME"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        max_node_count=3,
+    )
+    print(f"min={pool.min_node_count}  max={pool.max_node_count}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	pool, err := client.Cloud.K8S.Clusters.Pools.Update(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolUpdateParams{
+    			ProjectID:    gcore.Int(projectID),
+    			RegionID:     gcore.Int(regionID),
+    			ClusterName:  os.Getenv("GCORE_CLUSTER_NAME"),
+    			MaxNodeCount: gcore.Int(3),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("min=%d  max=%d\n", pool.MinNodeCount, pool.MaxNodeCount)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"max_node_count": 3}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "name": "gpu-pool",
+      "min_node_count": 1,
+      "max_node_count": 3,
+      "node_count": 1,
+      "status": "Running"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Replace a node
+
+<p>Deletes a specific node and lets the pool provision a replacement. Use this to recover a stuck or degraded node without modifying pool settings.</p>
+
+<p>Get the node ID by listing pool nodes first:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # Step 1. Find the node ID
+    nodes = client.cloud.k8s.clusters.pools.nodes.list(
+        pool_name="gpu-pool",
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    for n in nodes.results:
+        print(n.id, n.name, n.status)
+
+    # Step 2. Delete the node to trigger replacement
+    node_id = nodes.results[0].id
+    client.cloud.k8s.clusters.pools.nodes.delete(
+        instance_id=node_id,
+        cluster_name=CLUSTER,
+        pool_name="gpu-pool",
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    print(f"Node {node_id} deleted — replacement will provision automatically.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	// Step 1. Find the node ID
+    	nodes, err := client.Cloud.K8S.Clusters.Pools.Nodes.List(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolNodeListParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, n := range nodes.Results {
+    		fmt.Println(n.ID, n.Name, n.Status)
+    	}
+
+    	// Step 2. Delete the node to trigger replacement
+    	nodeID := nodes.Results[0].ID
+    	err = client.Cloud.K8S.Clusters.Pools.Nodes.Delete(
+    		context.TODO(),
+    		nodeID,
+    		cloud.K8SClusterPoolNodeDeleteParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    			PoolName:    "gpu-pool",
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Node %s deleted — replacement will provision automatically.\n", nodeID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Step 1. List nodes to get the instance ID
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool/instances" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {"id": "16af5716-0e10-4b7d-9d22-1a7827ed3445", "name": "ndp1-c3-168-10-33", "status": "ACTIVE"}
+      ]
+    }
+    ```
+
+    ```bash
+    # Step 2. Delete the node — the pool provisions a replacement automatically
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool/instances/16af5716-0e10-4b7d-9d22-1a7827ed3445" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns `204 No Content`. The pool automatically provisions a replacement node.
+  </Tab>
+</Tabs>
+
+## Delete a node pool
+
+<p>Removes a pool and terminates all its nodes. Pods running on those nodes are evicted and rescheduled if other pools have capacity. Deleting the last pool also deletes the cluster.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    task_list = client.cloud.k8s.clusters.pools.delete(
+        pool_name="gpu-pool",
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    task_id = task_list.tasks[0]
+
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print("Pool deleted.")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Pool deletion failed: {task}")
+        time.sleep(10)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	taskList, err := client.Cloud.K8S.Clusters.Pools.Delete(
+    		context.TODO(),
+    		"gpu-pool",
+    		cloud.K8SClusterPoolDeleteParams{
+    			ProjectID:   gcore.Int(projectID),
+    			RegionID:    gcore.Int(regionID),
+    			ClusterName: clusterName,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Println("Pool deleted.")
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Pool deletion failed: %+v", task))
+    		}
+    		time.Sleep(10 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/pools/gpu-pool" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 10 seconds until `state` is `FINISHED`.</p>
+  </Tab>
+</Tabs>
+
+## Upgrade the cluster
+
+<p>Upgrades the cluster to the next available Kubernetes minor version using a rolling update. Check available versions before starting, then trigger the upgrade.</p>
+
+<Warning>
+Upgrades move exactly one minor version at a time. The upgrade cannot be paused or cancelled once started. Verify that the cluster has quota for one additional node of the same flavor during the rolling update.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # Step 1. Check available upgrade versions
+    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(
+        cluster_name=CLUSTER, project_id=PROJECT, region_id=REGION
+    )
+    if not versions.results:
+        print("No upgrades available.")
+        exit()
+    target = versions.results[0].version
+    print(f"Upgrading to {target}")
+
+    # Step 2. Start the upgrade
+    task_list = client.cloud.k8s.clusters.upgrade(
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+        version=target,
+    )
+    task_id = task_list.tasks[0]
+
+    # Step 3. Poll until finished
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print("Upgrade complete.")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Upgrade failed: {task}")
+        print(f"Upgrade state: {task.state}")
+        time.sleep(30)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	// Step 1. Check available upgrade versions
+    	versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
+    		context.TODO(),
+    		clusterName,
+    		cloud.K8SClusterListVersionsForUpgradeParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	if len(versions.Results) == 0 {
+    		fmt.Println("No upgrades available.")
+    		return
+    	}
+    	target := versions.Results[0].Version
+    	fmt.Printf("Upgrading to %s\n", target)
+
+    	// Step 2. Start the upgrade
+    	taskList, err := client.Cloud.K8S.Clusters.Upgrade(
+    		context.TODO(),
+    		clusterName,
+    		cloud.K8SClusterUpgradeParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    			Version:   target,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+
+    	// Step 3. Poll until finished
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Println("Upgrade complete.")
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Upgrade failed: %+v", task))
+    		}
+    		fmt.Printf("Upgrade state: %s\n", task.State)
+    		time.Sleep(30 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Step 1. Check available upgrade versions
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/upgrade_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"count": 1, "results": [{"version": "v1.36.1"}]}
+    ```
+
+    ```bash
+    # Step 2. Start the upgrade
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/upgrade" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"version": "v1.36.1"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`. GPU bare metal node upgrades take longer than standard VM upgrades.</p>
+  </Tab>
+</Tabs>
+
+## Delete the cluster
+
+<p>Deletes the cluster, all its node pools, and associated control plane resources. External storage (Object Storage buckets, Persistent Volumes provisioned outside the cluster) is not deleted.</p>
+
+<Warning>
+Cluster deletion is irreversible. Download the kubeconfig and back up any required data before proceeding.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    task_list = client.cloud.k8s.clusters.delete(
+        cluster_name=CLUSTER,
+        project_id=PROJECT,
+        region_id=REGION,
+    )
+    task_id = task_list.tasks[0]
+
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print("Cluster deleted.")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Deletion failed: {task}")
+        time.sleep(15)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    	"github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+    	taskList, err := client.Cloud.K8S.Clusters.Delete(
+    		context.TODO(),
+    		clusterName,
+    		cloud.K8SClusterDeleteParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+
+    	for {
+    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Println("Cluster deleted.")
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Deletion failed: %+v", task))
+    		}
+    		time.Sleep(15 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 15 seconds until `state` is `FINISHED`.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
