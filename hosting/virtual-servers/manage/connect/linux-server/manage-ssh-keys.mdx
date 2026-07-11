@@ -1,28 +1,68 @@
 ---
 title: Manage SSH keys
-sidebarTitle: SSH key
-ai-navigation: Create and manage SSH public keys in Gcore Dedicated Servers portal by adding Key Name and Public Key fields; SSH keys automatically deploy to all future servers and OS reinstalls for authentication.
+sidebarTitle: SSH keys
+ai-navigation: Manage SSH keys for Gcore Linux virtual servers — generate a key pair, copy a public key to the server, connect via SSH key, and remove keys from authorized_keys.
 ---
 
-To create a key, go to the SSH keys section and click on the **Add** button.
+SSH key authentication provides a more secure alternative to [password&nbsp;login](/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh) for Linux virtual servers. An SSH key pair consists of a private key stored locally and a public key deployed on the server. The server grants access only to connections that present the matching private key.
 
+## Add a public key
 
-<Frame>![ DCImanager](/images/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788651407.png)</Frame>
+<Steps>
+<Step title="Generate a key pair">
 
+On the local machine (Linux, macOS, or Windows with OpenSSH), open a terminal and run:
 
+```bash
+ssh-keygen -t ed25519 -C "my-key"
+```
 
-Fill in the fields for "Key Name" and "Public Key". Pay attention to the key format, try not to move the lines.
+Press **Enter** to accept the default file path, or enter a custom path. The command creates two files:
 
+- `~/.ssh/id_ed25519` — the private key. Keep this file secure; do not share it with anyone.
+- `~/.ssh/id_ed25519.pub` — the public key. This is the file to copy to the server.
 
-<Frame>![Manage SSH keys](/images/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788759836.png)</Frame>
+</Step>
+<Step title="Copy the public key to the server">
 
+Run `ssh-copy-id` from the local machine while password access is still available:
 
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub username@server_ip
+```
 
-SSH key will be automatically added to all future servers and used OS. That is, using a specific key, you can connect to the server if: 
+Replace `username` with the account name (typically `root`) and `server_ip` with the server's IP address. Both are available on the **Instructions** tab in the [Hosting&nbsp;portal](https://hosting.gcore.com/billmgr).
 
-  * You had added an SSH key and bought a server later 
-  * You had bought a server, had added an SSH key and later reinstalled the OS on the server
+<Note>
+If `ssh-copy-id` is unavailable (Windows systems without OpenSSH 8.1 or later), append the public key manually. Log in to the server with a password, then run:
 
+```bash
+echo "public_key_content" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
 
+Replace `public_key_content` with the full contents of the `id_ed25519.pub` file (a single long line starting with `ssh-ed25519`).
+</Note>
 
-To change the key go to SSH keys - click **Edit**. To delete it go to SSH keys - **Delete**.
+</Step>
+</Steps>
+
+## Connect with an SSH key
+
+With the public key on the server, connect using the private key:
+
+```bash
+ssh -i ~/.ssh/id_ed25519 username@server_ip
+```
+
+If the key is stored in the default location (`~/.ssh/id_ed25519`), the `-i` flag can be omitted — the SSH client uses it automatically.
+
+## Remove a public key
+
+Open `~/.ssh/authorized_keys` on the server and delete the line containing the key to revoke:
+
+```bash
+nano ~/.ssh/authorized_keys
+```
+
+Each line in the file represents one authorized key. Delete the line for the key to remove, then save the file. The removed key loses access on the next connection attempt.
