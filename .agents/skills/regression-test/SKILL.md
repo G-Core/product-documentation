@@ -450,27 +450,72 @@ For each screenshot in the article:
 
 1. Navigate to the correct screen in the portal using the existing article
    text as a guide — it describes what each screenshot should show.
-2. Use `playwright_screenshot` with `fullPage: false`. Set the viewport to
-   1400×900 before capturing:
-   ```javascript
-   // browser_evaluate
-   window.resizeTo(1400, 900)
-   ```
-3.    Save to:
-   ```
-   C:\Projects\product-documentation_2\images\docs\{product}\{article-slug}\{filename}.png
-   ```
-   Use a **new filename** — never overwrite the old file directly (CDN caching).
-   Append `-2` or a short date suffix if the content is the same
-   (e.g., `bare-metal-page-2.png`).
 
-4. Update the `<Frame>` in the article to reference the new filename.
-5. Update the alt text if the UI shown has changed.
-6. Delete the old file:
+2. **Set the viewport to 1400×900** using `browser_resize`:
+   ```
+   browser_resize(width=1400, height=900)
+   ```
+   Do this once at the start of Phase 3, before the first screenshot.
+   Do NOT use `browser_evaluate` with `window.resizeTo` — that call is ignored
+   by headless Playwright. Only `browser_resize` actually changes the viewport.
+
+3. **Hide PII before every screenshot** — the portal shows the logged-in user's
+   email in the top-right corner. Remove it with `browser_evaluate`:
+   ```javascript
+   // Find and hide the email / account info element in the top-right corner.
+   // The selector targets the most common portal patterns; adjust if needed.
+   document.querySelectorAll(
+     '[class*="user-info"], [class*="UserInfo"], [class*="account-email"], ' +
+     '[class*="userEmail"], [class*="header__user"], [class*="userMenu"]'
+   ).forEach(el => { el.style.visibility = 'hidden'; });
+   // Fallback: hide any element whose text content looks like an email address.
+   document.querySelectorAll('span, p, div, a').forEach(el => {
+     if (/[^@\s]+@[^@\s]+\.[^@\s]+/.test(el.innerText) && el.children.length === 0) {
+       el.style.visibility = 'hidden';
+     }
+   });
+   ```
+   Use `visibility: hidden` (not `display: none`) so the element still occupies
+   space and the layout does not shift. Run this before EVERY screenshot — some
+   portal navigation re-renders the header and makes the email visible again.
+
+4. **Take a full-viewport screenshot** using `browser_take_screenshot`:
+   - Do NOT pass `element` or `target` parameters — those crop the image.
+   - Use the `filename` parameter to set the output filename:
+     ```
+     browser_take_screenshot(filename="screenshot-name.png")
+     ```
+   - The file is saved to `C:\Users\{username}\` (Playwright MCP home dir).
+     After saving, copy it to the article images folder:
+     ```powershell
+     $dest = "C:\Projects\product-documentation_2\images\docs\{product}\{slug}\{slug}-imageN.png"
+     Copy-Item "C:\Users\sergey.kostichev\screenshot-name.png" $dest -Force
+     ```
+   - Verify the file exists before moving on:
+     ```powershell
+     cmd /c "dir /b C:\Projects\product-documentation_2\images\docs\{product}\{slug}"
+     ```
+
+5. Update the `<Frame>` in the article to reference the new filename.
+6. Update the alt text if the UI shown has changed.
+7. Delete the old file:
    ```powershell
    cd C:\Projects\product-documentation_2
    git rm images/docs/{product}/{article-slug}/{old-filename}.png
    ```
+
+### What NOT to do with screenshots
+
+- **Never crop** by passing `element` or `target` to `browser_take_screenshot`.
+  Full-viewport screenshots are always correct; cropped ones frequently look broken.
+- **Never use `savePath`** — it is not a valid parameter. Use `filename` instead.
+- **Never use `browser_evaluate` to resize** — `window.resizeTo()` has no effect
+  in headless Playwright. Use `browser_resize` only.
+- **Never skip the PII-hide step** — the logged-in email is always visible in the
+  portal header and must not appear in published documentation.
+- **Never take a screenshot immediately after scrolling** — give the page
+  50–100 ms to finish rendering. Use a brief `browser_wait_for(time=100)` or
+  take a `browser_snapshot` first (which forces a render cycle) before capturing.
 
 ### Resource names in screenshots
 
@@ -947,8 +992,15 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ## Phase 9 — Create branch, commit, and push
 
-**One article = one branch.** Create a dedicated branch for this article before
-committing. The branch name uses the Jira ticket created in Phase 4.
+**One article = one branch.** The branch name is always the Jira ticket key
+created in Phase 4 — even if the user mentioned a different name earlier in the
+conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
+
+**CRITICAL — never reuse a ticket number from earlier in the conversation or from
+a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
+during work on a different article as a planned next ticket — it does not belong
+to the current article. Always use the ticket key that was actually created and
+returned by the Phase 4 script in this session. Anything else is wrong.
 
 ```powershell
 cd C:\Projects\product-documentation_2
@@ -957,7 +1009,8 @@ git pull origin main
 git checkout -b DOC-XXXX
 ```
 
-Replace `DOC-XXXX` with the ticket key from Phase 4.
+Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
+was mentioned earlier in the conversation).
 
 Run the pre-commit checklist below, then commit and push.
 
