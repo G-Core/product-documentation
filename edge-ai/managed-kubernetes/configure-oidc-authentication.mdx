@@ -1,0 +1,304 @@
+---
+title: Configure OIDC authentication
+sidebarTitle: OIDC authentication
+ai-navigation: Configure OIDC Single Sign-On for Kubernetes API access in a Gcore GPU Kubernetes cluster via the Customer Portal or via REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>OIDC authentication enables Single Sign-On (SSO) for Kubernetes API access through an external identity provider — Okta, Azure AD, Keycloak, or any OIDC-compatible service.</p>
+
+<Steps>
+  <Step title="Navigate to the Advanced settings tab">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-oidc-authentication/configure-oidc-authentication-image1.png" alt="Advanced settings tab showing OIDC authentication and Cluster Autoscaler sections" />
+    </Frame>
+  </Step>
+  <Step title="Expand OIDC authentication">
+  </Step>
+  <Step title="Configure the identity provider settings and click Save changes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-oidc-authentication/configure-oidc-authentication-image2.png" alt="OIDC authentication form showing Issuer URL, Client ID, groups claim, signing algorithms, and username fields" />
+    </Frame>
+  </Step>
+</Steps>
+
+| Field | Description |
+|-------|-------------|
+| Issuer URL | The OIDC issuer endpoint (e.g., `https://example.com`) |
+| Client ID | Application client ID from the identity provider |
+| Groups claim | JWT claim containing group membership (optional) |
+| Groups prefix | Prefix added to group names (default: `oidc`) |
+| Set required claims | Require specific claims in tokens |
+| Signing algorithms | JWT signing algorithms to accept (default: RS256, optional) |
+| Username claim | JWT claim used as the username (default: `sub`) |
+| Username prefix | Prefix added to usernames (default: `oidc`) |
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>OIDC authentication delegates Kubernetes API access to an external identity provider. Once configured, users authenticate with the provider and present the resulting JWT token to `kubectl` — Kubernetes validates the token against the configured issuer without contacting the provider again.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set the following environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## Configure OIDC
+
+<p>Pass the identity provider settings under `authentication.oidc`. Only `issuer_url` and `client_id` are typically required — all other fields are optional.</p>
+
+| Field | Description |
+|-------|-------------|
+| `issuer_url` | OIDC discovery endpoint of the identity provider |
+| `client_id` | Application client ID registered with the provider |
+| `username_claim` | JWT claim used as the Kubernetes username (default: `sub`) |
+| `username_prefix` | Prefix prepended to usernames to avoid conflicts (default: `oidc:`) |
+| `groups_claim` | JWT claim containing group membership |
+| `groups_prefix` | Prefix prepended to group names (default: `oidc:`) |
+| `signing_algs` | Accepted signing algorithms: `RS256`, `RS384`, `RS512`, `ES256`, `ES384`, `ES512`, `PS256`, `PS384`, `PS512` |
+| `required_claims` | Key-value pairs that must be present in the token |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    result = client.cloud.k8s.clusters.update(
+        cluster_name=cluster_name,
+        project_id=project_id,
+        region_id=region_id,
+        authentication={
+            "oidc": {
+                "issuer_url": "https://accounts.provider.example",
+                "client_id": "kubernetes",
+                "username_claim": "sub",
+                "username_prefix": "oidc:",
+                "groups_claim": "groups",
+                "groups_prefix": "oidc:",
+            }
+        },
+    )
+
+    task_id = result.tasks[0]
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state in ("FINISHED", "ERROR"):
+            break
+        time.sleep(5)
+
+    print("OIDC configured:", task.state)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        clusterName := os.Getenv("CLUSTER_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Authentication: cloud.K8SClusterUpdateParamsAuthentication{
+                Oidc: cloud.K8SClusterUpdateParamsAuthenticationOidc{
+                    IssuerURL:      gcore.String("https://accounts.provider.example"),
+                    ClientID:       gcore.String("kubernetes"),
+                    UsernameClaim:  gcore.String("sub"),
+                    UsernamePrefix: gcore.String("oidc:"),
+                    GroupsClaim:    gcore.String("groups"),
+                    GroupsPrefix:   gcore.String("oidc:"),
+                },
+            },
+        })
+        if err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        }
+
+        taskID := result.Tasks[0]
+        for {
+            task, _ := client.Cloud.Tasks.Get(ctx, taskID)
+            if task.State == "FINISHED" || task.State == "ERROR" {
+                fmt.Println("OIDC configured:", task.State)
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "authentication": {
+          "oidc": {
+            "issuer_url": "https://accounts.provider.example",
+            "client_id": "kubernetes",
+            "username_claim": "sub",
+            "username_prefix": "oidc:",
+            "groups_claim": "groups",
+            "groups_prefix": "oidc:"
+          }
+        }
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["fe5b3025-a9ce-4848-a94a-b6cbd6c0eae2"]}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
+
+## Remove OIDC
+
+<p>Set `authentication.oidc` to `null` to remove the OIDC configuration and return to kubeconfig-based authentication.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    result = client.cloud.k8s.clusters.update(
+        cluster_name=cluster_name,
+        project_id=project_id,
+        region_id=region_id,
+        authentication={"oidc": None},
+    )
+
+    task_id = result.tasks[0]
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state in ("FINISHED", "ERROR"):
+            break
+        time.sleep(5)
+
+    print("OIDC removed:", task.state)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+        "time"
+    )
+
+    func main() {
+        projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+        regionID := os.Getenv("GCORE_CLOUD_REGION_ID")
+        clusterName := os.Getenv("CLUSTER_NAME")
+        apiKey := os.Getenv("GCORE_API_KEY")
+
+        // The Go SDK typed API omits null object fields; use net/http to send oidc: null.
+        url := fmt.Sprintf("https://api.gcore.com/cloud/v2/k8s/clusters/%s/%s/%s", projectID, regionID, clusterName)
+        req, _ := http.NewRequest(http.MethodPatch, url, bytes.NewReader([]byte(`{"authentication": {"oidc": null}}`)))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, err := http.DefaultClient.Do(req)
+        if err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        }
+        defer resp.Body.Close()
+
+        var result struct {
+            Tasks []string `json:"tasks"`
+        }
+        json.NewDecoder(resp.Body).Decode(&result)
+        taskID := result.Tasks[0]
+        fmt.Println("Task ID:", taskID)
+
+        // Poll the task
+        for {
+            r, _ := http.NewRequest(http.MethodGet, "https://api.gcore.com/cloud/v1/tasks/"+taskID, nil)
+            r.Header.Set("Authorization", "APIKey "+apiKey)
+            res, _ := http.DefaultClient.Do(r)
+            var t struct{ State string `json:"state"` }
+            json.NewDecoder(res.Body).Decode(&t)
+            res.Body.Close()
+            if t.State == "FINISHED" || t.State == "ERROR" {
+                fmt.Println("OIDC removed:", t.State)
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"authentication": {"oidc": null}}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["task-uuid"]}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
+
+  </MethodSection>
+</MethodSwitch>

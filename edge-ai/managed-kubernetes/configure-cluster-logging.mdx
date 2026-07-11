@@ -1,0 +1,302 @@
+---
+title: Configure cluster logging
+sidebarTitle: Logging
+ai-navigation: Configure container and system log collection for a Gcore GPU Kubernetes cluster via the Customer Portal or via REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Cluster logging collects container and system logs, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature.</p>
+
+<Steps>
+  <Step title="Open the cluster">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-cluster-logging/configure-cluster-logging-image1.png" alt="Kubernetes Clusters list with doc-k8s-test cluster in Provisioned status" />
+    </Frame>
+  </Step>
+  <Step title="Navigate to the Logging tab">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-cluster-logging/configure-cluster-logging-image2.png" alt="Cluster detail page with the Logging tab highlighted" />
+    </Frame>
+  </Step>
+  <Step title="Toggle Enable Logging">
+  </Step>
+  <Step title="Select a log topic">
+    Select an existing log topic or create a new one.
+  </Step>
+  <Step title="Click Save">
+  </Step>
+</Steps>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Cluster logging forwards container and system logs to Gcore Logging-as-a-Service (LaaS), where they are stored in OpenSearch Dashboards. Logging requires a destination region — a Gcore region that hosts a LaaS instance — which may differ from the cluster region.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set the following environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## List available destination regions
+
+<p>Each cluster region has a set of LaaS destination regions where logs can be forwarded. Retrieve the list before enabling logging to get the correct `destination_region_id`.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/laas/$GCORE_CLOUD_REGION_ID/destination_regions" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "region_id": 76,
+      "region_name": "Luxembourg-2"
+    }
+  ]
+}
+```
+
+<p>Use the `region_id` from this response as `destination_region_id` in the enable call below.</p>
+
+## Enable logging
+
+<p>Pass the destination region, a topic name, and an optional retention period. The topic is created automatically if it does not exist.</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `enabled` | Yes | Set to `true` to start log forwarding |
+| `destination_region_id` | Yes | LaaS region from the list above |
+| `topic_name` | No | Topic to write logs to; created if absent |
+| `retention_policy.period` | No | Log retention in days |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    result = client.cloud.k8s.clusters.update(
+        cluster_name=cluster_name,
+        project_id=project_id,
+        region_id=region_id,
+        logging={
+            "enabled": True,
+            "destination_region_id": 76,  # from the destination regions list
+            "topic_name": "my-cluster-logs",
+            "retention_policy": {"period": 30},
+        },
+    )
+
+    task_id = result.tasks[0]
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state in ("FINISHED", "ERROR"):
+            break
+        time.sleep(5)
+
+    print("Logging enabled:", task.state)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        clusterName := os.Getenv("CLUSTER_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Logging: cloud.K8SClusterUpdateParamsLogging{
+                Enabled:             gcore.Bool(true),
+                DestinationRegionID: gcore.Int(76), // from the destination regions list
+                TopicName:           gcore.String("my-cluster-logs"),
+                RetentionPolicy: cloud.LaasIndexRetentionPolicyParam{
+                    Period: gcore.Int(30),
+                },
+            },
+        })
+        if err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        }
+
+        taskID := result.Tasks[0]
+        for {
+            task, _ := client.Cloud.Tasks.Get(ctx, taskID)
+            if task.State == "FINISHED" || task.State == "ERROR" {
+                fmt.Println("Logging enabled:", task.State)
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "logging": {
+          "enabled": true,
+          "destination_region_id": 76,
+          "topic_name": "my-cluster-logs",
+          "retention_policy": {"period": 30}
+        }
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["84162eb4-2555-4348-bead-dbc0c578d2de"]}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
+
+## Disable logging
+
+<p>Set `enabled` to `false` to stop log forwarding. The existing log topic and its data are preserved in OpenSearch Dashboards.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    import gcore
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    result = client.cloud.k8s.clusters.update(
+        cluster_name=cluster_name,
+        project_id=project_id,
+        region_id=region_id,
+        logging={"enabled": False},
+    )
+
+    task_id = result.tasks[0]
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state in ("FINISHED", "ERROR"):
+            break
+        time.sleep(5)
+
+    print("Logging disabled:", task.state)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        clusterName := os.Getenv("CLUSTER_NAME")
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.TODO()
+
+        result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Logging: cloud.K8SClusterUpdateParamsLogging{
+                Enabled: gcore.Bool(false),
+            },
+        })
+        if err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        }
+
+        taskID := result.Tasks[0]
+        for {
+            task, _ := client.Cloud.Tasks.Get(ctx, taskID)
+            if task.State == "FINISHED" || task.State == "ERROR" {
+                fmt.Println("Logging disabled:", task.State)
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"logging": {"enabled": false}}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["task-uuid"]}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
+
+  </MethodSection>
+</MethodSwitch>

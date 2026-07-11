@@ -335,3 +335,44 @@ f.write_text(text, encoding='utf-8')
 ```
 
 **Rule:** Navigation paths always use `>` as separator: `navigate to **Section** > **Subsection**`.
+
+---
+
+## Mintlify dev crashes with `TypeError: controller[kState].transformAlgorithm is not a function` after adding images
+
+**Symptom:** After adding `<Frame><img .../></Frame>` to an MDX article and saving the image files, the Mintlify dev server crashes on hot-reload with:
+```
+TypeError: controller[kState].transformAlgorithm is not a function
+    at ignore-listed frames
+```
+After the crash and auto-restart, ALL pages in the same navigation group return 404, not just the ones that were modified.
+
+**Root cause:** The image files are JPEG but saved with a `.png` extension. Mintlify's image optimizer reads the file extension and tries to process the file as PNG. When it reads a JPEG magic byte signature (`FF D8 FF E0`) instead of the expected PNG signature (`89 50 4E 47`), the transform stream crashes with a Node.js internal error.
+
+**How to diagnose:**
+```powershell
+# Check magic bytes of an image file — should be 89 50 4E 47 for real PNG
+$bytes = [System.IO.File]::ReadAllBytes("images/docs/.../image.png")[0..3]
+($bytes | ForEach-Object { $_.ToString("X2") }) -join " "
+# Real PNG: 89 50 4E 47
+# JPEG disguised as PNG: FF D8 FF E0
+```
+
+**How to fix:** Convert the JPEG files to real PNG using Pillow:
+```python
+# Run from repo root inside .venv
+from PIL import Image
+import os
+
+files = [
+    "images/docs/product/article/image1.png",
+    "images/docs/product/article/image2.png",
+]
+for f in files:
+    img = Image.open(f)
+    img.save(f, format="PNG")
+    raw = open(f, "rb").read(4)
+    print(os.path.basename(f), " ".join(f"{b:02X}" for b in raw))
+```
+
+**Rule:** Always verify that images provided by users or extracted from screenshots are real PNG files before saving them with a `.png` extension. Screenshots from Windows/macOS clipboard are often JPEG. If the magic bytes are not `89 50 4E 47`, convert before saving.
