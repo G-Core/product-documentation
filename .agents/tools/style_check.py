@@ -14,6 +14,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -207,13 +208,17 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
                         text=text.strip(),
                     ))
 
-            if href.startswith("https://docs.gcore.com"):
-                violations.append(Violation(
-                    line=lineno,
-                    rule="Internal link must be root-relative",
-                    detail=f"Link '{href}' must start with '/' not 'https://docs.gcore.com'",
-                    text=text.strip(),
-                ))
+            try:
+                parsed = urlparse(href)
+                if parsed.netloc == "docs.gcore.com":
+                    violations.append(Violation(
+                        line=lineno,
+                        rule="Internal link must be root-relative",
+                        detail=f"Link '{href}' must be root-relative (start with '/'), not a full docs.gcore.com URL",
+                        text=text.strip(),
+                    ))
+            except ValueError:
+                pass
     return violations
 
 
