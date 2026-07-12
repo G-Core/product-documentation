@@ -1,7 +1,7 @@
 ---
 title: Create a GPU Kubernetes cluster
 sidebarTitle: Create a cluster
-ai-navigation: Create GPU Kubernetes clusters with Bare Metal GPU pools via Customer Portal or REST API - configure version, pools, network, and download kubeconfig.
+ai-navigation: Create GPU Kubernetes clusters with Bare Metal GPU pools via Customer Portal, REST API, or Terraform - configure version, pools, network, and download kubeconfig.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -39,7 +39,7 @@ The cluster creation form requires a configured network, subnet, and SSH key bef
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step1-region.png" alt="Region selection showing available data centers grouped by geography" />
 </Frame>
 
-<p>GPU bare metal nodes and features such as VAST Storage integration are not available in all regions, so check regional availability before selecting if these are required.</p>
+<p>GPU bare metal nodes and VAST Storage integration are not available in all regions, so check regional availability before selecting if these are required.</p>
 
 <Info>
 Changing the region after configuring other settings resets all form values.
@@ -72,7 +72,7 @@ Changing the region after configuring other settings resets all form values.
     | GPU Bare metal instances | NVIDIA GPU servers with built-in NVMe storage | Model training, inference at scale |
 
     <Note>
-    Bare metal instances are not available in all regions. If the option is unavailable, switch to a region that supports bare metal, such as Luxembourg-2.
+    Bare metal instances are not available in all regions. If the option is unavailable, switch to a region that supports bare metal — Luxembourg is one example.
     </Note>
   </Step>
   <Step title="Select a flavor">
@@ -98,7 +98,7 @@ Changing the region after configuring other settings resets all form values.
     To configure container runtime settings, environment variables, and resource limits, click the **...** menu in the pool header and select **Configure settings**.
 
     <Warning>
-    Advanced pool settings cannot be changed after cluster creation. Store persistent data in external storage such as Object Storage, NFS, or managed databases — GPU bare metal nodes may be replaced during scaling or maintenance.
+    Advanced pool settings cannot be changed after cluster creation. Store persistent data in external storage — Object Storage, NFS, or managed databases — GPU bare metal nodes may be replaced during scaling or maintenance.
     </Warning>
   </Step>
 </Steps>
@@ -123,7 +123,7 @@ Changing the region after configuring other settings resets all form values.
     </Info>
   </Step>
   <Step title="Configure network ranges">
-    Change the defaults only if they conflict with existing networks — for example, if a VPN or peered network uses overlapping addresses:
+    Change the defaults only if they conflict with existing networks — a VPN or peered network with overlapping addresses is a common reason:
     - **Pod CIDR**: IP range assigned to pods (default: `172.16.0.0/17`). Each node carves a subnet from this range based on the node mask size.
     - **Service CIDR**: IP range assigned to Kubernetes services (default: `172.24.0.0/17`).
     - **Node mask size**: subnet size allocated per node (default: `/24`, which allows up to 254 pods per node). A smaller mask allows more pods per node; a larger mask allows more nodes but fewer pods each.
@@ -157,7 +157,7 @@ Changing the region after configuring other settings resets all form values.
 
 ### Step 6. Add an SSH key
 
-<p>In the **SSH key** section, select the SSH key to use for node access. The key is installed on all nodes in the cluster and is used for direct OS-level access — for example, to debug node issues or inspect container runtime logs.</p>
+<p>In the **SSH key** section, select the SSH key to use for node access. The key is installed on all nodes in the cluster and is used for direct OS-level access — debugging node issues or inspecting container runtime logs are typical uses.</p>
 
 <p>Select an existing key from the dropdown or click **Add a new SSH Key** to add one. Keys can also be managed under **GPU Cloud** > **SSH Keys**.</p>
 
@@ -183,7 +183,7 @@ Changing the region after configuring other settings resets all form values.
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step9-advanced-settings.png" alt="Advanced settings section showing OIDC authentication and Cluster Autoscaler options" />
 </Frame>
 
-- **OIDC authentication** — configure Single Sign-On for Kubernetes API access using an external identity provider such as Okta, Azure AD, or Keycloak. When configured, cluster users authenticate with their identity provider credentials rather than kubeconfig tokens. Set the issuer URL, client ID, and claim settings.
+- **OIDC authentication** — configure Single Sign-On for Kubernetes API access using an external identity provider — Okta, Azure AD, or Keycloak. When configured, cluster users authenticate with their identity provider credentials rather than kubeconfig tokens. Set the issuer URL, client ID, and claim settings.
 - **Cluster Autoscaler** — tune autoscaling behavior including how frequently the cluster checks for pending pods, how long a node must be underutilized before removal, and grace periods for pod termination.
 
 ### Step 10. Review cost and create
@@ -374,7 +374,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         // Step 1. Select the latest available Kubernetes version
         versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
@@ -598,12 +597,12 @@ The API returns:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Cluster name (1–20 chars, lowercase alphanumeric and hyphens, must start and end with a letter or digit) |
+| `name` | Yes | Cluster name (one–20 chars, lowercase alphanumeric and hyphens, must start and end with a letter or digit) |
 | `version` | Yes | Kubernetes version string including the `v` prefix, e.g. `v1.35.3` |
 | `keypair` | Yes | Name of an existing SSH key in the project |
 | `pools[].flavor_id` | Yes | Flavor ID from the flavor list — use a `bm3-ai` flavor for GPU Bare Metal nodes |
-| `pools[].name` | Yes | Pool name (2–20 chars, lowercase alphanumeric and hyphens) |
-| `pools[].min_node_count` | Yes | Minimum number of nodes (1–200) |
+| `pools[].name` | Yes | Pool name (two–20 chars, lowercase alphanumeric and hyphens) |
+| `pools[].min_node_count` | Yes | Minimum number of nodes (one–200) |
 | `fixed_network` | No | Network UUID. Omit to use the default public network |
 | `fixed_subnet` | No | Subnet UUID within the selected network |
 | `pools[].servergroup_policy` | No | Required for Virtual instance pools — not needed for Bare Metal GPU pools. Use `soft-anti-affinity` for VM pools |
@@ -811,6 +810,116 @@ kubectl get nodes
 curl -X DELETE \
   "https://api.gcore.com/cloud/v2/k8s/clusters/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/my-gpu-k8s" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Deploy a GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. GPU Bare Metal pools require no separate boot volume — NVMe storage is built in to each node.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. The cluster also requires an existing network with a subnet and an SSH key in the target region.
+</Info>
+
+## Create the cluster
+
+<p>Declare the cluster resource with a GPU Bare Metal pool. Set `min_node_count` equal to `max_node_count` to fix the pool size; use different values to enable the Cluster Autoscaler.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"        # 1–20 chars, lowercase alphanumeric and hyphens
+  version       = "v1.35.3"           # include the v prefix; list available versions via the versions API
+  keypair       = "my-ssh-key"        # name of an existing SSH key in the project
+  fixed_network = var.network_id      # UUID of an existing network
+  fixed_subnet  = var.subnet_id       # UUID of a subnet within that network
+
+  pools = [{
+    name           = "gpu-pool"
+    flavor_id      = "bm3-ai-1xlarge-a100-80-8"  # list GPU BM flavors via the K8s flavors API
+    min_node_count = 1
+    max_node_count = 3
+  }]
+}
+
+output "cluster_name" {
+  value = gcore_cloud_k8s_cluster.example.name
+}
+
+output "cluster_status" {
+  value = gcore_cloud_k8s_cluster.example.status
+}
+
+# terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+```
+
+<Warning>
+GPU Bare Metal K8s clusters can take over an hour to provision because the provider waits for all GPU Bare Metal nodes to become Ready, not only for the control plane to start. Keep the terminal open or run `terraform apply` in a persistent session. If `terraform apply` exits with `context deadline exceeded`, the cluster was created in Gcore but the node did not become Ready within the provider timeout. Once the node reaches Ready status, run `terraform import` to bring the cluster back under Terraform management.
+</Warning>
+
+<p>GPU Bare Metal flavors (`bm3-ai-*`) do not require `servergroup_policy`, `boot_volume_size`, or `boot_volume_type` — NVMe storage is built in and the API ignores volume settings for these flavors.</p>
+
+<p>To use Cilium instead of the default Calico CNI, add a `cni` block to the resource:</p>
+
+```hcl
+  cni = {
+    cloud_k8s_cluster_provider = "cilium"
+    cilium = {
+      lb_mode      = "dsr"    # snat, dsr, or hybrid
+      routing_mode = "native" # tunnel (default) or native
+    }
+  }
+```
+
+## Delete the cluster
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the cluster on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_k8s_cluster" "example" {
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+<Warning>
+Cluster deletion is irreversible. All node data is lost. External volumes and Object Storage are not affected.
+</Warning>
+
+## Import an existing cluster
+
+<p>Use when a cluster was created outside Terraform and needs to be managed as code. Declare a resource block with values that match the live cluster, then run `terraform import`.</p>
+
+<Info>
+The import key uses the cluster name, not the cluster ID.
+</Info>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"       # must match the current cluster name exactly
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [{
+    name           = "gpu-pool"
+    flavor_id      = "bm3-ai-1xlarge-a100-80-8"
+    min_node_count = 1
+    max_node_count = 3
+  }]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
 ```
 
 </MethodSection>
