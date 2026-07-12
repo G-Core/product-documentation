@@ -64,16 +64,10 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
-    task_list = client.cloud.k8s.clusters.delete(
-        cluster_name=CLUSTER,
-        project_id=PROJECT,
-        region_id=REGION,
-    )
+    task_list = client.cloud.k8s.clusters.delete(cluster_name=CLUSTER)
     task_id = task_list.tasks[0]
 
     while True:
@@ -99,7 +93,6 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -107,10 +100,10 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	taskList, err := client.Cloud.K8S.Clusters.Delete(
-    		context.TODO(),
+    		ctx,
     		clusterName,
     		cloud.K8SClusterDeleteParams{
     			ProjectID: gcore.Int(projectID),
@@ -123,7 +116,7 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	taskID := taskList.Tasks[0]
 
     	for {
-    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
     		if err != nil {
     			panic(err)
     		}

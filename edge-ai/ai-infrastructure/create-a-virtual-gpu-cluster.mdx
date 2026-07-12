@@ -202,16 +202,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
-    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     ssh_key_name = os.environ["GCORE_SSH_KEY_NAME"]
 
     # Step 1. List flavors — select the one with the fewest GPUs
-    flavors = client.cloud.gpu_virtual.clusters.flavors.list(
-        project_id=project_id,
-        region_id=region_id,
-    )
+    flavors = client.cloud.gpu_virtual.clusters.flavors.list()
     flavor = min(
         flavors.results,
         key=lambda f: f.hardware_properties.gpu_count,
@@ -219,17 +214,12 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     print(f"Flavor: {flavor.name}  ({flavor.hardware_properties.gpu_count} GPU(s))")
 
     # Step 2. List images — select the first (latest) image
-    images = client.cloud.gpu_virtual.clusters.images.list(
-        project_id=project_id,
-        region_id=region_id,
-    )
+    images = client.cloud.gpu_virtual.clusters.images.list()
     image = images.results[0]
     print(f"Image: {image.name}")
 
     # Step 3. Create the cluster
     task_id_list = client.cloud.gpu_virtual.clusters.create(
-        project_id=project_id,
-        region_id=region_id,
         name="my-gpu-cluster",
         flavor=flavor.name,
         servers_count=1,
@@ -262,11 +252,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         time.sleep(10)
 
     # Step 5. Get the public IP and print SSH command
-    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(
-        cluster_id=cluster_id,
-        project_id=project_id,
-        region_id=region_id,
-    )
+    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(cluster_id=cluster_id)
     for iface in ifaces.results:
         if iface.network.external:
             ip = iface.ip_assignments[0].ip_address
@@ -287,7 +273,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -295,8 +280,9 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
-        ctx := context.TODO()
+        client := gcore.NewClient()
+        ctx := context.Background()
+        ctx := ctx
 
         // Step 1. List flavors — select the one with fewest GPUs
         flavorList, err := client.Cloud.GPUVirtual.Clusters.Flavors.List(ctx,
@@ -419,15 +405,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    flavors = client.cloud.gpu_virtual.clusters.flavors.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    flavors = client.cloud.gpu_virtual.clusters.flavors.list()
     for f in flavors.results:
         print(f.name, f.hardware_description.gpu, f"GPUs={f.hardware_properties.gpu_count}")
     ```
@@ -496,15 +478,11 @@ The API returns:
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    images = client.cloud.gpu_virtual.clusters.images.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    images = client.cloud.gpu_virtual.clusters.images.list()
     for img in images.results:
         print(img.id, img.name)
     ```
@@ -575,11 +553,9 @@ Place `image_id` inside the volume object only; the boot volume `source` must be
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
     task_id_list = client.cloud.gpu_virtual.clusters.create(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         name="my-gpu-cluster",
         flavor="{FLAVOR_NAME}",
         servers_count=1,
@@ -708,11 +684,7 @@ When complete:
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(
-        cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    ifaces = client.cloud.gpu_virtual.clusters.interfaces.list(cluster_id="{CLUSTER_ID}")
     for iface in ifaces.results:
         if iface.network.external:
             print("Public IP:", iface.ip_assignments[0].ip_address)

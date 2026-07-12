@@ -122,15 +122,11 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
     # Step 1. Check available upgrade versions
-    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(
-        cluster_name=CLUSTER, project_id=PROJECT, region_id=REGION
-    )
+    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(cluster_name=CLUSTER)
     if not versions.results:
         print("No upgrades available.")
         exit()
@@ -140,8 +136,6 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
     # Step 2. Start the upgrade
     task_list = client.cloud.k8s.clusters.upgrade(
         cluster_name=CLUSTER,
-        project_id=PROJECT,
-        region_id=REGION,
         version=target,
     )
     task_id = task_list.tasks[0]
@@ -171,7 +165,6 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -179,11 +172,11 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	// Step 1. Check available upgrade versions
     	versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
-    		context.TODO(),
+    		ctx,
     		clusterName,
     		cloud.K8SClusterListVersionsForUpgradeParams{
     			ProjectID: gcore.Int(projectID),
@@ -202,7 +195,7 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
 
     	// Step 2. Start the upgrade
     	taskList, err := client.Cloud.K8S.Clusters.Upgrade(
-    		context.TODO(),
+    		ctx,
     		clusterName,
     		cloud.K8SClusterUpgradeParams{
     			ProjectID: gcore.Int(projectID),
@@ -217,7 +210,7 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
 
     	// Step 3. Poll until finished
     	for {
-    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
     		if err != nil {
     			panic(err)
     		}

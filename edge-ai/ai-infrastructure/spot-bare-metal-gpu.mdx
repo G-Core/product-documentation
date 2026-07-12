@@ -128,16 +128,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
-
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list()
     spot_flavors = [f for f in flavors.results if "spot" in f.name.lower()]
     for f in spot_flavors:
         print(f.name, f"capacity={f.capacity}", f.hardware_description.gpu)
@@ -156,16 +151,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(context.TODO(),
+        flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
             cloud.GPUBaremetalClusterFlavorListParams{
                 ProjectID: gcore.Int(projectID),
                 RegionID:  gcore.Int(regionID),
@@ -237,13 +232,10 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
     # Get the first available Spot flavor
-    flavors = client.cloud.gpu_baremetal.clusters.flavors.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    flavors = client.cloud.gpu_baremetal.clusters.flavors.list()
     spot = next(
         (f for f in flavors.results if "spot" in f.name.lower() and f.capacity > 0),
         None,
@@ -252,14 +244,9 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
         raise RuntimeError("No Spot capacity available in this region right now.")
 
     # Get the latest image
-    images = client.cloud.gpu_baremetal.clusters.images.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    images = client.cloud.gpu_baremetal.clusters.images.list()
 
     task_id_list = client.cloud.gpu_baremetal.clusters.create(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         name="my-spot-cluster",
         flavor=spot.name,
         image_id=images.results[0].id,
@@ -285,7 +272,6 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -293,8 +279,9 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
-        ctx := context.TODO()
+        client := gcore.NewClient()
+        ctx := context.Background()
+        ctx := ctx
 
         // Find an available Spot flavor
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
