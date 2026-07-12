@@ -799,11 +799,9 @@ Checklist:
 - [ ] No `## Next steps`, `## See also`, `## Related documentation`, `## Prerequisites`,
   `## Requirements`, `## Get started`, `## What's next`
 
-**Links:**
-- [ ] No standalone "For more details, see [X]" sentences
-- [ ] Link text 1–2 words maximum
+**Links** (script catches text length, &nbsp;, banned patterns, relative paths, docs.gcore.com URLs):
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
-- [ ] Subsequent mentions: plain "the Customer Portal" (no link)
+- [ ] Subsequent mentions: plain "the Customer Portal" (no link, no "Gcore" prefix)
 
 **Formatting:**
 - [ ] Bold only for clickable UI elements and field names
