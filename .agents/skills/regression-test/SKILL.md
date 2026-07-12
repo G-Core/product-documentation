@@ -800,8 +800,8 @@ Checklist:
   `## Requirements`, `## Get started`, `## What's next`
 
 **Links:**
-- [ ] No standalone "For more details, see [X]" sentences
-- [ ] Link text 1–2 words maximum
+- [ ] No standalone "For more details, see [X]" sentences — this includes ALL "see [article title]", "For an overview, see [X]", "refer to [X]" patterns. Fix: integrate the link inline in a sentence using 1–2 word link text. Example: ❌ `For an overview, see [Features and functions of VMmanager 6](...)` → ✅ `[VMmanager 6](...) provides...`
+- [ ] Link text 1–2 words maximum — check every `[...]()` in the file. Article titles used as link text are always a violation.
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
 - [ ] Subsequent mentions: plain "the Customer Portal" (no link)
 
