@@ -799,11 +799,9 @@ Checklist:
 - [ ] No `## Next steps`, `## See also`, `## Related documentation`, `## Prerequisites`,
   `## Requirements`, `## Get started`, `## What's next`
 
-**Links:**
-- [ ] No standalone "For more details, see [X]" sentences — this includes ALL "see [article title]", "For an overview, see [X]", "refer to [X]" patterns. Fix: integrate the link inline in a sentence using 1–2 word link text. Example: ❌ `For an overview, see [Features and functions of VMmanager 6](...)` → ✅ `[VMmanager 6](...) provides...`
-- [ ] Link text 1–2 words maximum — check every `[...]()` in the file. Article titles used as link text are always a violation.
+**Links** (script catches text length, &nbsp;, banned patterns, relative paths, docs.gcore.com URLs):
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
-- [ ] Subsequent mentions: plain "the Customer Portal" (no link)
+- [ ] Subsequent mentions: plain "the Customer Portal" (no link, no "Gcore" prefix)
 
 **Formatting:**
 - [ ] Bold only for clickable UI elements and field names
