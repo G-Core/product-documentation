@@ -1,7 +1,7 @@
 ---
 title: Connect to a GPU Kubernetes cluster
 sidebarTitle: Connect to a cluster
-ai-navigation: Connect to a Gcore GPU Kubernetes cluster via Customer Portal or REST API - download kubeconfig, configure kubectl, and list or inspect clusters.
+ai-navigation: Connect to a Gcore GPU Kubernetes cluster via Customer Portal, REST API, or Terraform - download kubeconfig, configure kubectl, and list or inspect clusters.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -138,6 +138,7 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	clusters, err := client.Cloud.K8S.Clusters.List(ctx, cloud.K8SClusterListParams{
     		ProjectID: gcore.Int(projectID),
@@ -214,6 +215,7 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	cluster, err := client.Cloud.K8S.Clusters.Get(
     		ctx,
@@ -295,6 +297,7 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(
     		ctx,
@@ -336,6 +339,53 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 export KUBECONFIG=/path/to/k8sConfig.yml
 kubectl cluster-info
 ```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Read the kubeconfig for an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster_kubeconfig`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_k8s_cluster_kubeconfig) data source from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. No infrastructure is created — the data source reads the kubeconfig from the Gcore API on every run.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required.
+</Info>
+
+## Download kubeconfig
+
+<p>Declare the data source with the cluster name and run `terraform apply`. The `kubeconfig` output holds the full kubeconfig YAML; mark it sensitive to avoid printing it to the terminal.</p>
+
+```hcl
+data "gcore_cloud_k8s_cluster_kubeconfig" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  cluster_name = "my-gpu-k8s"
+}
+
+output "cluster_host" {
+  value = data.gcore_cloud_k8s_cluster_kubeconfig.example.host
+}
+
+output "kubeconfig_expires_at" {
+  value = data.gcore_cloud_k8s_cluster_kubeconfig.example.expires_at
+}
+
+output "kubeconfig" {
+  value     = data.gcore_cloud_k8s_cluster_kubeconfig.example.config
+  sensitive = true
+}
+```
+
+<p>Write the kubeconfig to a file and configure kubectl:</p>
+
+```bash
+terraform apply
+terraform output -raw kubeconfig > k8sConfig.yml
+export KUBECONFIG=/path/to/k8sConfig.yml
+kubectl cluster-info
+```
+
+<Note>
+Kubeconfig certificates are valid for two years. When a certificate is renewed, run `terraform apply` again and re-export the kubeconfig.
+</Note>
 
 </MethodSection>
 </MethodSwitch>

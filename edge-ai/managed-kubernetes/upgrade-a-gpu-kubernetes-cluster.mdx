@@ -1,7 +1,7 @@
 ---
 title: Upgrade a GPU Kubernetes cluster
 sidebarTitle: Upgrade a cluster
-ai-navigation: Upgrade a Gcore GPU Kubernetes cluster to the next minor version via Customer Portal or REST API.
+ai-navigation: Update a Gcore GPU Kubernetes cluster to the next minor version via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -173,6 +173,7 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	// Step 1. Check available upgrade versions
     	versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
@@ -257,6 +258,54 @@ Upgrades move exactly one minor version at a time. The upgrade cannot be paused 
     <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`. GPU bare metal node upgrades take longer than standard VM upgrades.</p>
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Upgrade a GPU Kubernetes cluster to the next minor version using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Changing the `version` field triggers a rolling upgrade — Terraform applies the change in-place without recreating the cluster.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Import an existing cluster with `terraform import` before changing its version.
+</Info>
+
+<Warning>
+Provider v2.0.0-alpha.12 throws a "Provider produced inconsistent result after apply" error after the upgrade due to a known bug with `security_group_ids`. The rolling upgrade completes successfully — verify the new version with the Portal or API, then re-run `terraform import` to sync the state file.
+</Warning>
+
+## Upgrade the cluster
+
+<p>Change `version` to the next minor version and run `terraform apply`. The cluster upgrades one node at a time — workloads are rescheduled to the new node before the old node is removed. GPU bare metal upgrades take significantly longer than VM upgrades.</p>
+
+<Warning>
+Upgrades move exactly one minor version at a time. To move from v1.33 to v1.35, apply the change twice: first to v1.34, then to v1.35. Downgrade is not supported.
+</Warning>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.36.1"  # changed from v1.35.3
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
