@@ -249,7 +249,7 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     )
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
-        r"\d\s+to\s+\d|\d+\s*(to|-)\s*\d+",
+        r"\d\s+to\s+\d|\d+\s*(to|-)\s*\d+|[-–]\d+\b",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
@@ -375,7 +375,7 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
         "receive", "assign", "attach", "detach", "scale", "resize", "start", "stop",
         "restart", "reinstall", "resolve", "troubleshoot", "convert", "import", "export",
         "protect", "apply", "validate", "audit", "review", "check", "change", "edit",
-        "move", "copy", "share", "publish", "back", "allocate",
+        "move", "copy", "share", "publish", "back", "allocate", "order", "buy",
     }
     in_fm = False
     for i, raw in enumerate(raw_lines, start=1):
