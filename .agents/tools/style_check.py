@@ -375,7 +375,7 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
         "receive", "assign", "attach", "detach", "scale", "resize", "start", "stop",
         "restart", "reinstall", "resolve", "troubleshoot", "convert", "import", "export",
         "protect", "apply", "validate", "audit", "review", "check", "change", "edit",
-        "move", "copy", "share", "publish", "back",
+        "move", "copy", "share", "publish", "back", "allocate",
     }
     in_fm = False
     for i, raw in enumerate(raw_lines, start=1):
