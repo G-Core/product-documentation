@@ -296,35 +296,29 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     SSH_KEY = os.environ["GCORE_SSH_KEY_NAME"]
 
     # Step 1. Select the latest available Kubernetes version
-    versions = client.cloud.k8s.list_versions(project_id=PROJECT, region_id=REGION)
+    versions = client.cloud.k8s.list_versions()
     version = versions.results[-1].version  # versions are sorted oldest to newest
 
     # Step 2. Select a GPU Bare Metal flavor (non-spot)
     # IDs are region-specific; selects the first non-spot GPU BM flavor
-    flavors = client.cloud.k8s.flavors.list(project_id=PROJECT, region_id=REGION)
+    flavors = client.cloud.k8s.flavors.list()
     flavor = next(
         f for f in flavors.results
         if "bm3-ai" in f.flavor_id and "spot" not in f.flavor_id
     )
 
     # Step 3. Select the first available network and subnet
-    networks = client.cloud.networks.list(project_id=PROJECT, region_id=REGION)
+    networks = client.cloud.networks.list()
     network = networks.results[0]
-    subnets = client.cloud.networks.subnets.list(
-        project_id=PROJECT, region_id=REGION, network_id=network.id
-    )
+    subnets = client.cloud.networks.subnets.list(network_id=network.id)
     subnet = subnets.results[0]
 
     # Step 4. Create the cluster
     task_id_list = client.cloud.k8s.clusters.create(
-        project_id=PROJECT,
-        region_id=REGION,
         name="my-gpu-k8s",
         version=version,
         keypair=SSH_KEY,
@@ -351,9 +345,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         time.sleep(15)
 
     # Step 6. Download kubeconfig
-    kc = client.cloud.k8s.clusters.kubeconfig.get(
-        "my-gpu-k8s", project_id=PROJECT, region_id=REGION
-    )
+    kc = client.cloud.k8s.clusters.kubeconfig.get("my-gpu-k8s")
     with open("k8sConfig.yml", "w") as f:
         f.write(kc.config)
     print("Kubeconfig saved to k8sConfig.yml")
@@ -373,7 +365,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -381,8 +372,9 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
-        ctx := context.TODO()
+        client := gcore.NewClient()
+        ctx := context.Background()
+        ctx := ctx
 
         // Step 1. Select the latest available Kubernetes version
         versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
@@ -497,15 +489,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
 
-    versions = client.cloud.k8s.list_versions(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    versions = client.cloud.k8s.list_versions()
     for v in versions.results:
         print(v.version)
     ```
@@ -559,10 +547,7 @@ The API returns:
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    flavors = client.cloud.k8s.flavors.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    flavors = client.cloud.k8s.flavors.list()
     gpu_bm = [f for f in flavors.results if "bm3-ai" in f.flavor_id and "spot" not in f.flavor_id]
     for f in gpu_bm:
         print(f.flavor_id, f.vcpus, "vCPU", f.ram // 1024, "GB")
@@ -634,13 +619,9 @@ The `version` field must include the `v` prefix (e.g. `v1.35.3`). Omitting it re
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
 
     task_id_list = client.cloud.k8s.clusters.create(
-        project_id=PROJECT,
-        region_id=REGION,
         name="my-gpu-k8s",
         version="v1.35.3",
         keypair=os.environ["GCORE_SSH_KEY_NAME"],
@@ -772,11 +753,7 @@ When complete:
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    kc = client.cloud.k8s.clusters.kubeconfig.get(
-        "my-gpu-k8s",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    kc = client.cloud.k8s.clusters.kubeconfig.get("my-gpu-k8s")
     with open("k8sConfig.yml", "w") as f:
         f.write(kc.config)
     print("Kubeconfig saved to k8sConfig.yml")

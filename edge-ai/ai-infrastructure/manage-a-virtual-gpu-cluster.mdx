@@ -20,8 +20,6 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 3. In the sidebar, expand **GPU Clusters** and select **Virtual GPU Clusters**.
 4. Click a cluster name to open the details page.
 
-<p>The most commonly used tabs are **Overview**, **Volumes**, **Networking**, **Power**, and **Delete**.</p>
-
 <Frame>![Cluster details page with Overview tab showing cluster instances](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-instances-overview.png)</Frame>
 
 ## Cluster power state
@@ -49,9 +47,6 @@ When a node is shelved, the local data disk is deleted and all data on it is los
 1. In the cluster list or cluster details page, locate the powered-off cluster.
 2. Click the **Power On** action.
 
-<Warning>
-Restart is not guaranteed after shelving. If the requested resources (GPU model, flavor) are not available in the region at the time of power on, the operation fails. For workloads requiring guaranteed availability, use Bare Metal clusters.
-</Warning>
 
 ## Node disks
 
@@ -157,20 +152,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 ## List virtual GPU clusters
 
-<p>The list endpoint returns all clusters in a project and region. Query string filters — by name, flavor, node count, tags, and timestamps — are documented in the [API&nbsp;reference](/api-reference/cloud/gpu-virtual). Multiple filters are ANDed.</p>
+<p>The list endpoint returns all clusters in a project and region. Query string filters — by name, flavor, node count, tags, and timestamps — are documented in the [API&nbsp;reference](/api-reference/cloud/gpu-virtual).</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    page = client.cloud.gpu_virtual.clusters.list(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    page = client.cloud.gpu_virtual.clusters.list()
     for cluster in page.results:
         print(cluster.id, cluster.name, cluster.servers_count, cluster.status)
     ```
@@ -191,16 +182,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        page, err := client.Cloud.GPUVirtual.Clusters.List(context.TODO(),
+        page, err := client.Cloud.GPUVirtual.Clusters.List(ctx,
             cloud.GPUVirtualClusterListParams{
                 ProjectID: gcore.Int(projectID),
                 RegionID:  gcore.Int(regionID),
@@ -265,16 +256,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    cluster = client.cloud.gpu_virtual.clusters.get(
-        cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    cluster = client.cloud.gpu_virtual.clusters.get(cluster_id="{CLUSTER_ID}")
     print(cluster.id, cluster.name, cluster.status, cluster.servers_count)
     ```
   </Tab>
@@ -290,16 +276,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        cluster, err := client.Cloud.GPUVirtual.Clusters.Get(context.TODO(),
+        cluster, err := client.Cloud.GPUVirtual.Clusters.Get(ctx,
             "{CLUSTER_ID}",
             cloud.GPUVirtualClusterGetParams{
                 ProjectID: gcore.Int(projectID),
@@ -359,23 +345,17 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 `stop` permanently erases local disk data on all nodes. Save critical data to network volumes before stopping a cluster.
 </Warning>
 
-<Warning>
-`start` is not guaranteed to succeed. If the requested GPU flavor is unavailable in the region at the time of restart, the operation fails.
-</Warning>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
     # Replace "stop" with "start", "soft_reboot", or "hard_reboot" as needed
     task_id_list = client.cloud.gpu_virtual.clusters.action(
         cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         action="stop",
     )
     print(task_id_list.tasks)
@@ -393,17 +373,17 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
         // Swap OfStop for OfStart, OfSoftReboot, or OfHardReboot as needed
-        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Action(context.TODO(),
+        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Action(ctx,
             "{CLUSTER_ID}",
             cloud.GPUVirtualClusterActionParams{
                 ProjectID: gcore.Int(projectID),
@@ -444,16 +424,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    volume_list = client.cloud.gpu_virtual.clusters.volumes.list(
-        cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    volume_list = client.cloud.gpu_virtual.clusters.volumes.list(cluster_id="{CLUSTER_ID}")
     for vol in volume_list.results:
         print(vol.id, vol.name, vol.size, vol.status)
     ```
@@ -470,16 +445,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        vols, err := client.Cloud.GPUVirtual.Clusters.Volumes.List(context.TODO(),
+        vols, err := client.Cloud.GPUVirtual.Clusters.Volumes.List(ctx,
             "{CLUSTER_ID}",
             cloud.GPUVirtualClusterVolumeListParams{
                 ProjectID: gcore.Int(projectID),
@@ -528,16 +503,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
-    iface_list = client.cloud.gpu_virtual.clusters.interfaces.list(
-        cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    iface_list = client.cloud.gpu_virtual.clusters.interfaces.list(cluster_id="{CLUSTER_ID}")
     for iface in iface_list.results:
         print(iface.port_id, iface.network.name, iface.ip_assignments)
     ```
@@ -554,16 +524,16 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(context.TODO(),
+        ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(ctx,
             "{CLUSTER_ID}",
             cloud.GPUVirtualClusterInterfaceListParams{
                 ProjectID: gcore.Int(projectID),
@@ -621,15 +591,12 @@ Deleting the last node in a cluster automatically deletes the entire cluster —
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+    client = Gcore()
 
     task_id_list = client.cloud.gpu_virtual.clusters.delete(
         cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         all_floating_ips=True,
         all_reserved_fixed_ips=True,
         all_volumes=True,
@@ -649,16 +616,16 @@ Deleting the last node in a cluster automatically deletes the entire cluster —
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
         regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Delete(context.TODO(),
+        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Delete(ctx,
             "{CLUSTER_ID}",
             cloud.GPUVirtualClusterDeleteParams{
                 ProjectID:           gcore.Int(projectID),

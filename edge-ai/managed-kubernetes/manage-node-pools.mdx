@@ -247,12 +247,10 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
 
     pools = client.cloud.k8s.clusters.pools.list(
         cluster_name=os.environ["GCORE_CLUSTER_NAME"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     for p in pools.results:
         print(p.name, p.flavor_id, p.min_node_count, p.max_node_count, p.status)
@@ -270,17 +268,16 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
     	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	pools, err := client.Cloud.K8S.Clusters.Pools.List(
-    		context.TODO(),
+    		ctx,
     		os.Getenv("GCORE_CLUSTER_NAME"),
     		cloud.K8SClusterPoolListParams{
     			ProjectID: gcore.Int(projectID),
@@ -347,16 +344,12 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
     # GPU Bare Metal pool
     task_list = client.cloud.k8s.clusters.pools.create(
         cluster_name=CLUSTER,
-        project_id=PROJECT,
-        region_id=REGION,
         name="gpu-pool",
         flavor_id="g2a-gpu-1-24-1",    # select a GPU flavor for the region
         min_node_count=1,
@@ -389,7 +382,6 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -397,11 +389,11 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	// GPU Bare Metal pool
     	taskList, err := client.Cloud.K8S.Clusters.Pools.New(
-    		context.TODO(),
+    		ctx,
     		clusterName,
     		cloud.K8SClusterPoolNewParams{
     			ProjectID:    gcore.Int(projectID),
@@ -420,7 +412,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
 
     	// Poll until provisioned
     	for {
-    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
     		if err != nil {
     			panic(err)
     		}
@@ -470,13 +462,11 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
 
     pool = client.cloud.k8s.clusters.pools.update(
         pool_name="gpu-pool",
         cluster_name=os.environ["GCORE_CLUSTER_NAME"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         max_node_count=3,
     )
     print(f"min={pool.min_node_count}  max={pool.max_node_count}")
@@ -494,17 +484,16 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
     	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	pool, err := client.Cloud.K8S.Clusters.Pools.Update(
-    		context.TODO(),
+    		ctx,
     		"gpu-pool",
     		cloud.K8SClusterPoolUpdateParams{
     			ProjectID:    gcore.Int(projectID),
@@ -554,17 +543,13 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
     # Step 1. Find the node ID
     nodes = client.cloud.k8s.clusters.pools.nodes.list(
         pool_name="gpu-pool",
         cluster_name=CLUSTER,
-        project_id=PROJECT,
-        region_id=REGION,
     )
     for n in nodes.results:
         print(n.id, n.name, n.status)
@@ -575,8 +560,6 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
         instance_id=node_id,
         cluster_name=CLUSTER,
         pool_name="gpu-pool",
-        project_id=PROJECT,
-        region_id=REGION,
     )
     print(f"Node {node_id} deleted — replacement will provision automatically.")
     ```
@@ -593,7 +576,6 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -601,11 +583,11 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	// Step 1. Find the node ID
     	nodes, err := client.Cloud.K8S.Clusters.Pools.Nodes.List(
-    		context.TODO(),
+    		ctx,
     		"gpu-pool",
     		cloud.K8SClusterPoolNodeListParams{
     			ProjectID:   gcore.Int(projectID),
@@ -623,7 +605,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	// Step 2. Delete the node to trigger replacement
     	nodeID := nodes.Results[0].ID
     	err = client.Cloud.K8S.Clusters.Pools.Nodes.Delete(
-    		context.TODO(),
+    		ctx,
     		nodeID,
     		cloud.K8SClusterPoolNodeDeleteParams{
     			ProjectID:   gcore.Int(projectID),
@@ -678,16 +660,12 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     import time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    PROJECT = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
     task_list = client.cloud.k8s.clusters.pools.delete(
         pool_name="gpu-pool",
         cluster_name=CLUSTER,
-        project_id=PROJECT,
-        region_id=REGION,
     )
     task_id = task_list.tasks[0]
 
@@ -714,7 +692,6 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func main() {
@@ -722,10 +699,10 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+    	client := gcore.NewClient()
 
     	taskList, err := client.Cloud.K8S.Clusters.Pools.Delete(
-    		context.TODO(),
+    		ctx,
     		"gpu-pool",
     		cloud.K8SClusterPoolDeleteParams{
     			ProjectID:   gcore.Int(projectID),
@@ -739,7 +716,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	taskID := taskList.Tasks[0]
 
     	for {
-    		task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
     		if err != nil {
     			panic(err)
     		}
