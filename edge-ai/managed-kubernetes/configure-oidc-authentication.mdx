@@ -1,7 +1,7 @@
 ---
 title: Configure OIDC authentication
 sidebarTitle: OIDC authentication
-ai-navigation: Configure OIDC Single Sign-On for Kubernetes API access in a Gcore GPU Kubernetes cluster via the Customer Portal or via REST API.
+ai-navigation: Configure OIDC Single Sign-On for Kubernetes API access in a Gcore GPU Kubernetes cluster via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -128,7 +128,6 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
             ProjectID: gcore.Int(projectID),
@@ -293,4 +292,87 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 <p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
 
   </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure OIDC authentication for an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `authentication.oidc` block maps directly to the identity provider settings.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Import an existing cluster with `terraform import` before making changes.
+</Info>
+
+## Configure OIDC
+
+<p>Add the `authentication` block with the identity provider settings and run `terraform apply`. Only `issuer_url` and `client_id` are required — all other fields are optional.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  authentication = {
+    oidc = {
+      issuer_url      = "https://accounts.provider.example"
+      client_id       = "kubernetes"
+      username_claim  = "sub"
+      username_prefix = "oidc:"
+      groups_claim    = "groups"
+      groups_prefix   = "oidc:"
+    }
+  }
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
+
+## Remove OIDC
+
+<p>Remove the `authentication` block — Terraform detects the absence and sends `oidc: null` to the API on the next `terraform apply`, returning the cluster to kubeconfig-based authentication.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  # authentication block removed — clears OIDC configuration
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
 </MethodSwitch>
