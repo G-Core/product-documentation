@@ -4,9 +4,11 @@ sidebarTitle: Configure
 ai-navigation: Configure additional IPv4 and IPv6 addresses on virtual private and dedicated servers via OS network settings on Debian, Ubuntu, CentOS, and Windows Server.
 ---
 
-An additional IP address purchased in the control panel becomes active only after it is configured in the operating system.
+Purchasing an additional IP address assigns it to the server, but it must still be configured in the operating system before it becomes usable.
 
-To find the netmask for the purchased address, navigate to the **Virtual private servers** or **Dedicated servers** tab in the Gcore Hosting [control&nbsp;panel](https://hosting.gcore.com/billmgr). Select the server and click **IP addresses**.
+## Before starting
+
+Find the IP address and its netmask in the Gcore Hosting [control&nbsp;panel](https://hosting.gcore.com/billmgr): navigate to the **Virtual private servers** or **Dedicated servers** tab, select the server, and click **IP addresses**.
 
 <Frame>
   ![Virtual private servers list with the IP addresses button highlighted in the toolbar](/images/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image1.png)
@@ -16,12 +18,15 @@ To find the netmask for the purchased address, navigate to the **Virtual private
   ![Dedicated servers list with the IP addresses button highlighted in the toolbar](/images/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image2.png)
 </Frame>
 
-## Debian and Ubuntu
+<Tabs>
+  <Tab title="Debian and Ubuntu">
 
 Edit the network interfaces file to add the IP address.
 
 1. Open `/etc/network/interfaces`.
-2. Add the following configuration. Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask:
+2. Add the configuration.
+
+For IPv4:
 
 ```sh
 auto eth0:N
@@ -30,22 +35,29 @@ iface eth0:N inet static
     netmask 255.255.255.255
 ```
 
-(Optional) To add an IPv6 address, also append:
+For IPv6 (optional):
 
 ```sh
 iface eth0:N inet6 static
     address 2001:X:X:X::X
 ```
 
+Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask.
+
 3. Save the file.
 4. Restart networking: run `systemctl restart networking`.
 
-## CentOS
+After restarting, run `ip addr show` to verify the new address appears on the interface.
+
+  </Tab>
+  <Tab title="CentOS">
 
 Create a per-interface configuration file for each additional IP address.
 
 1. Create the file `/etc/sysconfig/network-scripts/ifcfg-eth0:N`.
-2. Add the following configuration. Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask:
+2. Add the configuration.
+
+For IPv4:
 
 ```sh
 DEVICE=eth0:N
@@ -55,16 +67,21 @@ IPADDR=X.X.X.X
 NETMASK=255.255.255.255
 ```
 
-(Optional) To add an IPv6 address, also set:
+For IPv6 (optional):
 
 ```sh
 IPV6ADDR_SECONDARIES="2001:X:X:X::X/64"
 ```
 
+Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask.
+
 3. Save the file.
 4. Restart networking: run `systemctl restart network`.
 
-## Windows Server
+After restarting, run `ip addr show` to verify the new address appears on the interface.
+
+  </Tab>
+  <Tab title="Windows Server">
 
 Configure additional IP addresses through the network adapter properties.
 
@@ -75,3 +92,8 @@ Configure additional IP addresses through the network adapter properties.
 5. Select the IP version: **Internet Protocol Version 4 (TCP/IPv4)** for IPv4 or **Internet Protocol Version 6 (TCP/IPv6)** for IPv6.
 6. Click **Advanced**, then **Add** to enter the IP address and subnet mask.
 7. Click **OK**, then **Close**.
+
+After closing, open **Command Prompt** and run `ipconfig` to verify the new address appears in the output.
+
+  </Tab>
+</Tabs>
