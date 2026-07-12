@@ -1,87 +1,97 @@
 ---
-title: "Configure an additional IP address"
-sidebarTitle: "Configure"
-ai-navigation: "Configure additional IP addresses on Virtual Private Servers and Dedicated Servers by editing network configuration files on Debian/Ubuntu, CentOS, or Windows Server 2012, specifying interface serial number, IPv4/IPv6 address, and netmask."
+title: Configure an additional IP address
+sidebarTitle: Configure
+ai-navigation: Configure additional IPv4 and IPv6 addresses on virtual private and dedicated servers via OS network settings on Debian, Ubuntu, and CentOS.
 ---
 
-An additional IP address becomes available only after you configure it. This guide will help you to configure IP addresses manually. If you want to configure it automatically, reinstall the operating system of your server.
+Purchasing an additional IP address assigns it to the server, but it must still be configured in the operating system before it becomes usable.
 
-## Configure an additional IP address on Debian/Ubuntu
+<Steps>
+<Step title="In the Gcore Hosting control panel, open the Virtual private servers or Dedicated servers tab">
+</Step>
+<Step title="Select the checkbox next to the server">
+</Step>
+<Step title="View the IP addresses and note the netmask">
 
-1. Open the network configuration file in `/etc/network/interfaces`.
-2. Add the following lines to the file:
-
-```sh
-auto eth0:N  
-iface eth0:N inet static  
-                address Х. Х. Х. Х  
-                netmask 255.255.255.255
-```
-
-Replace
-
-- `N` with the serial number of the interface (0 for the first one, 1 for the second, etc.)
-- `Х.Х.Х.Х` with the IP address you want to add
-- `255.255.255.255` with the net mask. You can find it in your Control Panel. Go to the **Virtual private servers** or **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
+Click **IP addresses** in the toolbar. Note the IP address and its netmask — these are required for the configuration.
 
 <Frame>
-  ![Configure an additional IP address on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image1.png)
+  ![Virtual private servers list with the IP addresses button highlighted in the toolbar](/images/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image1.png)
 </Frame>
 
 <Frame>
-  ![Configure an additional IP address on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image2.png)
+  ![Dedicated servers list with the IP addresses button highlighted in the toolbar](/images/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image2.png)
 </Frame>
 
-If you need to add an IPv6 address, add the following:
+</Step>
+<Step title="Configure the IP address in the OS">
+
+Select the operating system and follow the steps.
+
+<Tabs>
+  <Tab title="Debian and Ubuntu">
+
+Edit the network interfaces file to add the IP address.
+
+1. Open `/etc/network/interfaces`.
+2. Add the configuration.
+
+For IPv4:
 
 ```sh
-iface eth0:N inet6 static  
-    address 2х01:Х:X:X::X
+auto eth0:N
+iface eth0:N inet static
+    address X.X.X.X
+    netmask 255.255.255.255
 ```
+
+For IPv6 (optional):
+
+```sh
+iface eth0:N inet6 static
+    address 2001:X:X:X::X
+```
+
+Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask.
 
 3. Save the file.
-4. Reboot the server or run the "**service network restart** " command.
+4. Restart networking: run `systemctl restart networking`.
 
-## Configure an additional IP address on CentOS
+After restarting, run `ip addr show` to verify the new address appears on the interface.
 
-1. Create the `"ifcfg-eth0:N"` file in the `/etc/sysconfig/network-scripts/` directory.
-2. Add the following lines to the file:
+  </Tab>
+  <Tab title="CentOS">
+
+Create a per-interface configuration file for each additional IP address.
+
+1. Create the file `/etc/sysconfig/network-scripts/ifcfg-eth0:N`.
+2. Add the configuration.
+
+For IPv4:
 
 ```sh
-DEVICE=eth0:N 
-ONBOOT=yes 
-BOOTPROTO=static 
-IPADDR=X.X.X.X 
+DEVICE=eth0:N
+ONBOOT=yes
+BOOTPROTO=static
+IPADDR=X.X.X.X
 NETMASK=255.255.255.255
 ```
 
-Replace "N" with the serial number of the interface (0 for the first one, 1 for the second, etc.), "Х.Х.Х.Х" with the IP address you want to add, and "255.255.255.255" with the netmask. You can find it in your Control Panel. Go to the **Virtual private servers** or **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
-
-<Frame>
-  ![Configure an additional IP address on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image3.png)
-</Frame>
-
-<Frame>
-  ![Configure an additional IP address on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/configure-an-additional-ip-address-image4.png)
-</Frame>
-
-If you need to add an IPv6 address, add the following:
+For IPv6 (optional):
 
 ```sh
-IPV6ADDR_SECONDARIES="2х01:Х:X:X::X/64"
+IPV6ADDR_SECONDARIES="2001:X:X:X::X/64"
 ```
 
-Replace `"2х01:Х:X:X::X/64"` with the IP address you want to add.
+Replace `N` with the sequential index of the additional IP address (starting at `0` for the first), `X.X.X.X` with the IP address, and `255.255.255.255` with the actual netmask.
 
 3. Save the file.
-4. Reboot the server or run the `"service network restart"` command.
+4. Restart networking: run `systemctl restart network`.
 
-## Configure an additional IP address on Windows Server 2012
+After restarting, run `ip addr show` to verify the new address appears on the interface.
 
-1. Run the server via RDP.
-2. Click **Start** and find **Server Manager**.
-3. In the Server Manager window, click **Local Server.**
-4. In the Server Configuration page, right-click the connection you want to configure and select **Properties**.
-5. Choose IP Version: for IPv4, select **Internet Protocol Version 4 (TCP/IPv4)**, and for IPv6, select **Internet Protocol Version 6 (TCP/IPv6)**.
-6. Click **Advanced** and then select **Add** to specify the IP address and the subnet mask.
-7. Click **Ok** to save the changes, and then click **Close**.
+  </Tab>
+</Tabs>
+
+</Step>
+</Steps>
