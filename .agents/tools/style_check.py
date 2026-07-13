@@ -299,6 +299,43 @@ def check_alt_text(lines: list[tuple[int, str]]) -> list[Violation]:
     return violations
 
 
+def check_opening_heading(raw_lines: list[str]) -> list[Violation]:
+    """Article body must open with a prose paragraph, not a heading.
+
+    The title: field renders as the page H1. A ## heading immediately after
+    the frontmatter creates two headings in a row with no context for the reader.
+    """
+    violations: list[Violation] = []
+    in_frontmatter = False
+    frontmatter_closed = False
+    fence_count = 0
+
+    for i, raw in enumerate(raw_lines, start=1):
+        stripped = raw.strip()
+        if i == 1 and stripped == "---":
+            in_frontmatter = True
+            continue
+        if in_frontmatter:
+            if stripped == "---":
+                in_frontmatter = False
+                frontmatter_closed = True
+            continue
+        if not frontmatter_closed:
+            continue
+        if stripped == "":
+            continue
+        if stripped.startswith("##"):
+            violations.append(Violation(
+                line=i,
+                rule="Opening heading",
+                detail="Article body opens with a heading — add an intro paragraph before the first ## heading",
+                text=raw.strip(),
+            ))
+        break
+
+    return violations
+
+
 def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     violations: list[Violation] = []
     forbidden_starts = re.compile(
@@ -308,6 +345,7 @@ def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     forbidden_sections = {
         "next steps", "get started", "prerequisites", "requirements",
         "related documentation", "see also", "what's next",
+        "key benefits", "benefits", "overview",
     }
     heading = re.compile(r"^(#{2,3})\s+(.+)")
     for i, raw in enumerate(raw_lines, start=1):
@@ -463,6 +501,7 @@ def lint(path: Path) -> list[Violation]:
     violations: list[Violation] = []
     for checker in CHECKERS:
         violations.extend(checker(filtered))
+    violations.extend(check_opening_heading(raw_lines))
     violations.extend(check_heading_style(raw_lines))
     violations.extend(check_callout_prefix(raw_lines))
     violations.extend(check_frontmatter(raw_lines))
