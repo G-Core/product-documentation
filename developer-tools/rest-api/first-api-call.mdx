@@ -54,9 +54,8 @@ Cloud API URLs include a project ID — a number that identifies the account's p
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
     projects = client.cloud.projects.list()
     for p in projects.results:
         print(p.id, p.name, p.is_default)
@@ -98,10 +97,11 @@ The terminal outputs:
 }
 ```
 
-Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set it as a variable:
+Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set the appropriate variable for the method being used:
 
 ```bash
-export PROJECT_ID=1234567
+export PROJECT_ID=1234567              # curl and JavaScript
+export GCORE_CLOUD_PROJECT_ID=1234567  # Python SDK and Go SDK
 ```
 
 Replace `1234567` with the actual ID from the response.
@@ -177,10 +177,11 @@ The fields that matter for choosing:
 | `has_k8s` | `true` means Managed Kubernetes is available |
 | `has_dbaas` | `true` means Managed PostgreSQL is available |
 
-Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Then set it:
+Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Set the appropriate variable for the method being used:
 
 ```bash
-export REGION_ID=148
+export REGION_ID=148              # curl and JavaScript
+export GCORE_CLOUD_REGION_ID=148  # Python SDK and Go SDK
 ```
 
 Replace `148` with the chosen region's `id`.
@@ -198,18 +199,17 @@ With all three variables set, run a real Cloud API call — list all VMs in the 
   </Tab>
   <Tab title="Python SDK">
     ```python
-    instances = client.cloud.instances.list(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
+    # Uses GCORE_CLOUD_PROJECT_ID and GCORE_CLOUD_REGION_ID set in Step 2 and 3
+    instances = client.cloud.instances.list()
     print(f"{instances.count} instances")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    var projectID int64 = 1234567
-    var regionID  int64 = 148
-    instances, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
+    ctx := context.Background()
+    instances, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{
         ProjectID: gcore.Int(projectID),
         RegionID:  gcore.Int(regionID),
     })
@@ -240,31 +240,53 @@ The terminal outputs:
 
 An empty list is expected on a new project — no VMs have been created yet. A `200 OK` response with valid JSON confirms the token, project ID, and region ID are all correct.
 
-## API URL structure
+## Environment variables reference
 
-These three environment variables appear in every Cloud API call throughout these guides:
+The three values set in Steps 1–3 are required for every Cloud API call. The variable names differ depending on the method used.
+
+**curl and JavaScript** — project and region IDs are embedded in the URL path:
 
 ```bash
-export GCORE_API_KEY="..."    # Who is making the request (authentication)
-export PROJECT_ID=1234567     # Which project the resource belongs to
-export REGION_ID=148          # Which data center location to use
+export GCORE_API_KEY="..."    # Authentication
+export PROJECT_ID=1234567     # Goes into the URL path
+export REGION_ID=148          # Goes into the URL path
 ```
 
-The API URL always follows this pattern:
+The curl URL pattern:
 
 ```
 https://api.gcore.com/cloud/v1/{resource_type}/{PROJECT_ID}/{REGION_ID}
 ```
 
-With the three variables exported, the shell substitutes them automatically in every call:
+Example:
 
 ```bash
-$ curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
-    -H "Authorization: APIKey $GCORE_API_KEY"
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+# Sends: GET https://api.gcore.com/cloud/v1/instances/1234567/148
+```
 
-# Shell sends:
-# GET https://api.gcore.com/cloud/v1/instances/1234567/148
-# Authorization: APIKey 29841$c767...
+**Python SDK** — all three values are read automatically from environment variables:
+
+```bash
+export GCORE_API_KEY="..."           # Read by Gcore() automatically
+export GCORE_CLOUD_PROJECT_ID=1234567  # Read by Gcore() automatically
+export GCORE_CLOUD_REGION_ID=148       # Read by Gcore() automatically
+```
+
+No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
+
+**Go SDK** — `GCORE_API_KEY` is read automatically by `gcore.NewClient()`. Project ID and region ID must be read from the environment and passed explicitly to each call:
+
+```bash
+export GCORE_API_KEY="..."
+export GCORE_CLOUD_PROJECT_ID=1234567
+export GCORE_CLOUD_REGION_ID=148
+```
+
+```go
+projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
 ```
 
 Resource creation is asynchronous — the response returns a task ID, not the finished resource.

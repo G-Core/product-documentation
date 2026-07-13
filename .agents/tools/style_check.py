@@ -162,10 +162,10 @@ def check_em_dash(lines: list[tuple[int, str]]) -> list[Violation]:
 def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     link_pattern = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
-    banned_starts = [
-        "for more details", "see ", "learn more", "for details",
-        "refer to", "use the ", "open the ", "read the ", "check the ",
-    ]
+    banned_routing_verbs = re.compile(
+        r"\b(see|refer to|learn more|for more details|for details|read the|check the|open the|use the)\b",
+        re.IGNORECASE,
+    )
     for lineno, text in lines:
         for m in link_pattern.finditer(text):
             link_text = m.group(1)
@@ -189,15 +189,14 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
                     text=text.strip(),
                 ))
 
-            sentence_before = text[:m.start()].strip().lower()
-            for banned in banned_starts:
-                if sentence_before.endswith(banned.rstrip()):
-                    violations.append(Violation(
-                        line=lineno,
-                        rule="Banned link pattern",
-                        detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
-                        text=text.strip(),
-                    ))
+            sentence_before = text[:m.start()].strip()
+            if banned_routing_verbs.search(sentence_before):
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Banned link pattern",
+                    detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
+                    text=text.strip(),
+                ))
 
             try:
                 parsed = urlparse(href)
@@ -249,7 +248,7 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     )
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
-        r"\d\s+to\s+\d|\d+\s*(to|-)\s*\d+|[-–]\d+\b",
+        r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
@@ -300,6 +299,43 @@ def check_alt_text(lines: list[tuple[int, str]]) -> list[Violation]:
     return violations
 
 
+def check_opening_heading(raw_lines: list[str]) -> list[Violation]:
+    """Article body must open with a prose paragraph, not a heading.
+
+    The title: field renders as the page H1. A ## heading immediately after
+    the frontmatter creates two headings in a row with no context for the reader.
+    """
+    violations: list[Violation] = []
+    in_frontmatter = False
+    frontmatter_closed = False
+    fence_count = 0
+
+    for i, raw in enumerate(raw_lines, start=1):
+        stripped = raw.strip()
+        if i == 1 and stripped == "---":
+            in_frontmatter = True
+            continue
+        if in_frontmatter:
+            if stripped == "---":
+                in_frontmatter = False
+                frontmatter_closed = True
+            continue
+        if not frontmatter_closed:
+            continue
+        if stripped == "":
+            continue
+        if stripped.startswith("##"):
+            violations.append(Violation(
+                line=i,
+                rule="Opening heading",
+                detail="Article body opens with a heading — add an intro paragraph before the first ## heading",
+                text=raw.strip(),
+            ))
+        break
+
+    return violations
+
+
 def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     violations: list[Violation] = []
     forbidden_starts = re.compile(
@@ -309,6 +345,7 @@ def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     forbidden_sections = {
         "next steps", "get started", "prerequisites", "requirements",
         "related documentation", "see also", "what's next",
+        "key benefits", "benefits", "overview",
     }
     heading = re.compile(r"^(#{2,3})\s+(.+)")
     for i, raw in enumerate(raw_lines, start=1):
@@ -464,6 +501,7 @@ def lint(path: Path) -> list[Violation]:
     violations: list[Violation] = []
     for checker in CHECKERS:
         violations.extend(checker(filtered))
+    violations.extend(check_opening_heading(raw_lines))
     violations.extend(check_heading_style(raw_lines))
     violations.extend(check_callout_prefix(raw_lines))
     violations.extend(check_frontmatter(raw_lines))
