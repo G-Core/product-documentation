@@ -162,10 +162,10 @@ def check_em_dash(lines: list[tuple[int, str]]) -> list[Violation]:
 def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     link_pattern = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
-    banned_starts = [
-        "for more details", "see ", "learn more", "for details",
-        "refer to", "use the ", "open the ", "read the ", "check the ",
-    ]
+    banned_routing_verbs = re.compile(
+        r"\b(see|refer to|learn more|for more details|for details|read the|check the|open the|use the)\b",
+        re.IGNORECASE,
+    )
     for lineno, text in lines:
         for m in link_pattern.finditer(text):
             link_text = m.group(1)
@@ -189,15 +189,14 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
                     text=text.strip(),
                 ))
 
-            sentence_before = text[:m.start()].strip().lower()
-            for banned in banned_starts:
-                if sentence_before.endswith(banned.rstrip()):
-                    violations.append(Violation(
-                        line=lineno,
-                        rule="Banned link pattern",
-                        detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
-                        text=text.strip(),
-                    ))
+            sentence_before = text[:m.start()].strip()
+            if banned_routing_verbs.search(sentence_before):
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Banned link pattern",
+                    detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
+                    text=text.strip(),
+                ))
 
             try:
                 parsed = urlparse(href)
@@ -249,7 +248,7 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     )
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
-        r"\d\s+to\s+\d|\d+\s*(to|-)\s*\d+|[-–]\d+\b",
+        r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
