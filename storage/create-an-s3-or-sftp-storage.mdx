@@ -1,7 +1,7 @@
 ---
 title: Create an object or SFTP storage
 sidebarTitle: Create Object Storage
-ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via the Customer Portal or REST API - includes access key rotation for S3 and password management for SFTP.
+ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - includes S3 access key rotation and SFTP password management.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -688,6 +688,133 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     Returns HTTP 204 with no response body.
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Provision S3-compatible and SFTP storages declaratively using the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create S3 storage
+
+<p>Declares an S3 storage and an optional additional access key for zero-downtime credential rotation. The storage is provisioned with one key automatically; `gcore_storage_access_key` creates a second one.</p>
+
+```hcl
+resource "gcore_storage_object_storage" "example" {
+  location_name = "luxembourg-2"
+  name          = "my-storage"
+}
+
+# Optional: second access key for zero-downtime rotation
+resource "gcore_storage_access_key" "extra" {
+  storage_id = gcore_storage_object_storage.example.id
+}
+
+output "s3_endpoint" {
+  value = gcore_storage_object_storage.example.address
+}
+
+output "s3_access_key" {
+  value = gcore_storage_object_storage.example.access_keys[0].access_key
+}
+
+output "s3_secret_key" {
+  value     = gcore_storage_object_storage.example.access_keys[0].secret_key
+  sensitive = true
+}
+
+output "extra_access_key" {
+  value = gcore_storage_access_key.extra.access_key
+}
+
+output "extra_secret_key" {
+  value     = gcore_storage_access_key.extra.secret_key
+  sensitive = true
+}
+
+# terraform import gcore_storage_object_storage.example '<storage_id>'
+# terraform import gcore_storage_access_key.extra '<storage_id>/<access_key>'
+```
+
+```bash
+terraform apply
+```
+
+## Rotate access keys
+
+<p>Declare a new `gcore_storage_access_key` resource to create a second key. Once clients are updated to use the new credentials, remove the resource block for the old key and apply to delete it.</p>
+
+```hcl
+# Add a new key resource, update clients, then remove this block:
+# resource "gcore_storage_access_key" "extra" {
+#   storage_id = gcore_storage_object_storage.example.id
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Delete S3 storage
+
+<p>Remove both resource blocks — Terraform deletes the extra access key first, then the storage.</p>
+
+```hcl
+# Remove or comment out both blocks:
+# resource "gcore_storage_access_key" "extra" { ... }
+# resource "gcore_storage_object_storage" "example" { ... }
+```
+
+```bash
+terraform apply
+```
+
+## Create SFTP storage
+
+<p>Declares an SFTP storage with an auto-generated password. After apply, use `full_name` as the login username when connecting on port 2200.</p>
+
+```hcl
+resource "gcore_storage_sftp" "example" {
+  location_name = "ams"
+  name          = "my-sftp-storage"
+  password_mode = "auto"
+}
+
+output "sftp_address" {
+  value = gcore_storage_sftp.example.address
+}
+
+output "sftp_full_name" {
+  value = gcore_storage_sftp.example.full_name
+}
+
+output "sftp_password" {
+  value     = gcore_storage_sftp.example.password
+  sensitive = true
+}
+
+# terraform import gcore_storage_sftp.example '<storage_id>'
+```
+
+```bash
+terraform apply
+```
+
+## Delete SFTP storage
+
+<p>Remove the resource block — Terraform deletes the storage on the next apply.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_storage_sftp" "example" {
+#   location_name = "ams"
+#   name          = "my-sftp-storage"
+#   password_mode = "auto"
+# }
+```
+
+```bash
+terraform apply
+```
 
   </MethodSection>
 </MethodSwitch>
