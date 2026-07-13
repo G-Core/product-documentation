@@ -101,8 +101,8 @@ Requires a running VS.
 | todo | — | `hosting/virtual-servers/troubleshooting/remove-your-ip-address-from-blacklists.mdx` |
 | todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
 | todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports.mdx` |
-| todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
-| todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection.mdx` |
+| done | DOC-1775 | `hosting/virtual-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
+| done | DOC-1777 | `hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection.mdx` |
 
 ---
 
