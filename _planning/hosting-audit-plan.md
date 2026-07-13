@@ -169,7 +169,7 @@ Requires a running DS.
 | todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors.mdx` |
 | todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-an-incorrect-ip-location.mdx` |
-| todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-packet-loss-or-high-ping.mdx` |
+| done | DOC-1778 | `hosting/dedicated-servers/troubleshooting/troubleshoot-packet-loss-or-high-ping.mdx` |
 
 ---
 
