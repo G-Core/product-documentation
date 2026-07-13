@@ -1,129 +1,65 @@
 ---
 title: 'Setup and configuration'
 sidebarTitle: 'Setup and configuration'
-ai-navigation: Configure Edge Proxy protection by specifying origin server IP address, port number (1–65535), protocol (TCP or UDP), and application type (Minecraft, Counter-Strike, Rust, Teamspeak, etc.) to receive a protected IP -PORT endpoint and activate DDoS mitigation.
+ai-navigation: Configure Edge Proxy DDoS protection by adding port mappings (port, protocol, and application type) to receive a protected IP endpoint for the origin server.
 ---
 
-## Before you start
+Edge Proxy routes incoming traffic through Gcore's DDoS mitigation infrastructure and assigns a protected IP address that clients connect to instead of the origin server. To configure Edge Proxy, specify the origin server's public IPv4 address, the application port, the protocol (TCP or UDP), and the application type.
 
-Prepare the following information:
+<Steps>
+<Step title="Open the Protected IPs page">
 
-- Origin server IP address
-- Port number your application uses
-- Protocol (TCP or UDP)
-- Application type
+In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **Security → Edge Proxy → Protected IPs**.
 
-## Step 1. Open Edge Proxy page
+Click **Add protection** — on an empty list the button is labeled **Add your first protection**.
 
-Navigate to the Edge Proxy section in the [Gcore Customer Portal](https://portal.gcore.com/).
+<Frame>![Empty Protected IPs page with Add your first protection button](/images/docs/edge-proxy/setup-and-configuration/setup-and-configuration-image1.png)</Frame>
 
-- If this is your first proxy, click **Add Your First Protection**
-- If you already have proxies, click **Add Protection**
-
-## Step 2. Configure proxy settings
+</Step>
+<Step title="Configure proxy settings">
 
 Fill in the configuration form.
 
-<Frame>![Edge Proxy configuration form](/images/docs/edge-proxy/edge-proxy-configuration.png)</Frame>
+**Proxy name** — Enter a name to identify this proxy. Example: `my-game-server-1`.
 
-### Proxy name
+**Origin server IP address** — Enter the origin server's public IPv4 address. Example: `195.14.50.0`.
 
-Enter a friendly name to identify your proxy.
+**Port mappings** — Each mapping defines one protected application endpoint.
 
-Example: Main game server.
+1. Enter the port the application listens on (1–65535). Example: `25565`.
+2. Select the protocol: TCP or UDP.
+3. Select the application type from the dropdown. Available profiles include Minecraft Protection, Counter-Strike 2, FiveM TCP, FiveM UDP, Rust Game A2S Caching, Teamspeak 3 Voice Chat, and Unity Engine UTP, among others.
+4. Click **Add rule**.
 
-### Origin IP address
+<Frame>![Edge Proxy configuration form](/images/docs/edge-proxy/setup-and-configuration/edge-proxy-configuration.png)</Frame>
 
-Enter your origin server IP.
+Repeat for each port the application uses — a game server using both TCP and UDP requires two separate mappings.
 
-- Must be a valid IPv4 or IPv6 address
+</Step>
+<Step title="Start protection">
 
-### Port number
+Click **Start protecting**. Activation typically takes about 3 minutes. A progress indicator appears during setup.
 
-Enter the port your application listens on.
+</Step>
+<Step title="Get the protected endpoint">
 
-- Range: 1–65535
+After activation, the proxy appears in the Protected IPs list with **Active** status and the assigned protected IP address. Copy the protected IP address and port to use in the next step.
 
-### Protocol
+<Frame>![Protected IPs list showing my-game-server-1 with Active status and protected IP address 193.239.179.45](/images/docs/edge-proxy/setup-and-configuration/edge-proxy-active.png)</Frame>
 
-Select the protocol:
+</Step>
+<Step title="Update the service">
 
-- TCP
-- UDP
+Update the application's client configuration to connect to the protected IP:port instead of the origin server's address directly. If clients connect using a domain name, update its A record to point to the protected IP.
 
-### Application type
+</Step>
+<Step title="Confirm the result">
 
-Select the application type from the dropdown.
+With the proxy showing **Active** and client configuration pointing to the protected IP, the application should be reachable and traffic should be routing through the protected endpoint.
 
-Examples include:
+</Step>
+</Steps>
 
-- Minecraft
-- Counter-Strike
-- Left 4 Dead 2
-- San Andreas Multiplayer
-- Rust
-- Teamspeak
-- Battlefield 2
-- Unity
-
-## Step 3. Start protection
-
-- After filling in all required fields, click **Start Protecting**
-- The system processes the request (about 20 seconds)
-- A progress indicator appears during setup
-
-## Step 4. Get protected endpoint
-
-After activation, you receive:
-
-- Protected IP address with port
-- Active status
-- Configuration summary
-
-Copy the IP:PORT value.
-
-## Step 5. Update your service
-
-Update your DNS or client configuration:
-
-- Use a CNAME record pointing to the protected endpoint  
-or  
-- Use the provided IP:PORT directly
-
-## Step 6. Verify protection
-
-Check that:
-
-- Traffic flows through the protected IP
-- Your service is accessible
-- The proxy status is active in the list
-
-If you encounter issues during setup or verification, refer to the [Edge Proxy FAQs and troubleshooting](/edge-proxy/faqs-and-trobleshooting) guide.
-
-## Manage protected IPs
-
-### View proxies
-
-The list shows:
-
-- Proxy name
-- Status (active)
-- Protected IP and port
-- Origin IP
-- Protocol
-- Application type
-- Creation date
-
-### Delete a proxy
-
-Click **Delete** and confirm the action in the dialog.
-
-## Notes and limitations
-
-- You can create multiple translation rules under one protected IP
-- Each rule is defined by origin, port, protocol, and application type
-- Setup typically takes less than five minutes
-
-## Billing overview
-
-Billing is based on the number of translation rules.
+<Info>
+If the application is unreachable, most [activation&nbsp;issues](/edge-proxy/faqs-and-trobleshooting) at this stage trace back to firewall rules blocking Gcore edge IPs, incomplete DNS propagation, or a protocol mismatch.
+</Info>
