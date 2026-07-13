@@ -1,10 +1,15 @@
 ---
 title: SSH key management for SFTP storage
 sidebarTitle: SSH keys
-ai-navigation: Create and assign SSH keys for SFTP storage authentication by uploading a public key and linking it to storage via the SSH keys manager.
+ai-navigation: Create and assign SSH keys for SFTP storage authentication via Customer Portal or REST API - add, list, and delete keys, then link them to storage.
 ---
 
-SSH keys provide passwordless authentication for SFTP storage. Keys are created and managed in the [Gcore Customer Portal](https://portal.gcore.com).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>SSH keys provide passwordless authentication for SFTP storage. Keys are created and managed in the [Gcore Customer Portal](https://portal.gcore.com).</p>
 
 ## Adding an SSH key
 
@@ -35,3 +40,288 @@ SSH keys provide passwordless authentication for SFTP storage. Keys are created 
     <Frame>![SSH keys manager dialog with Add new SSH key button](/images/docs/storage/manage-sftp-storage/create-and-add-an-ssh-key-to-your-storage/ssh-keys-manager-dialog.png)</Frame>
   </Step>
 </Steps>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>SSH key management uses two separate endpoints — one for the key registry and one for assigning keys to SFTP storage. Keys are stored account-wide and can be assigned to multiple storages. Up to five keys can be active per storage at the same time.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Add an SSH key
+
+<p>Creates a named SSH public key in the account-level key registry. Supported formats are `ssh-rsa` and `ssh-ed25519`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Key name, letters/numbers/underscores/dashes, max 128 characters |
+| `public_key` | Yes | Full SSH public key string including key type prefix |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    key = client.storage.ssh_keys.create(
+        name="my-ssh-key",
+        public_key="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host",
+    )
+    print(f"Key ID: {key.id}  name={key.name}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        key, err := client.Storage.SSHKeys.New(ctx, storage.SSHKeyNewParams{
+            Name:      "my-ssh-key",
+            PublicKey: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host",
+        })
+        if err != nil {
+            log.Fatalf("create ssh key: %v", err)
+        }
+        fmt.Printf("Key ID: %d  name=%s\n", key.ID, key.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST https://api.gcore.com/storage/v4/ssh_keys \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-ssh-key",
+        "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host"
+      }'
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "id": 2714,
+      "name": "my-ssh-key",
+      "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host",
+      "created_at": "2026-07-13T16:41:35Z"
+    }
+    ```
+
+    Save the key ID:
+
+    ```bash
+    export SSH_KEY_ID=2714
+    ```
+  </Tab>
+</Tabs>
+
+## List SSH keys
+
+<p>Returns all SSH keys stored in the account.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    keys = client.storage.ssh_keys.list()
+    for k in keys:
+        print(f"id={k.id}  name={k.name}  created_at={k.created_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.Storage.SSHKeys.List(ctx, storage.SSHKeyListParams{})
+        if err != nil {
+            log.Fatalf("list ssh keys: %v", err)
+        }
+        for _, k := range page.Results {
+            fmt.Printf("id=%d  name=%s\n", k.ID, k.Name)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl https://api.gcore.com/storage/v4/ssh_keys \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": 2714,
+          "name": "my-ssh-key",
+          "public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host",
+          "created_at": "2026-07-13T16:41:35Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Assign keys to SFTP storage
+
+<p>Links one or more SSH keys to an SFTP storage by ID. The `ssh_key_ids` field replaces the entire list of assigned keys — include all keys that should remain active, not the new ones alone. Send an empty array to remove all keys.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `ssh_key_ids` | Yes | Array of SSH key IDs to assign. Replaces all existing assignments. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["SFTP_STORAGE_ID"])
+    ssh_key_id = int(os.environ["SSH_KEY_ID"])
+
+    sftp = client.storage.sftp_storages.update(storage_id, ssh_key_ids=[ssh_key_id])
+    print(f"Assigned key IDs: {sftp.ssh_key_ids}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        sftpStorageID, _ := strconv.ParseInt(os.Getenv("SFTP_STORAGE_ID"), 10, 64)
+        sshKeyID, _ := strconv.ParseInt(os.Getenv("SSH_KEY_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        sftp, err := client.Storage.SftpStorages.Update(ctx, sftpStorageID, storage.SftpStorageUpdateParams{
+            SSHKeyIDs: []int64{sshKeyID},
+        })
+        if err != nil {
+            log.Fatalf("assign keys: %v", err)
+        }
+        fmt.Printf("Assigned key IDs: %v\n", sftp.SSHKeyIDs)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/storage/v4/sftp_storages/$SFTP_STORAGE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"ssh_key_ids": [2714]}'
+    ```
+
+    The API returns the updated SFTP storage object with `ssh_key_ids` reflecting the new assignment.
+  </Tab>
+</Tabs>
+
+## Delete an SSH key
+
+<p>Removes an SSH key from the account registry. If the key is currently assigned to any SFTP storage, it is also removed from those storages automatically.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    ssh_key_id = int(os.environ["SSH_KEY_ID"])
+
+    client.storage.ssh_keys.delete(ssh_key_id)
+    print("SSH key deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        sshKeyID, _ := strconv.ParseInt(os.Getenv("SSH_KEY_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        err := client.Storage.SSHKeys.Delete(ctx, sshKeyID)
+        if err != nil {
+            log.Fatalf("delete ssh key: %v", err)
+        }
+        fmt.Println("SSH key deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/ssh_keys/$SSH_KEY_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>
