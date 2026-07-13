@@ -1,7 +1,7 @@
 ---
 title: Configure cluster logging
 sidebarTitle: Logging
-ai-navigation: Configure container and system log collection for a Gcore GPU Kubernetes cluster via the Customer Portal or via REST API.
+ai-navigation: Configure container and system log collection for a Gcore GPU Kubernetes cluster via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -139,7 +139,6 @@ curl "https://api.gcore.com/cloud/v1/laas/$GCORE_CLOUD_REGION_ID/destination_reg
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
             ProjectID: gcore.Int(projectID),
@@ -246,7 +245,6 @@ curl "https://api.gcore.com/cloud/v1/laas/$GCORE_CLOUD_REGION_ID/destination_reg
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
             ProjectID: gcore.Int(projectID),
@@ -291,4 +289,83 @@ curl "https://api.gcore.com/cloud/v1/laas/$GCORE_CLOUD_REGION_ID/destination_reg
 <p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
 
   </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure log forwarding for an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `logging` attribute is a nested block — import the cluster before making changes.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. To find valid `destination_region_id` values, query <code>GET&nbsp;/cloud/v1/laas/{region_id}/destination_regions</code>.
+</Info>
+
+## Enable logging
+
+<p>Add the `logging` block with `enabled = true`, a destination region, and a topic name. Run `terraform import` first if the cluster is not yet under Terraform management.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  logging = {
+    enabled               = true
+    destination_region_id = 76  # from GET /cloud/v1/laas/{region_id}/destination_regions
+    topic_name            = "my-cluster-logs"
+    retention_policy = {
+      period = 30
+    }
+  }
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
+
+## Disable logging
+
+<p>Set `enabled = false` to stop log forwarding. The log topic and its data in OpenSearch Dashboards are preserved.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  logging = {
+    enabled = false
+  }
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+</MethodSection>
 </MethodSwitch>

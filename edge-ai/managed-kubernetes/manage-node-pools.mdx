@@ -1,7 +1,7 @@
 ---
 title: Manage node pools
 sidebarTitle: Node pools
-ai-navigation: Manage GPU Kubernetes node pools via Customer Portal or REST API - view, scale, add, replace nodes, and delete pools.
+ai-navigation: Manage GPU Kubernetes node pools via Customer Portal, REST API, or Terraform - view, scale, add, replace nodes, and delete pools.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -275,6 +275,7 @@ export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	pools, err := client.Cloud.K8S.Clusters.Pools.List(
     		ctx,
@@ -390,6 +391,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	// GPU Bare Metal pool
     	taskList, err := client.Cloud.K8S.Clusters.Pools.New(
@@ -491,6 +493,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	pool, err := client.Cloud.K8S.Clusters.Pools.Update(
     		ctx,
@@ -584,6 +587,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	// Step 1. Find the node ID
     	nodes, err := client.Cloud.K8S.Clusters.Pools.Nodes.List(
@@ -700,6 +704,7 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	taskList, err := client.Cloud.K8S.Clusters.Pools.Delete(
     		ctx,
@@ -747,6 +752,133 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 10 seconds until `state` is `FINISHED`.</p>
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Manage node pools of an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Pools are a nested attribute of the cluster resource — add, scale, and delete pools by modifying the `pools` list and running `terraform apply`.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Bring an existing cluster under Terraform management with `terraform import` before making changes.
+</Info>
+
+## Import an existing cluster
+
+<p>Use `terraform import` to bring an existing cluster and its pools under Terraform management without recreating them. Declare the resource block with values that match the live cluster, then import.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "my_cluster" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 1
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.my_cluster '<project_id>/<region_id>/<cluster_name>'
+```
+
+## Add a node pool
+
+<p>Append a new entry to the `pools` list and run `terraform apply`. GPU Bare Metal pools require only `flavor_id` and node counts. VM pools additionally require `servergroup_policy`, `boot_volume_size`, and `boot_volume_type`.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "my_cluster" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 1
+      auto_healing_enabled = true
+    },
+    {
+      name               = "vm-pool"          # new pool
+      flavor_id          = "g3a-standard-2-4"
+      min_node_count     = 1
+      max_node_count     = 2
+      servergroup_policy = "soft-anti-affinity"
+      boot_volume_size   = 50
+      boot_volume_type   = "ssd_hiiops"
+    }
+  ]
+}
+```
+
+## Scale a node pool
+
+<p>Edit `min_node_count` or `max_node_count` for the target pool and run `terraform apply`. When `min_node_count` equals `max_node_count`, the pool maintains a fixed size and the Cluster Autoscaler does not act on it.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "my_cluster" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3   # updated upper bound
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+## Delete a node pool
+
+<p>Remove the pool entry from the `pools` list and run `terraform apply`. Pods on the removed pool are evicted and rescheduled to remaining pools. Removing the last pool also deletes the cluster.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "my_cluster" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    # vm-pool removed — only gpu-pool remains
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 1
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
 
 </MethodSection>
 </MethodSwitch>

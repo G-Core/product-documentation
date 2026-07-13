@@ -108,7 +108,6 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
     from gcore.types.cloud.instance_create_params import (
         InterfaceNewInterfaceExternalSerializerPydantic,
@@ -116,25 +115,19 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
     )
 
     client = Gcore()
-    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
 
     # Select a flavor: 2 vCPU / 4 GB RAM
-    flavors = client.cloud.flavors.list(project_id=project_id, region_id=region_id)
+    flavors = client.cloud.flavors.list()
     flavor = next(
         f for f in flavors
         if f.vcpus == 2 and f.ram == 4096
     )
 
     # Select a public Ubuntu 22.04 image
-    images = client.cloud.images.list(
-        project_id=project_id, region_id=region_id, visibility="public"
-    )
+    images = client.cloud.images.list(visibility="public")
     image = next(i for i in images if "ubuntu-22.04" in i.name.lower() and "arm64" not in i.name.lower())
 
     instance = client.cloud.instances.create_and_poll(
-        project_id=project_id,
-        region_id=region_id,
         flavor=flavor.flavor_name,
         interfaces=[InterfaceNewInterfaceExternalSerializerPydantic(type="external")],
         volumes=[
@@ -236,18 +229,13 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
     client = Gcore()
-    project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
     instance_id = "your-instance-id"
 
     result = client.cloud.instances.update(
         instance_id=instance_id,
-        project_id=project_id,
-        region_id=region_id,
         tags={"env": "staging", "team": "backend"},
     )
     user_tags = [(t.key, t.value) for t in result.tags if not t.read_only]
@@ -324,16 +312,12 @@ curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE
 <p>Using the Python SDK:</p>
 
 ```python
-import json, os
+import json
 from gcore import Gcore
 
 client = Gcore()
-project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
 
 instances = list(client.cloud.instances.list(
-    project_id=project_id,
-    region_id=region_id,
     tag_key_value=json.dumps({"env": "production"}),
 ))
 print(f"Found {len(instances)} instances tagged env=production")

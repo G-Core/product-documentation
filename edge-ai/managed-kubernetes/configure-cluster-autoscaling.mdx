@@ -1,7 +1,7 @@
 ---
 title: Configure cluster autoscaling
 sidebarTitle: Autoscaling
-ai-navigation: Configure the Cluster Autoscaler for a Gcore GPU Kubernetes cluster via the Customer Portal or via REST API.
+ai-navigation: Configure the Cluster Autoscaler for a Gcore GPU Kubernetes cluster via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -137,7 +137,6 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
             ProjectID: gcore.Int(projectID),
@@ -201,4 +200,79 @@ curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_
 ```
 
   </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure the Cluster Autoscaler for an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `autoscaler_config` attribute is a flat string map — all values, including numbers and booleans, must be quoted.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Import an existing cluster with `terraform import` before modifying its autoscaler configuration.
+</Info>
+
+## Configure autoscaling
+
+<p>Add the `autoscaler_config` map to the cluster resource block and run `terraform apply`. Omitted parameters keep their current values.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  autoscaler_config = {
+    "scan-interval"                    = "20s"
+    "scale-down-unneeded-time"         = "10m"
+    "scale-down-utilization-threshold" = "0.5"
+    "expander"                         = "least-waste"
+  }
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
+
+## Reset to defaults
+
+<p>Set `autoscaler_config` to an empty map — the API restores all parameters to Gcore defaults on the next `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  autoscaler_config = {}
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+</MethodSection>
 </MethodSwitch>

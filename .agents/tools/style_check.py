@@ -1,19 +1,13 @@
-"""
-Style guide linter for Gcore product documentation MDX files.
+"""Style guide linter for Gcore product documentation MDX files.
 
 Checks detectable violations from .agents/references/style-guide.md.
-Skips frontmatter, code blocks, and image alt text where rules do not apply.
-
-Usage:
-    python scripts/style_check.py <path/to/article.mdx>
-    python scripts/style_check.py hosting/virtual-servers/order-a-virtual-server.mdx
+Usage: python .agents/tools/style_check.py hosting/path/to/article.mdx
 """
 
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
 from urllib.parse import urlparse
 
 
@@ -26,11 +20,7 @@ class Violation:
 
 
 def strip_skipped_regions(lines: list[str]) -> list[tuple[int, str]]:
-    """
-    Return (line_number, line_text) pairs with code blocks zeroed out.
-    Frontmatter (between --- markers) is also excluded.
-    Line numbers are 1-based and preserved for accurate reporting.
-    """
+    """Return (lineno, text) pairs with frontmatter and code blocks zeroed out."""
     result: list[tuple[int, str]] = []
     in_frontmatter = False
     in_code_block = False
@@ -66,7 +56,7 @@ def strip_skipped_regions(lines: list[str]) -> list[tuple[int, str]]:
 
 
 def strip_urls_and_links(text: str) -> str:
-    """Remove URLs and link targets so checkers don't match inside them."""
+    """Remove URLs and link targets to avoid false matches inside them."""
     text = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", text)
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
     text = re.sub(r"https?://\S+", "", text)
@@ -117,6 +107,7 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
         (r"\bgo to\b", "go to — use 'navigate to'"),
         (r"\btype in\b", "type in — use 'enter'"),
         (r"\bchoose\b", "choose — use 'select'"),
+        (r"\blog\s+into\b", "log into — use 'log in to' (three words, not two)"),
     ]
     for lineno, text in lines:
         clean = strip_urls_and_links(text)
@@ -129,7 +120,6 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
                     text=text.strip(),
                 ))
     return violations
-
 
 
 def check_uk_spelling(lines: list[tuple[int, str]]) -> list[Violation]:
@@ -172,18 +162,16 @@ def check_em_dash(lines: list[tuple[int, str]]) -> list[Violation]:
 def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     link_pattern = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
-    banned_starts = [
-        "for more details", "see ", "learn more", "for details",
-        "refer to", "use the ", "open the ", "read the ", "check the ",
-    ]
+    banned_routing_verbs = re.compile(
+        r"\b(see|refer to|learn more|for more details|for details|read the|check the|open the|use the)\b",
+        re.IGNORECASE,
+    )
     for lineno, text in lines:
         for m in link_pattern.finditer(text):
             link_text = m.group(1)
             href = m.group(2)
 
             words = link_text.replace("&nbsp;", " ").split()
-            # "Gcore Customer Portal" is an explicit exception — proper product name,
-            # must never be shortened (style-guide.md: link text rules).
             is_portal_link = link_text.strip() == "Gcore Customer Portal"
             if len(words) > 2 and not is_portal_link:
                 violations.append(Violation(
@@ -201,15 +189,14 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
                     text=text.strip(),
                 ))
 
-            sentence_before = text[:m.start()].strip().lower()
-            for banned in banned_starts:
-                if sentence_before.endswith(banned.rstrip()):
-                    violations.append(Violation(
-                        line=lineno,
-                        rule="Banned link pattern",
-                        detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
-                        text=text.strip(),
-                    ))
+            sentence_before = text[:m.start()].strip()
+            if banned_routing_verbs.search(sentence_before):
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Banned link pattern",
+                    detail=f"Link sentence uses banned routing verb before '[{link_text}]'",
+                    text=text.strip(),
+                ))
 
             try:
                 parsed = urlparse(href)
@@ -220,6 +207,13 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
                         detail=f"Link '{href}' must be root-relative (start with '/'), not a full docs.gcore.com URL",
                         text=text.strip(),
                     ))
+                if href.startswith("../") or href.startswith("./"):
+                    violations.append(Violation(
+                        line=lineno,
+                        rule="Relative link path",
+                        detail=f"Link '{href}' uses relative path — use root-relative path starting with '/'",
+                        text=text.strip(),
+                    ))
             except ValueError:
                 pass
     return violations
@@ -228,10 +222,10 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
 def check_meta_preamble(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     patterns = [
-        r"this (guide|article|document|tutorial|section) (covers|explains|describes|walks)",
-        r"in this (guide|article|document|section)",
-        r"here you will find",
-        r"the sections below",
+        r"this (guide|article|document|tutorial|section|page) (covers|explains|describes|walks|shows)",
+        r"in this (guide|article|document|section|page)", r"here you will find",
+        r"the sections below", r"below you (will|can) find",
+        r"the following (guide|article|document|tutorial) (covers|explains|describes)",
     ]
     combined = re.compile("|".join(patterns), re.IGNORECASE)
     for lineno, text in lines:
@@ -246,7 +240,6 @@ def check_meta_preamble(lines: list[tuple[int, str]]) -> list[Violation]:
 
 
 def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
-    """Flag digit 1-9 where a word is likely expected (non-measurement context)."""
     violations: list[Violation] = []
     measurement_units = re.compile(
         r"\d+\s*(ms|s|min|minutes?|hours?|days?|GB|MB|KB|TB|Gbps|Mbps|vCPU|rpm|"
@@ -254,13 +247,8 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
         re.IGNORECASE,
     )
     skip_context = re.compile(
-        r"IPv[46]|step\s+\d|v\d|\d\.|"
-        r"\d\s+to\s+\d|"
-        r"1\s*(to|-)\s*\d|"
-        r"\d+\s*(to|-)\s*\d+|"
-        r"port\s+\d|"
-        r"\d{1,3}\.\d{1,3}|"
-        r"-\d\b",
+        r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
+        r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
@@ -279,8 +267,76 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     return violations
 
 
+def check_alt_text(lines: list[tuple[int, str]]) -> list[Violation]:
+    violations: list[Violation] = []
+    img_pattern = re.compile(r"!\[([^\]]*)\]\([^)]+\)")
+    bad_starts = re.compile(r"^(screenshot of|image of|a picture of|a screenshot|picture of)", re.IGNORECASE)
+    for lineno, text in lines:
+        for m in img_pattern.finditer(text):
+            alt = m.group(1).strip()
+            if not alt:
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Alt text missing",
+                    detail="Image has no alt text — add a descriptive sentence (max 125 chars)",
+                    text=text.strip(),
+                ))
+                continue
+            if len(alt) > 125:
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Alt text length",
+                    detail=f"Alt text is {len(alt)} chars — max 125 chars",
+                    text=text.strip(),
+                ))
+            if bad_starts.match(alt):
+                violations.append(Violation(
+                    line=lineno,
+                    rule="Alt text content",
+                    detail=f"Alt text must not start with '{alt.split()[0:3]}' — describe what is shown, not that it is a screenshot",
+                    text=text.strip(),
+                ))
+    return violations
+
+
+def check_opening_heading(raw_lines: list[str]) -> list[Violation]:
+    """Article body must open with a prose paragraph, not a heading.
+
+    The title: field renders as the page H1. A ## heading immediately after
+    the frontmatter creates two headings in a row with no context for the reader.
+    """
+    violations: list[Violation] = []
+    in_frontmatter = False
+    frontmatter_closed = False
+    fence_count = 0
+
+    for i, raw in enumerate(raw_lines, start=1):
+        stripped = raw.strip()
+        if i == 1 and stripped == "---":
+            in_frontmatter = True
+            continue
+        if in_frontmatter:
+            if stripped == "---":
+                in_frontmatter = False
+                frontmatter_closed = True
+            continue
+        if not frontmatter_closed:
+            continue
+        if stripped == "":
+            continue
+        if stripped.startswith("##"):
+            violations.append(Violation(
+                line=i,
+                rule="Opening heading",
+                detail="Article body opens with a heading — add an intro paragraph before the first ## heading",
+                text=raw.strip(),
+            ))
+        break
+
+    return violations
+
+
 def check_heading_style(raw_lines: list[str]) -> list[Violation]:
-    """Check ## and ### headings for forbidden patterns."""
     violations: list[Violation] = []
     forbidden_starts = re.compile(
         r"^#{2,3}\s+(what|how|why|when|to\s+\w+)\b",
@@ -289,6 +345,7 @@ def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     forbidden_sections = {
         "next steps", "get started", "prerequisites", "requirements",
         "related documentation", "see also", "what's next",
+        "key benefits", "benefits", "overview",
     }
     heading = re.compile(r"^(#{2,3})\s+(.+)")
     for i, raw in enumerate(raw_lines, start=1):
@@ -321,8 +378,42 @@ def check_heading_style(raw_lines: list[str]) -> list[Violation]:
     return violations
 
 
+def check_callout_prefix(raw_lines: list[str]) -> list[Violation]:
+    violations: list[Violation] = []
+    callout_open = re.compile(r"^<(Note|Warning|Info|Tip)>", re.IGNORECASE)
+    callout_close = re.compile(r"^</(Note|Warning|Info|Tip)>", re.IGNORECASE)
+    prefix_pattern = re.compile(r"^\*\*(Note|Warning|Info|Tip)\*\*", re.IGNORECASE)
+    inside: str | None = None
+    for i, raw in enumerate(raw_lines, start=1):
+        stripped = raw.strip()
+        if m_open := callout_open.match(stripped):
+            inside = m_open.group(1)
+            continue
+        if callout_close.match(stripped):
+            inside = None
+            continue
+        if inside and prefix_pattern.match(stripped):
+            violations.append(Violation(
+                line=i,
+                rule="Callout prefix",
+                detail=f"Remove '**{inside}**' prefix inside <{inside}> — the component already renders the label",
+                text=raw.strip(),
+            ))
+    return violations
+
+
 def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
     violations: list[Violation] = []
+    action_verbs = {
+        "create", "configure", "manage", "enable", "disable", "deploy", "set", "add",
+        "update", "remove", "connect", "install", "mount", "view", "monitor", "generate",
+        "integrate", "use", "run", "build", "upload", "download", "test", "verify",
+        "access", "allow", "block", "migrate", "restore", "delete", "list", "get", "send",
+        "receive", "assign", "attach", "detach", "scale", "resize", "start", "stop",
+        "restart", "reinstall", "resolve", "troubleshoot", "convert", "import", "export",
+        "protect", "apply", "validate", "audit", "review", "check", "change", "edit",
+        "move", "copy", "share", "publish", "back", "allocate", "order", "buy",
+    }
     in_fm = False
     for i, raw in enumerate(raw_lines, start=1):
         stripped = raw.strip()
@@ -331,34 +422,76 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
             continue
         if in_fm and stripped == "---":
             break
-        if in_fm:
-            if re.match(r"^description\s*:", stripped, re.IGNORECASE):
+        if not in_fm:
+            continue
+
+        if re.match(r"^description\s*:", stripped, re.IGNORECASE):
+            violations.append(Violation(
+                line=i,
+                rule="Frontmatter",
+                detail="'description:' is forbidden — use 'ai-navigation:' instead",
+                text=raw.strip(),
+            ))
+
+        if re.match(r"^ai-navigation\s*:", stripped):
+            value = stripped.split(":", 1)[1].strip()
+
+            if value.startswith('"') or value.startswith("'"):
                 violations.append(Violation(
                     line=i,
-                    rule="Frontmatter",
-                    detail="'description:' is forbidden — use 'ai-navigation:' instead",
+                    rule="ai-navigation quotes",
+                    detail="ai-navigation value must not be wrapped in YAML quotes",
                     text=raw.strip(),
                 ))
-            if re.match(r"^ai-navigation\s*:", stripped):
-                value = stripped.split(":", 1)[1].strip()
-                if ":" in value or "#" in value:
+
+            val = value.strip("\"'")
+
+            if ":" in val:
+                violations.append(Violation(
+                    line=i,
+                    rule="ai-navigation syntax",
+                    detail="ai-navigation must not contain ':' — YAML treats it as a key separator",
+                    text=raw.strip(),
+                ))
+            if "#" in val:
+                violations.append(Violation(
+                    line=i,
+                    rule="ai-navigation syntax",
+                    detail="ai-navigation must not contain '#' — YAML treats it as a comment start",
+                    text=raw.strip(),
+                ))
+            for ch in ["/", "{", "}"]:
+                if ch in val:
                     violations.append(Violation(
                         line=i,
                         rule="ai-navigation syntax",
-                        detail="ai-navigation must not contain ':' or '#'",
+                        detail=f"ai-navigation must not contain '{ch}' — use descriptive text without URL paths or template variables",
                         text=raw.strip(),
                     ))
+
+            if len(val) > 160:
+                violations.append(Violation(
+                    line=i,
+                    rule="ai-navigation length",
+                    detail=f"ai-navigation is {len(val)} chars — max 160 chars",
+                    text=raw.strip(),
+                ))
+
+            first_word = val.split()[0].lower().rstrip(".,;") if val.split() else ""
+            if first_word and first_word not in action_verbs:
+                violations.append(Violation(
+                    line=i,
+                    rule="ai-navigation verb",
+                    detail=f"ai-navigation must start with an action verb — '{first_word}' is not in the approved list",
+                    text=raw.strip(),
+                ))
+
     return violations
 
 
-CHECKERS: list[Callable] = [
-    check_you_your,
-    check_forbidden_words,
-    check_uk_spelling,
-    check_em_dash,
-    check_link_text,
-    check_meta_preamble,
-    check_numbers,
+CHECKERS = [
+    check_you_your, check_forbidden_words, check_uk_spelling, check_em_dash,
+    check_link_text, check_meta_preamble, check_numbers, check_alt_text,
 ]
 
 
@@ -368,7 +501,9 @@ def lint(path: Path) -> list[Violation]:
     violations: list[Violation] = []
     for checker in CHECKERS:
         violations.extend(checker(filtered))
+    violations.extend(check_opening_heading(raw_lines))
     violations.extend(check_heading_style(raw_lines))
+    violations.extend(check_callout_prefix(raw_lines))
     violations.extend(check_frontmatter(raw_lines))
     violations.sort(key=lambda v: v.line)
     return violations

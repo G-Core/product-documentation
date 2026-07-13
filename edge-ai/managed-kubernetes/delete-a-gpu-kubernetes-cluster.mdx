@@ -1,7 +1,7 @@
 ---
 title: Delete a GPU Kubernetes cluster
 sidebarTitle: Delete a cluster
-ai-navigation: Delete a Gcore GPU Kubernetes cluster via Customer Portal or REST API.
+ai-navigation: Delete a Gcore GPU Kubernetes cluster via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -101,6 +101,7 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
     	client := gcore.NewClient()
+    	ctx := context.Background()
 
     	taskList, err := client.Cloud.K8S.Clusters.Delete(
     		ctx,
@@ -147,6 +148,46 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 15 seconds until `state` is `FINISHED`.</p>
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Delete a GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Terraform removes all nodes, pools, and control plane resources. External storage is not deleted.</p>
+
+<Warning>
+Cluster deletion is irreversible. Download the kubeconfig and back up any required data before proceeding.
+</Warning>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required.
+</Info>
+
+## Delete the cluster
+
+<p>Run `terraform destroy` to delete the cluster and all its pools. If the cluster was not created with Terraform, import it first.</p>
+
+```bash
+# If the cluster was created outside Terraform, import it first:
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+
+terraform destroy
+```
+
+<p>To delete only one cluster in a workspace that manages multiple resources, remove its resource block and run `terraform apply` instead of `terraform destroy`:</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_k8s_cluster" "example" {
+#   project_id    = var.project_id
+#   region_id     = var.region_id
+#   name          = "my-gpu-k8s"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

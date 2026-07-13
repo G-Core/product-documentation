@@ -1,7 +1,7 @@
 ---
 title: "Create a Bare Metal GPU cluster"
 sidebarTitle: "Create a Bare Metal GPU cluster"
-ai-navigation: Create Bare Metal GPU clusters with dedicated physical servers via Customer Portal or REST API using the GPU Bare Metal API.
+ai-navigation: Create Bare Metal GPU clusters with dedicated physical servers via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,206 +9,170 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>GPU clusters are high-performance computing resources designed for AI/ML workloads, inference, and large-scale data processing. Each cluster consists of one or more GPU servers connected via high-speed networking.</p>
-
-<p>GPU clusters come in two types:</p>
-
-- **Bare Metal GPU**: Dedicated physical servers without virtualization, offering maximum performance and full hardware control.
-- **Spot Bare Metal GPU**: Discounted servers suitable for batch processing, experiments, and testing. [Spot clusters](/edge-ai/ai-infrastructure/spot-bare-metal-gpu) provide the same hardware access as standard Bare Metal GPUs and may be reclaimed with 24 hours' notice.
-
-<p>Cluster type and GPU model availability vary by region. The creation form displays only the options available in the selected region.</p>
+<p>Bare Metal GPU clusters provision one or more dedicated GPU servers with no virtualization layer. They are intended for AI training, inference, distributed workloads, and other applications that require full hardware performance. Two cluster types are available: **Bare Metal GPU** for on-demand dedicated servers, and **[Spot&nbsp;GPU](/edge-ai/ai-infrastructure/spot-bare-metal-gpu)** for discounted interruptible capacity that may be reclaimed with 24 hours' notice. Available GPU models and cluster types vary by region.</p>
 
 ## Cluster architecture
 
-<p>A cluster consists of one or more GPU servers with identical configuration.</p>
+<p>A cluster consists of one or more bare metal GPU servers provisioned from an identical template. All nodes share the same image, flavor, and network configuration.</p>
 
-<p>For multi-node clusters:</p>
+```
+Cluster
+ ├─ Node 1  (GPU server)
+ ├─ Node 2  (GPU server)
+ ├─ ...
+ ├─ InfiniBand fabric  (auto-configured when the flavor supports it)
+ └─ File Share         (optional — shared storage across all nodes)
+```
 
-- Nodes share the same image and network settings.
-- InfiniBand networking is configured automatically when supported by the flavor.
-- File shares provide shared storage for datasets and checkpoints across all nodes.
+<p>InfiniBand inter-node networking is configured automatically when the selected flavor supports it, enabling efficient distributed training without manual network setup. File shares mount across all nodes and persist independently of cluster state.</p>
 
 ## Create a GPU cluster
 
-<p>To create a Bare Metal GPU cluster, complete the following steps in the Gcore Customer Portal.</p>
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**, open **GPU Clusters** > **Bare Metal GPU Clusters**, and click **Create Cluster**.</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
-2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
-3. Click **Create Cluster**.
+<Steps>
+  <Step title="Select region">
+    In the **Region** section, select the data center location for the cluster. Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows its availability status — file share integration, for instance, is available only in select regions.
 
-### Step 1. Select region
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-region.png" alt="Region selection section showing available regions grouped by geography" />
+    </Frame>
 
-<p>In the **Region** section, select the data center location for the cluster.</p>
+    <Info>
+    GPU model availability and pricing vary by region. Check other regions if a required GPU model is not available. For help with availability, contact the [sales&nbsp;team](https://gcore.com/contact-sales).
+    </Info>
+  </Step>
+  <Step title="Configure cluster capacity">
+    In the **Cluster capacity** section, select the GPU model and flavor that define the hardware configuration for every node. Available options depend on the selected region.
 
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-region.png" alt="Region selection section showing available regions grouped by geography" />
-</Frame>
+    - **GPU Cluster type**: Select **Bare Metal GPU** for dedicated servers, or **Spot Bare Metal GPU** for discounted interruptible capacity — pricing and reclamation details are on the [Spot&nbsp;GPU](/edge-ai/ai-infrastructure/spot-bare-metal-gpu) page.
+    - **GPU Model**: A100, H100, or H200 — availability depends on the region.
+    - **Show out of stock**: Toggle to show or hide unavailable flavors.
+    - **Flavor**: Each card displays GPU configuration, CPU type, RAM, storage, network connectivity, and pricing.
 
-<p>Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows its availability status. File share integration, for example, is available only in select regions.</p>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-capacity.png" alt="Cluster capacity section showing GPU Cluster type, GPU Model selector, and flavor card with specifications" />
+    </Frame>
+  </Step>
+  <Step title="Set the number of instances">
+    In the **Number of Instances** section, specify how many servers to provision. Each instance is a separate physical server with the selected flavor configuration. The maximum depends on regional stock availability — there is no fixed per-cluster limit.
 
-<Info>
-GPU model availability and pricing vary by region. Check other regions if a required GPU model is not available. For help with availability, contact the [sales team](https://gcore.com/contact-sales).
-</Info>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-instances.png" alt="Number of Instances section with instance counter" />
+    </Frame>
 
-### Step 2. Configure cluster capacity
+    <Info>
+    After creation, the cluster can be resized. Scaling up adds nodes with the same configuration used at creation. Scaling down removes a random node — to delete a specific node, use the per-node delete action in the cluster details. Deleting the last node deletes the entire cluster.
+    </Info>
+  </Step>
+  <Step title="Select image">
+    The image defines the operating system and pre-installed software for cluster nodes.
 
-<p>In this step, select the GPU model and flavor that define the hardware configuration for every node in the cluster. Available options depend on the selected region.</p>
+    In the **Image** section, select the operating system:
 
-1. In the **Cluster capacity** section, select the **GPU Cluster type**:
-   - **Bare Metal GPU** for dedicated physical servers
-   - **Spot Bare Metal GPU** for discounted, interruptible instances (available in select regions) — see [Spot Bare Metal GPU](/edge-ai/ai-infrastructure/spot-bare-metal-gpu) for pricing, reclamation policy, and data preservation details
+    - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit (recommended)
+    - **Custom**: Custom images uploaded to the account
 
-2. Select the **GPU Model**. Available models — A100, H100, or H200 — depend on the region.
+    Images with the `eni` suffix are configured for InfiniBand interconnect.
 
-3. Enable or disable **Show out of stock** to filter available flavors.
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-image.png" alt="Image section with Public and Custom tabs and image selector" />
+    </Frame>
+  </Step>
+  <Step title="Configure file share integration (optional)">
+    File shares provide shared storage accessible from all cluster nodes. GPU-enabled regions use VAST-backed high-performance shares. This option appears only in regions where file shares are available — — [file&nbsp;shares](/cloud/file-shares/configure-file-shares) documentation describes share types, sizing, and access rules.
 
-4. Select a flavor. Each flavor card displays GPU configuration, CPU type, RAM capacity, storage, network connectivity, pricing, and stock availability.
+    1. Enable the **File Share integration** checkbox.
+    2. Select an existing file share or create a new one.
+    3. Specify the mount path on cluster nodes (default: `/home/ubuntu/mnt/nfs`).
 
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-capacity.png" alt="Cluster capacity section showing GPU Cluster type, GPU Model selector, and flavor card with specifications" />
-</Frame>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-file-share.png" alt="File share integration section with Enable File Share checkbox" />
+    </Frame>
 
-### Step 3. Set the number of instances
+    <Info>
+    When file share integration is enabled, the cluster automatically adds mount commands to the user data script. If **User data** is also configured in Additional options, do not remove these commands — they handle automatic mounting on first boot.
+    </Info>
+  </Step>
+  <Step title="Configure network settings">
+    Network settings define how the cluster communicates with external services and other resources. At least one interface is required.
 
-<p>In the **Number of Instances** section, specify how many servers to provision in the cluster.</p>
+    In the **Network settings** section, select the interface type:
 
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-instances.png" alt="Number of Instances section with instance counter" />
-</Frame>
+    | Type | Access | Use case |
+    |------|--------|----------|
+    | **Public** | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
+    | **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
+    | **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
 
-<p>Each instance is a separate physical server with the selected flavor configuration. For single-node workloads, one instance is sufficient. For distributed training, provision multiple instances.</p>
+    To add more interfaces, click **Add Interface**. All public interfaces include Basic DDoS Protection at no additional cost.
 
-<p>The maximum number of instances is limited by the current stock availability in the region. There is no fixed per-cluster limit — clusters can scale to hundreds of nodes if capacity is available.</p>
+    Each interface can be expanded to configure [security&nbsp;groups](/cloud/networking/add-and-configure-a-firewall). The `default` security group is pre-selected — if no security group is selected, it is attached automatically.
 
-<Info>
-After creation, the cluster can be resized. Scaling up adds nodes with the same configuration used at creation. Scaling down removes a random node — to delete a specific node, use the per-node delete action in the cluster details. Deleting the last node in a cluster deletes the entire cluster.
-</Info>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/network-settings-security-groups.png" alt="Security Groups field with default group selected per interface" />
+    </Frame>
+  </Step>
+  <Step title="Configure SSH key">
+    In the **SSH key** section, select an existing key from the dropdown or create a new one. If generating a new key pair, save the private key immediately as it cannot be retrieved later.
 
-### Step 4. Select image
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-ssh-key.png" alt="SSH key section with dropdown and options to add or generate keys" />
+    </Frame>
+  </Step>
+  <Step title="Set additional options">
+    The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
 
-<p>The image defines the operating system and pre-installed software for cluster nodes.</p>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-additional-options.png" alt="Additional options section with User data and Add tags checkboxes" />
+    </Frame>
+  </Step>
+  <Step title="Name and create the cluster">
+    In the **GPU Cluster Name** section, enter a name or use the auto-generated one. Review the estimated cost in the right panel, then click **Create Cluster**.
 
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-image.png" alt="Image section with Public and Custom tabs and image selector" />
-</Frame>
+    <Frame>
+      <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-name.png" alt="GPU Cluster Name section with name input field" />
+    </Frame>
 
-1. In the **Image** section, choose the operating system:
-   - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit (recommended)
-   - **Custom**: Custom images uploaded to the account
+    Once all instances reach **Power on** status, the cluster is ready for use.
 
-<p>The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Images with the `eni` suffix in the name are configured for InfiniBand interconnect.</p>
-
-2. Note the default login credentials displayed below the image selector: username `ubuntu`, SSH port `22`. These credentials are used to connect to the cluster after creation.
-
-### Step 5. Configure file share integration
-
-<p>File shares provide shared storage accessible from all cluster nodes. GPU-enabled regions use VAST-backed high-performance shares. This option appears only in regions where file shares are available.</p>
-
-<p>For share types, sizing, access rules, and manual mounting, see [Configure file shares](/cloud/file-shares/configure-file-shares).</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-file-share.png" alt="File share integration section with Enable File Share checkbox" />
-</Frame>
-
-1. Enable the **File Share integration** checkbox.
-2. Select an existing file share or create a new one.
-3. Specify the mount path on cluster nodes (default: `/home/ubuntu/mnt/nfs`).
-
-<Info>
-When file share integration is enabled, the cluster automatically adds mount commands to the user data script. If **User data** is also configured in Additional options, do not remove these commands — they handle automatic mounting on first boot.
-</Info>
-
-### Step 6. Configure network settings
-
-<p>Network settings define how the cluster communicates with external services and other resources. At least one interface is required.</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-network.png" alt="Network settings section showing interface configuration" />
-</Frame>
-
-1. In the **Network settings** section, configure the network interface:
-
-| Type | Access | Use case |
-|------|--------|----------|
-| **Public** | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
-| **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
-| **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
-
-   <p>For multi-node clusters, a private interface keeps internal traffic separate from internet-facing traffic.</p>
-
-<p>To add or configure interfaces, expand the interface card and adjust settings as needed. Additional interfaces can be attached by clicking **Add Interface**.</p>
-
-<p>All public interfaces include Basic DDoS Protection at no additional cost.</p>
-
-<p>Each interface can be expanded to configure security groups. In the **Security Groups** field, select one or more [security groups](/cloud/networking/add-and-configure-a-firewall) to control inbound and outbound traffic for that interface. The `default` security group is pre-selected. If no security group is selected, the default security group is attached automatically.</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/network-settings-security-groups.png" alt="Security Groups field with default group selected per interface" />
-</Frame>
-
-<p>To create a new security group, click **Add new Security Group** and configure inbound and outbound rules in the dialog.</p>
-
-### Step 7. Configure SSH key
-
-<p>In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the Customer Portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-ssh-key.png" alt="SSH key section with dropdown and options to add or generate keys" />
-</Frame>
-
-### Step 8. Set additional options
-
-<p>The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-additional-options.png" alt="Additional options section with User data and Add tags checkboxes" />
-</Frame>
-
-### Step 9. Name and create the cluster
-
-<p>The final step assigns a name to the cluster and initiates provisioning.</p>
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-name.png" alt="GPU Cluster Name section with name input field" />
-</Frame>
-
-1. In the **GPU Cluster Name** section, enter a name or use the auto-generated one.
-
-2. Review the **Estimated cost** panel on the right.
-
-3. Click **Create Cluster**.
-
-<p>Once all instances reach **Power on** status, the cluster is ready for use.</p>
-
-<Warning>
-Cluster-level settings (image, file share integration, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
-</Warning>
+    <Warning>
+    Cluster-level settings (image, file share integration, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
+    </Warning>
+  </Step>
+</Steps>
 
 ## Connect and verify the cluster
 
-<p>After the cluster is created, use SSH to connect to a node. The default username is `ubuntu`.</p>
+<p>After the cluster is created, connect to a node via SSH and verify that GPUs are available.</p>
 
-```bash
-ssh ubuntu@<instance-ip-address>
-```
+<Steps>
+  <Step title="Connect via SSH">
+    Open a terminal and connect using the default username `ubuntu`:
 
-<p>Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details. For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
+    ```bash
+    ssh ubuntu@<instance-ip-address>
+    ```
 
-<p>Verify that GPUs are available and drivers are loaded:</p>
+    Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details. For nodes with only private interfaces, connect through a bastion host, VPN, or the Customer Portal [web&nbsp;console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).
+  </Step>
+  <Step title="Verify GPU detection">
 
-```bash
-nvidia-smi
-```
+    ```bash
+    nvidia-smi
+    ```
 
-<p>The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.</p>
+    A successful output shows all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.
 
-<p>If file share integration was enabled, verify the mount is accessible:</p>
+    If file share integration was enabled, verify the mount is accessible:
 
-```bash
-ls /home/ubuntu/mnt/nfs
-```
+    ```bash
+    ls /home/ubuntu/mnt/nfs
+    ```
+  </Step>
+</Steps>
 
-<p>Clusters can also be created programmatically using the [GPU Bare Metal API](/api-reference/cloud/gpu-bare-metal).</p>
+<p>Clusters can also be created programmatically using the [GPU&nbsp;API](/api-reference/cloud/gpu-bare-metal).</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -216,10 +180,10 @@ ls /home/ubuntu/mnt/nfs
 <p>Create a Bare Metal GPU cluster by selecting a flavor and image, then provisioning the cluster with a single API call.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required, along with a
-[project ID](/api-reference/cloud/projects/list-projects)
-and a [region ID](/api-reference/cloud/regions/list-regions).
-Bare Metal GPU clusters are available in select regions — use the [List flavors](#step-1-list-available-flavors) call to confirm availability.
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+Bare Metal GPU clusters are available in select regions — the [List&nbsp;flavors](#step-1-list-available-flavors) call confirms availability for the target region.
 </Info>
 
 <p>Open a terminal and set these environment variables before running the examples:</p>
@@ -287,8 +251,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     # Step 5. Get the public IP and print SSH command
     ifaces = client.cloud.gpu_baremetal.clusters.interfaces.list(
         cluster_id=cluster_id,
-        project_id=project_id,
-        region_id=region_id,
     )
     for iface in ifaces.results:
         if iface.network_details.external:
@@ -319,7 +281,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         client := gcore.NewClient()
         ctx := context.Background()
-        ctx := ctx
 
         // Step 1. List flavors — select the one with fewest GPUs
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
@@ -565,7 +526,7 @@ The API returns:
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Cluster name (2–63 chars, alphanumeric, hyphens, underscores) |
+| `name` | Yes | Cluster name (two–63 chars, alphanumeric, hyphens, underscores) |
 | `flavor` | Yes | Flavor name from Step 1 |
 | `image_id` | Yes | Image UUID from Step 2 |
 | `servers_count` | Yes | Number of nodes to provision |
@@ -753,6 +714,68 @@ nvidia-smi
 ```
 
 <p>A successful output shows the list of GPUs, driver version, and CUDA version. For nodes with only private interfaces, connect through a bastion host or VPN.</p>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare a Bare Metal GPU cluster as code using the [`gcore_cloud_gpu_baremetal_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_gpu_baremetal_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create a Bare Metal GPU cluster
+
+<p>Provisions one bare metal node with a public interface. Use the flavors and images endpoints from the REST&nbsp;API tab to identify the right `flavor` and `image_id` for the target region before applying.</p>
+
+```hcl
+resource "gcore_cloud_gpu_baremetal_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-bm-gpu-cluster"
+  flavor        = "bm3-ai-1xlarge-a100-80-8"  # 8× A100 80 GB; list available flavors via the flavors API
+  image_id      = "d9400449-0ee8-4c60-adb9-fc545a80325c"  # Ubuntu 22.04, driver 580, CUDA 13.0 — Luxembourg-2; list current images via the images API
+  servers_count = 1
+
+  # servers_settings is an attribute (nested type), not a block — use = assignment
+  servers_settings = {
+    interfaces = [
+      { type = "external" }
+    ]
+    credentials = {
+      ssh_key_name = "my-ssh-key"  # name of an existing SSH key in the project
+    }
+  }
+}
+
+output "cluster_id" {
+  value = gcore_cloud_gpu_baremetal_cluster.example.id
+}
+
+output "cluster_status" {
+  value = gcore_cloud_gpu_baremetal_cluster.example.status
+}
+
+# terraform import gcore_cloud_gpu_baremetal_cluster.example '<project_id>/<region_id>/<cluster_id>'
+```
+
+<p>Bare Metal nodes take 15–20 minutes to provision. After `terraform apply` completes, the cluster status is `active`. Connect via SSH to the public IP from the cluster's network interfaces.</p>
+
+<Info>
+`ssh_key_name` must be a literal string in the HCL file — a variable reference causes the provider to reject the configuration at plan time. Replace `"my-ssh-key"` with the name of an existing SSH key in the project.
+</Info>
+
+## Delete the cluster
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the cluster on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_gpu_baremetal_cluster" "example" {
+#   name          = "my-bm-gpu-cluster"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

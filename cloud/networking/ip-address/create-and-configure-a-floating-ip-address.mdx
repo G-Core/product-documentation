@@ -162,42 +162,27 @@ export PORT_ID="{YOUR_PORT_ID}"          # UUID of the VM's private interface; s
     import os
     from gcore import Gcore
 
-    PROJECT_ID = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
     PORT_ID = os.environ["PORT_ID"]
 
     client = Gcore()
 
     # Step 1. Reserve a floating IP
-    fip = client.cloud.floating_ips.create_and_poll(
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
-    )
+    fip = client.cloud.floating_ips.create_and_poll()
     print(f"Reserved: {fip.floating_ip_address}  ID: {fip.id}  status: {fip.status}")
 
     # Step 2. Assign to a Virtual Machine
     fip = client.cloud.floating_ips.assign(
         fip.id,
         port_id=PORT_ID,
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
     )
     print(f"Assigned: {fip.floating_ip_address}  status: {fip.status}")
 
     # Step 3. Unassign from the Virtual Machine
-    fip = client.cloud.floating_ips.unassign(
-        fip.id,
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
-    )
+    fip = client.cloud.floating_ips.unassign(fip.id)
     print(f"Unassigned: status {fip.status}")
 
     # Step 4. Delete the floating IP
-    client.cloud.floating_ips.delete_and_poll(
-        fip.id,
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
-    )
+    client.cloud.floating_ips.delete_and_poll(fip.id)
     print("Floating IP deleted.")
     ```
   </Tab>
@@ -268,15 +253,11 @@ Allocating a floating IP reserves a public address from the region pool without 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
     client = Gcore()
 
-    fip = client.cloud.floating_ips.create_and_poll(
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    fip = client.cloud.floating_ips.create_and_poll()
     print(f"ID: {fip.id}  address: {fip.floating_ip_address}  status: {fip.status}")
     ```
   </Tab>
@@ -362,11 +343,11 @@ Linking the floating IP to the port makes the address reachable from the Interne
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+
     fip = client.cloud.floating_ips.assign(
         os.environ["FIP_ID"],
         port_id=os.environ["PORT_ID"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"status: {fip.status}  fixed_ip: {fip.fixed_ip_address}")
     ```
@@ -409,11 +390,9 @@ Detaching releases the floating IP from the port; the address remains reserved a
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    fip = client.cloud.floating_ips.unassign(
-        os.environ["FIP_ID"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    import os
+
+    fip = client.cloud.floating_ips.unassign(os.environ["FIP_ID"])
     print(f"status: {fip.status}")
     ```
   </Tab>
@@ -455,11 +434,9 @@ Detaching releases the floating IP from the port; the address remains reserved a
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.floating_ips.delete_and_poll(
-        os.environ["FIP_ID"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    import os
+
+    client.cloud.floating_ips.delete_and_poll(os.environ["FIP_ID"])
     print("Floating IP deleted.")
     ```
   </Tab>

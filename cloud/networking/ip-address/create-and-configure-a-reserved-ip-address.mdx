@@ -299,17 +299,12 @@ export FLAVOR_ID="{YOUR_FLAVOR_ID}"
     import os
     from gcore import Gcore
 
-    PROJECT_ID = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
-    REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
-
     client = Gcore()
 
     # Step 1. Reserve a public IP address
     rip = client.cloud.reserved_fixed_ips.create_and_poll(
         type="external",
         ip_family="ipv4",
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
     )
     print(f"Reserved: {rip.fixed_ip_address}  port_id: {rip.port_id}")
 
@@ -320,23 +315,19 @@ export FLAVOR_ID="{YOUR_FLAVOR_ID}"
         image_id=os.environ["IMAGE_ID"],
         size=20,
         type_name="ssd_hiiops",
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
     )
     instance = client.cloud.instances.create_and_poll(
         name="my-vm",
         flavor=os.environ["FLAVOR_ID"],
         interfaces=[{"type": "reserved_fixed_ip", "port_id": rip.port_id}],
         volumes=[{"volume_id": volume.id}],
-        project_id=PROJECT_ID,
-        region_id=REGION_ID,
     )
     print(f"Instance: {instance.id}  IP: {rip.fixed_ip_address}")
 
     # Step 3. Delete the VM, volume, and reserved IP
-    client.cloud.instances.delete_and_poll(instance.id, project_id=PROJECT_ID, region_id=REGION_ID)
-    client.cloud.volumes.delete_and_poll(volume.id, project_id=PROJECT_ID, region_id=REGION_ID)
-    client.cloud.reserved_fixed_ips.delete_and_poll(rip.port_id, project_id=PROJECT_ID, region_id=REGION_ID)
+    client.cloud.instances.delete_and_poll(instance.id)
+    client.cloud.volumes.delete_and_poll(volume.id)
+    client.cloud.reserved_fixed_ips.delete_and_poll(rip.port_id)
     print("Cleaned up.")
     ```
   </Tab>
@@ -443,8 +434,6 @@ Reserving an IP allocates a static address from the region pool exclusively for 
         rip = client.cloud.reserved_fixed_ips.create_and_poll(
             type="external",
             ip_family="ipv4",
-            project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-            region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         )
         print(f"IP: {rip.fixed_ip_address}  port_id: {rip.port_id}  status: {rip.status}")
         ```
@@ -514,8 +503,6 @@ export SUBNET_ID="{YOUR_SUBNET_ID}"
         rip = client.cloud.reserved_fixed_ips.create_and_poll(
             type="subnet",
             subnet_id=os.environ["SUBNET_ID"],
-            project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-            region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
         )
         print(f"Private IP: {rip.fixed_ip_address}  port_id: {rip.port_id}")
         ```
@@ -566,11 +553,7 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    rip = client.cloud.reserved_fixed_ips.get(
-        os.environ["PORT_ID"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    rip = client.cloud.reserved_fixed_ips.get(os.environ["PORT_ID"])
     print(f"IP: {rip.fixed_ip_address}  is_external: {rip.is_external}  reservation: {rip.reservation.status}")
     ```
   </Tab>
@@ -636,8 +619,6 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
             "size": 20,
             "boot_index": 0,
         }],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"Instance: {instance.id}")
     ```
@@ -689,11 +670,7 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.reserved_fixed_ips.delete_and_poll(
-        os.environ["PORT_ID"],
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-    )
+    client.cloud.reserved_fixed_ips.delete_and_poll(os.environ["PORT_ID"])
     print("Reserved IP deleted.")
     ```
   </Tab>
