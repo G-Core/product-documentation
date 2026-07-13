@@ -259,7 +259,8 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
         r"1\s*(to|-)\s*\d|"
         r"\d+\s*(to|-)\s*\d+|"
         r"port\s+\d|"
-        r"\d{1,3}\.\d{1,3}",
+        r"\d{1,3}\.\d{1,3}|"
+        r"-\d\b",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
