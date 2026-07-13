@@ -1,248 +1,199 @@
 ---
 title: "Configure API access and protection with reserved tags"
 sidebarTitle: Configure API access with reserved tags
-ai-navigation: Configure API protection with reserved tags (API Privileged Access, API Admin Access, Indicate API Privileged User, Indicate API Admin User, Auth Endpoint, Ignore Email Address Detection, Ignore Phone Number Detection, Ignore CCN Detection, Ignore SSN Detection) via API Discovery or custom rules to categorize and manage API endpoint access by authorization level.
+ai-navigation: Configure API protection by applying reserved tags to endpoints and user rules, then enabling API Protection policies to control access by authorization level.
 ---
 
-API protection tags are used to flag and categorize API requests based on different conditions and parameters, which allows you to manage API traffic more efficiently. 
+API protection tags flag and categorize API requests based on conditions and parameters, enabling more efficient traffic management.
 
-These tags are reserved, which means that you can't customize them. However, you can use the tags to create different custom rules for managing traffic to your endpoints. 
+These tags are reserved and can't be customized, but they can be used to create custom rules for managing traffic to specific endpoints.
 
-Here's the list of reserved tags applicable only for the API protection: 
+The following reserved tags apply to API protection:
 
-  * API Privileged Access
-  * API Admin Access
-  * Indicate API Privileged User
-  * Indicate API Admin User
-  * Ignore Email Address Detection
-  * Ignore Phone Number Detection
-  * Auth Endpoint
-  * Ignore CCN Detection
-  * Ignore SSN Detection
+- API Privileged Access
+- API Admin Access
+- Indicate API Privileged User
+- Indicate API Admin User
+- Ignore Email Address Detection
+- Ignore Phone Number Detection
+- Auth Endpoint
+- Ignore CCN Detection
+- Ignore SSN Detection
 
-
-
-These tags can be added to your API endpoints either via the [API Discovery](/waap/api-discovery-and-protection/api-discovery) feature or by using [custom rules](/waap/waap-rules/custom-rules).
+Add these tags to API endpoints via the [API Discovery](/waap/api-discovery-and-protection/api-discovery) feature or [custom rules](/waap/waap-rules/custom-rules).
 
 ## Configure API protection
 
-The following steps will guide you through the process of protecting your endpoints from unauthorized access. 
-
-After you complete the steps, it's important to enable the relevant policies within the [Advanced API protection](/waap/waap-policies/advanced-api-protection) policy group to make sure everything is set up correctly. 
+API endpoint protection requires three coordinated actions: tagging endpoints by access level, defining matching user role rules, and enabling the [API Protection](/waap/api-protection) policies.
 
 <Info>
-**Info**
-
-To ensure that your APIs are fully protected, enable the [API Discovery](/waap/api-discovery-and-protection/api-discovery) feature or manually add your endpoints to the [API base path](/waap/api-discovery-and-protection/configure-api-base-path) so that WAAP correctly recognizes these endpoints as associated with your domain.
+For WAAP to correctly identify and protect API endpoints, either enable [API Discovery](/waap/api-discovery-and-protection/api-discovery) or manually add the endpoints to an [API base path](/waap/api-discovery-and-protection/configure-api-base-path).
 </Info>
 
 ### Step 1. Group endpoints based on their access levels
 
-The first step in API protection is to categorize your endpoints based on their authorization levels: 
+Categorize API endpoints by authorization level:
 
-  * **Admin** : Endpoints that can only be accessed by admin users.
-  * **Privileged** : Endpoints that can be accessed by privileged users and admins.
-  * **Non-privileged** : Endpoints accessible to users with no permissions.
+- **Admin**: Endpoints accessible only to admin users.
+- **Privileged**: Endpoints accessible to privileged users and admins.
+- **Non-privileged**: Endpoints accessible to users without elevated permissions.
 
+Custom rules automatically mark endpoints with access tags such as **API Admin Access** or **API Privileged Access**.
 
+When creating a rule, specify secure conditions such as client IP or a specific HTTP response header. Avoid conditions that are easy to spoof, such as the User-agent header.
 
-You can control access to endpoints by creating custom rules that will automatically mark endpoints with tags, like **API Admin Access** or **API Privileged Access**.
+For example, restrict access to admin endpoints so only users with a valid bearer token in the authorization header can interact with admin APIs.
 
-When creating a rule, make sure that you specify secure conditions, such as client IP or specific HTTP response header. Avoid conditions that are easy to spoof, like the User-agent header. 
+To create the rule:
 
-For example, you can create a rule that restricts access to admin endpoints. Only users with a valid bearer token in the authorization header will be able to interact with admin APIs. 
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Custom Rules**.
 
-To create the rule: 
+2. Click **Add custom rule**.
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
+3. Give the rule a name.
 
+4. In the **IF** section, select **Header**.
 
-<Frame>![Domains page in the Customer Portal](/images/docs/waap/getting-started/configure-waap-for-a-domain/domains-waap-page.png)</Frame>
+5. In the **Header key** field, enter `Authorization`. This means that an admin user has to be authenticated to access the endpoint.
 
+6. In the next dropdown, select **-** to apply the rule only to the specified condition.
 
+7. Select **Contains** as the match criteria to apply the rule even when a request header partly matches the specified one.
 
-2\. Find the needed domain and click its name to open it. You'll be directed to the **Overview** page.
+8. Enter `Bearer` as the header value to require an authorization token on each request that attempts to access admin API endpoints.
 
-3\. In the sidebar, click **WAAP rules** > **Add a custom rule**. 
+9. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria.
 
-4\. Give your rule a name. 
+10. In the next dropdown, select the relevant reserved tag:
 
-5\. (Optional) Add a description to provide more context about the rule. 
+   * **API Privileged Access**: This tag grants permission to reach any privileged API endpoint.
 
-6\. In the **IF** section, select **Header**. 
+   * **API Admin Access**: This tag allows interaction with all API endpoints. In the current rule example, select this tag.
 
-7\. In the **Header key** field, enter **Authorization**. This means that an admin user has to be authenticated to access the endpoint. 
+<Frame>![Custom rule configured to set up privileged API access](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-access-APIs-2.png)</Frame>
 
-8\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+11. Click **Save** to create the rule.
 
-9\. Define match criteria. Select **Contains** to apply the rule even when a request header partly matches the specified one. 
-
-10\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access admin API endpoints. 
-
-11\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria. 
-
-12\. In the next dropdown, select the relevant reserved tag: 
-
-  * **API Privileged Access** : This tag grants permission to reach any privileged API endpoint. 
-
-  * **API Admin Access** : This tag allows interaction with all API endpoints. In the current rule example, choose this tag.
-
-
-
-<Frame>![A custom rule to set up privileged API access](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-access-APIs.png)</Frame>
-
-
-
-13\. Click **Save** to create the rule. 
-
-All requests from authorized users with relevant permissions can now reach the admin API endpoints. 
+All requests from authorized users with relevant permissions can now reach the admin API endpoints.
 
 ### Step 2. Define user roles that can access endpoints
 
-After you define access levels for API endpoints, you need to configure which users can interact with those endpoints. To do so, create a new custom rule for each user type. 
+After defining access levels for endpoints, create a custom rule for each user type to specify which users can interact with those endpoints.
 
-For example, create a rule that identifies a request as coming from an admin user if the request contains a valid bearer token in the authorization header. 
+For example, create a rule that identifies admin requests by checking for a valid bearer token in the authorization header.
 
 <Tip>
-**Tip**
-
-It's a good practice to add multiple conditions to custom rules. Complex rules are harder to bypass and more nuanced, which reduces the probability of false positives.
+Adding multiple conditions to custom rules makes them harder to bypass and reduces false positives.
 </Tip>
 
-To create the rule: 
+To create the rule:
 
-1\. On the **WAAP Rules** page, click **Add a custom rule**. 
+1. On the **WAAP Rules** page, click **Add custom rule**.
 
-2\. Give your rule a name. 
+2. Give the rule a name.
 
-3\. (Optional) Add a description to provide more context about the rule. 
+3. In the **IF** section, select **Header**.
 
-4\. In the **IF** section, select **Header**. 
+4. In the **Header key** field, enter `Authorization`. This means that the user has to be authenticated to access the endpoint.
 
-5\. In the **Header key** field, enter **Authorization**. This means that the user has to be authenticated to access the endpoint. 
+5. In the next dropdown, select **-** to apply the rule only to the specified condition.
 
-6\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+6. Select **Contains** as the match criteria to apply the rule even when a request header partly matches the specified one.
 
-7\. Define match criteria. Select **Contains** to apply the rule even when a request header partly matches the specified one. 
+7. Enter `Bearer` as the header value to require an authorization token on each request that attempts to access admin API endpoints.
 
-8\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access admin API endpoints. 
+8. Select another condition in the **AND** section:
 
-9\. Select another condition in the **AND** section: 
+   * Select **Header** as the condition type.
+   * In the **Header key** field, enter `X-Admin-User`.
+   * Select **Contains** as the match criteria.
+   * Enter `Token` as the header value.
 
-  * In the **IF** section, select **Header**. 
-  * In the **Header key** field, enter the relevant value: **X-Admin-User**
-  * Select **Contains** as a match criteria. 
-  * Provide **Token** as a header value.
+9. In the **THEN** section, select the **Tag** action.
 
+10. In the next dropdown, select the relevant reserved tag:
 
+   * **Indicate API Admin User**: Requests from these users will reach any API endpoint. In the current rule example, select this tag.
+   * **Indicate API Privileged User**: Requests from these users will reach privileged endpoints.
 
-10\. In the **THEN** section, select the **Tag** action.
+<Frame>![Custom rule configured to identify privileged users](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-users-2.png)</Frame>
 
-11\. In the next dropdown, select the relevant reserved tag: 
+11. Click **Save** to create the rule.
 
-  * **Indicate API Admin User** : Requests from these users will reach any API endpoint. In the current rule example, choose this tag.
-  * **Indicate API Privileged User** : Requests from these users will reach privileged endpoints.
-
-
-<Frame>![A custom rule to create privileged users](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-users.png)</Frame>
-
-
-
-12\. Click **Save** to create the rule. 
-
-All authorized requests that contain the X-Admin-User token can now reach the admin API endpoints. 
+All authorized requests that contain the `X-Admin-User` token can now reach the admin API endpoints.
 
 ### Step 3 (optional). Configure additional API protection settings
 
-Additionally, you can configure the following security settings for your APIs. 
+The following optional settings provide additional API protection.
 
 #### Auth token protection
 
-As an additional API protection measure, you can tag the following OAuth endpoints: oauth/token, oauth2/token, and oauth2/v1/token. Protecting authentication token endpoints helps you secure APIs against unauthorized access, token theft, or brute force attacks. 
+Tag the following OAuth endpoints to protect authentication flows: `oauth/token`, `oauth2/token`, and `oauth2/v1/token`. Protecting these endpoints secures APIs against unauthorized access, token theft, and brute force attacks.
 
-Our heuristic mechanism automatically detects and protects Auth token endpoints. For additional customization, you can manually tag Auth endpoints via custom rules. 
+A heuristic mechanism automatically detects and protects Auth token endpoints. For additional customization, manually tag Auth endpoints via custom rules.
 
-This will help our system apply more rigorous monitoring and protection in response to such events as multiple failed login attempts, requests with unauthorized tokens, and multiple requests to forbidden paths. 
+This enables more rigorous monitoring and protection for events such as multiple failed login attempts, requests with unauthorized tokens, and repeated requests to forbidden paths.
 
-To tag the endpoints, create the following custom rule: 
+To tag the endpoints, create the following custom rule:
 
-1\. Navigate to the **WAAP Rules** page and click **Add a custom rule**. 
+1. Navigate to **WAAP** > **Custom Rules** and click **Add custom rule**.
 
-2\. Give your rule a name. 
+2. Give the rule a name.
 
-3\. (Optional) Add a description to provide more context about the rule. 
+3. In the **IF** section, select **URL**.
 
-4\. In the **IF** section, select **URL**. 
+4. In the next dropdown, select **-** to apply the rule only to the specified condition.
 
-5\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+5. Select **Equals** as the match criteria to apply the rule when the URL exactly matches the specified one.
 
-6\. Define match criteria. Select **Equals** to apply the rule when the URL exactly matches the specified one. 
+6. Enter the relevant endpoint.
 
-7\. Enter the relevant endpoint. 
+7. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria.
 
-8\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria. 
+8. Select the **Auth Endpoint** reserved tag.
 
-9\. In the next dropdown, select **Auth Endpoint** reserved tag.
+<Frame>![Custom rule configured to protect an Auth endpoint](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/auth-endpoint-2.png)</Frame>
 
-
-<Frame>![A custom rule to protect Auth endpoint](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/auth-endpoint.png)</Frame>
-
-
-
-10\. Click **Save** to create the rule. 
+9. Click **Save** to create the rule.
 
 #### Ignore sensitive data exposure detection
 
-You can notify the WAAP of any legitimate exposure of personally identifiable information (PII) in a request's response, such as social security numbers, credit card numbers, emails, and phone numbers. You can also exclude the request from being affected by the sensitive data exposure policy, which encompasses broader sensitive data exposures like confidential organizational data or code leaks.
+Use tags to notify WAAP of legitimate PII exposure in request responses — such as social security numbers, credit card numbers, email addresses, and phone numbers — or to exclude requests from the [data exposure](/waap/waap-policies/waf-and-owasp-top-threats) policy, which covers broader exposures such as confidential organizational data and code leaks.
 
-Check our [WAF and OWASP top threats](/waap/waap-policies/waf-and-owasp-top-threats) policy group for details.
+This lets legitimate resources collect user information without triggering WAAP interruptions while keeping sensitive data leakage protection active. Ignore rules also reduce false positives, preventing WAAP from blocking requests to specific endpoints.
 
-This means that you can still benefit from the protection of sensitive data leakage while allowing legitimate resources to collect user information without being interrupted by WAAP. 
+For instance, create the following rule to ignore data collection during the checkout process:
 
-Setting up rules to ignore sensitive data can also prevent false positives and ensure that WAAP doesn't interrupt requests to certain endpoints. 
+1. Navigate to **WAAP** > **Custom Rules** and click **Add custom rule**.
 
-For instance, create the following rule to ignore data collection during the checkout process: 
+2. Give the rule a name.
 
-1\. Navigate to the **WAAP Rules** page and click **Add a custom rule**. 
+3. In the **IF** section, select **URL**.
 
-2\. Give your rule a name. 
+4. In the next dropdown, select **-** to apply the rule only to the specified condition.
 
-3\. (Optional) Add a description to provide more context about the rule. 
+5. Select **Contains** as the match criteria to apply the rule when the URL partially matches the specified one.
 
-4\. In the **IF** section, select **URL**. 
+6. Enter the relevant endpoint. In this example, `/url/order/checkout`.
 
-5\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+7. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria.
 
-6\. Define match criteria. Select **Contains** to apply the rule when the URL partially matches the specified one. 
+8. Select the **Ignore Phone Number Detection** and **Ignore Email Address Detection** tags.
 
-7\. Enter the relevant endpoint. In this example, /url/order/checkout. 
+<Frame>![Custom rule configured to ignore sensitive data detection](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/ignore-sde-detection-2.png)</Frame>
 
-8\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria. 
+9. Click **Save** to create the rule.
 
-9\. In the next dropdown, select the **Ignore Phone Number Detection** and **Ignore Email Address Detection** tags. 
+### Step 4. Enable API protection policies
 
+After adding access tags to restricted API endpoints and configuring user roles, enable the relevant [API Protection](/waap/api-protection) policies.
 
-<Frame>![A custom rule to ignore SDE detection](/images/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/ignore-sde-detection.png)</Frame>
+<Frame>![API Protection page showing the available protection policies](/images/docs/waap/waap-policies/advanced-api-protection/advanced-api-protection-2.png)</Frame>
 
-
-
-10\. Click **Save** to create the rule. 
-
-### Step 4. Enable advanced API protection
-
-After you add access tags to restricted API endpoints and configure user roles, enable the relevant [Advanced API protection](/waap/waap-policies/advanced-api-protection) policies. 
-
-
-<Frame>![WAAP policies page with the highlighted advanced AIP protection policy](/images/docs/waap/waap-policies/advanced-api-protection/advanced-api-protection.png)</Frame>
-
-
-
-This is necessary to ensure that only users with admin and privileged roles will be able to interact with those API endpoints after logging in. 
+With these policies enabled, only users with admin and privileged roles can interact with those endpoints after logging in.
 
 <Info>
-**Info**
-
-Admin users can access any endpoint, so it's important to define users with admin roles.
+Admin users can access any endpoint, so define which users hold admin roles before enabling the policies.
 </Info>
 
-After the policy is enabled, WAAP will block any requests that don't have the correct user tag.
+After the policy is enabled, WAAP blocks any request that doesn't carry the correct user tag.
