@@ -1,7 +1,7 @@
 ---
 title: Managing buckets
 sidebarTitle: Manage buckets
-ai-navigation: Create and manage S3 buckets via Customer Portal or REST API - configure CORS, public access, and lifecycle policies for automatic object deletion.
+ai-navigation: Create and manage S3 buckets via Customer Portal, REST API, or Terraform - configure CORS, public access, and lifecycle policies for automatic object deletion.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -622,6 +622,83 @@ export STORAGE_ID="{YOUR_STORAGE_ID}"
     Returns HTTP 204 with no response body.
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare S3 buckets with CORS rules, public access policy, and lifecycle settings using the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create bucket
+
+<p>Declares a bucket in an existing S3 storage. CORS rules, public access, and lifecycle policy are optional — omit any block to leave that setting unconfigured.</p>
+
+```hcl
+resource "gcore_storage_object_storage_bucket" "example" {
+  storage_id = var.storage_id
+  name       = "my-bucket"
+
+  cors = {
+    allowed_origins = ["https://portal.gcore.com"]
+  }
+
+  policy = {
+    is_public = false
+  }
+
+  storage_object_storage_bucket_lifecycle = {
+    expiration_days = 30
+  }
+}
+
+variable "storage_id" {
+  type = number
+}
+```
+
+```bash
+terraform apply
+```
+
+## Update bucket settings
+
+<p>Edit any field in the resource block and run `terraform apply`. To remove the lifecycle policy, omit the `storage_object_storage_bucket_lifecycle` attribute.</p>
+
+```hcl
+resource "gcore_storage_object_storage_bucket" "example" {
+  storage_id = var.storage_id
+  name       = "my-bucket"
+
+  cors = {
+    allowed_origins = ["https://portal.gcore.com", "https://example.com"]
+  }
+
+  policy = {
+    is_public = true
+  }
+
+  # Omit storage_object_storage_bucket_lifecycle to remove the lifecycle policy
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete bucket
+
+<p>Remove the resource block — Terraform deletes the bucket and all its objects on the next apply.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_storage_object_storage_bucket" "example" {
+#   storage_id = var.storage_id
+#   name       = "my-bucket"
+# }
+```
+
+```bash
+terraform apply
+```
 
   </MethodSection>
 </MethodSwitch>
