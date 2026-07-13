@@ -1,7 +1,7 @@
 ---
 title: SSH key management for SFTP storage
 sidebarTitle: SSH keys
-ai-navigation: Create and assign SSH keys for SFTP storage authentication via Customer Portal or REST API - add, list, and delete keys, then link them to storage.
+ai-navigation: Create and assign SSH keys for SFTP storage authentication via Customer Portal, REST API, or Terraform - add, list, and delete keys, then link them to storage.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -322,6 +322,67 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     Returns HTTP 204 with no response body.
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare SSH keys for SFTP storage authentication using the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Add an SSH key
+
+<p>Registers a public key in the account-level registry. Supported formats are `ssh-rsa` and `ssh-ed25519`. Changing the key name recreates the resource — the old key is deleted and a new one is created in its place.</p>
+
+```hcl
+resource "gcore_storage_ssh_key" "example" {
+  name       = "my-ssh-key"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host"
+}
+
+output "ssh_key_id" {
+  value = gcore_storage_ssh_key.example.id
+}
+
+# terraform import gcore_storage_ssh_key.example '<ssh_key_id>'
+```
+
+```bash
+terraform apply
+```
+
+## Assign keys to SFTP storage
+
+<p>Pass key IDs in the `ssh_key_ids` attribute of a `gcore_storage_sftp` resource. The list replaces all existing assignments — include every key that should remain active. Up to five keys are allowed per storage.</p>
+
+```hcl
+resource "gcore_storage_sftp" "example" {
+  location_name = "ams"
+  name          = "my-sftp-storage"
+  password_mode = "none"
+  ssh_key_ids   = [gcore_storage_ssh_key.example.id]
+}
+```
+
+```bash
+terraform apply
+```
+
+<p>To remove all key assignments, set `ssh_key_ids = []` and apply.</p>
+
+## Delete an SSH key
+
+<p>Remove the resource block — Terraform deletes the key from the account registry on the next apply. Keys assigned to any SFTP storage are automatically unlinked before deletion.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_storage_ssh_key" "example" {
+#   name       = "my-ssh-key"
+#   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... user@host"
+# }
+```
+
+```bash
+terraform apply
+```
 
   </MethodSection>
 </MethodSwitch>
