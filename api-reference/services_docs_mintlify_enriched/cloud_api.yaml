@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 10d059796d11
+  version: 17ccf04e2042
 servers:
 - url: https://api.gcore.com
 paths:
@@ -9669,6 +9669,33 @@ paths:
           format: uuid4
           title: Cluster Id
           type: string
+      - in: query
+        name: limit
+        required: false
+        description: Limit of items on a single page
+        schema:
+          default: 1000
+          description: Limit of items on a single page
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        description: Offset in results list
+        schema:
+          default: 0
+          description: Offset in results list
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
+          type: integer
       responses:
         '200':
           description: OK
@@ -19177,33 +19204,35 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Dict of exceeding quotas
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegionalDiffQuotasSchema'
-        '400':
-          description: Invalid parameter in request
-        '404':
-          description: Keypair or other mandatory resource was not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFoundErrorSchema'
+                $ref: '#/components/schemas/RegionRequestedQuotasSerializer'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CheckQuotaBeforeInstanceCreatingSchema'
+              $ref: '#/components/schemas/CheckQuotaBeforeInstanceCreatingSerializer'
       tags:
       - Instances
   /cloud/v2/pricing/{project_id}/{region_id}/instances:
@@ -47661,68 +47690,43 @@ components:
       - containers
       title: CheckQuotaBeforeInferenceCreationSerializer
       type: object
-    CheckQuotaBeforeInstanceCreatingSchema:
-      type: object
+    CheckQuotaBeforeInstanceCreatingSerializer:
       properties:
         flavor:
+          description: Instance flavor name.
+          example: g1-standard-1-2
+          examples:
+          - g1-standard-1-2
+          title: Flavor
           type: string
         interfaces:
+          description: Subnet IPs and floating IPs.
+          items:
+            $ref: '#/components/schemas/_CheckLimitsInterfaceSerializer'
+          title: Interfaces
           type: array
-          description: Subnet IPs and floating IPs
+        name_templates:
+          description: List of instance name templates. Either this or `names` must be specified.
           items:
             anyOf:
-            - $ref: '#/components/schemas/NewInterfaceExternalSchema'
-            - $ref: '#/components/schemas/NetworkSubnetFipSchema'
-            - $ref: '#/components/schemas/NetworkAnySubnetFipSchema'
-            - $ref: '#/components/schemas/ReservedFixedIpFipSchema'
-        name_templates:
+            - type: string
+            - type: 'null'
+          title: Name Templates
           type: array
-          description: List of instance name templates. Either this or names must be specified.
-          items:
-            type:
-            - string
-            - 'null'
         names:
-          type: array
           description: List of instance names. Either this or `name_templates` must be specified.
           items:
             type: string
-        volumes:
+          title: Names
           type: array
-          items:
-            $ref: '#/components/schemas/LegacyCreateInstanceVolumePricingRequestSchema'
-      example:
-        flavor: g1-standard-1-2
-        interfaces:
-        - floating_ip:
-            source: new
-          network_id: ddc28e44-2acb-499b-985b-831f29432e1c
-          subnet_id: 2731a56e-a5c9-44be-80c2-02c57c594573
-          type: subnet
-        - floating_ip:
-            existing_floating_id: 57be69f6-6f6a-4f03-a4ad-8eb86c69ec0a
-            source: existing
-          network_id: 53609647-2619-420a-b046-59905c8e3370
-          subnet_id: e3c6ee77-48cb-416b-b204-11b492cc776e3
-          type: subnet
-        - network_id: 783b36b4-3ef4-48ac-879d-5b3ea53180d8
-          subnet_id: 382a83e5-1b38-49f9-bd83-730353b29ed4
-          type: subnet
-        - network_id: 783b36b4-3ef4-48ac-879d-5b3ea53180d8
-          type: any_subnet
-        - type: external
-        names:
-        - cirroz1
-        - cirroz2
         volumes:
-        - size: 10
-          source: image
-          type_name: ssd_hiiops
-        - size: 5
-          source: new-volume
-          type_name: standard
-        - snapshot_id: 7cca40d7-a843-4e9f-ae08-62b9a394b1ab
-          source: snapshot
+          description: List of volumes.
+          items:
+            $ref: '#/components/schemas/InstanceVolumePricingRequestSerializer'
+          title: Volumes
+          type: array
+      title: CheckQuotaBeforeInstanceCreatingSerializer
+      type: object
     CheckQuotaBeforeLoadbalancerCreationPydanticSerializer:
       properties:
         floating_ip:
@@ -52792,6 +52796,7 @@ components:
           examples:
           - 5
           maximum: 2147483
+          minimum: 0
           title: Timeout
           type: integer
         type:
@@ -63084,6 +63089,14 @@ components:
       - ipv6
       title: InterfaceIPFamily
       type: string
+    Interfaces:
+      enum:
+      - any_subnet
+      - external
+      - reserved_fixed_ip
+      - subnet
+      title: Interfaces
+      type: string
     IpAssignmentRequestSerializer:
       properties:
         ip_address:
@@ -66606,6 +66619,7 @@ components:
           examples:
           - 5
           maximum: 2147483
+          minimum: 0
           title: Timeout
           type: integer
         type:
@@ -67320,41 +67334,6 @@ components:
       - type
       title: LbSessionPersistence
       type: object
-    LegacyCreateInstanceVolumePricingRequestSchema:
-      type: object
-      properties:
-        size:
-          type: integer
-          description: Volume size in GiB
-        snapshot_id:
-          type: string
-          description: Snapshot ID. Mandatory if volume is created from a snapshot
-        source:
-          type: string
-          enum:
-          - apptemplate
-          - existing-volume
-          - image
-          - new-volume
-          - snapshot
-          description: 'One of: ''new-volume'', ''image'', ''snapshot'', ''apptemplate'''
-        type_name:
-          type: string
-          enum:
-          - cold
-          - ssd_hiiops
-          - ssd_local
-          - ssd_lowlatency
-          - standard
-          - ultra
-          description: One of 'standard', 'ssd_hiiops', 'cold', 'ultra'
-      required:
-      - source
-      description: Schema lists only the fields required to calculate price
-      example:
-        size: 1000
-        source: new-volume
-        type_name: standard
     LegacyGPUClusterPricingPreviewRequestSerializer:
       description: Pricing schema for AI cluster creation with detailed prices per category
       example: &id182
@@ -69659,52 +69638,6 @@ components:
       - namespace
       title: NamespacedName
       type: object
-    NetworkAnySubnetFipSchema:
-      type: object
-      properties:
-        floating_ip:
-          description: Floating IP config for this subnet attachment
-          allOf:
-          - $ref: '#/components/schemas/NewInterfaceFloatingIpSchema'
-        interface_name:
-          type: string
-          maxLength: 37
-          description: Interface name
-        ip_address:
-          type: string
-          description: Fixed IP address
-        ip_family:
-          type: string
-          enum:
-          - dual
-          - ipv4
-          - ipv6
-          description: 'Which subnets should be selected: IPv4, IPv6 or use dual stack.'
-        network_id:
-          type: string
-          description: Network ID the subnet belongs to. Port will be plugged in this network
-        port_group:
-          type: integer
-          minimum: 0
-          maximum: 3
-          description: Each group will be added to the separate trunk.
-        type:
-          type: string
-          default: any_subnet
-          description: '''any_subnet''. Instance will be attached to a subnet with the largest count of free ips. Floating IP will be created and attached to that IP'
-      required:
-      - network_id
-      description: |-
-        Instance will be attached to a subnet with the largest count of free ips.
-        Floating IP will be created and attached to that IP
-      example:
-        floating_ip:
-          existing_floating_id: 57be69f6-6f6a-4f03-a4ad-8eb86c69ec0a
-          source: existing
-        ip_address: 192.168.6.9
-        network_id: 59905c8e-2619-420a-b046-536096473370
-        type: any_subnet
-        interface_name: my-any-subnet-interface
     NetworkCollectionSerializer:
       properties:
         count:
@@ -70046,43 +69979,6 @@ components:
       - port_security_enabled
       title: NetworkSerializer
       type: object
-    NetworkSubnetFipSchema:
-      type: object
-      properties:
-        floating_ip:
-          description: Floating IP config for this subnet attachment
-          allOf:
-          - $ref: '#/components/schemas/NewInterfaceFloatingIpSchema'
-        interface_name:
-          type: string
-          maxLength: 37
-          description: Interface name
-        network_id:
-          type: string
-          description: Network ID the subnet belongs to. Port will be plugged in this network
-        port_group:
-          type: integer
-          minimum: 0
-          maximum: 3
-          description: Each group will be added to the separate trunk.
-        subnet_id:
-          type: string
-          description: Port is assinged an IP address from this subnet
-        type:
-          type: string
-          default: subnet
-          description: '''subnet''. Instance will be attached to specified subnet, and floating IP can be created and attached to this IP'
-      required:
-      - network_id
-      - subnet_id
-      description: Instance will be attached to specified subnet, and floating IP can be created and attached to this IP
-      example:
-        floating_ip:
-          existing_floating_id: 57be69f6-6f6a-4f03-a4ad-8eb86c69ec0a
-          source: existing
-        network_id: 59905c8e-2619-420a-b046-536096473370
-        subnet_id: e3c6ee77-48cb-416b-b204-11b492cc776e3
-        type: subnet
     NetworkSubnetworkCollectionSerializer:
       properties:
         count:
@@ -70492,33 +70388,6 @@ components:
         ddos_profile:
           profile_template: 29
           fields: []
-    NewInterfaceExternalSchema:
-      type: object
-      properties:
-        interface_name:
-          type: string
-          maxLength: 37
-          description: Interface name
-        ip_family:
-          type: string
-          enum:
-          - dual
-          - ipv4
-          - ipv6
-          description: 'Which subnets should be selected: IPv4, IPv6 or use dual stack.'
-        port_group:
-          type: integer
-          minimum: 0
-          maximum: 3
-          description: Each group will be added to the separate trunk.
-        type:
-          type: string
-          default: external
-          description: Must be 'external'. Union tag
-      description: Instance will be attached to default external network
-      example:
-        type: external
-        ip_family: dual
     NewInterfaceExternalSerializerPydantic:
       description: Instance will be attached to default external network
       example: &id201
@@ -70574,21 +70443,6 @@ components:
       - source
       title: NewInterfaceFloatingIpPydanticSerializer
       type: object
-    NewInterfaceFloatingIpSchema:
-      type: object
-      properties:
-        existing_floating_id:
-          type: string
-          description: If source is 'existing', existing floating IP ID must be specified
-        source:
-          type: string
-          enum:
-          - existing
-          - new
-          description: Will the floating for this subnet's IP be created or reused?
-      required:
-      - source
-      description: NewInterfaceFloatingIpSerializer schema
     NewInterfaceReservedFixedIpFipSerializerPydantic:
       example: &id202
         floating_ip:
@@ -71586,6 +71440,7 @@ components:
           examples:
           - 5
           maximum: 2147483
+          minimum: 0
           title: Timeout
           type: integer
         type:
@@ -78683,40 +78538,6 @@ components:
       - attachments
       title: ReservedFixedIPSerializer
       type: object
-    ReservedFixedIpFipSchema:
-      type: object
-      properties:
-        floating_ip:
-          description: Floating IP config for this subnet attachment
-          allOf:
-          - $ref: '#/components/schemas/NewInterfaceFloatingIpSchema'
-        interface_name:
-          type: string
-          maxLength: 37
-          description: Interface name
-        port_group:
-          type: integer
-          minimum: 0
-          maximum: 3
-          description: Each group will be added to the separate trunk.
-        port_id:
-          type: string
-          description: Network ID the subnet belongs to. Port will be plugged in this network
-        type:
-          type: string
-          default: reserved_fixed_ip
-          description: '''reserved_fixed_ip''. Instance will be attached to the given port. Floating IP will be created and attached to that IP'
-      required:
-      - port_id
-      description: |-
-        Instance will be attached to the given port.
-        Floating IP will be created and attached to that IP
-      example:
-        floating_ip:
-          source: new
-        port_id: 59905c8e-2619-420a-b046-536096473370
-        type: reserved_fixed_ip
-        interface_name: my-rfip-interface
     ResizeAIClusterGPUSerializerV1:
       properties:
         instances_count:
@@ -95772,6 +95593,64 @@ components:
       - RUSSIA_AND_CIS
       title: Zone
       type: string
+    _CheckLimitsInterfaceSerializer:
+      properties:
+        floating_ip:
+          $ref: '#/components/schemas/_FloatingIp'
+          examples:
+          - existing_floating_id: c64e5db1-5f1f-43ec-a8d9-5090df85b82d
+            source: existing
+        ip_family:
+          anyOf:
+          - $ref: '#/components/schemas/InterfaceIPFamily'
+          - type: 'null'
+          default: null
+        network_id:
+          example: ddc28e44-2acb-499b-985b-831f29432e1c
+          examples:
+          - ddc28e44-2acb-499b-985b-831f29432e1c
+          format: uuid4
+          title: Network Id
+          type: string
+        port_id:
+          example: ff83e13a-b256-4be2-ba5d-028d3f0ab450
+          examples:
+          - ff83e13a-b256-4be2-ba5d-028d3f0ab450
+          format: uuid4
+          title: Port Id
+          type: string
+        subnet_id:
+          example: 2731a56e-a5c9-44be-80c2-02c57c594573
+          examples:
+          - 2731a56e-a5c9-44be-80c2-02c57c594573
+          format: uuid4
+          title: Subnet Id
+          type: string
+        type:
+          $ref: '#/components/schemas/Interfaces'
+          examples:
+          - subnet
+      required:
+      - type
+      title: _CheckLimitsInterfaceSerializer
+      type: object
+    _FloatingIp:
+      properties:
+        existing_floating_id:
+          example: 57be69f6-6f6a-4f03-a4ad-8eb86c69ec0a
+          examples:
+          - 57be69f6-6f6a-4f03-a4ad-8eb86c69ec0a
+          format: uuid4
+          title: Existing Floating Id
+          type: string
+        source:
+          $ref: '#/components/schemas/FloatingIpSource'
+          examples:
+          - existing
+      required:
+      - source
+      title: _FloatingIp
+      type: object
   securitySchemes:
     APIKey:
       description: |-
