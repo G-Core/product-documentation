@@ -666,6 +666,7 @@ sentence before the next code block or table.
 - Keep column headers short
 - Row labels in the first column: plain text, no bold
 - Every table needs a real intro sentence — not one that just restates what the table shows
+- **No terminal period in table cell descriptions.** Single-sentence descriptions in reference tables (field definitions, parameter lists, option lists) do not end with a period. Multi-sentence descriptions use periods between sentences but omit the final period.
 
 ---
 
