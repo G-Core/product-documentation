@@ -50,8 +50,11 @@ MDX_TO_IMAGE_PRODUCT: dict[str, str] = {v: k for k, v in PRODUCT_FOLDER_MAP.item
 # Regex patterns to extract image paths from MDX content.
 _IMAGE_REF_PATTERNS = [
     re.compile(r'!\[[^\]]*\]\((/images/docs/[^)\s"\']+)\)'),        # ![alt](/images/...)
-    re.compile(r'src=["\']([^"\']*?/images/docs/[^"\']+)["\']'),    # src="/images/..."
-    re.compile(r'href=["\']([^"\']*?/images/docs/[^"\']+)["\']'),   # href="/images/..."
+    # Any JSX/HTML attribute value, e.g. src="...", href="...", icon="...",
+    # img="...". Covers Mintlify components (Card icon, etc.) as well as
+    # plain HTML, so image paths referenced via component props aren't
+    # mistaken for orphaned files and deleted.
+    re.compile(r'\w+=["\']([^"\']*?/images/docs/[^"\']+)["\']'),
 ]
 
 
