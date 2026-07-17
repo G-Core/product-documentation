@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 17ccf04e2042
+  version: 0a145a260ef0
 servers:
 - url: https://api.gcore.com
 paths:
@@ -18188,22 +18188,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          example: bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          examples:
+          - bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Created task
+          description: OK
           content:
             application/json:
               schema:
@@ -18212,18 +18228,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-              - $ref: '#/components/schemas/NewInterfaceExternalExtendSchemaWithDdos'
-              - $ref: '#/components/schemas/NewInterfaceSpecificSubnetSchema'
-              - $ref: '#/components/schemas/NewInterfaceAnySubnetSchema'
-              - $ref: '#/components/schemas/NewInterfaceReservedFixedIpSchema'
-              discriminator:
-                propertyName: type
-                mapping:
-                  external: '#/components/schemas/NewInterfaceExternalExtendSchemaWithDdos'
-                  subnet: '#/components/schemas/NewInterfaceSpecificSubnetSchema'
-                  any_subnet: '#/components/schemas/NewInterfaceAnySubnetSchema'
-                  reserved_fixed_ip: '#/components/schemas/NewInterfaceReservedFixedIpSchema'
+              $ref: '#/components/schemas/AttachInterfaceBodySerializer'
       tags:
       - Instances
       x-codeSamples:
@@ -18506,22 +18511,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          example: bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          examples:
+          - bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          format: uuid4
+          title: Instance Id
           type: string
       responses:
         '200':
-          description: Created task
+          description: OK
           content:
             application/json:
               schema:
@@ -18530,7 +18551,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PortIdWithIpSchema'
+              $ref: '#/components/schemas/DetachInterfaceBodySerializer'
       tags:
       - Instances
       x-codeSamples:
@@ -18683,38 +18704,69 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: instance_id
         required: true
         description: Instance ID
         schema:
+          description: Instance ID
+          example: bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          examples:
+          - bf325375-9af6-4c8b-a2fc-7f6f4ca02e2e
+          format: uuid4
+          title: Instance Id
           type: string
       - in: query
         name: limit
         required: false
         description: Limit the number of returned items
         schema:
+          default: 1000
+          description: Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
           type: integer
       - in: query
         name: offset
         required: false
         description: Offset value is used to exclude the first set of records from the result
         schema:
+          default: 0
+          description: Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
           type: integer
       responses:
         '200':
-          description: List of instance network interfaces
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InstanceInterfaceTrunkCollectionSerializer'
+                $ref: '#/components/schemas/InstanceInterfaceMixedCollectionSerializer'
       tags:
       - Instances
       x-codeSamples:
@@ -44650,6 +44702,264 @@ components:
       - assignment_id
       title: AssignmentSerializer
       type: object
+    AttachInterfaceAnySubnetRequestSerializer:
+      properties:
+        ddos_profile:
+          anyOf:
+          - $ref: '#/components/schemas/AttachInterfaceDdosProfileSerializer'
+          - type: 'null'
+          default: null
+          description: Advanced DDoS protection.
+        interface_name:
+          anyOf:
+          - maxLength: 37
+            type: string
+          - type: 'null'
+          default: null
+          description: Interface name.
+          title: Interface Name
+        ip_family:
+          anyOf:
+          - $ref: '#/components/schemas/InterfaceIPFamily'
+          - type: 'null'
+          default: null
+        network_id:
+          description: Port will get an IP address in this network subnet.
+          format: uuid4
+          title: Network Id
+          type: string
+        port_group:
+          default: 0
+          description: Each group will be added to a separate trunk.
+          example: 0
+          examples:
+          - 0
+          maximum: 3
+          minimum: 0
+          title: Port Group
+          type: integer
+        security_groups:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+            type: array
+          - type: 'null'
+          default: null
+          description: List of security group IDs.
+          title: Security Groups
+        type:
+          const: any_subnet
+          default: any_subnet
+          title: Type
+          type: string
+      required:
+      - network_id
+      title: AttachInterfaceAnySubnetRequestSerializer
+      type: object
+    AttachInterfaceBodySerializer:
+      discriminator:
+        mapping:
+          any_subnet: '#/components/schemas/AttachInterfaceAnySubnetRequestSerializer'
+          external: '#/components/schemas/AttachInterfaceExternalRequestSerializer'
+          reserved_fixed_ip: '#/components/schemas/AttachInterfaceReservedFixedIpRequestSerializer'
+          subnet: '#/components/schemas/AttachInterfaceSubnetRequestSerializer'
+        propertyName: type
+      oneOf:
+      - $ref: '#/components/schemas/AttachInterfaceExternalRequestSerializer'
+      - $ref: '#/components/schemas/AttachInterfaceSubnetRequestSerializer'
+      - $ref: '#/components/schemas/AttachInterfaceAnySubnetRequestSerializer'
+      - $ref: '#/components/schemas/AttachInterfaceReservedFixedIpRequestSerializer'
+      title: AttachInterfaceBodySerializer
+    AttachInterfaceDdosProfileFieldSerializer:
+      properties:
+        base_field:
+          description: ID of DDoS profile field.
+          title: Base Field
+          type: integer
+        field_value:
+          default: null
+          description: Complex value for the DDoS profile field.
+          title: Field Value
+        value:
+          anyOf:
+          - maxLength: 500
+            type: string
+          - type: 'null'
+          default: null
+          description: Basic type value.
+          title: Value
+      required:
+      - base_field
+      title: AttachInterfaceDdosProfileFieldSerializer
+      type: object
+    AttachInterfaceDdosProfileSerializer:
+      properties:
+        fields:
+          description: Protection parameters.
+          items:
+            $ref: '#/components/schemas/AttachInterfaceDdosProfileFieldSerializer'
+          title: Fields
+          type: array
+        profile_template:
+          description: DDoS profile template ID.
+          title: Profile Template
+          type: integer
+        profile_template_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: DDoS profile template name.
+          title: Profile Template Name
+      required:
+      - profile_template
+      title: AttachInterfaceDdosProfileSerializer
+      type: object
+    AttachInterfaceExternalRequestSerializer:
+      properties:
+        ddos_profile:
+          anyOf:
+          - $ref: '#/components/schemas/AttachInterfaceDdosProfileSerializer'
+          - type: 'null'
+          default: null
+          description: Advanced DDoS protection.
+        interface_name:
+          anyOf:
+          - maxLength: 37
+            type: string
+          - type: 'null'
+          default: null
+          description: Interface name.
+          title: Interface Name
+        ip_family:
+          anyOf:
+          - $ref: '#/components/schemas/InterfaceIPFamily'
+          - type: 'null'
+          default: null
+        port_group:
+          default: 0
+          description: Each group will be added to a separate trunk.
+          example: 0
+          examples:
+          - 0
+          maximum: 3
+          minimum: 0
+          title: Port Group
+          type: integer
+        security_groups:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+            type: array
+          - type: 'null'
+          default: null
+          description: List of security group IDs.
+          title: Security Groups
+        type:
+          const: external
+          default: external
+          title: Type
+          type: string
+      title: AttachInterfaceExternalRequestSerializer
+      type: object
+    AttachInterfaceReservedFixedIpRequestSerializer:
+      properties:
+        ddos_profile:
+          anyOf:
+          - $ref: '#/components/schemas/AttachInterfaceDdosProfileSerializer'
+          - type: 'null'
+          default: null
+          description: Advanced DDoS protection.
+        interface_name:
+          anyOf:
+          - maxLength: 37
+            type: string
+          - type: 'null'
+          default: null
+          description: Interface name.
+          title: Interface Name
+        port_group:
+          default: 0
+          description: Each group will be added to a separate trunk.
+          example: 0
+          examples:
+          - 0
+          maximum: 3
+          minimum: 0
+          title: Port Group
+          type: integer
+        port_id:
+          description: Port ID.
+          format: uuid4
+          title: Port Id
+          type: string
+        security_groups:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+            type: array
+          - type: 'null'
+          default: null
+          description: List of security group IDs.
+          title: Security Groups
+        type:
+          const: reserved_fixed_ip
+          default: reserved_fixed_ip
+          title: Type
+          type: string
+      required:
+      - port_id
+      title: AttachInterfaceReservedFixedIpRequestSerializer
+      type: object
+    AttachInterfaceSubnetRequestSerializer:
+      properties:
+        ddos_profile:
+          anyOf:
+          - $ref: '#/components/schemas/AttachInterfaceDdosProfileSerializer'
+          - type: 'null'
+          default: null
+          description: Advanced DDoS protection.
+        interface_name:
+          anyOf:
+          - maxLength: 37
+            type: string
+          - type: 'null'
+          default: null
+          description: Interface name.
+          title: Interface Name
+        port_group:
+          default: 0
+          description: Each group will be added to a separate trunk.
+          example: 0
+          examples:
+          - 0
+          maximum: 3
+          minimum: 0
+          title: Port Group
+          type: integer
+        security_groups:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+            type: array
+          - type: 'null'
+          default: null
+          description: List of security group IDs.
+          title: Security Groups
+        subnet_id:
+          description: Port will get an IP address from this subnet.
+          format: uuid4
+          title: Subnet Id
+          type: string
+        type:
+          const: subnet
+          default: subnet
+          title: Type
+          type: string
+      required:
+      - subnet_id
+      title: AttachInterfaceSubnetRequestSerializer
+      type: object
     AttachVolumeToInstanceSerializer:
       description: Attach volume to instance schema
       properties:
@@ -55743,6 +56053,23 @@ components:
           title: Task Ids
       title: DeprecatedTasksAcknowledgeBodySerializer
       type: object
+    DetachInterfaceBodySerializer:
+      properties:
+        ip_address:
+          description: IP address
+          format: ipvanyaddress
+          title: Ip Address
+          type: string
+        port_id:
+          description: ID of the port
+          format: uuid4
+          title: Port Id
+          type: string
+      required:
+      - port_id
+      - ip_address
+      title: DetachInterfaceBodySerializer
+      type: object
     DetailedBaremetalInstancePricingSerializer:
       properties:
         external_ip:
@@ -61931,9 +62258,7 @@ components:
         results:
           description: Objects
           items:
-            anyOf:
-            - $ref: '#/components/schemas/InstanceInterfaceTrunkSerializer'
-            - $ref: '#/components/schemas/InstanceInterfaceSerializer'
+            $ref: '#/components/schemas/InstanceInterfaceVariant'
           title: Results
           type: array
       required:
@@ -62119,27 +62444,6 @@ components:
       - segmentation_id
       title: InstanceInterfaceSubportSerializer
       type: object
-    InstanceInterfaceTrunkCollectionSerializer:
-      properties:
-        count:
-          description: Number of objects
-          example: 1
-          examples:
-          - 1
-          minimum: 0
-          title: Count
-          type: integer
-        results:
-          description: Objects
-          items:
-            $ref: '#/components/schemas/InstanceInterfaceTrunkSerializer'
-          title: Results
-          type: array
-      required:
-      - count
-      - results
-      title: InstanceInterfaceTrunkCollectionSerializer
-      type: object
     InstanceInterfaceTrunkSerializer:
       properties:
         allowed_address_pairs:
@@ -62228,6 +62532,11 @@ components:
       - sub_ports
       title: InstanceInterfaceTrunkSerializer
       type: object
+    InstanceInterfaceVariant:
+      anyOf:
+      - $ref: '#/components/schemas/InstanceInterfaceTrunkSerializer'
+      - $ref: '#/components/schemas/InstanceInterfaceSerializer'
+      title: InstanceInterfaceVariant
     InstanceMetricsListSerializer:
       properties:
         count:
@@ -72495,15 +72804,26 @@ components:
             type: string
           title: Security Group Ids
           type: array
+        system_tags:
+          additionalProperties:
+            type: string
+          description: Read-only key-value tags on the port, set by the platform and not modifiable by the user
+          example: &id213
+            image_name: ubuntu-22.04
+            os_type: linux
+          examples:
+          - *id213
+          title: System Tags
+          type: object
         tags:
           additionalProperties:
             type: string
           description: Key-value tags on the port
-          example: &id213
+          example: &id214
             env: prod
             team: platform
           examples:
-          - *id213
+          - *id214
           title: Tags
           type: object
         updated_at:
@@ -72523,6 +72843,7 @@ components:
       - security_group_ids
       - allowed_address_pairs
       - tags
+      - system_tags
       - managed_by
       - capabilities
       - created_at
@@ -72533,11 +72854,11 @@ components:
       properties:
         port_ids:
           description: List of port IDs that will share one VIP
-          example: &id214
+          example: &id215
           - 351b0dd7-ca09-431c-be53-935db3785067
           - bc688791-f1b0-44eb-97d4-07697294b1e1
           examples:
-          - *id214
+          - *id215
           items:
             format: uuid4
             type: string
@@ -72681,11 +73002,11 @@ components:
           title: Port Id
         security_group_names:
           description: List of security group names
-          example: &id215
+          example: &id216
           - name1
           - name2
           examples:
-          - *id215
+          - *id216
           items:
             pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
             type: string
@@ -72744,13 +73065,13 @@ components:
       properties:
         ip_assignments:
           description: IP addresses assigned to this port
-          example: &id216
+          example: &id217
           - ip_address: 192.168.123.20
             subnet_id: 351b0dd7-ca09-431c-be53-935db3785067
           - ip_address: 192.168.120.16
             subnet_id: 0a641ef8-62dc-4146-91e5-6ab4b464df6d
           examples:
-          - *id216
+          - *id217
           items:
             $ref: '#/components/schemas/PortIpSubnetIdSerializer'
           title: Ip Assignments
@@ -72977,10 +73298,10 @@ components:
           type: array
         volume_ids:
           description: List of volume IDs.
-          example: &id217
+          example: &id218
           - 3ed9e2ce-f906-47fb-ba32-c25a3f63df4f
           examples:
-          - *id217
+          - *id218
           items:
             format: uuid4
             type: string
@@ -73116,11 +73437,11 @@ components:
           type: string
         protocols:
           description: List of network protocols enabled on the specified port
-          example: &id218
+          example: &id219
           - TCP
           - HTTP
           examples:
-          - *id218
+          - *id219
           items:
             type: string
           title: Protocols
@@ -73144,10 +73465,10 @@ components:
       properties:
         acl:
           description: Allowed IPs and subnets for incoming traffic
-          example: &id219
+          example: &id220
           - 92.33.34.127
           examples:
-          - *id219
+          - *id220
           items:
             format: ipvanyinterface
             type: string
@@ -73170,10 +73491,10 @@ components:
       properties:
         acl:
           description: Allowed IPs and subnets for incoming traffic
-          example: &id220
+          example: &id221
           - 92.33.34.127
           examples:
-          - *id220
+          - *id221
           items:
             format: ipvanyinterface
             type: string
@@ -73517,11 +73838,11 @@ components:
       properties:
         capacity:
           description: List of capacities by flavor.
-          example: &id221
+          example: &id222
           - capacity: 42
             flavor_name: inference-16vcpu-232gib-1xh100-80gb
           examples:
-          - *id221
+          - *id222
           items:
             $ref: '#/components/schemas/CapacityDetailsSerializer'
           title: Capacity
@@ -75230,12 +75551,12 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/RegionComponentStatus'
           description: Mapping of component names to their status in the region
-          example: &id222
+          example: &id223
             model:
               error: ''
               status: Active
           examples:
-          - *id222
+          - *id223
           title: Components
           type: object
         region_id:
@@ -77353,7 +77674,7 @@ components:
           type: integer
         tags:
           description: Artifact tags
-          example: &id223
+          example: &id224
           - artifact_id: 1
             id: 1
             name: v0.0.1
@@ -77367,7 +77688,7 @@ components:
             pushed_at: '2024-06-18T09:36:53.335000Z'
             repository_id: 5
           examples:
-          - *id223
+          - *id224
           items:
             $ref: '#/components/schemas/RegistryTagSerializer'
           title: Tags
@@ -77387,12 +77708,12 @@ components:
       properties:
         users:
           description: Set of users
-          example: &id224
+          example: &id225
           - duration: -1
             name: user1
             read_only: false
           examples:
-          - *id224
+          - *id225
           items:
             $ref: '#/components/schemas/RegistryUserCreateSerializer'
           title: Users
@@ -77969,10 +78290,10 @@ components:
       properties:
         schedule_ids:
           description: List of schedule IDs.
-          example: &id225
+          example: &id226
           - 1488e2ce-f906-47fb-ba32-c25a3f63df4f
           examples:
-          - *id225
+          - *id226
           items:
             type: string
           title: Schedule Ids
@@ -78033,7 +78354,7 @@ components:
       type: string
     ReservationCostReportTotalsRequestSerializer:
       additionalProperties: false
-      example: &id226
+      example: &id227
         regions:
         - 4
         - 5
@@ -78058,16 +78379,16 @@ components:
         - egress_traffic
         - instance
       examples:
-      - *id226
+      - *id227
       properties:
         regions:
           description: List of region IDs.
-          example: &id227
+          example: &id228
           - 1
           - 2
           - 3
           examples:
-          - *id227
+          - *id228
           items:
             type: integer
           title: Regions
@@ -78178,11 +78499,11 @@ components:
           type: string
         types:
           description: List of resource types to be filtered in the report.
-          example: &id228
+          example: &id229
           - egress_traffic
           - instance
           examples:
-          - *id228
+          - *id229
           items:
             $ref: '#/components/schemas/PrebillingResourceTypes'
           title: Types
@@ -78349,26 +78670,26 @@ components:
       properties:
         allowed_address_pairs:
           description: Group of subnet masks and/or IP addresses that share the current IP as VIP
-          example: &id229
+          example: &id230
           - ip_address: 192.168.123.20
             mac_address: 00:16:3e:f2:87:16
           - ip_address: 192.168.0.2
             mac_address: 00:16:3e:f2:87:89
           examples:
-          - *id229
+          - *id230
           items:
             $ref: '#/components/schemas/AllowedAddressPairsSerializer'
           title: Allowed Address Pairs
           type: array
         attachments:
           description: Reserved fixed IP attachment entities
-          example: &id230
+          example: &id231
           - resource_id: e3c6ee77-48cb-416b-b204-11b492cc776e3
             resource_type: instance
           - resource_id: e73a4dbd-da04-4b6e-8ef9-07e8742001b7
             resource_type: ai_cluster
           examples:
-          - *id230
+          - *id231
           items:
             $ref: '#/components/schemas/AttachmentSerializer'
           title: Attachments
@@ -84971,7 +85292,7 @@ components:
       type: object
     ResourcesPricingResponseV2Serializer:
       description: Pricing scheme for various resources
-      example: &id231
+      example: &id232
         instances:
         - currency_code: USD
           discount_percent: 0.16
@@ -85005,7 +85326,7 @@ components:
           price_without_discount_per_month: 604.8
           tax_percent: 17
       examples:
-      - *id231
+      - *id232
       properties:
         instances:
           items:
@@ -85417,14 +85738,14 @@ components:
               type: string
             type: array
           description: FaaS runtimes.
-          example: &id232
+          example: &id233
             go:
             - go1.16.6
             python:
             - python2.7.18
             - python3.7.12
           examples:
-          - *id232
+          - *id233
           title: Runtimes
           type: object
       required:
@@ -85651,10 +85972,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id233
+          example: &id234
           - bm3-ai-1xlarge-h100-80-8
           examples:
-          - *id233
+          - *id234
           items:
             type: string
           title: Values
@@ -85687,10 +86008,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id234
+          example: &id235
           - g3-ai-32-192-1500-l40s-48-1
           examples:
-          - *id234
+          - *id235
           items:
             type: string
           title: Values
@@ -85725,10 +86046,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id235
+          example: &id236
           - '10'
           examples:
-          - *id235
+          - *id236
           items:
             type: string
           title: Values
@@ -85753,10 +86074,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id236
+          example: &id237
           - bm2-hf-medium
           examples:
-          - *id236
+          - *id237
           items:
             type: string
           title: Values
@@ -85781,10 +86102,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id237
+          example: &id238
           - g2s-shared-1-2-25
           examples:
-          - *id237
+          - *id238
           items:
             type: string
           title: Values
@@ -85816,10 +86137,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id238
+          example: &id239
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id238
+          - *id239
           items:
             type: string
           title: Values
@@ -85844,10 +86165,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id239
+          example: &id240
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id239
+          - *id240
           items:
             type: string
           title: Values
@@ -85879,10 +86200,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id240
+          example: &id241
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id240
+          - *id241
           items:
             type: string
           title: Values
@@ -85907,10 +86228,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id241
+          example: &id242
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id241
+          - *id242
           items:
             type: string
           title: Values
@@ -85935,10 +86256,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id242
+          example: &id243
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id242
+          - *id243
           items:
             type: string
           title: Values
@@ -85963,10 +86284,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id243
+          example: &id244
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id243
+          - *id244
           items:
             type: string
           title: Values
@@ -86008,10 +86329,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id244
+          example: &id245
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id244
+          - *id245
           items:
             type: string
           title: Values
@@ -86046,10 +86367,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id245
+          example: &id246
           - 10.100.178.92
           examples:
-          - *id245
+          - *id246
           items:
             type: string
           title: Values
@@ -86083,10 +86404,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id246
+          example: &id247
           - '10'
           examples:
-          - *id246
+          - *id247
           items:
             type: string
           title: Values
@@ -86119,10 +86440,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id247
+          example: &id248
           - 10.100.178.92
           examples:
-          - *id247
+          - *id248
           items:
             type: string
           title: Values
@@ -86154,10 +86475,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id248
+          example: &id249
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id248
+          - *id249
           items:
             type: string
           title: Values
@@ -86189,10 +86510,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id249
+          example: &id250
           - '10'
           examples:
-          - *id249
+          - *id250
           items:
             type: string
           title: Values
@@ -86224,10 +86545,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id250
+          example: &id251
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id250
+          - *id251
           items:
             type: string
           title: Values
@@ -86260,10 +86581,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id251
+          example: &id252
           - '10'
           examples:
-          - *id251
+          - *id252
           items:
             type: string
           title: Values
@@ -86296,10 +86617,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id252
+          example: &id253
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id252
+          - *id253
           items:
             type: string
           title: Values
@@ -86332,10 +86653,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id253
+          example: &id254
           - g1-standard-1-2
           examples:
-          - *id253
+          - *id254
           items:
             type: string
           title: Values
@@ -86368,10 +86689,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id254
+          example: &id255
           - lb1-1-2
           examples:
-          - *id254
+          - *id255
           items:
             type: string
           title: Values
@@ -86404,10 +86725,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id255
+          example: &id256
           - '10'
           examples:
-          - *id255
+          - *id256
           items:
             type: string
           title: Values
@@ -86442,10 +86763,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id256
+          example: &id257
           - '10'
           examples:
-          - *id256
+          - *id257
           items:
             type: string
           title: Values
@@ -86480,10 +86801,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id257
+          example: &id258
           - '10'
           examples:
-          - *id257
+          - *id258
           items:
             type: string
           title: Values
@@ -86892,12 +87213,12 @@ components:
           type: array
         tags_v2:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id258
+          example: &id259
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id258
+          - *id259
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags V2
@@ -87006,13 +87327,13 @@ components:
       properties:
         instances:
           description: The list of instances in this server group.
-          example: &id259
+          example: &id260
           - instance_id: 6d14f194-6c1e-49b3-9fc7-50dc8401eb74
             instance_name: my-instance-1
           - instance_id: 142988bb-291e-4862-bffb-b1cf20036c27
             instance_name: my-instance-2
           examples:
-          - *id259
+          - *id260
           items:
             $ref: '#/components/schemas/InstanceBriefSerializer'
           title: Instances
@@ -87074,12 +87395,12 @@ components:
       properties:
         client_ids:
           description: List of client IDs to access
-          example: &id260
+          example: &id261
           - 1
           - 22
           - 333
           examples:
-          - *id260
+          - *id261
           items:
             type: integer
           title: Client Ids
@@ -87261,10 +87582,10 @@ components:
       title: SnapshotCollectionSerializer
       type: object
     SnapshotPricingRequestSerializer:
-      example: &id261
+      example: &id262
         volume_id: c23fb11d-4748-489e-a659-e888e121e825
       examples:
-      - *id261
+      - *id262
       properties:
         volume_id:
           description: Volume ID
@@ -87353,12 +87674,12 @@ components:
           - available
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id262
+          example: &id263
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id262
+          - *id263
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -87745,12 +88066,12 @@ components:
           type: string
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id263
+          example: &id264
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id263
+          - *id264
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -87827,10 +88148,10 @@ components:
           type: boolean
         security_groups:
           description: Security group UUIDs applied to this interface. If omitted (or empty), the top-level `security_groups` value applies; if both are omitted, the project's default security group is applied.
-          example: &id264
+          example: &id265
           - id: b4849ffa-89f2-45a1-951f-0ae5b7809d98
           examples:
-          - *id264
+          - *id265
           items:
             $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
           title: Security Groups
@@ -88062,12 +88383,12 @@ components:
           type: integer
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id265
+          example: &id266
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id265
+          - *id266
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -88257,7 +88578,7 @@ components:
           description: Specifies whether conditions are combined using OR (default) or AND logic.
         conditions:
           description: A list of tag filtering conditions defining how tags should match.
-          example: &id266
+          example: &id267
           - key: os_version
             strict: true
             value: '9'
@@ -88268,7 +88589,7 @@ components:
             strict: true
             value: centos
           examples:
-          - *id266
+          - *id267
           items:
             $ref: '#/components/schemas/TagsFilterConditionSerializer'
           maxItems: 10
@@ -88324,10 +88645,10 @@ components:
             List of task IDs representing asynchronous operations. Use these IDs to monitor operation progress:
               - `GET /v1/tasks/{task_id}` - Check individual task status and details
               Poll task status until completion (`FINISHED`/`ERROR`) before proceeding with dependent operations.
-          example: &id267
+          example: &id268
           - d478ae29-dedc-4869-82f0-96104425f565
           examples:
-          - *id267
+          - *id268
           items:
             type: string
           title: Tasks
@@ -92414,10 +92735,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id268
+          example: &id269
           - test_tag
           examples:
-          - *id268
+          - *id269
           items:
             type: string
           title: Tags
@@ -92462,10 +92783,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id269
+          example: &id270
           - test_tag
           examples:
-          - *id269
+          - *id270
           items:
             type: string
           title: Tags
@@ -92528,10 +92849,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id270
+          example: &id271
           - test_tag
           examples:
-          - *id270
+          - *id271
           items:
             type: string
           title: Tags
@@ -92569,10 +92890,10 @@ components:
           type: integer
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id271
+          example: &id272
           - test_tag
           examples:
-          - *id271
+          - *id272
           items:
             type: string
           title: Tags
@@ -92620,11 +92941,11 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the l7 rule
-          example: &id272
+          example: &id273
           - test_tag_1
           - test_tag_2
           examples:
-          - *id272
+          - *id273
           items:
             type: string
           title: Tags
@@ -93022,7 +93343,7 @@ components:
       type: object
     UsageReportRequestSerializer:
       additionalProperties: false
-      example: &id273
+      example: &id274
         limit: 50
         offset: 0
         order_by:
@@ -93056,7 +93377,7 @@ components:
         - egress_traffic
         - instance
       examples:
-      - *id273
+      - *id274
       properties:
         enable_last_day:
           default: false
@@ -93088,11 +93409,11 @@ components:
           default:
           - project.asc
           description: List of sorting criteria in 'field.direction' format.
-          example: &id274
+          example: &id275
           - project.asc
           - region.desc
           examples:
-          - *id274
+          - *id275
           items:
             $ref: '#/components/schemas/CostReportOrderByChoices'
           title: Order By
@@ -93114,12 +93435,12 @@ components:
           title: Projects
         regions:
           description: List of region IDs.
-          example: &id275
+          example: &id276
           - 1
           - 2
           - 3
           examples:
-          - *id275
+          - *id276
           items:
             type: integer
           title: Regions
@@ -93225,11 +93546,11 @@ components:
           type: string
         types:
           description: List of resource types to be filtered in the report.
-          example: &id276
+          example: &id277
           - egress_traffic
           - instance
           examples:
-          - *id276
+          - *id277
           items:
             $ref: '#/components/schemas/PrebillingResourceTypes'
           title: Types
@@ -93370,10 +93691,10 @@ components:
       title: UsageReportResponseSerializer
       type: object
     UsageReportSortingRequestSerializer:
-      example: &id277
+      example: &id278
       - region: asc
       examples:
-      - *id277
+      - *id278
       properties:
         billing_value:
           $ref: '#/components/schemas/SortingDirections'
@@ -94293,11 +94614,11 @@ components:
           type: integer
         servers_ids:
           description: List of cluster nodes
-          example: &id278
+          example: &id279
           - b4522653-fbcd-44a0-a949-541570a52281
           - e56192de-ed28-452a-b775-eeeacc795e3b
           examples:
-          - *id278
+          - *id279
           items:
             format: uuid4
             type: string
@@ -94312,12 +94633,12 @@ components:
           - active
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id279
+          example: &id280
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id279
+          - *id280
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -94433,11 +94754,11 @@ components:
           title: Currency Code
         discount_details:
           description: Discount details per resource.
-          example: &id280
+          example: &id281
             discount: '0.5'
             resource: ssd_hiiops
           examples:
-          - *id280
+          - *id281
           items:
             $ref: '#/components/schemas/ResourceDiscountSerializer'
           title: Discount Details
@@ -94597,13 +94918,13 @@ components:
           type: array
         ip_assignments:
           description: IP addresses assigned to this port
-          example: &id281
+          example: &id282
           - ip_address: 192.168.123.20
             subnet_id: 351b0dd7-ca09-431c-be53-935db3785067
           - ip_address: 192.168.120.16
             subnet_id: 0a641ef8-62dc-4146-91e5-6ab4b464df6d
           examples:
-          - *id281
+          - *id282
           items:
             $ref: '#/components/schemas/PortIpAssignmentSerializer'
           title: Ip Assignments
@@ -94918,10 +95239,10 @@ components:
         security_groups:
           deprecated: true
           description: Deprecated. Use per-interface `security_groups` inside `interfaces[]` instead. Cannot be combined with per-interface `security_groups`. If omitted everywhere, the project's default security group is applied.
-          example: &id282
+          example: &id283
           - id: b4849ffa-89f2-45a1-951f-0ae5b7809d98
           examples:
-          - *id282
+          - *id283
           items:
             $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
           title: Security Groups
@@ -94976,11 +95297,11 @@ components:
         security_groups:
           deprecated: true
           description: Deprecated. Deduplicated union of security groups across all interfaces; the actual assignment may differ per interface. Use `interfaces[].security_groups` for the authoritative per-interface list.
-          example: &id283
+          example: &id284
           - id: ae74714c-c380-48b4-87f8-758d656cdad6
             name: default
           examples:
-          - *id283
+          - *id284
           items:
             $ref: '#/components/schemas/GroupSecurityGroupSerializer'
           title: Security Groups
@@ -95136,10 +95457,10 @@ components:
       properties:
         volume_ids:
           description: List of volume IDs.
-          example: &id284
+          example: &id285
           - 1488e2ce-f906-47fb-ba32-c25a3f63df4f
           examples:
-          - *id284
+          - *id285
           items:
             type: string
           title: Volume Ids
@@ -95187,12 +95508,12 @@ components:
       title: VolumeLimiterStatsSerializer
       type: object
     VolumeOrSnapshotPricingRequestSerializer:
-      example: &id285
+      example: &id286
         size: 1000
         source: new-volume
         type_name: standard
       examples:
-      - *id285
+      - *id286
       properties:
         size:
           anyOf:
@@ -95268,12 +95589,12 @@ components:
           type: integer
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id286
+          example: &id287
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id286
+          - *id287
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -95331,12 +95652,12 @@ components:
       properties:
         volumes:
           description: Prices of volumes per type over the specified period of time.
-          example: &id287
+          example: &id288
             discount: 0.1
             price: 78
             type: cold
           examples:
-          - *id287
+          - *id288
           items:
             anyOf:
             - $ref: '#/components/schemas/VolumePriceWithDiscountSerializer'
@@ -95465,12 +95786,12 @@ components:
           - available
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id288
+          example: &id289
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id288
+          - *id289
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
