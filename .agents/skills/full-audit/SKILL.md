@@ -8,15 +8,36 @@ in the live portal using Playwright, record all discrepancies, then fix the
 article. Do not skip portal verification — articles updated without testing
 mislead customers.
 
+## CRITICAL EXECUTION RULE
+
+**Execute ONE phase per user message. After completing a phase, stop and wait.**
+Do not proceed to the next phase automatically. Do not batch phases.
+The user controls phase sequencing.
+
+At the end of every phase, run this PowerShell command as the very last step:
+```powershell
+"a{N}_p{P}_done" | Out-File -FilePath "C:\Projects\docops-agent2\phase_done.txt" -Encoding utf8
+```
+Where `{N}` is the article number in the audit plan and `{P}` is the phase number.
+The user will provide the exact signal string with each phase instruction.
+
+---
+
 ## Scope — read exactly these files
 
-1. This SKILL.md
-2. The article file specified by the user
-3. `.agents/references/mcp-tools/setup.md` — verify Playwright MCP is available
-4. `.agents/references/mcp-tools/playwright.md` — Playwright protocol and screenshot standards
-5. `.agents/references/review-process.md` — Phase 4 review process and grep commands
-6. `.agents/references/style-guide.md` — only during Phase 4 review
-7. `.agents/references/mdx-rules.md` — only if making structural edits to MethodSwitch
+Load on demand as each phase requires them:
+
+| File | When to load |
+|------|-------------|
+| The target article MDX | Phase 0 |
+| `.agents/references/content-types.md` | Phase 0, Phase 5 |
+| `.agents/references/mcp-tools/setup.md` | Phase 1 (verify Playwright) |
+| `.agents/references/mcp-tools/playwright.md` | Phase 1, Phase 3 |
+| `_planning/hosting-account-map.md` | Phase 1 (hosting articles only) |
+| `_planning/hosting-audit-plan.md` | Phase 0 (mark in_progress), Phase 10 (mark done) |
+| `.agents/references/style-guide.md` | Phase 6 |
+| `.agents/references/procedures.md` | Phase 6 |
+| `.agents/references/mdx-rules.md` | Phase 7, and Phase 5 if MethodSwitch structure changes |
 
 Do not read other articles. Do not read the API section of the article —
 it is out of scope for this skill.
@@ -28,251 +49,450 @@ it is out of scope for this skill.
 | Input | Required | Notes |
 |-------|----------|-------|
 | Article path | Yes | The MDX file to audit |
-| Jira ticket | No | Defines what must be fixed — but does NOT limit audit scope |
-
-**Important:** if a Jira ticket is provided, it is an additional input to Phase 3,
-not a replacement for Phases 1–2. The audit scope is always the full article —
-every step, every UI element, every screenshot.
+| Jira ticket | No | Additional fixes to apply in Phase 5 — does NOT limit audit scope |
 
 ---
 
-## Before starting — report blockers first
+## Platform routing (hosting articles)
 
-Before creating a branch or making any changes, check Phase 2 feasibility:
+Before logging in during Phase 1, determine the correct platform from the article path.
+Read `_planning/hosting-account-map.md` for full platform details and current service state.
 
-- Is the feature accessible with the test account?
-- Are there destructive actions (delete, wipe) that cannot be safely tested?
-- Is the feature behind a paywall or regional restriction?
+| Article path prefix | Platform | URL | How to access |
+|---------------------|----------|-----|---------------|
+| `hosting/` (any) | BillMgr | https://hosting.gcore.com/billmgr | Credentials: `_private/access.md` lines 13–16 |
+| `hosting/virtual-servers/manage/` (VMmanager articles) | VMmanager 6 | https://sqr-v6.vm.gcore.com | In BillMgr: Products/Services → Virtual private servers → select row → **To panel**. Auto-login, no separate credentials. |
+| `hosting/dedicated-servers/manage/` | DCImanager | Shown after server provisioned | In BillMgr: Products/Services → Dedicated servers → select row → **To panel**. Auto-login. |
+| `cloud/` or any non-hosting path | Cloud portal | https://portal.gcore.com | SSO flow from `.agents/references/mcp-tools/playwright.md` |
 
-If any blocker exists — **stop and tell the user before doing any work.**
-Describe exactly what cannot be tested and ask how to proceed.
-Do not silently proceed and bury the problem in the changelog.
-
----
-
-## Phase 1 — Read the article
-
-1. Read the full article MDX file
-2. Understand the **goal**: what task does the article walk the user through?
-3. Extract all steps: what to do, in what order, via which UI elements
-4. List every screenshot reference (`<Frame>` blocks) — you will verify each one
-5. Note the `<MethodSection id="portal">` — this is the only section being audited
-
-Use this as your roadmap in Phase 2. The article may have errors in the details,
-but it is correct enough to understand the intent and navigate the portal.
+If the required platform has no active service (e.g., no dedicated server provisioned yet),
+stop and report the blocker to the user before doing any work.
 
 ---
 
-## Phase 2 — Portal execution (mandatory)
+## Phase 0 — Find and read the article
 
-**Do not just read the portal. Actually perform the task.**
+1. Read the full article MDX file.
+2. Read `.agents/references/content-types.md`. Determine the article type:
+   `how-to` | `conceptual` | `reference` | `combined`. Record it — do not change the type.
+3. Extract the article's goal: what task does it walk the user through?
+4. List all steps in order, noting UI elements, navigation paths, and field names.
+5. List every `<Frame>` block — filename, alt text, what it shows. This is the screenshot inventory for Phase 3.
+6. Note whether `<MethodSection id="portal">` exists — this is the only section being audited.
+7. Open `_planning/hosting-audit-plan.md`. Find the row for this article. Change status from `todo`/`reopen` to `in_progress`.
 
-First, verify Playwright MCP is available. If not — follow `.agents/references/mcp-tools/setup.md` and stop.
+Report to the user:
+- Article type
+- Goal in one sentence
+- Step count
+- Screenshot count
+- Any obvious blocker (feature gated, account required, destructive action)
 
-Log in to the portal following the SSO flow in `.agents/references/mcp-tools/playwright.md`.
-If Windows Hello authentication is required — ask the user to confirm it, then continue.
+---
 
-### Execution protocol
+## Phase 1 — Open the portal and log in
 
-1. Open the portal and navigate to the section the article describes
-2. Follow the article's steps in order, as a real user would
-3. At each step, use `browser_snapshot` to read actual current UI labels
-4. Use `browser_screenshot` to capture screens that have a corresponding screenshot in the article
-5. Continue until the task is fully completed or until a genuine blocker is hit
+1. Verify Playwright MCP is available. If not — follow `.agents/references/mcp-tools/setup.md` and stop.
+2. Open an incognito browser session. This is mandatory to avoid conflicts with other open sessions.
+   If incognito cannot be opened — stop and tell the user.
+3. Determine the correct platform using the routing table above.
+4. Navigate to the platform URL and log in using credentials from `_private/access.md`.
+5. Confirm successful login by taking a screenshot of the dashboard/home screen.
+6. For hosting articles: navigate to the relevant service section and confirm it is accessible.
 
-**Resource naming during execution:** any resource you create (instance, network, bucket, etc.) must use a neutral user-style name — `my-instance-1`, `my-network-1`, `my-bucket-1`. Never use `docs-`, `audit-`, `test-`, article slugs, or Jira IDs as names. These names end up in screenshots that are published as documentation. See the full naming table in `.agents/references/mcp-tools/playwright.md`.
+Report: platform used, login status, dashboard screenshot.
 
-**Do not fix anything during Phase 2. Only collect findings.**
+---
 
-### What to look for
+## Phase 2 — Regression test
 
-| Category | Example |
-|----------|---------|
-| Wrong UI element names | Article: "Click **Add Instance**" — Portal: "**Create Instance**" |
-| Changed navigation path | Article: **Cloud** > **Instances** — Portal: **Cloud** > **Virtual Machines** |
-| Step order changed | Article describes A then B — Portal now shows B then A |
-| Missing steps | Portal has a new mandatory step the article does not mention |
-| Outdated screenshots | Screenshot shows old layout, old button positions, old field names |
-| Missing sections | Portal shows a new tab or option the article does not document |
-| Wrong field names | Article names form fields incorrectly |
-| Deprecated options | Article documents an option that no longer exists |
+**You are a customer reading this article for the first time. You have no prior knowledge of the product. Follow the article literally.**
 
-### Finding format
+### Before starting
 
-Record each discrepancy:
+- If a step requires a resource that does not exist (server, IP, etc.) — create it now.
+  This is test environment setup, not a finding.
+- Resource naming: use neutral user-style names only — `my-server-1`, `my-instance-1`.
+  Never use `docs-`, `audit-`, `test-`, article slugs, or Jira IDs. These names appear in screenshots.
+
+### Execution
+
+1. Follow each article step in order.
+2. At each step, use `browser_snapshot` to read the actual current UI labels.
+3. Record the result for every step:
 
 ```
-FINDING: [category from table above]
+VERIFIED OK: Step N — [what was confirmed]
+```
+or
+```
+FINDING: [category]
 Location: Step N / screenshot [filename]
 Article says: "..."
 Portal shows: "..."
 Action needed: rename / reorder / add step / update screenshot / remove
 ```
 
-### If the task cannot be completed
+4. **Simultaneously build an execution trace** — one line per action taken in the portal.
+   Append each line as you go, do not reconstruct from memory at the end:
 
-Note the blocker, describe how far you got, mark specific findings as unverified:
+```
+TRACE | Phase 2 | BillMgr | Navigated to Products/Services → Virtual private servers
+TRACE | Phase 2 | BillMgr | Clicked Order button — catalog opened at Luxembourg DC 2
+TRACE | Phase 2 | BillMgr | Observed plan list: KVM-SSD-1 through KVM-SSD-8, KVM-HIGHCPU-SSD — no KVM-SAS visible
+TRACE | Phase 3 | gcore.com/hosting/vds | Navigated to plan configurator, applied Luxembourg filter
+TRACE | Phase 3 | gcore.com/hosting/vds | Screenshot saved as choose-a-virtual-server-for-your-needs-image2.png
+```
+
+   This trace is included verbatim in the Phase 10 changelog.
+
+Finding categories:
+- Wrong UI element names
+- Changed navigation path
+- Step order changed
+- Missing steps
+- Outdated screenshots
+- Missing sections
+- Wrong field names
+- Deprecated options
+
+4. After completing all steps — delete any test resources created.
+
+### Special cases
+
+**GUI-only articles** (install software, configure OS inside the server): skip live execution steps,
+mark them as `UNVERIFIED: GUI-only step`, continue with style review phases.
+
+**Terminal/CLI articles**: execute commands in PowerShell using real credentials from the portal.
+
+### If blocked
+
 ```
 BLOCKED at Step N: [reason — feature gated, account limitation, region unavailable]
 Findings before blocker: [list]
 Unverified: Steps N through M
 ```
 
+**Do not apply any fixes in this phase. Collect only.**
+
 ---
 
-## Phase 3 — Fix the article
+## Phase 3 — Screenshot audit
 
-Apply fixes based on Phase 2 findings. Fix in this order:
+Replace EVERY screenshot in the article. Do not skip screenshots that look correct — UI changes subtly.
 
-1. **Navigation paths and step order** — structural changes first
-2. **UI element names and field names** — rename throughout the article
-3. **Missing steps** — add new required steps with prose
-4. **Missing sections** — add new sections for undocumented features
-5. **Screenshots** — replace outdated ones last (after prose is correct)
+### Preparation
 
-If a Jira ticket was provided — apply those specific changes as part of this phase,
-in addition to all findings from Phase 2.
+Build a table before starting:
 
-### Replacing screenshots
+| # | Current filename | What it shows | Status |
+|---|-----------------|---------------|--------|
+| 1 | filename.png | description | todo |
 
-1. Navigate to the exact screen using Playwright
-2. Follow all screenshot standards from `.agents/references/mcp-tools/playwright.md`:
-   - Collapse the sidebar before every screenshot
-   - Zoom and crop to the relevant area
-   - Light mode, English UI, no personal data visible
-3. Save screenshot to the current working directory first, then copy:
-   ```powershell
-   Copy-Item ".\screenshot.png" `
-     "C:\Projects\product-documentation\images\docs\{product}\{slug}\{filename}.png" -Force
+### For each screenshot
+
+1. Navigate to the exact screen in the portal using Playwright.
+2. Collapse the sidebar (if present).
+3. Zoom to the relevant area. Crop to show only what is necessary.
+4. Capture with `browser_take_screenshot` using the `filename` parameter set to the **full absolute path**
+   of the target file in the repo. This saves directly to the correct location — no copy step needed:
    ```
-4. **Always rename when replacing** — reusing the same filename causes CDN caching issues
-5. **Delete the old file:** `git rm old-filename.png`
-6. Update the `<Frame>` block reference and alt text in the article
+   filename: "C:/Projects/product-documentation_2/images/docs/{product}/{article-slug}/{new-filename}.png"
+   ```
+   Use forward slashes in the path. Always use a new filename — reusing the old name causes CDN caching issues.
+5. Verify the file was saved: `git status` should show the new file as untracked in the correct folder.
+   If it does not appear — the MCP saved it elsewhere. Find it with:
+   ```powershell
+   Get-ChildItem "$env:USERPROFILE\*.png" | Sort-Object LastWriteTime -Descending | Select-Object -First 5
+   ```
+   Then copy it manually with `Copy-Item` to the correct path and delete the misplaced file.
+6. Delete the old file: `git rm images/docs/{product}/{article-slug}/{old-filename}.png`
+7. Update the `<Frame>` block in the article: new filename, updated alt text.
+8. Mark the row in the table as `done`.
 
-Screenshot folder rule: `images/docs/{product}/{article-slug}/{filename}.png`
-Every article has its own subfolder — never save to the product root folder.
+Screenshot folder rule: `images/docs/{product}/{article-slug}/`
+Never save to the product root folder.
 
-### Adding new steps
+Requirements for every screenshot:
+- Light mode
+- English UI
+- No personal data visible (blur or crop out emails, IPs, account names)
+- Sidebar collapsed
+- Focused on the relevant UI area
 
-```mdx
-1. Navigate to **Section** > **Subsection**.
-2. Click **Button Name**.
+**Phase 3 is complete only when ALL rows in the table are `done`.**
 
-<Frame>
-  ![Description of what is shown](/images/docs/{product}/{slug}/{filename}.png)
-</Frame>
+If a screenshot cannot be taken (platform inaccessible, feature not provisioned):
+mark row as `SKIPPED — [reason]` and note it in the findings.
+
+---
+
+## Phase 4 — Findings summary and Jira ticket
+
+1. Group all FINDINGs from Phase 2 by category. Present as a numbered list.
+2. Report:
+   - Total finding count
+   - List of prerequisites (resources needed to test)
+   - List of screenshots requiring replacement (from Phase 3)
+   - UNVERIFIED steps and reason
+
+3. Create a Jira ticket immediately — do not wait for a request.
+   If a ticket already exists for this article — use its number and skip creation.
+
+   Open `C:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`.
+   Fill `SUMMARY` and `DESCRIPTION` with findings from Phase 2.
+   Run dry-run first, show output, then run without `--dry-run`.
+   After creation — reset `SUMMARY` and `DESCRIPTION` to placeholder values.
+
+4. Record the ticket number — it is required in Phase 9 and Phase 10.
+
+---
+
+## Phase 5 — Apply fixes
+
+Before starting:
+- Read `.agents/references/content-types.md`. Confirm article type. Do not change it.
+- If MethodSwitch structure will change — read `.agents/references/mdx-rules.md` first.
+
+Apply all confirmed FINDINGs from Phase 2. Apply in this order:
+1. Navigation paths and step order — structural changes first
+2. UI element names and field names — rename throughout
+3. Missing steps — add with correct prose
+4. Missing sections — add new sections for undocumented features
+5. Screenshots — already replaced in Phase 3; update `<Frame>` references if not done
+
+If a Jira ticket was provided as input — apply those specific changes here too,
+in addition to Phase 2 findings.
+
+### CRITICAL: write only what you personally verified works
+
+**Every sentence in the article must describe confirmed, working behavior.**
+
+- If you verified a step — write exactly what you saw.
+- If a step was UNVERIFIED or BLOCKED — **do not write it**. Do not guess, paraphrase, or carry over old text that you could not confirm.
+- If an option, plan, or feature was not visible in the portal — **do not state it exists**. Add a note only if you can confirm it is regional or restricted, not as a fact.
+
+**For everything unverified or unclear** — create a SME questions file:
+```
+C:\Projects\product-documentation_2\_planning\sme-questions\{article-slug}.md
 ```
 
-For numbered steps inside `<MethodSection>`, use `1.` (not `1\.`) and wrap
-standalone prose in `<p>` tags. See `.agents/references/mdx-rules.md`.
-
-### Do not touch
-
-- `<MethodSection id="api">` — API sections are maintained separately
-- Article filename and slug — broken URLs are worse than outdated content
-- `docs.json` — only edit if a new sidebar section is required; confirm with user first
-- `ai-navigation` frontmatter — only update if the article's topic fundamentally changed
-
----
-
-## Phase 4 — Style review (mandatory)
-
-Run after every article update. Do not skip.
-
-Run the full 6-step process from `.agents/references/review-process.md`.
-Use the grep commands in that file for each step.
-
----
-
-## Git workflow
-
-```powershell
-cd C:\Projects\product-documentation
-git checkout main
-git pull origin main
-git checkout -b update-{product}-{article-slug}
-```
-
-**Rules:**
-- Always pull before branching — never branch from a stale local main
-- Never reuse an existing branch — delete it and recreate from updated main
-- Stage files by name only — never `git add .` or `git add -A`
-- Never commit without explicit user approval
-- Branch naming: `update-{product}-{article-slug}` — both product and slug, not just product
-
----
-
-## Changelog file
-
-After completing Phase 3 (before the style review), create a changelog file.
-This file stays in `C:\Projects\update_outdated_articles\changelogs\` — do NOT
-commit it to the product-documentation repo.
-
-Filename: `{product}--{article-slug}.md`
-
+Template:
 ```markdown
-# {article path relative to product-documentation}
+# SME questions — {article title}
 
+**Ticket:** {jira}
 **Audited:** {date}
 
-## Changes
+## Questions
 
-- {change description}
-
-## Screenshots replaced
-
-- {filename} — {reason}
-
-## Not updated
-
-- {item} — {reason it could not be updated}
+| # | Location in article | What the article claims | What we observed | Question for SME |
+|---|---------------------|------------------------|-----------------|-----------------|
+| 1 | Section "..." | "..." | Not visible in portal | Is this feature deprecated / regional / gated? |
 ```
 
-Update this file if Phase 4 introduces additional edits.
+This file is committed to the repo. It is reviewed with the subject-matter expert before the article is published.
+
+Do not write unverified content in the article and do not leave it silent. Every gap must appear in the SME file.
+
+### Rules
+
+- Use `StrReplace` only — one replacement at a time. Never use scripts for text replacement in MDX.
+- For each fix: describe what changed and why.
+- Wrap standalone prose inside `<MethodSection>` in `<p>` tags.
+- Use `1.` for numbered steps (not `1\.`).
+- Do not restructure `<MethodSwitch>` unless explicitly instructed.
+- Do not touch `<MethodSection id="api">` — API sections are out of scope.
+- Do not change the article filename or slug.
+- Do not edit `docs.json` unless a new sidebar section is needed — confirm with user first.
+- Do not update `ai-navigation` unless the article's topic fundamentally changed.
+
+---
+
+## Phase 6 — Style guide check
+
+Read `.agents/references/style-guide.md` and `.agents/references/procedures.md`.
+
+Go through every checklist item. Mark `[V]` only after real verification — never as a placeholder.
+Fix every violation found. If a paragraph needs rewriting — rewrite it.
+If any items remain unchecked after a full pass — re-examine those lines before finishing.
+
+Use `StrReplace` for all edits — one replacement at a time.
+
+---
+
+## Phase 7 — MDX rules check
+
+Read `.agents/references/mdx-rules.md`.
+
+Check whether `<MethodSwitch>` is present in the article.
+
+**If no `<MethodSwitch>`** — run basic checklist only:
+- Frontmatter: `title`, `sidebarTitle`, `ai-navigation` present; no `description`
+- `ai-navigation`: no `:`, `#`, `{`, `}`, `/` characters; starts with action verb; max 160 chars
+- No inline backtick spans containing `{identifier}` — use `<code>` tag instead
+- All internal links are root-relative (start with `/`)
+- All image paths have file extension
+- No `####` headings inside `<MethodSection>`
+- `</MethodSection>` closing tags are at column 0
+
+**If `<MethodSwitch>` is present** — run full checklist from `mdx-rules.md`.
+
+Use `StrReplace` for all edits — one replacement at a time. Never use scripts.
+
+---
+
+## Phase 8 — LLM quality review
+
+Run the quality review script:
+```powershell
+Set-Location "C:\Projects\docops-agent2"
+.\.venv\Scripts\python.exe scripts\review_article_quality.py `
+  --article "C:\Projects\product-documentation_2\{article-path}"
+```
+
+For each remark from the LLM — classify before acting:
+
+| Classification | Action |
+|---------------|--------|
+| Valid — factual or structural problem | Apply fix immediately |
+| Valid — style problem | Apply fix immediately |
+| Opinion / subjective preference | Skip, note as skipped |
+| Contradicts style guide | Skip, note why |
+| Outside audit scope (API section, etc.) | Skip, note as out of scope |
+
+Report to user:
+- LLM score
+- Each remark with classification
+- Actions taken or skipped with reason
+
+---
+
+## Phase 9 — Commit and push
+
+### Pre-commit checklist
+
+- [ ] All Phase 5, 6, 7, 8 fixes applied
+- [ ] No `description` in frontmatter
+- [ ] No broken `<Frame>` references (all image files exist)
+- [ ] Old screenshot files removed with `git rm`
+- [ ] No unrelated files staged
+
+### UTF-8 integrity check
+
+```powershell
+$bytes = [System.IO.File]::ReadAllBytes("C:\Projects\product-documentation_2\{article-path}")
+if ($bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    Write-Host "BOM detected — remove it"
+} else {
+    Write-Host "No BOM — OK"
+}
+```
+
+Also run:
+```powershell
+Select-String -Pattern "â€"|Ã¢|Ã©|Ã " -Path "C:\Projects\product-documentation_2\{article-path}"
+```
+If any matches — the file has encoding corruption. Fix before committing.
+
+### Git workflow
+
+```powershell
+Set-Location "C:\Projects\product-documentation_2"
+git checkout main
+git pull origin main
+git checkout -b {jira-ticket}
+git add {article-path}
+git add images/docs/{product}/{article-slug}/   # only if screenshots changed
+git status   # verify only expected files are staged
+git commit -m "{jira-ticket}: audit and update {article-slug}"
+git push -u origin {jira-ticket}
+```
+
+Branch naming: use the Jira ticket number from Phase 4 (e.g., `DOC-1722`).
+Always pull from main before branching. Never reuse an existing branch.
+Stage files by name only — never `git add .` or `git add -A`.
+
+---
+
+## Phase 10 — Send to review
+
+1. Open `C:\Projects\docops-agent2\scripts\send_to_review.py`.
+   Fill the constants:
+   - `TICKET` — Jira ticket number from Phase 4
+   - `BRANCH` — branch name from Phase 9
+   - `ARTICLE_PATH` — article path relative to repo root
+   - `BLOCKED` — `True` if any steps were unverified, `False` otherwise
+   - `BLOCKED_REASON` — describe what could not be tested (empty string if not blocked)
+
+   Dry-run first, show output. Then run without `--dry-run`.
+   After running — reset all constants to placeholder values.
+
+2. Open `_planning/hosting-audit-plan.md`.
+   Find the row for this article. Change status from `in_progress` to `done`.
+
+3. Create a changelog file at `C:\Projects\update_outdated_articles\changelogs\{product}--{article-slug}.md`:
+
+```markdown
+# {Article title}
+
+**Audited:** {YYYY-MM-DD}
+**Ticket:** {jira-ticket}
+**Branch:** {branch}
+**Article:** {article path relative to repo root}
+
+## Content fixes (Phase 5)
+
+| # | Location | Article said | Portal shows | Fix applied |
+|---|----------|-------------|--------------|-------------|
+| 1 | Section "..." | "..." | "..." | Rewrote / added / removed |
+
+## Style fixes (Phase 6)
+
+- {fix description}
+
+## MDX fixes (Phase 7)
+
+- {fix description}
+
+## LLM quality fixes (Phase 8)
+
+- {fix description}
+
+## Screenshots replaced (Phase 3)
+
+| Old filename | New filename |
+|-------------|--------------|
+| old.png | new.png |
+
+## SME questions (unverified items)
+
+| # | Location | Article claims | Observed | Question |
+|---|----------|----------------|----------|----------|
+| 1 | ... | ... | Not visible | Is this deprecated / regional? |
+
+If no open questions: `- None`
+
+## Execution trace
+
+All portal actions taken during this audit in order:
+
+```
+TRACE | Phase 1 | BillMgr | Login as sergey.kostichev@gcore.com — OK
+TRACE | Phase 2 | {platform} | {action} — {result}
+TRACE | Phase 3 | {platform} | {action} — {result}
+```
+```
+
+This file goes in `C:\Projects\update_outdated_articles\changelogs\` — do NOT commit it to the product-documentation repo.
 
 ---
 
 ## Self-documentation rule
 
-If during the audit you encounter something not covered by these instructions —
-a portal quirk, an extra required step, a workaround that worked — add it to
-`.agents/references/mcp-tools/playwright.md` under "Known portal quirks" immediately.
-Do not wait until the end of the session. Future audits should not have to
-rediscover the same thing.
-
----
-
-## Output
-
-After completing all four phases:
-
-```
-Article: [path]
-Product: [product area]
-
-Findings:
-- [N] UI element names updated
-- [N] navigation paths corrected
-- [N] steps added / reordered
-- [N] screenshots replaced
-- [N] new sections added
-
-Status: updated / no changes needed / needs manual review
-
-Branch: update-{product}-{article-slug}
-```
-
-If the article cannot be fully verified:
-```
-Status: PARTIALLY UPDATED
-Unverified: [list of steps that could not be tested]
-Recommendation: [what is needed to complete the audit]
-```
-
-When the user confirms the result looks good — load `.agents/skills/pr/SKILL.md`
-to create the branch, commit, and open a draft PR.
-```
-
+If during the audit you encounter a portal quirk, an extra required step, or a workaround —
+add it to `.agents/references/mcp-tools/playwright.md` under "Known portal quirks" immediately.
+Do not wait until the end of the session.
 
 ---
 

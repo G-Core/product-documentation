@@ -93,11 +93,7 @@ rg "keyword" --glob "*.mdx" -l
 
 ### Claim the article before doing any work
 
-Before reading the article, open the plan file and mark the article as `in_progress`:
-
-```
-C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
-```
+Before reading the article, open the plan file specified in the task and mark the article as `in_progress`.
 
 Find the row for this article and change its status from `pending` to `in_progress`.
 
@@ -165,9 +161,7 @@ inside the isolated session:
 1. Navigate to `https://auth.gcore.com/login/signin`
 2. Click **SSO**
 3. Enter `gcore.com` in the Work domain field and press Enter
-4. Enter `sergey.kostichev@gcore.com` on the Microsoft login page and click **Next**
-5. **STOP — ask the user to complete Windows Hello authentication**
-6. Wait for confirmation, then verify the browser is at `https://portal.gcore.com`
+4. Verify the browser is at `https://portal.gcore.com`
 
 ### Select the region
 
@@ -176,7 +170,7 @@ Default region: **Luxembourg-3**.
 Select it from the region dropdown in the portal header before starting any steps.
 
 **Why Luxembourg-3:** all quotas needed for testing are available in this region.
-Do not use Luxembourg or Luxembourg-2 — quota availability differs.
+Do not use any other regions — quota availability differs. Other regions are allowed only if you don't find the required resource on Luxembourg-3.
 
 Verify the region switcher in the portal header shows **Luxembourg-3** before proceeding.
 
@@ -218,7 +212,7 @@ screenshots taken in Phase 2, Phase 3, and Phase 5.
 - If the article says to create something — create it.
 - If the article says to delete something — delete it.
 - If something the article describes does not exist or works differently — do not skip it.
-  Explore what the portal actually shows now and document the divergence as a FINDING.
+  Explore what the portal actually shows now and document the divergence as a FINDING. Make a full investigation of functionality related to this.
 - If a step requires a prerequisite resource (a network, a cluster, an SSH key,
   a volume, a load balancer, etc.) that does not yet exist:
 
@@ -246,6 +240,122 @@ screenshots taken in Phase 2, Phase 3, and Phase 5.
 - If a feature is genuinely unavailable in this region or account (gated by plan,
   requires support enablement, or does not appear in the portal) — note it as a
   finding, describe how far you got, and mark related findings as UNVERIFIED.
+
+### Non-portal articles
+
+Some articles require tools other than the Customer Portal. Identify the article type
+before starting Phase 2 and apply the rules below.
+
+**General rule: never stop because a tool or environment is unavailable.**
+If a testing environment is inaccessible — no GUI app, no CLI tool, no portal access
+for a specific feature — do NOT wait for the user, do NOT ask for permission.
+Skip testing for those specific steps, apply style guide and MDX checks to the full
+article, and document the untested steps as UNVERIFIED in Phase 4. Continue to Phase 5
+and beyond as normal. Style guide compliance applies to every article regardless of
+whether its steps can be portal-verified.
+
+#### Terminal articles (AWS CLI, S3cmd, shell commands)
+
+The test machine has PowerShell and internet access. AWS CLI and S3cmd can be
+installed and used directly.
+
+**Testing rules:**
+
+1. Verify that the tool is installed before following the article steps:
+   ```powershell
+   aws --version
+   s3cmd --version
+   ```
+   If a tool is not installed — install it following the article's own instructions
+   (if the article covers installation) or using the tool's official installer.
+   Installation is test-environment setup, not a FINDING.
+
+2. Obtain real credentials from the portal before running any command:
+   - Navigate to the storage in the portal.
+   - Copy the Access Key, Secret Key, and endpoint URL from the storage Details.
+   - Use these credentials in all commands. Never fabricate credentials.
+
+3. Follow every command in the article, run it in PowerShell, and record the actual
+   output. Compare the expected output described in the article with what the terminal
+   shows.
+
+4. If a command produces an error — investigate whether the article's syntax is wrong
+   or the endpoint has changed. Record as a FINDING with category `Broken flow`.
+
+5. If a command produces no output where output is expected — record as a FINDING.
+
+6. Files created during testing (JSON, XML, config files) must be deleted after the
+   test unless the article explicitly says to keep them.
+
+**What cannot be tested in terminal:**
+- AWS JavaScript SDK examples — verify the SDK version and syntax only; mark
+  version-specific claims as needing manual browser verification.
+
+#### GUI desktop application articles (FileZilla, WinSCP, etc.)
+
+The agent cannot open or interact with GUI desktop applications.
+**Do not stop. Do not ask the user for access. Proceed immediately with style-only mode.**
+
+**Testing rules:**
+
+1. Skip Phase 2 portal testing entirely for GUI-only steps. Do not attempt to
+   navigate the portal for steps that belong to the external app.
+
+2. Proceed directly to Phase 6 (style guide check) and Phase 7 (MDX rules check)
+   for the full article — these phases apply regardless of tool type.
+
+3. Mark all GUI-specific steps as UNVERIFIED in the Phase 4 findings summary
+   (not in the article text itself). Use this format:
+   ```
+   UNVERIFIED: GUI desktop application step — cannot be tested by agent.
+   Location: Step N / section "[heading]"
+   Instruction: [the step verbatim]
+   Concern: Requires manual verification with [app name] installed locally.
+   ```
+
+4. Screenshot replacement for GUI app screenshots: do NOT retake them in Phase 3.
+   Mark them in the screenshot checklist as `SKIP — GUI app, manual retake required`.
+
+5. Note all GUI-only UNVERIFIED items in the Jira ticket description (Phase 4)
+   so a human can complete the visual verification.
+
+#### Reference table articles (endpoint URLs, region names)
+
+Articles that consist mainly of tables of URLs, endpoints, or region names
+do not have portal steps to follow. Verify the data differently:
+
+1. Cross-reference each URL against the portal:
+   - Navigate to a storage → Details to see the actual endpoint format.
+   - Compare with the table in the article.
+
+2. If the table lists regions or locations, verify each one exists in the portal's
+   region dropdown or storage creation form.
+
+3. Record any mismatch as a FINDING with category `UI label mismatch` or
+   `Deprecated option`.
+
+---
+
+### VERIFIED OK format
+
+For every article claim that is confirmed correct in the portal, record it immediately
+after testing that claim. Do not skip this step — every element tested must appear in
+either a VERIFIED OK block or a FINDING block. This log is the primary output that
+the human reads to understand what was actually tested.
+
+```
+VERIFIED OK: [what was checked — one line description]
+Location: Step N / section "[heading]" / screenshot "[filename]"
+Article says: "..."
+Portal shows: "..." (matches)
+```
+
+Record a VERIFIED OK for every:
+- Navigation path confirmed in the portal
+- UI label, button name, or field name that matches
+- URL schema or hostname format that is still valid
+- Screenshot that is visually current (will be retaken in Phase 3 but content is accurate)
+- Feature or option that still exists as described
 
 ### FINDING format
 
@@ -340,27 +450,72 @@ For each screenshot in the article:
 
 1. Navigate to the correct screen in the portal using the existing article
    text as a guide — it describes what each screenshot should show.
-2. Use `playwright_screenshot` with `fullPage: false`. Set the viewport to
-   1400×900 before capturing:
-   ```javascript
-   // browser_evaluate
-   window.resizeTo(1400, 900)
-   ```
-3. Save to:
-   ```
-   C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
-   ```
-   Use a **new filename** — never overwrite the old file directly (CDN caching).
-   Append `-2` or a short date suffix if the content is the same
-   (e.g., `bare-metal-page-2.png`).
 
-4. Update the `<Frame>` in the article to reference the new filename.
-5. Update the alt text if the UI shown has changed.
-6. Delete the old file:
+2. **Set the viewport to 1400×900** using `browser_resize`:
+   ```
+   browser_resize(width=1400, height=900)
+   ```
+   Do this once at the start of Phase 3, before the first screenshot.
+   Do NOT use `browser_evaluate` with `window.resizeTo` — that call is ignored
+   by headless Playwright. Only `browser_resize` actually changes the viewport.
+
+3. **Hide PII before every screenshot** — the portal shows the logged-in user's
+   email in the top-right corner. Remove it with `browser_evaluate`:
+   ```javascript
+   // Find and hide the email / account info element in the top-right corner.
+   // The selector targets the most common portal patterns; adjust if needed.
+   document.querySelectorAll(
+     '[class*="user-info"], [class*="UserInfo"], [class*="account-email"], ' +
+     '[class*="userEmail"], [class*="header__user"], [class*="userMenu"]'
+   ).forEach(el => { el.style.visibility = 'hidden'; });
+   // Fallback: hide any element whose text content looks like an email address.
+   document.querySelectorAll('span, p, div, a').forEach(el => {
+     if (/[^@\s]+@[^@\s]+\.[^@\s]+/.test(el.innerText) && el.children.length === 0) {
+       el.style.visibility = 'hidden';
+     }
+   });
+   ```
+   Use `visibility: hidden` (not `display: none`) so the element still occupies
+   space and the layout does not shift. Run this before EVERY screenshot — some
+   portal navigation re-renders the header and makes the email visible again.
+
+4. **Take a full-viewport screenshot** using `browser_take_screenshot`:
+   - Do NOT pass `element` or `target` parameters — those crop the image.
+   - Use the `filename` parameter to set the output filename:
+     ```
+     browser_take_screenshot(filename="screenshot-name.png")
+     ```
+   - The file is saved to `C:\Users\{username}\` (Playwright MCP home dir).
+     After saving, copy it to the article images folder:
+     ```powershell
+     $dest = "C:\Projects\product-documentation_2\images\docs\{product}\{slug}\{slug}-imageN.png"
+     Copy-Item "C:\Users\sergey.kostichev\screenshot-name.png" $dest -Force
+     ```
+   - Verify the file exists before moving on:
+     ```powershell
+     cmd /c "dir /b C:\Projects\product-documentation_2\images\docs\{product}\{slug}"
+     ```
+
+5. Update the `<Frame>` in the article to reference the new filename.
+6. Update the alt text if the UI shown has changed.
+7. Delete the old file:
    ```powershell
-   cd C:\Projects\product-documentation
+   cd C:\Projects\product-documentation_2
    git rm images/docs/{product}/{article-slug}/{old-filename}.png
    ```
+
+### What NOT to do with screenshots
+
+- **Never crop** by passing `element` or `target` to `browser_take_screenshot`.
+  Full-viewport screenshots are always correct; cropped ones frequently look broken.
+- **Never use `savePath`** — it is not a valid parameter. Use `filename` instead.
+- **Never use `browser_evaluate` to resize** — `window.resizeTo()` has no effect
+  in headless Playwright. Use `browser_resize` only.
+- **Never skip the PII-hide step** — the logged-in email is always visible in the
+  portal header and must not appear in published documentation.
+- **Never take a screenshot immediately after scrolling** — give the page
+  50–100 ms to finish rendering. Use a brief `browser_wait_for(time=100)` or
+  take a `browser_snapshot` first (which forces a render cycle) before capturing.
 
 ### Resource names in screenshots
 
@@ -402,6 +557,10 @@ Also present:
 
 Do not wait for the user to ask. Create the ticket now, while the findings are
 fresh and before any fixes are applied.
+
+**If a Jira ticket already exists for this article** (e.g. the article is being
+redone after a partial run), do NOT create a duplicate ticket. Use the existing
+ticket number and continue directly to Phase 5.
 
 Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
 and fill in `SUMMARY` and `DESCRIPTION` with the article name and the findings
@@ -489,7 +648,7 @@ it is needed in Phase 9.
 Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
 the ticket so the script is ready for the next article.
 
-Immediately proceed to Phase 4 without asking for confirmation.
+Immediately proceed to Phase 5 without asking for confirmation.
 
 ---
 
@@ -586,7 +745,35 @@ The rule depends on whether the article uses `<MethodSwitch>`:
 
 Load `.agents/references/style-guide.md` and `.agents/references/procedures.md` now.
 
+### Step 1 — Run the automated style linter
+
+Run the style linter first. It catches mechanical violations automatically so the manual
+checklist can focus on things the script cannot detect (flow, headings, structure, logic).
+
+```powershell
+cd C:\Projects\product-documentation_2
+python .agents/tools/style_check.py {relative/path/to/article.mdx}
+```
+
+Replace `{relative/path/to/article.mdx}` with the actual path, for example:
+```
+python .agents/tools/style_check.py hosting/virtual-servers/order-a-virtual-server.mdx
+```
+
+For every violation the script reports:
+1. Read the line it flagged.
+2. Fix the violation if it is real.
+3. If it is a false positive (e.g. a term matched inside a URL or a technical name
+   that must stay as-is), note it and move on — do not change correct text.
+
+Re-run the script after fixing until it reports **OK — no violations found**.
+
+### Step 2 — Manual checklist
+
 Work through the article section by section and verify each rule. Do not skim.
+For each checklist item: read the article, verify the rule, then mark the item with `[V]`.
+Only mark `[V]` after you have actually checked — not as a placeholder.
+When the full checklist is marked, scan for any remaining `[ ]` and re-check those lines before proceeding.
 
 Checklist:
 
@@ -612,11 +799,9 @@ Checklist:
 - [ ] No `## Next steps`, `## See also`, `## Related documentation`, `## Prerequisites`,
   `## Requirements`, `## Get started`, `## What's next`
 
-**Links:**
-- [ ] No standalone "For more details, see [X]" sentences
-- [ ] Link text 1–2 words maximum
+**Links** (script catches text length, &nbsp;, banned patterns, relative paths, docs.gcore.com URLs):
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
-- [ ] Subsequent mentions: plain "the Customer Portal" (no link)
+- [ ] Subsequent mentions: plain "the Customer Portal" (no link, no "Gcore" prefix)
 
 **Formatting:**
 - [ ] Bold only for clickable UI elements and field names
@@ -653,6 +838,7 @@ Checklist:
 - [ ] Article titles and headings in sentence case
 
 Fix every violation found. If a fix requires rewriting a paragraph, do it.
+If any items remain unmarked (`[ ]`) after the full pass — re-check those lines before closing Phase 6.
 
 ---
 
@@ -802,70 +988,29 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Present for review
+## Phase 9 — Create branch, commit, and push
 
-After completing Phase 8, scan every tab (Portal, API, Terraform, CLI) for
-template-language issues before presenting the report:
+**One article = one branch.** The branch name is always the Jira ticket key
+created in Phase 4 — even if the user mentioned a different name earlier in the
+conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
 
-**Template language check (all tabs):**
-- [ ] API tab: intro sentences for each endpoint must not all follow the exact same
-  "The [endpoint] endpoint [verb]s..." pattern. If every section opening is structurally
-  identical, note it as a style finding even if it is not a rule violation — it is a
-  signal that the section reads as machine-generated. Do not rewrite API sections (they
-  are out of scope for Portal regression), but record it in "Unrelated issues noticed."
-- [ ] Terraform tab: same check — if every section begins with the same sentence
-  structure or if paragraphs are one sentence each with no connecting prose, note it.
-- [ ] Portal tab: same check — no dictionary-card paragraphs, no consecutive sections
-  with identical opening patterns.
+**CRITICAL — never reuse a ticket number from earlier in the conversation or from
+a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
+during work on a different article as a planned next ticket — it does not belong
+to the current article. Always use the ticket key that was actually created and
+returned by the Phase 4 script in this session. Anything else is wrong.
 
-After completing Phase 8, present the article to the user for review.
-
-Report:
-
-```
-Article: [path]
-
-Regression findings applied: N
-  - [brief description of each]
-
-Style guide fixes applied: N
-  - [brief description of each]
-
-Unresolved / unverified findings:
-  - [finding] — reason unverified
-
-Prerequisites noted (not tested):
-  - [resource type]: covered in [article path] / no article found
-
-Unrelated issues noticed (not fixed):
-  - [issue] at [location] — recommend fixing separately
-
-Screenshots replaced: N
-  - Old: [filename] → New: [filename]
+```powershell
+cd C:\Projects\product-documentation_2
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
 ```
 
-Wait for the user's review feedback. Apply any additional fixes requested.
+Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
+was mentioned earlier in the conversation).
 
-**When applying review feedback — verify before fixing.**
-
-Do not apply review feedback blindly. Before making any change the user requests:
-
-1. Check whether it is factually correct — verify against the portal snapshot,
-   the article text, or the findings collected in Phase 2.
-2. If the requested change conflicts with what the portal actually shows,
-   or contradicts a finding already recorded — say so explicitly.
-   State what the portal shows and why the change may be incorrect.
-3. Only apply the fix after the user confirms, or after you have verified
-   that the change is accurate.
-
-**Never silently apply a correction that you have reason to believe is wrong.**
-The review is a conversation — if the user is mistaken about a UI label, a
-button name, or a factual detail, say so. Do not assume the user is always right
-about portal details; they may not have the portal open in front of them.
-
-**Do not create a commit or push until the user explicitly says to.**
-
-When the user approves, run the pre-commit checklist below, then commit and push.
+Run the pre-commit checklist below, then commit and push.
 
 **PowerShell git commit — do NOT use bash heredoc syntax.**
 
@@ -963,10 +1108,10 @@ three constants:
 ```python
 TICKET = "DOC-XXXX"           # the key created in Phase 4
 
-BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1514
+BRANCH = "DOC-XXXX"           # branch created in Phase 9, same as ticket key
 
-ARTICLE_PATH = "cloud/..."    # path from docs.json, no leading slash, no .mdx
-                               # e.g. cloud/getting-started/view-statistics-on-expenses
+ARTICLE_PATH = "hosting/..."  # path from docs.json, no leading slash, no .mdx
+                               # e.g. hosting/virtual-servers/order-a-virtual-server
 ```
 
 The script will:
@@ -999,11 +1144,11 @@ script is ready for the next article.
 
 ### Step 2 — Mark the article as done in the plan
 
-Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
-find the article's row, and add the Jira ticket key to the status column:
+Open `_planning/hosting-audit-plan.md` in `C:\Projects\product-documentation_2`,
+find the article's row, and update it:
 
 ```
-done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
+| done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX) | DOC-XXXX | `hosting/...` |
 ```
 
 ### Step 3 — Write the changelog entry
@@ -1011,7 +1156,7 @@ done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
 Create a file at:
 
 ```
-C:\Projects\docops-agent2\docs\changelogs\{article-slug}.md
+C:\Projects\product-documentation_2\_planning\changelogs\{article-slug}.md
 ```
 
 Where `{article-slug}` matches the MDX filename without the extension
@@ -1056,6 +1201,17 @@ Use this template:
 ## Screenshots removed (orphaned)
 
 - ...
+
+---
+
+## Portal verification log
+
+All elements tested in Phase 2, with pass/fail status. Every tested item must appear
+in this table — either as OK or as a reference to the FINDING number that covers it.
+
+| # | Element tested | Article says | Portal confirmed | Status |
+|---|---------------|--------------|-----------------|--------|
+| 1 | ... | ... | ... | OK / FINDING N |
 
 ---
 

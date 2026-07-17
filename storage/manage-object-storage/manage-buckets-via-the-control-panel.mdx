@@ -1,170 +1,704 @@
 ---
-title: Managing buckets through the customer portal
+title: Managing buckets
 sidebarTitle: Manage buckets
-ai-navigation: Create S3 buckets in Gcore Object Storage with naming constraints (3-63 characters, lowercase, no underscores or consecutive dots), configure CORS policy per bucket, and manage file uploads via the customer portal file manager using Access Key and Secret Key authentication.
+ai-navigation: Create and manage S3 buckets via Customer Portal, REST API, or Terraform - configure CORS, public access, and lifecycle policies for automatic object deletion.
 ---
 
-## Create a bucket
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-1\. Navigate to the [Object Storage](https://portal.gcore.com/storage/storages/list) section. Click the relevant storage name.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
+<p>Gcore Object Storage organizes files into buckets. The built-in file manager handles uploading and organizing files, with controls for public access and lifecycle policies.</p>
 
-<Frame>![Open the Buckets interface](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-10.png)</Frame>
+## Bucket creation
 
+<Steps>
+  <Step title="Open the bucket list">
+    Navigate to the [Gcore Customer Portal](https://portal.gcore.com) > **Storage** > **Object Storage** and click the relevant storage name. Alternatively, open the storage's three-dot menu and select **Buckets**.
 
+    <Frame>![Object Storage list with storage rows](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-10.png)</Frame>
+  </Step>
+  <Step title="Click Add new bucket">
+    <Frame>![Bucket list with Add new bucket button](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-20.png)</Frame>
+  </Step>
+  <Step title="Name the bucket">
+    In the dialog that appears, enter a name that meets the following criteria:
 
-You can access the bucket interface by clicking the three dots on the right side and selecting **Buckets**.
+    - 3–63 characters.
+    - Lowercase only.
+    - No underscores, trailing dashes, consecutive dots, or a mix of dots and dashes — these conflict with DNS notation rules.
+    - Unique across the entire Gcore Object Storage system. A `This bucket name already exists. Please use a different name` error appears if the name is taken.
+  </Step>
+  <Step title="Click Create">
+  </Step>
+</Steps>
 
-2\. Click **Add new bucket**.
+<Note>Avoid using sensitive information in the bucket name. The bucket name appears in object URLs and is publicly visible.</Note>
 
-
-<Frame>![Add new bucket](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-20.png)</Frame>
-
-
-
-3\. A pop-up window will appear. Input a name for your bucket that meets the following criteria:
-
-  * Between 3 to 63 characters in length.
-  * Lowercase only.
-  * No underscores, trailing dashes, consecutive dots, or a mix of dots and dashes; they conflict with DNS notation rules.
-  * The bucket name must be unique within the entire Gcore Object Storage system, not just your account. If a name is already used, you'll receive a `This bucket name already exists. Please use a different name` error message.
-
-
-
-Click **Create**.
-
-**Important note** : Do not use sensitive information in the bucket name as it will be visible in the object's URL, potentially posing a security risk.
-
-Once you've completed these steps, your bucket will be created and prepared for the following functions:
-
-  * [File management](/storage/manage-object-storage/manage-buckets-via-the-control-panel#file-manager) (includes uploading and other related tasks)
-  * [Providing HTTP access to all files within the bucket](/storage/manage-object-storage/manage-buckets-via-the-control-panel#configuring-http-access)
-  * [Setting a lifecycle policy](/storage/manage-object-storage/manage-buckets-via-the-control-panel#adding-lifecycle-policy-for-s3-in-luxembourg-only) (available only for the S3 Luxembourg location)
-
-
+<p>The new bucket appears in the list once created. The following sections cover how to upload and manage files, control public access, and configure lifecycle policies.</p>
 
 ## File manager
 
-### Access (Override CORS)
+<p>The file manager is a browser-based interface for managing files in a bucket. Two setup steps are required before use: configuring CORS and authenticating with S3 credentials.</p>
 
-To access the file manager (Override CORS), you must add `https://storage.gcore.com` to your list of approved origins. This is a one-time action.
+### CORS setup
 
-To access the file manager, click the bucket name you created. A pop-up will appear where you can select **Override CORS**.
+<p>To access the file manager, add `https://portal.gcore.com` to the bucket's CORS policy. This is a one-time setup per bucket.</p>
 
-**Note** : CORS must be set up individually for each bucket.
+<p>Click the bucket name to open the access settings dialog, then click **Override CORS**.</p>
 
+<Note>Configure CORS individually for each bucket.</Note>
 
-<Frame>![Override CORS](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-30.gif)</Frame>
+<Frame>![Override CORS dialog](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-30.png)</Frame>
 
-
-
-You also have the option to set the CORS policy through the [API](/api-reference/storage/storage/create-s3-bucket-cors). This method allows you to override CORS for not just `https://storage.gcore.com` but also for other domains.
+<p>The [API](/api-reference/storage/storage/create-s3-bucket-cors) also supports multiple allowed origins beyond `https://portal.gcore.com`.</p>
 
 ### Authorization
 
-To authorize, click on the bucket name, enter the Access key and Secret key, then click **Auth**.
+<p>To authorize, click the bucket name, enter the Access key and Secret key, then click **Auth**.</p>
 
+<Frame>![Authorization form for the file manager](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-40.png)</Frame>
 
-<Frame>![Authorize to file manager](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-40.gif)</Frame>
-
-
-
-You can access the file manager by clicking the three dots on the right side and selecting **File manager**.
-
+<p>Alternatively, access the file manager from the bucket's three-dot menu by selecting **File manager**.</p>
 
 <Accordion title="Access key and Secret key features">
-**Note** : If you have entered keys, they will be saved and will not need to be re-entered within the session. Keys will be requested for each new session.
+<Note>Keys entered during a session remain active for that session. Each new session requires entering them again.</Note>
 
-To avoid the need for manual input, save the Access key and Secret key with the browser functionality. 
+<p>To avoid re-entering keys manually, save them using the browser's credential manager.</p>
 
+<p>Storage creation generates the Access key and Secret key. Gcore does not store these values. To regenerate lost keys, click **Generate new keys** in the **Object Storage** list using the three-dot menu.</p>
 
-<Frame>![Manage passwords browser functionality](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-50.png)</Frame>
-
-
-
-The Access key and Secret key are generated during storage creation. We don't store them in our system for security and privacy reasons. If you've forgotten the values, click **Generate new keys** in the [Storages](https://portal.gcore.com/storage/storages/list) tab.
-
-
-<Frame>![Generate new keys](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-60.png)</Frame>
-
+<Frame>![Object storage three-dot menu with the Generate new keys option](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-60.png)</Frame>
 
 </Accordion>
 
-
 ### Adding folders
 
-Once you're [authorized in the file manager](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization), click **Add folder**. Enter the desired name in the field provided and click **Create**.
+<p>After [authorizing](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization), click **Add folder**. Enter a name in the field and click **Create**.</p>
 
+<Frame>![Add folder dialog](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-70.png)</Frame>
 
-<Frame>![Creation of folders](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-70.gif)</Frame>
-
-
-
-In the interface, you can view the last modification date. To open the folder, simply click its name.
+<p>Each folder displays its last modification date. Click a folder name to open it.</p>
 
 ### Uploading files
 
-To upload files, [authorize access to your bucket](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization) and click **Select and upload file(s)** either in the bucket root or within a specific folder. Then, follow the standard upload process.
+<p>To upload files, [authorize](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization) and click **Select and upload file(s)** either in the bucket root or within a specific folder. Then, follow the standard upload process.</p>
 
-
-<Frame>![Uploading of files](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-80.png)</Frame>
-
-
+<Frame>![File manager with uploaded file and folder](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-80.png)</Frame>
 
 ### Deleting folders and files
 
-To delete folders or files, [authorize access to your bucket](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization) and click **Delete** next to the desired object. Alternatively, select the checkboxes next to the object names and click **Delete selected**.
+<p>To delete folders or files, [authorize](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization) and click **Delete** next to the desired object. Alternatively, select the checkboxes next to the object names and click **Delete selected**.</p>
 
+<Frame>![Delete confirmation dialog](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-90.png)</Frame>
 
-<Frame>![Deletion of files](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-90.png)</Frame>
+<Note>Deleting a folder removes all files nested within it.</Note>
 
+### Copying file URLs
 
+<p>To copy file URLs, [authorize](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization), select objects, and click the relevant button: **Copy S3 URL** or **Copy URL**.</p>
 
-**Note** : Deleting a folder will also delete any nested files within it.
+<Frame>![Copy S3 URL and Copy URL buttons visible for a selected file](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-100.png)</Frame>
 
-### Copying URL or object storage URL
+<p>The links for the file `image 3972.png` look like this:</p>
 
-To copy the links of certain files, [authorize access to your bucket](/storage/manage-object-storage/manage-buckets-via-the-control-panel#authorization), select objects and click the relevant buttons: **Copy S3 URL** or **Copy URL**.
+- `s3://s-ed1.cloud.gcore.lu/000-sample-for-articles/test/image%203972.png`
+- `https://s-ed1.cloud.gcore.lu/000-sample-for-articles/test/image%203972.png`
 
-
-<Frame>![Copy S3 URL and Copy URL](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-100.png)</Frame>
-
-
-
-For instance, the links for the file `image 3972.png` will look like this:
-
-  * `s3://s-ed1.cloud.gcore.lu/000-sample-for-articles/test/image%3972.png`
-  * `https://s-ed1.cloud.gcore.lu/000-sample-for-articles/test/image%3972.png`
-
-
-
-**Note** : If you haven't enabled [HTTP access to all files](/storage/manage-object-storage/manage-buckets-via-the-control-panel#configuring-http-access), you'll encounter a 403 error when opening the file.
+<Note>Without public HTTP access enabled, the direct file URL returns a 403 error.</Note>
 
 ## Managing access
 
-If you wish to use [Gcore Object Storage as the origin for a CDN resource](/storage/use-storage-as-the-origin-for-your-cdn-resource) or to make files accessible via an Object Storage URL, you must allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and click **Public access to all files**. Then, click **Apply** in the pop-up window.
+<p>Enable public HTTP access to make files directly accessible by URL or to serve them through a [CDN&nbsp;origin](/storage/use-storage-as-the-origin-for-your-cdn-resource). Click the three-dot menu on the bucket row, select **Public access to all files**, and confirm by clicking **Apply**.</p>
 
+<Frame>![Confirmation dialog for enabling public HTTP access to all files in the bucket](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/http-access-s3-bucket.png)</Frame>
 
-<Frame>![Configure HTTP access to all files](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/http-access-s3-bucket.png)</Frame>
+<p>To revert to private access, click the three-dot menu on the bucket row and click **Default access to all files**.</p>
 
-
-
-if you want to make objects unavailable via HTTP, meaning make them private, repeat the steps from the instructions above, go to the bucket interface, click on the three dots on the right, and click **Default access to all files**. 
-
-
-<Frame>![Configure default access to all files](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/default-access-s3-bucket.png)</Frame>
-
-
+<Frame>![Confirmation dialog for reverting the bucket to default private access](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/default-access-s3-bucket.png)</Frame>
 
 ## Adding lifecycle policy (for S3 in Luxembourg only)
 
-To add a lifecycle policy, navigate to the bucket interface, click the three dots to the right, and select **Lifecycle management**. Set how long files should be retained in your bucket before deletion and click **Save changes**.
+<p>Click the three-dot menu on the bucket row and select **Lifecycle Management**. Set the retention period and click **Save changes**.</p>
 
+<Frame>![Lifecycle policy configuration dialog](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-120.png)</Frame>
 
-<Frame>![Set lifecycle policy](/images/docs/storage/manage-object-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-120.gif)</Frame>
+<p>To remove an existing policy, click **Cancel policy**.</p>
 
+<p>For other storage locations, configure lifecycle policies with the [AWS&nbsp;CLI](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli).</p>
 
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
 
-If you don't want any expiry time, click **Cancel policy**.
+<p>Bucket operations within an S3 storage — creation, CORS rules, public access, and lifecycle policies — are managed through the buckets endpoint. Each request requires the numeric storage ID, returned when [creating&nbsp;storage](/storage/create-an-s3-or-sftp-storage) or available from the [storage&nbsp;list](/api-reference/storage/storage/list-object-storages).</p>
 
-You can still set a lifecycle policy if your storage is outside the S3 Luxembourg location by using the AWS CLI tool, as outlined in the [separate guide](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli).
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STORAGE_ID="{YOUR_STORAGE_ID}"
+```
+
+## Create bucket
+
+<p>Bucket names must be globally unique across the Gcore Object Storage system, 3–63 lowercase characters, with no underscores, trailing dashes, consecutive dots, or combinations of dots and dashes.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Globally unique bucket name, 3–63 lowercase characters |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    bucket = client.storage.object_storages.buckets.create(
+        storage_id,
+        name="my-bucket",
+    )
+    print(f"Bucket: {bucket.name}  storage_id={bucket.storage_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        bucket, err := client.Storage.ObjectStorages.Buckets.New(ctx, storageID, storage.ObjectStorageBucketNewParams{
+            Name: "my-bucket",
+        })
+        if err != nil {
+            log.Fatalf("create bucket: %v", err)
+        }
+        fmt.Printf("Bucket: %s  storage_id=%d\n", bucket.Name, bucket.StorageID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-bucket"}'
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "name": "my-bucket",
+      "storage_id": 13799,
+      "cors": null,
+      "lifecycle": null,
+      "policy": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List buckets
+
+<p>Returns all buckets in a storage, including their current CORS, lifecycle, and public access settings.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    buckets = client.storage.object_storages.buckets.list(storage_id)
+    for b in buckets:
+        print(f"{b.name}  is_public={b.policy.is_public if b.policy else False}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.Storage.ObjectStorages.Buckets.List(ctx, storageID, storage.ObjectStorageBucketListParams{})
+        if err != nil {
+            log.Fatalf("list buckets: %v", err)
+        }
+        for _, b := range page.Results {
+            fmt.Printf("%s  is_public=%v\n", b.Name, b.Policy.IsPublic)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "name": "my-bucket",
+          "storage_id": 13799,
+          "cors": {
+            "allowed_origins": ["https://portal.gcore.com"]
+          },
+          "lifecycle": null,
+          "policy": {
+            "is_public": false
+          }
+        },
+        {
+          "name": "my-other-bucket",
+          "storage_id": 13799,
+          "cors": null,
+          "lifecycle": {
+            "expiration_days": 30
+          },
+          "policy": {
+            "is_public": true
+          }
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Configure CORS
+
+<p>CORS rules control which web origins can make direct browser requests to the bucket. Sending an empty array removes all CORS rules.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cors.allowed_origins` | Yes | List of allowed origin URLs, e.g. `["https://portal.gcore.com"]`. Send `[]` to remove CORS. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    bucket = client.storage.object_storages.buckets.update(
+        "my-bucket",
+        storage_id=storage_id,
+        cors={"allowed_origins": ["https://portal.gcore.com", "https://example.com"]},
+    )
+    print(f"Allowed origins: {bucket.cors.allowed_origins}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        bucket, err := client.Storage.ObjectStorages.Buckets.Update(ctx, "my-bucket", storage.ObjectStorageBucketUpdateParams{
+            StorageID: storageID,
+            Cors: storage.ObjectStorageBucketUpdateParamsCors{
+                AllowedOrigins: []string{"https://portal.gcore.com", "https://example.com"},
+            },
+        })
+        if err != nil {
+            log.Fatalf("update CORS: %v", err)
+        }
+        fmt.Printf("Allowed origins: %v\n", bucket.Cors.AllowedOrigins)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"cors": {"allowed_origins": ["https://portal.gcore.com", "https://example.com"]}}'
+    ```
+
+    The API returns the updated bucket object with `cors.allowed_origins` set.
+  </Tab>
+</Tabs>
+
+## Enable or disable public access
+
+<p>Setting `is_public` to `true` allows unauthenticated downloads of all objects in the bucket by direct URL. Set to `false` to require S3 credentials for all requests.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    # Enable public access
+    bucket = client.storage.object_storages.buckets.update(
+        "my-bucket",
+        storage_id=storage_id,
+        policy={"is_public": True},
+    )
+    print(f"is_public={bucket.policy.is_public}")
+
+    # Revert to private
+    bucket = client.storage.object_storages.buckets.update(
+        "my-bucket",
+        storage_id=storage_id,
+        policy={"is_public": False},
+    )
+    print(f"is_public={bucket.policy.is_public}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Enable public access
+        bucket, err := client.Storage.ObjectStorages.Buckets.Update(ctx, "my-bucket", storage.ObjectStorageBucketUpdateParams{
+            StorageID: storageID,
+            Policy: storage.ObjectStorageBucketUpdateParamsPolicy{
+                IsPublic: param.NewOpt[bool](true),
+            },
+        })
+        if err != nil {
+            log.Fatalf("enable public access: %v", err)
+        }
+        fmt.Printf("is_public=%v\n", bucket.Policy.IsPublic)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Enable public access
+    curl -X PATCH "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"policy": {"is_public": true}}'
+
+    # Revert to private
+    curl -X PATCH "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"policy": {"is_public": false}}'
+    ```
+
+    The API returns the updated bucket object with `policy.is_public` reflecting the new value.
+  </Tab>
+</Tabs>
+
+## Set lifecycle policy
+
+<p>Lifecycle policies automatically delete objects after a set number of days. This feature is available for S3 storage in Luxembourg only. Set `expiration_days` to a positive integer to enable, or to `0` to remove an existing policy.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `lifecycle.expiration_days` | Yes | Days before objects are deleted. Use `0` to remove the rule. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    # Set 30-day expiration
+    bucket = client.storage.object_storages.buckets.update(
+        "my-bucket",
+        storage_id=storage_id,
+        lifecycle={"expiration_days": 30},
+    )
+    print(f"expiration_days={bucket.lifecycle.expiration_days}")
+
+    # Remove the lifecycle policy
+    bucket = client.storage.object_storages.buckets.update(
+        "my-bucket",
+        storage_id=storage_id,
+        lifecycle={"expiration_days": 0},
+    )
+    print(f"lifecycle={bucket.lifecycle}")  # None
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Set 30-day expiration
+        bucket, err := client.Storage.ObjectStorages.Buckets.Update(ctx, "my-bucket", storage.ObjectStorageBucketUpdateParams{
+            StorageID: storageID,
+            Lifecycle: storage.ObjectStorageBucketUpdateParamsLifecycle{
+                ExpirationDays: param.NewOpt[int64](30),
+            },
+        })
+        if err != nil {
+            log.Fatalf("set lifecycle: %v", err)
+        }
+        fmt.Printf("expiration_days=%d\n", bucket.Lifecycle.ExpirationDays)
+
+        // Remove the lifecycle policy
+        bucket, err = client.Storage.ObjectStorages.Buckets.Update(ctx, "my-bucket", storage.ObjectStorageBucketUpdateParams{
+            StorageID: storageID,
+            Lifecycle: storage.ObjectStorageBucketUpdateParamsLifecycle{
+                ExpirationDays: param.NewOpt[int64](0),
+            },
+        })
+        if err != nil {
+            log.Fatalf("remove lifecycle: %v", err)
+        }
+        fmt.Printf("lifecycle removed: expiration_days=%d\n", bucket.Lifecycle.ExpirationDays)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Set 30-day expiration
+    curl -X PATCH "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"lifecycle": {"expiration_days": 30}}'
+
+    # Remove the lifecycle policy
+    curl -X PATCH "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"lifecycle": {"expiration_days": 0}}'
+    ```
+
+    The API returns the updated bucket object. When the policy is removed, `lifecycle` is `null`.
+  </Tab>
+</Tabs>
+
+## Delete bucket
+
+<p>Deleting a bucket permanently removes it and all objects it contains. The bucket name becomes available again after deletion.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    storage_id = int(os.environ["STORAGE_ID"])
+
+    client.storage.object_storages.buckets.delete("my-bucket", storage_id=storage_id)
+    print("Bucket deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        storageID, _ := strconv.ParseInt(os.Getenv("STORAGE_ID"), 10, 64)
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        err := client.Storage.ObjectStorages.Buckets.Delete(ctx, "my-bucket", storage.ObjectStorageBucketDeleteParams{
+            StorageID: storageID,
+        })
+        if err != nil {
+            log.Fatalf("delete bucket: %v", err)
+        }
+        fmt.Println("Bucket deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/buckets/my-bucket" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare S3 buckets with CORS rules, public access policy, and lifecycle settings using the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create bucket
+
+<p>Declares a bucket in an existing S3 storage. CORS rules, public access, and lifecycle policy are optional — omit any block to leave that setting unconfigured.</p>
+
+```hcl
+resource "gcore_storage_object_storage_bucket" "example" {
+  storage_id = var.storage_id
+  name       = "my-bucket"
+
+  cors = {
+    allowed_origins = ["https://portal.gcore.com"]
+  }
+
+  policy = {
+    is_public = false
+  }
+
+  storage_object_storage_bucket_lifecycle = {
+    expiration_days = 30
+  }
+}
+
+variable "storage_id" {
+  type = number
+}
+```
+
+```bash
+terraform apply
+```
+
+## Update bucket settings
+
+<p>Edit any field in the resource block and run `terraform apply`. To remove the lifecycle policy, omit the `storage_object_storage_bucket_lifecycle` attribute.</p>
+
+```hcl
+resource "gcore_storage_object_storage_bucket" "example" {
+  storage_id = var.storage_id
+  name       = "my-bucket"
+
+  cors = {
+    allowed_origins = ["https://portal.gcore.com", "https://example.com"]
+  }
+
+  policy = {
+    is_public = true
+  }
+
+  # Omit storage_object_storage_bucket_lifecycle to remove the lifecycle policy
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete bucket
+
+<p>Remove the resource block — Terraform deletes the bucket and all its objects on the next apply.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_storage_object_storage_bucket" "example" {
+#   storage_id = var.storage_id
+#   name       = "my-bucket"
+# }
+```
+
+```bash
+terraform apply
+```
+
+  </MethodSection>
+</MethodSwitch>

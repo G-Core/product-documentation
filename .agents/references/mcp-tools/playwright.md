@@ -12,7 +12,7 @@ mcp__playwright__browser_navigate   — open a URL
 mcp__playwright__browser_click      — click a UI element
 mcp__playwright__browser_type       — type into a field
 mcp__playwright__browser_snapshot   — get DOM/accessibility tree (read UI labels)
-mcp__playwright__browser_screenshot — capture the current page visually
+mcp__playwright__browser_take_screenshot — capture the current page visually
 mcp__playwright__browser_evaluate   — run JavaScript (scroll, zoom, collapse sidebar)
 mcp__playwright__browser_select     — select from a dropdown
 mcp__playwright__browser_hover      — hover over an element
@@ -20,10 +20,10 @@ mcp__playwright__browser_hover      — hover over an element
 
 **Key distinction:**
 - Use `browser_snapshot` to **read** current UI element names, labels, button text
-- Use `browser_screenshot` to **capture** a visual for comparison or saving
+- Use `browser_take_screenshot` to **capture** a visual for comparison or saving
 
 When verifying that UI matches an article — always `browser_snapshot` first to read
-the actual labels, then `browser_screenshot` to capture if a new screenshot is needed.
+the actual labels, then `browser_take_screenshot` to capture if a new screenshot is needed.
 
 ---
 
@@ -122,10 +122,44 @@ When the audit or screenshot workflow requires creating a resource (instance, ne
 
 Do not submit a full-page screenshot when the subject is a small part of the page.
 
-- **Crop to the dialog or form:** use the `clip` parameter in `browser_screenshot`
+`browser_take_screenshot` does NOT support a `clip` parameter. Use these methods instead:
+
+**Method 1 — Element screenshot (preferred):**
+Use the `element` + `target` parameters to capture a specific DOM element. The tool automatically crops to the element's bounding box, cutting out white borders, sidebar, and browser chrome.
+
+```
+browser_take_screenshot(
+  element="main content area",
+  target="[class*='isp-content'], main, .main-content",
+  filename="C:\\Users\\...\\screenshot.png"
+)
+```
+
+For the Gcore Hosting portal (`hosting.gcore.com/billmgr`), the main content wrapper is typically `[class*='isp-content']` or the inner panel — get the exact selector from a snapshot first.
+
+**Method 2 — Zoom + full viewport:**
+```javascript
+// browser_evaluate before screenshot
+document.body.style.zoom = '0.85'  // zoom out to fit wide content
+```
+
+Then reset after:
+```javascript
+document.body.style.zoom = '1'
+```
+
+**Method 3 — Hide whitespace with CSS:**
+```javascript
+// browser_evaluate — removes body margin/padding that creates white borders
+document.body.style.margin = '0';
+document.body.style.padding = '0';
+```
+
 - **Zoom in** when controls or labels would otherwise be too small to read
 - **Zoom out** when a wide table would cause horizontal scrolling artifacts
-- Be dynamic — adjust zoom, scroll position, and clip per screenshot
+- Be dynamic — adjust zoom, scroll position, and element target per screenshot
+
+**Hosting portal note:** The `hosting.gcore.com/billmgr` portal has no sidebar collapse button. Always use element screenshot (Method 1) or hide the sidebar with CSS before capturing.
 
 ### File format
 
@@ -221,7 +255,7 @@ will not display in browsers.
 
 ## Screenshot file path limitation
 
-`browser_screenshot` with a `filename` parameter can only save files inside the
+`browser_take_screenshot` with a `filename` parameter can only save files inside the
 **current working directory** of the active project. It cannot write directly to
 `C:\Projects\product-documentation`.
 
@@ -270,7 +304,7 @@ When executing an article step-by-step:
 1. Open the portal and navigate to the section the article describes
 2. Follow the article's steps in order, as a real user would
 3. At each step, use `browser_snapshot` to read actual current UI labels
-4. Use `browser_screenshot` to capture screens that have a corresponding screenshot
+4. Use `browser_take_screenshot` to capture screens that have a corresponding screenshot
 5. Record every divergence in FINDING format:
 
 ```

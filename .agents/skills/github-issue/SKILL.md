@@ -115,7 +115,7 @@ Determine the action:
 | End-to-end guide spanning products | NEW | `.agents/skills/cookbook/SKILL.md` |
 | Needs portal/API verification before editing | AUDIT first | `.agents/skills/full-audit/SKILL.md`, then update-page |
 
-Map public docs URLs to repo paths: strip `https://gcore.com/docs/` and
+Map public docs URLs to repo paths: strip `https://docs.gcore.com/` and
 append `.mdx`. Example: `/cdn/logs/logs-uploader` → `cdn/logs/logs-uploader.mdx`.
 
 Produce a brief before editing:

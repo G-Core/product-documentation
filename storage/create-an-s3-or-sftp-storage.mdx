@@ -1,94 +1,820 @@
 ---
 title: Create an object or SFTP storage
 sidebarTitle: Create Object Storage
-ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage in Gcore Object Storage with access keys, SSH keys, or password authentication; configure server alias, Expires header, and manage up to 3600 storages per account with maximum 1000 buckets per storage and 10 million objects per bucket.
+ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - includes S3 access key rotation and SFTP password management.
 ---
 
-## Storage types
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Gcore Object Storage offers three storage types:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-- **S3 Standard** – general-purpose S3-compatible storage for backups, content delivery, and most workloads
-- **S3 Fast** – high-performance S3-compatible storage optimized for AI/ML workloads, IoT telemetry, and latency-sensitive applications (available in Sines-2, Sines-3, and London-2)
-- **SFTP** – legacy file-based storage accessed via SFTP protocol, with the same pricing and billing terms as S3 Standard
+<p>Gcore Object Storage offers three storage types, each suited to different workloads and access protocols:</p>
 
-When creating a storage, the location name indicates both the storage type and the data center location.
+- **S3 Standard** — general-purpose S3-compatible storage for backups, content delivery, and most workloads
+- **S3 Fast** — high-performance S3-compatible storage optimized for AI/ML workloads, IoT telemetry, and latency-sensitive applications (available in Sines-2, Sines-3, and London-2)
+- **SFTP** — legacy file-based storage accessed via SFTP protocol, with the same pricing and billing terms as S3 Standard
 
 ## Create a storage
 
-To create a storage:
+<Steps>
+  <Step title="Open Object Storages">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Storage** > **Object Storages**.
+  </Step>
+  <Step title="Start creation">
+    Click **Add new object storage** in the top-right corner.
+  </Step>
+  <Step title="Enter storage details">
+    In the dialog, enter the storage name and select a location. The location name shows the storage type and data center — S3 Standard Luxembourg-2 or SFTP Amsterdam. SFTP locations appear and disappear based on available capacity.
 
-  1. In the Gcore Customer Portal, click **Add new storage** in the top-right corner of the screen.
-  2. Specify the storage name and location. The location name has two elements: the storage type (Object Storage or SFTP) and the city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
+    <Frame>![Add new object storage dialog with Name and Location fields](/images/docs/storage/create-an-s3-or-sftp-storage/add-object-storage-dialog.png)</Frame>
 
+    <Info>
+    A maximum of 3600 storages can be created per account.
+    </Info>
+  </Step>
+</Steps>
+### S3 Standard and S3 Fast
 
+<p>S3 Standard and S3 Fast use the same creation flow — the only difference is the location selected in the dropdown. Each S3 storage supports up to 1000 buckets and 10 million objects per bucket. For optimal performance, keep under 100K objects per bucket and distribute data across multiple buckets.</p>
 
-<Info>
-A maximum of 3600 storages can be created per account.
-</Info>
+<p>In the **Location** dropdown, select an **S3 Standard** or **S3 Fast** location, then click **Create** at the bottom of the dialog.</p>
 
-### Object storage
+<Frame>![Location dropdown in the Add new object storage dialog showing S3 and SFTP location options](/images/docs/storage/create-an-s3-or-sftp-storage/location-dropdown.png)</Frame>
 
-Object Storage has the following limits:
+<p>A **Details** dialog opens immediately, showing the storage credentials: access key, secret key, hostname, and location. Click **Copy object storage data** to copy all credentials at once. Save the keys — regenerating them invalidates the existing credentials.</p>
 
-- Maximum 1000 buckets per storage
-- Maximum 10 million objects per bucket (for optimal performance, keep under 100K objects and distribute across multiple buckets)
+<Frame>![Details dialog showing S3 storage credentials including access key, secret key, and hostname](/images/docs/storage/create-an-s3-or-sftp-storage/s3-storage-created-10.png)</Frame>
 
+#### S3 management options
 
+<p>The created storage appears in the storage list. To manage it, click **...** (three dots) next to the storage name and select an option:</p>
 
-To create an Object Storage, specify its name and location, and click the **Create** button.
+| Option | Description |
+|---|---|
+| Details | View the access key, secret key, hostname, and location. |
+| Generate new keys | Replace the current access and secret keys. A confirmation dialog warns that the existing key will be deactivated. Click **Yes** to proceed; the new keys appear in the **Details** dialog. |
+| Buckets | Manage the storage's [buckets](/storage/manage-object-storage/manage-buckets-via-the-control-panel). |
+| Delete object storage | Permanently delete the storage and all its contents. This action cannot be undone. |
 
-The next window displays both access and secret keys. Copy and save them immediately—the keys are shown only once.
+<Frame>![Object storage list with actions dropdown showing Details, Generate new keys, Buckets, and Delete object storage](/images/docs/storage/create-an-s3-or-sftp-storage/s3-storage-settings-20.png)</Frame>
 
+### SFTP storage
 
-<Frame>![Create a storage](/images/docs/storage/create-storage/s3-storage-created-10.png)</Frame>
+<p>SFTP storage requires choosing an authentication method during creation — password or SSH key. Both can be managed after creation.</p>
 
+<Steps>
+  <Step title="Select a location">
+    In the **Location** dropdown, select an **SFTP** location.
+  </Step>
+  <Step title="Enter a name">
+    Enter the storage name in the **Name** field.
+  </Step>
+  <Step title="Select authentication method">
+    Select **Password** or **SSH Key** as the authentication method. Leave the password field empty to generate one automatically.
+  </Step>
+  <Step title="Create">
+    Click **Create** at the bottom of the dialog.
 
+    <Frame>![Add new object storage dialog with SFTP Amsterdam location and password authentication fields](/images/docs/storage/create-an-s3-or-sftp-storage/sftp-storage-created-30.png)</Frame>
+  </Step>
+</Steps>
 
-The created storage appears in the storage list.
+#### SFTP management options
 
-To see its information (location, hostname), click the **Details** button.
+<p>After creation, manage the SFTP storage by clicking **...** (three dots) next to the storage name and selecting an option:</p>
 
-To regenerate lost keys, click **Generate new keys**.
+| Option | Description |
+|---|---|
+| Details | View the hostname and connection path. Use port 2200 to connect via SFTP. |
+| Edit | Configure the server alias and the HTTP `Expires` response header for files served over HTTP. Configuration details are in the [Edit&nbsp;dialog](#edit-dialog) section. |
+| Set/Update password | Set or replace the password used to authenticate SFTP connections. |
+| Remove password | Remove password authentication from the storage. After removal, only SSH key authentication is accepted. |
+| SSH keys manager | Add or remove [SSH&nbsp;keys](/storage/manage-sftp-storage/create-and-add-an-ssh-key-to-your-storage) for SFTP authentication. Up to five keys are allowed per storage. |
+| Delete object storage | Permanently delete the storage and all its contents. This action cannot be undone. |
 
-The **Delete storage** button permanently deletes all files in the storage.
+<Frame>![SFTP storage actions dropdown showing Details, Edit, password management, SSH keys manager, and Delete options](/images/docs/storage/create-an-s3-or-sftp-storage/sftp-storage-settings-40.png)</Frame>
 
+#### Edit dialog
 
-<Frame>![Delete storage](/images/docs/storage/create-storage/s3-storage-settings-20.png)</Frame>
+<p>The **Edit** dialog for SFTP storage has two fields. Open it by clicking **...** > **Edit** next to the storage name.</p>
 
+<Frame>![Edit dialog for SFTP storage with Server alias and Expires fields](/images/docs/storage/create-an-s3-or-sftp-storage/sftp-expires-header-50.png)</Frame>
 
+<p>In the **Server alias** field, enter a domain name (subdomains are supported), then add a CNAME record in DNS settings: `<server_name>.<host>`. For a storage named `12345-test` in Amsterdam, the record would be `CNAME 12345-test.ams.origin.gcdn.co`.</p>
 
-### SFTP
-
-To create an SFTP storage, specify the name, location, and preferred authentication method: SSH key or password. Both methods become available after storage creation.
-
-
-<Frame>![create an SFTP storage,](/images/docs/storage/create-storage/sftp-storage-created-30.png)</Frame>
-
-
-
-To see the hostname, click the **Details** button (use port 2200 to connect to the storage).
-
-Passwords can be set, removed, and updated. SSH keys (up to 5 per storage) are managed in the SSH keys manager.
-
-
-<Frame>![Dropdown](/images/docs/storage/create-storage/sftp-storage-settings-40.png)</Frame>
-
-
-
-To set an alias or regulate the Expires header value, click **Edit**.
-
-Specify a domain name (subdomains are supported) in the **Server alias** field, and add a CNAME record to the DNS settings: `<server_name>.<host>`. A storage named `12345-test` in Amsterdam would use the record `CNAME 12345-test.ams.origin.gcdn.co`.
-
-Expires header can be modified via the "Expires" field. The default value is a year.
-
-
-<Frame>![Edit popup](/images/docs/storage/create-storage/sftp-expires-header-50.png)</Frame>
-
-
+<p>In the **Expires** field, set the value of the HTTP `Expires` response header for files served over HTTP. Use the format `N years|months|weeks|days|hours|minutes|seconds`. The default is one year.</p>
 
 ## Storage status indicator
 
-Circles on the left from the storage IDs are status indicators.
+<p>Each storage row shows a colored circle to the left of the ID.</p>
 
-After creation or settings update (adding keys or changing password), it might take time for the requests to get processed. Orange color indicates a processing state, while green one shows that the storage is ready.
+<p>After creation or a settings update — adding keys or changing a password — the storage enters a processing state shown by an orange circle. A green circle indicates the storage is ready.</p>
+
+<Frame>![Storage list showing orange and green status circles next to storage entries](/images/docs/storage/create-an-s3-or-sftp-storage/storage-status-indicator-60.png)</Frame>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>S3-compatible and SFTP storages are provisioned with a single API call. For S3 storage, the secret key is returned only at creation time and when a new access key is created — it cannot be retrieved later.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Quickstart
+
+<p>The scripts below list available locations, create an S3 storage, and print the credentials.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. List available locations and select an S3-compatible one
+    locations = client.storage.locations.list()
+    s3_location = next(loc for loc in locations if loc.type == "s3_compatible")
+
+    # Step 2. Create S3 storage — access key and secret key are returned only here
+    storage = client.storage.object_storages.create(
+        location_name=s3_location.name,
+        name="my-storage",
+    )
+    print(f"Storage ID: {storage.id}")
+    print(f"Endpoint:   {storage.address}")
+    print(f"Full name:  {storage.full_name}")
+    print(f"Access key: {storage.access_keys[0].access_key}")
+    print(f"Secret key: {storage.access_keys[0].secret_key}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. List available locations and select an S3-compatible one
+        locations, err := client.Storage.Locations.List(ctx, storage.LocationListParams{})
+        if err != nil {
+            log.Fatalf("list locations: %v", err)
+        }
+        var locationName string
+        for _, loc := range locations.Results {
+            if loc.Type == "s3_compatible" {
+                locationName = loc.Name
+                break
+            }
+        }
+
+        // Step 2. Create S3 storage — access key and secret key are returned only here
+        s3, err := client.Storage.ObjectStorages.New(ctx, storage.ObjectStorageNewParams{
+            Name:         "my-storage",
+            LocationName: locationName,
+        })
+        if err != nil {
+            log.Fatalf("create storage: %v", err)
+        }
+        fmt.Printf("Storage ID: %d\n", s3.ID)
+        fmt.Printf("Endpoint:   %s\n", s3.Address)
+        fmt.Printf("Full name:  %s\n", s3.FullName)
+        fmt.Printf("Access key: %s\n", s3.AccessKeys[0].AccessKey)
+        fmt.Printf("Secret key: %s\n", s3.AccessKeys[0].SecretKey)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available locations
+
+<p>The locations endpoint returns all regions where Object Storage is available, including their type and S3 endpoint hostname. Pass the `name` field as `location_name` when creating storage.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    locations = client.storage.locations.list()
+    for loc in locations:
+        print(f"{loc.name}  type={loc.type}  endpoint={loc.address}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        locations, err := client.Storage.Locations.List(ctx, storage.LocationListParams{})
+        if err != nil {
+            log.Fatalf("list locations: %v", err)
+        }
+        for _, loc := range locations.Results {
+            fmt.Printf("%s  type=%s  endpoint=%s\n", loc.Name, loc.Type, loc.Address)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl https://api.gcore.com/storage/v4/locations \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 9,
+      "results": [
+        {
+          "technical_name": "s-ed1",
+          "name": "luxembourg-2",
+          "type": "s3_compatible",
+          "address": "luxembourg-2.storage.gcore.dev",
+          "title": "S3 Standard Luxembourg-2"
+        },
+        {
+          "technical_name": "ams",
+          "name": "ams",
+          "type": "sftp",
+          "address": "ams.origin.gcdn.co",
+          "title": "SFTP Amsterdam"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 2. Create S3 storage
+
+<p>Pass the `name` from the locations response as `location_name`. The response includes the access key and secret key — this is the only time the secret key is returned. Save it immediately.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `location_name` | Yes | Location `name` value from Step 1 — `luxembourg-2` for S3 Standard in Luxembourg |
+| `name` | Yes | Storage name. The API prefixes it with the account ID to form `full_name`, which is the bucket path used in S3 clients |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage = client.storage.object_storages.create(
+        location_name="luxembourg-2",
+        name="my-storage",
+    )
+    print(f"Storage ID: {storage.id}")
+    print(f"Endpoint:   {storage.address}")
+    print(f"Full name:  {storage.full_name}")
+    print(f"Access key: {storage.access_keys[0].access_key}")
+    print(f"Secret key: {storage.access_keys[0].secret_key}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        s3, err := client.Storage.ObjectStorages.New(ctx, storage.ObjectStorageNewParams{
+            Name:         "my-storage",
+            LocationName: "luxembourg-2",
+        })
+        if err != nil {
+            log.Fatalf("create storage: %v", err)
+        }
+        fmt.Printf("Storage ID: %d\n", s3.ID)
+        fmt.Printf("Endpoint:   %s\n", s3.Address)
+        fmt.Printf("Full name:  %s\n", s3.FullName)
+        fmt.Printf("Access key: %s\n", s3.AccessKeys[0].AccessKey)
+        fmt.Printf("Secret key: %s\n", s3.AccessKeys[0].SecretKey)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST https://api.gcore.com/storage/v4/object_storages \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"location_name": "luxembourg-2", "name": "my-storage"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": 13864,
+      "name": "my-storage",
+      "full_name": "1000503-my-storage",
+      "location_name": "luxembourg-2",
+      "address": "luxembourg-2.storage.gcore.dev",
+      "provisioning_status": "active",
+      "access_keys": [
+        {
+          "access_key": "L1M3FSX3T0B3TWDVINKT",
+          "secret_key": "Qt5mbsZWv6F6q4QySDmWuCfgQIBAHnkVefsPfATf"
+        }
+      ],
+      "created_at": "2026-07-13T13:06:54Z"
+    }
+    ```
+
+    Save the storage ID:
+
+    ```bash
+    export STORAGE_ID=13864
+    export OLD_ACCESS_KEY="L1M3FSX3T0B3TWDVINKT"
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Rotate access keys
+
+<p>Each S3 storage supports up to two active access keys, which allows rotating credentials without downtime — create the new key first, update clients, then delete the old one. The secret key is returned only when the key is created.</p>
+
+<p>**Create a new access key:**</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage_id = 13864
+
+    new_key = client.storage.object_storages.access_keys.create(storage_id)
+    print(f"New access key: {new_key.access_key}")
+    print(f"New secret key: {new_key.secret_key}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var storageID int64 = 13864
+
+        newKey, err := client.Storage.ObjectStorages.AccessKeys.New(ctx, storageID)
+        if err != nil {
+            log.Fatalf("create access key: %v", err)
+        }
+        fmt.Printf("New access key: %s\n", newKey.AccessKey)
+        fmt.Printf("New secret key: %s\n", newKey.SecretKey)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "access_key": "0CW9Q09ART50W9XB4O13",
+      "secret_key": "oO5jztJ4ewahrFGX9pMNIq0X3nfVVlfu9XVO9NLz",
+      "created_at": "2026-07-13T13:07:54Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>**Delete the old access key** after updating all clients to the new credentials:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage_id = 13864
+    old_access_key = "L1M3FSX3T0B3TWDVINKT"
+
+    client.storage.object_storages.access_keys.delete(old_access_key, storage_id=storage_id)
+    print("Old access key deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var storageID int64 = 13864
+        oldAccessKey := "L1M3FSX3T0B3TWDVINKT"
+
+        err := client.Storage.ObjectStorages.AccessKeys.Delete(ctx, oldAccessKey, storage.ObjectStorageAccessKeyDeleteParams{
+            StorageID: storageID,
+        })
+        if err != nil {
+            log.Fatalf("delete access key: %v", err)
+        }
+        fmt.Println("Old access key deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys/$OLD_ACCESS_KEY" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+## Create SFTP storage
+
+<p>SFTP storage uses a different endpoint and requires a `password_mode` field. Setting it to `auto` generates a random password returned in the creation response — the only time it is visible. Use `set` to provide a custom password, or `none` to disable password authentication and use SSH keys instead.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    sftp = client.storage.sftp_storages.create(
+        location_name="ams",
+        name="my-sftp-storage",
+        password_mode="auto",
+    )
+    print(f"Storage ID: {sftp.id}")
+    print(f"Hostname:   {sftp.address}")
+    print(f"Password:   {sftp.password}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        sftp, err := client.Storage.SftpStorages.New(ctx, storage.SftpStorageNewParams{
+            Name:         "my-sftp-storage",
+            LocationName: "ams",
+            PasswordMode: storage.SftpStorageNewParamsPasswordModeAuto,
+        })
+        if err != nil {
+            log.Fatalf("create SFTP storage: %v", err)
+        }
+        fmt.Printf("Storage ID: %d\n", sftp.ID)
+        fmt.Printf("Hostname:   %s\n", sftp.Address)
+        fmt.Printf("Password:   %s\n", sftp.Password)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST https://api.gcore.com/storage/v4/sftp_storages \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"location_name": "ams", "name": "my-sftp-storage", "password_mode": "auto"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": 13865,
+      "name": "my-sftp-storage",
+      "full_name": "1000503-my-sftp-storage",
+      "location_name": "ams",
+      "address": "ams.origin.gcdn.co",
+      "provisioning_status": "creating",
+      "has_password": true,
+      "password": "SVaUEHefakmx",
+      "created_at": "2026-07-13T13:08:43Z"
+    }
+    ```
+
+    Connect to the storage using SFTP on port 2200:
+
+    ```bash
+    sftp -P 2200 1000503-my-sftp-storage@ams.origin.gcdn.co
+    ```
+  </Tab>
+</Tabs>
+
+## Delete storage
+
+<p>Deleting a storage permanently removes all data it contains. S3 and SFTP storages use different endpoints.</p>
+
+<p>**Delete S3 storage:**</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage_id = 13864
+    client.storage.object_storages.delete(storage_id)
+    print("Storage deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var storageID int64 = 13864
+
+        err := client.Storage.ObjectStorages.Delete(ctx, storageID)
+        if err != nil {
+            log.Fatalf("delete storage: %v", err)
+        }
+        fmt.Println("Storage deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+<p>**Delete SFTP storage** uses the SFTP endpoint:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    sftp_id = 13865
+    client.storage.sftp_storages.delete(sftp_id)
+    print("SFTP storage deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var sftpID int64 = 13865
+
+        err := client.Storage.SftpStorages.Delete(ctx, sftpID)
+        if err != nil {
+            log.Fatalf("delete SFTP storage: %v", err)
+        }
+        fmt.Println("SFTP storage deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/sftp_storages/$SFTP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Provision S3-compatible and SFTP storages declaratively using the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create S3 storage
+
+<p>Declares an S3 storage and an optional additional access key for zero-downtime credential rotation. The storage is provisioned with one key automatically; `gcore_storage_access_key` creates a second one.</p>
+
+```hcl
+resource "gcore_storage_object_storage" "example" {
+  location_name = "luxembourg-2"
+  name          = "my-storage"
+}
+
+# Optional: second access key for zero-downtime rotation
+resource "gcore_storage_access_key" "extra" {
+  storage_id = gcore_storage_object_storage.example.id
+}
+
+output "s3_endpoint" {
+  value = gcore_storage_object_storage.example.address
+}
+
+output "s3_access_key" {
+  value = gcore_storage_object_storage.example.access_keys[0].access_key
+}
+
+output "s3_secret_key" {
+  value     = gcore_storage_object_storage.example.access_keys[0].secret_key
+  sensitive = true
+}
+
+output "extra_access_key" {
+  value = gcore_storage_access_key.extra.access_key
+}
+
+output "extra_secret_key" {
+  value     = gcore_storage_access_key.extra.secret_key
+  sensitive = true
+}
+
+# terraform import gcore_storage_object_storage.example '<storage_id>'
+# terraform import gcore_storage_access_key.extra '<storage_id>/<access_key>'
+```
+
+```bash
+terraform apply
+```
+
+## Rotate access keys
+
+<p>Declare a new `gcore_storage_access_key` resource to create a second key. Once clients are updated to use the new credentials, remove the resource block for the old key and apply to delete it.</p>
+
+```hcl
+# Add a new key resource, update clients, then remove this block:
+# resource "gcore_storage_access_key" "extra" {
+#   storage_id = gcore_storage_object_storage.example.id
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Delete S3 storage
+
+<p>Remove both resource blocks — Terraform deletes the extra access key first, then the storage.</p>
+
+```hcl
+# Remove or comment out both blocks:
+# resource "gcore_storage_access_key" "extra" { ... }
+# resource "gcore_storage_object_storage" "example" { ... }
+```
+
+```bash
+terraform apply
+```
+
+## Create SFTP storage
+
+<p>Declares an SFTP storage with an auto-generated password. After apply, use `full_name` as the login username when connecting on port 2200.</p>
+
+```hcl
+resource "gcore_storage_sftp" "example" {
+  location_name = "ams"
+  name          = "my-sftp-storage"
+  password_mode = "auto"
+}
+
+output "sftp_address" {
+  value = gcore_storage_sftp.example.address
+}
+
+output "sftp_full_name" {
+  value = gcore_storage_sftp.example.full_name
+}
+
+output "sftp_password" {
+  value     = gcore_storage_sftp.example.password
+  sensitive = true
+}
+
+# terraform import gcore_storage_sftp.example '<storage_id>'
+```
+
+```bash
+terraform apply
+```
+
+## Delete SFTP storage
+
+<p>Remove the resource block — Terraform deletes the storage on the next apply.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_storage_sftp" "example" {
+#   location_name = "ams"
+#   name          = "my-sftp-storage"
+#   password_mode = "auto"
+# }
+```
+
+```bash
+terraform apply
+```
+
+  </MethodSection>
+</MethodSwitch>

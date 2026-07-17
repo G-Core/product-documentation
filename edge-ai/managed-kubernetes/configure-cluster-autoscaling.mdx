@@ -1,0 +1,278 @@
+---
+title: Configure cluster autoscaling
+sidebarTitle: Autoscaling
+ai-navigation: Configure the Cluster Autoscaler for a Gcore GPU Kubernetes cluster via the Customer Portal, REST API, or Terraform.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The Cluster Autoscaler adjusts cluster size based on workload demand. When pods are pending due to insufficient resources, the autoscaler adds nodes. When nodes are underutilized, it removes them. Autoscaling operates within the min/max limits set per pool.</p>
+
+<Info>
+The Cluster Autoscaler scales based on CPU and memory utilization only. GPU utilization is not used as a scaling signal.
+</Info>
+
+<Steps>
+  <Step title="Navigate to the Advanced settings tab">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-cluster-autoscaling/configure-cluster-autoscaling-image1.png" alt="Advanced settings tab showing OIDC authentication and Cluster Autoscaler sections" />
+    </Frame>
+  </Step>
+  <Step title="Expand Cluster Autoscaler">
+  </Step>
+  <Step title="Configure the parameters and click Save changes">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/configure-cluster-autoscaling/configure-cluster-autoscaling-image2.png" alt="Cluster Autoscaler settings form showing scale-down delays, utilization threshold, and toggle options" />
+    </Frame>
+  </Step>
+</Steps>
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| Cluster scan interval | How often the autoscaler checks for pending pods | 10 seconds |
+| Cluster expander | Strategy for selecting which node group to scale | random |
+| Max node provision time | Maximum time to wait for a node to become ready | 15 minutes |
+| New pod scale up delay | Wait time before triggering scale-up for new pods | 0 seconds |
+| Post-addition scale-down delay | Wait time after adding a node before considering scale-down | 5 minutes |
+| Post-deletion scale-down delay | Wait time after deleting a node before the next deletion | 0 seconds |
+| Unneeded node delay | How long a node must be unneeded before removal | 5 minutes |
+| Scale-down utilization threshold | Node utilization below which it is considered for removal | 99% |
+| Max bulk deletion of empty nodes | Maximum empty nodes deleted at once | 10 |
+| Max graceful termination time | Time allowed for pods to terminate gracefully | 600 seconds |
+
+<p>If the autoscaler cannot provision enough capacity, increase the maximum node count for the affected pool in [Node&nbsp;pools](/edge-ai/managed-kubernetes/manage-node-pools).</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The Cluster Autoscaler adds nodes when pods are pending and removes underutilized nodes. All autoscaler parameters are configured through a single PATCH request to the cluster — omitted parameters keep their current values, and an empty object restores Gcore defaults.</p>
+
+<Info>
+The Cluster Autoscaler scales based on CPU and memory utilization only. GPU utilization is not used as a scaling signal.
+</Info>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set the following environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## Configure autoscaling
+
+<p>The `autoscaler_config` field is a flat key-value map where all values are strings, including numbers and booleans.</p>
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `scan-interval` | duration | How often the cluster is checked for scale-up or scale-down, e.g. `10s` |
+| `expander` | string | Node group selection strategy: `random`, `most-pods`, `least-waste`, `price`, `priority`, `grpc` |
+| `scale-down-unneeded-time` | duration | How long a node must be unneeded before removal, e.g. `10m` |
+| `scale-down-utilization-threshold` | float | Utilization ratio below which a node is considered for removal, e.g. `0.5` |
+| `scale-down-delay-after-add` | duration | Wait after scale-up before scale-down evaluation resumes, e.g. `10m` |
+| `max-node-provision-time` | duration | Maximum time to wait for a node to become ready, e.g. `15m` |
+| `max-empty-bulk-delete` | integer | Maximum number of empty nodes deleted at once |
+| `max-graceful-termination-sec` | integer | Seconds allowed for pod termination before forced removal |
+| `new-pod-scale-up-delay` | duration | Pods newer than this value are excluded from scale-up triggering, e.g. `10s` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    import gcore
+
+    client = gcore.Gcore()
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    result = client.cloud.k8s.clusters.update(
+        cluster_name=cluster_name,
+        autoscaler_config={
+            "scan-interval": "20s",
+            "scale-down-unneeded-time": "10m",
+            "scale-down-utilization-threshold": "0.5",
+            "expander": "least-waste",
+        },
+    )
+
+    task_id = result.tasks[0]
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state in ("FINISHED", "ERROR"):
+            break
+        time.sleep(5)
+
+    print("Autoscaling configured:", task.state)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        clusterName := os.Getenv("CLUSTER_NAME")
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            AutoscalerConfig: map[string]string{
+                "scan-interval":                    "20s",
+                "scale-down-unneeded-time":         "10m",
+                "scale-down-utilization-threshold": "0.5",
+                "expander":                         "least-waste",
+            },
+        })
+        if err != nil {
+            fmt.Fprintln(os.Stderr, err)
+            os.Exit(1)
+        }
+
+        taskID := result.Tasks[0]
+        for {
+            task, _ := client.Cloud.Tasks.Get(ctx, taskID)
+            if task.State == "FINISHED" || task.State == "ERROR" {
+                fmt.Println("Autoscaling configured:", task.State)
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "autoscaler_config": {
+          "scan-interval": "20s",
+          "scale-down-unneeded-time": "10m",
+          "scale-down-utilization-threshold": "0.5",
+          "expander": "least-waste"
+        }
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["facce763-b13a-4792-83ad-fefdcda7ae37"]}
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every five seconds until `state` is `FINISHED`.</p>
+
+<p>To restore all autoscaler parameters to Gcore defaults, send an empty object:</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"autoscaler_config": {}}'
+```
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure the Cluster Autoscaler for an existing GPU Kubernetes cluster using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `autoscaler_config` attribute is a flat string map — all values, including numbers and booleans, must be quoted.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Import an existing cluster with `terraform import` before modifying its autoscaler configuration.
+</Info>
+
+## Configure autoscaling
+
+<p>Add the `autoscaler_config` map to the cluster resource block and run `terraform apply`. Omitted parameters keep their current values.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  autoscaler_config = {
+    "scan-interval"                    = "20s"
+    "scale-down-unneeded-time"         = "10m"
+    "scale-down-utilization-threshold" = "0.5"
+    "expander"                         = "least-waste"
+  }
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
+
+## Reset to defaults
+
+<p>Set `autoscaler_config` to an empty map — the API restores all parameters to Gcore defaults on the next `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.35.3"
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  autoscaler_config = {}
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+</MethodSection>
+</MethodSwitch>

@@ -78,7 +78,7 @@ Same result: empty page on deploy.
 |------|---------|--------|
 | `portal` | `Customer Portal` | Active |
 | `api` | `REST API` | Active |
-| `terraform` | `Terraform` | Planned |
+| `terraform` | `Terraform` | Active |
 | `cli` | `CLI` | Planned |
 
 - `portal` always comes first — it is the default tab
@@ -559,6 +559,30 @@ Do **not** use `<Steps>` for conceptual lists, reference tables, or a single act
 - Body content inside `<Step>` follows all normal MDX rules: prose, `<Frame>`, code blocks, nested lists.
 - A `<Frame>` screenshot goes **inside** the relevant `<Step>`, after the instructions that describe the UI state being shown.
 - Do not number the steps manually — the component handles numbering.
+- **No body that restates the title.** If the body text is identical or near-identical to the title, omit the body entirely — the title alone is sufficient. A step with only a title renders correctly and is less noisy than a title + one-word restatement.
+
+**Wrong — body restates title:**
+```mdx
+<Step title="Create the cluster">
+  Click **Create Cluster**.
+</Step>
+
+<Step title="Select a region">
+  Select a region where Spot is available.
+</Step>
+```
+
+**Correct — body omitted when title says it all:**
+```mdx
+<Step title="Create the cluster">
+</Step>
+
+<Step title="Select a region">
+  <Frame>
+    <img src="..." alt="Region selector" />
+  </Frame>
+</Step>
+```
 
 ### Sections that should use Steps
 
