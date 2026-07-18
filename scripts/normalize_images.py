@@ -1,5 +1,6 @@
 """
 normalize_images.py — Enforce image folder hygiene in product-documentation.
+# codeowners-test
 
 Convention:
     images/docs/{product}/{article-slug}/
