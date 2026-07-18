@@ -39,6 +39,13 @@ log = logging.getLogger(__name__)
 IMAGES_ROOT = "images/docs"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
+# Folders under images/docs/ that are shared-asset libraries, not article
+# screenshot folders.  The normalizer never moves or deletes files here.
+PROTECTED_IMAGE_FOLDERS: set[str] = {
+    "images/docs/portal-icons",
+    "images/docs/home",
+}
+
 # Image product folder names that differ from MDX product folder names.
 PRODUCT_FOLDER_MAP: dict[str, str] = {
     "streaming-platform": "streaming",
@@ -189,6 +196,12 @@ def compute_plan(
 
     for folder in sorted(affected_folders):
         if not folder.is_dir():
+            continue
+
+        # Skip shared-asset folders that must not be renamed or deleted.
+        folder_rel = str(folder.relative_to(repo_root)).replace("\\", "/")
+        if any(folder_rel == p or folder_rel.startswith(p + "/") for p in PROTECTED_IMAGE_FOLDERS):
+            log.info("SKIP protected folder: %s", folder_rel)
             continue
 
         images_in_folder = sorted(
