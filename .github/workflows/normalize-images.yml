@@ -34,6 +34,14 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Pin normalize script to main branch version
+        # Always run the script as it exists on main, not on the PR branch.
+        # This ensures any hotfix to normalize_images.py takes effect immediately
+        # on all branches without requiring a rebase first.
+        run: |
+          git fetch origin main --depth=1
+          git checkout origin/main -- scripts/normalize_images.py
+
       - name: Detect changed files
         id: changed
         run: |
@@ -48,6 +56,17 @@ jobs:
           echo "$ADDED_IMAGES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Preview normalize plan (dry-run)
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          readarray -t files <<< "$CHANGED_FILES"
+          python scripts/normalize_images.py \
+            --repo . \
+            --changed-files "${files[@]}" \
+            --dry-run
+
       - name: Run normalize_images (own branch)
         if: github.event.pull_request.head.repo.full_name == github.repository
         env:
@@ -60,6 +79,23 @@ jobs:
             --repo . \
             --changed-files "${files[@]}" \
             --pr-images "${images[@]}"
+
+      - name: Guard against protected-path deletions
+        # Fail the job before committing if the normalizer would delete files from
+        # shared-asset folders (portal-icons/, home/).  Deletions there are never
+        # intentional and have caused the homepage icons to break three times.
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          DELETED=$(git diff --name-only --diff-filter=D)
+          PROTECTED=$(echo "$DELETED" | grep -E '^images/docs/(portal-icons|home)/' || true)
+          if [ -n "$PROTECTED" ]; then
+            echo "ERROR: normalizer would delete protected icon files:"
+            echo "$PROTECTED"
+            echo ""
+            echo "Add the folder to PROTECTED_IMAGE_FOLDERS in scripts/normalize_images.py"
+            echo "or restore the missing files before merging."
+            exit 1
+          fi
 
       - name: Regenerate llms.txt (own branch)
         if: github.event.pull_request.head.repo.full_name == github.repository
