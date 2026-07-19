@@ -126,7 +126,7 @@ Requires a running DS. IPMI and DCImanager access may require special account ac
 | todo | — | `hosting/dedicated-servers/manage/connect/connect-to-a-linux-server.mdx` |
 | done | DOC-1737 | `hosting/dedicated-servers/manage/connect/connect-to-a-windows-server.mdx` |
 | in_progress | — | `hosting/dedicated-servers/manage/log-in-to-dcimanager.mdx` |
-| in_progress | — | `hosting/dedicated-servers/manage/log-in-to-ipmi.mdx` |
+| done [DOC-1814](https://jira.gcore.lu/browse/DOC-1814) | DOC-1814 | `hosting/dedicated-servers/manage/log-in-to-ipmi.mdx` |
 
 ---
 
