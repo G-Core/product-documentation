@@ -137,7 +137,7 @@ Requires a running DS.
 | Status | Ticket | File |
 |--------|--------|------|
 | todo | — | `hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template.mdx` |
-| todo | — | `hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-your-iso-image.mdx` |
+| in_progress | — | `hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-your-iso-image.mdx` |
 
 ---
 
