@@ -25,9 +25,9 @@ These are the most-visited articles. Do these first.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| done | DOC-1704 | hosting-order-a-virtual-server | `hosting/virtual-servers/order-a-virtual-server.mdx` | merged
-| done | [DOC-1734](https://jira.gcore.lu/browse/DOC-1734) | DOC-1734 | `hosting/virtual-servers/upgrade-your-virtual-server.mdx` |
-| todo | — | `hosting/virtual-servers/delete-a-virtual-server.mdx` |
+| done | DOC-1704 | `hosting/virtual-servers/order-a-virtual-server.mdx` |
+| done | DOC-1734 | `hosting/virtual-servers/upgrade-your-virtual-server.mdx` |
+| done | DOC-1759 | `hosting/virtual-servers/delete-a-virtual-server.mdx` |
 
 ---
 
@@ -37,8 +37,8 @@ Short informational articles. No portal steps required for most.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| done | [DOC-1730](https://jira.gcore.lu/browse/DOC-1730) | DOC-1730 | `hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs.mdx` |
-| done | [DOC-1732](https://jira.gcore.lu/browse/DOC-1732) | DOC-1732 | `hosting/virtual-servers/before-purchase/test-the-connectivity-between-your-location-and-the-server-you-want-to-buy.mdx` |
+| done | DOC-1730 | `hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs.mdx` |
+| done | DOC-1732 | `hosting/virtual-servers/before-purchase/test-the-connectivity-between-your-location-and-the-server-you-want-to-buy.mdx` |
 
 ---
 
@@ -51,8 +51,8 @@ Requires a running VS from Group A.
 | done | DOC-1738 | `hosting/virtual-servers/manage/connect/connect-to-a-virtual-server-via-vnc.mdx` |
 | done | DOC-1739 | `hosting/virtual-servers/manage/connect/linux-server/connect-to-a-linux-server-via-control-panel.mdx` |
 | done | DOC-1740 | `hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh.mdx` |
-| done | [DOC-1742](https://jira.gcore.lu/browse/DOC-1742) | `hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections.mdx` |
-| done | [DOC-1741](https://jira.gcore.lu/browse/DOC-1741) | `hosting/virtual-servers/manage/connect/linux-server/manage-ssh-keys.mdx` |
+| done | DOC-1742 | `hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections.mdx` |
+| done | DOC-1741 | `hosting/virtual-servers/manage/connect/linux-server/manage-ssh-keys.mdx` |
 
 ---
 
@@ -62,11 +62,11 @@ Requires a running VS. VMmanager articles may need a separate test environment.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template.mdx` |
-| todo | — | `hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-your-iso-image.mdx` |
-| todo | — | `hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template-in-vmmanager-6.mdx` |
-| todo | — | `hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-in-vmmanager-6.mdx` |
-| in_progress | — | `hosting/virtual-servers/manage/operating-system/buy-a-windows-server.mdx` |
+| done | DOC-1748 | `hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template.mdx` |
+| done | DOC-1750 | `hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-your-iso-image.mdx` |
+| done | DOC-1751 | `hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template-in-vmmanager-6.mdx` |
+| done | DOC-1752 | `hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-in-vmmanager-6.mdx` |
+| done | DOC-1747 | `hosting/virtual-servers/manage/operating-system/buy-a-windows-server.mdx` |
 
 ---
 
@@ -76,8 +76,8 @@ Requires a running VS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address.mdx` |
-| todo | — | `hosting/virtual-servers/manage/networking/allocate-an-ipv6-address-in-vmmanager-6.mdx` |
+| done | DOC-1756 | `hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address.mdx` |
+| done | DOC-1754 | `hosting/virtual-servers/manage/networking/allocate-an-ipv6-address-in-vmmanager-6.mdx` |
 
 ---
 
@@ -87,10 +87,10 @@ Requires a running VS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| done | [DOC-1736](https://jira.gcore.lu/browse/DOC-1736) | DOC-1736 | `hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6.mdx` |
-| done | [DOC-1745](https://jira.gcore.lu/browse/DOC-1745) | `hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian.mdx` |
-| todo | — | `hosting/virtual-servers/manage/reboot-a-server.mdx` |
-| todo | — | `hosting/virtual-servers/manage/set-up-a-ptr-record.mdx` |
+| done | DOC-1736 | `hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6.mdx` |
+| done | DOC-1745 | `hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian.mdx` |
+| done | DOC-1325 | `hosting/virtual-servers/manage/reboot-a-server.mdx` |
+| done | DOC-1758 | `hosting/virtual-servers/manage/set-up-a-ptr-record.mdx` |
 
 ---
 
@@ -98,9 +98,9 @@ Requires a running VS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/virtual-servers/troubleshooting/remove-your-ip-address-from-blacklists.mdx` |
-| todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
-| todo | — | `hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports.mdx` |
+| done | DOC-1762 | `hosting/virtual-servers/troubleshooting/remove-your-ip-address-from-blacklists.mdx` |
+| done | DOC-1760 | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
+| done | DOC-1764 | `hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports.mdx` |
 | done | DOC-1775 | `hosting/virtual-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | done | DOC-1777 | `hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection.mdx` |
 
@@ -110,8 +110,8 @@ Requires a running VS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/dedicated-servers/order-a-dedicated-server.mdx` |
-| todo | — | `hosting/dedicated-servers/upgrade-your-dedicated-server.mdx` |
+| done | DOC-1811 | `hosting/dedicated-servers/order-a-dedicated-server.mdx` |
+| done | DOC-1812 | `hosting/dedicated-servers/upgrade-your-dedicated-server.mdx` |
 | todo | — | `hosting/dedicated-servers/delete-a-dedicated-server.mdx` |
 | todo | — | `hosting/dedicated-servers/check-statistics-of-your-dedicated-server.mdx` |
 
@@ -125,7 +125,7 @@ Requires a running DS. IPMI and DCImanager access may require special account ac
 |--------|--------|------|
 | todo | — | `hosting/dedicated-servers/manage/connect/connect-to-a-linux-server.mdx` |
 | done | DOC-1737 | `hosting/dedicated-servers/manage/connect/connect-to-a-windows-server.mdx` |
-| todo | — | `hosting/dedicated-servers/manage/log-in-to-dcimanager.mdx` |
+| in_progress | — | `hosting/dedicated-servers/manage/log-in-to-dcimanager.mdx` |
 | todo | — | `hosting/dedicated-servers/manage/log-in-to-ipmi.mdx` |
 
 ---
@@ -147,7 +147,7 @@ Requires a running DS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address.mdx` |
+| done | DOC-1755 | `hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address.mdx` |
 | todo | — | `hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card.mdx` |
 | todo | — | `hosting/dedicated-servers/manage/networking/connect-dedicated-servers-into-a-vlan.mdx` |
 
@@ -165,10 +165,10 @@ Requires a running DS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests.mdx` |
-| todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
+| done | DOC-1761 | `hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests.mdx` |
+| done | DOC-1763 | `hosting/dedicated-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors.mdx` |
-| todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-an-incorrect-ip-location.mdx` |
+| done | DOC-1765 | `hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-an-incorrect-ip-location.mdx` |
 | done | DOC-1778 | `hosting/dedicated-servers/troubleshooting/troubleshoot-packet-loss-or-high-ping.mdx` |
 
 ---

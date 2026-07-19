@@ -428,10 +428,9 @@ After completing all steps, clean up any test resources created during testing
 
 ## Phase 3 — Screenshot audit
 
-**Retake every screenshot in the article.** Do not skip screenshots that look
-correct — portal UI changes subtly over time and the only way to guarantee
-accuracy is to retake all of them. No screenshot should remain from before
-this regression run.
+For each screenshot in the article, navigate to the corresponding screen in the portal and **compare the current UI with the existing screenshot**. Retake only if the UI has visibly changed — layout, labels, buttons, or missing/added elements. If the screenshot still accurately represents the current portal state, mark it as `ok` and move on.
+
+**Do not retake screenshots unconditionally.** Retake only when the comparison reveals a real discrepancy. If the user has explicitly told you the screenshots are current, mark all as `ok` without opening the browser.
 
 ### Checklist
 
@@ -441,8 +440,12 @@ Before starting, list every `<Frame>` in the article with the following table:
 |---|----------|-----------------|--------|
 | 1 | `filename.png` | Navigation path or step | pending |
 
-Mark each row `done` after the screenshot is saved and the article updated.
-Do not mark Phase 3 as completed until every row is `done`.
+For each row, set status to:
+- `ok` — screenshot matches current portal UI, no retake needed
+- `retaken` — screenshot was outdated and has been replaced
+- `skip` — screenshot cannot be verified (GUI app, gated feature, user confirmed current)
+
+Do not mark Phase 3 as completed until every row has a final status.
 
 ### How to take each screenshot
 
