@@ -149,7 +149,7 @@ Requires a running DS.
 |--------|--------|------|
 | done | DOC-1755 | `hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address.mdx` |
 | todo | — | `hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card.mdx` |
-| todo | — | `hosting/dedicated-servers/manage/networking/connect-dedicated-servers-into-a-vlan.mdx` |
+| in_progress | — | `hosting/dedicated-servers/manage/networking/connect-dedicated-servers-into-a-vlan.mdx` |
 
 ---
 
