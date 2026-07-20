@@ -1,181 +1,93 @@
 ---
 title: 'FAQs and trobleshooting'
 sidebarTitle: 'FAQs and trobleshooting'
-ai-navigation: Configure Edge Proxy DDoS protection for TCP and UDP applications by assigning protected Anycast IP addresses, creating proxy rules with application type selection, and updating DNS A or AAAA records to route traffic through Gcore CDN edge network Points of Presence.
+ai-navigation: Troubleshoot Edge Proxy issues and find answers to common questions about setup, DNS configuration, application types, and traffic connectivity.
 ---
 
-This guide provides the answers to common questions and solutions to typical issues when using Edge Proxy.
+Edge Proxy assignments are automated and require no IP management. Most issues appear during initial DNS migration or when the application type is misconfigured.
 
-## General questions
+## Frequently asked questions
 
-### What is Edge Proxy?
+<AccordionGroup>
 
-Edge Proxy is a DDoS protection service that runs on the Gcore CDN edge network. It filters incoming traffic before forwarding it to your origin server.
+<Accordion title="Protected IP assignment">
+No. Gcore assigns a protected IP from the Anycast pool automatically.
+</Accordion>
 
-### What types of applications can I protect?
+<Accordion title="Changing the origin server IP">
+No. The origin IP cannot be changed after creation. To use a different origin IP, delete the proxy and create a new one — a new protected IP will be assigned.
+</Accordion>
 
-You can protect any TCP or UDP application, including:
+<Accordion title="Editing proxy settings">
+Yes, but partially. The proxy name and port mappings can be changed at any time from the **Edit protection** form. The origin IP cannot be changed.
+</Accordion>
 
-- Game servers (for example, Counter-Strike, Minecraft, FiveM)
-- Web servers and APIs
-- DNS servers
-- Voice servers (for example, TeamSpeak)
-- Custom TCP or UDP applications
+<Accordion title="Supported application types">
+Any TCP or UDP application can be protected. If the exact profile is not in the dropdown, select the closest matching engine or protocol (Unity, Unreal, or RakNet), or use generic TCP protection. An incorrect application type may cause legitimate traffic to be blocked during an attack.
+</Accordion>
 
-### How long does setup take?
+<Accordion title="Multiple proxies and applications">
+Yes. Multiple proxies can use the same origin IP with different ports or protocols, and several proxies can share the same protected IP address.
+</Accordion>
 
-The setup process typically takes less than five minutes. After you click **Start Protecting**, the proxy is provisioned in about 20 seconds.
+<Accordion title="Setup duration">
+Activation typically takes about 3 minutes after clicking **Start protecting**.
+</Accordion>
 
-### Does Edge Proxy add latency?
+</AccordionGroup>
 
-Edge Proxy is designed to add minimal latency. Traffic is routed to the nearest Point of Presence (PoP), which may improve routing efficiency in some cases.
+## DNS migration
 
-### Can I protect multiple applications?
+If clients connect using a domain name, update its A or AAAA record to point to the protected IP. Propagation depends on the DNS TTL and can take from a few minutes to 48 hours — lowering the TTL before the switch reduces downtime.
 
-Yes. You can create multiple proxy rules. Several rules can share the same protected IP address.
-
-### Do I need my own IP range or AS?
-
-No. Gcore assigns a protected Anycast IP address automatically.
-
-## Setup and configuration
-
-### Can I choose the protected IP address?
-
-No. The system automatically assigns a protected IP from the Gcore Anycast pool.
-
-### Can I reuse the same origin IP?
-
-Yes. You can create multiple proxy rules that use the same origin IP with different ports, protocols, or application types.
-
-### What happens if I select the wrong application type?
-
-Incorrect configuration may cause legitimate traffic to be blocked during an attack.
-
-To resolve this:
-
-- Delete the proxy  
-- Create a new one with the correct application type  
-
-### What if my application is not listed?
-
-If your application is not available in the list:
-
-- Select a matching engine or protocol (for example, Unity, Unreal, RakNet)  
-- Use TCP protection for TCP-based applications  
-- Contact support if you are unsure  
-
-### Can I edit an existing proxy?
-
-No. To change the configuration, delete the proxy and create a new one. A new protected IP may be assigned.
-
-## DNS and connectivity
-
-### Do I need to update DNS?
-
-Yes, if your application uses a domain name.
-
-- Update your A or AAAA record to the protected IP  
-- If using direct IP connections, share the new IP:PORT with users  
-
-### How long does DNS propagation take?
-
-Propagation depends on your DNS TTL and can take from a few minutes to 48 hours.
-
-To reduce downtime:
-
-- Lower the TTL before making changes  
-- Update the record  
-- Increase the TTL after propagation completes  
-
-### What happens to existing connections?
-
-Existing connections to the origin continue until clients reconnect. New connections use the protected IP.
+Existing connections to the origin continue until clients reconnect. New connections automatically use the protected IP.
 
 ## Troubleshooting
 
-### Clients cannot connect to the protected IP
+<AccordionGroup>
 
-Symptoms:
+<Accordion title="Clients cannot connect">
 
-Users cannot connect to your application using the protected IP and port.
+Verify that:
 
-Steps to resolve:
+- clients connect to the protected IP:PORT, not the origin address
+- the origin server is running and listening on the configured port
+- the proxy protocol matches the application (TCP or UDP)
+- firewall rules allow Gcore edge IPs
+- DNS resolves to the protected IP (check with `dig` or `nslookup`)
 
-1. Verify the protected IP and port  
-   - Check the values in the Customer Portal  
-   - Ensure you use the full IP:PORT pair  
+</Accordion>
 
-2. Check your origin server  
-   - Confirm the application is running  
-   - Verify it listens on the correct port and protocol  
+<Accordion title="High latency through the proxy">
 
-3. Verify protocol configuration  
-   - Ensure TCP or UDP matches your application  
+Compare latency on a direct connection vs the protected IP to isolate the source. If the origin server is far from Gcore PoPs, round-trip time increases. An incorrect application type can also cause retransmissions that appear as latency.
 
-4. Check firewall rules  
-   - Allow traffic from Gcore edge IPs  
-   - Do not restrict access to old client IPs only  
+</Accordion>
 
-5. Check DNS propagation  
-   - Verify DNS resolution using tools like `dig` or `nslookup`  
+<Accordion title="Legitimate traffic blocked during an attack">
 
-### High latency through the proxy
+The most common cause is an incorrect application type — the countermeasure profile is not tuned for the application and flags legitimate packets as malicious. Reconfigure the proxy with the correct application type. If the issue persists, [contact&nbsp;support](#contact-gcore-support).
 
-Symptoms:
+</Accordion>
 
-Users experience increased latency or lag.
+<Accordion title="Proxy active but no traffic reaches the application">
 
-Steps to resolve:
+Confirm clients are connecting to the protected IP:PORT and not the origin address directly. Test from a network other than the origin server's, as local routing may bypass the proxy.
 
-1. Compare latency  
-   - Test direct connection vs protected IP  
+</Accordion>
 
-2. Check origin location  
-   - Ensure your origin is close to Gcore PoPs  
-
-3. Verify application type  
-   - Incorrect settings may cause retransmissions  
-
-### Legitimate traffic is blocked during an attack
-
-Symptoms:
-
-Real users cannot connect or are disconnected during an attack.
-
-Steps to resolve:
-
-1. Verify application type  
-   - Use the correct countermeasure for your application  
-
-2. Contact Gcore support  
-   - Follow the instructions in the [Contact Gcore support](#contact-gcore-support) section  
-
-### Proxy is active but no traffic flows
-
-Symptoms:
-
-The proxy shows as active, but no traffic reaches your application.
-
-Steps to resolve:
-
-1. Verify client configuration  
-   - Ensure clients use the protected IP:PORT  
-
-2. Check the port  
-   - Confirm clients connect to the correct protected port  
-
-3. Test from another network  
-   - Avoid testing from the same network as the origin  
+</AccordionGroup>
 
 ## Contact Gcore support
 
-If the issue persists, contact Gcore support via the [support portal](https://support.gcore.com).
+If the issue persists, reach [Gcore&nbsp;support](https://support.gcore.com).
 
-Use the **Submit a request** form to create a support ticket, and provide:
+<Frame>![Gcore Help Center with Submit a request button highlighted in the top navigation](/images/docs/edge-proxy/faqs-and-trobleshooting/faqs-and-trobleshooting-image1.png)</Frame>
 
-- Account ID  
-- Proxy name and protected IP  
-- Description of the issue  
-- Steps already taken  
-- Screenshots or logs, if available  
+Use the **Submit a request** form and provide:
+
+- Account ID
+- Proxy name and protected IP
+- Description of the issue
+- Steps already taken
+- Screenshots or logs, if available

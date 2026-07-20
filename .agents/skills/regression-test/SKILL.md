@@ -93,11 +93,7 @@ rg "keyword" --glob "*.mdx" -l
 
 ### Claim the article before doing any work
 
-Before reading the article, open the plan file and mark the article as `in_progress`:
-
-```
-C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
-```
+Before reading the article, open the plan file specified in the task and mark the article as `in_progress`.
 
 Find the row for this article and change its status from `pending` to `in_progress`.
 
@@ -432,10 +428,9 @@ After completing all steps, clean up any test resources created during testing
 
 ## Phase 3 — Screenshot audit
 
-**Retake every screenshot in the article.** Do not skip screenshots that look
-correct — portal UI changes subtly over time and the only way to guarantee
-accuracy is to retake all of them. No screenshot should remain from before
-this regression run.
+For each screenshot in the article, navigate to the corresponding screen in the portal and **compare the current UI with the existing screenshot**. Retake only if the UI has visibly changed — layout, labels, buttons, or missing/added elements. If the screenshot still accurately represents the current portal state, mark it as `ok` and move on.
+
+**Do not retake screenshots unconditionally.** Retake only when the comparison reveals a real discrepancy. If the user has explicitly told you the screenshots are current, mark all as `ok` without opening the browser.
 
 ### Checklist
 
@@ -445,8 +440,12 @@ Before starting, list every `<Frame>` in the article with the following table:
 |---|----------|-----------------|--------|
 | 1 | `filename.png` | Navigation path or step | pending |
 
-Mark each row `done` after the screenshot is saved and the article updated.
-Do not mark Phase 3 as completed until every row is `done`.
+For each row, set status to:
+- `ok` — screenshot matches current portal UI, no retake needed
+- `retaken` — screenshot was outdated and has been replaced
+- `skip` — screenshot cannot be verified (GUI app, gated feature, user confirmed current)
+
+Do not mark Phase 3 as completed until every row has a final status.
 
 ### How to take each screenshot
 
@@ -454,27 +453,72 @@ For each screenshot in the article:
 
 1. Navigate to the correct screen in the portal using the existing article
    text as a guide — it describes what each screenshot should show.
-2. Use `playwright_screenshot` with `fullPage: false`. Set the viewport to
-   1400×900 before capturing:
-   ```javascript
-   // browser_evaluate
-   window.resizeTo(1400, 900)
-   ```
-3. Save to:
-   ```
-   C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
-   ```
-   Use a **new filename** — never overwrite the old file directly (CDN caching).
-   Append `-2` or a short date suffix if the content is the same
-   (e.g., `bare-metal-page-2.png`).
 
-4. Update the `<Frame>` in the article to reference the new filename.
-5. Update the alt text if the UI shown has changed.
-6. Delete the old file:
+2. **Set the viewport to 1400×900** using `browser_resize`:
+   ```
+   browser_resize(width=1400, height=900)
+   ```
+   Do this once at the start of Phase 3, before the first screenshot.
+   Do NOT use `browser_evaluate` with `window.resizeTo` — that call is ignored
+   by headless Playwright. Only `browser_resize` actually changes the viewport.
+
+3. **Hide PII before every screenshot** — the portal shows the logged-in user's
+   email in the top-right corner. Remove it with `browser_evaluate`:
+   ```javascript
+   // Find and hide the email / account info element in the top-right corner.
+   // The selector targets the most common portal patterns; adjust if needed.
+   document.querySelectorAll(
+     '[class*="user-info"], [class*="UserInfo"], [class*="account-email"], ' +
+     '[class*="userEmail"], [class*="header__user"], [class*="userMenu"]'
+   ).forEach(el => { el.style.visibility = 'hidden'; });
+   // Fallback: hide any element whose text content looks like an email address.
+   document.querySelectorAll('span, p, div, a').forEach(el => {
+     if (/[^@\s]+@[^@\s]+\.[^@\s]+/.test(el.innerText) && el.children.length === 0) {
+       el.style.visibility = 'hidden';
+     }
+   });
+   ```
+   Use `visibility: hidden` (not `display: none`) so the element still occupies
+   space and the layout does not shift. Run this before EVERY screenshot — some
+   portal navigation re-renders the header and makes the email visible again.
+
+4. **Take a full-viewport screenshot** using `browser_take_screenshot`:
+   - Do NOT pass `element` or `target` parameters — those crop the image.
+   - Use the `filename` parameter to set the output filename:
+     ```
+     browser_take_screenshot(filename="screenshot-name.png")
+     ```
+   - The file is saved to `C:\Users\{username}\` (Playwright MCP home dir).
+     After saving, copy it to the article images folder:
+     ```powershell
+     $dest = "C:\Projects\product-documentation_2\images\docs\{product}\{slug}\{slug}-imageN.png"
+     Copy-Item "C:\Users\sergey.kostichev\screenshot-name.png" $dest -Force
+     ```
+   - Verify the file exists before moving on:
+     ```powershell
+     cmd /c "dir /b C:\Projects\product-documentation_2\images\docs\{product}\{slug}"
+     ```
+
+5. Update the `<Frame>` in the article to reference the new filename.
+6. Update the alt text if the UI shown has changed.
+7. Delete the old file:
    ```powershell
-   cd C:\Projects\product-documentation
+   cd C:\Projects\product-documentation_2
    git rm images/docs/{product}/{article-slug}/{old-filename}.png
    ```
+
+### What NOT to do with screenshots
+
+- **Never crop** by passing `element` or `target` to `browser_take_screenshot`.
+  Full-viewport screenshots are always correct; cropped ones frequently look broken.
+- **Never use `savePath`** — it is not a valid parameter. Use `filename` instead.
+- **Never use `browser_evaluate` to resize** — `window.resizeTo()` has no effect
+  in headless Playwright. Use `browser_resize` only.
+- **Never skip the PII-hide step** — the logged-in email is always visible in the
+  portal header and must not appear in published documentation.
+- **Never take a screenshot immediately after scrolling** — give the page
+  50–100 ms to finish rendering. Use a brief `browser_wait_for(time=100)` or
+  take a `browser_snapshot` first (which forces a render cycle) before capturing.
 
 ### Resource names in screenshots
 
@@ -704,6 +748,31 @@ The rule depends on whether the article uses `<MethodSwitch>`:
 
 Load `.agents/references/style-guide.md` and `.agents/references/procedures.md` now.
 
+### Step 1 — Run the automated style linter
+
+Run the style linter first. It catches mechanical violations automatically so the manual
+checklist can focus on things the script cannot detect (flow, headings, structure, logic).
+
+```powershell
+cd C:\Projects\product-documentation_2
+python .agents/tools/style_check.py {relative/path/to/article.mdx}
+```
+
+Replace `{relative/path/to/article.mdx}` with the actual path, for example:
+```
+python .agents/tools/style_check.py hosting/virtual-servers/order-a-virtual-server.mdx
+```
+
+For every violation the script reports:
+1. Read the line it flagged.
+2. Fix the violation if it is real.
+3. If it is a false positive (e.g. a term matched inside a URL or a technical name
+   that must stay as-is), note it and move on — do not change correct text.
+
+Re-run the script after fixing until it reports **OK — no violations found**.
+
+### Step 2 — Manual checklist
+
 Work through the article section by section and verify each rule. Do not skim.
 For each checklist item: read the article, verify the rule, then mark the item with `[V]`.
 Only mark `[V]` after you have actually checked — not as a placeholder.
@@ -733,11 +802,9 @@ Checklist:
 - [ ] No `## Next steps`, `## See also`, `## Related documentation`, `## Prerequisites`,
   `## Requirements`, `## Get started`, `## What's next`
 
-**Links:**
-- [ ] No standalone "For more details, see [X]" sentences
-- [ ] Link text 1–2 words maximum
+**Links** (script catches text length, &nbsp;, banned patterns, relative paths, docs.gcore.com URLs):
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
-- [ ] Subsequent mentions: plain "the Customer Portal" (no link)
+- [ ] Subsequent mentions: plain "the Customer Portal" (no link, no "Gcore" prefix)
 
 **Formatting:**
 - [ ] Bold only for clickable UI elements and field names
@@ -924,7 +991,27 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Commit and push
+## Phase 9 — Create branch, commit, and push
+
+**One article = one branch.** The branch name is always the Jira ticket key
+created in Phase 4 — even if the user mentioned a different name earlier in the
+conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
+
+**CRITICAL — never reuse a ticket number from earlier in the conversation or from
+a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
+during work on a different article as a planned next ticket — it does not belong
+to the current article. Always use the ticket key that was actually created and
+returned by the Phase 4 script in this session. Anything else is wrong.
+
+```powershell
+cd C:\Projects\product-documentation_2
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
+was mentioned earlier in the conversation).
 
 Run the pre-commit checklist below, then commit and push.
 
@@ -1024,10 +1111,10 @@ three constants:
 ```python
 TICKET = "DOC-XXXX"           # the key created in Phase 4
 
-BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1684
+BRANCH = "DOC-XXXX"           # branch created in Phase 9, same as ticket key
 
-ARTICLE_PATH = "cloud/..."    # path from docs.json, no leading slash, no .mdx
-                               # e.g. cloud/getting-started/view-statistics-on-expenses
+ARTICLE_PATH = "hosting/..."  # path from docs.json, no leading slash, no .mdx
+                               # e.g. hosting/virtual-servers/order-a-virtual-server
 ```
 
 The script will:
@@ -1060,11 +1147,11 @@ script is ready for the next article.
 
 ### Step 2 — Mark the article as done in the plan
 
-Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
-find the article's row, and add the Jira ticket key to the status column:
+Open `_planning/hosting-audit-plan.md` in `C:\Projects\product-documentation_2`,
+find the article's row, and update it:
 
 ```
-done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
+| done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX) | DOC-XXXX | `hosting/...` |
 ```
 
 ### Step 3 — Write the changelog entry
@@ -1072,7 +1159,7 @@ done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
 Create a file at:
 
 ```
-C:\Projects\docops-agent2\docs\changelogs\{article-slug}.md
+C:\Projects\product-documentation_2\_planning\changelogs\{article-slug}.md
 ```
 
 Where `{article-slug}` matches the MDX filename without the extension

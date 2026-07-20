@@ -105,6 +105,89 @@ Select-String -Path "api-reference\services_documented\cloud_api.yaml" `
 
 ---
 
+## SDK code patterns (mandatory — do not deviate)
+
+These patterns are canonical. Every Python and Go example must follow them exactly.
+Deviating from these patterns requires fixing all examples retroactively.
+
+### Python SDK
+
+The SDK constructor `Gcore()` reads three environment variables automatically:
+- `GCORE_API_KEY` → `api_key`
+- `GCORE_CLOUD_PROJECT_ID` → `cloud_project_id`
+- `GCORE_CLOUD_REGION_ID` → `cloud_region_id`
+
+Because `cloud_project_id` and `cloud_region_id` are set at client level, **they must not be passed to individual API calls**. Any method that accepts `project_id` and `region_id` as optional parameters will use the client-level values when they are omitted.
+
+**Correct pattern:**
+```python
+from gcore import Gcore
+
+client = Gcore()  # reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID
+
+clusters = client.cloud.gpu_virtual.clusters.list()          # no project_id/region_id
+cluster  = client.cloud.gpu_virtual.clusters.get("{ID}")     # no project_id/region_id
+```
+
+**When `import os` is needed:** only when the code reads additional env vars that the SDK does not handle automatically — for example `GCORE_SSH_KEY_NAME`, `GCORE_CLUSTER_NAME`, `CLUSTER_NAME`. Do not import `os` just for `GCORE_CLOUD_PROJECT_ID` or `GCORE_CLOUD_REGION_ID`.
+
+**Never write:**
+```python
+# wrong — SDK reads api_key automatically
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+# wrong — project_id/region_id are already set at client level
+project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+region_id  = int(os.environ["GCORE_CLOUD_REGION_ID"])
+client.cloud.something.list(project_id=project_id, region_id=region_id)
+```
+
+### Go SDK
+
+The Go SDK does not read `project_id`/`region_id` at client level — they must be passed explicitly in every params struct. Only `GCORE_API_KEY` is read automatically by `gcore.NewClient()`.
+
+**Correct pattern:**
+```go
+import (
+    "context"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
+
+    client := gcore.NewClient()       // reads GCORE_API_KEY automatically — no option.WithAPIKey
+    ctx := context.Background()       // created once, passed to every call
+
+    result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+    })
+}
+```
+
+**Never write:**
+```go
+import "github.com/G-Core/gcore-go/option"
+client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))  // wrong — no option import needed
+
+result, err := client.Cloud.Something.Do(context.TODO(), ...)  // wrong — context.TODO() is a placeholder
+```
+
+Key rules:
+- `gcore.NewClient()` — no arguments; never pass `option.WithAPIKey`
+- No `option` import
+- `ctx := context.Background()` — one variable, reused in all calls
+- `context.TODO()` is forbidden
+
+---
+
 ## Phase 4 — Write the API section
 
 ### Structure A — Sequential creation flow

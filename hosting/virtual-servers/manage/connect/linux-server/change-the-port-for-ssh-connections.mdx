@@ -1,71 +1,100 @@
 ---
 title: Change the port for SSH connections
-sidebarTitle: Change port for SSH connections
-ai-navigation: Configure SSH port in sshd_config file by modifying the Port parameter, restarting the SSH service, and updating firewall rules to permit traffic on the new port.
+sidebarTitle: Change SSH port
+ai-navigation: Change the SSH listening port on a Linux virtual server by editing sshd_config, restarting the SSH service, and updating firewall rules.
 ---
 
-Follow these instructions to modify the SSH port through which you connect to your Linux server.
+The SSH daemon listens on port 22 by default. Follow these steps to change it.
 
-  1. Log in to your server.
+<Steps>
+<Step title="Log in to the server">
 
-  2. Navigate to the SSH directory using the following command:
+Log in via [SSH](/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh).
 
-    ```sh
-    cd /etc/ssh/
-    ```
+</Step>
+<Step title="Open the SSH configuration file">
 
-  3. Open the SSH configuration file with root privileges using this command:
+```bash
+sudo nano /etc/ssh/sshd_config
+```
 
-    ```sh
-    sudo nano sshd_config
-    ```
+</Step>
+<Step title="Update the Port line">
 
-  4. Find the **Port** line in the open file and replace the value 22 with the port number you want to use. Also, remove the **#** symbol if it is present before the **Port** line.
+Find the **Port** line and replace the value `22` with the new port number. If the line begins with `#`, remove the `#` to uncomment it first.
 
+<Frame>![sshd_config with Port 22 commented out](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/1-port-22.png)</Frame>
 
-    <Frame>![terminal](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/1-port-22.png)</Frame>
+<Frame>![sshd_config with Port 2233](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/2-port-2233.png)</Frame>
 
-    
-    <Frame>![terminal](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/2-port-2233.png)</Frame>
+</Step>
+<Step title="Save and close the file">
 
+Press **Ctrl+O**, then **Enter** to confirm the filename, and **Ctrl+X** to exit nano.
 
-  5. Press **Ctrl+O** to save the changes.
+</Step>
+<Step title="Restart the SSH service">
 
-  6. Restart the SSH service. For Ubuntu, Debian, or CentOS, use the following command:
+On Ubuntu and Debian:
 
-    ```sh
-    sudo systemctl restart ssh
-    ```
+```bash
+sudo systemctl restart ssh
+```
 
-    For FreeBSD, use:
+On CentOS, AlmaLinux, and Rocky Linux:
 
-    ```sh
-    sudo service sshd restart
-    ```
+```bash
+sudo systemctl restart sshd
+```
 
-  7. Add a rule to permit traffic exchange on the new port using the command:
+On FreeBSD:
 
+```bash
+sudo service sshd restart
+```
 
+</Step>
+<Step title="Allow traffic on the new port">
 
-    ```sh
-    sudo ufw allow 2233
-    ```
+On Ubuntu and Debian (ufw):
 
-    Replace "2233" with the chosen port.
+```bash
+sudo ufw allow 2233/tcp
+```
 
-  8. Verify if everything is functioning properly by using the command:
+On CentOS, AlmaLinux, and Rocky Linux (firewalld):
 
-    ```sh
-    telnet 8.8.8.8 2233
-    ```
+```bash
+sudo firewall-cmd --permanent --add-port=2233/tcp && sudo firewall-cmd --reload
+```
 
-    Replace "8.8.8.8" with your server IP address, and "2233" with the chosen port.
+Replace `2233` with the chosen port number.
 
-    The output should look like this:
+</Step>
+<Step title="Verify the port is reachable">
 
+From a local machine (not from the server), run:
 
-    <Frame>![output](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/3-output.png)</Frame>
+```bash
+telnet <server_ip> 2233
+```
 
+Replace `<server_ip>` with the server IP address and `2233` with the chosen port. A successful response includes the SSH banner line starting with `SSH-2.0`.
 
+<Frame>![Telnet output showing SSH banner on port 2233](/images/docs/hosting/virtual-servers/manage/connect/linux-server/change-the-port-for-ssh-connections/3-output.png)</Frame>
 
-  9. Attempt to establish a connection to your server using the new port in a separate window **without closing your current session**. This step is crucial to prevent any potential loss of access to your server. If you encounter difficulties connecting to your server through the new port, revert the port back to 22 and then try again.
+</Step>
+<Step title="Test the SSH connection">
+
+<Warning>
+Keep the current SSH session open. Open a separate terminal window and connect using the new port:
+
+```bash
+ssh -p 2233 username@<server_ip>
+```
+
+Replace `username` with the server username (typically `root`) and `<server_ip>` with the server IP address. If the connection fails, revert the **Port** value in `/etc/ssh/sshd_config` back to `22` and restart the SSH service again.
+</Warning>
+
+</Step>
+</Steps>
