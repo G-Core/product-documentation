@@ -99,7 +99,7 @@ Requires a running VS.
 | Status | Ticket | File |
 |--------|--------|------|
 | done | DOC-1762 | `hosting/virtual-servers/troubleshooting/remove-your-ip-address-from-blacklists.mdx` |
-| in_progress | DOC-1760 | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
+| done | DOC-1823 | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
 | done | DOC-1764 | `hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports.mdx` |
 | done | DOC-1775 | `hosting/virtual-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | done | DOC-1777 | `hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection.mdx` |
