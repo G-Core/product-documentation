@@ -157,7 +157,7 @@ Requires a running DS.
 
 | Status | Ticket | File |
 |--------|--------|------|
-| todo | — | `hosting/dedicated-servers/manage/reboot-a-server.mdx` |
+| in_progress | — | `hosting/dedicated-servers/manage/reboot-a-server.mdx` |
 
 ---
 
