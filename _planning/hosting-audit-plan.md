@@ -113,7 +113,7 @@ Requires a running VS.
 | done | DOC-1811 | `hosting/dedicated-servers/order-a-dedicated-server.mdx` |
 | done | DOC-1812 | `hosting/dedicated-servers/upgrade-your-dedicated-server.mdx` |
 | todo | — | `hosting/dedicated-servers/delete-a-dedicated-server.mdx` |
-| todo | — | `hosting/dedicated-servers/check-statistics-of-your-dedicated-server.mdx` |
+| in_progress | — | `hosting/dedicated-servers/check-statistics-of-your-dedicated-server.mdx` |
 
 ---
 
