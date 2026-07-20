@@ -4,9 +4,7 @@ sidebarTitle: 10 Gbps network card
 ai-navigation: Configure a 10 Gbps network interface on a Dedicated Server running Ubuntu, Debian, or CentOS using the ip and ethtool commands.
 ---
 
-Each Dedicated Server has multiple network cards connected to separate network switches. By default, the installed OS uses a 1 Gbps network card. To switch to a faster 10 Gbps network card, configure the 10 Gbps interface manually.
-
-To avoid failover, consider using Link Aggregation Control Protocol (LACP).
+Each Dedicated Server has multiple network cards connected to separate network switches. By default, the installed OS uses a 1 Gbps network card. This guide applies to servers with a 10 Gbps network card already installed. To add a 10 Gbps card to a server, [contact&nbsp;support](/hosting/dedicated-servers/upgrade-your-dedicated-server).
 
 <Warning>
 This guide is intended for experienced users. Consult a system administrator if difficulties arise.
@@ -34,7 +32,7 @@ These steps apply to Ubuntu and Debian systems that use `netplan` for network co
     ip
     ```
 
-    The output resembles the following, where `eth0` is the active interface.
+    The output resembles the following, where `eth0` is the active 1 Gbps interface.
 
     <Frame>![ip command output](/images/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12987773655057.png)</Frame>
 
@@ -67,17 +65,17 @@ These steps apply to Ubuntu and Debian systems that use `netplan` for network co
     On older Linux versions where `ip link show` is not available, use `ifconfig` instead.
   </Step>
   <Step title="Activate inactive interfaces">
-    Bring up the interfaces that were listed as down.
+    Bring up each interface that is listed as down. Replace `eth1` and `eth2` with the interface names shown in the previous step.
 
     ```sh
     ip link set eth1 up
     ip link set eth2 up
     ```
 
-    This activates the `eth1` and `eth2` interfaces. On older Linux versions, use `ifconfig eth1 up` instead. To verify that an interface is active, run `ip` and check for `state UP` in the output (`state DOWN` means the interface is still inactive). On older Linux versions, use `ifconfig` instead of `ip`.
+    On older Linux versions, use `ifconfig eth1 up` instead. To verify that an interface is active, run `ip` and check for `state UP` in the output (`state DOWN` means the interface is still inactive). On older Linux versions, use `ifconfig` instead of `ip`.
   </Step>
   <Step title="Find the 10 Gbps interface">
-    Run `ethtool` on each interface until finding the one that supports 10 Gbps.
+    Run `ethtool` on each inactive interface until finding the one that supports 10 Gbps.
 
     ```sh
     ethtool eth1
@@ -88,7 +86,7 @@ These steps apply to Ubuntu and Debian systems that use `netplan` for network co
 
     <Frame>![ethtool output showing 10 Gbps interface](/images/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988155718033.png)</Frame>
 
-    Confirm that **Link detected** is `yes` and **Speed** is `10000Mb/s` (10 Gbps).
+    Confirm that **Link detected** is `yes` and **Speed** is `10000Mb/s` (10 Gbps). Note the interface name — it is needed in the next step.
   </Step>
   <Step title="Update the network configuration">
     Open the network configuration file in a text editor.
@@ -97,13 +95,31 @@ These steps apply to Ubuntu and Debian systems that use `netplan` for network co
     nano /etc/netplan/*.yaml
     ```
 
-    On older Linux versions, use `nano /etc/network/interfaces` instead. In the configuration file, replace every occurrence of `eth0` with `eth2`. The `lo` interface requires no changes.
+    On older Linux versions, use `nano /etc/network/interfaces` instead.
+
+    In the configuration file, find every line where the current 1 Gbps interface name (`eth0`) appears and replace it with the 10 Gbps interface name identified in the previous step. The `lo` interface requires no changes.
+
+    If the 10 Gbps interface is `eth2`, a section that reads:
+
+    ```yaml
+    ethernets:
+      eth0:
+        dhcp4: true
+    ```
+
+    becomes:
+
+    ```yaml
+    ethernets:
+      eth2:
+        dhcp4: true
+    ```
   </Step>
   <Step title="Save and reboot">
     Save the file and exit the text editor. Reboot the server for the changes to take effect.
   </Step>
   <Step title="Verify the active interface">
-    After the reboot, run `ethtool` to confirm the active interface is set to 10 Gbps.
+    After the reboot, run `ethtool` on the 10 Gbps interface name to confirm **Speed** shows `10000Mb/s`. The server now uses the 10 Gbps network interface.
 
     If the server does not respond after reboot, use [IPMI](/hosting/dedicated-servers/manage/log-in-to-ipmi) to access it, or [reinstall](/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template) the OS.
   </Step>
@@ -133,7 +149,7 @@ These steps apply to CentOS systems that use `/etc/sysconfig/network-scripts/` f
     ip
     ```
 
-    The output resembles the following, where `eno1` is the active interface.
+    The output resembles the following, where `eno1` is the active 1 Gbps interface.
 
     <Frame>![ip command output on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988893619089.png)</Frame>
 
@@ -166,16 +182,16 @@ These steps apply to CentOS systems that use `/etc/sysconfig/network-scripts/` f
     On older Linux versions where `ip link show` is not available, use `ifconfig` instead.
   </Step>
   <Step title="Activate inactive interfaces">
-    Bring up the interface that was listed as down.
+    Bring up the interface that is listed as down. Replace `eno2` with the interface name shown in the previous step.
 
     ```sh
     ip link set eno2 up
     ```
 
-    This activates the `eno2` interface. On older Linux versions, use `ifconfig eno2 up` instead. To verify that the interface is active, run `ip` and check for `state UP` in the output (`state DOWN` means the interface is still inactive). On older Linux versions, use `ifconfig` instead of `ip`.
+    On older Linux versions, use `ifconfig eno2 up` instead. To verify that the interface is active, run `ip` and check for `state UP` in the output (`state DOWN` means the interface is still inactive). On older Linux versions, use `ifconfig` instead of `ip`.
   </Step>
   <Step title="Find the 10 Gbps interface">
-    Run `ethtool` on each interface until finding the one that supports 10 Gbps.
+    Run `ethtool` on each inactive interface until finding the one that supports 10 Gbps.
 
     ```sh
     ethtool eno2
@@ -185,21 +201,28 @@ These steps apply to CentOS systems that use `/etc/sysconfig/network-scripts/` f
 
     <Frame>![ethtool output showing 10 Gbps interface on CentOS](/images/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12989201201041.png)</Frame>
 
-    Confirm that **Link detected** is `yes` and **Speed** is `10000Mb/s` (10 Gbps).
+    Confirm that **Link detected** is `yes` and **Speed** is `10000Mb/s` (10 Gbps). Note the interface name — it is needed in the next step.
   </Step>
   <Step title="Update the network configuration">
-    Move the network settings to the 10 Gbps configuration file (`ifcfg-eno2`) and disable the 1 Gbps configuration (`ifcfg-eno1`) if it is no longer needed. Open each file in a text editor.
+    Open the configuration file for the current 1 Gbps interface and disable it by setting `ONBOOT=no`.
 
     ```sh
     nano /etc/sysconfig/network-scripts/ifcfg-eno1
+    ```
+
+    Then open the configuration file for the 10 Gbps interface. Replace `eno1` in the filename with the 10 Gbps interface name identified in the previous step.
+
+    ```sh
     nano /etc/sysconfig/network-scripts/ifcfg-eno2
     ```
+
+    In `ifcfg-eno2`, copy the IP address, subnet mask, gateway, and DNS settings from `ifcfg-eno1`, then update `DEVICE` and `NAME` to the 10 Gbps interface name and set `ONBOOT=yes`.
   </Step>
   <Step title="Save and reboot">
     Save the file and exit the text editor. Reboot the server for the changes to take effect.
   </Step>
   <Step title="Verify the active interface">
-    After the reboot, run `ethtool` to confirm the active interface is set to 10 Gbps.
+    After the reboot, run `ethtool` on the 10 Gbps interface name to confirm **Speed** shows `10000Mb/s`. The server now uses the 10 Gbps network interface.
 
     If the server does not respond after reboot, use [IPMI](/hosting/dedicated-servers/manage/log-in-to-ipmi) to access it, or [reinstall](/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template) the OS.
   </Step>
