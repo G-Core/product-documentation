@@ -166,7 +166,7 @@ Requires a running DS.
 | Status | Ticket | File |
 |--------|--------|------|
 | done | DOC-1761 | `hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests.mdx` |
-| done | DOC-1763 | `hosting/dedicated-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
+| in_progress | DOC-1763 | `hosting/dedicated-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | todo | — | `hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors.mdx` |
 | done | DOC-1765 | `hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-an-incorrect-ip-location.mdx` |
 | done | DOC-1778 | `hosting/dedicated-servers/troubleshooting/troubleshoot-packet-loss-or-high-ping.mdx` |
