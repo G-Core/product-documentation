@@ -55,7 +55,12 @@ The required authentication data is available in the S3 storage account.
     To determine the region of a Gcore Object Storage bucket, use the [S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names) guide.
     </Tip>
 
-    d. Enter the **Bucket name**.
+    d. Enter the **Bucket name**. CDN servers use this value only when calculating the AWS Signature V4 `Authorization` header for the private origin. The CDN does not automatically add the value from this field to the request URL sent to the origin.
+
+    If the origin requires the bucket name in the request URL, check the S3 or storage provider documentation to determine whether the bucket must be included in the origin hostname or the request path.
+
+    * **Origin hostname:** Include the bucket in the hostname, for example, `my-bucket.s3.amazonaws.com` or `my-bucket.s-ed1.cloud.gcore.lu`. No additional CDN configuration is required.
+    * **Path:** To keep the bucket name out of end-user URLs, such as `https://my.domain.com/content.png`, add a [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) rule that prepends it to requests sent to the origin. For example, the rule `/(.*) /my-bucket/$1` transforms the end-user request into an origin request for `/my-bucket/content.png`.
 
     e. Optional: enter the storage hostname in the **Host header override** field for this origin. When left empty, the Host header configured in the resource settings applies to all origins. When set, it overrides the global value for this specific origin — required when multiple origins point to different buckets that each need a unique hostname.
 
