@@ -99,7 +99,7 @@ Requires a running VS.
 | Status | Ticket | File |
 |--------|--------|------|
 | done | DOC-1762 | `hosting/virtual-servers/troubleshooting/remove-your-ip-address-from-blacklists.mdx` |
-| done | DOC-1760 | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
+| done | DOC-1823 | `hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment.mdx` |
 | done | DOC-1764 | `hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports.mdx` |
 | done | DOC-1775 | `hosting/virtual-servers/troubleshooting/troubleshoot-errors-with-iso-image-installation.mdx` |
 | done | DOC-1777 | `hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection.mdx` |
@@ -112,7 +112,7 @@ Requires a running VS.
 |--------|--------|------|
 | done | DOC-1811 | `hosting/dedicated-servers/order-a-dedicated-server.mdx` |
 | done | DOC-1812 | `hosting/dedicated-servers/upgrade-your-dedicated-server.mdx` |
-| todo | — | `hosting/dedicated-servers/delete-a-dedicated-server.mdx` |
+| done | DOC-1822 | `hosting/dedicated-servers/delete-a-dedicated-server.mdx` |
 | done [DOC-1821](https://jira.gcore.lu/browse/DOC-1821) | DOC-1821 | `hosting/dedicated-servers/check-statistics-of-your-dedicated-server.mdx` |
 
 ---
