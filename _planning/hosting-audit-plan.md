@@ -237,5 +237,5 @@ Content accuracy depends on how-tos being correct first.
 | todo | — | `hosting/virtual-servers/about-virtual-servers.mdx` |
 | todo | — | `hosting/dedicated-servers/about-dedicated-servers.mdx` |
 | todo | — | `hosting/other-services/ssl-certificates/about-ssl-certificates.mdx` |
-| todo | — | `hosting/other-services/ddos-protection/about-gcore-ddos-protection-for-dedicated-servers.mdx` |
+| in_progress | — | `hosting/other-services/ddos-protection/about-gcore-ddos-protection-for-dedicated-servers.mdx` |
 | todo | — | `hosting.mdx` |
