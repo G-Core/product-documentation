@@ -4,7 +4,7 @@ info:
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
   contact:
     email: support@gcore.com
-  version: 85a6ae0cdcd3
+  version: 16771786216b
 servers:
 - url: https://api.gcore.com
 paths:
@@ -1763,7 +1763,7 @@ paths:
       summary: Get Requests
       description: |-
         Retrieve a domain's requests data. Deprecated.
-        Use [GET /v1/analytics/requests](/api-reference/waap/analytics/get-request-log-data) instead.
+        Deprecated. Use [GET /v1/analytics/requests](/api-reference/waap/analytics/get-events) instead.
       operationId: get_requests_v1_domains__domain_id__requests_get
       deprecated: true
       parameters:
@@ -12660,7 +12660,9 @@ paths:
       description: |-
         Retrieve request log data over account's domains.
         The log records every request passing through WAAP towards the origin server.
+        Deprecated. Use [GET /v1/analytics/traffic](/api-reference/waap/analytics/get-events) instead.
       operationId: get_requests_v1_analytics_requests_get
+      deprecated: true
       parameters:
       - name: domains
         in: query
@@ -15385,6 +15387,749 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+  /waap/v2/analytics/events:
+    get:
+      tags:
+      - Analytics
+      summary: Get security events
+      description: |-
+        Retrieve security events over account's domains.
+        A security event is recorded for every request passing through WAAP towards the origin server.
+      operationId: get_events_v2_analytics_events_get
+      parameters:
+      - name: domains
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            description: Domain ID
+          description: List of domain IDs. Empty list means all domains belonging to the current account.
+          example: &id077
+          - 1
+          - 2
+          - 3
+          examples:
+          - *id077
+          title: Domains
+        description: List of domain IDs. Empty list means all domains belonging to the current account.
+      - name: order_by
+        in: query
+        required: false
+        schema:
+          enum:
+          - request_time.asc
+          - request_time.desc
+          type: string
+          description: Result sorting order.
+          example: request_time.asc
+          examples:
+          - request_time.asc
+          - request_time.desc
+          default: request_time.desc
+          title: Order By
+        description: Result sorting order.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: next
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Cursor value to fetch next page of events log.
+          title: Next
+        description: Cursor value to fetch next page of events log.
+      - name: start
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Filter data items starting from a specified date in ISO 8601 format
+          example: '2024-04-13T00:00:00+01:00'
+          examples:
+          - '2024-04-13T00:00:00+01:00'
+          title: Start
+        description: Filter data items starting from a specified date in ISO 8601 format
+      - name: end
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter data items up to a specified end date in ISO 8601 format. If not provided, defaults to the current date and time.
+          examples:
+          - '2024-04-14T12:00:00Z'
+          title: End
+        description: Filter data items up to a specified end date in ISO 8601 format. If not provided, defaults to the current date and time.
+      - name: ips
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: ipvanyaddress
+          maxItems: 10
+          description: Filter traffic data by client IP.
+          example: &id078
+          - 1.2.3.4
+          - 2001:678:194::3c25:ddad
+          examples:
+          - *id078
+          title: Ips
+        description: Filter traffic data by client IP.
+      - name: path
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: Filter by URL path. '*' is wildcard.
+          example: &id079
+          - /home
+          - /users/*/profile
+          examples:
+          - *id079
+          title: Path
+        description: Filter by URL path. '*' is wildcard.
+      - name: countries
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^\w{2}$
+          description: Filter data by a country code of the originating IP address in ISO 3166-1 alpha-2 format.
+          example: &id080
+          - DE
+          - MY
+          examples:
+          - *id080
+          title: Countries
+        description: Filter data by a country code of the originating IP address in ISO 3166-1 alpha-2 format.
+      - name: status_codes
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            maximum: 599
+            minimum: 100
+          description: Filter data by HTTP response status code.
+          example: &id081
+          - '403'
+          - '499'
+          examples:
+          - *id081
+          title: Status Codes
+        description: Filter data by HTTP response status code.
+      - name: http_methods
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/HttpMethodType'
+          description: Filter by HTTP methods
+          example: &id082
+          - GET
+          - HEAD
+          examples:
+          - *id082
+          title: Http Methods
+        description: Filter by HTTP methods
+      - name: reference_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}$
+          description: Filter data by reference IDs.
+          example: &id083
+          - 1140fcddf208cbdf01694e8e2f818a68
+          examples:
+          - *id083
+          title: Reference Ids
+        description: Filter data by reference IDs.
+      - name: request_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}-[0-9]{6}$
+          description: Filter data by request IDs.
+          example: &id084
+          - 96763b8fb655e9f18a2e04097b704e39-458959
+          examples:
+          - *id084
+          title: Request Ids
+        description: Filter data by request IDs.
+      - name: exclude_request_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}-[0-9]{6}$
+          description: Exclude data by request IDs.
+          example: &id085
+          - 96763b8fb655e9f18a2e04097b704e39-458959
+          examples:
+          - *id085
+          title: Exclude Request Ids
+        description: Exclude data by request IDs.
+      - name: session_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}$
+          description: Filter data by session IDs.
+          example: &id086
+          - edab69d73b47cfecc3d3c038ada6c7de
+          examples:
+          - *id086
+          title: Session Ids
+        description: Filter data by session IDs.
+      - name: security_rule_names
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+            pattern: ^[a-zA-Z0-9_ ~!@#$%^&*()+\[\]{}|.,;:<>?/-]*$
+          description: Filter data by name of a security rule matched the request.
+          example: &id087
+          - SQL injection
+          examples:
+          - *id087
+          title: Security Rule Names
+        description: Filter data by name of a security rule matched the request.
+      - name: decision
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventDecision'
+            description: Filter data by the event decision.
+          description: Filter data by decision.
+          example: &id088
+          - allowed
+          - blocked
+          examples:
+          - *id088
+          title: Decision
+        description: Filter data by decision.
+      - name: optional_action
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionalAction'
+            description: An optional action that may be applied in addition to the primary decision.
+          description: Filter data by optional action.
+          example: &id089
+          - captcha
+          - challenge
+          examples:
+          - *id089
+          title: Optional Action
+        description: Filter data by optional action.
+      - name: exclude_ips
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            format: ipvanyaddress
+          description: Exclude traffic data by client IP.
+          example: &id090
+          - 1.2.3.4
+          - 2001:678:194::3c25:ddad
+          examples:
+          - *id090
+          title: Exclude Ips
+        description: Exclude traffic data by client IP.
+      - name: exclude_countries
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^\w{2}$
+          description: Exclude data by a country code of the originating IP address in ISO 3166-1 alpha-2 format.
+          example: &id091
+          - DE
+          - MY
+          examples:
+          - *id091
+          title: Exclude Countries
+        description: Exclude data by a country code of the originating IP address in ISO 3166-1 alpha-2 format.
+      - name: exclude_session_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}$
+          description: Exclude data by session IDs.
+          title: Exclude Session Ids
+        description: Exclude data by session IDs.
+      - name: exclude_reference_ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[a-f0-9]{32}$
+          description: Exclude data by reference IDs.
+          title: Exclude Reference Ids
+        description: Exclude data by reference IDs.
+      - name: exclude_security_rule_names
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+            pattern: ^[a-zA-Z0-9_ ~!@#$%^&*()+\[\]{}|.,;:<>?/-]*$
+          description: Exclude data by name of a security rule matched the request.
+          example: &id092
+          - SQL injection
+          examples:
+          - *id092
+          title: Exclude Security Rule Names
+        description: Exclude data by name of a security rule matched the request.
+      - name: exclude_domains
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+          description: Exclude data by domain ID.
+          title: Exclude Domains
+        description: Exclude data by domain ID.
+      - name: ja3
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[0-9a-fA-F]{32}$
+          maxItems: 10
+          description: Filter by JA3 TLS client fingerprint. Each value must be exactly 32 hexadecimal characters (mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to match any of them. Omit the parameter to apply no JA3 filter.
+          example: &id093
+          - e7d705a3286e19ea42f587b344ee6865
+          examples:
+          - *id093
+          title: Ja3
+        description: Filter by JA3 TLS client fingerprint. Each value must be exactly 32 hexadecimal characters (mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to match any of them. Omit the parameter to apply no JA3 filter.
+      - name: ja4
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[0-9a-zA-Z]{10}_[0-9a-fA-F]{12}_[0-9a-fA-F]{12}$
+          maxItems: 10
+          description: Filter by JA4 TLS client fingerprint. When present, the value must match the JA4 form `<ja4_a>_<ja4_b>_<ja4_c>` (a 10-character prefix and two 12-character hexadecimal hashes, mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to match any of them. Omit the parameter entirely to apply no JA4 filter.
+          example: &id094
+          - t13d3113h2_e8f1e7e78f70_ce5650b735ce
+          examples:
+          - *id094
+          title: Ja4
+        description: Filter by JA4 TLS client fingerprint. When present, the value must match the JA4 form `<ja4_a>_<ja4_b>_<ja4_c>` (a 10-character prefix and two 12-character hexadecimal hashes, mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to match any of them. Omit the parameter entirely to apply no JA4 filter.
+      - name: user_agent
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+          maxItems: 10
+          description: Include entries whose user agent contains any of the supplied texts, case-insensitive partial match. Omit or provide an empty list to apply no user agent text filter.
+          example: &id095
+          - Mozilla/5.0
+          - python-requests
+          examples:
+          - *id095
+          title: User Agent
+        description: Include entries whose user agent contains any of the supplied texts, case-insensitive partial match. Omit or provide an empty list to apply no user agent text filter.
+      - name: user_agent_clients
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          description: Include entries whose parsed user agent client exactly equals any supplied value. Omit or provide an empty list to apply no user agent client filter.
+          example: &id096
+          - Chrome
+          - Firefox
+          examples:
+          - *id096
+          title: User Agent Clients
+        description: Include entries whose parsed user agent client exactly equals any supplied value. Omit or provide an empty list to apply no user agent client filter.
+      - name: user_agent_devices
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          description: Include entries whose parsed user agent device exactly equals any supplied value. Omit or provide an empty list to apply no user agent device filter.
+          example: &id097
+          - mac
+          - Nokia
+          - PlayStation
+          examples:
+          - *id097
+          title: User Agent Devices
+        description: Include entries whose parsed user agent device exactly equals any supplied value. Omit or provide an empty list to apply no user agent device filter.
+      - name: tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 5
+          description: Include entries whose tag exactly equals any supplied value. Omit or provide an empty list to apply no tag filter.
+          example: &id098
+          - evasiveclient
+          - injectionattack
+          examples:
+          - *id098
+          title: Tags
+        description: Include entries whose tag exactly equals any supplied value. Omit or provide an empty list to apply no tag filter.
+      - name: organizations
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 10
+          description: Include entries whose organization exactly equals any supplied value. Omit or provide an empty list to apply no organization filter.
+          example: &id099
+          - Example Org
+          - Acme Corp
+          examples:
+          - *id099
+          title: Organizations
+        description: Include entries whose organization exactly equals any supplied value. Omit or provide an empty list to apply no organization filter.
+      - name: exclude_user_agent
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 300
+          maxItems: 10
+          description: Exclude entries whose user agent contains any of the supplied texts, case-insensitive partial match. Omit or provide an empty list to apply no user agent text exclusion.
+          example: &id100
+          - python-requests
+          - bot
+          examples:
+          - *id100
+          title: Exclude User Agent
+        description: Exclude entries whose user agent contains any of the supplied texts, case-insensitive partial match. Omit or provide an empty list to apply no user agent text exclusion.
+      - name: exclude_user_agent_clients
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          description: Exclude entries whose parsed user agent client exactly equals any supplied value. Omit or provide an empty list to apply no user agent client exclusion.
+          example: &id101
+          - OpenAI GPTBot
+          - Uptimerobot
+          examples:
+          - *id101
+          title: Exclude User Agent Clients
+        description: Exclude entries whose parsed user agent client exactly equals any supplied value. Omit or provide an empty list to apply no user agent client exclusion.
+      - name: exclude_user_agent_devices
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+          description: Exclude entries whose parsed user agent device exactly equals any supplied value. Omit or provide an empty list to apply no user agent device exclusion.
+          example: &id102
+          - SMART TV
+          examples:
+          - *id102
+          title: Exclude User Agent Devices
+        description: Exclude entries whose parsed user agent device exactly equals any supplied value. Omit or provide an empty list to apply no user agent device exclusion.
+      - name: exclude_ja3
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[0-9a-fA-F]{32}$
+          maxItems: 10
+          description: Exclude entries whose JA3 TLS client fingerprint matches any of the supplied values. Each value must be exactly 32 hexadecimal characters (mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to exclude any of them. Omit the parameter to apply no JA3 exclusion.
+          example: &id103
+          - e7d705a3286e19ea42f587b344ee6865
+          examples:
+          - *id103
+          title: Exclude Ja3
+        description: Exclude entries whose JA3 TLS client fingerprint matches any of the supplied values. Each value must be exactly 32 hexadecimal characters (mixed case allowed) and is case-folded to lowercase when the backend filter is built. Supply multiple values to exclude any of them. Omit the parameter to apply no JA3 exclusion.
+      - name: exclude_ja4
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            pattern: ^[0-9a-zA-Z]{10}_[0-9a-fA-F]{12}_[0-9a-fA-F]{12}$
+          maxItems: 10
+          description: Exclude entries whose JA4 TLS client fingerprint equals any of the supplied values. An item must match the JA4 form `<ja4_a>_<ja4_b>_<ja4_c>` (a 10-character prefix and two 12-character hexadecimal hashes, mixed case allowed) and is case-folded to lowercase when the backend filter is built. Omit the parameter to apply no JA4 exclusion.
+          example: &id104
+          - t13d3113h2_e8f1e7e78f70_ce5650b735ce
+          examples:
+          - *id104
+          title: Exclude Ja4
+        description: Exclude entries whose JA4 TLS client fingerprint equals any of the supplied values. An item must match the JA4 form `<ja4_a>_<ja4_b>_<ja4_c>` (a 10-character prefix and two 12-character hexadecimal hashes, mixed case allowed) and is case-folded to lowercase when the backend filter is built. Omit the parameter to apply no JA4 exclusion.
+      - name: exclude_tags
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 5
+          description: Exclude entries whose tag exactly equals any supplied value. Omit or provide an empty list to apply no tag exclusion.
+          example: &id105
+          - mousedevice
+          examples:
+          - *id105
+          title: Exclude Tags
+        description: Exclude entries whose tag exactly equals any supplied value. Omit or provide an empty list to apply no tag exclusion.
+      - name: exclude_organizations
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            maxLength: 100
+          maxItems: 10
+          description: Exclude entries whose organization exactly equals any supplied value. Omit or provide an empty list to apply no organization exclusion.
+          example: &id106
+          - Acme corp
+          examples:
+          - *id106
+          title: Exclude Organizations
+        description: Exclude entries whose organization exactly equals any supplied value. Omit or provide an empty list to apply no organization exclusion.
+      - name: exclude_status_codes
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            maximum: 599
+            minimum: 100
+          description: Exclude entries with any of the given HTTP response status codes.
+          example: &id107
+          - '500'
+          - '501'
+          examples:
+          - *id107
+          title: Exclude Status Codes
+        description: Exclude entries with any of the given HTTP response status codes.
+      - name: exclude_http_methods
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/HttpMethodType'
+          description: Exclude entries with any of the given HTTP methods.
+          example: &id108
+          - POST
+          - PUT
+          examples:
+          - *id108
+          title: Exclude Http Methods
+        description: Exclude entries with any of the given HTTP methods.
+      - name: exclude_optional_action
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/OptionalAction'
+            description: An optional action that may be applied in addition to the primary decision.
+          description: Exclude entries that match any of the given optional action values.
+          example: &id109
+          - captcha
+          - challenge
+          examples:
+          - *id109
+          title: Exclude Optional Action
+        description: Exclude entries that match any of the given optional action values.
+      - name: exclude_decision
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventDecision'
+            description: Decision applied to a request.
+          description: Exclude entries that match any of the given decisions.
+          example: &id110
+          - allowed
+          - blocked
+          examples:
+          - *id110
+          title: Exclude Decision
+        description: Exclude entries that match any of the given decisions.
+      - name: exclude_path
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+          description: Exclude entries that match the given URL path pattern; '*' is wildcard.
+          example: &id111
+          - /home
+          - /users/*/profile
+          examples:
+          - *id111
+          title: Exclude Path
+        description: Exclude entries that match the given URL path pattern; '*' is wildcard.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetEventsResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
 components:
   schemas:
     APICompositeError:
@@ -15796,11 +16541,11 @@ components:
           type: array
           title: Api Path Groups
           description: An array of api groups associated with the API path
-          example: &id077
+          example: &id112
           - accounts
           - internal
           examples:
-          - *id077
+          - *id112
       type: object
       required:
       - api_path_groups
@@ -15875,22 +16620,22 @@ components:
           maxItems: 5
           title: Tags
           description: An array of tags associated with the API path
-          example: &id078
+          example: &id113
           - sensitivedataurl
           - highriskurl
           examples:
-          - *id078
+          - *id113
         api_groups:
           items:
             type: string
           type: array
           title: Api Groups
           description: An array of api groups associated with the API path
-          example: &id079
+          example: &id114
           - accounts
           - internal
           examples:
-          - *id079
+          - *id114
         status:
           $ref: '#/components/schemas/ApiPathStatus'
           description: The status of the discovered API path
@@ -15994,11 +16739,11 @@ components:
           title: Api Urls
           description: The API base paths for a domain. If your domain has a common base path for all API endpoints, it can be set here. When set or updated, each entry must contain at least one letter or digit; a value that would match the whole domain (such as "/") is rejected - to treat the entire domain as an API domain, use the `is_api` field instead.
           default: []
-          example: &id080
+          example: &id115
           - api/v1/.*
           - v2/.*
           examples:
-          - *id080
+          - *id115
       type: object
       title: ApiSettings
       description: API settings of a domain
@@ -16193,12 +16938,12 @@ components:
           type: object
           title: Quotas
           description: Quotas for the client
-          example: &id081
+          example: &id116
             number-of-domains:
               allowed: 5
               current: 1
           examples:
-          - *id081
+          - *id116
       type: object
       required:
       - id
@@ -16428,21 +17173,21 @@ components:
           type: array
           maxItems: 5
           title: Tags
-          example: &id082
+          example: &id117
           - sensitivedataurl
           - highriskurl
           examples:
-          - *id082
+          - *id117
         api_groups:
           items:
             type: string
           type: array
           title: Api Groups
-          example: &id083
+          example: &id118
           - accounts
           - internal
           examples:
-          - *id083
+          - *id118
       type: object
       required:
       - path
@@ -17160,6 +17905,110 @@ components:
       - blocked
       title: EventStatistics
       description: A collection of event metrics over a time span
+    EventSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Request's unique id
+        path:
+          type: string
+          title: Path
+          description: Request path
+        client_ip:
+          type: string
+          title: Client Ip
+          description: Client's IP address.
+        method:
+          type: string
+          title: Method
+          description: HTTP method
+        rule_name:
+          type: string
+          title: Rule Name
+          description: Name of the triggered rule
+        country:
+          type: string
+          title: Country
+          description: Country code
+        action:
+          type: string
+          title: Action
+          description: Action of the triggered rule
+        rule_id:
+          type: string
+          title: Rule Id
+          description: The ID of the triggered rule.
+        domain:
+          type: string
+          title: Domain
+          description: Domain name
+        domain_id:
+          type: integer
+          title: Domain Id
+          description: Domain ID
+        request_time:
+          type: integer
+          title: Request Time
+          description: The UNIX timestamp in ms of the date a set of traffic counters was recorded
+        status_code:
+          type: integer
+          title: Status Code
+          description: Status code for http request
+        result:
+          type: string
+          enum:
+          - passed
+          - blocked
+          - suppressed
+          - ''
+          title: Result
+          description: The result of a request
+        decision:
+          anyOf:
+          - $ref: '#/components/schemas/EventDecision'
+          - type: string
+            const: ''
+          title: Decision
+          description: The decision made for processing the request through the WAAP.
+          examples:
+          - blocked
+        optional_action:
+          anyOf:
+          - $ref: '#/components/schemas/OptionalAction'
+          - type: string
+            const: ''
+          title: Optional Action
+          description: An optional action that may be applied in addition to the primary decision.
+          examples:
+          - captcha
+        scheme:
+          type: string
+          title: Scheme
+          description: The URI scheme of the request that generated an event
+          default: ''
+          example: https
+          examples:
+          - https
+      type: object
+      required:
+      - id
+      - path
+      - client_ip
+      - method
+      - rule_name
+      - country
+      - action
+      - rule_id
+      - domain
+      - domain_id
+      - request_time
+      - status_code
+      - result
+      - decision
+      - optional_action
+      title: EventSummary
+      description: Event record summary used when displaying a list of events
     FileExtensionCondition:
       properties:
         negation:
@@ -17199,12 +18048,12 @@ components:
           type: object
           title: Filter Config
           description: Arbitrary JSON object storing the frontend filter state
-          example: &id084
+          example: &id119
             domains:
             - admin.example.com
             event: Probing detected
           examples:
-          - *id084
+          - *id119
       additionalProperties: false
       type: object
       required:
@@ -17385,6 +18234,37 @@ components:
       - conditions
       - id
       title: FirewallRuleResponse
+    GetEventsResponse:
+      properties:
+        results:
+          items:
+            $ref: '#/components/schemas/EventSummary'
+          type: array
+          title: Results
+          description: Records summary information. To fetch detailed information by an event, use [Get request details](/api-reference/waap/analytics/get-request-details)
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next
+          description: |-
+            Cursor value.
+            When present, indicates _possible_ availability of more data satisfying the request criteria.
+            To fetch the next page, repeat the request with the original parameter and the cursor value attached, for example:
+
+            ```
+                        GET /v2/analytics/events?start=2026-06-01T12:00:00Z&end=2026-06-02T00:00:00Z[...]&next=$next
+                        ```
+
+            The next page request _may_ return empty result set.
+      type: object
+      required:
+      - results
+      title: GetEventsResponse
+      description: |-
+        Page of records from security event log.
+
+        The data from the security event log are read in a streaming fashion, using cursor access pattern.
     HTTPMethod:
       type: string
       enum:
@@ -18961,7 +19841,7 @@ components:
           type: object
           title: Request Headers
           description: HTTP request headers
-          example: &id085
+          example: &id120
             ACCEPT: '*/*'
             ACCEPT-ENCODING: gzip, deflate
             CONNECTION: keep-alive
@@ -18971,7 +19851,7 @@ components:
             X-FORWARDED-PORT: '80'
             X-FORWARDED-PROTO: http
           examples:
-          - *id085
+          - *id120
         incident_id:
           type: string
           title: Incident Id
@@ -19058,11 +19938,11 @@ components:
           type: array
           title: Traffic Types
           description: List of traffic types
-          example: &id086
+          example: &id121
           - sanctioned
           - policy_blocked
           examples:
-          - *id086
+          - *id121
         pattern_matched_tags:
           items:
             $ref: '#/components/schemas/PatternMatchedTag'
@@ -19594,13 +20474,13 @@ components:
           type: array
           title: Total
           description: Total number of observed requests. First element of the tuple is a key, the second one is its counter value. The key refers to a point in the requested dimension (e.g., an IP address). Results are ordered by the counter value in descending order.
-          example: &id087
+          example: &id122
           - - 1.2.3.4
             - 100000
           - - 5.6.7.8
             - 80000
           examples:
-          - *id087
+          - *id122
         blocked:
           items:
             prefixItems:
@@ -19612,13 +20492,13 @@ components:
           type: array
           title: Blocked
           description: Number of blocked request events, with the same keys and formatted the same as in the total field.
-          example: &id088
+          example: &id123
           - - 1.2.3.4
             - 2000
           - - 5.6.7.8
             - 1000
           examples:
-          - *id088
+          - *id123
         suppressed:
           items:
             prefixItems:
@@ -19630,13 +20510,13 @@ components:
           type: array
           title: Suppressed
           description: Number of requests observed in monitoring mode that would have been blocked otherwise.
-          example: &id089
+          example: &id124
           - - 1.2.3.4
             - 1500
           - - 5.6.7.8
             - 1100
           examples:
-          - *id089
+          - *id124
         allowed:
           items:
             prefixItems:
@@ -19648,13 +20528,13 @@ components:
           type: array
           title: Allowed
           description: Number of requests passed due to a permissive security rule.
-          example: &id090
+          example: &id125
           - - 1.2.3.4
             - 1000
           - - 5.6.7.8
             - 900
           examples:
-          - *id090
+          - *id125
         reference:
           anyOf:
           - additionalProperties:
@@ -20384,21 +21264,21 @@ components:
           type: array
           maxItems: 5
           title: Tags
-          example: &id091
+          example: &id126
           - sensitivedataurl
           - highriskurl
           examples:
-          - *id091
+          - *id126
         api_groups:
           items:
             type: string
           type: array
           title: Api Groups
-          example: &id092
+          example: &id127
           - accounts
           - internal
           examples:
-          - *id092
+          - *id127
         status:
           $ref: '#/components/schemas/ApiPathStatus'
       type: object
@@ -20416,11 +21296,11 @@ components:
           type: array
           title: Api Urls
           description: The API base paths for a domain. If your domain has a common base path for all API endpoints, it can be set here. When set or updated, each entry must contain at least one letter or digit; a value that would match the whole domain (such as "/") is rejected - to treat the entire domain as an API domain, use the `is_api` field instead.
-          example: &id093
+          example: &id128
           - api/v1/.*
           - v2/.*
           examples:
-          - *id093
+          - *id128
       additionalProperties: false
       type: object
       title: UpdateApiSettings
