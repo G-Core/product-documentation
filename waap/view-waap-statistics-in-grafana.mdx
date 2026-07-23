@@ -1,79 +1,77 @@
 ---
 title: View WAAP statistics in Grafana
 sidebarTitle: Grafana reports
-ai-navigation: Install and configure the Gcore WAAP datasource plugin in Grafana to visualize total requests and total bytes metrics for WAAP-protected domains with hourly or daily granularity.
+ai-navigation: Install the Gcore Platform-EN Grafana plugin and visualize WAAP total requests and total bytes metrics in dashboards.
 ---
 
-The Gcore WAAP datasource plugin for Grafana lets security and DevOps teams visualize traffic statistics for WAAP-protected domains directly in Grafana dashboards. It connects to the Gcore WAAP Statistics API and renders time-series panels without requiring any manual API calls.
+The Gcore Platform-EN data source connects Grafana to Edge Network statistics, including WAAP traffic and request analytics, through a single plugin and query editor. Select **WAAP** as the service, then build time-series panels for protected domains. Grafana 12.0.0 or higher and an [API token](/account-settings/api-tokens) are required.
 
-The plugin supports the following metrics:
+The same data source also covers CDN, DNS, and FastEdge. For the full Edge Network setup and those services, see [View Edge Network statistics in Grafana](/cdn/grafana/view-cdn-statistics-in-grafana).
 
-- **Total Requests** — the number of HTTP requests processed by WAAP across protected domains within the selected time range.
-- **Total Bytes** — the total volume of traffic, displayed in kilobytes (KB).
-
-Metrics can be queried at two granularity levels:
-
-- **1h** — one data point per hour.
-- **1d** — one data point per day.
-
-<Note>
-The plugin requires Grafana 10.4.0 or higher.
-</Note>
+<Warning>
+The previous WAAP-only plugin (`Waap` / [waap-stats-datasource-plugin](https://github.com/G-Core/waap-stats-datasource-plugin)) is deprecated as of **July 25, 2026**. Migrate dashboards to **Gcore Platform-EN** before that date.
+</Warning>
 
 ## Download and install the plugin
 
-1. Get the plugin from the [GitHub repository](https://github.com/G-Core/waap-stats-datasource-plugin) using either method:
-   - **Clone the repository:** run `git clone https://github.com/G-Core/waap-stats-datasource-plugin.git` in a terminal.
-   - **Download as ZIP:** on the GitHub page, click **Code** > **Download ZIP**, then extract the archive.
+Install the unified plugin from the [GitHub repository](https://github.com/G-Core/gcore-stats-datasource-plugin), then restart Grafana so it can load the data source.
 
-2. Copy the `gcorelabs-waap-stats-datasource` folder into the Grafana plugins directory. The default location is:
+1. Download the latest [gcore-stats-datasource-plugin.zip](https://github.com/G-Core/gcore-stats-datasource-plugin/raw/main/release/gcore-stats-datasource-plugin.zip) from the repository `release` folder.
+
+2. Extract the archive into the Grafana plugins directory. Default locations:
    - **Linux/macOS:** `/var/lib/grafana/plugins`
    - **Windows:** `C:\Program Files\GrafanaLabs\grafana\data\plugins`
 
-3. [Restart Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/restart-grafana/) to load the new plugin.
+   The plugin folder name must be `gcore-stats-datasource-plugin`.
+
+3. If Grafana blocks unsigned plugins, allow this plugin ID in the Grafana configuration file (`custom.ini` or `grafana.ini`):
+
+   ```ini
+   [plugins]
+   allow_loading_unsigned_plugins = gcore-stats-datasource-plugin
+   ```
+
+4. [Restart Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/restart-grafana/) and sign in.
 
 ## Configure the data source
 
-After installing the plugin, add it as a data source in Grafana and authenticate it with a Gcore API token.
+After installation, add **Gcore Platform-EN** as a data source and authenticate it with a Gcore API token.
 
-1. Log in to Grafana, then open the main menu and navigate to **Connections** > **Data sources**.
+1. In the Grafana main menu, navigate to **Connections** > **Data sources**.
 
 2. Click **Add new data source**.
 
-3. Search for `Waap` and select the **Waap** plugin from Gcore.
+3. Search for `Gcore` and select **Gcore Platform-EN**.
 
-4. In the **WAAP API** section, fill in the configuration fields:
+4. Configure the connection fields:
 
-   - **API URL (host only)** — enter `api.gcore.com`. Change this only if connecting to a dedicated or on-premises Gcore API endpoint.
-   - **Authorization header value** — enter the permanent API token generated in the Gcore Customer Portal. The value must include the `APIKey` prefix:
-
-     ```
-     APIKey 7711$eyJ0eXAiOiJKV1Q...
-     ```
-
-   To generate a token, log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **Profile** > **API tokens** > **Create**.
+   - **API URL** — leave empty to use the default host, or enter a hostname only with no scheme or path — `api.gcore.com`.
+   - **API key** — paste an API token from the Gcore Customer Portal (**Profile** > **API tokens** > **Create**). The raw token is enough; the plugin adds the `APIKey` prefix when needed. A value that already includes `APIKey` or `Bearer` is also accepted.
 
 5. Click **Save & Test**.
 
-<p>A successful connection displays a confirmation message with the authenticated account name. If the test fails, verify that the API token is valid and includes the `APIKey` prefix.</p>
+A successful test confirms authentication with the account name. If the test fails, verify the token and that the API URL is a hostname only.
 
 ## Configure a dashboard
 
-With the data source connected, create a dashboard panel to visualize WAAP metrics.
+With the data source connected, create a panel and select **WAAP** to query protection traffic metrics.
 
-1. In the Grafana main menu, click **+** > **New dashboard**, then click **Add visualization**.
+1. In the Grafana main menu, click **+** > **Dashboard**, then **Add visualization**.
 
-2. In the **Data source** dropdown at the top of the query editor, select **Waap**.
+2. In the data source dropdown, select **Gcore Platform-EN**.
 
-3. In the query editor, configure the query:
+3. In the query editor, under **Edge Network**, set **Service** to **WAAP**. The query fields update for WAAP.
 
-   - **Metric** — select the metric to display:
-     - `total_requests` — renders the request count over time.
-     - `total_bytes` — renders traffic volume in KB over time.
-   - **Granularity** — select the time resolution:
-     - `1h` — one data point per hour.
-     - `1d` — one data point per day.
+4. Configure the WAAP query:
 
-4. Click **Apply** to add the panel to the dashboard.
+   - **Metric** — `total_requests` (HTTP requests processed by WAAP across protected domains) or `total_bytes` (traffic volume in kilobytes)
+   - **Granularity** — `1h` (one data point per hour) or `1d` (one data point per day)
+   - **Legend format** — optional series label template
 
-5. To save the dashboard, click **Save dashboard** in the upper-right corner, enter a name, and click **Save**.
+5. Click **Apply** to add the panel.
+
+6. Click **Save dashboard**, enter a name, and click **Save**.
+
+## Grafana Alerting
+
+Because Gcore Platform-EN is a backend data source with alerting enabled, WAAP panel queries can back [Grafana Alerting](https://grafana.com/docs/grafana/latest/alerting/) rules. Create an alert rule from the query and use Grafana expressions (Reduce, Math, Threshold) to turn the time series into a condition.
