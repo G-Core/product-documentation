@@ -74,7 +74,7 @@ Wait for the answer before proceeding.
 
 **If no → spec only:**
 - Mark steps that cannot be verified from the spec as `{TODO: verify in live environment}`
-- These will need a follow-up `full-audit` run to verify
+- These will need a follow-up `regression-test` run to verify
 
 ---
 
