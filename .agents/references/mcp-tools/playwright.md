@@ -297,7 +297,7 @@ Update this section when you discover new quirks during testing.
 
 ---
 
-## Testing protocol (for full-audit skill)
+## Testing protocol (for regression-test skill)
 
 When executing an article step-by-step:
 

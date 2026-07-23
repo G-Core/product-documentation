@@ -15,4 +15,4 @@ description: >-
   write-from-scratch instead; for a small targeted edit to one page without portal
   verification, use update-page.
 ---
-@../../../.agents/skills/full-audit/SKILL.md
+@../../../.agents/skills/regression-test/SKILL.md
