@@ -438,6 +438,51 @@ These headings must never appear:
 - Prerequisites go in the opening paragraph as plain text, not a separate section
 - Every article opens with its own unique sentence — never a template sentence that could appear in three different articles
 
+### No artificial scenarios in the opening sentence
+
+The reader already knows why they opened the article. Do not write a life scenario to justify the feature's existence.
+
+**Bad — scenario that adds no information:**
+```
+Multiple people often need access to the same hosting account — for example, a site
+administrator or a billing contact. Adding a sub-user gives each person separate
+login credentials instead of sharing a single password.
+```
+
+**Good — one sentence stating what the feature does:**
+```
+Sub-users allow multiple people to access the same hosting account with separate login credentials.
+```
+
+The test: could this opening sentence appear unchanged in three other articles in the same product? If yes, it is a scenario — rewrite it as a direct statement of what the feature does or enables.
+
+### No navigation chains in prose
+
+Never embed a multi-step navigation path (three or more steps) inside a prose sentence. A sentence like "...found on the General information page, reached by clicking the avatar, selecting Profile, then navigating to Account > General information" is a hidden procedure — the reader cannot follow it without re-reading.
+
+Extract it as numbered steps instead.
+
+**Bad — navigation chain buried in prose:**
+```
+The tax location and its rate appear in the Tax location field, in the Tax and currency
+section of the General information page, reached by clicking the avatar in the top-right
+corner of the Gcore Customer Portal, selecting Profile, then Account > General information.
+```
+
+**Good — one-sentence intro, then numbered steps:**
+```
+Every Gcore account has a tax location — the country whose tax regulations apply to the account.
+
+To view it:
+
+1. Click the avatar in the top-right corner of the Gcore Customer Portal.
+2. Select **Profile**.
+3. Navigate to **Account** > **General information**.
+4. Find the **Tax location** field in the **Tax and currency** section.
+```
+
+This rule applies anywhere in the article — including inside `<Step>` bodies. A `<Step>` that contains three or more sequential actions must use a numbered sub-list, not a single run-on sentence.
+
 ### Article must open with a prose paragraph
 
 The `title:` field in the frontmatter renders as the page H1. The first element in the article body must be a prose paragraph — never a heading, list, table, or code block.
@@ -557,6 +602,15 @@ Embed the link into an existing content sentence as a natural part of the text.
 |---------|-----|
 | First mention in article | `[Gcore Customer Portal](https://portal.gcore.com)` |
 | All subsequent mentions | plain text: "the Customer Portal" (no link, no "Gcore" prefix) |
+
+### Gcore Hosting Portal naming
+
+The Gcore Hosting Portal (`https://hosting.gcore.com`) is the portal for Dedicated Servers and Virtual Servers. Follow the same pattern as the Customer Portal.
+
+| Context | Use |
+|---------|-----|
+| First mention in article | `[Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr)` |
+| All subsequent mentions | plain text: "the Hosting Portal" (no link, no "Gcore" prefix) |
 
 ---
 
@@ -733,8 +787,10 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 
 | Context | Use |
 |---------|-----|
-| First mention of portal | Gcore Customer Portal |
-| Subsequent mentions | the Customer Portal |
+| First mention of Customer Portal | Gcore Customer Portal |
+| Subsequent mentions of Customer Portal | the Customer Portal |
+| First mention of Hosting Portal | Gcore Hosting Portal |
+| Subsequent mentions of Hosting Portal | the Hosting Portal |
 | Company as subject | Gcore (not "the platform", "the system", "we") |
 | API | Gcore API |
 

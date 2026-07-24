@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       issues: write
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -20,40 +22,44 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Get latest provider release
+      - name: Get latest v2 provider release
         id: provider
         run: |
+          # Fetch all releases and find the latest v2.x (including alpha)
           LATEST=$(curl -s \
             -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/G-Core/terraform-provider-gcore/releases/latest \
-            | jq -r '.tag_name // empty')
+            "https://api.github.com/repos/G-Core/terraform-provider-gcore/releases?per_page=50" \
+            | jq -r '[.[] | select(.tag_name | startswith("v2."))] | sort_by(.published_at) | last | .tag_name // empty')
           if [ -z "$LATEST" ]; then
-            echo "Could not fetch latest release tag. Exiting."
+            echo "Could not fetch latest v2 release tag. Exiting."
             exit 1
           fi
           LATEST="${LATEST#v}"
           echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
-          echo "Latest provider release: $LATEST"
+          echo "Latest v2 provider release: $LATEST"
 
-      - name: Get pinned version from docs
+      - name: Get tracked version from state file
         id: pinned
         run: |
-          PINNED=$(grep -r 'version = "= ' cloud/ --include="*.mdx" -h \
-            | grep -oP '[\d.]+-alpha\.\d+|[\d.]+' \
-            | sort -V | tail -1)
+          STATE_FILE=".terraform-provider-version"
+          if [ ! -f "$STATE_FILE" ]; then
+            echo "State file $STATE_FILE not found. Exiting."
+            exit 1
+          fi
+          PINNED=$(cat "$STATE_FILE" | tr -d '[:space:]')
           if [ -z "$PINNED" ]; then
-            echo "Could not find a pinned version in docs. Exiting."
+            echo "State file is empty. Exiting."
             exit 1
           fi
           echo "pinned=$PINNED" >> "$GITHUB_OUTPUT"
-          echo "Pinned version in docs: $PINNED"
+          echo "Last tracked version: $PINNED"
 
       - name: Skip if versions match
         if: steps.provider.outputs.latest == steps.pinned.outputs.pinned
         run: |
-          echo "Provider version matches docs (${{ steps.pinned.outputs.pinned }}). Nothing to do."
+          echo "Provider version matches tracked version (${{ steps.pinned.outputs.pinned }}). Nothing to do."
 
-      - name: Get schema for pinned version
+      - name: Get schema for tracked version
         if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
         run: |
           mkdir -p /tmp/tf-old
@@ -93,35 +99,56 @@ jobs:
           terraform providers schema -json > /tmp/schema-new.json
           echo "New schema extracted."
 
-      - name: Diff schemas for documented resources
+      - name: Build resource-to-article index
+        if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
+        id: index
+        run: |
+          python3 << 'PYEOF'
+          import os, re, json
+          from pathlib import Path
+
+          # Find all MDX files containing gcore_ resource blocks
+          resource_to_files = {}
+          all_resources = set()
+
+          mdx_dirs = ["cloud", "developer-tools/terraform", "cdn/terraform",
+                      "dns/dns-plugins", "edge-ai", "waap"]
+
+          for d in mdx_dirs:
+              for mdx in Path(d).rglob("*.mdx"):
+                  content = mdx.read_text(encoding="utf-8", errors="ignore")
+                  resources = re.findall(r'resource\s+"(gcore_\w+)"', content)
+                  for res in set(resources):
+                      all_resources.add(res)
+                      resource_to_files.setdefault(res, []).append(str(mdx))
+
+          print(f"Unique resources documented: {len(all_resources)}")
+          for res, files in sorted(resource_to_files.items()):
+              print(f"  {res}: {len(files)} article(s)")
+
+          with open("/tmp/resource_index.json", "w") as f:
+              json.dump(resource_to_files, f, indent=2)
+
+          # Also output the full resource list for schema diff
+          resources_list = sorted(all_resources)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write("resources<<RES_EOF\n")
+              f.write(json.dumps(resources_list) + "\n")
+              f.write("RES_EOF\n")
+          PYEOF
+
+      - name: Diff schemas and map to articles
         if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
         id: diff
         run: |
           python3 << 'PYEOF'
           import json, os
 
-          DOCUMENTED_RESOURCES = [
-              "gcore_cloud_project",
-              "gcore_cloud_network",
-              "gcore_cloud_network_subnet",
-              "gcore_cloud_network_router",
-              "gcore_cloud_security_group",
-              "gcore_cloud_volume",
-              "gcore_cloud_placement_group",
-              "gcore_cloud_instance",
-              "gcore_cloud_floating_ip",
-              "gcore_cloud_reserved_fixed_ip",
-              "gcore_cloud_secret",
-              "gcore_cloud_load_balancer",
-              "gcore_cloud_load_balancer_listener",
-              "gcore_cloud_load_balancer_pool",
-              "gcore_cloud_load_balancer_pool_member",
-              "gcore_cloud_k8s_cluster",
-              "gcore_cloud_file_share",
-              "gcore_cloud_file_share_access_rule",
-              "gcore_cloud_baremetal_server",
-              "gcore_cloud_instance_image",
-          ]
+          resources_json = os.environ.get("DOCUMENTED_RESOURCES", "[]")
+          documented_resources = json.loads(resources_json)
+
+          with open("/tmp/resource_index.json") as f:
+              resource_to_files = json.load(f)
 
           def get_resources(path):
               with open(path) as f:
@@ -138,17 +165,22 @@ jobs:
           lines = []
           has_changes = False
 
-          for resource in DOCUMENTED_RESOURCES:
+          for resource in sorted(documented_resources):
               old = old_resources.get(resource)
               new = new_resources.get(resource)
+              articles = resource_to_files.get(resource, [])
 
               resource_lines = []
 
               if old is None and new is not None:
-                  resource_lines.append(f"- **Added resource** `{resource}`")
+                  resource_lines.append(f"\n#### `{resource}` — NEW resource")
+                  resource_lines.append("This resource is now available in the provider but not yet documented.")
                   has_changes = True
               elif old is not None and new is None:
-                  resource_lines.append(f"- **Removed resource** `{resource}`")
+                  resource_lines.append(f"\n#### `{resource}` — REMOVED from provider")
+                  if articles:
+                      resource_lines.append(f"**Affects {len(articles)} article(s):** " +
+                          ", ".join(f"`{a}`" for a in articles))
                   has_changes = True
               elif old is not None and new is not None:
                   old_attrs = get_attrs(old)
@@ -171,12 +203,26 @@ jobs:
                   if added or removed or changed:
                       has_changes = True
                       resource_lines.append(f"\n#### `{resource}`")
+                      if articles:
+                          resource_lines.append(
+                              f"**Affects {len(articles)} article(s):** " +
+                              ", ".join(f"`{a}`" for a in articles)
+                          )
                       for a in added:
                           resource_lines.append(f"- Added attribute `{a}`")
                       for r in removed:
                           resource_lines.append(f"- Removed attribute `{r}`")
                       for c in changed:
-                          resource_lines.append(f"- Changed attribute `{c}`")
+                          old_a = old_attrs[c]
+                          new_a = new_attrs[c]
+                          changes = []
+                          if old_a.get("required") != new_a.get("required"):
+                              changes.append(f"required: {old_a.get('required')} → {new_a.get('required')}")
+                          if old_a.get("optional") != new_a.get("optional"):
+                              changes.append(f"optional: {old_a.get('optional')} → {new_a.get('optional')}")
+                          if old_a.get("type") != new_a.get("type"):
+                              changes.append(f"type: `{old_a.get('type')}` → `{new_a.get('type')}`")
+                          resource_lines.append(f"- Changed attribute `{c}`: {'; '.join(changes)}")
 
               lines.extend(resource_lines)
 
@@ -187,12 +233,13 @@ jobs:
           print(output)
 
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              # Write multiline output
               f.write("schema_diff<<DIFF_EOF\n")
               f.write(output + "\n")
               f.write("DIFF_EOF\n")
               f.write(f"has_changes={'true' if has_changes else 'false'}\n")
           PYEOF
+        env:
+          DOCUMENTED_RESOURCES: ${{ steps.index.outputs.resources }}
 
       - name: Ensure terraform label exists
         if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
@@ -243,18 +290,20 @@ jobs:
           diff   = os.environ["SCHEMA_DIFF"]
           body = (
               "## Terraform provider version drift detected\n\n"
-              "The Gcore Terraform provider has a new release.\n\n"
+              "The Gcore Terraform provider has a new v2 release.\n\n"
               "| | Version |\n"
               "|---|---|\n"
               f"| Latest release | `{latest}` |\n"
-              f"| Pinned in docs  | `{pinned}` |\n\n"
+              f"| Last tracked | `{pinned}` |\n\n"
               "### Schema changes in documented resources\n\n"
+              "Each section lists changed attributes and which articles contain HCL examples "
+              "for that resource — those articles need to be reviewed and updated.\n\n"
               f"{diff}\n\n"
               "### Action required\n\n"
-              f"1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v{latest}) for context on each change listed above.\n"
-              "2. Run live tests for each changed resource in the affected Cloud Terraform tab.\n"
-              f"3. Update the pinned version in all Terraform tabs from `= {pinned}` to `= {latest}`.\n"
-              "4. Update `.agents/TF-PROVIDER-BUGS.md` if any known issues are resolved or new ones appear.\n"
+              f"1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v{latest}) for context on each change.\n"
+              "2. For each resource above, open the listed articles and update the HCL examples and attribute descriptions.\n"
+              "3. Run live tests for each changed resource to confirm examples still work.\n"
+              f"4. Update `.terraform-provider-version` from `{pinned}` to `{latest}` and commit to close this issue.\n"
           )
           with open("/tmp/issue-body.md", "w") as f:
               f.write(body)

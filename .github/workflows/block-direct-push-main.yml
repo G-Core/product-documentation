@@ -1,0 +1,54 @@
+name: Block direct push to main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Fail if pushed directly by kostichs
+        env:
+          ACTOR: ${{ github.actor }}
+          EVENT: ${{ github.event_name }}
+          SHA: ${{ github.sha }}
+          REF: ${{ github.ref }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          BLOCKED_ACTOR="kostichs"
+
+          if [ "$ACTOR" != "$BLOCKED_ACTOR" ]; then
+            echo "Actor is $ACTOR — not blocked. OK."
+            exit 0
+          fi
+
+          # Check if this push came from a PR merge (allowed) or direct push (blocked)
+          # PR merges have a merge commit message starting with "Merge pull request"
+          COMMIT_MSG=$(curl -s \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$REPO/commits/$SHA" \
+            | jq -r '.commit.message // ""')
+
+          echo "Commit message: $COMMIT_MSG"
+
+          if echo "$COMMIT_MSG" | grep -q "^Merge pull request"; then
+            echo "This is a PR merge commit. Allowed."
+            exit 0
+          fi
+
+          echo "::error::Direct push to main by $ACTOR is not allowed. Use a branch and open a pull request."
+
+          gh issue create \
+            --repo "$REPO" \
+            --title "[CI] Direct push to main by $ACTOR — $SHA" \
+            --body "$(printf '## Direct push to main detected\n\n**Actor:** %s\n**SHA:** %s\n**Ref:** %s\n\nDirect pushes to main are not allowed. Always use a feature branch and open a pull request.\n\nPlease revert if needed.' "$ACTOR" "$SHA" "$REF")" \
+            --label "bug" || true
+
+          exit 1

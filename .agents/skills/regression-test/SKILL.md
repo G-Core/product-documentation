@@ -61,11 +61,12 @@ deep work within each phase. This is forbidden.
 
 1. This SKILL.md
 2. The article file identified in Phase 0
-3. `.agents/references/style-guide.md` — Phase 6 only
-4. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
-5. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
-6. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
-7. `.agents/references/mcp-tools/playwright.md` — Phase 1, Phase 2, and Phase 3
+3. `.agents/references/product-routing.md` — Phase 0 (portal and Jira routing)
+4. `.agents/references/style-guide.md` — Phase 6 only
+5. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
+6. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
+7. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
+8. `.agents/references/mcp-tools/playwright.md` — Phase 1 (Gcore portal only), Phase 2, and Phase 3
 
 Do not read other articles for context unless they are directly linked from the
 article being tested.
@@ -90,6 +91,21 @@ If only a topic is given — search the repository:
 ```powershell
 rg "keyword" --glob "*.mdx" -l
 ```
+
+### Determine portal and Jira routing
+
+Load `.agents/references/product-routing.md` now.
+
+Match the article path against the prefix table (longest match wins). Record:
+
+- `portal_type` — BillMgr / VMmanager 6 / DCImanager / Gcore Customer Portal
+- `portal_url` — the URL to navigate to in Phase 1
+- `login_method` — how to authenticate
+- `jira_org_unit` — the ORG_UNIT value for Phase 4
+- `jira_epic` — the EPIC value for Phase 4 (may be TBD for non-hosting products)
+
+If `jira_epic` is TBD — check Jira for the current active epic for that product area
+before creating the ticket in Phase 4.
 
 ### Claim the article before doing any work
 
@@ -124,11 +140,12 @@ They will be tested in their own turn.
 
 ## Phase 1 — Open the portal
 
-Load `.agents/references/mcp-tools/playwright.md` now.
+Use `portal_type` and `login_method` recorded in Phase 0 to determine which portal
+to open. The steps below differ by portal type.
 
 ### Open an isolated browser session first
 
-**Before navigating to the portal**, open a new incognito window to get a clean,
+**Before navigating to any portal**, open a new incognito window to get a clean,
 isolated session that does not interfere with any other agent currently using the browser:
 
 ```javascript
@@ -136,43 +153,61 @@ isolated session that does not interfere with any other agent currently using th
 window.open('about:blank', '_blank');
 ```
 
-Or use the Playwright MCP `browser_navigate` with a `--incognito` context if the MCP
-server supports it. The goal is a browser context with **no shared cookies, no shared
-tabs, no shared history** with any other session on this machine.
-
 **Why this is required:** Playwright MCP runs a single browser process shared across
-all agents running on the same machine. Without isolation, two parallel agents click in
-the same browser window — one agent's navigation overwrites the other's. An incognito
-window is a separate context: separate cookies (separate login session), separate tabs,
-no cross-contamination.
+all agents running on the same machine. An incognito window is a separate context:
+separate cookies, separate tabs, no cross-contamination.
 
 **If you cannot open an isolated context** — stop and tell the user:
 > "Playwright MCP is sharing a browser session with another agent. A separate
 > incognito window is required to proceed safely. Please confirm the incognito
 > window is open before I continue."
 
-Do not proceed with portal testing until you are certain you are in an isolated session.
+### Portal-specific login
 
-### Log in
+**Gcore Customer Portal** (`portal_type = Gcore Customer Portal`)
 
-Follow the SSO login flow from `.agents/references/mcp-tools/playwright.md` exactly,
-inside the isolated session:
+Load `.agents/references/mcp-tools/playwright.md` now.
 
+Follow the SSO login flow exactly, inside the isolated session:
 1. Navigate to `https://auth.gcore.com/login/signin`
 2. Click **SSO**
 3. Enter `gcore.com` in the Work domain field and press Enter
 4. Verify the browser is at `https://portal.gcore.com`
 
-### Select the region
+After login, select region **Luxembourg-3** from the region dropdown before starting
+any steps. All required quotas are available in Luxembourg-3.
 
-After login, navigate to the region the article targets.
-Default region: **Luxembourg-3**.
-Select it from the region dropdown in the portal header before starting any steps.
+**BillMgr** (`portal_type = BillMgr`)
 
-**Why Luxembourg-3:** all quotas needed for testing are available in this region.
-Do not use any other regions — quota availability differs. Other regions are allowed only if you don't find the required resource on Luxembourg-3.
+Credentials are in `_private/access.md` lines 13–16.
+Also load `_planning/hosting-account-map.md` for BillMgr navigation structure and
+active services.
 
-Verify the region switcher in the portal header shows **Luxembourg-3** before proceeding.
+1. Navigate to `https://hosting.gcore.com/billmgr`
+2. Log in with the credentials from `_private/access.md`
+3. Confirm successful login by taking a screenshot of the BillMgr dashboard
+
+**VMmanager 6** (`portal_type = VMmanager 6`)
+
+VMmanager is reached through BillMgr — no separate login.
+
+1. Log in to BillMgr as above
+2. Navigate to Products/Services → Virtual private servers
+3. Select the active VDS row
+4. Click **To panel** in the toolbar
+5. BillMgr opens VMmanager at `https://sqr-v6.vm.gcore.com` via token URL (auto-login)
+6. Confirm access by taking a screenshot of the VMmanager dashboard
+
+**DCImanager** (`portal_type = DCImanager`)
+
+DCImanager is only available when a Dedicated Server is active.
+If no dedicated server is provisioned — stop and report the blocker to the user.
+Otherwise, follow the same BillMgr → Products/Services → Dedicated servers → **To panel** flow.
+
+**Future portals** (`portal_type = Reseller Portal` / `Box Portal`)
+
+Routing is TBD. Stop and tell the user the portal is not yet configured in
+`.agents/references/product-routing.md`.
 
 ---
 
@@ -565,9 +600,11 @@ fresh and before any fixes are applied.
 redone after a partial run), do NOT create a duplicate ticket. Use the existing
 ticket number and continue directly to Phase 5.
 
-Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
-and fill in `SUMMARY` and `DESCRIPTION` with the article name and the findings
-list collected in Phase 2.
+Open `c:\Projects\docops-agent2\scripts\hosting-audit\create_edge_cloud_regression_ticket.py`
+and fill in `SUMMARY`, `DESCRIPTION`, `EPIC`, and `ORG_UNIT` using:
+- `SUMMARY` and `DESCRIPTION` — article name and findings from Phase 2
+- `EPIC` — `jira_epic` from Phase 0 routing (if TBD, resolve it in Jira first)
+- `ORG_UNIT` — `jira_org_unit` from Phase 0 routing
 
 **What belongs in the description — every finding in full.**
 
@@ -1144,91 +1181,3 @@ Run without `--dry-run` immediately after — do not wait for separate confirmat
 
 After running, reset the three constants back to placeholder values so the
 script is ready for the next article.
-
-### Step 2 — Mark the article as done in the plan
-
-Open `_planning/hosting-audit-plan.md` in `C:\Projects\product-documentation_2`,
-find the article's row, and update it:
-
-```
-| done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX) | DOC-XXXX | `hosting/...` |
-```
-
-### Step 3 — Write the changelog entry
-
-Create a file at:
-
-```
-C:\Projects\product-documentation_2\_planning\changelogs\{article-slug}.md
-```
-
-Where `{article-slug}` matches the MDX filename without the extension
-(e.g. `view-statistics-on-expenses.md`).
-
-Use this template:
-
-```markdown
-# Changelog: {Article title}
-
-**Article path:** `{relative path in product-documentation}`
-**Branch:** `{branch name}`
-**Jira ticket:** [{key}](https://jira.gcore.lu/browse/{key})
-**Regression date:** {YYYY-MM-DD}
-**Agent:** regression-test skill, phases 0-9
-
----
-
-## Summary of changes
-
-### Content fixes (from regression findings)
-
-| # | Location | Article said | Portal shows | Fix applied |
-|---|----------|-------------|--------------|-------------|
-| 1 | ... | ... | ... | ... |
-
-### Style guide fixes (Phase 5)
-
-- ...
-
-### MDX fixes (Phase 6)
-
-- ...
-
----
-
-## Screenshots replaced
-
-| Old filename | New filename | Notes |
-|-------------|--------------|-------|
-
-## Screenshots removed (orphaned)
-
-- ...
-
----
-
-## Portal verification log
-
-All elements tested in Phase 2, with pass/fail status. Every tested item must appear
-in this table — either as OK or as a reference to the FINDING number that covers it.
-
-| # | Element tested | Article says | Portal confirmed | Status |
-|---|---------------|--------------|-----------------|--------|
-| 1 | ... | ... | ... | OK / FINDING N |
-
----
-
-## Issues noted but not fixed (out of scope)
-
-- ...
-
----
-
-## Lessons learned (skill improvements made)
-
-- ...
-```
-
-Fill every section from the findings and fixes recorded during phases 2-6.
-The changelog is for future reference — describe what was actually done,
-not what was planned. If a section has nothing to report, write "None."
