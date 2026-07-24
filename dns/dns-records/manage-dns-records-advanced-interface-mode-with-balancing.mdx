@@ -8,106 +8,99 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
 
 ## Create a DNS record
 
-1\. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the zone to which records should be added. Alternatively, click the three-dot icon on the right and select **Go to records**.
+<Steps>
+  <Step title="Select a DNS zone">
+    Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the zone to which records should be added. Alternatively, click the three-dot icon on the right and select **Go to records**.
 
+    <Frame>![All zones list with a DNS zone ready to open](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image1.png)</Frame>
 
-<Frame>![All zones list with a DNS zone ready to open](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image1.png)</Frame>
+    Check that the **Advanced** toggle in the **Interface mode** section is enabled (green):
 
+    <Frame>![Zone records page with the Advanced interface mode toggle enabled](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image2.png)</Frame>
+  </Step>
+  <Step title="Open the record creation form">
+    Click **Add record set**.
 
+    <Frame>![Zone records in advanced mode with the Add record set button](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image3.png)</Frame>
 
-Check that the **Advanced** toggle in the **Interface mode** section is enabled (green):
+    A new page opens with the record creation form.
 
+    <Frame>![Add record form with Type, Name, TTL, Dynamic response, and Records fields](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image4.png)</Frame>
+  </Step>
+  <Step title="Select the record type">
+    In the **Type** field, select the DNS record type: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB. Each type is described in [DNS&nbsp;records](/dns/dns-records).
+  </Step>
+  <Step title="Set the record name">
+    In the **Name** field, specify the subdomain the record belongs to. The options are:
 
-<Frame>![Zone records page with the Advanced interface mode toggle enabled](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image2.png)</Frame>
+    * Leave the field blank to add a record for the apex domain (`sample-test.com`).
+    * Enter a subdomain name to add a record for that subdomain. Entering `one` creates a record for `one.sample-test.com`.
+    * Enter an asterisk (`*`) to add a wildcard record that applies to all subdomains.
+  </Step>
+  <Step title="Set the TTL">
+    In the **TTL** field, specify the TTL (time to live) in seconds.
 
+    <Accordion title="TTL operation">
+    Consider an A record with a TTL of 300 seconds, equal to 5 minutes. If the value changes from `10.0.0.1` to `10.0.0.0`, users requesting the domain will receive the server with IP `10.0.0.1` for up to 5 minutes (this value will be stored in the cache of recursive DNS servers). Within a maximum of 5 minutes, the DNS server will see the new value of the A record and refresh its cache, after which users will be directed to the server with IP `10.0.0.0`.
 
+    The point within the 300-second interval at which the record changes determines how long users wait to access the new record. If the change occurs 240 seconds into the TTL, users wait only one minute; if it occurs at 1 second, they wait 4 minutes and 59 seconds. Select a TTL duration according to the maximum wait-time tolerance.
+    </Accordion>
+  </Step>
+  <Step title="Configure dynamic response (optional)">
+    <Note>
+    The dynamic response feature is available on the Free plan, but creating more than one dynamic RRset requires a paid plan.
+    </Note>
 
-2\. The page with existing DNS record sets opens. Click **Add record set**.
+    Gcore's DNS servers can return different DNS records to different users — users in Asia can be directed to an Asian server and users in Europe to a European one. This is called dynamic response. Full configuration instructions are in [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing).
 
+    To enable dynamic response, check the **Dynamic response** checkbox. Leave it unchecked to proceed without dynamic response.
 
-<Frame>![Zone records in advanced mode with the Add record set button](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image3.png)</Frame>
+    Dynamic response can also be configured via API using dynamic RRsets. The [DNS&nbsp;API](/api-reference/dns/rrsets/create-rrset) reference covers picker and selector options.
+  </Step>
+  <Step title="Set the record value status">
+    Each record value is active by default. To save a value without activating it, uncheck the toggle next to that record.
+  </Step>
+  <Step title="Enter the record value">
+    In the **Content** field, enter a value for the record type.
 
+    <Accordion title="Example values by record type">
+    Record type | Example value
+    \---|---
+    A | ```128.128.128.128```
+    AAAA | ```2001:0db8:85a3:0000:0000:8a2e:0370:7334```
+    NS | ```ns1.smth.com```
+    CNAME | ```uuuuu8.cdn.co```
+    MX | ```ASPMX.L.GOOGLE.COM``` (for multiple servers, fill in the **Priority** field; lower value = higher priority)
+    SRV | ```_sip._tcp.example.com. 3600 IN SRV 10 50 5060 sipserver.example.com```
+    HTTPS | ```example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6```
+    TXT | ```logmein-verification-code=976afe6f-8039-40e4-95a5-261b462```
+    CAA | ```0 issue "comodo.com"``` (format: `[flags] [tag] "[value]"`)
+    </Accordion>
+  </Step>
+  <Step title="Add metadata (optional)">
+    Specify associated metadata to be used for dynamic response configuration. The [metadata&nbsp;guide](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the full configuration.
+  </Step>
+  <Step title="Add more record values (optional)">
+    Click **Add record** to specify additional values for the record set. A new record entry appears — enter the content and metadata as needed. To remove a record value, click the minus button next to it. To disable a value without removing it, uncheck its toggle.
+  </Step>
+  <Step title="Create the record">
+    Click **Create**.
 
-
-A new page opens. Complete the remaining steps on this page.
-
-
-<Frame>![Add record form with Type, Name, TTL, Dynamic response, and Records fields](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image4.png)</Frame>
-
-
-
-3\. In the **Type** field, select the DNS record type: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB. Each type is described in [DNS&nbsp;records](/dns/dns-records).
-
-4\. In the **Name** field, specify the subdomain the record belongs to. The options are:
-
-  * Leave the field blank to add a record for the apex domain (`sample-test.com`).
-  * Enter a subdomain name to add a record for that subdomain. Entering `one` creates a record for `one.sample-test.com`.
-  * Enter an asterisk (`*`) to add a wildcard record that applies to all subdomains.
-
-
-
-5\. In the **TTL** field, specify the TTL (time to live) in seconds. 
-
-
-<Accordion title="TTL operation">
-Consider an A record with a TTL of 300 seconds, equal to 5 minutes. If the value changes from `10.0.0.1` to `10.0.0.0`, users requesting the domain will receive the server with IP `10.0.0.1` for up to 5 minutes (this value will be stored in the cache of recursive DNS servers). Within a maximum of 5 minutes, the DNS server will see the new value of the A record and refresh its cache, after which users will be directed to the server with IP `10.0.0.0`.
-
-The point within the 300-second interval at which the record changes determines how long users wait to access the new record. If the change occurs 240 seconds into the TTL, users wait only one minute; if it occurs at 1 second, they wait 4 minutes and 59 seconds. Select a TTL duration according to the maximum wait-time tolerance.
-</Accordion>
-
-
-6\. (Optional) Configure dynamic response.
-
-<Note>
-The dynamic response feature is available on the Free plan, but creating more than one dynamic RRset requires a paid plan.
-</Note>
-
-Gcore's DNS servers can return different DNS records to different users — users in Asia can be directed to an Asian server and users in Europe to a European one. This is called dynamic response. Full configuration instructions are in [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing).
-
-To enable dynamic response, check the **Dynamic response** checkbox. Leave it unchecked to proceed without dynamic response.
-
-Dynamic response can also be configured via API using dynamic RRsets. The [DNS&nbsp;API](/api-reference/dns/rrsets/create-rrset) reference covers picker and selector options.
-
-7\. Each record value is active by default. To save a value without activating it, uncheck the toggle next to that record.
-
-8\. In the **Content** field, enter a value for the record type.
-
-
-<Accordion title="Example values by record type">
-Record type | Example value
-\---|---
-A | ```128.128.128.128```
-AAAA | ```2001:0db8:85a3:0000:0000:8a2e:0370:7334```
-NS | ```ns1.smth.com```
-CNAME | ```uuuuu8.cdn.co```
-MX | ```ASPMX.L.GOOGLE.COM``` (for multiple servers, fill in the **Priority** field; lower value = higher priority)
-SRV | ```_sip._tcp.example.com. 3600 IN SRV 10 50 5060 sipserver.example.com```
-HTTPS | ```example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6```
-TXT | ```logmein-verification-code=976afe6f-8039-40e4-95a5-261b462```
-CAA | ```0 issue "comodo.com"``` (format: `[flags] [tag] "[value]"`)
-</Accordion>
-
-
-9\. (Optional) Specify associated metadata to be used for dynamic response configuration. The [metadata&nbsp;guide](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the full configuration.
-
-10\. (Optional) Click **Add record** to specify additional values for the record set.
-
-11\. A new record entry appears. Enter the content and metadata as needed. To remove a record value, click the minus button next to it. To disable a value without removing it, uncheck its toggle.
-
-12\. Click **Create**.
-
-The record set is created with the specified parameters. The [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool verifies that the record is propagated correctly.
+    The record set is created with the specified parameters. The [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool verifies that the record is propagated correctly.
+  </Step>
+</Steps>
 
 ## Manage a DNS record
 
-1\. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the zone containing the records to edit or delete.
+<Steps>
+  <Step title="Select a DNS zone">
+    Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the zone containing the records to edit or delete.
 
+    <Frame>![All zones list with a DNS zone ready to open](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image1.png)</Frame>
+  </Step>
+  <Step title="Edit or delete a record">
+    To edit a record, click its name or select **Edit record** from the three-dot menu — both open the same edit form. To delete a record, click the three-dot icon and select **Delete**.
 
-<Frame>![All zones list with a DNS zone ready to open](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image1.png)</Frame>
-
-
-
-2\. To edit a record, click its name or select **Edit record** from the three-dot menu — both open the same edit form. To delete a record, click the three-dot icon and select **Delete**.
-
-
-<Frame>![Zone records list with the three-dot menu showing Edit record and Delete options](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image5.png)</Frame>
+    <Frame>![Zone records list with the three-dot menu showing Edit record and Delete options](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image5.png)</Frame>
+  </Step>
+</Steps>
