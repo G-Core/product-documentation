@@ -481,7 +481,7 @@ To view it:
 4. Find the **Tax location** field in the **Tax and currency** section.
 ```
 
-This rule applies anywhere in the article, not just the opening paragraph.
+This rule applies anywhere in the article — including inside `<Step>` bodies. A `<Step>` that contains three or more sequential actions must use a numbered sub-list, not a single run-on sentence.
 
 ### Article must open with a prose paragraph
 
@@ -602,6 +602,15 @@ Embed the link into an existing content sentence as a natural part of the text.
 |---------|-----|
 | First mention in article | `[Gcore Customer Portal](https://portal.gcore.com)` |
 | All subsequent mentions | plain text: "the Customer Portal" (no link, no "Gcore" prefix) |
+
+### Gcore Hosting Portal naming
+
+The Gcore Hosting Portal (`https://hosting.gcore.com`) is the portal for Dedicated Servers and Virtual Servers. Follow the same pattern as the Customer Portal.
+
+| Context | Use |
+|---------|-----|
+| First mention in article | `[Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr)` |
+| All subsequent mentions | plain text: "the Hosting Portal" (no link, no "Gcore" prefix) |
 
 ---
 
@@ -778,8 +787,10 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 
 | Context | Use |
 |---------|-----|
-| First mention of portal | Gcore Customer Portal |
-| Subsequent mentions | the Customer Portal |
+| First mention of Customer Portal | Gcore Customer Portal |
+| Subsequent mentions of Customer Portal | the Customer Portal |
+| First mention of Hosting Portal | Gcore Hosting Portal |
+| Subsequent mentions of Hosting Portal | the Hosting Portal |
 | Company as subject | Gcore (not "the platform", "the system", "we") |
 | API | Gcore API |
 
