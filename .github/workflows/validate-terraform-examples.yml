@@ -1,0 +1,50 @@
+name: Validate Terraform examples
+
+on:
+  pull_request:
+    paths:
+      - '**/*.mdx'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: pip install -r .github/scripts/terraform/requirements.txt
+
+      - name: Resolve current provider version
+        id: version
+        run: |
+          VERSION=$(cat .terraform-provider-version | tr -d '[:space:]')
+          SCHEMA="terraform-provider/schemas/gcore-$VERSION.json"
+          if [ ! -f "$SCHEMA" ]; then
+            echo "::warning::Schema file $SCHEMA not found. Trigger check-terraform-provider workflow to bootstrap it. Skipping HCL validation."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "schema=$SCHEMA" >> "$GITHUB_OUTPUT"
+
+      - name: Get changed MDX files
+        id: changed
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            | grep -E '\.mdx$' \
+            || true)
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "Changed MDX files:"
+          echo "$FILES"
+
+      - name: Validate HCL examples
+        if: steps.changed.outputs.files != '' && steps.version.outputs.skip != 'true'
+        run: |
+          python3 .github/scripts/terraform/validate_hcl.py \
+            "${{ steps.version.outputs.schema }}" \
+            ${{ steps.changed.outputs.files }}
