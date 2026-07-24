@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -24,11 +25,14 @@ jobs:
       - name: Rebuild doc index
         run: python3 .github/scripts/terraform/build_doc_index.py
 
-      - name: Commit updated index
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add terraform-provider/doc_index.json
-          git diff --cached --quiet && echo "Index unchanged, nothing to commit." && exit 0
-          git commit -m "chore: rebuild Terraform doc index"
-          git push
+      - name: Open PR with updated index
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild Terraform doc index"
+          branch: chore/update-doc-index
+          delete-branch: true
+          title: "chore: rebuild Terraform doc index"
+          body: "Automated update of `terraform-provider/doc_index.json` triggered by a push to `main`."
+          labels: "automated,terraform"
+          add-paths: terraform-provider/doc_index.json
