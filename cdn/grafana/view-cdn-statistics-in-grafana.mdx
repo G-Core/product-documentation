@@ -1,216 +1,148 @@
 ---
-title: View CDN statistics in Grafana
+title: View Edge Network statistics in Grafana
 sidebarTitle: Grafana reports
-ai-navigation: Display CDN statistics in Grafana using the cdn-stats plugin to visualize Total Traffic, Byte Cache Hit Ratio, Edges Traffic, Shield Traffic, Origin Traffic, Total Requests, HTTP response codes (2xx, 3xx, 4xx, 5xx), Bandwidth, Cache Hit Ratio, and Shield Traffic Ratio, grouped by Clients, Resource, Region, Country, Data Center, or Vhost parameters.
+ai-navigation: Install the Gcore Platform-EN Grafana plugin and visualize CDN, DNS, FastEdge, and WAAP statistics in dashboards.
 ---
 
-With the Gcore cdn-stats plugin in Grafana, you can display the CDN statistics by:
+The Gcore Platform-EN data source connects Grafana to Edge Network statistics through a single plugin and query editor. Select a service — CDN, DNS, FastEdge, or WAAP — then build time-series panels from the matching Gcore APIs. Grafana 12.0.0 or higher and an API token are required.
 
-  * **Total Traffic,** which is total traffic volume, consisting of traffic from origin to CDN or [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) \+ from [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to CDN + from CDN to users;
-  * **Byte cache Hit Ratio,** which is the share of cached traffic, calculated using the formula: 1-(traffic from the origin to the CDN or [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding)/traffic from the CDN to users);
-  * **Edges Traffic,** which is traffic from CDN, consisting of traffic from [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to CDN + from CDN to users;
-  * **Shield Traffic,** which is traffic from [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to CDN;
-  * **Origin Traffic,** which is traffic from the origin, consisting of traffic from the origin to the CDN or from the origin to the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding);
-  * **Total Requests,** which is the number of requests to the CDN;
-  * **2xx, 3xx, 4xx, 5xx Responses,** which is the number of 2xx, 3xx, 4xx, and 5xx responses;
-  * **Bandwidth,** which is bandwidth, calculated based on traffic from the origin to the CDN or [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) \+ from [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to CDN + from CDN to users;
-  * **Cache Hit Ratio,** which is the share of sending cached content, consisting of responses with cached content / requests to CDN;
-  * **Shield traffic ratio** is the efficiency of the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding): how much more traffic is sent from the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) than from the origin, calculated using the formula: (traffic from the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to the CDN - traffic from the origin to the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding)) / traffic from the [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to the CDN;
+<Warning>
+The previous CDN-only plugin (`cdn-stats` / [cdn-stats-datasource-plugin](https://github.com/G-Core/cdn-stats-datasource-plugin)) is deprecated as of **July 25, 2026**. Migrate dashboards to **Gcore Platform-EN** before that date.
+</Warning>
 
+Supported services:
 
-
-You can group metrics by the following parameters:
-
-  * **Clients** is for clients;
-  * **Resource** is for CDN resources;
-  * **Region** is for regions;
-  * **Country** is for countries;
-  * **Data** is for data centers;
-  * **Vhost** is for a personal domain.
-
-
-
-**Note** : The plugin is designed for Grafana version 7.0 and higher.
-
-To configure CDN statistics in Grafana, you need to:
-
-  * Use Grafana version 7.0 and higher.
-
-
-
-Video instructions of the steps:
+- **CDN** — delivery traffic, bandwidth, cache efficiency, and request statistics
+- **DNS** — authoritative DNS traffic per zone and record type
+- **FastEdge** — application latency and performance metrics
+- **WAAP** — web application and API protection traffic and request analytics
 
 ## Download and install the plugin
 
-[Download](https://github.com/G-Core/cdn-stats-datasource-plugin/releases) the gcore-cdn-stats-datasource-1.0.8.zip file with the latest version of the plugin in GitHub.
+Install the unified plugin from the [GitHub repository](https://github.com/G-Core/gcore-stats-datasource-plugin), then restart Grafana so it can load the data source.
 
-**Note** : The numbers (1.0.8) in the file name indicate the plugin version and may differ depending on updates.
+1. Download the latest [gcore-stats-datasource-plugin.zip](https://github.com/G-Core/gcore-stats-datasource-plugin/raw/main/release/gcore-stats-datasource-plugin.zip) from the repository `release` folder.
 
+2. Extract the archive into the Grafana plugins directory. Default locations:
+   - **Linux/macOS:** `/var/lib/grafana/plugins`
+   - **Windows:** `C:\Program Files\GrafanaLabs\grafana\data\plugins`
 
-<Frame>![Download and install the plugin](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/_____________.png)</Frame>
+   The plugin folder name must be `gcore-stats-datasource-plugin`.
 
+3. If Grafana blocks unsigned plugins, allow this plugin ID in the Grafana configuration file (`custom.ini` or `grafana.ini`):
 
+   ```ini
+   [plugins]
+   allow_loading_unsigned_plugins = gcore-stats-datasource-plugin
+   ```
 
-Unzip the archive to the Grafana plugin folder. By default, this is the _Grafana\grafana\data\plugins_ installation folder.
+4. [Restart Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/restart-grafana/) and sign in.
 
-[Restart](https://grafana.com/docs/grafana/latest/installation/restart-grafana) and [log](https://grafana.com/docs/grafana/latest/fundamentals/getting-started/first-dashboards/) in to Grafana.
+## Configure the data source
 
-Click the gear icon in the menu to open the "Configuration" section, select "Data Sources".
+After installation, add **Gcore Platform-EN** as a data source and authenticate it with a Gcore API token.
 
+1. In the Grafana main menu, navigate to **Connections** > **Data sources**.
 
-<Frame>![Configuration](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/data_source.png)</Frame>
+2. Click **Add new data source**.
 
+3. Search for `Gcore` and select **Gcore Platform-EN**.
 
+4. Configure the connection fields:
 
-Click **Add data source** to add a new resource for getting data.
+   - **URL** — leave empty to use the default host, or enter a hostname only with no scheme or path — `api.gcore.com`.
+   - **API key** — paste an [API token](/account-settings/api-tokens) from the Gcore Customer Portal (**Profile** > **API tokens** > **Create**). The raw token is enough; the plugin adds the `APIKey` prefix when needed. A value that already includes `APIKey` or `Bearer` is also accepted.
 
+5. Click **Save & Test**.
 
-<Frame>![data source](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/_________Data_Source.png)</Frame>
+A successful test confirms authentication with the account name. If the test fails, verify the token and that the URL is a hostname only.
 
+## Configure a dashboard
 
+With the data source connected, create a panel and pick the Edge Network service to query.
 
-Find the cdn-stats plugin from Gcore and click "Select".
+1. In the Grafana main menu, click **+** > **Dashboard**, then **Add visualization**.
 
+2. In the data source dropdown, select **Gcore Platform-EN**.
 
-<Frame>![cdn-stats plugin](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/cdn-stats.png)</Frame>
+3. In the query editor, under **Edge Network**, select the **Service**: **CDN**, **DNS**, **FastEdge**, or **WAAP**. The fields below update for that service.
 
+4. Configure the service-specific query fields, then click **Apply** to add the panel.
 
+5. Click **Save dashboard**, enter a name, and click **Save**.
 
-The plugin settings will be opened. Add a permanent API token to the "Auth" section.
+The following sections describe the query fields for each service.
 
-You can get a token in your personal account. To do this, go to Profile > API tokens > Create. 
+### CDN
 
+CDN queries cover delivery traffic, cache efficiency, and request or response trends. Metrics, granularity, and grouping match the CDN statistics API.
 
-<Frame>![Add a permanent API token](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/mceclip0.png)</Frame>
+**Metrics**
 
+| Metric in the plugin | Description |
+|---|---|
+| `total_bytes` | Total traffic volume: origin to CDN or [Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding), Shielding to CDN, and CDN to users |
+| `cache_hit_traffic_ratio` | Share of cached traffic: `1 - (origin or Shielding traffic / CDN-to-user traffic)` |
+| `sent_bytes` | Edges traffic: Shielding to CDN plus CDN to users |
+| `shield_bytes` | Traffic from Shielding to CDN |
+| `upstream_bytes` | Origin traffic: origin to CDN or origin to Shielding |
+| `requests` | Number of requests to the CDN |
+| `responses_2xx`, `responses_3xx`, `responses_4xx`, `responses_5xx` | Response counts by status class |
+| `bandwidth` | Bandwidth derived from total traffic |
+| `cache_hit_requests_ratio` | Share of responses served from cache |
+| `shield_traffic_ratio` | Shielding efficiency: `(Shielding-to-CDN traffic - origin-to-Shielding traffic) / Shielding-to-CDN traffic` |
+| `image_processed` | Number of processed images |
 
+**Granularity:** `5m`, `15m`, `1h`, or `1d`.
 
-Insert the received API token in the API token field in the format: **APIKey** `{the received API token}`.
+**Group by:** `resource`, `client`, `region`, `country`, `dc` (data center), or `vhost` (custom domain). Multiple groupings can be selected.
 
-For example: `APIKey 7711_eyJ0eXAiOiJKV`
+**Filters (comma-separated):** optional **Vhosts**, **Resources**, **Clients**, **Regions**, and **Countries** fields narrow the series.
 
+**Legend Format:** by default the legend uses the group-by values and metric name. Customize it with placeholders in double curly braces that match the selected grouping — <code>Traffic — &#123;&#123;resource&#125;&#125;</code>.
 
-<Frame>![Insert the received API token](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/api_token_1.png)</Frame>
+### DNS
 
+DNS queries show authoritative traffic across zones and record types so query volume and load can be monitored per zone.
 
+- **Zone** — a specific zone, or **All Zones**
+- **Granularity** — `5m`, `10m`, `15m`, `30m`, `1h`, `1.5h`, `2h45m`, or `24h`
+- **Record type** — `ALL`, `A`, `AAAA`, `NS`, `CNAME`, `MX`, `TXT`, `SVCB`, or `HTTPS`
+- **Legend Format** — optional series label template
 
-Click **Save & Test**.
+### FastEdge
 
-If everything is correct, you will see the following messages: "Datasource updated" and "You successfully authenticated as {Name}".
+FastEdge queries expose application duration metrics so latency can be compared across apps and networks.
 
+- **App** — a specific application, or **All**
+- **Metric** — `avg`, `min`, `max`, `median`, `perc75`, or `perc90`
+- **Step** — sampling interval in seconds
+- **Network** — optional network name filter
+- **Legend Format** — optional series label template
 
-<Frame>![Save ](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/save_test.png)</Frame>
+### WAAP
 
+WAAP queries surface protection traffic and request volume for protected domains over time.
 
+- **Metric** — `total_requests` or `total_bytes`
+- **Granularity** — `1h` or `1d`
+- **Legend Format** — optional series label template
 
-## The Download and install the plugin step video instructions
+## Dashboard variables
 
-## Configure the dashboard
+Dashboard variables can drive CDN filters so the same panel switches between resources, clients, or other dimensions without editing the query.
 
-Click on the **+** in the menu to open the "Create" section, select "Dashboard" to add a new dashboard.
+1. Open dashboard settings (gear icon), go to **Variables**, and click **Add variable**.
 
+2. Configure the variable. For CDN resource filtering:
+   - **Name** — variable name used in the query
+   - **Query type / Values for** — select the CDN dimension exposed by the plugin (`resource`, `client`, `vhost`, `region`, `country`, or `datacenter`)
+   - Optional **Sort** and **Selection options** (**Multi-value**, **Include All option**)
 
-<Frame>![Configure the Dashboard](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/dashboard.png)</Frame>
+3. Return to the dashboard and enter the variable in the matching CDN filter field with a `$` prefix — `$resource` in **Resources**.
 
+4. Save the dashboard.
 
+## Grafana Alerting
 
-In the next window, click "Add an empty panel" to create a new panel.
-
-
-<Frame>![Add an empty pane](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/add_panel.png)</Frame>
-
-
-Make sure that "cdn-stats" is set as the data source in the Query section.
-
-
-<Frame>![query.png](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/query.png)</Frame>
-
-
-
-Select the necessary metric, granularity, and grouping (you can select several).
-
-
-<Frame>![Select the necessary metric,](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/query_props_1.png)</Frame>
-
-
-
-The "Legend" field displays the values of the Group by field and the name of the metric by default:
-
-
-<Frame>![Legend](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/grafa.jpg)</Frame>
-
-
-
-You can customize the output of legend data.
-
-Set a name for the metric and in brackets `{{}}` set the parameters specified in the Group by field.
-
-For example, for the settings above, you can set the following format: Traffic quantity — `{{resource}}`.
-
-
-<Frame>![Traffic ](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/15717167195025.png)</Frame>
-
-
-Open the dashboard settings by clicking on the gear icon in the upper-right corner.
-
-
-<Frame>![dashboard settings](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/panel_settings.png)</Frame>
-
-
-
-Go to the "Variables" section and click "Add variable". You can use it to filter the data on the chart.
-
-
-<Frame>![Variables](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/add_variable.png)</Frame>
-
-
-
-For example, to be able to filter resources, you need to make the following settings and click "Update":
-
-  * In the **_Name_** you can specify the variable name (required).
-  * In the **_Values for_** you can select a value for the variable: resourceID (resources).
-  * In the **_Sort_** you can set the sorting order of the elements (optional)
-  * In the **_Selection Options_** you can set the way of how elements can be selected (optional)
-    * In the **_Multi-value_** you can set the ability to select multiple elements.
-    * In the **_Include All option_** you can set the ability to select all elements by marking the All value.
-
-
-<Frame>![Update](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/variables_edit.png)</Frame>
-
-
-
-Go back to the dashboard by clicking the arrow icon in the upper-left corner of the screen.
-
-
-<Frame>![Go back t](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/go_back.png)</Frame>
-
-
-
-Connect the variable with the Dashboard. To do this, specify its name in the "Resources" field of the "Filters (comma separated)" section.
-
-**Important!** Enter "$" before the variable name.
-
-
-<Frame>![Resources](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/filters.png)</Frame>
-
-
-
-Now you can choose resource data to be displayed on the chart.
-
-
-<Frame>![chart](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/pane_____.png)</Frame>
-
-
-
-Save the Dashboard. To do this, click "Save" in the upper-right corner of the panel. 
-
-
-<Frame>![Save the Dashboard](/images/docs/cdn/grafana/view-cdn-statistics-in-grafana/save.png)</Frame>
-
-
-
-## Configure the dashboard step video instructions
-
-<Frame>
-<iframe width="100%" src="https://www.youtube.com/embed/EZUdzlpyyDU" title="Dashboard setup: EN" frameborder="0" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</Frame>
+Because Gcore Platform-EN is a backend data source with alerting enabled, panel queries can back [Grafana Alerting](https://grafana.com/docs/grafana/latest/alerting/) rules. Build a CDN, DNS, FastEdge, or WAAP query, create an alert rule from it, and use Grafana expressions (Reduce, Math, Threshold) to turn the time series into a condition.
