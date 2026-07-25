@@ -460,8 +460,6 @@ The test: could this opening sentence appear unchanged in three other articles i
 
 Never embed a multi-step navigation path (three or more steps) inside a prose sentence. A sentence like "...found on the General information page, reached by clicking the avatar, selecting Profile, then navigating to Account > General information" is a hidden procedure — the reader cannot follow it without re-reading.
 
-Extract it as numbered steps instead.
-
 **Bad — navigation chain buried in prose:**
 ```
 The tax location and its rate appear in the Tax location field, in the Tax and currency
@@ -481,7 +479,67 @@ To view it:
 4. Find the **Tax location** field in the **Tax and currency** section.
 ```
 
-This rule applies anywhere in the article — including inside `<Step>` bodies. A `<Step>` that contains three or more sequential actions must use a numbered sub-list, not a single run-on sentence.
+### Use `<Steps>` for portal procedures
+
+For any Customer Portal procedure with two or more sequential steps, use the Mintlify
+`<Steps>` + `<Step>` components instead of a plain numbered list. This renders numbered
+UI blocks with visible titles and is significantly more scannable than prose.
+
+```mdx
+<Steps>
+  <Step title="Navigate to the page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** → **Managed DNS**
+    and click the zone name.
+  </Step>
+  <Step title="Configure the record">
+    Click **Add record** and fill in the form:
+
+    1. Set **Type** to **CNAME**.
+    2. In the **Name** field, enter the root domain.
+    3. In the **Content** field, enter the target domain.
+    4. Click **Add**.
+
+    <Frame>![Add CNAME record form](/images/docs/...)</Frame>
+  </Step>
+</Steps>
+```
+
+**Rules for `<Step>` bodies:**
+
+- When a step involves a single UI action — write it as a plain sentence inside `<Step>`.
+- When a step involves filling a form or performing three or more sequential sub-actions
+  — use a **numbered list** (not bullets) inside the `<Step>` body.
+- Never use bullet points for sequential sub-actions. Bullets imply the order does not
+  matter; numbered lists signal required order.
+- A `<Frame>` screenshot goes inside the `<Step>` that it illustrates, after the instructions.
+- Each `<Step title="...">` uses sentence case. The title names the goal, not the first
+  micro-action: "Add a CNAME record", not "Click Add record".
+
+**What not to do inside `<Step>`:**
+
+```
+# Wrong — three or more sequential actions in one sentence
+<Step title="Configure the record">
+  Click **Add record**, set Type to CNAME, enter the root domain in Name,
+  enter the target in Content, and click Add.
+</Step>
+
+# Wrong — bullets for sequential sub-steps
+<Step title="Configure the record">
+  - Set **Type** to **CNAME**.
+  - Enter the **Name**.
+  - Click **Add**.
+</Step>
+
+# Correct — numbered sub-list
+<Step title="Configure the record">
+  Click **Add record** and fill in the form:
+
+  1. Set **Type** to **CNAME**.
+  2. In the **Name** field, enter the root domain.
+  3. Click **Add**.
+</Step>
+```
 
 ### Article must open with a prose paragraph
 
