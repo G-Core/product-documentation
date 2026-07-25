@@ -14,9 +14,9 @@ This extended information allows a client to fetch all parameters needed for a s
 
 ## HTTPS connection overhead
 
-Traditional HTTPS connections require multiple round trips between the client and the server. A request to `www.sample-test.com` first triggers a lookup for A or AAAA records, then establishes an HTTP connection that redirects to HTTPS, and finally negotiates a TLS connection — which may upgrade again to HTTP/3 over the [Alt-Svc&nbsp;header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Alt-Svc).
+Even when a client connects directly over HTTPS, establishing a connection involves several additional steps beyond the initial DNS lookup. After resolving the A or AAAA records, the client must negotiate TLS and, in some cases, discover the supported application protocols separately — often via a subsequent DNS query or an [Alt-Svc&nbsp;header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Alt-Svc) returned only after the first response. Sites that still redirect HTTP to HTTPS add an extra round trip before any of this begins.
 
-These multiple steps add significant latency and introduce a security risk — the HTTP-to-HTTPS upgrade creates an opportunity to inject malicious content.
+Each additional round trip increases latency. The HTTPS record eliminates most of these extra steps by delivering protocol parameters — ALPN identifiers, IP hints, and port information — as part of the original DNS response.
 
 ## HTTPS record structure
 
@@ -32,7 +32,7 @@ Each element represents:
 * `1800` — Time To Live (TTL)
 * `IN` — the record class
 * `HTTPS` — the record type
-* `1` — the priority (position in the queue when multiple HTTPS records exist)
+* `1` — the priority (selection preference when multiple HTTPS records exist for the same name)
 * `.` — the target host when it is the same as the domain name
 * `alpn=h3,h3-29,h2` — the application protocol versions
 * `ipv4hint=1.2.3.4,9.8.7.6` — IPv4 addresses (optional)
@@ -43,7 +43,7 @@ When a browser requests the HTTPS record, it receives all parameters needed to c
 * The exact protocol configuration and server preferences for the domain.
 * IP addresses of web servers — potentially from multiple CDNs or providers — which also resolves the limitations of records at the [domain&nbsp;apex](/dns/dns-records/specify-cname-at-root).
 
-Combining all parameters into a single lookup response reduces the connection round trips. When paired with [ECN&nbsp;configuration](https://datatracker.ietf.org/doc/html/rfc3168), this eliminates multiple rounds of TLS negotiation while supporting multi-CDN deployments.
+Combining all parameters into a single lookup response reduces the additional round trips needed before a connection can begin. When paired with [ECN&nbsp;configuration](https://datatracker.ietf.org/doc/html/rfc3168), this can reduce the number of TLS negotiation steps required, while still supporting multi-CDN deployments.
 
 ## Configure HTTPS records
 
@@ -56,8 +56,6 @@ To add an HTTPS record to a zone, navigate to the zone in the Customer Portal an
     <Frame>![DNS zones list](/images/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/what-is-an-https-record-and-how-is-it-configured-image1.png)</Frame>
   </Step>
   <Step title="Open the Add record form">
-    Click **Add record**.
-
     <Frame>![Zone records list with the Add record button](/images/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/https-conf-10.png)</Frame>
   </Step>
   <Step title="Configure the HTTPS record">
