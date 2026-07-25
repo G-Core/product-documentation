@@ -15,7 +15,6 @@ import json
 import logging
 import re
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 try:
@@ -304,7 +303,6 @@ def main() -> None:
     resource_to_articles, resource_attr_to_articles = build_lookup_maps(articles)
 
     index = {
-        "generated_at": datetime.now(timezone.utc).isoformat(),
         "hcl2_available": HCL2_AVAILABLE,
         "stats": {
             "articles_with_terraform": len(articles),
