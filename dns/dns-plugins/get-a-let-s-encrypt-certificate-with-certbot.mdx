@@ -4,10 +4,10 @@ sidebarTitle: Certbot
 ai-navigation: Configure Let's Encrypt certificate issuance for domains using Gcore Managed DNS with the Certbot DNS plugin via DNS-01 challenge and API token credentials.
 ---
 
-The Certbot plugin automates Let's Encrypt certificate issuance and renewal using the Gcore DNS API. To confirm domain ownership, Let's Encrypt uses a [DNS-01&nbsp;challenge](https://letsencrypt.org/docs/challenge-types): a TXT record with a specific value must be present under the domain name. The plugin creates and removes these TXT records automatically when obtaining, renewing, or revoking certificates.
+The `certbot-dns-gcore` plugin automates Let's Encrypt certificate issuance and renewal using the Gcore DNS API. To confirm domain ownership, Let's Encrypt uses a [DNS-01&nbsp;challenge](https://letsencrypt.org/docs/challenge-types): a TXT record with a specific value must be present under the domain name. The plugin creates and removes these TXT records automatically when obtaining, renewing, or revoking certificates.
 
 <Note>
-A domain delegated to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`) and a Gcore account are required.
+The domain must be delegated to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`), and a Gcore account is required.
 </Note>
 
 ## Install the Certbot plugin
@@ -76,7 +76,7 @@ cd ~/
 
 <Step title="Create the credentials file">
 
-Create a file named `gcore.ini` using any text editor:
+Create a file named `gcore.ini` in the home directory using any text editor:
 
 ```sh
 nano gcore.ini
@@ -112,7 +112,7 @@ chmod 600 gcore.ini
 certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=30 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=.
 ```
 
-Replace `*.example.com` with the target domain. Specifying `*.example.com` issues a wildcard certificate covering all subdomains.
+The example uses `*.example.com` to request a wildcard certificate covering all subdomains. To secure a single domain, omit the wildcard prefix: `-d 'example.com'`.
 
 </Step>
 
@@ -158,9 +158,10 @@ If the error persists, verify that the domain's nameservers point to `ns1.gcorel
 
 Let's Encrypt certificates expire after 90 days. There are two renewal options:
 
-- **Manual:** Run the following command to renew any previously issued certificate expiring within 30 days. Activate the virtual environment before running, and use the same working directory and parameters as during issuance.
+- **Manual:** Run the following commands to renew any previously issued certificate expiring within 30 days:
 
 ```sh
+source ~/certbot-venv/bin/activate
 certbot renew
 ```
 
