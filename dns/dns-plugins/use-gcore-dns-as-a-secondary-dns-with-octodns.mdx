@@ -1,5 +1,5 @@
 ---
-title: Use Gcore Managed DNS as a secondary DNS with OctoDNS
+title: Configure OctoDNS with Gcore Managed DNS
 sidebarTitle: OctoDNS
 ai-navigation: Use OctoDNS to synchronize DNS records from a primary provider to Gcore Managed DNS - install packages, create a YAML configuration, and run sync commands.
 ---
@@ -10,56 +10,58 @@ Before starting, verify that the primary DNS provider is supported by checking t
 
 ## Set up OctoDNS
 
-Complete these steps on the machine that will run OctoDNS.
+<Info>
+Steps 2–11 run in a terminal on the machine where OctoDNS will be installed — a local laptop or any Linux server works. The commands below are for Debian/Ubuntu; for other operating systems, install Python 3 and create a virtual environment using the method appropriate for that system.
+</Info>
 
-<Note>
-These steps use Debian/Ubuntu Linux commands. For other operating systems, install Python 3 and create a virtual environment using the method appropriate for that operating system.
-</Note>
-
-1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** and create a DNS zone for the domain to synchronize. If the zone already exists, skip this step.
+<Steps>
+<Step title="Create a DNS zone for the domain to synchronize">
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** and create a [DNS&nbsp;zone](/dns/manage-a-dns-zone) for the domain to synchronize. If the zone already exists, skip this step.
 
 <Frame>![All zones page in the Gcore Customer Portal](/images/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/dns-zones-list.png)</Frame>
+</Step>
 
-2\. Update the local package index:
-
+<Step title="Update the local package index">
 ```sh
 sudo apt update
 ```
+</Step>
 
-3\. Install Python 3 and the venv module:
-
+<Step title="Install Python 3 and the venv module">
 ```sh
 sudo apt install python3 python3-venv
 ```
+</Step>
 
-4\. Create a working directory for OctoDNS:
-
+<Step title="Create a working directory for OctoDNS">
 ```sh
 mkdir ~/octodns ~/octodns/config
 ```
+</Step>
 
-5\. Navigate to the directory:
-
+<Step title="Navigate to the working directory">
 ```sh
 cd ~/octodns
 ```
+</Step>
 
-6\. Create and activate a Python virtual environment:
-
+<Step title="Create and activate a Python virtual environment">
 ```sh
 python3 -m venv venv
 source venv/bin/activate
 ```
 
 Keep the virtual environment active for all remaining steps.
+</Step>
 
-7\. (Optional) If Git is not installed, install it:
-
+<Step title="(Optional) Install Git">
 ```sh
 sudo apt-get install git-all
 ```
+</Step>
 
-8\. Install OctoDNS and the provider packages. Replace `octodns_yourprovider` with the module name for the primary DNS provider found in the [providers&nbsp;table](https://github.com/octodns/octodns#providers):
+<Step title="Install OctoDNS and the provider packages">
+Replace `octodns_yourprovider` with the module name for the primary DNS provider found in the providers table:
 
 ```sh
 pip install octodns octodns_gcore octodns_yourprovider
@@ -78,14 +80,16 @@ octoDNS x.x.x
 ```
 
 If the command is not found, the virtual environment is not active. Run `source venv/bin/activate` from the `~/octodns` directory and retry.
+</Step>
 
-9\. Navigate to the config directory:
-
+<Step title="Navigate to the config directory">
 ```sh
 cd ~/octodns/config
 ```
+</Step>
 
-10\. Create a file named `config.yaml`. This file specifies the providers and DNS zones for OctoDNS to manage. YAML indentation is required — use the template below as a starting point:
+<Step title="Create config.yaml">
+This file specifies the providers and DNS zones for OctoDNS to manage. YAML indentation is required — use the template below as a starting point:
 
 ```yaml
 providers:
@@ -125,7 +129,7 @@ gcore:
 
 **Primary provider configuration**
 
-Each provider has its own configuration format. In the [providers&nbsp;table](https://github.com/octodns/octodns#providers), find the primary provider and follow the link to its repository. Locate the **Configuration** section and copy the provider name, class name, and authentication fields.
+Each provider has its own configuration format. In the providers table, find the primary provider, open its repository, and locate the **Configuration** section to copy the provider name, class name, and authentication fields.
 
 With Amazon Route 53 as the primary provider, the full `config.yaml` looks like this:
 
@@ -153,8 +157,10 @@ zones:
 ```
 
 Save and close the file.
+</Step>
 
-11\. Run a dry-run sync first — it shows the planned changes without applying them:
+<Step title="Verify with a dry-run sync, then apply">
+A dry-run shows the planned changes without applying them:
 
 ```sh
 octodns-sync --config-file=~/octodns/config/config.yaml
@@ -185,22 +191,26 @@ INFO    Manager sync:   1 total changes
 The synchronized records are visible in the Customer Portal under **DNS** → the zone name.
 
 <Frame>![DNS zone records in the Gcore Customer Portal](/images/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/dns-zone-records.png)</Frame>
+</Step>
+</Steps>
 
 ## Update records
 
 To re-sync records after changes in the primary provider:
 
-1\. Navigate to the OctoDNS directory and activate the virtual environment:
-
+<Steps>
+<Step title="Navigate to the OctoDNS directory and activate the virtual environment">
 ```sh
 cd ~/octodns
 source venv/bin/activate
 ```
+</Step>
 
-2\. Run the sync command:
-
+<Step title="Run the sync command">
 ```sh
 octodns-sync --config-file=~/octodns/config/config.yaml --doit
 ```
+</Step>
+</Steps>
 
 To automate record updates, schedule this command with cron.
