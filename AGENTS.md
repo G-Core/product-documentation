@@ -88,7 +88,7 @@ Read nothing else until the skill tells you to.
 | Write a new article from scratch | `.agents/skills/write-from-scratch/SKILL.md` |
 | Analyze a Jira ticket — what needs documenting | `.agents/skills/jira-context/SKILL.md` |
 | Add REST API tab to an existing Portal article | `.agents/skills/api-use-case/SKILL.md` |
-| Test an article step by step and fix it | `.agents/skills/full-audit/SKILL.md` |
+| Test an article step by step and fix it | `.agents/skills/regression-test/SKILL.md` |
 | Product team: new feature → draft PR | `.agents/skills/feature-draft/SKILL.md` |
 | Compile a multi-topic end-to-end guide | `.agents/skills/cookbook/SKILL.md` |
 | Create a PR after work is done | `.agents/skills/pr/SKILL.md` |

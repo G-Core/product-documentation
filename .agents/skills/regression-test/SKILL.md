@@ -61,11 +61,12 @@ deep work within each phase. This is forbidden.
 
 1. This SKILL.md
 2. The article file identified in Phase 0
-3. `.agents/references/style-guide.md` — Phase 6 only
-4. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
-5. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
-6. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
-7. `.agents/references/mcp-tools/playwright.md` — Phase 1, Phase 2, and Phase 3
+3. `.agents/references/product-routing.md` — Phase 0 (portal and Jira routing)
+4. `.agents/references/style-guide.md` — Phase 6 only
+5. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
+6. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
+7. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
+8. `.agents/references/mcp-tools/playwright.md` — Phase 1 (Gcore portal only), Phase 2, and Phase 3
 
 Do not read other articles for context unless they are directly linked from the
 article being tested.
@@ -91,13 +92,24 @@ If only a topic is given — search the repository:
 rg "keyword" --glob "*.mdx" -l
 ```
 
+### Determine portal and Jira routing
+
+Load `.agents/references/product-routing.md` now.
+
+Match the article path against the prefix table (longest match wins). Record:
+
+- `portal_type` — BillMgr / VMmanager 6 / DCImanager / Gcore Customer Portal
+- `portal_url` — the URL to navigate to in Phase 1
+- `login_method` — how to authenticate
+- `jira_org_unit` — the ORG_UNIT value for Phase 4
+- `jira_epic` — the EPIC value for Phase 4 (may be TBD for non-hosting products)
+
+If `jira_epic` is TBD — check Jira for the current active epic for that product area
+before creating the ticket in Phase 4.
+
 ### Claim the article before doing any work
 
-Before reading the article, open the plan file and mark the article as `in_progress`:
-
-```
-C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
-```
+Before reading the article, open the plan file specified in the task and mark the article as `in_progress`.
 
 Find the row for this article and change its status from `pending` to `in_progress`.
 
@@ -128,11 +140,12 @@ They will be tested in their own turn.
 
 ## Phase 1 — Open the portal
 
-Load `.agents/references/mcp-tools/playwright.md` now.
+Use `portal_type` and `login_method` recorded in Phase 0 to determine which portal
+to open. The steps below differ by portal type.
 
 ### Open an isolated browser session first
 
-**Before navigating to the portal**, open a new incognito window to get a clean,
+**Before navigating to any portal**, open a new incognito window to get a clean,
 isolated session that does not interfere with any other agent currently using the browser:
 
 ```javascript
@@ -140,43 +153,61 @@ isolated session that does not interfere with any other agent currently using th
 window.open('about:blank', '_blank');
 ```
 
-Or use the Playwright MCP `browser_navigate` with a `--incognito` context if the MCP
-server supports it. The goal is a browser context with **no shared cookies, no shared
-tabs, no shared history** with any other session on this machine.
-
 **Why this is required:** Playwright MCP runs a single browser process shared across
-all agents running on the same machine. Without isolation, two parallel agents click in
-the same browser window — one agent's navigation overwrites the other's. An incognito
-window is a separate context: separate cookies (separate login session), separate tabs,
-no cross-contamination.
+all agents running on the same machine. An incognito window is a separate context:
+separate cookies, separate tabs, no cross-contamination.
 
 **If you cannot open an isolated context** — stop and tell the user:
 > "Playwright MCP is sharing a browser session with another agent. A separate
 > incognito window is required to proceed safely. Please confirm the incognito
 > window is open before I continue."
 
-Do not proceed with portal testing until you are certain you are in an isolated session.
+### Portal-specific login
 
-### Log in
+**Gcore Customer Portal** (`portal_type = Gcore Customer Portal`)
 
-Follow the SSO login flow from `.agents/references/mcp-tools/playwright.md` exactly,
-inside the isolated session:
+Load `.agents/references/mcp-tools/playwright.md` now.
 
+Follow the SSO login flow exactly, inside the isolated session:
 1. Navigate to `https://auth.gcore.com/login/signin`
 2. Click **SSO**
 3. Enter `gcore.com` in the Work domain field and press Enter
 4. Verify the browser is at `https://portal.gcore.com`
 
-### Select the region
+After login, select region **Luxembourg-3** from the region dropdown before starting
+any steps. All required quotas are available in Luxembourg-3.
 
-After login, navigate to the region the article targets.
-Default region: **Luxembourg-3**.
-Select it from the region dropdown in the portal header before starting any steps.
+**BillMgr** (`portal_type = BillMgr`)
 
-**Why Luxembourg-3:** all quotas needed for testing are available in this region.
-Do not use any other regions — quota availability differs. Other regions are allowed only if you don't find the required resource on Luxembourg-3.
+Credentials are in `_private/access.md` lines 13–16.
+Also load `_planning/hosting-account-map.md` for BillMgr navigation structure and
+active services.
 
-Verify the region switcher in the portal header shows **Luxembourg-3** before proceeding.
+1. Navigate to `https://hosting.gcore.com/billmgr`
+2. Log in with the credentials from `_private/access.md`
+3. Confirm successful login by taking a screenshot of the BillMgr dashboard
+
+**VMmanager 6** (`portal_type = VMmanager 6`)
+
+VMmanager is reached through BillMgr — no separate login.
+
+1. Log in to BillMgr as above
+2. Navigate to Products/Services → Virtual private servers
+3. Select the active VDS row
+4. Click **To panel** in the toolbar
+5. BillMgr opens VMmanager at `https://sqr-v6.vm.gcore.com` via token URL (auto-login)
+6. Confirm access by taking a screenshot of the VMmanager dashboard
+
+**DCImanager** (`portal_type = DCImanager`)
+
+DCImanager is only available when a Dedicated Server is active.
+If no dedicated server is provisioned — stop and report the blocker to the user.
+Otherwise, follow the same BillMgr → Products/Services → Dedicated servers → **To panel** flow.
+
+**Future portals** (`portal_type = Reseller Portal` / `Box Portal`)
+
+Routing is TBD. Stop and tell the user the portal is not yet configured in
+`.agents/references/product-routing.md`.
 
 ### Switch to Light mode
 
@@ -444,10 +475,9 @@ After completing all steps, clean up any test resources created during testing
 
 ## Phase 3 — Screenshot audit
 
-**Retake every screenshot in the article.** Do not skip screenshots that look
-correct — portal UI changes subtly over time and the only way to guarantee
-accuracy is to retake all of them. No screenshot should remain from before
-this regression run.
+For each screenshot in the article, navigate to the corresponding screen in the portal and **compare the current UI with the existing screenshot**. Retake only if the UI has visibly changed — layout, labels, buttons, or missing/added elements. If the screenshot still accurately represents the current portal state, mark it as `ok` and move on.
+
+**Do not retake screenshots unconditionally.** Retake only when the comparison reveals a real discrepancy. If the user has explicitly told you the screenshots are current, mark all as `ok` without opening the browser.
 
 ### Checklist
 
@@ -457,8 +487,12 @@ Before starting, list every `<Frame>` in the article with the following table:
 |---|----------|-----------------|--------|
 | 1 | `filename.png` | Navigation path or step | pending |
 
-Mark each row `done` after the screenshot is saved and the article updated.
-Do not mark Phase 3 as completed until every row is `done`.
+For each row, set status to:
+- `ok` — screenshot matches current portal UI, no retake needed
+- `retaken` — screenshot was outdated and has been replaced
+- `skip` — screenshot cannot be verified (GUI app, gated feature, user confirmed current)
+
+Do not mark Phase 3 as completed until every row has a final status.
 
 ### How to take each screenshot
 
@@ -466,27 +500,72 @@ For each screenshot in the article:
 
 1. Navigate to the correct screen in the portal using the existing article
    text as a guide — it describes what each screenshot should show.
-2. Use `playwright_screenshot` with `fullPage: false`. Set the viewport to
-   1400×900 before capturing:
-   ```javascript
-   // browser_evaluate
-   window.resizeTo(1400, 900)
-   ```
-3. Save to:
-   ```
-   C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
-   ```
-   Use a **new filename** — never overwrite the old file directly (CDN caching).
-   Append `-2` or a short date suffix if the content is the same
-   (e.g., `bare-metal-page-2.png`).
 
-4. Update the `<Frame>` in the article to reference the new filename.
-5. Update the alt text if the UI shown has changed.
-6. Delete the old file:
+2. **Set the viewport to 1400×900** using `browser_resize`:
+   ```
+   browser_resize(width=1400, height=900)
+   ```
+   Do this once at the start of Phase 3, before the first screenshot.
+   Do NOT use `browser_evaluate` with `window.resizeTo` — that call is ignored
+   by headless Playwright. Only `browser_resize` actually changes the viewport.
+
+3. **Hide PII before every screenshot** — the portal shows the logged-in user's
+   email in the top-right corner. Remove it with `browser_evaluate`:
+   ```javascript
+   // Find and hide the email / account info element in the top-right corner.
+   // The selector targets the most common portal patterns; adjust if needed.
+   document.querySelectorAll(
+     '[class*="user-info"], [class*="UserInfo"], [class*="account-email"], ' +
+     '[class*="userEmail"], [class*="header__user"], [class*="userMenu"]'
+   ).forEach(el => { el.style.visibility = 'hidden'; });
+   // Fallback: hide any element whose text content looks like an email address.
+   document.querySelectorAll('span, p, div, a').forEach(el => {
+     if (/[^@\s]+@[^@\s]+\.[^@\s]+/.test(el.innerText) && el.children.length === 0) {
+       el.style.visibility = 'hidden';
+     }
+   });
+   ```
+   Use `visibility: hidden` (not `display: none`) so the element still occupies
+   space and the layout does not shift. Run this before EVERY screenshot — some
+   portal navigation re-renders the header and makes the email visible again.
+
+4. **Take a full-viewport screenshot** using `browser_take_screenshot`:
+   - Do NOT pass `element` or `target` parameters — those crop the image.
+   - Use the `filename` parameter to set the output filename:
+     ```
+     browser_take_screenshot(filename="screenshot-name.png")
+     ```
+   - The file is saved to `C:\Users\{username}\` (Playwright MCP home dir).
+     After saving, copy it to the article images folder:
+     ```powershell
+     $dest = "C:\Projects\product-documentation_2\images\docs\{product}\{slug}\{slug}-imageN.png"
+     Copy-Item "C:\Users\sergey.kostichev\screenshot-name.png" $dest -Force
+     ```
+   - Verify the file exists before moving on:
+     ```powershell
+     cmd /c "dir /b C:\Projects\product-documentation_2\images\docs\{product}\{slug}"
+     ```
+
+5. Update the `<Frame>` in the article to reference the new filename.
+6. Update the alt text if the UI shown has changed.
+7. Delete the old file:
    ```powershell
-   cd C:\Projects\product-documentation
+   cd C:\Projects\product-documentation_2
    git rm images/docs/{product}/{article-slug}/{old-filename}.png
    ```
+
+### What NOT to do with screenshots
+
+- **Never crop** by passing `element` or `target` to `browser_take_screenshot`.
+  Full-viewport screenshots are always correct; cropped ones frequently look broken.
+- **Never use `savePath`** — it is not a valid parameter. Use `filename` instead.
+- **Never use `browser_evaluate` to resize** — `window.resizeTo()` has no effect
+  in headless Playwright. Use `browser_resize` only.
+- **Never skip the PII-hide step** — the logged-in email is always visible in the
+  portal header and must not appear in published documentation.
+- **Never take a screenshot immediately after scrolling** — give the page
+  50–100 ms to finish rendering. Use a brief `browser_wait_for(time=100)` or
+  take a `browser_snapshot` first (which forces a render cycle) before capturing.
 
 ### Resource names in screenshots
 
@@ -533,9 +612,11 @@ fresh and before any fixes are applied.
 redone after a partial run), do NOT create a duplicate ticket. Use the existing
 ticket number and continue directly to Phase 5.
 
-Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
-and fill in `SUMMARY` and `DESCRIPTION` with the article name and the findings
-list collected in Phase 2.
+Open `c:\Projects\docops-agent2\scripts\hosting-audit\create_edge_cloud_regression_ticket.py`
+and fill in `SUMMARY`, `DESCRIPTION`, `EPIC`, and `ORG_UNIT` using:
+- `SUMMARY` and `DESCRIPTION` — article name and findings from Phase 2
+- `EPIC` — `jira_epic` from Phase 0 routing (if TBD, resolve it in Jira first)
+- `ORG_UNIT` — `jira_org_unit` from Phase 0 routing
 
 **What belongs in the description — every finding in full.**
 
@@ -716,6 +797,31 @@ The rule depends on whether the article uses `<MethodSwitch>`:
 
 Load `.agents/references/style-guide.md` and `.agents/references/procedures.md` now.
 
+### Step 1 — Run the automated style linter
+
+Run the style linter first. It catches mechanical violations automatically so the manual
+checklist can focus on things the script cannot detect (flow, headings, structure, logic).
+
+```powershell
+cd C:\Projects\product-documentation_2
+python .agents/tools/style_check.py {relative/path/to/article.mdx}
+```
+
+Replace `{relative/path/to/article.mdx}` with the actual path, for example:
+```
+python .agents/tools/style_check.py hosting/virtual-servers/order-a-virtual-server.mdx
+```
+
+For every violation the script reports:
+1. Read the line it flagged.
+2. Fix the violation if it is real.
+3. If it is a false positive (e.g. a term matched inside a URL or a technical name
+   that must stay as-is), note it and move on — do not change correct text.
+
+Re-run the script after fixing until it reports **OK — no violations found**.
+
+### Step 2 — Manual checklist
+
 Work through the article section by section and verify each rule. Do not skim.
 For each checklist item: read the article, verify the rule, then mark the item with `[V]`.
 Only mark `[V]` after you have actually checked — not as a placeholder.
@@ -745,11 +851,9 @@ Checklist:
 - [ ] No `## Next steps`, `## See also`, `## Related documentation`, `## Prerequisites`,
   `## Requirements`, `## Get started`, `## What's next`
 
-**Links:**
-- [ ] No standalone "For more details, see [X]" sentences
-- [ ] Link text 1–2 words maximum
+**Links** (script catches text length, &nbsp;, banned patterns, relative paths, docs.gcore.com URLs):
 - [ ] First mention of portal: `[Gcore Customer Portal](https://portal.gcore.com)`
-- [ ] Subsequent mentions: plain "the Customer Portal" (no link)
+- [ ] Subsequent mentions: plain "the Customer Portal" (no link, no "Gcore" prefix)
 
 **Formatting:**
 - [ ] Bold only for clickable UI elements and field names
@@ -936,7 +1040,27 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Commit and push
+## Phase 9 — Create branch, commit, and push
+
+**One article = one branch.** The branch name is always the Jira ticket key
+created in Phase 4 — even if the user mentioned a different name earlier in the
+conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
+
+**CRITICAL — never reuse a ticket number from earlier in the conversation or from
+a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
+during work on a different article as a planned next ticket — it does not belong
+to the current article. Always use the ticket key that was actually created and
+returned by the Phase 4 script in this session. Anything else is wrong.
+
+```powershell
+cd C:\Projects\product-documentation_2
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
+was mentioned earlier in the conversation).
 
 Run the pre-commit checklist below, then commit and push.
 
@@ -1036,10 +1160,10 @@ three constants:
 ```python
 TICKET = "DOC-XXXX"           # the key created in Phase 4
 
-BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1684
+BRANCH = "DOC-XXXX"           # branch created in Phase 9, same as ticket key
 
-ARTICLE_PATH = "cloud/..."    # path from docs.json, no leading slash, no .mdx
-                               # e.g. cloud/getting-started/view-statistics-on-expenses
+ARTICLE_PATH = "hosting/..."  # path from docs.json, no leading slash, no .mdx
+                               # e.g. hosting/virtual-servers/order-a-virtual-server
 ```
 
 The script will:
@@ -1069,91 +1193,3 @@ Run without `--dry-run` immediately after — do not wait for separate confirmat
 
 After running, reset the three constants back to placeholder values so the
 script is ready for the next article.
-
-### Step 2 — Mark the article as done in the plan
-
-Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
-find the article's row, and add the Jira ticket key to the status column:
-
-```
-done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
-```
-
-### Step 3 — Write the changelog entry
-
-Create a file at:
-
-```
-C:\Projects\docops-agent2\docs\changelogs\{article-slug}.md
-```
-
-Where `{article-slug}` matches the MDX filename without the extension
-(e.g. `view-statistics-on-expenses.md`).
-
-Use this template:
-
-```markdown
-# Changelog: {Article title}
-
-**Article path:** `{relative path in product-documentation}`
-**Branch:** `{branch name}`
-**Jira ticket:** [{key}](https://jira.gcore.lu/browse/{key})
-**Regression date:** {YYYY-MM-DD}
-**Agent:** regression-test skill, phases 0-9
-
----
-
-## Summary of changes
-
-### Content fixes (from regression findings)
-
-| # | Location | Article said | Portal shows | Fix applied |
-|---|----------|-------------|--------------|-------------|
-| 1 | ... | ... | ... | ... |
-
-### Style guide fixes (Phase 5)
-
-- ...
-
-### MDX fixes (Phase 6)
-
-- ...
-
----
-
-## Screenshots replaced
-
-| Old filename | New filename | Notes |
-|-------------|--------------|-------|
-
-## Screenshots removed (orphaned)
-
-- ...
-
----
-
-## Portal verification log
-
-All elements tested in Phase 2, with pass/fail status. Every tested item must appear
-in this table — either as OK or as a reference to the FINDING number that covers it.
-
-| # | Element tested | Article says | Portal confirmed | Status |
-|---|---------------|--------------|-----------------|--------|
-| 1 | ... | ... | ... | OK / FINDING N |
-
----
-
-## Issues noted but not fixed (out of scope)
-
-- ...
-
----
-
-## Lessons learned (skill improvements made)
-
-- ...
-```
-
-Fill every section from the findings and fixes recorded during phases 2-6.
-The changelog is for future reference — describe what was actually done,
-not what was planned. If a section has nothing to report, write "None."

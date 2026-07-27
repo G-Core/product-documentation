@@ -6,6 +6,10 @@ ai-navigation: Gcore API list endpoints return paginated results using limit and
 
 All list endpoints in the Gcore API return paginated results using `limit` and `offset` query parameters. Without explicit pagination, a single response returns up to 1000 items — the default for most endpoints. For accounts with many resources, iterating pages is required to retrieve all results.
 
+<Info>
+The code examples require `GCORE_API_KEY`, `GCORE_CLOUD_PROJECT_ID`, and `GCORE_CLOUD_REGION_ID` to be set in the environment. See [Make the first API call](/developer-tools/rest-api/first-api-call) for setup instructions.
+</Info>
+
 ## Response structure
 
 Every list response includes `count` and `results`:
@@ -91,18 +95,15 @@ Page 2 response (limit=5, offset=5):
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()  # reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID
 
     limit, offset = 100, 0
     all_instances = []
 
     while True:
         page = client.cloud.instances.list(
-            project_id=int(os.environ["PROJECT_ID"]),
-            region_id=int(os.environ["REGION_ID"]),
             limit=limit,
             offset=offset,
         )
@@ -116,14 +117,15 @@ Page 2 response (limit=5, offset=5):
   </Tab>
   <Tab title="Go SDK">
     ```go
-    var projectID int64 = 1234567
-    var regionID  int64 = 148
+    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
+    ctx := context.Background()
     var limit int64 = 100
     var offset int64 = 0
     var all []cloud.Instance
 
     for {
-        page, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+        page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{
             ProjectID: gcore.Int(projectID),
             RegionID:  gcore.Int(regionID),
             Limit:     gcore.Int(limit),

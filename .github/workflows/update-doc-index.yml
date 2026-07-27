@@ -1,0 +1,38 @@
+name: Update Terraform doc index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.mdx'
+      - '.github/scripts/terraform/build_doc_index.py'
+
+jobs:
+  rebuild-index:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: pip install -r .github/scripts/terraform/requirements.txt
+
+      - name: Rebuild doc index
+        run: python3 .github/scripts/terraform/build_doc_index.py
+
+      - name: Open PR with updated index
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild Terraform doc index"
+          branch: chore/update-doc-index
+          delete-branch: true
+          title: "chore: rebuild Terraform doc index"
+          body: "Automated update of `terraform-provider/doc_index.json` triggered by a push to `main`."
+          labels: "automated,terraform"
+          add-paths: terraform-provider/doc_index.json

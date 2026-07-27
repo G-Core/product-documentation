@@ -1,7 +1,7 @@
 ---
 title: "An SSL certificate isn't working: how to solve the issue"
 sidebarTitle: Attaching or issuing an SSL certificate
-ai-navigation: Troubleshoot SSL certificate attachment and Let's Encrypt issuance failures by verifying certificate chain formatting, checking CDN rules don't block /.well-known/acme-challenge/ path, and confirming CNAME record configuration in DNS.
+ai-navigation: Troubleshoot CDN SSL certificate attachment errors, Let's Encrypt issuance failures, and browser TLS handshake errors including SSL_ERROR_INTERNAL_ERROR_ALERT.
 ---
 
 ## Can't attach a personal certificate to a resource
@@ -29,3 +29,23 @@ You can check whether the rule blocks the certificate issuance path using [this 
 
 
 If these tips don't help, write to technical support via the chat in the corner of the screen — we will help you.
+
+## SSL_ERROR_INTERNAL_ERROR_ALERT
+
+This Firefox error code indicates a TLS handshake failure that occurs after the certificate is verified as valid. It is distinct from certificate issuance errors — the certificate chain is intact, but the TLS negotiation between the browser and the CDN edge server failed.
+
+To diagnose, first verify the certificate chain is valid:
+
+```bash
+openssl s_client -connect your-domain.com:443 -servername your-domain.com
+```
+
+A complete, valid chain shows `verify return:1` at each depth level. If the chain shows errors, the certificate itself is the issue — the troubleshooting steps above apply.
+
+If the certificate is valid, test with curl to isolate the browser:
+
+```bash
+curl -I https://your-domain.com
+```
+
+If curl returns a `200` or the expected status code and other browsers connect successfully, the TLS negotiation is failing for that specific browser version or configuration. Contact Gcore support with the domain name, the affected browser and its version, and the full `openssl s_client` output.

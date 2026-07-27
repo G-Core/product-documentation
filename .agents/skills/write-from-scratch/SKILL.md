@@ -319,7 +319,7 @@ TODO items requiring verification:
 
 Recommended next step:
 - No TODOs → ready for review, create PR with skill pr
-- Has portal TODOs → run skill full-audit to verify UI steps
+- Has portal TODOs → run skill regression-test to verify UI steps
 - Has API TODOs → verify against API spec or test manually
 ```
 

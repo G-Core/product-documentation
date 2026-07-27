@@ -438,6 +438,142 @@ These headings must never appear:
 - Prerequisites go in the opening paragraph as plain text, not a separate section
 - Every article opens with its own unique sentence — never a template sentence that could appear in three different articles
 
+### No artificial scenarios in the opening sentence
+
+The reader already knows why they opened the article. Do not write a life scenario to justify the feature's existence.
+
+**Bad — scenario that adds no information:**
+```
+Multiple people often need access to the same hosting account — for example, a site
+administrator or a billing contact. Adding a sub-user gives each person separate
+login credentials instead of sharing a single password.
+```
+
+**Good — one sentence stating what the feature does:**
+```
+Sub-users allow multiple people to access the same hosting account with separate login credentials.
+```
+
+The test: could this opening sentence appear unchanged in three other articles in the same product? If yes, it is a scenario — rewrite it as a direct statement of what the feature does or enables.
+
+### No navigation chains in prose
+
+Never embed a multi-step navigation path (three or more steps) inside a prose sentence. A sentence like "...found on the General information page, reached by clicking the avatar, selecting Profile, then navigating to Account > General information" is a hidden procedure — the reader cannot follow it without re-reading.
+
+**Bad — navigation chain buried in prose:**
+```
+The tax location and its rate appear in the Tax location field, in the Tax and currency
+section of the General information page, reached by clicking the avatar in the top-right
+corner of the Gcore Customer Portal, selecting Profile, then Account > General information.
+```
+
+**Good — one-sentence intro, then numbered steps:**
+```
+Every Gcore account has a tax location — the country whose tax regulations apply to the account.
+
+To view it:
+
+1. Click the avatar in the top-right corner of the Gcore Customer Portal.
+2. Select **Profile**.
+3. Navigate to **Account** > **General information**.
+4. Find the **Tax location** field in the **Tax and currency** section.
+```
+
+### Never nest `<Steps>` inside `<Steps>`
+
+Mintlify `<Steps>` components must never be nested inside another `<Steps>` component.
+When a `<Step>` body contains a sequential sub-procedure (e.g., form fields inside a tab),
+use a plain **numbered list** — not another `<Steps>` + `<Step>` block.
+
+**Wrong — nested Steps inside a Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    <Steps>
+      <Step title="Set the port">
+      In the "Port" field, enter 443.
+      </Step>
+      <Step title="Save">
+      </Step>
+    </Steps>
+  </Step>
+</Steps>
+```
+
+**Correct — numbered list inside the Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    1. In the "Port" field, enter 443.
+    2. Click **Save**.
+  </Step>
+</Steps>
+```
+
+This also applies inside `<Tab>` components that are themselves inside a `<Step>`.
+
+### Use `<Steps>` for portal procedures
+
+For any Customer Portal procedure with two or more sequential steps, use the Mintlify
+`<Steps>` + `<Step>` components instead of a plain numbered list. This renders numbered
+UI blocks with visible titles and is significantly more scannable than prose.
+
+```mdx
+<Steps>
+  <Step title="Navigate to the page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** → **Managed DNS**
+    and click the zone name.
+  </Step>
+  <Step title="Configure the record">
+    Click **Add record** and fill in the form:
+
+    1. Set **Type** to **CNAME**.
+    2. In the **Name** field, enter the root domain.
+    3. In the **Content** field, enter the target domain.
+    4. Click **Add**.
+
+    <Frame>![Add CNAME record form](/images/docs/...)</Frame>
+  </Step>
+</Steps>
+```
+
+**Rules for `<Step>` bodies:**
+
+- When a step involves a single UI action — write it as a plain sentence inside `<Step>`.
+- When a step involves filling a form or performing three or more sequential sub-actions
+  — use a **numbered list** (not bullets) inside the `<Step>` body.
+- Never use bullet points for sequential sub-actions. Bullets imply the order does not
+  matter; numbered lists signal required order.
+- A `<Frame>` screenshot goes inside the `<Step>` that it illustrates, after the instructions.
+- Each `<Step title="...">` uses sentence case. The title names the goal, not the first
+  micro-action: "Add a CNAME record", not "Click Add record".
+
+**What not to do inside `<Step>`:**
+
+```
+# Wrong — three or more sequential actions in one sentence
+<Step title="Configure the record">
+  Click **Add record**, set Type to CNAME, enter the root domain in Name,
+  enter the target in Content, and click Add.
+</Step>
+
+# Wrong — bullets for sequential sub-steps
+<Step title="Configure the record">
+  - Set **Type** to **CNAME**.
+  - Enter the **Name**.
+  - Click **Add**.
+</Step>
+
+# Correct — numbered sub-list
+<Step title="Configure the record">
+  Click **Add record** and fill in the form:
+
+  1. Set **Type** to **CNAME**.
+  2. In the **Name** field, enter the root domain.
+  3. Click **Add**.
+</Step>
+```
+
 ### Article must open with a prose paragraph
 
 The `title:` field in the frontmatter renders as the page H1. The first element in the article body must be a prose paragraph — never a heading, list, table, or code block.
@@ -558,6 +694,15 @@ Embed the link into an existing content sentence as a natural part of the text.
 | First mention in article | `[Gcore Customer Portal](https://portal.gcore.com)` |
 | All subsequent mentions | plain text: "the Customer Portal" (no link, no "Gcore" prefix) |
 
+### Gcore Hosting Portal naming
+
+The Gcore Hosting Portal (`https://hosting.gcore.com`) is the portal for Dedicated Servers and Virtual Servers. Follow the same pattern as the Customer Portal.
+
+| Context | Use |
+|---------|-----|
+| First mention in article | `[Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr)` |
+| All subsequent mentions | plain text: "the Hosting Portal" (no link, no "Gcore" prefix) |
+
 ---
 
 ## Formatting
@@ -666,6 +811,7 @@ sentence before the next code block or table.
 - Keep column headers short
 - Row labels in the first column: plain text, no bold
 - Every table needs a real intro sentence — not one that just restates what the table shows
+- **No terminal period in table cell descriptions.** Single-sentence descriptions in reference tables (field definitions, parameter lists, option lists) do not end with a period. Multi-sentence descriptions use periods between sentences but omit the final period.
 
 ---
 
@@ -732,8 +878,10 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 
 | Context | Use |
 |---------|-----|
-| First mention of portal | Gcore Customer Portal |
-| Subsequent mentions | the Customer Portal |
+| First mention of Customer Portal | Gcore Customer Portal |
+| Subsequent mentions of Customer Portal | the Customer Portal |
+| First mention of Hosting Portal | Gcore Hosting Portal |
+| Subsequent mentions of Hosting Portal | the Hosting Portal |
 | Company as subject | Gcore (not "the platform", "the system", "we") |
 | API | Gcore API |
 
