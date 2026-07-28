@@ -1,60 +1,52 @@
 ---
 title: Setting up a PTR record and reverse DNS zone
 sidebarTitle: PTR record and reverse DNS zone
-ai-navigation: Create PTR records in reverse DNS zones (in-addr.arpa for IPv4, ip6.arpa for IPv6) to map IP addresses to hostnames for anti-spam email authentication and subnet tracing via Gcore Managed DNS.
+ai-navigation: Add PTR records to reverse DNS zones to map IP addresses to hostnames for email anti-spam validation and subnet tracing using Gcore Managed DNS.
 ---
 
-## What is a PTR record for?
-
-A PoinTeR or PTR record is an A record in reverse: it associates server IP with a domain name. A PTR could be used:
-
-  * **As an anti-spam measure in email delivery.** The destination mail server compares the PTR record of the sender mail server IP address with the host/domain part of a sender email address. Today, there exist more convenient modes of authentication, like DKIM, DMARC, and SPF, and usually, these are used together with PTR records.
-
-  * **For the convenience of tracing dedicated subnets.** This allows the naming of subnet sections with human-readable domains instead of IP addresses.
-
+A PoinTeR (PTR) record maps a server's IP address to a domain name — the reverse of an A record. PTR records are required for anti-spam validation: receiving mail servers perform a reverse lookup on the sender's IP and reject messages if no PTR record exists. PTR records are also used to assign readable names to dedicated subnets.
 
 <Info>
-**Info**
-
-A PTR record can be added only in the reverse DNS zone (RDNS) and not in a regular [domain zone](https://gcore.com/learning/what-is-dns-zone). Therefore, in the Gcore Customer Portal, there is no PTR record in the list of [DNS records](/dns/dns-records) that can be added for a forward domain zone.
+PTR records can only be added to a reverse DNS zone (RDNS), not to a regular [domain&nbsp;zone](https://gcore.com/learning/what-is-dns-zone). The [Gcore Customer Portal](https://portal.gcore.com) does not include PTR in the list of [DNS&nbsp;records](/dns/dns-records) available for forward domain zones.
 </Info>
 
-## What is a reverse DNS lookup zone?
+## PTR record use cases
 
-A reverse DNS lookup is a special zone that is intended to define the hostname by its IPv4 or IPv6 address using a PTR record.
+As an anti-spam measure in email delivery, the destination mail server performs a reverse lookup on the sender IP and compares the result against the sender's domain. Mail servers often reject messages from IPs with no PTR record.
 
-You can add a PTR record to a reverse lookup zone only if your zone is under the top-level domain (TLD) `in-addr.arpa` (for IPv4) or `ip6.arpa` (for IPv6). After creating a zone under the TLD, you can then create a PTR record in the UI.
+For dedicated subnet management, PTR records map raw IP addresses to human-readable names, making it easier to trace and monitor traffic across large subnets.
 
-An IPv4 host address _AAA.BBB.CCC.DDD_ in the reverse DNS zone is represented in the format: _DDD.CCC.BBB.AAA.in-addr.arpa_. For example, a Gcore site address _80.240.113.62_ in a reverse DNS query would be _62.113.240.80.in-addr.arpa_.
+## Reverse DNS lookup zone
 
-And the IPv6 in a reverse DNS lookup will work the same way, but with a slight difference. For example, the address _2a03:90c0:501:2801::62_ will be rendered as _6.2.1.0.8.2.1.0.5.0.c.0.9.3.0.a.2.ip6.arpa_ in the reverse DNS zone.
+A reverse DNS lookup zone maps IPv4 or IPv6 addresses to hostnames using PTR records.
+
+PTR records must be created inside a reverse DNS zone — a special zone named `*.in-addr.arpa` (for IPv4) or `*.ip6.arpa` (for IPv6). Only after that zone is created can PTR records be added to it in the portal.
+
+An IPv4 host address _AAA.BBB.CCC.DDD_ is represented in its reverse DNS zone as _DDD.CCC.BBB.AAA.in-addr.arpa_ — a Gcore address _80.240.113.62_ becomes _62.113.240.80.in-addr.arpa_. IPv6 addresses follow the same digit-reversal pattern under `ip6.arpa`.
 
 ## Configure reverse DNS zone and PTR record
 
-You need to have a dedicated IP space (IPv4 or IPv6) to configure the reverse DNS zone. Here's how to do it:
+A dedicated IP space (IPv4 or IPv6) is required to configure a reverse DNS zone.
 
-1\. Contact an organization with [RIR status](https://nro.net/about/rirs) (that is, a technical registrar authorized to create and delegate reverse DNS zones) and ask them to delegate the zone of your subnet to Gcore NSs.
+<Steps>
+  <Step title="Request zone delegation">
+    Contact an organization with [RIR&nbsp;status](https://nro.net/about/rirs) — a registrar authorized to manage IP address space and delegate reverse DNS zones — and request delegation of the subnet's reverse zone to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`). The RIR creates the zone and points it to the specified nameservers.
+  </Step>
+  <Step title="Add the zone in the Customer Portal">
+    Once delegation is confirmed, add the reverse DNS zone in the Customer Portal. The [zone&nbsp;creation](/dns/manage-a-dns-zone#create-dns-zones) process is the same as for any other DNS zone.
 
-2\. When you get a reverse DNS zone, add it in the Gcore Customer Portal according to the guide [Getting started with Managed DNS](/dns/manage-a-dns-zone#create-dns-zones).
+    <Tip>
+    A subnet up to /24 bits can be added for the IP address.
+    </Tip>
+  </Step>
+  <Step title="Add PTR records">
+    In the Customer Portal, open the added reverse zone _xx.xx.xx.in-addr.arpa_ and add the PTR records.
 
-<Tip>
-**Tip**
+    <Frame>![PTR record form inside a reverse DNS zone](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png)</Frame>
+  </Step>
+  <Step title="Verify DNS propagation">
+    After the PTR records are saved, run a reverse DNS lookup to confirm the records are resolving correctly. DNS cache propagation takes up to 24 hours, so the records may not be immediately visible from all locations.
 
-You can add a subnet up to /24 bits for your IP address.
-</Tip>
-
-3\. Open the added reverse zone _xx.xx.xx.in-addr-arpa_ in the control panel and add the PTR records you need.
-
-
-<Frame>![Configure reverse DNS zone and PTR record](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png)</Frame>
-
-
-
-4\. Specify Gcore's name servers `ns1.gcorelabs.net` and `ns2.gcdn.services` for the subnet `xx.xx.xx/24` and wait up to 24 hours for DNS cache updating.
-
-
-<Frame>![Configure reverse DNS zone and PTR record](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/added-record-20.png)</Frame>
-
-
-
-That's it! The PTR record is now added and will prevent your mail from ending up as spam.
+    <Frame>![Reverse DNS zone records list after PTR record is added](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/added-record-20.png)</Frame>
+  </Step>
+</Steps>
