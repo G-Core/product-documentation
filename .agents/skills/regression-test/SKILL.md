@@ -209,18 +209,6 @@ Otherwise, follow the same BillMgr → Products/Services → Dedicated servers �
 Routing is TBD. Stop and tell the user the portal is not yet configured in
 `.agents/references/product-routing.md`.
 
-### Switch to Light mode
-
-Take a screenshot and check the portal theme. If the portal is in Dark mode, switch to Light mode before proceeding — all screenshots in the documentation must use Light mode.
-
-To switch:
-
-1. Click the user avatar / profile icon in the top-right corner of the portal.
-2. Look for a **Theme** or **Appearance** toggle and select **Light**.
-3. Take another screenshot to confirm the portal background is now white/light.
-
-If no theme toggle is visible in the profile menu, check the portal's account settings page. Do not proceed to Phase 2 until the portal is confirmed to be in Light mode.
-
 ---
 
 ## Phase 2 — Regression test
