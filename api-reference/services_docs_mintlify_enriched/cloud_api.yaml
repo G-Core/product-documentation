@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 0a4b169e8b98
+  version: 375fe12cfc96
 servers:
 - url: https://api.gcore.com
 paths:
@@ -5798,7 +5798,7 @@ paths:
       summary: Get inference application template
       description: |-
         Retrieves detailed information about a specific machine learning application template from the catalog.
-        The response includes the application’s metadata, documentation, tags,
+        The response includes the application's metadata, documentation, tags,
         and a complete set of components with configuration options, compatible flavors,
         and deployment capabilities — all necessary for building and customizing an AI application.
       parameters:
@@ -6380,7 +6380,7 @@ paths:
       operationId: SfsInstanceViewSet.patch
       summary: Update file share
       description: |-
-        Rename file share or update tags
+        Rename file share, update tags or change VAST settings.
 
         **Deprecated**: Use PATCH /v3/`file_shares`/{`project_id`}/{`region_id`}/{`file_share_id`} instead
       parameters:
@@ -6430,7 +6430,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateFileShareSerializer'
+              $ref: '#/components/schemas/DeprecatedUpdateFileShareSerializer'
       tags:
       - File Shares
   /cloud/v1/file_shares/{project_id}/{region_id}/{file_share_id}/access_rule:
@@ -10343,28 +10343,42 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: cluster_id
         required: true
-        description: Cluster ID
+        description: GPU cluster ID
         schema:
+          description: GPU cluster ID
+          example: faab46fd-26fd-4321-9876-abcdef012345
+          examples:
+          - faab46fd-26fd-4321-9876-abcdef012345
+          format: uuid4
+          title: Cluster Id
           type: string
       responses:
         '200':
-          description: created tasks for nodes rebuild
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaskIDsSerializer'
-        '400':
-          description: Invalid parameter in request
       requestBody:
         content:
           application/json:
@@ -10385,34 +10399,42 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: cluster_id
         required: true
-        description: Cluster ID
+        description: GPU cluster ID
         schema:
+          description: GPU cluster ID
+          example: faab46fd-26fd-4321-9876-abcdef012345
+          examples:
+          - faab46fd-26fd-4321-9876-abcdef012345
+          format: uuid4
+          title: Cluster Id
           type: string
       responses:
         '200':
-          description: created tasks for cluster resizing
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TaskIDsSerializer'
-        '400':
-          description: Invalid parameter in request
-        '404':
-          description: Mandatory resource was not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFoundErrorSchema'
       requestBody:
         content:
           application/json:
@@ -10478,7 +10500,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: All Regions (json format).
+          description: OK
           content:
             application/json:
               schema:
@@ -12869,34 +12891,53 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: query
         name: disabled
         required: false
         description: Flag for filtering disabled flavors in the region
         schema:
+          default: true
+          description: Flag for filtering disabled flavors in the region
+          title: Disabled
           type: boolean
       - in: query
         name: include_capacity
         required: false
-        description: Set to true to see the number of available AI Infrastructure clusters of given configuration
+        description: Set to true to see the number of available AI Infrastructure clusters
         schema:
+          default: false
+          description: Set to true to see the number of available AI Infrastructure clusters
+          title: Include Capacity
           type: boolean
       - in: query
         name: include_prices
         required: false
         description: Set to true if flavor listing should include flavor prices
         schema:
+          default: false
+          description: Set to true if flavor listing should include flavor prices
+          title: Include Prices
           type: boolean
       responses:
         '200':
-          description: List of available flavors
+          description: OK
           content:
             application/json:
               schema:
@@ -12917,28 +12958,41 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: query
         name: private
         required: false
         description: Any value to show private images
         schema:
+          description: Any value to show private images
+          title: Private
           type: string
       - in: query
         name: visibility
         required: false
         description: Search only public, shared or private images
         schema:
-          type: string
+          $ref: '#/components/schemas/VisibilityTypeEnum'
+          description: Search only public, shared or private images
       responses:
         '200':
-          description: List of images
+          description: OK
           content:
             application/json:
               schema:
@@ -15557,10 +15611,10 @@ paths:
         Returns the complete list of IPv4 and IPv6 address ranges that Cloud uses for outbound (egress) traffic.
 
         Typical reasons to call this endpoint:
-        - Host-file delivery workflows – You upload images or other assets to the Cloud and share a download link
+        - Host-file delivery workflows - You upload images or other assets to the Cloud and share a download link
         that points to your own infrastructure. Add these egress prefixes to your firewall or object-storage allow-list
         so our clients can fetch the files without being blocked.
-        - Push integrations / webhooks – You subscribe to the user-actions event log and Cloud pushes events to your
+        - Push integrations / webhooks - You subscribe to the user-actions event log and Cloud pushes events to your
         listener endpoint. Whitelisting the egress IP ranges lets you accept only traffic that originates from us.
         - General security controls, audit tooling, or SIEM rules that need to verify that traffic truly comes
         from the Cloud.
@@ -20491,6 +20545,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       responses:
@@ -20583,6 +20638,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       responses:
@@ -20685,6 +20741,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       responses:
@@ -20778,6 +20835,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       responses:
@@ -20881,6 +20939,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       - in: query
@@ -21002,6 +21061,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       - in: path
@@ -21013,6 +21073,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Rule Id
           type: string
       responses:
@@ -21107,6 +21168,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       - in: path
@@ -21118,6 +21180,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Rule Id
           type: string
       responses:
@@ -21217,6 +21280,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Policy Id
           type: string
       - in: path
@@ -21228,6 +21292,7 @@ paths:
           example: 023f2e34-7806-443b-bfae-16c324569a3d
           examples:
           - 023f2e34-7806-443b-bfae-16c324569a3d
+          format: uuid4
           title: L7Rule Id
           type: string
       responses:
@@ -28956,6 +29021,51 @@ paths:
               $ref: '#/components/schemas/PatchNetworkSerializer'
       tags:
       - Networks
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.networks.update(
+              network_id="b39792c3-3160-4356-912e-ba396c95cdcf",
+              project_id=1,
+              region_id=1,
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.Networks.Update(
+          		context.TODO(),
+          		"b39792c3-3160-4356-912e-ba396c95cdcf",
+          		cloud.NetworkUpdateParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v1/networks/{project_id}/{region_id}/{network_id}:
     get:
       operationId: NetworkInstanceViewSet.get
@@ -29202,51 +29312,6 @@ paths:
               $ref: '#/components/schemas/PatchNetworkSerializer'
       tags:
       - Networks
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          network = client.cloud.networks.update(
-              network_id="b39792c3-3160-4356-912e-ba396c95cdcf",
-              project_id=1,
-              region_id=1,
-          )
-          print(network.id)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/cloud"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	network, err := client.Cloud.Networks.Update(
-          		context.TODO(),
-          		"b39792c3-3160-4356-912e-ba396c95cdcf",
-          		cloud.NetworkUpdateParams{
-          			ProjectID: gcore.Int(1),
-          			RegionID:  gcore.Int(1),
-          		},
-          	)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", network.ID)
-          }
   /cloud/v1/networks/{project_id}/{region_id}/{network_id}/ports:
     get:
       operationId: InstancePortsByNetworkView.get
@@ -51684,9 +51749,64 @@ components:
       - type
       title: CreateCronScheduleSerializer
       type: object
+    CreateDdnFileShareSerializer:
+      additionalProperties: false
+      properties:
+        name:
+          description: File share name
+          example: test-share-file-system
+          examples:
+          - test-share-file-system
+          pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
+          title: Name
+          type: string
+        protocol:
+          const: LUSTRE
+          description: File share protocol
+          example: LUSTRE
+          examples:
+          - LUSTRE
+          title: Protocol
+          type: string
+        share_settings:
+          $ref: '#/components/schemas/DdnFileShareSettingsInputSerializer'
+          description: Configuration settings for the share
+        size:
+          description: File share size in GiB
+          example: 5
+          examples:
+          - 5
+          minimum: 1
+          title: Size
+          type: integer
+        tags:
+          $ref: '#/components/schemas/CreateTagsSerializer'
+          description: Key-value tags to associate with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Both tag keys and values have a maximum length of 255 characters. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
+          examples:
+          - my-tag: my-tag-value
+        type_name:
+          const: ddn
+          default: ddn
+          description: DDN file share type
+          title: Type Name
+          type: string
+        volume_type:
+          const: ddn_share_type
+          default: ddn_share_type
+          deprecated: true
+          description: Deprecated. Use `type_name` instead.
+          title: Volume Type
+          type: string
+      required:
+      - name
+      - protocol
+      - size
+      title: CreateDdnFileShareSerializer
+      type: object
     CreateFileShareSerializer:
       oneOf:
       - $ref: '#/components/schemas/CreateStandardFileShareSerializer'
+      - $ref: '#/components/schemas/CreateDdnFileShareSerializer'
       - $ref: '#/components/schemas/CreateVastFileShareSerializer'
       title: CreateFileShareSerializer
     CreateFileShareSource:
@@ -54080,7 +54200,7 @@ components:
         public_key:
           description: |-
             The public part of an SSH key is the shareable portion of an SSH key pair. It can be safely sent to servers or services to grant access. It does not contain sensitive information.
-            - If you’re uploading your own key, provide the public part here (usually found in a file like `id_ed25519.pub`).
+            - If you're uploading your own key, provide the public part here (usually found in a file like `id_ed25519.pub`).
             - If you want the platform to generate an Ed25519 key pair for you, leave this field empty — the system will return the private key in the response **once only**.
           example: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIjxL6g1II8NsO8odvBwGKvq2Dx/h/xrvsV9b9LVIYKm my-username@my-hostname
           examples:
@@ -55813,6 +55933,67 @@ components:
       - is_initialized
       title: DbaasStatusSerializer
       type: object
+    DdnFileShareSettingsInputSerializer:
+      additionalProperties: false
+      properties:
+        gid:
+          description: When set created file share will be owned by user with given GID
+          example: 1000
+          examples:
+          - 1000
+          maximum: 2147483647
+          minimum: 0
+          title: Gid
+          type: integer
+        uid:
+          description: When set created file share will be owned by group with given UID
+          example: 1000
+          examples:
+          - 1000
+          maximum: 2147483647
+          minimum: 0
+          title: Uid
+          type: integer
+      title: DdnFileShareSettingsInputSerializer
+      type: object
+    DdnShareSettingsOutputSerializer:
+      properties:
+        gid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Group ID being owner of the share
+          examples:
+          - 1000
+          title: Gid
+        projid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Exascaler project ID
+          examples:
+          - 42
+          title: Projid
+        type_name:
+          const: ddn
+          description: DDN file share type
+          title: Type Name
+          type: string
+        uid:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: User ID being owner of the share
+          examples:
+          - 1000
+          title: Uid
+      required:
+      - type_name
+      - projid
+      - gid
+      - uid
+      title: DdnShareSettingsOutputSerializer
+      type: object
     DdosManagedBy:
       enum:
       - system
@@ -56078,6 +56259,39 @@ components:
           description: List of tasks ids
           title: Task Ids
       title: DeprecatedTasksAcknowledgeBodySerializer
+      type: object
+    DeprecatedUpdateFileShareSerializer:
+      properties:
+        name:
+          description: Name
+          example: some_name
+          examples:
+          - some_name
+          pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
+          title: Name
+          type: string
+        share_settings:
+          $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
+          description: Configuration settings for the share
+        tags:
+          anyOf:
+          - $ref: '#/components/schemas/UpdateTagsSerializer'
+          - type: 'null'
+          description: |-
+            Update key-value tags using JSON Merge Patch semantics (RFC 7386). Provide key-value pairs to add or update tags. Set tag values to `null` to remove tags. Unspecified tags remain unchanged. Read-only tags are always preserved and cannot be modified.
+
+            **Examples:**
+
+            - **Add/update tags:** `{'tags': {'environment': 'production', 'team': 'backend'}}` adds new tags or updates existing ones.
+            - **Delete tags:** `{'tags': {'old_tag': null}}` removes specific tags.
+            - **Remove all tags:** `{'tags': null}` removes all user-managed tags (read-only tags are preserved).
+            - **Partial update:** `{'tags': {'environment': 'staging'}}` only updates specified tags.
+            - **Mixed operations:** `{'tags': {'environment': 'production', 'cost_center': 'engineering', 'deprecated_tag': null}}` adds/updates 'environment' and 'cost_center' while removing 'deprecated_tag', preserving other existing tags.
+            - **Replace all:** first delete existing tags with null values, then add new ones in the same request.
+          examples:
+          - my-tag: my-tag-value
+            my-tag-to-remove: null
+      title: DeprecatedUpdateFileShareSerializer
       type: object
     DetachInterfaceBodySerializer:
       properties:
@@ -57120,6 +57334,7 @@ components:
       type: object
     FileShareShareType:
       enum:
+      - ddn_share_type
       - default_share_type
       - vast_share_type
       title: FileShareShareType
@@ -57158,12 +57373,14 @@ components:
       type: string
     FileShareStorageType:
       enum:
+      - ddn
       - standard
       - vast
       title: FileShareStorageType
       type: string
     FileShareTypeName:
       enum:
+      - ddn
       - standard
       - vast
       title: FileShareTypeName
@@ -63852,6 +64069,13 @@ components:
       type: object
     K8sClusterCheckLimitsV2Serializer:
       properties:
+        fixed_network:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Fixed network ID. When set, OVPN infrastructure quotas (LB, FIP) are checked.
+          title: Fixed Network
         logging:
           anyOf:
           - $ref: '#/components/schemas/K8sClusterCheckLimitsLoggingV2Serializer'
@@ -66379,7 +66603,7 @@ components:
           title: Region Id
           type: integer
         rules:
-          description: Rules. All the rules associated with a given policy are logically ANDed together. A request must match all the policy’s rules to match the policy.If you need to express a logical OR operation between rules, then do this by creating multiple policies with the same action.
+          description: Rules. All the rules associated with a given policy are logically ANDed together. A request must match all the policy's rules to match the policy.If you need to express a logical OR operation between rules, then do this by creating multiple policies with the same action.
           items:
             $ref: '#/components/schemas/L7RuleInlineSerializer'
           title: Rules
@@ -73705,7 +73929,7 @@ components:
     QuotaCountForThresholdSerializer:
       properties:
         limit:
-          description: Сurrent quota limit
+          description: Current quota limit
           example: 10
           examples:
           - 10
@@ -73714,7 +73938,7 @@ components:
           title: Limit
           type: integer
         usage:
-          description: Сurrent amount of resource used
+          description: Current amount of resource used
           example: 8
           examples:
           - 8
@@ -87533,11 +87757,13 @@ components:
     ShareSettingsSerializer:
       discriminator:
         mapping:
+          ddn: '#/components/schemas/DdnShareSettingsOutputSerializer'
           standard: '#/components/schemas/StandardShareSettingsOutputSerializer'
           vast: '#/components/schemas/VastShareSettingsOutputSerializer'
         propertyName: type_name
       oneOf:
       - $ref: '#/components/schemas/StandardShareSettingsOutputSerializer'
+      - $ref: '#/components/schemas/DdnShareSettingsOutputSerializer'
       - $ref: '#/components/schemas/VastShareSettingsOutputSerializer'
       title: ShareSettingsSerializer
     SingleCreateSecurityGroupSerializer:
@@ -92574,8 +92800,11 @@ components:
           title: Name
           type: string
         share_settings:
-          $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
+          anyOf:
+          - $ref: '#/components/schemas/DdnFileShareSettingsInputSerializer'
+          - $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
           description: Configuration settings for the share
+          title: Share Settings
         tags:
           anyOf:
           - $ref: '#/components/schemas/UpdateTagsSerializer'

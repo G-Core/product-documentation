@@ -479,6 +479,39 @@ To view it:
 4. Find the **Tax location** field in the **Tax and currency** section.
 ```
 
+### Never nest `<Steps>` inside `<Steps>`
+
+Mintlify `<Steps>` components must never be nested inside another `<Steps>` component.
+When a `<Step>` body contains a sequential sub-procedure (e.g., form fields inside a tab),
+use a plain **numbered list** — not another `<Steps>` + `<Step>` block.
+
+**Wrong — nested Steps inside a Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    <Steps>
+      <Step title="Set the port">
+      In the "Port" field, enter 443.
+      </Step>
+      <Step title="Save">
+      </Step>
+    </Steps>
+  </Step>
+</Steps>
+```
+
+**Correct — numbered list inside the Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    1. In the "Port" field, enter 443.
+    2. Click **Save**.
+  </Step>
+</Steps>
+```
+
+This also applies inside `<Tab>` components that are themselves inside a `<Step>`.
+
 ### Use `<Steps>` for portal procedures
 
 For any Customer Portal procedure with two or more sequential steps, use the Mintlify
