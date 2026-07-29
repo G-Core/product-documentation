@@ -4,7 +4,7 @@ info:
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
   contact:
     email: support@gcore.com
-  version: 16771786216b
+  version: 8711188d9ac6
 servers:
 - url: https://api.gcore.com
 paths:
@@ -1762,8 +1762,8 @@ paths:
       - Analytics
       summary: Get Requests
       description: |-
-        Retrieve a domain's requests data. Deprecated.
-        Deprecated. Use [GET /v1/analytics/requests](/api-reference/waap/analytics/get-events) instead.
+        Retrieve a domain's requests data.
+        Deprecated. Use [GET /v2/analytics/events](/api-reference/waap/analytics/get-security-events) instead.
       operationId: get_requests_v1_domains__domain_id__requests_get
       deprecated: true
       parameters:
@@ -12660,7 +12660,7 @@ paths:
       description: |-
         Retrieve request log data over account's domains.
         The log records every request passing through WAAP towards the origin server.
-        Deprecated. Use [GET /v1/analytics/traffic](/api-reference/waap/analytics/get-events) instead.
+        Deprecated. Use [GET /v2/analytics/events](/api-reference/waap/analytics/get-security-events) instead.
       operationId: get_requests_v1_analytics_requests_get
       deprecated: true
       parameters:
@@ -17417,7 +17417,7 @@ components:
           description: The action that the rule takes when triggered. Only one action can be set per rule.
         conditions:
           items:
-            $ref: '#/components/schemas/CustomRuleCondition-Input'
+            $ref: '#/components/schemas/CustomRuleCondition'
           type: array
           maxItems: 5
           minItems: 1
@@ -17431,7 +17431,7 @@ components:
       - conditions
       title: CustomRule
       description: A request to create a new WAAP rule
-    CustomRuleCondition-Input:
+    CustomRuleCondition:
       properties:
         ip:
           $ref: '#/components/schemas/IpCondition'
@@ -17445,10 +17445,6 @@ components:
           $ref: '#/components/schemas/HeaderCondition'
         header_exists:
           $ref: '#/components/schemas/HeaderExistsCondition'
-        response_header:
-          $ref: '#/components/schemas/ResponseHeaderCondition'
-        response_header_exists:
-          $ref: '#/components/schemas/ResponseHeaderExistsCondition'
         http_method:
           $ref: '#/components/schemas/HttpMethodCondition'
         file_extension:
@@ -17476,8 +17472,13 @@ components:
       additionalProperties: false
       type: object
       title: CustomRuleCondition
-      description: The criteria of an incoming web request and the models of the various values those criteria can take
-    CustomRuleCondition-Output:
+      description: |-
+        The criteria of an incoming web request and the models of the various values those criteria can take.
+
+        Used for creating and updating custom rules. Does not include the ResponseHeader/
+        ResponseHeaderExists condition types, which are only readable on existing rules
+        (see CustomRuleConditionResponse).
+    CustomRuleConditionResponse:
       properties:
         ip:
           $ref: '#/components/schemas/IpCondition'
@@ -17491,10 +17492,6 @@ components:
           $ref: '#/components/schemas/HeaderCondition'
         header_exists:
           $ref: '#/components/schemas/HeaderExistsCondition'
-        response_header:
-          $ref: '#/components/schemas/ResponseHeaderCondition'
-        response_header_exists:
-          $ref: '#/components/schemas/ResponseHeaderExistsCondition'
         http_method:
           $ref: '#/components/schemas/HttpMethodCondition'
         file_extension:
@@ -17519,10 +17516,17 @@ components:
           $ref: '#/components/schemas/Ja3Condition-Output'
         ja4:
           $ref: '#/components/schemas/Ja4Condition-Output'
+        response_header:
+          $ref: '#/components/schemas/ResponseHeaderCondition'
+        response_header_exists:
+          $ref: '#/components/schemas/ResponseHeaderExistsCondition'
       additionalProperties: false
       type: object
-      title: CustomRuleCondition
-      description: The criteria of an incoming web request and the models of the various values those criteria can take
+      title: CustomRuleConditionResponse
+      description: |-
+        The full set of custom rule condition types, including ResponseHeader/ResponseHeaderExists
+        conditions that may exist on rules already stored in Lime but cannot be created or updated
+        through the API.
     CustomRuleResponse:
       properties:
         name:
@@ -17547,25 +17551,25 @@ components:
         action:
           $ref: '#/components/schemas/CustomerRuleAction'
           description: The action that the rule takes when triggered. Only one action can be set per rule.
+        id:
+          type: integer
+          title: Id
+          description: The unique identifier for the rule
         conditions:
           items:
-            $ref: '#/components/schemas/CustomRuleCondition-Output'
+            $ref: '#/components/schemas/CustomRuleConditionResponse'
           type: array
           maxItems: 5
           minItems: 1
           title: Conditions
           description: The conditions required for the WAAP engine to trigger the rule. Rules may have between 1 and 5 conditions. All conditions must pass for the rule to trigger
-        id:
-          type: integer
-          title: Id
-          description: The unique identifier for the rule
       type: object
       required:
       - name
       - enabled
       - action
-      - conditions
       - id
+      - conditions
       title: CustomRuleResponse
       description: An WAAP rule applied to a domain
     CustomerRuleAction:
@@ -21340,7 +21344,7 @@ components:
         conditions:
           anyOf:
           - items:
-              $ref: '#/components/schemas/CustomRuleCondition-Input'
+              $ref: '#/components/schemas/CustomRuleCondition'
             type: array
             maxItems: 5
             minItems: 1
