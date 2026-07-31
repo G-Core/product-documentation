@@ -19,8 +19,35 @@ Large File Delivery Optimization can be configured in the Resource Settings and 
   * Large File Delivery Optimization will be applied to all contents in the CDN resource, which could lead to an increased load on the origin. Therefore, consider activating [Origin Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) before using this feature, or make any updates during off-peak hours.
   * Remember to [purge the resource cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after enabling Large File Delivery Optimization.
   * Large File Delivery Optimization cannot be used in conjunction with [Fetch Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression), [Gzip Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip), and [Brotli Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli) within the Resource Settings or within the same rule.
+  * **HLS and MPEG-DASH don't need slicing** — those streams are already split into small segments that the CDN caches individually.
 
 
+## Example of large file slicing
+
+Example of a video file which is a progressive MP4 of several GB. CDN fetches the file from origin in fixed-size chunks using HTTP Range requests, caches each chunk independently, and serves the requested byte range to the viewer.
+
+When a viewer requests a byte range of a large file, the CDN maps it to the 10 MB chunk(s) that contain it, fetches only those chunks from origin (through the shield), caches them, and assembles the response:
+
+```
+Viewer requests bytes 0–1 MB of movie.mp4 (a 2 GB file)
+        │
+        ▼
+  ┌───────────┐  needs chunk #1 (bytes 0–10 MB) → cache MISS
+  │ CDN edge  │
+  └─────┬─────┘
+        │ Range: bytes=0-10485759
+        ▼
+  ┌───────────┐  chunk cached? no → one Range request to origin
+  │  Shield   │ ───────────────────────────────►┌──────────┐
+  └─────┬─────┘ ◄──────── 10 MB chunk #1 ───────│  Origin  │
+        │ caches chunk #1                       └──────────┘
+        ▼
+  ┌───────────┐
+  │ CDN edge  │  caches chunk #1, returns bytes 0–1 MB to viewer
+  └───────────┘
+
+Later: viewer seeks to bytes 1-2 MB or 2-3 MB → data is taken from the same already cached 0-10 MB chunk #1.
+```
 
 ## Configuration steps
 

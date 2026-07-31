@@ -1,0 +1,307 @@
+---
+title: Upgrade a GPU Kubernetes cluster
+sidebarTitle: Upgrade a cluster
+ai-navigation: Update a Gcore GPU Kubernetes cluster to the next minor version via Customer Portal, REST API, or Terraform.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Kubernetes upgrades use a rolling update strategy: a new node on the target version is provisioned, workloads migrate to it, and the old node is removed. This repeats until all nodes run the new version, minimizing downtime.</p>
+
+<Warning>
+Upgrades are one minor version at a time. To move from v1.33 to v1.35, run two separate upgrades: v1.33 → v1.34, then v1.34 → v1.35. Downgrade is not supported.
+</Warning>
+
+## Before upgrading
+
+<p>Check that the cluster control plane version and node versions match:</p>
+
+```bash
+kubectl version
+kubectl get nodes
+```
+
+<p>Verify that all nodes show the same version as the control plane before starting the upgrade. Review the [changelog](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/) for deprecated APIs that may affect running workloads.</p>
+
+<p>Rolling upgrades require quota for one additional node of the same flavor during the process. For a 10-node pool, quota for 11 nodes is needed temporarily. To avoid requesting extra quota, scale the pool down by one node before starting the upgrade, then scale it back up after the upgrade completes.</p>
+
+## Start the upgrade
+
+<p>When a newer Kubernetes version is available, an upgrade prompt appears in the cluster overview next to the **Kubernetes Version** field:</p>
+
+<Steps>
+  <Step title="Click the upgrade prompt next to Kubernetes Version">
+    <Frame>
+      <img src="/images/docs/edge-ai/managed-kubernetes/manage-node-pools/kubernetes-version-upgrade.png" alt="Kubernetes version upgrade prompt on the cluster overview page" />
+    </Frame>
+  </Step>
+  <Step title="Select the target version (next minor version only)">
+  </Step>
+  <Step title="Confirm the upgrade">
+  </Step>
+</Steps>
+
+<p>The upgrade cannot be paused or cancelled once started.</p>
+
+## After upgrading
+
+<p>After the control plane upgrades, update the local kubectl client if the version skew exceeds one minor version:</p>
+
+```bash
+kubectl version
+```
+
+**Update the Cluster Autoscaler**
+
+<p>The Cluster Autoscaler image must match the cluster's Kubernetes minor version. Find the latest release for the new version on the [releases&nbsp;page](https://github.com/kubernetes/autoscaler/releases), then update the image:</p>
+
+```bash
+kubectl -n kube-system set image deployment.apps/cluster-autoscaler \
+  cluster-autoscaler=registry.k8s.io/autoscaling/cluster-autoscaler:v<X.XX.X>
+```
+
+<p>Replace `<X.XX.X>` with the release that matches the upgraded cluster version. If the cluster is now v1.35, use the latest `1.35.x` Cluster Autoscaler release. A version mismatch causes the autoscaler to stop scaling correctly.</p>
+
+<p>Verify the rollout completed:</p>
+
+```bash
+kubectl -n kube-system rollout status deployment/cluster-autoscaler
+```
+
+**Update the NVIDIA device plugin (GPU bare metal pools only)**
+
+<p>The NVIDIA device plugin DaemonSet must be updated after a cluster upgrade to maintain GPU resource scheduling. Find the latest compatible release on the [releases&nbsp;page](https://github.com/NVIDIA/k8s-device-plugin/releases), then apply it:</p>
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v<X.X.X>/deployments/static/nvidia-device-plugin.yml
+```
+
+<p>Replace `<X.X.X>` with the target plugin version. Verify the DaemonSet is running on all GPU nodes:</p>
+
+```bash
+kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
+```
+
+<p>All pods in the DaemonSet should show `READY` equal to `DESIRED` before scheduling GPU workloads.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Check available upgrade versions and trigger a rolling upgrade to the next Kubernetes minor version.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+## Upgrade the cluster
+
+<p>Upgrades the cluster to the next available Kubernetes minor version using a rolling update. Check available versions before starting, then trigger the upgrade.</p>
+
+<Warning>
+Upgrades move exactly one minor version at a time. The upgrade cannot be paused or cancelled once started. Verify that the cluster has quota for one additional node of the same flavor during the rolling update.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore()
+    CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
+
+    # Step 1. Check available upgrade versions
+    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(cluster_name=CLUSTER)
+    if not versions.results:
+        print("No upgrades available.")
+        exit()
+    target = versions.results[0].version
+    print(f"Upgrading to {target}")
+
+    # Step 2. Start the upgrade
+    task_list = client.cloud.k8s.clusters.upgrade(
+        cluster_name=CLUSTER,
+        version=target,
+    )
+    task_id = task_list.tasks[0]
+
+    # Step 3. Poll until finished
+    while True:
+        task = client.cloud.tasks.get(task_id)
+        if task.state == "FINISHED":
+            print("Upgrade complete.")
+            break
+        if task.state == "ERROR":
+            raise RuntimeError(f"Upgrade failed: {task}")
+        print(f"Upgrade state: {task.state}")
+        time.sleep(30)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+    	projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+    	regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	// Step 1. Check available upgrade versions
+    	versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
+    		ctx,
+    		clusterName,
+    		cloud.K8SClusterListVersionsForUpgradeParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	if len(versions.Results) == 0 {
+    		fmt.Println("No upgrades available.")
+    		return
+    	}
+    	target := versions.Results[0].Version
+    	fmt.Printf("Upgrading to %s\n", target)
+
+    	// Step 2. Start the upgrade
+    	taskList, err := client.Cloud.K8S.Clusters.Upgrade(
+    		ctx,
+    		clusterName,
+    		cloud.K8SClusterUpgradeParams{
+    			ProjectID: gcore.Int(projectID),
+    			RegionID:  gcore.Int(regionID),
+    			Version:   target,
+    		},
+    	)
+    	if err != nil {
+    		panic(err)
+    	}
+    	taskID := taskList.Tasks[0]
+
+    	// Step 3. Poll until finished
+    	for {
+    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		if task.State == "FINISHED" {
+    			fmt.Println("Upgrade complete.")
+    			break
+    		}
+    		if task.State == "ERROR" {
+    			panic(fmt.Sprintf("Upgrade failed: %+v", task))
+    		}
+    		fmt.Printf("Upgrade state: %s\n", task.State)
+    		time.Sleep(30 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Step 1. Check available upgrade versions
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/upgrade_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"count": 1, "results": [{"version": "v1.36.1"}]}
+    ```
+
+    ```bash
+    # Step 2. Start the upgrade
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GCORE_CLUSTER_NAME/upgrade" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"version": "v1.36.1"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d3b8f2a1-4c5e-6789-abcd-ef0123456789"]}
+    ```
+
+    <p>Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`. GPU bare metal node upgrades take longer than standard VM upgrades.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Upgrade a GPU Kubernetes cluster to the next minor version using the [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) resource from the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Changing the `version` field triggers a rolling upgrade — Terraform applies the change in-place without recreating the cluster.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens), a [project&nbsp;ID](/api-reference/cloud/projects/list-projects), and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions) are required. Import an existing cluster with `terraform import` before changing its version.
+</Info>
+
+## Upgrade the cluster
+
+<p>Change `version` to the next minor version and run `terraform apply`. The cluster upgrades one node at a time — workloads are rescheduled to the new node before the old node is removed. GPU bare metal upgrades take significantly longer than VM upgrades.</p>
+
+<Warning>
+Upgrades move exactly one minor version at a time. To move from v1.33 to v1.35, apply the change twice: first to v1.34, then to v1.35. Downgrade is not supported.
+</Warning>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-gpu-k8s"
+  version       = "v1.36.1"  # changed from v1.35.3
+  keypair       = "my-ssh-key"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+
+  pools = [
+    {
+      name                 = "gpu-pool"
+      flavor_id            = "bm3-ai-1xlarge-a100-80-8"
+      min_node_count       = 1
+      max_node_count       = 3
+      auto_healing_enabled = true
+    }
+  ]
+}
+```
+
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>

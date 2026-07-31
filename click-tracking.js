@@ -26,7 +26,8 @@
     /api\.gcore\.com\/iam\/auth\/oauth2/i
   ];
   var SALES_LINK = [
-    /gcore\.com\/contact-sales(?:[/?#]|$)/i
+    /gcore\.com\/contact-sales(?:[/?#]|$)/i,
+    /gcore\.com\/contact-us(?:[/?#]|$)/i
   ];
 
   function isTrackedLink(href) {

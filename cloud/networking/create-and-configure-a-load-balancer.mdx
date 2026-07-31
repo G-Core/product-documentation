@@ -1,285 +1,1137 @@
 ---
 title: "Create and configure a load balancer"
 sidebarTitle: "Create load balancer"
-ai-navigation: Create and configure a Load Balancer with region selection, computing configuration (vCPU, GiB), network type (Public, Private, Dedicated public), IP family (IPv4, IPv6, Dual), reserved IP assignment, and preferred connectivity method (L2 or L3) for distributing traffic across Virtual Machines in active-standby high availability mode.
+ai-navigation: Create and configure a Load Balancer with region selection, computing configuration (vCPU, GiB), network type (Public, Private), IP family (IPv4, IPv6, Dual), reserved IP assignment, preferred connectivity method (L2 or L3), listeners, and pools via Customer Portal, REST API, or Terraform.
 ---
 
-A Load Balancer is a tool used to sort incoming requests across your Virtual Machines to improve your infrastructure's fault tolerance.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>A Load Balancer distributes incoming requests across Virtual Machines to improve infrastructure fault tolerance.</p>
 
 ## Step 1. Initiate Load Balancer creation
 
-Go to your project, navigate to the "Load Balancers" in the "Networking" section and click **Create Load Balancer**.
+<p>In the project, navigate to **Load Balancers** in the **Networking** section and click **Create Load Balancer**.</p>
 
 <Frame>
-  ![Initiate the process of Load Balancer creation](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-1-lb.png)
+  ![Load Balancers list with Create Load Balancer button](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-create-button.png)
 </Frame>
 
-The new page opens. Perform the remaining steps there.
-
-## Step 2. Set the region
-
-Select a region for balancing.
+<p>The new page opens. Select a region for balancing.</p>
 
 <Warning>
-  **Warning**
-
-  You can balance traffic only within a single data center.
+  Traffic can only be balanced within a single data center.
 </Warning>
 
-## Step 3. Set computing configuration
+## Step 2. Set computing configuration
 
-Select a suitable computing configuration for your Load Balancer: vCPU and GiB. All Load Balancers are created in high availability mode with active-standby instances. Upon failure of the active instance, the standby one will seamlessly take over the load-balancing functions.
+<p>Select a flavor for the Load Balancer — vCPU and RAM. All Load Balancers are created in high availability mode with active-standby instances. Upon failure of the active instance, the standby one takes over the load-balancing functions.</p>
 
 <Frame>
-  ![Select type](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-2-lb.png)
+  ![Load Balancer type selection with Standard flavor options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-flavor-type.png)
 </Frame>
 
-Two classes of Load Balancer flavors are available:
+<p>Two classes of Load Balancer flavors are available:</p>
 
 - **Standard** — general-purpose configurations suitable for most workloads, with network throughput up to 1.5 Gbps.
-- **Network-Optimized** — built on network-optimised infrastructure with SR-IOV on the VIP port. These deliver significantly higher packet rates and lower latency, with guaranteed bandwidth up to 10 Gbps per instance.
+- **Network-Optimized** — built on network-optimized infrastructure with SR-IOV on the VIP port. These deliver higher packet rates and lower latency, with guaranteed bandwidth up to 10 Gbps per instance.
 
 <Frame>
   ![Network-Optimized flavor tab](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-type-network-optimized.png)
 </Frame>
 
-| **vCPU** | **RAM (GiB)** | **Network bandwidth (VIP)** |
-| --- | --- | --- |
-| 2 | 2 | 1.5 Gbps |
-| 4 | 4 | 5 Gbps |
-| 8 | 8 | 10 Gbps |
-| 16 | 16 | 10 Gbps |
+| **Class** | **vCPU** | **RAM (GiB)** | **Network bandwidth (VIP)** |
+| --- | --- | --- | --- |
+| Standard | 1 | 2 | 1.5 Gbps |
+| Standard | 2 | 4 | 5 Gbps |
+| Network-Optimized | 4 | 8 | 10 Gbps |
+| Network-Optimized | 8 | 16 | 10 Gbps |
 
-Use Network-Optimized flavors for services that handle large volumes of concurrent connections or high-bandwidth traffic, such as media streaming, CDN origin servers, and API gateways.
+<p>Use Network-Optimized flavors for services that handle large volumes of concurrent connections or high-bandwidth traffic — media streaming, CDN origin servers, and API gateways.</p>
 
-## Step 4. Configure network
+## Step 3. Configure network
 
-Configure the network interface:
+<p>Configure the network interface for the Load Balancer.</p>
 
-1. Select the **Network type**: **Public** or **Private**.
+<Steps>
+  <Step title="Select the network type">
+    Select **Public** or **Private** in the **Network type** field.
+  </Step>
+  <Step title="Select the IP version">
+    In the **IP Family** section, select **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
+  </Step>
+  <Step title="(Optional) Assign a reserved IP">
+    Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the Load Balancer.
+  </Step>
+  <Step title="Configure preferred connectivity">
+    Select **L2** or **L3** in the **Preferred connectivity** field. This option is explained in detail in Step 4.
 
-2. In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
+    <Frame>
+      ![Network section showing public network type, IPv4 IP family, and L2 preferred connectivity](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-network-section.png)
+    </Frame>
+  </Step>
+</Steps>
 
-3. (Optional) Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the Load Balancer.
+## Step 4. Configure preferred connectivity
 
-4. Configure **Preferred connectivity** (L2 or L3) as described in the next step.
+<p>L2 (Layer 2) and L3 (Layer 3) connectivity options are available. This setting determines the preferred connectivity method the Load Balancer uses to connect to backend pool members.</p>
 
-![Network configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-network-section.png)
+<p>The Load Balancer determines available routes by evaluating subnet host routes only. Due to current system limitations, it does not take router `host_routes` into account.</p>
 
-## Step 5. Configure preferred connectivity
+<p>If the preferred connectivity is not feasible, traffic will automatically route via the alternative method:</p>
 
-You can choose between L2 (Layer 2) and L3 (Layer 3) connectivity. This setting determines the preferred connectivity method the Load Balancer uses to connect to backend pool members. If the preferred connectivity is not feasible, traffic will automatically route via the alternative method:
+**L2 (preferred) -> (if not possible) L3 -> (if not possible) Validation Error**
 
-**L2 (preferred) → (if not possible) L3 → (if not possible) Validation Error**
+**L3 (preferred) -> (if not possible) L2 -> (if not possible) Validation Error**
 
-**L3 (preferred) → (if not possible) L2 → (if not possible) Validation Error**
+<Tabs>
+  <Tab title="L2 (Layer 2)">
+    <p>L2 connectivity offers better performance because traffic flows directly between the Load Balancer and pool members without passing through a router. This reduces network hops and minimizes latency.</p>
 
-The Load Balancer determines available routes only by evaluating subnet host routes. Due to current system limitations, it does not take router `host_routes` into account.
+    <p>However, this approach requires more IP addresses. In networks with many `/24` subnets, each Load Balancer must create ports in every subnet where its members are located. This can lead to high IP utilization and reduced efficiency in large-scale deployments.</p>
 
-### Layer 2
+    <Frame>
+      ![Select Layer 2 connectivity option](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-5-preferred-connectivity.png)
+    </Frame>
+  </Tab>
+  <Tab title="L3 (Layer 3)">
+    <p>L3 connectivity routes traffic through a router or gateway, introducing additional network hops that may slightly impact performance.</p>
 
-L2 connectivity offers better performance because traffic flows directly between the Load Balancer and pool members without passing through a router. This reduces network hops and minimizes latency.
+    <p>It also optimizes IP address utilization by reducing the number of required IPs per Load Balancer. Instead of allocating a separate IP in every subnet, the Load Balancer communicates with pool members across subnets using routing mechanisms. This approach improves scalability and efficiency, especially in environments with multiple subnets.</p>
 
-However, this approach requires more IP addresses. In networks with many `/24` subnets, each Load Balancer must create ports in every subnet where its members are located. This can lead to high IP utilization and reduced efficiency in large-scale deployments.
+    <Tip>
+      For a single subnet setup, use **L2 connectivity** for optimal performance. For deployments with multiple subnets or complex networking requirements, contact support to determine the best configuration.
+    </Tip>
+  </Tab>
+</Tabs>
 
-<Frame>
-  ![Select Layer 2 connectivity option](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-5-preferred-connectivity.png)
-</Frame>
+## Step 5. Configure listeners
 
-### Layer 3
+<p>Add listeners that will check for connection requests using the protocol and port specified. Multiple listeners are supported per Load Balancer.</p>
 
-L3 connectivity routes traffic through a router or gateway, introducing additional network hops that may slightly impact performance.
+<Steps>
+  <Step title="Add a listener">
+    In the **Listeners** section, click **Add Listener**.
 
-It also optimizes IP address utilization by reducing the number of required IPs per Load Balancer. Instead of allocating a separate IP in every subnet, the Load Balancer communicates with pool members across subnets using routing mechanisms. This approach improves scalability and efficiency, especially in environments with multiple subnets.
+    <Frame>
+      ![Listeners section with Add Listener button, and Load Balancer Name, Logging, and Tags sections below](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listeners-name-logging.png)
+    </Frame>
+  </Step>
+  <Step title="Enter the listener name">
+    Enter the listener's name.
+  </Step>
+  <Step title="Select the protocol">
+    Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. Multiple TLS certificates are configurable for Terminated HTTPS and Prometheus.
+  </Step>
+  <Step title="Specify the port">
+    Specify a port the Load Balancer will listen on for incoming traffic. Keep the default port for protocols that provide one, or enter a custom port from 1 to 65535.
+  </Step>
+  <Step title="(Optional) Enable X-Forwarded headers">
+    To identify the origin of the client IP address when a request passes through the load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
+  </Step>
+  <Step title="(Optional) Configure TLS certificates">
+    For Terminated HTTPS and Prometheus protocols, [TLS certificates](/cloud/networking/load-balancers/add-certificates-to-load-balancer) are configurable.
+  </Step>
+  <Step title="Set the connection limit">
+    Set the connection limit — the maximum number of simultaneous connections handled by this listener. The default value is 100,000. Setting the value to -1 sets the limit to the default.
+  </Step>
+  <Step title="(Optional) Add allowed CIDR ranges">
+    Add allowed CIDR ranges to define which IP addresses can access the content. All IP addresses outside the specified ranges will be denied access. Up to 100 CIDR ranges can be specified per listener.
 
-<Tip>
-  **Tip**
+    The IP version of Allowed CIDRs must match the IP version of the Load Balancer's Virtual IPs (VIPs):
 
-  For most cases, such as a single subnet setup, use **L2 connectivity** for optimal performance. If your deployment involves multiple subnets or complex networking requirements, contact support to determine the best configuration.
-</Tip>
+    - VIPs with both IPv4 and IPv6 support CIDRs of both versions.
+    - VIPs with only IPv4 allow only IPv4 CIDRs.
+    - VIPs with only IPv6 allow only IPv6 CIDRs.
 
-## Step 6. Configure listeners
+    If the provided CIDRs do not match the VIP's IP version, the API will return a validation error.
 
-Add listeners that will check for connection requests using the protocol and port that you specify. You can add multiple listeners to a Load Balancer.
+    <Frame>
+      ![Listener form showing Allowed CIDRs field with an IPv4 example](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png)
+    </Frame>
+  </Step>
+  <Step title="(Optional) Configure user authentication">
+    For HTTP-based listeners, configure basic user authentication to protect the resource from unauthorized access. Click **+ Add user** to enable authentication:
 
-To configure a listener:
+    - **Enter username**: specify a username.
+    - **Password**: specify a password or choose the **Encrypted password** option to store the password as a hash — [encrypted passwords](/cloud/networking/load-balancers/add-certificates-to-load-balancer#create-an-encrypted-password) are stored as bcrypt hashes.
 
-1. In the **Listeners** section, click **Add listener**.
+    <Info>
+      A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character. The maximum password length is 128 symbols.
+    </Info>
+  </Step>
+  <Step title="Create the listener">
+    Click **Create Listener**.
 
-<Frame>
-  ![Add listener](/images/docs/cloud/networking/create-and-configure-a-load-balancer/add-listener.png)
-</Frame>
+    <Frame>
+      ![Add Listener dialog with name, protocol, port, connection limit, and allowed CIDRs fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listener-dialog.png)
+    </Frame>
+  </Step>
+</Steps>
 
-2. Enter the listener's name.
-
-3. Select the required protocol: TCP, UDP, HTTP, Terminated HTTPS, and Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.
-
-4. Specify a port that the Load Balancer will listen on for incoming traffic. You can keep a default port for some protocols or specify the needed port from 1 to 65535.
-
-5. (Optional) To identify the origin of the user's IP address connecting to a web server via a load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
-
-6. If you select Terminated HTTPS and Prometheus protocols, you can configure TLS certificates. Follow instructions from our [dedicated guide](/cloud/networking/load-balancers/add-certificates-to-load-balancer).
-
-7. Set the connection limit: the maximum number of simultaneous connections that can be handled by this listener. The default value is 100,000. Setting the value to -1 sets the limit to the default.
-
-8. (Optional) Add allowed CIDR ranges to define which IP addresses can access the content. All IP addresses outside the specified ranges will be denied access. Up to 100 CIDR ranges can be specified per listener.
-
-To ensure correct operation and avoid misconfigurations, the IP version of Allowed CIDRs must match the IP version of the Load Balancer's Virtual IPs (VIPs).
-
-**Basic Rules:**
-
-- VIPs with both IPv4 and IPv6 support CIDRs of both versions.
-
-VIPs: 62.112.222.52 (IPv4), 2a03:90c0:4d6:1::2e8 (IPv6)
-
-Allowed CIDRs: 10.0.0.0/8, fe00::/7
-
-<Frame>
-  ![step 8 cidr validation](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png)
-</Frame>
-
-- VIPs with only IPv4 allow only IPv4 CIDRs
-- VIPs with only IPv6 allow only IPv6 CIDRs
-
-If the provided CIDRs do not match the VIP's IP version, the API will return a validation error.
-
-9. (Optional) For HTTP-based listeners, you can configure basic user authentication to protect your resource from unauthorized access. Click **Add users** to enable the authentication:
-
-- **Enter username** : specify a username.
-- **Password** : specify a password or choose the **Encrypted password** option to store password as a hash. Check out [create an encrypted password](/cloud/networking/load-balancers/add-certificates-to-load-balancer#create-an-encrypted-password) for instructions.
-
-<Info>
-  **Info**
-
-  A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character. The maximum password length is 128 symbols.
-</Info>
-
-10. Click **Create Listener**.
-
-<Frame>
-  ![Listener configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/configure-listener.png)
-</Frame>
-
-Listener configuration options differ depending on the selected protocol. For example, HTTP and Terminated HTTPS protocols allow additional settings, such as enabling headers and authentication, while TCP and UDP listeners focus on specifying ports and connection limits.
+<p>Listener configuration options differ depending on the selected protocol. HTTP and Terminated HTTPS protocols allow additional settings — headers and authentication — while TCP and UDP listeners focus on specifying ports and connection limits.</p>
 
 ### Pool
 
-Configure a pool—a list of VMs to which the listener will redirect incoming traffic. Click **Add new pool** in the "Listeners" block to start configuring.
+<p>Configure a pool — a list of VMs to which the listener will redirect incoming traffic. Click **Add new pool** in the **Listeners** section to start configuring.</p>
 
 <Frame>
   ![Add pools](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png)
 </Frame>
 
-1. Specify the pool name.
+<Steps>
+  <Step title="Name the pool">
+    Specify the pool name.
+  </Step>
+  <Step title="Select the balancing algorithm">
+    Select one of the following:
 
-2. Select the balancing algorithm:
+    - **Round robin** — requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second to the second, and so on in a circle.
+    - **Least Connection** — new requests are sent to a server with the fewest active connections.
+    - **Source IP** — a client's IP address is used to determine which server receives the request.
+  </Step>
+  <Step title="Select the pool protocol">
+    Select the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
 
-- **Round robin** —requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle.
-- **Least Connection** —new requests are sent to a server with the fewest active connections.
-- **Source IP** —a client's IP address is used to determine which server receives the request.
+    <Frame>
+      ![Pool protocol dropdown showing HTTP, HTTPS, TCP, UDP, PROXY, and PROXY V2 options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/pool-protocol-dropdown.png)
+    </Frame>
 
-3. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
+    To preserve the original client IP address on the backend, select **PROXY** (Proxy Protocol v1, text-based) or **PROXY V2** (Proxy Protocol v2, binary). When either option is selected, the Load Balancer prepends a Proxy Protocol header to each TCP connection, allowing backend servers to read the real client IP instead of the Load Balancer's IP.
 
-4. Select **App Cookie** and fill in the "Cookie" field. [A special module](https://code.google.com/p/nginx-sticky-module/) creates a cookie and then uses it to forward requests to the same server.
+    <Info>
+      PROXY and PROXY V2 require the listener to use the TCP protocol. The backend application must be configured to parse Proxy Protocol headers. Selecting PROXY or PROXY V2 on a pool whose members do not expect these headers will cause connection failures.
+    </Info>
+  </Step>
+  <Step title="(Optional) Configure sticky sessions">
+    In the **Sticky Sessions** dropdown, select the session persistence method:
 
-<Frame>
-  ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
-</Frame>
+    - **None** — no session persistence, requests are distributed according to the selected algorithm.
+    - **App Cookie** — the Load Balancer reads an existing cookie set by the backend application and uses it to route subsequent requests from the same client to the same server. Fill in the **Cookie** field with the cookie name.
+    - **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
 
-#### Sharing a pool across multiple listeners
+    <Frame>
+      ![Pool configuration showing name, algorithm, protocol, and sticky sessions fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
-A single pool can be used by multiple listeners within the same Load Balancer. This reduces configuration overhead and simplifies pool member management when routing traffic from different ports to the same backend servers.
+**Sharing a pool across multiple listeners**
+
+<p>A single pool can be used by multiple listeners within the same Load Balancer. This reduces configuration overhead and simplifies pool member management when routing traffic from different ports to the same backend servers.</p>
 
 <Info>
-  **Info**
-
   Shared pools can only be configured via the [Load Balancer API](https://apidocs.gcore.com/cloud#tag/Load-Balancers).
 </Info>
 
-To configure a shared pool:
+<p>To configure a shared pool:</p>
 
 1. Create a Load Balancer via `POST /cloud/v1/loadbalancers/{project_id}/{region_id}`.
 2. Create a pool via `POST /cloud/v1/lbpools/{project_id}/{region_id}`, specifying `loadbalancer_id` without `listener_id`.
 3. Create listeners via `POST /cloud/v1/lblisteners/{project_id}/{region_id}`, referencing the pool via `default_pool_id`.
 
 <Warning>
-  **Warning**
-
   When deleting a listener that uses a shared pool, do not use the `delete_default_pool` option. This would delete the pool and affect all other listeners using it. Instead, manage the pool separately.
 </Warning>
 
 ### Virtual Machine
 
-<Frame>
-  ![Add Virtual Machine](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
-</Frame>
+<p>Click **Add Instance** to add Virtual Machines that will participate in the traffic distribution for the configured listener.</p>
 
-Click **Add Instance** to add Virtual Machines that will participate in the traffic distribution for the configured listener.
+<Steps>
+  <Step title="Select the instance type">
+    Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations.
+  </Step>
+  <Step title="Specify port and weight">
+    Specify the port and weight in the distribution.
 
-1. Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations.
-
-2. Specify its port and weight in the distribution.
+    <Frame>
+      ![Instance row with type selector, IP target, subnet, port, weight, and backup toggle](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
 ### Health check
 
-<Frame>
-  ![Configure Health Check](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
-</Frame>
+<p>Configure a health check to monitor backend instance availability. The Load Balancer stops sending traffic to instances that fail the configured threshold.</p>
 
-1. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations.
+<Steps>
+  <Step title="Select the check protocol">
+    Select the protocol for checking — TCP, Ping, or HTTP — and configure the appropriate settings.
+  </Step>
+  <Step title="Set check interval">
+    Specify check interval (sec) — time between sent requests.
+  </Step>
+  <Step title="Set response time">
+    Specify response time (sec) — the time to wait for a response from a server.
+  </Step>
+  <Step title="Set unhealthy threshold">
+    Specify unhealthy threshold — the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
+  </Step>
+  <Step title="Set healthy threshold">
+    Specify healthy threshold — the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
 
-2. Specify check interval (sec)—time between sent requests.
-
-3. Specify response time (sec)—the time to wait for a response from a server.
-
-4. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
-
-5. Specify healthy thresholds—the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
+    <Frame>
+      ![Health check configuration with protocol, check interval, response time, and threshold fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
+    </Frame>
+  </Step>
+</Steps>
 
 ### Timeouts
 
-Specify client data, member connect and member data timeouts in msec.
+<p>Specify client data, member connect, and member data timeouts in ms.</p>
 
 <Frame>
   ![Configure timeouts](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png)
 </Frame>
 
-Each terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.
+<p>Each Terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.</p>
 
-## Step 7. Enter the name
+## Step 6. Enter the name
 
-Enter a name for the Load Balancer. This name will be displayed in the Gcore Customer Portal.
+<p>Enter a name for the Load Balancer. This name will be displayed in the Customer Portal.</p>
 
 <Frame>
   ![Enter Load Balancer name](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png)
 </Frame>
 
-## Step 8. (Optional) Enable logging
+## Step 7. (Optional) Enable logging
 
-The Logging service will be activated to store your logs. To learn how it works and how to configure it, refer to the article about [Logging](/cloud/logging-as-a-service/about-logging-as-a-service).
+<p>When enabled, the [Logging](/cloud/logging-as-a-service/about-logging-as-a-service) service stores listener protocol logs, accessible through OpenSearch Dashboards.</p>
 
 <Frame>
   ![Configure Logging](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-7-lb.png)
 </Frame>
 
-## Step 9. (Optional) Add tags
+## Step 8. (Optional) Add tags
 
-Create tags for your load balancer by entering "Key" and "Value".
+<p>Create tags for the load balancer by entering a **Key** and **Value**.</p>
 
 <Frame>
   ![Configure tags](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-lb.png)
 </Frame>
 
-## Step 10. Finalize creation
+## Step 9. Finalize creation
 
-Check the settings and click **Create Load Balancer** on the right.
+<p>Check the settings and click **Create Load Balancer** on the right.</p>
 
-## Step 11. Configure firewall
+## Step 10. Configure firewall
 
-Configure firewalls for Virtual Machines in the pool according to the [separate guide](/cloud/networking/add-and-configure-a-firewall).
+<p>Configure [firewalls](/cloud/networking/add-and-configure-a-firewall) for Virtual Machines in the pool.</p>
 
-Make sure their ports are open for the Load Balancer traffic:
+<p>Verify that their ports are open for the Load Balancer traffic:</p>
 
 - If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the VM.
 - If a Load Balancer and Virtual Machines are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
 - If a Load Balancer is in a **public network** and Virtual Machine are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>A [load balancer](/api-reference/cloud/load-balancers/create-load-balancer) distributes incoming requests across backend VMs, routing traffic only to healthy members. Creating one requires four API calls: create the balancer, add a listener, create a pool, and register the backend VMs as pool members.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Open a bash terminal and set these as environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export VM1_IP="{VM1_PUBLIC_IP}"
+export VM2_IP="{VM2_PUBLIC_IP}"
+```
+
+<Info>
+**VM1\_IP** and **VM2\_IP** are the public IP addresses of the virtual machines that will serve as backend pool members. To create VMs and find their IPs, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
+</Info>
+
+## Quickstart
+
+<p>The scripts below create a load balancer with an HTTP listener and a round-robin pool, then add two backend VMs as pool members. Set `VM1_IP` and `VM2_IP` to the public IP addresses of running VMs.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. List flavors and pick the smallest
+    flavors = client.cloud.load_balancers.flavors.list()
+    lb_flavor = flavors.results[0].flavor_name
+    print(f"Flavor: {lb_flavor}")
+
+    # Step 2. Create load balancer (takes about 1 minute)
+    lb = client.cloud.load_balancers.create_and_poll(
+        name="my-lb",
+        flavor=lb_flavor,
+        polling_timeout_seconds=300,
+    )
+    print(f"LB VIP: {lb.vip_address}")
+
+    # Step 3. Create HTTP listener on port 80
+    listener = client.cloud.load_balancers.listeners.create_and_poll(
+        load_balancer_id=lb.id,
+        name="http-listener",
+        protocol="HTTP",
+        protocol_port=80,
+    )
+
+    # Step 4. Create round-robin pool
+    pool = client.cloud.load_balancers.pools.create_and_poll(
+        name="http-pool",
+        lb_algorithm="ROUND_ROBIN",
+        protocol="HTTP",
+        listener_id=listener.id,
+        load_balancer_id=lb.id,
+    )
+
+    # Step 5. Add backend VMs as pool members
+    for ip in [os.environ["VM1_IP"], os.environ["VM2_IP"]]:
+        t = client.cloud.load_balancers.pools.members.create(
+            pool_id=pool.id,
+            address=ip,
+            protocol_port=80,
+        )
+        client.cloud.tasks.poll(t.tasks[0], polling_interval_seconds=5, polling_timeout_seconds=120)
+
+    print(f"Traffic on {lb.vip_address}:80 is now distributed across both VMs")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.TODO()
+
+        // Step 1. List flavors and pick the smallest
+        flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{})
+        if err != nil {
+            panic(err.Error())
+        }
+        lbFlavor := flavors.Results[0].FlavorName
+        fmt.Printf("Flavor: %s\n", lbFlavor)
+
+        // Step 2. Create load balancer (takes about 1 minute)
+        lb, err := client.Cloud.LoadBalancers.NewAndPoll(ctx, cloud.LoadBalancerNewParams{
+            Name:   "my-lb",
+            Flavor:    gcore.String(lbFlavor),
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("LB VIP: %s\n", lb.VipAddress)
+
+        // Step 3. Create HTTP listener on port 80
+        listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
+            LoadBalancerID: lb.ID,
+            Name:           "http-listener",
+            Protocol:       "HTTP",
+            ProtocolPort:   80,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+
+        // Step 4. Create round-robin pool
+        pool, err := client.Cloud.LoadBalancers.Pools.NewAndPoll(ctx, cloud.LoadBalancerPoolNewParams{
+            Name:           "http-pool",
+            LbAlgorithm:    "ROUND_ROBIN",
+            Protocol:       "HTTP",
+            ListenerID:     gcore.String(listener.ID),
+            LoadBalancerID: gcore.String(lb.ID),
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+
+        // Step 5. Add backend VMs as pool members
+        for _, ip := range []string{os.Getenv("VM1_IP"), os.Getenv("VM2_IP")} {
+            t, err := client.Cloud.LoadBalancers.Pools.Members.New(ctx, pool.ID, cloud.LoadBalancerPoolMemberNewParams{
+                Address:      ip,
+                ProtocolPort: 80,
+            })
+            if err != nil {
+                panic(err.Error())
+            }
+            if _, err = client.Cloud.Tasks.Poll(ctx, t.Tasks[0]); err != nil {
+                panic(err.Error())
+            }
+        }
+        fmt.Printf("Traffic on %s:80 is now distributed across both VMs\n", lb.VipAddress)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List load balancer flavors
+
+<p>A [flavor](/api-reference/cloud/load-balancers/list-load-balancer-flavors) determines the vCPU count, RAM, and maximum network throughput of the load balancer instance. Flavor availability is region-specific — run this call to see what's available in the target region.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    flavors = client.cloud.load_balancers.flavors.list()
+    for f in flavors.results:
+        print(f.flavor_name, f.vcpus, "vCPU /", f.ram // 1024, "GB")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{})
+    if err != nil {
+        panic(err.Error())
+    }
+    for _, f := range flavors.Results {
+        fmt.Printf("%s: %d vCPU / %d MB RAM\n", f.FlavorName, f.Vcpus, f.Ram)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/lbflavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 4,
+      "results": [
+        {"flavor_id": "fca2fc7c-...", "flavor_name": "lb1-1-2", "vcpus": 1, "ram": 2048},
+        {"flavor_id": "b5e956d8-...", "flavor_name": "lb1-2-4", "vcpus": 2, "ram": 4096},
+        {"flavor_id": "...",          "flavor_name": "lb1-4-8", "vcpus": 4, "ram": 8192},
+        {"flavor_id": "...",          "flavor_name": "lb1-8-16","vcpus": 8, "ram": 16384}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>The `flavor_name` value (`lb1-1-2`) is used in the next step. The `flavor_id` UUID is not accepted by the create endpoint.</p>
+
+```bash
+export LB_FLAVOR="lb1-1-2"
+```
+
+### Step 2. Create the load balancer
+
+<p>Creating the load balancer without specifying a network assigns a public VIP automatically. Provisioning takes about 1 minute.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name for the load balancer. |
+| `flavor` | Yes | The `flavor_name` string from step 1, not the `flavor_id` UUID. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    lb = client.cloud.load_balancers.create_and_poll(
+        name="my-lb",
+        flavor=os.environ["LB_FLAVOR"],
+        polling_timeout_seconds=300,
+    )
+    print(f"LB ID: {lb.id}  VIP: {lb.vip_address}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    lb, err := client.Cloud.LoadBalancers.NewAndPoll(ctx, cloud.LoadBalancerNewParams{
+        Name:   "my-lb",
+        Flavor:    gcore.String(os.Getenv("LB_FLAVOR")),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("LB ID: %s  VIP: %s\n", lb.ID, lb.VipAddress)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-lb", "flavor": "'"$LB_FLAVOR"'"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d4a4b10e-..."]}
+    ```
+
+    <p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Then retrieve the VIP address:</p>
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    ```json
+    {
+      "id": "f0782954-...",
+      "provisioning_status": "ACTIVE",
+      "operating_status": "ONLINE",
+      "vip_address": "85.234.84.36"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Save the load balancer ID and VIP for later steps:</p>
+
+```bash
+export LB_ID="{LB_ID}"
+export LB_VIP="{LB_VIP_ADDRESS}"
+```
+
+### Step 3. Create a listener
+
+<p>A [listener](/api-reference/cloud/load-balancers/create-load-balancer-listener) watches for incoming connections on a specific protocol and port, then forwards them to a pool.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | The LB ID from step 2. |
+| `protocol` | Yes | `HTTP`, `TCP`, `UDP`, or `TERMINATED_HTTPS`. |
+| `protocol_port` | Yes | Port to listen on (1–65535). |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    listener = client.cloud.load_balancers.listeners.create_and_poll(
+        load_balancer_id=lb.id,
+        name="http-listener",
+        protocol="HTTP",
+        protocol_port=80,
+    )
+    print(f"Listener ID: {listener.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
+        LoadBalancerID: lb.ID,
+        Name:           "http-listener",
+        Protocol:       "HTTP",
+        ProtocolPort:   80,
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Listener ID: %s\n", listener.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "http-listener",
+        "load_balancer_id": "'"$LB_ID"'",
+        "protocol": "HTTP",
+        "protocol_port": 80
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["f1e2d3c4-..."]}
+    ```
+
+    Poll until `FINISHED`, then save the listener ID from `created_resources.listeners[0]`.
+  </Tab>
+</Tabs>
+
+```bash
+export LISTENER_ID="{LISTENER_ID}"
+```
+
+### Step 4. Create a pool
+
+<p>A [pool](/api-reference/cloud/load-balancers/create-load-balancer-pool) groups the backend VMs and distributes requests across them according to the chosen algorithm.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `listener_id` | Yes | Attaches this pool to the listener from step 3. |
+| `load_balancer_id` | Yes | The LB ID from step 2. |
+| `lb_algorithm` | Yes | `ROUND_ROBIN`, `LEAST_CONNECTIONS`, or `SOURCE_IP`. |
+| `protocol` | Yes | Must match the listener protocol (`HTTP` in this example). |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    pool = client.cloud.load_balancers.pools.create_and_poll(
+        name="http-pool",
+        lb_algorithm="ROUND_ROBIN",
+        protocol="HTTP",
+        listener_id=listener.id,
+        load_balancer_id=lb.id,
+    )
+    print(f"Pool ID: {pool.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    pool, err := client.Cloud.LoadBalancers.Pools.NewAndPoll(ctx, cloud.LoadBalancerPoolNewParams{
+        Name:           "http-pool",
+        LbAlgorithm:    "ROUND_ROBIN",
+        Protocol:       "HTTP",
+        ListenerID:     gcore.String(listener.ID),
+        LoadBalancerID: gcore.String(lb.ID),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Pool ID: %s\n", pool.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "http-pool",
+        "lb_algorithm": "ROUND_ROBIN",
+        "protocol": "HTTP",
+        "listener_id": "'"$LISTENER_ID"'",
+        "load_balancer_id": "'"$LB_ID"'"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["a2b3c4d5-..."]}
+    ```
+
+    Poll until `FINISHED`, then save the pool ID from `created_resources.lbpools[0]`.
+  </Tab>
+</Tabs>
+
+```bash
+export POOL_ID="{POOL_ID}"
+```
+
+### Step 5. Add backend VMs as pool members
+
+<p>Each [pool member](/api-reference/cloud/load-balancers/create-load-balancer-pool-member) is a VM identified by its IP address and the port where the application listens. Repeat this call for each VM.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `address` | Yes | The IP address of the backend VM. |
+| `protocol_port` | Yes | The port the application is listening on inside the VM. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    for ip in [os.environ["VM1_IP"], os.environ["VM2_IP"]]:
+        t = client.cloud.load_balancers.pools.members.create(
+            pool_id=pool.id,
+            address=ip,
+            protocol_port=80,
+        )
+        client.cloud.tasks.poll(t.tasks[0], polling_interval_seconds=5, polling_timeout_seconds=120)
+        print(f"Added {ip} to pool")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    for _, ip := range []string{os.Getenv("VM1_IP"), os.Getenv("VM2_IP")} {
+        t, err := client.Cloud.LoadBalancers.Pools.Members.New(ctx, pool.ID, cloud.LoadBalancerPoolMemberNewParams{
+            Address:      ip,
+            ProtocolPort: 80,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        if _, err = client.Cloud.Tasks.Poll(ctx, t.Tasks[0]); err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Added %s to pool\n", ip)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Add VM1 (repeat for VM2 with its IP)
+    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POOL_ID/member" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"address": "'"$VM1_IP"'", "protocol_port": 80}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["c3d4e5f6-..."]}
+    ```
+
+    Poll until `FINISHED`, then repeat for VM2.
+  </Tab>
+</Tabs>
+
+<p>Members show `operating_status: NO_MONITOR` when no health monitor is configured — this is expected. The load balancer still distributes traffic. To enable automatic member removal when a backend becomes unhealthy, add a [health monitor](/api-reference/cloud/load-balancers/create-load-balancer-pool-health-monitor) to the pool.</p>
+
+### Step 6. Verify the load balancer
+
+<p>After adding both members, confirm the load balancer is active and traffic is flowing. The [load balancers](/api-reference/cloud/load-balancers) endpoint also supports updating listeners, resizing the flavor, enabling logging, and configuring DDoS protection.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    fetched = client.cloud.load_balancers.get(load_balancer_id=lb.id)
+    print(f"Status: {fetched.provisioning_status} / {fetched.operating_status}")
+    print(f"VIP: {fetched.vip_address}")
+    print(f"Listeners: {len(fetched.listeners)}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    fetched, err := client.Cloud.LoadBalancers.Get(ctx, lb.ID, cloud.LoadBalancerGetParams{})
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Status: %s / %s\n", fetched.ProvisioningStatus, fetched.OperatingStatus)
+    fmt.Printf("VIP: %s  Listeners: %d\n", fetched.VipAddress, len(fetched.Listeners))
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "f0782954-...",
+      "provisioning_status": "ACTIVE",
+      "operating_status": "ONLINE",
+      "vip_address": "85.234.84.36",
+      "listeners": [{"id": "d2ac5700-..."}]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Incoming HTTP traffic on port 80 is now distributed across both VMs using round-robin.</p>
+
+</Accordion>
+
+## Clean up
+
+<p>Deleting the load balancer removes the listener, pool, and members automatically. Delete the load balancer:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.load_balancers.delete_and_poll(
+        load_balancer_id=lb.id,
+        polling_timeout_seconds=300,
+    )
+    print("Load balancer deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    err = client.Cloud.LoadBalancers.DeleteAndPoll(ctx, lb.ID, cloud.LoadBalancerDeleteParams{})
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("Load balancer deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["e5f6g7h8-..."]}
+    ```
+
+    Poll until `FINISHED`.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Build a complete load balancer from scratch — from [`gcore_cloud_load_balancer`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_load_balancer) to listeners, pools, and backend members. The [Terraform provider](/developer-tools/terraform/overview) models each as a separate resource, provisioned in dependency order.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+
+## Quickstart
+
+<p>Deploys an HTTP load balancer with a round-robin pool and two backend members.</p>
+
+```hcl
+resource "gcore_cloud_load_balancer" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-lb"
+  flavor     = "lb1-1-2"
+}
+
+resource "gcore_cloud_load_balancer_listener" "http" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "http-listener"
+  protocol         = "HTTP"
+  protocol_port    = 80
+}
+
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  listener_id      = gcore_cloud_load_balancer_listener.http.id
+  name             = "backend-pool"
+  lb_algorithm     = "ROUND_ROBIN"
+  protocol         = "HTTP"
+
+  members = [
+    {
+      address       = "192.0.2.10"  # VM1's IP address
+      protocol_port = 80
+    },
+    {
+      address       = "192.0.2.11"  # VM2's IP address
+      protocol_port = 80
+    }
+  ]
+}
+
+output "vip_address" {
+  value = gcore_cloud_load_balancer.example.vip_address
+}
+```
+
+<p>Run `terraform init && terraform apply`. Load balancer creation takes approximately one minute.</p>
+
+## Step-by-step
+
+<p>Each resource is covered independently below with its key attributes and options.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create the load balancer
+
+<p>The `gcore_cloud_load_balancer` resource provisions the balancer and its virtual IP (VIP).</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name of the load balancer. |
+| `flavor` | No | Compute flavor. Omit to use the region default. |
+| `vip_network_id` | No | Network ID for the VIP. Omit for a public VIP. |
+| `vip_subnet_id` | No | Subnet ID for the VIP within the selected network. |
+| `vip_ip_family` | No | IP version when auto-selecting a subnet. Values: `ipv4` (default), `ipv6`, `dual`. |
+| `preferred_connectivity` | No | How backends connect to the VIP. Values: `L2` (better performance), `L3` (fewer IPs used). |
+
+<p>Available flavors and their vCPU/RAM configurations:</p>
+
+| Flavor | vCPU | RAM | Max bandwidth |
+|--------|------|-----|---------------|
+| `lb1-1-2` | 1 | 2 GiB | 1.5 Gbps |
+| `lb1-2-4` | 2 | 4 GiB | 5 Gbps |
+| `lb1-4-8` | 4 | 8 GiB | 10 Gbps |
+| `lb1-8-16` | 8 | 16 GiB | 10 Gbps |
+
+<p>To attach a public floating IP to the load balancer's VIP:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-lb"
+  flavor     = "lb1-1-2"
+
+  floating_ip = {
+    source = "new"  # use "existing" and set existing_floating_id to reuse one
+  }
+}
+```
+
+### Step 2. Create a listener
+
+<p>A listener defines the protocol and port on which the load balancer accepts traffic. One load balancer supports multiple listeners.</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | ID of the parent load balancer. |
+| `name` | Yes | Display name of the listener. |
+| `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
+| `protocol_port` | Yes | Port number the listener binds to. |
+| `secret_id` | Required for `TERMINATED_HTTPS` | ID of the default TLS certificate from Secrets Manager. Used as fallback when no SNI match is found. |
+| `sni_secret_id` | No | List of additional certificate IDs for SNI-based domain matching. |
+
+<p>For `TERMINATED_HTTPS`, set `secret_id` to the ID of the default TLS certificate. Add `sni_secret_id` to serve different certificates for different domains — the default certificate from `secret_id` is used when no SNI match is found:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_listener" "https" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "https-listener"
+  protocol         = "TERMINATED_HTTPS"
+  protocol_port    = 443
+  secret_id        = var.tls_secret_id    # ID of a gcore_cloud_secret resource
+  # sni_secret_id = [var.sni_cert_id]     # optional: additional certs for multi-domain
+}
+```
+
+<p>For an HTTP listener, omit `secret_id` and `sni_secret_id`:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_listener" "http" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  name             = "http-listener"
+  protocol         = "HTTP"
+  protocol_port    = 80
+}
+```
+
+### Step 3. Create a pool with backend members
+
+<p>A pool groups backend VMs and defines how traffic is distributed among them. Members are declared inline using the `members` attribute.</p>
+
+| Attribute | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | ID of the parent load balancer. |
+| `listener_id` | No | ID of the listener to attach the pool to. |
+| `name` | Yes | Display name of the pool. |
+| `lb_algorithm` | Yes | Distribution algorithm. Values: `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. |
+| `protocol` | Yes | Backend protocol. Must match the listener protocol (use `HTTP` for both `HTTP` and `TERMINATED_HTTPS` listeners). |
+
+<p>Each entry in the `members` list supports the following fields:</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `address` | Yes | IP address of the backend VM. |
+| `protocol_port` | Yes | Port the application listens on inside the VM. |
+| `weight` | No | Relative weight for traffic distribution. Range: 1–256, default 1. |
+| `backup` | No | Set to `true` to mark as a backup member. Traffic goes to backup members only when all primary members are unreachable. |
+
+<p>Example pool with weighted members:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = gcore_cloud_load_balancer.example.id
+  listener_id      = gcore_cloud_load_balancer_listener.http.id
+  name             = "backend-pool"
+  lb_algorithm     = "ROUND_ROBIN"
+  protocol         = "HTTP"
+
+  members = [
+    {
+      address       = "192.0.2.10"
+      protocol_port = 80
+      weight        = 3
+    },
+    {
+      address       = "192.0.2.11"
+      protocol_port = 80
+      weight        = 1
+    }
+  ]
+}
+```
+
+### Step 4. (Optional) Add a health monitor
+
+<p>A health monitor probes each pool member on a schedule and removes unreachable members from rotation automatically. Define it inline in the pool resource using the `healthmonitor` attribute.</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `type` | Yes | Probe protocol. Values: `HTTP`, `HTTPS`, `TCP`, `PING`, `UDP-CONNECT`, `TLS-HELLO`. |
+| `delay` | Yes | Seconds between probes. |
+| `timeout` | Yes | Seconds to wait for a probe response. Must be less than `delay`. |
+| `max_retries` | Yes | Consecutive successes before marking a member `ONLINE`. |
+| `url_path` | No | HTTP path to probe. Default is `/`. Only for `HTTP` and `HTTPS` types. |
+| `expected_codes` | No | Expected HTTP response codes, e.g. `200` or `200,204`. Default is `200`. |
+
+<p>Example pool block with a health monitor:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_pool" "backend" {
+  # ... other attributes ...
+
+  healthmonitor = {
+    type        = "HTTP"
+    delay       = 10
+    timeout     = 5
+    max_retries = 3
+    url_path    = "/health"
+  }
+}
+```
+
+</Accordion>
+
+## Import
+
+<p>To bring existing load balancer resources under Terraform management, run each import command separately:</p>
+
+```bash
+terraform import gcore_cloud_load_balancer.example PROJECT_ID:REGION_ID:LB_ID
+terraform import gcore_cloud_load_balancer_listener.http PROJECT_ID:REGION_ID:LISTENER_ID
+terraform import gcore_cloud_load_balancer_pool.backend PROJECT_ID:REGION_ID:POOL_ID
+```
+
+<p>Find the IDs in the Customer Portal under **Networking** → **Load Balancers**, or retrieve them with the REST API.</p>
+
+## Clean up
+
+<p>Terraform removes the pool, listener, and load balancer in the correct dependency order.</p>
+
+```bash
+terraform destroy
+```
+
+  </MethodSection>
+</MethodSwitch>

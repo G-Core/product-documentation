@@ -1,138 +1,168 @@
 ---
 title: Get a Let's Encrypt certificate with Certbot
 sidebarTitle: Certbot
-ai-navigation: Configure Let's Encrypt certificate issuance with Certbot plugin using Gcore Managed DNS API credentials and DNS-01 challenge via TXT record automation on domains with Gcore nameservers ns1.gcorelabs.net and ns2.gcdn.services.
+ai-navigation: Configure Let's Encrypt certificate issuance for domains using Gcore Managed DNS with the Certbot DNS plugin via DNS-01 challenge and API token credentials.
 ---
 
-## What is the Certbot plugin?
+The `certbot-dns-gcore` plugin automates Let's Encrypt certificate issuance and renewal using the Gcore DNS API. To confirm domain ownership, it uses a [DNS-01&nbsp;challenge](https://letsencrypt.org/docs/challenge-types): a TXT record with a specific value must be present under the domain name. The plugin creates and removes these TXT records automatically when obtaining, renewing, or revoking certificates.
 
-The Certbot plugin automates Let's Encrypt certificate issuance with Gcore DNS API.
-
-**How it works.** To issue a Let's Encrypt certificate for a domain, you need to confirm that you are its owner. You can do this in several ways (you can find more info in [Let's Encrypt documentation](https://letsencrypt.org/docs/challenge-types)). One of the most common ways is a DNS-01 challenge that asks you to prove that you control the DNS for your domain name by creating a specific value in a TXT record under that domain name. You can use the Certbot plugin to send a request to issue a certificate. It automatically creates TXT records and subsequently removes them for obtaining, renewing, or revoking certificates. You can get more information about this in the [Certbot documentation](https://eff-certbot.readthedocs.io/en/stable).
-
-To use the Certbot plugin, you'll need:
-
-  * A domain with Gcore name servers (_ns1.gcorelabs.net_ and _ns2.gcdn.services_) that the certificate is hosted on or delegated to
-  * A Gcore account
-
-
+<Note>
+The domain must be delegated to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`), and a Gcore account is required.
+</Note>
 
 ## Install the Certbot plugin
 
-Below, we provide the commands for Certbot plugin installation on Ubuntu 22.04. If you have a different OS, the commands you need may differ a little.
+<Info>
+All steps run in a terminal on the Linux server where Certbot will be installed. Connect to it via SSH before starting. The commands below apply to Ubuntu 22.04; other Linux distributions may require different package names.
+</Info>
 
-1\. Connect to your server via SSH.
-
-2\. Download and install the updates for outdated packages using the sudo command for package manager privileges. You need to upgrade to avoid errors when installing the plugin.
+<Steps>
+<Step title="Update package lists">
 
 ```sh
 sudo apt update
- ```
+```
 
-3\. Install the _pip3_ Python library if it's missing. It is required to install Certbot.
+</Step>
+
+<Step title="Install pip3 and the venv module">
 
 ```sh
-sudo apt install python3-pip
- ```
+sudo apt install python3-pip python3-venv
+```
 
-4\. Install the Certbot plugin using the command:
+</Step>
+
+<Step title="Create and activate a virtual environment">
+
+Ubuntu 22.04 and later restrict direct pip installations into the system Python. A virtual environment avoids this restriction:
+
+```sh
+python3 -m venv ~/certbot-venv
+source ~/certbot-venv/bin/activate
+```
+
+The shell prompt changes to show `(certbot-venv)` when the environment is active.
+
+</Step>
+
+<Step title="Install the Certbot plugin">
 
 ```sh
 pip install certbot-dns-gcore
- ```
+```
 
-If you see the output _Successfully installed …_, installation is complete.
+A successful installation ends with:
 
+```
+Successfully installed certbot certbot-dns-gcore ...
+```
 
-<Frame>![installation is complete](https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506251025.png)</Frame>
-
-
+</Step>
+</Steps>
 
 ## Create credentials for the Certbot plugin
 
-To use the Certbot plugin, you'll need Gcore DNS API credentials. Without them, the Certbot plugin won't be able to issue a certificate for your domain.
+The plugin authenticates with the Gcore DNS API using an [API&nbsp;token](/account-settings/api-tokens) to create and remove TXT records on behalf of the domain.
 
-You can use two types of credentials: a permanent API token or the e-mail address and password associated with your Gcore account. We recommend using the first one because it's the preferred option for integration via API. To receive the token, follow the "[How to create, use and delete permanent token](/account-settings/api-tokens)" guide.
-
-1\. Go to the _home/user_name_ directory:
+<Steps>
+<Step title="Navigate to the home directory">
 
 ```sh
 cd ~/
- ```
+```
 
-2\. Create the _gcore.ini_ file in the home directory. You can do this with _nano_ or any text editor. For example:
+</Step>
+
+<Step title="Create the credentials file">
+
+Create a file named `gcore.ini` in the home directory using any text editor:
 
 ```sh
 nano gcore.ini
- ```
+```
 
-3\. Add the credentials into _gcore.ini_ as follows:
+</Step>
 
-```sh
+<Step title="Add the API token to the file">
+
+```ini
 dns_gcore_apitoken = 0123456789abcdef...
- ```
+```
 
-where _0123456789abcdef..._ is your API token.
+Replace `0123456789abcdef...` with the actual API token value.
 
-4\. Restrict access to the _gcore.ini_ file to protect it from other users. To do this, use the following command:
+</Step>
+
+<Step title="Restrict file permissions">
 
 ```sh
 chmod 600 gcore.ini
- ```
+```
 
-You've now added credentials.
+</Step>
+</Steps>
 
-## Acquire a certificate via the Certbot plugin
+## Acquire a certificate
 
-1\. Run the following command to acquire the certificate:
+<Steps>
+<Step title="Run certbot to request the certificate">
 
 ```sh
 certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=30 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=.
- ```
+```
 
-where _*.example.com_ is the domain and its subdomains for which you want to issue a Let's Encrypt certificate. You also can specify _*.example.com_ to issue a wildcard certificate for all subdomains.
+The example uses `*.example.com` to request a wildcard certificate covering all subdomains. To secure a single domain, omit the wildcard prefix: `-d 'example.com'`.
 
-2\. The system will prompt you to enter your e-mail address for urgent renewal and security notifications. Specify your e-mail address. If you don't do this, you'll see the error _An e-mail address or --register-unsafely-without-email must be provided_.
+</Step>
 
-Then enter **Y** to agree to the terms. After that, certificate issuance will start.
+<Step title="Enter an email address and agree to the terms">
 
+Certbot prompts for an email address for renewal notifications and urgent security alerts:
 
-<Frame>![certificate issuance](https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506234257.png)</Frame>
+```
+Enter email address (used for urgent renewal and security notices)
+ (Enter 'c' to cancel): user@example.com
 
+Please read the Terms of Service at ...
+Do you agree? [Y]es/[N]o: Y
+```
 
+Enter a valid email address, then type `Y` to agree. Certificate issuance starts automatically.
 
-3\. If the certificate for your domain is issued, you will see the following notification:
+</Step>
 
+<Step title="Confirm the certificate was issued">
 
-<Frame>![notification](https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620491170833.png)</Frame>
+A successful issuance returns:
 
+```
+Congratulations! Your certificate and chain have been saved at:
+   /path/to/fullchain.pem
+Your key file has been saved at:
+   /path/to/privkey.pem
+```
 
-
-If you get the _Some challenges have failed_ error, try to increase the propagation time:
+If `Some challenges have failed` appears, increase the propagation wait time and retry:
 
 ```sh
-\--dns-gcore-propagation-seconds=80
- ```
+certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=80 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=.
+```
 
-where _80_ is a setting value.
+If the error persists, verify that the domain's nameservers point to `ns1.gcorelabs.net` and `ns2.gcdn.services`. Nameserver changes can take up to 24 hours to propagate globally.
 
-Repeat the command from step 1 with the new value for propagation:
-
-```sh
-certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=80 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=
- ```
-
-If that didn't work, make sure that the domain is delegated to Gcore name servers using _dig_ utility or via online services. If not, change name servers and wait 24 hours for the DNS to update. Then try to issue the certificate again.
+</Step>
+</Steps>
 
 ## Renew a certificate
 
-You need to renew the issued Let's Encrypt certificate every 90 days. It can be done in two ways:
+Let's Encrypt certificates expire after 90 days. There are two renewal options:
 
-  * Manually with a command that attempts to renew any previously issued certificates that expire within 30 days. The working directory and the rest of the parameters should be the same for issuing.
-
+- **Manual:** Run the following commands to renew any previously issued certificate expiring within 30 days:
 
 ```sh
+source ~/certbot-venv/bin/activate
 certbot renew
- ```
+```
 
-  * (recommended) Automatically with the _cron_ daemon that maintains automated renewal in the background. You can find the commands for this method in [Certbot documentation](https://eff-certbot.readthedocs.io/en/stable/using.html?highlight=cron).
+- **Automatic (recommended):** Schedule `certbot renew` as a [cron&nbsp;job](https://eff-certbot.readthedocs.io/en/stable/using.html?highlight=cron) for automatic background renewal.

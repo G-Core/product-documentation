@@ -1,202 +1,187 @@
 ---
-title: What Healthcheck are and how to configure them
+title: DNS Healthchecks
 sidebarTitle: Healthchecks
-ai-navigation: Configure DNS Healthchecks to monitor server availability and exclude non-responding IPs from DNS responses, supporting round-robin and Geobalancing load distribution across multiple servers.
+ai-navigation: Configure DNS Healthchecks to monitor server availability, exclude failing IPs from DNS responses, and set up backup records via the Gcore Customer Portal.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
 
-Healthchecks keep your site or application available for all users if one or more servers go down. This feature monitors the availability of your website or servers and excludes non-working IPs from DNS responses in case of issues. As a result, traffic is redirected from the problematic server to a working one, and your resource stays available for all users.
+Healthchecks keep a site or application available when one or more servers go down. This feature monitors server availability and excludes non-working IPs from DNS responses when issues occur. As a result, traffic is redirected from the problematic server to a working one, and the resource stays available for all users.
 
 
 <Accordion title="Example of how Healthchecks works">
-This feature is especially important for business areas where the loss of availability means the loss of customers. Imagine that you own an online store that works in Europe and the US. Your site is available on two servers: a European one and an American one. You use Geobalancing to route people from all over the world to the closest server so that the site loads faster. Customers from Paris, France, and Barcelona, Spain, are balanced to the European server, while users from Vancouver, Canada, and Chicago, US, are balanced to the American one.
+This feature is especially important for business areas where the loss of availability means the loss of customers. Consider an online store that serves Europe and the US. The site runs on two servers — a European one and an American one — with Geobalancing routing visitors to the closest server. Customers from Paris and Barcelona are balanced to the European server, while customers from Vancouver and Chicago are balanced to the American one.
 
 
-<Frame>![Healthchecks scheme: both servers work](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-1.png)</Frame>
-
-
-
-Imagine the European server crashes. Users who were being balanced to the European server get an error instead of your site. While the server is being fixed, customers go to a competitor's site to make purchases faster.
-
-
-<Frame>![Healthchecks scheme: one server is broken](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-2.png)</Frame>
+<Frame>![Healthchecks scheme: both servers work](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-1.png)</Frame>
 
 
 
-If you enable Healthchecks, the next time the European server crashes, Healthchecks will tell the DNS server not to add the unavailable European server IP in DNS responses. All requests from your customers will be directed to the American server, so your web application will still be working. Customers will be able to make purchases without even noticing that anything happened.
+If the European server crashes, visitors balanced to it receive an error instead of the site. While the server is being fixed, customers visit a competitor's site instead.
 
 
-<Frame>![Healthchecks scheme: redirecting requests to a working server](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-3.png)</Frame>
+<Frame>![Healthchecks scheme: one server is broken](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-2.png)</Frame>
 
 
 
-When your European server recovers, Healthchecks will detect that and return its IP in the DNS responses for users in Europe.
+With Healthchecks enabled, the next time the European server crashes, Healthchecks tells the DNS server not to include the unavailable IP in responses. All requests are directed to the American server, so the web application stays available — customers can continue making purchases without noticing the outage.
+
+
+<Frame>![Healthchecks scheme: redirecting requests to a working server](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-3.png)</Frame>
+
+
+
+When the European server recovers, Healthchecks detects that and restores its IP in DNS responses for users in Europe.
 </Accordion>
 
 
-## How do healthchecks work?
+## Healthchecks mechanism
 
-This section includes a basic and advanced explanation of how the Healthchecks feature works.
+Healthchecks operate in a continuous poll-detect-respond cycle. The brief overview below covers the essentials; the step-by-step breakdown that follows explains each stage in detail.
 
 **Basic explanation:**
 
-Healthchecks send regular requests to configured addresses to determine whether they are available. If a server doesn't respond, DNS Healthchecks tells DNS servers to exclude its IP from DNS responses. When the server recovers, DNS Healthchecks sends DNS the command to return its IP to DNS responses.
-
-By default, DNS Healthchecks uses round-robin load balancing to distribute users' requests across available web servers. However, you can enable Geobalancing during configuration.
+DNS Healthchecks sends regular requests to each configured record to determine whether the server is reachable. A record is excluded from DNS responses when its server stops responding, and restored when it comes back online. By default, round-robin balancing distributes requests across available servers; Geobalancing can also be enabled.
 
 **Detailed explanation:**
 
-1\. DNS Healthchecks sends requests to servers to check their availability. You configure request settings (protocol, frequency, and others) in the Gcore Customer Portal after the feature is enabled.
+<Steps>
+  <Step title="Healthchecks send requests to servers">
+  DNS Healthchecks sends requests to servers to check their availability. Configure request settings — protocol, frequency, and others — in the Gcore Customer Portal after the feature is enabled.
 
-For example, you can set the configuration for Healthchecks requests as follows:
+  The following is an example configuration:
 
   * Protocol: ICMP
-  * Frequency: 1 minute 
+  * Frequency: 1 minute
   * Timeout: 10 seconds
 
+  With this configuration, DNS Healthchecks sends requests to web servers via ICMP every 60 seconds.
+  </Step>
+  <Step title="Healthchecks classify servers">
+  Requests are sent from all Gcore DNS server locations. If web servers respond within the set timeout (e.g., 10 seconds) in 85% of locations, the feature marks them as available. If a web server fails to respond within the timeout in 20% of locations, the feature marks it as unavailable. The gap between these thresholds is intentional — a server must fall below 20% to be marked unavailable, and must recover above 85% to be marked available again, preventing flapping when availability is borderline.
+  </Step>
+  <Step title="Unavailable records are excluded from DNS responses">
+  If a web server is unavailable, Healthchecks marks the corresponding record as unavailable, and the DNS server excludes it from responses.
 
+  <Info>
+  If all Healthchecks fail, their A records will be included in the DNS response, while still adhering to other filters like _geo county_ or _first_n_.
+  </Info>
+  </Step>
+  <Step title="Traffic is redirected to available servers">
+  The DNS server removes the A record of the unavailable server from its responses. Any requests intended for the unavailable server are redirected to other available servers.
 
-DNS Healthchecks will send requests to web servers via ICMP protocol every 60 seconds.
+  The load balancing mechanism decides which server responds. By default, DNS Healthchecks use round-robin, but a custom mechanism can be configured. [Dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the available load balancing options.
+  </Step>
+  <Step title="Recovered servers are restored to DNS responses">
+  Healthchecks keep sending requests to web servers. When the web server becomes available and responds, the feature sends the appropriate update to the DNS server, and the web server goes back online for end-users.
+  </Step>
+</Steps>
 
-2\. Requests are sent from all Gcore DNS server locations. If your web servers send responses to Healthchecks within the set timeout (e.g., 10 seconds) in 85% of locations, the feature will mark them as available. If a web server doesn't send a response to Healthchecks within the set timeout in 20% of locations, the feature will mark them as unavailable.
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-4.png)</Frame>
 
-3\. If a web server is unavailable, Healthchecks will mark the corresponding record as unavailable, and the DNS server will exclude it from responses.
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-5.png)</Frame>
 
-<Info>
-**Info**
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-6.png)</Frame>
 
-If all Healthchecks fail, their A records will be included in the DNS response, while still adhering to other filters like _geo county_ or _first_n_.
-</Info>
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-7.png)</Frame>
 
-4\. The DNS server removes the A record of the unavailable server from its responses. Any requests intended for the unavailable server are redirected to other available servers.
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-8.png)</Frame>
 
-The load balancing mechanism decides which server will respond to requests originally meant for the unavailable server. By default, DNS Healthchecks use round-robin, but you can configure your own mechanism, such as geobalancing. You can find the configuration for this mechanism in the article [Dynamic response](/dns/dns-records/configure-weight-balancing-and-geobalancing).
-
-5\. Healthchecks keep sending requests to web servers. When the web server becomes available and responds, the feature will send the appropriate update to the DNS server. After that, the web server goes back online for end-users.
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-4.png)</Frame>
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-5.png)</Frame>
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-6.png)</Frame>
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-7.png)</Frame>
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-8.png)</Frame>
-
-<Frame>![Health Checks scheme](https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-9.png)</Frame>
+<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-9.png)</Frame>
 
 
 
 ## Configure healthchecks
 
-1\. Navigate to the [DNS](https://portal.gcore.com/dns/zones) section in the Gcore Customer Portal.
+<Steps>
+  <Step title="Open the DNS section">
+  In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS**.
+  </Step>
+  <Step title="Open the DNS zone">
+  Click the domain name of the DNS zone where Healthchecks will be configured.
 
-2\. Click the domain name of the DNS zone where you intend to set up Healthchecks. 
+  <Frame>![Open a DNS zone](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-08.png)</Frame>
+  </Step>
+  <Step title="Confirm advanced interface mode is enabled">
+  In non-advanced mode, the Healthchecks feature isn't available.
 
-<Frame>![Open a DNS zone](https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png)</Frame>
+  <Caution>
+  A Healthcheck picker can be applied only to records of the **A**, **AAAA**, or **CNAME** type.
+  </Caution>
+  </Step>
+  <Step title="Open the record for editing">
+  Click the three-dot icon and click **Edit record** in the row of the A, AAAA, or CNAME record.
 
-A new page will open.
+  <Frame>![Open a Records list/Edit record set page](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-10.png)</Frame>
 
-3\. Ensure that the advanced interface mode is enabled. In non-advanced mode, the Healthchecks feature isn't available.
+  The "Records list/Edit record set" page will open. Perform the remaining steps there.
 
-<Caution> 
-**Caution**
+  <Frame>![Select a Healthchecks picker](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-20.png)</Frame>
+  </Step>
+  <Step title="Enable Dynamic response">
+  </Step>
+  <Step title="Add a Healthcheck picker">
+  </Step>
+  <Step title="Open picker settings">
+  Click the edit icon when the picker is added to the left column.
 
-A Healthcheck picker can be applied only to records of the **A**, **AAAA**, or **CNAME** type.
-</Caution>
+  A pop-up will open. The settings differ depending on the protocol: TCP/UDP, ICMP, or HTTP. Select the relevant tab below to complete configuration.
 
-4\. Click three-dot icon and click **Edit record** in the row of the A, AAAA, or CNAME record. 
+  <Tabs>
+    <Tab title="TCP/UDP">
+      <Frame>![Configure a Healthchecks picker: TCP or UDP](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-30.png)</Frame>
 
+      1. Under "Protocol", select **TCP** or **UDP**.
+      2. In the "Port" field, specify the connection port (e.g., 80 or 443).
+      3. In the "Check Frequency" field, select the interval of checks from the list.
+      4. In the "Timeout" field, set the time within which the web servers should give the response before being considered down.
+      5. (Optional) In the "Command" field, enter the text that will be sent to the host as plain text, for instance: `GET / HTTP/1.1\n\n`.
+      6. (Optional) In the "Expected content regexp" field, enter a regular expression that matches the response body or leave it blank.
+      7. Click **Save**.
+    </Tab>
+    <Tab title="ICMP">
+      <Frame>![Configure a Healthchecks picker: ICMP](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-40.png)</Frame>
 
-<Frame>![Open a Records list/Edit record set page](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-10.png)</Frame>
+      1. Under "Protocol", select **ICMP**.
+      2. In the "Check Frequency" field, select the interval of checks from the list.
+      3. In the "Timeout" field, set the time within which the web servers should give the response before being considered down.
+      4. Click **Save**.
+    </Tab>
+    <Tab title="HTTP">
+      <Frame>![Configure a Healthchecks picker: HTTP](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-50.png)</Frame>
 
-The "Records list/Edit record set" page will open. Perform the remaining steps there.
+      1. In the "Protocol" block, select **HTTP**.
+      2. In the "Port" field, specify the connection port (e.g., 80 or 443).
+      3. In the "Check Frequency" field, select the interval of checks from the list.
+      4. In the "Timeout" field, set the time within which the web servers should give the response before being considered down.
+      5. (Optional) In the "Host" field, specify a value of the Host header to be passed during the HTTP request.
+      6. In the **Request URL** field, enter the URL that will be requested for checks.
+      7. In the **Request Method** block, select the method for checking requests; e.g., GET.
+      8. In the "Use TLS" block, select whether TLS should be used.
+      9. In the "HTTP status code" field, put the expected HTTP response code or leave it blank if any response is acceptable.
+      10. (Optional) In the "Expected content regexp" field, enter a regular expression that matches the response body or leave it blank.
+      11. Click **Save**.
+    </Tab>
+  </Tabs>
+  </Step>
+</Steps>
 
-<Frame>![Select a Healthchecks picker](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-20.png)</Frame>
-
-
-5\. Enable the **Dynamic response** toggle.
-
-6\. Click a Healthcheck picker in the right list. 
-
-7\. Click the edit icon when the picker is added to the left column.
-
-A pop-up will open. Complete the remaining the steps there. The settings will differ depending on the protocol: TCP/UDP, ICMP, or HTTP. Choose the relevant section below to complete configuration.
-
-<Tabs>
-  <Tab title="TCP/UDP">
-    <Frame>![Configure a Healthchecks picker: TCP or UDP](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-30.png)</Frame>
-
-    8\. Under "Protocol", select **TCP** or **UDP**.
-
-    9\. In the "Port" field, specify the connection port (e.g., 80 or 443).
-
-    10\. In the "Check Frequency" field, select the interval of checks from the list.
-
-    11\. In the "Timeout" field, set the time within which your web servers should give the response before being considered down.
-
-    12\. (Optional) In the "Command" field, enter the text that will be sent to the host of the site as plain text, e.g., `GET / HTTP/1.1\n\n`.
-
-    13\. (Optional) In the "Expected content regexp" field, enter a regular expression that matches the response body or leave it blank.
-
-    14\. Click **Save**.
-  </Tab>
-  <Tab title="ICMP">
-    <Frame>![Configure a Healthchecks picker: ICMP](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-40.png)</Frame>
-
-    8\. Under "Protocol", select **ICMP**.
-
-    9\. In the "Check Frequency" field, select the interval of checks from the list.
-
-    10\. In the "Timeout" field, set the time within which your web servers should give the response before being considered down.
-
-    11\. Click **Save**.
-  </Tab>
-  <Tab value="HTTP">
-    <Frame>![Configure a Healthchecks picker: HTTP](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-50.png)</Frame>
-
-    8\. In the "Protocol" block, select **HTTP**.
-
-    9\. In the "Port" field, specify the connection port (e.g., 80 or 443).
-
-    10\. In the "Check Frequency" field, select the interval of checks from the list.
-
-    11\. In the "Timeout" field, set the time within which your web servers should give the response before being considered down.
-
-    12\. (Optional) In the "Host" field, specify a value of the Host header to be passed during HTTP request.
-
-    13\. In the "Requested URL" field, enter the URL that will be requested for checks.
-
-    14\. In the "Requested Method" block, select the method for checking requests; e.g., GET.
-
-    15\. In the "Use TLS" block, choose whether TLS should be used.
-
-    16\. In the "HTTP status code" field, put the expected HTTP response code or leave it blank if any response is ok.
-
-    17\. (Optional) In the "Expected content regexp", enter a regular expression that matches the response body or leave it blank.
-
-    18\. Click **Save**.
-  </Tab>
-</Tabs>
-
-The configuration is complete!
+Healthchecks begin monitoring the configured address on the next check interval. If the server is unreachable, its record is excluded from DNS responses automatically and restored once it recovers. Recent monitoring events are available in the health check logs section below.
 
 ## Enable backup metadata
 
-You can enable backup metadata for Healthchecks. In this case, records marked as backups will not participate in the response if at least one "healthy," valid record exists. If all records not marked as backup are non-functional, the "healthy" backup records will appear in the response. 
+Backup metadata keeps designated records out of DNS responses as long as at least one non-backup record is healthy. When all primary records fail, backup records take over automatically.
 
-To configure backup metadata, select which record will be used as a backup (Record 1 in the example,) choose "backup" from the dropdown list, and enable the toggle.
+To configure backup metadata, select which record will be used as a backup (Record one in the example), select "backup" from the dropdown list, and enable the toggle.
 
-<Frame>![Configure backup metadata](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-60.png)</Frame>
+<Frame>![Configure backup metadata](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-60.png)</Frame>
 
-By default, DNS Healthchecks use round-robin balancing. You can configure the logic that will be used to distribute requests among available servers when some of them are unavailable. Refer to [our detailed guide](/dns/dns-records/configure-weight-balancing-and-geobalancing) for more information.
+By default, DNS Healthchecks use round-robin balancing. [Dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the options for configuring how requests are distributed among available servers.
 
 ## Check healthchecks logs
 
-Refresh your DNS cache renewal and Healthchecks will start to monitor your site's availability.
+After a DNS cache renewal, Healthchecks will start monitoring availability.
 
-You can also check for recent monitoring events in Healthchecks logs. Go to the page of the DNS zone for which you configured Healthchecks. Select the relevant record, click the three-dot icon on the right, and click **Healthchecks logs**.
+To check for recent monitoring events, open the DNS zone page where Healthchecks is configured. Select the relevant record, click the three-dot icon on the right, and click **Health check logs**.
 
-<Frame>![Check monitoring logs](https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-70.png)</Frame>
+<Frame>![Check monitoring logs](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-70.png)</Frame>

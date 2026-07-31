@@ -1,262 +1,216 @@
 ---
-title: Use GCore managed DNS as a secondary DNS with OctoDNS
+title: Configure OctoDNS with Gcore Managed DNS
 sidebarTitle: OctoDNS
-ai-navigation: Configure Gcore Managed DNS as secondary DNS using OctoDNS to synchronize DNS zones and records from primary DNS providers via Python virtual environment, pip package installation, and YAML configuration file with provider credentials.
+ai-navigation: Use OctoDNS to synchronize DNS records from a primary provider to Gcore Managed DNS - install packages, create a YAML configuration, and run sync commands.
 ---
 
-## What is a secondary DNS?
+OctoDNS is an open-source tool that manages DNS zones across multiple providers — use it to synchronize records from a primary DNS provider to Gcore Managed DNS, keeping Gcore as a secondary DNS with an up-to-date copy of zone data.
 
-A secondary DNS is a backup DNS that stores a copy of information about your zones and records. It receives data from the primary server. To use our DNS as a secondary one, send the information about all DNS records right from the databases of your provider using this instruction. 
+Before starting, verify that the primary DNS provider is supported by checking the [providers&nbsp;table](https://github.com/octodns/octodns#providers). If the provider is not listed, automatic record transfer is not supported.
 
-Before you start, check your provider against [the table of providers who support OctoDNS](https://github.com/octodns/octodns#providers). If not, unfortunately, it is not possible to transfer the records automatically.
+## Install OctoDNS
 
-Synchronize records of Gcore DNS with your DNS
+<Info>
+Steps 2–11 run in a terminal on the machine where OctoDNS will be installed — a local laptop or any Linux server works. The commands below are for Debian/Ubuntu; for other operating systems, install Python 3 and create a virtual environment using the method appropriate for that system.
+</Info>
 
-## Synchronize records of GCore managed DNS with your DNS
+<Steps>
+<Step title="Create a DNS zone for the domain to synchronize">
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** and create a [DNS&nbsp;zone](/dns/manage-a-dns-zone) for the domain to synchronize. If the zone already exists, skip this step.
 
-This guide will help you to install OctoDNS — a tool for managing DNS zones of different providers. Using it, you will make records on our DNS server identical to records on yours. That's how it works:
+<Frame>![All zones page in the Gcore Customer Portal](/images/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/dns-zones-list.png)</Frame>
+</Step>
 
-
-<Frame>![Synchronize records of Gcore DNS with your DNS](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip3.png)</Frame>
-
-
-
-1\. In your account, create a necessary DNS zone manually. If the zone has been already created, skip this step. 
-
-
-<Frame>![create a necessary DNS zone manually](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip0.png)</Frame>
-
-
-
-2\. On your PC, update a local package index to download all new versions.
-
+<Step title="Update the local package index">
 ```sh
 sudo apt update
 ```
+</Step>
 
-Perform all next steps of this tutorial on your PC.
-
-3\. Install python and virtualenv packages.
-
+<Step title="Install Python 3 and the venv module">
 ```sh
-sudo apt install python virtualenv
+sudo apt install python3 python3-venv
 ```
+</Step>
 
-4\. Create necessary directories for OctoDNS — a tool for managing DNS zones.
-
+<Step title="Create a working directory for OctoDNS">
 ```sh
 mkdir ~/octodns ~/octodns/config
 ```
+</Step>
 
-5\. Go to "octodns".
-
+<Step title="Navigate to the working directory">
 ```sh
 cd ~/octodns
 ```
+</Step>
 
-6\. Create a [python virtual environment](https://python.org/dev/peps/pep-0405), activate it and stay in it while you work with this tutorial.
+<Step title="Create and activate a Python virtual environment">
+```sh
+python3 -m venv venv
+source venv/bin/activate
+```
 
-7\. (Optional) if you don't have Git, install it via the following command:
+Keep the virtual environment active for all remaining steps.
+</Step>
 
+<Step title="(Optional) Install Git">
 ```sh
 sudo apt-get install git-all
 ```
+</Step>
 
-8\. In virtualenv, install OctoDNS pip packages for two providers: Gcore and yours. To do this, use the command below (replace "octodns_yourprovider" to "module" of your provider from [the table of providers](https://github.com/octodns/octodns#providers)).
+<Step title="Install OctoDNS and the provider packages">
+Replace `octodns_yourprovider` with the module name for the primary DNS provider found in the providers table:
 
 ```sh
-pip install --user octodns octodns_gcore octodns_yourprovider
+pip install octodns octodns_gcore octodns_yourprovider
 ```
 
-After installation, request OctoDNS version to make sure everything works.
+Verify the installation:
 
 ```sh
 octodns-sync --version
 ```
 
-You will receive a response with your OctoDNS version, for example:
+Expected output (version number varies):
 
-```sh
-octoDNS 0.9.17
+```
+octoDNS x.x.x
 ```
 
-If you see the error:
+If the command is not found, the virtual environment is not active. Run `source venv/bin/activate` from the `~/octodns` directory and retry.
+</Step>
 
-```sh
-octodns-sync: command not found
-```
-
-Most likely you are not in virtualenv. Do steps no. 4-6 again.
-
-9\. Go to the "config" directory you have already created.
-
+<Step title="Navigate to the config directory">
 ```sh
 cd ~/octodns/config
 ```
+</Step>
 
-10\. Create a configuration file inside.
-
-```sh
-nano config.yaml
-```
-
-In this configuration file, you need to specify providers and zones that OctoDNS will manage as well as the dependencies between them. The final file will look like this:
-
-
-<Frame>![configuration file](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip1.png)</Frame>
-
-
-
-We will tell you how to fill in each data section. First, copy the template below and paste it into the configuration file (for the .yaml format, indentations are very important — our template will help you to enter the data exactly so that the program can read it):
+<Step title="Create config.yaml">
+This file specifies the providers and DNS zones for OctoDNS to manage. YAML indentation is required — use the template below as a starting point:
 
 ```yaml
-providers:  
-    [your provider name]:  
-        [your provider class]  
-        [authentication data, line no. 1]  
-        [authentication data, line no. 2] 
-        [authentication data, line no. ...] 
-    gcore:  
-        class: octodns_gcore.GCoreProvider  
-        [authentication data, line no. 1]  
-        [authentication data, line no. ]  
-        [authentication data, line no. ...]  
-zones:  
-  [your DNS zone no. 1].:  
-    sources:  
-      - [your provider name]  
-    targets:  
-      - gcore  
-  [your DNS zone no. 2].:  
-    sources:  
-      - [your provider name]  
-    targets:  
+providers:
+  [your provider name]:
+    [your provider class]
+    [authentication data]
+  gcore:
+    class: octodns_gcore.GCoreProvider
+    [authentication data]
+zones:
+  [your DNS zone].:
+    sources:
+      - [your provider name]
+    targets:
       - gcore
 ```
 
-Secondly, you have to fill in providers sections. Templates for them are located in OctoDNS repositories of providers. Let's start filling in the form of the Gcore DNS provider. To open its repository, open the [the table of providers](https://github.com/octodns/octodns#providers) and click module name "octodns_gcore".
+**Gcore DNS provider configuration**
 
-
-<Frame>![providers ](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip3.png)</Frame>
-
-
-
-Find the "Configuration" section. Three things are described there: provider name, provider class name and authentification data. 
-
-
-<Frame>![Configuration](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip0.png)</Frame>
-
-
-
-Provider name (gcore) and class name (class: octodns_gcore.GCoreProvider) are already in our configuration file template, you don't need to copy-paste them. Now you have to fill in authentification data according to what is writtten in the "Conguration" section. You can choose what authentication data to use: an API key or a login-password pair. We recommend using an API key.
-
-Example of configuration with an API key:
+The Gcore DNS provider requires authentication. An [API&nbsp;token](/account-settings/api-tokens) is recommended:
 
 ```yaml
-gcore:  
-    class: octodns_gcore.GCoreProvider  
-    token: Fdjkfjsflsfjdjjfjsnflfdlsdf&fsfhd  
+gcore:
+  class: octodns_gcore.GCoreProvider
+  token: YOUR_API_TOKEN
+  token_type: APIKey
+```
+
+Alternatively, login and password authentication is supported:
+
+```yaml
+gcore:
+  class: octodns_gcore.GCoreProvider
+  login: your_login
+  password: your_password
+```
+
+**Primary provider configuration**
+
+Each provider has its own configuration format. In the providers table, find the primary provider, open its repository, and locate the **Configuration** section to copy the provider name, class name, and authentication fields.
+
+With Amazon Route 53 as the primary provider, the full `config.yaml` looks like this:
+
+```yaml
+providers:
+  route53:
+    class: octodns_route53.Route53Provider
+    access_key_id: YOUR_KEY_ID
+    secret_access_key: YOUR_SECRET_KEY
+  gcore:
+    class: octodns_gcore.GCoreProvider
+    token: YOUR_API_TOKEN
     token_type: APIKey
+zones:
+  myzone.com.:
+    sources:
+      - route53
+    targets:
+      - gcore
+  mymyzone.com.:
+    sources:
+      - route53
+    targets:
+      - gcore
 ```
 
-Example of configuration with a login-password pair:
+Save and close the file.
+</Step>
 
-```yaml
-gcore: 
-    class: octodns_gcore.GCoreProvider 
-    login: Yourlogin 
-    password: Yourpassword 
-    auth_url: https://api.gcore.com 
-    url: https://api.gcore.com/dns 
-    records_per_response: 1
-```
-
-In "config.yaml" file, fill in your provider section as you've just done for Gcore DNS: open its repository, find the "Configuration" section, copy and paste the provider name and its class name, fill in authentication data. If your provider is Amazon Route 53, the result will be as follows:
-
-```yaml
-route53:  
-    class: octodns_route53.Route53Provider  
-    access_key_id: YourKeyID  
-    secret_access_key: YourSecretKeyID  
-gcore:  
-    class: octodns_gcore.GCoreProvider  
-    token: Fdjkfjsflsfjdjjfjsnflfdlsdf&fsfhd  
-    token_type: APIKey
-```
-
-Then fill in the DNS zones data. For each zone, enter its name and a pair of source-target providers. Your provider will act as a source (OctoDNS will take DNS records from its databases), and Gcore DNS provider will act as a target (its records will be edited to be identical to data of your provider). For example, to synchronize DNS records of "myzone.com" and "mymyzone.com" zones, you need to enter the following data:
-
-
-<Frame>![DNS zones data](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip0.png)</Frame>
-
-
-
-After adding all zones to the file, save changes and close it.
-
-11\. The last step is synchronizing DNS records. Run the test command first — it will show you what changes OctoDNS will make during synchronization.
+<Step title="Verify with a dry-run sync, then apply">
+A dry-run shows the planned changes without applying them:
 
 ```sh
-octodns-sync --config-file=[your configuration file directory]
+octodns-sync --config-file=~/octodns/config/config.yaml
 ```
 
-For example, if the directory of the configuration file is _/home/ubuntu/octodns/config/config.yaml_, then the command will be:
+Example output:
+
+```
+* gcore (GCoreProvider)
+*   Create <ARecord A 300, www.myzone.com., ['1.2.3.4']> (route53)
+*   Summary: Creates=1, Updates=0, Deletes=0, Existing=0, Meta=False
+```
+
+If the output is correct, apply the changes:
 
 ```sh
-octodns-sync --config-file=/home/ubuntu/octodns/config/config.yaml
+octodns-sync --config-file=~/octodns/config/config.yaml --doit
 ```
 
-If the configuration file was filled out correctly, you will get output with a similar summary at the end:
+Example output:
 
-
-<Frame>![configuration file](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip6.png)</Frame>
-
-
-
-These are the changes OctoDNS is going to make to our DNS records. If everything is correct, run the command to make these changes:
-
-```sh
-octodns-sync --config-file=[your configuration file directory] --doit
+```
+INFO    GCoreProvider[gcore] apply: making 1 changes to myzone.com.
+INFO    GCoreProvider[gcore] creating: Create <ARecord A 300, www.myzone.com., ['1.2.3.4']> (route53)
+INFO    Manager sync:   1 total changes
 ```
 
-You will see similar output:
+The synchronized records are visible in the Customer Portal under **DNS** → the zone name.
 
+<Frame>![DNS zone records in the Gcore Customer Portal](/images/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/dns-zone-records.png)</Frame>
+</Step>
+</Steps>
 
-<Frame>![output](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip7.png)</Frame>
+## Update records
 
+To re-sync records after changes in the primary provider:
 
-
-It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the [DNS page](https://portal.gcore.com/dns/zones).
-
-
-<Frame>![DNS page in the Gcore Customer Portal](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip8.png)</Frame>
-
-
-
-## Update records of our secondary DNS
-
-The instructions below are for updating records manually. If you need an auto-update of records, set up automatic execution of the commands from this instruction via the cron daemon.
-
-1\. Go to "octodns".
-
+<Steps>
+<Step title="Navigate to the OctoDNS directory and activate the virtual environment">
 ```sh
 cd ~/octodns
+source venv/bin/activate
 ```
+</Step>
 
-2\. Activate the python virtual environment.
-
-  3. You have already configured necessary zones as part of the instruction "[Synchronize records in DNS Gcore with your DNS](/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns#synchronize-records-of-gcore-dns-with-your-dns)" above. To synchronize DNS records, run the command:
-
-
-
+<Step title="Run the sync command">
 ```sh
-octodns-sync --config-file=[your config file directory] --doit
+octodns-sync --config-file=~/octodns/config/config.yaml --doit
 ```
+</Step>
+</Steps>
 
-You will see similar output:
-
-
-<Frame>![output](https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip9.png)</Frame>
-
-
-
-It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the [DNS page](https://portal.gcore.com/dns/zones).
+To automate record updates, schedule this command with cron.

@@ -1,0 +1,89 @@
+---
+title: Migrate DNS from Cloudflare to Gcore
+sidebarTitle: Migrate from Cloudflare
+---
+
+{/* LEGAL REVIEW NEEDED: This doc mentions Cloudflare (third-party software) throughout. Requires legal clearance before publishing per DOC-1233 policy. */}
+
+This guide explains how to move your DNS management from Cloudflare to Gcore Managed DNS. The process involves exporting your existing DNS records, importing them into Gcore, and then updating the nameservers at your domain registrar to point to Gcore infrastructure.
+
+<Warning>
+Changing nameservers causes a propagation period of up to 24 hours. Plan the migration during low-traffic hours to minimize impact.
+</Warning>
+
+## Before you begin
+
+Lower the TTL on all your DNS records in Cloudflare before starting. A shorter TTL means DNS resolvers refresh records more quickly, which reduces propagation time during the cutover.
+
+1. Log in to the Cloudflare dashboard and select your domain.
+2. Go to **DNS** > **Records**.
+3. Edit each record and set the TTL to **10 minutes** (or the lowest value available).
+4. Wait for the current TTL to expire before proceeding—this ensures old cached records stop being served.
+
+## Step 1. Export DNS records from Cloudflare
+
+1. In the Cloudflare dashboard, select your domain and go to **DNS** > **Records**.
+2. Click **Export** to download your DNS records as a BIND zone file (`.txt` format).
+
+<Warning>
+Cloudflare proxied records (those with the orange cloud icon enabled) export with Cloudflare's proxy IP addresses, not your origin server IPs. Before importing into Gcore, open the zone file and replace any Cloudflare proxy IPs with your actual origin server IPs.
+
+To find your origin IPs, temporarily disable the proxy (set the record to DNS-only) in Cloudflare before exporting.
+</Warning>
+
+## Step 2. Create a DNS zone in Gcore
+
+1. Navigate to [DNS](https://portal.gcore.com/dns/zones) in the Gcore Customer Portal and click **Add zone**.
+2. Enter your domain name and click **Confirm**.
+3. Gcore will scan and display any existing DNS records it can detect. Review them, then click **Confirm**.
+
+<Tip>
+Check the **Skip scanning** box if you prefer to import all records manually from your Cloudflare zone file in the next step.
+</Tip>
+
+## Step 3. Import your DNS records
+
+1. In the [All zones](https://portal.gcore.com/dns/zones) tab, open the zone you just created.
+2. Click **Import records**.
+3. In the pop-up, either paste the contents of your Cloudflare zone file or click **Upload zone file** to select the `.txt` file you exported.
+4. Click **Import**.
+
+Review the imported records to confirm everything looks correct. Pay particular attention to A and AAAA records that were previously proxied through Cloudflare—verify they now point to your actual origin IPs.
+
+## Step 4. Update nameservers at your registrar
+
+Point your domain to Gcore nameservers by updating the NS records at your **domain registrar** — the company where you purchased or manage your domain (such as GoDaddy, Namecheap, or Google Domains).
+
+<Warning>
+**You must change the nameservers at your domain registrar, not inside Cloudflare.** Updating NS records within the Cloudflare dashboard has no effect on delegation. The authoritative nameservers for your domain are controlled by glue records at your registrar. If those glue records don't change, the nameservers will never change — regardless of what Cloudflare shows.
+</Warning>
+
+Set the nameservers to the following Gcore values:
+
+| Nameserver | Value |
+|---|---|
+| NS 1 | `ns1.gcorelabs.net` |
+| NS 2 | `ns2.gcdn.services` |
+
+Look for a **Nameservers** or **DNS** section in your registrar's control panel. The exact steps vary by registrar.
+
+## Step 5. Verify propagation
+
+DNS changes can take up to 24 hours to propagate globally. To check the status:
+
+- Use a DNS propagation checker tool to verify your domain's NS records are resolving to Gcore nameservers worldwide. {/* LEGAL REVIEW NEEDED: third-party tool reference removed pending legal clearance */}
+- In the Gcore Customer Portal, a notification will appear on your DNS zone until propagation is complete—this is expected and clears automatically.
+
+Once propagation is complete, your DNS is fully managed by Gcore.
+
+## Cloudflare feature comparison
+
+| Feature | Cloudflare | Gcore |
+|---|---|---|
+| HTTP proxy (orange cloud) | Yes | Not available in DNS — use [Gcore CDN](/cdn) |
+| Anycast DNS | Yes | Yes |
+| GeoDNS / load balancing | Yes (paid) | Yes (on Pro and Enterprise plans) |
+| DNSSEC | Yes | Yes |
+| DNS Failover / Health Checks | Yes (paid) | Yes (on Pro and Enterprise plans) |
+| Minimum TTL | 1 min (free), 30 s (paid) | 120 s (free), 30 s (Pro), 1 s (Enterprise) |
+| API access | Yes | Yes |

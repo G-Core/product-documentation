@@ -1,235 +1,817 @@
 ---
 title: Create a Kubernetes cluster
 sidebarTitle: Create
-ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal).
+ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor, volume type, volume size, autoscaling limits, and worker node type (Virtual instances, Bare metal instances, or GPU Bare metal instances). Includes REST API, Python SDK, Go SDK, and Terraform examples.
 ---
 
-## Step 1. Initiate the process
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Open the "Kubernetes" tab and click **Create Cluster**.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), create a Managed Kubernetes cluster by configuring region, version, node pools, CNI provider, network, SSH key, and optional logging or advanced settings.</p>
 
-<Frame>![Start Kubernetes container creation](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster.png)</Frame>
+## Step 1. Open the create form
 
+1. Navigate to **Cloud** > **Managed Kubernetes**.
+2. Click **Create Cluster**.
 
+<Frame>![Kubernetes Clusters page with the Create Cluster button](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/managed-kubernetes-clusters-list.png)</Frame>
 
-A new page will open. Perform the remaining steps there. 
+<p>The create cluster form opens on a single page. Complete the remaining steps on that page.</p>
 
 ## Step 2. Select the region
 
-Select a **region** —the location of the data center where your cluster will be deployed. 
+<p>Select a **region** — the location of the data center where the cluster will be deployed.</p>
 
-
-<Frame>![Kubernetes region](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/region-k8s.png)</Frame>
-
-
+<Frame>![Region selector on the create cluster form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-region.png)</Frame>
 
 ## Step 3. Select the version
 
-Select your Kubernetes cluster version from the dropdown menu.
+<p>Select the Kubernetes cluster version from the dropdown menu.</p>
 
-
-<Frame>![Kubernetes cluster version](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/version-k8s.png)</Frame>
-
-
+<Frame>![Kubernetes cluster version dropdown on the create form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-version.png)</Frame>
 
 ## Step 4. Configure pools
 
-Under the **Pools** block, configure a pool. A pool is a set of cluster nodes with the same specifications. 
+<p>Under the **Pools** section, configure a pool. A pool is a set of cluster nodes with the same specifications.</p>
 
-  * Enter the Pool name.
-  * Set the minimum nodes and maximum nodes for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling).
-  * Select the type of a worker node: Virtual Machine or Bare Metal. 
-  * (Optional) Configure advanced pool settings. For an overview of advanced settings, check out the Create and configure a pool guide.
+- Enter the **Pool name**.
+- Set **Minimum nodes** and **Maximum nodes** for [autoscaling](/cloud/kubernetes/clusters/autoscaling/about-autoscaling).
+- Under **Type**, select **Virtual instances**, **Bare metal instances**, or **GPU Bare metal instances**.
+- For **Virtual instances**, select a flavor, **Volume type**, and **Size** in GiB.
+- Select a **Placement policy**: anti-affinity soft, anti-affinity hard, or affinity.
+- (Optional) Enable **Add labels**, **Add taints**, **Autohealing nodes**, or **Public IPv4 address**.
+- (Optional) Click **Configure settings** under **Advanced pool settings** for additional [pool configuration](/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster) options.
+- Add as many pools as needed using the **Add pool** button.
 
-<Tabs>
-  <Tab title="Virtual Machine">
-    Select the flavor, disk size in GiB, and disk type.
+<p>Available **Volume type** options for Virtual instances:</p>
 
-The following Virtual Machine flavors are available:
+| Type | Best for | IOPS limit | Bandwidth |
+|---|---|---|---|
+| **High IOPS SSD** | Latency-sensitive transactional workloads (60 IOPS/GiB; 2.5 MB/s per GiB) | 9,000 | 500 MB/s |
+| **Standard** | General-purpose workloads with stable random I/O (6 IOPS/GiB; 0.4 MB/s per GiB) | 4,500 | 300 MB/s |
+| **SSD Low-Latency** | Real-time data processing requiring sub-millisecond latency (avg. 300 µs) | 50,000 | — |
 
-  * **Standard.** 2–4 times the memory of vCPUs
-  * **vCPU.** The number of vCPUs equals the amount of memory in GB
-  * **Memory.** Much higher memory than that of vCPUs-up to 8x more
-  * **High Frequency.** High CPU clock speed starting at 3.7 GHz in the basic configuration
+<p>For **Bare metal instances**, select a flavor from the [available configurations](/cloud/kubernetes/bare-metal-kubernetes#available-configurations).</p>
 
-
-
-
-The following disk types are available:
-
-  * **High IOPS SSD.** A high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB.) The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
-  * **Standard.** A network SSD disk that provides stable and high random I/O performance and high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB.) The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
-  * **Cold (deprecated).** A network HDD disk suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
-  * **Ultra (deprecated).** The recommended network block storage option for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
-  * **SSD Low Latency.** An SSD block storage designed for applications that require low-latency storage and real-time data processing. The IOPS performance limit is 50,00, with an average latency of 300 µs.
-  </Tab>
-  <Tab title="Bare Metal">
-    The following Bare Metal flavors are available:
-
-  * **High-frequency.** Single-socket servers equipped with 2288G/2388 CPUs, suitable for hosting applications requiring high processor frequency.
-  * **Infrastructure.** Multi-core, multi-socket configurations designed for hosting applications that demand a high number of cores. These servers are optimized for multithreading.
-  </Tab>
-</Tabs>
-
-
-
-  * Ensure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. When toggled on, this feature monitors node statuses. Upon detecting a non-working node, the autohealer initiates its replacement. If one of the machines fails, the application will not stand idle: The node(s) will be replaced on a working machine, and the app will keep working.
-
-  * (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.
-
+<Frame>![Pools section with worker node type, flavor, volume, and placement policy fields](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-pools.png)</Frame>
 
 <Info>
-**Info**
-
-If you want to [enable an IPv6 dual-stack](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) for your cluster, at least one of the pools must have a public IPv4 address.
+If [IPv6 dual-stack](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) is required, at least one pool must have a public IPv4 address.
 </Info>
-  * Add as many pools as you need using the **Add pool** button.
-
-
-<Frame>![Pools](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-k8s.png)</Frame>
-
-
 
 ## Step 5. Select the CNI provider
 
-Choose either the Cilium or Calico network stack. These provide networking and network security solutions for containers.
+<p>Select **Calico** or **Cilium**. These network stacks provide networking and network security for containers.</p>
 
-  * Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. You can add additional functions as required by checking the relevant box for DSR, tunneling, Load Balancer acceleration, and encryption.
+- **Cilium** uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, and more) than Calico.
+- **Calico** uses a more conservative stack based on iptables.
 
-  * Calico uses a more conservative stack based on iptables.
+<p>Configure **Pod CIDR** and **Service CIDR** as needed. Default ranges:</p>
 
+| | Calico | Cilium |
+|---|---|---|
+| Pods | 172.16.0.0/18 | 172.16.0.0/17 |
+| Services | 172.24.0.0/18 | 172.24.0.0/17 |
 
+<p>The CIDR range cannot overlap with 10.255.255.0/24 or 192.168.128.0/17. These ranges are reserved for internal usage.</p>
 
-
-You can also enable [Hubble UI](https://github.com/cilium/hubble-ui) for the Cilium and use the graphical interface to check your cluster's network traffic. 
-
-
-<Frame>![Enable CNI provider section](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png)</Frame>
-
-
-
-(Optional) Set up the CIDR range for pods in a cluster. The default ranges are: 
-
-Calico:
-
-  * For pods: 172.16.0.0/18 
-
-  * For services: 172.24.0.0/18
-
-
-
-
-Cilium:
-
-  * For pods: 172.16.0.0/17 
-
-  * For services: 172.24.0.0/17
-
-
-
-
-Your CIRD range can't overlap with the following ranges: 10.255.255.0/24, 192.168.128.0/17. These ranges are reserved for internal usage. 
+<p>(Optional) Adjust **Node mask size** or enable **Hubble for network monitoring** when using Cilium.</p>
 
 <Warning>
-**Warning**
+The CNI provider cannot be changed after the cluster has been created.
+</Warning>
 
-You cannot change the network stack after the cluster has been created.
-</Warning> 
-<Frame>![Network stack](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png)</Frame>
-
-
+<Frame>![CNI Provider section with Calico and Cilium options and CIDR fields](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-cni.png)</Frame>
 
 ## Step 6. Configure network settings
 
+<p>Under **Network settings**, configure **Interface 1** for the cluster.</p>
+
+<p>If a [network](/cloud/networking/create-and-manage-a-network) already exists, select it from the **Network** dropdown and select a [subnetwork](/cloud/networking/create-and-manage-a-subnetwork) from the **Subnet** dropdown.</p>
+
+<Frame>![Network settings section with network and subnet dropdowns](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network.png)</Frame>
+
+<p>To add a new network, click **Add a new network** and configure the dialog:</p>
+
+1. Enter the **Network name**.
+2. (Optional) Enable **Bare Metal Network** to connect Bare Metal servers to the network.
+3. (Optional) Enable **Create router** to connect subnets through a router.
+4. (Optional) Enable **Add tags** to add metadata to the network.
+5. Click **Create & Proceed**.
+
+<Frame>![Create network dialog with network name, Bare Metal Network, and Create router options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network-dialog.png)</Frame>
+
+<p>(Optional) Enable **Enable IPv6 dual-stack** to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the toggle is unavailable, at least one pool must have a public IPv4 address. If the cluster connects only to a private network, configure and add an IPv6 subnetwork.</p>
+
+<p>Basic DDoS Protection is included for the cluster network.</p>
+
+## Step 7. Add an SSH key
+
+<p>Configure an [SSH key](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) to enable remote SSH connections to all nodes. Select an existing key or create a new one.</p>
+
+<Frame>![SSH key section with key selection dropdown](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-ssh.png)</Frame>
+
+## Step 8. Specify a cluster name
+
+<p>Enter the cluster name in the **Cluster name** field.</p>
+
+<Frame>![Cluster name field on the create form](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-name.png)</Frame>
+
+## Step 9. (Optional) Configure logging
+
+<p>Under **Logging**, enable **Logging** to stream cluster logs to [Managed Logging](/cloud/logging-as-a-service/configure-logging-and-view-your-logs). Select an existing topic or create a new one.</p>
+
+<Frame>![Logging section with Enable Logging checkbox and topic options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-logging.png)</Frame>
+
+## Step 10. (Optional) Configure advanced settings
+
+<p>Under **Advanced settings**, expand [OIDC authentication](/cloud/kubernetes/clusters/secure-cluster-with-oidc) or [Cluster Autoscaler](/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings) to configure optional cluster-wide settings.</p>
+
+## Step 11. Finalize
+
+<p>Review the **Estimated cost** summary on the right side of the screen. If the configuration is correct, click **Create Cluster**.</p>
+
+<p>Cluster creation typically takes several minutes.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+A Kubernetes cluster consists of a control plane managed by Gcore and one or more node pools running workloads. The API flow creates a private network, provisions the cluster into that network, and returns a kubeconfig file for `kubectl` access.
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
+export K8S_FLAVOR_ID="{YOUR_K8S_FLAVOR_ID}"
+```
+
+<Info>
+To find the values for each variable:
+- **SSH\_KEY\_NAME**: the name of an SSH key in the project.
+- **K8S\_FLAVOR\_ID**: the flavor identifier for the Kubernetes node pool. Use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list flavors available for Kubernetes in your region.
+</Info>
+
+## Quickstart
+
+The scripts below create a private network and subnet, provision a single-node Kubernetes cluster, and save the kubeconfig to a local file. Cluster creation takes approximately 5–20 minutes.
+
 <Tabs>
-  <Tab title="Configure a network">
-    Add one or multiple network interfaces to your cluster. 
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
 
-If you have previously [created networks](/cloud/networking/create-and-manage-a-network), select the correct network from the dropdown. 
+    client = Gcore()
 
+    # Step 1. Find the latest available Kubernetes version
+    versions = client.cloud.k8s.list_versions()
+    k8s_version = max(v.version for v in versions.results)
+    print(f"Kubernetes version: {k8s_version}")
 
-<Frame>![Network settings for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png)</Frame>
+    # Step 2. Create a private network with a router
+    network = client.cloud.networks.create_and_poll(
+        name="k8s-network",
+        create_router=True,
+    )
+    print(f"Network: {network.id}")
 
+    # Step 3. Create a subnet
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="k8s-subnet",
+        network_id=network.id,
+        cidr="10.0.0.0/24",
+        enable_dhcp=True,
+        connect_to_network_router=True,
+        dns_nameservers=["8.8.8.8", "8.8.4.4"],
+    )
+    print(f"Subnet: {subnet.id}")
 
+    # Step 4. Create the Kubernetes cluster
+    cluster_name = "my-k8s-cluster"
+    task = client.cloud.k8s.clusters.create(
+        keypair=os.environ["SSH_KEY_NAME"],
+        name=cluster_name,
+        version=k8s_version,
+        fixed_network=network.id,
+        fixed_subnet=subnet.id,
+        pods_ip_pool="172.16.0.0/18",
+        services_ip_pool="172.24.0.0/18",
+        pools=[{
+            "name": "default-pool",
+            "flavor_id": os.environ["K8S_FLAVOR_ID"],
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "boot_volume_size": 10,
+            "boot_volume_type": "ssd_hiiops",
+            "servergroup_policy": "anti-affinity",
+            "auto_healing_enabled": True,
+        }],
+    )
+    result = client.cloud.tasks.poll(task.tasks[0])
+    print(f"Cluster ID: {result.created_resources.k8s_clusters[0]}")
 
-To add a new network, click **Add a new network** radio button and configure the network as follows: 
-
-1\. Enter the network name. 
-
-2\. (optional) Turn on the **Bare Metal network** toggle to connect Bare Metal servers to the network. 
-
-3\. (optional) Turn on the **Add tags** toggle to add metadata to the network. 
-
-4\. Click **Create network**. 
-
-
-<Frame>![create network dialog](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-network-dialog.png)</Frame>
-
-
-
-5\. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the **Enable IPv6 dual-stack** toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork.
+    # Step 5. Download the kubeconfig
+    kc = client.cloud.k8s.clusters.kubeconfig.get(cluster_name)
+    with open("kubeconfig.yaml", "w") as f:
+        f.write(kc.config)
+    print(f"Kubeconfig saved. API server: {kc.host}")
+    ```
   </Tab>
-  <Tab title="Configure a subnetwork">
-    If you have previously [created subnetworks](/cloud/networking/create-and-manage-a-subnetwork), select the correct subnetwork from the dropdown. 
+  <Tab title="Go SDK">
+    ```go
+    package main
 
-To add a new subnetwork, click **Add a new subnetwork** and configure it according to the following instructions: [Create a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork). 
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. Find the latest available Kubernetes version
+        versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{})
+        if err != nil {
+            panic(err)
+        }
+        k8sVersion := versions.Results[len(versions.Results)-1].Version
+        fmt.Printf("Kubernetes version: %s\n", k8sVersion)
+
+        // Step 2. Create a private network with a router
+        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+            Name:         "k8s-network",
+            CreateRouter: gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Network: %s\n", network.ID)
+
+        // Step 3. Create a subnet
+        subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+            Name:                   "k8s-subnet",
+            NetworkID:              network.ID,
+            Cidr:                   "10.0.0.0/24",
+            EnableDhcp:             gcore.Bool(true),
+            ConnectToNetworkRouter: gcore.Bool(true),
+            DNSNameservers:         []string{"8.8.8.8", "8.8.4.4"},
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Subnet: %s\n", subnet.ID)
+
+        // Step 4. Create the Kubernetes cluster
+        clusterName := "my-k8s-cluster"
+        cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, cloud.K8SClusterNewParams{
+            Keypair:         os.Getenv("SSH_KEY_NAME"),
+            Name:            clusterName,
+            Version:         k8sVersion,
+            FixedNetwork:    gcore.String(network.ID),
+            FixedSubnet:     gcore.String(subnet.ID),
+            PodsIPPool:      gcore.String("172.16.0.0/18"),
+            ServicesIPPool:  gcore.String("172.24.0.0/18"),
+            Pools: []cloud.K8SClusterNewParamsPool{{
+                Name:               "default-pool",
+                FlavorID:           os.Getenv("K8S_FLAVOR_ID"),
+                MinNodeCount:       1,
+                MaxNodeCount:       gcore.Int(int64(3)),
+                BootVolumeSize:     gcore.Int(int64(10)),
+                BootVolumeType:     "ssd_hiiops",
+                ServergroupPolicy:  "anti-affinity",
+                AutoHealingEnabled: gcore.Bool(true),
+            }},
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Cluster: %s  status: %s\n", cluster.Name, cluster.Status)
+
+        // Step 5. Download the kubeconfig
+        kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, clusterName, cloud.K8SClusterKubeconfigGetParams{})
+        if err != nil {
+            panic(err)
+        }
+        if err := os.WriteFile("kubeconfig.yaml", []byte(kc.Config), 0600); err != nil {
+            panic(err)
+        }
+        fmt.Printf("Kubeconfig saved. API server: %s\n", kc.Host)
+    }
+
+    ```
   </Tab>
 </Tabs>
 
-By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses used by malicious actors. For a higher level of protection, we recommend enabling Advanced DDoS Protection. 
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available Kubernetes versions
+
+The available K8s versions change as Gcore adds new releases and retires old ones. Retrieve the current list before creating a cluster so the version string is valid.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    versions = client.cloud.k8s.list_versions()
+    for v in versions.results:
+        print(v.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{})
+    for _, v := range versions.Results {
+        fmt.Println(v.Version)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/create_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 4,
+      "results": [
+        { "version": "v1.32.13" },
+        { "version": "v1.33.10" },
+        { "version": "v1.34.6" },
+        { "version": "v1.35.3" }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
 
 
-<Accordion title="Advanced DDoS Protection">
-You can enable **Advanced DDoS Protection** for your private network. To do so, activate the **Enable Advanced DDoS Protection** toggle, open the drop-down menu, and select the desired template from the list. We currently support the following templates: CS:GO, Rust, ARK, Basic L3/L4, or TCP protection. 
+### Step 2. Create a network
 
-The settings offered depend on the selected template. For example, for the Basic L3/L4 specify the uppermost threshold of attack in Gbps that our DDoS Protection can mitigate in the "Mitigation capacity" field.
+Kubernetes clusters require a private network and subnet for inter-node communication. Creating the network with `create_router: true` automatically provisions a router and connects the subnet to the internet through it.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Network name |
+| `create_router` | Yes | Set to `true` to create a router so nodes can reach the internet |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    network = client.cloud.networks.create_and_poll(
+        name="k8s-network",
+        create_router=True,
+    )
+    print(f"Network ID: {network.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+        Name:         "k8s-network",
+        CreateRouter: gcore.Bool(true),
+    })
+    fmt.Printf("Network ID: %s\n", network.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "k8s-network", "create_router": true}'
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["6adbfb62-21fc-4432-9cc4-e3bb7cc6c061"]
+    }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Extract `created_resources.networks[0]` as `NETWORK_ID`.
+  </Tab>
+</Tabs>
+
+### Step 3. Create a subnet
+
+The subnet defines the IP address range for cluster nodes. Set `connect_to_network_router` to `true` so the subnet is attached to the router created in the previous step.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cidr` | Yes | IP range for node addresses, e.g. `10.0.0.0/24` |
+| `network_id` | Yes | ID of the network created in Step 2 |
+| `connect_to_network_router` | Yes | Attach the subnet to the network router for internet access |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="k8s-subnet",
+        network_id=network.id,
+        cidr="10.0.0.0/24",
+        enable_dhcp=True,
+        connect_to_network_router=True,
+        dns_nameservers=["8.8.8.8", "8.8.4.4"],
+    )
+    print(f"Subnet ID: {subnet.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+        Name:                   "k8s-subnet",
+        NetworkID:              network.ID,
+        Cidr:                   "10.0.0.0/24",
+        EnableDhcp:             gcore.Bool(true),
+        ConnectToNetworkRouter: gcore.Bool(true),
+        DNSNameservers:         []string{"8.8.8.8", "8.8.4.4"},
+    })
+    fmt.Printf("Subnet ID: %s\n", subnet.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "k8s-subnet",
+        "network_id": "$NETWORK_ID",
+        "cidr": "10.0.0.0/24",
+        "enable_dhcp": true,
+        "connect_to_network_router": true,
+        "dns_nameservers": ["8.8.8.8", "8.8.4.4"]
+      }'
+    ```
+
+    The API returns a task ID. Poll until `FINISHED` and extract `created_resources.subnets[0]` as `SUBNET_ID`.
+  </Tab>
+</Tabs>
+
+### Step 4. Create the cluster
+
+A cluster requires a node pool with at least one node. The pool defines the VM flavor, disk type, autoscaling limits, and server placement policy.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Cluster name. Used in all subsequent API calls |
+| `version` | Yes | Kubernetes version string from Step 1 |
+| `keypair` | Yes | SSH key name for node access |
+| `fixed_network` | Yes | Network ID from Step 2 |
+| `fixed_subnet` | Yes | Subnet ID from Step 3 |
+| `pools[].flavor_id` | Yes | Node VM flavor. Flavor IDs are region-specific — use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list available options |
+| `pools[].min_node_count` | Yes | Minimum nodes for autoscaling |
+| `pools[].servergroup_policy` | Yes | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `pods_ip_pool` | No | CIDR for pod IPs. Default for Calico: `172.16.0.0/18`. Cannot overlap with `10.255.255.0/24` or `192.168.128.0/17` |
+| `services_ip_pool` | No | CIDR for service IPs. Default for Calico: `172.24.0.0/18` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.k8s.clusters.create(
+        keypair=os.environ["SSH_KEY_NAME"],
+        name="my-k8s-cluster",
+        version=k8s_version,
+        fixed_network=network.id,
+        fixed_subnet=subnet.id,
+        pods_ip_pool="172.16.0.0/18",
+        services_ip_pool="172.24.0.0/18",
+        pools=[{
+            "name": "default-pool",
+            "flavor_id": os.environ["K8S_FLAVOR_ID"],
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "boot_volume_size": 10,
+            "boot_volume_type": "ssd_hiiops",
+            "servergroup_policy": "anti-affinity",
+            "auto_healing_enabled": True,
+        }],
+    )
+    result = client.cloud.tasks.poll(task.tasks[0])
+    print(f"Cluster ID: {result.created_resources.k8s_clusters[0]}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, cloud.K8SClusterNewParams{
+        Keypair:        os.Getenv("SSH_KEY_NAME"),
+        Name:           "my-k8s-cluster",
+        Version:        k8sVersion,
+        FixedNetwork:   gcore.String(network.ID),
+        FixedSubnet:    gcore.String(subnet.ID),
+        PodsIPPool:     gcore.String("172.16.0.0/18"),
+        ServicesIPPool: gcore.String("172.24.0.0/18"),
+        Pools: []cloud.K8SClusterNewParamsPool{{
+            Name:               "default-pool",
+            FlavorID:           os.Getenv("K8S_FLAVOR_ID"),
+            MinNodeCount:       1,
+            MaxNodeCount:       gcore.Int(int64(3)),
+            BootVolumeSize:     gcore.Int(int64(10)),
+            BootVolumeType:     "ssd_hiiops",
+            ServergroupPolicy:  "anti-affinity",
+            AutoHealingEnabled: gcore.Bool(true),
+        }},
+    })
+    fmt.Printf("Cluster: %s  status: %s\n", cluster.Name, cluster.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-k8s-cluster",
+        "version": "v1.32.13",
+        "keypair": "my-ssh-key",
+        "fixed_network": "$NETWORK_ID",
+        "fixed_subnet": "$SUBNET_ID",
+        "pods_ip_pool": "172.16.0.0/18",
+        "services_ip_pool": "172.24.0.0/18",
+        "pools": [{
+          "name": "default-pool",
+          "flavor_id": "$K8S_FLAVOR_ID",
+          "min_node_count": 1,
+          "max_node_count": 3,
+          "boot_volume_size": 10,
+          "boot_volume_type": "ssd_hiiops",
+          "servergroup_policy": "anti-affinity",
+          "auto_healing_enabled": true
+        }]
+      }'
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "tasks": ["61ee06b0-4705-4616-bb19-245bc510a8d0"]   // save as TASK_ID
+    }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Cluster creation takes approximately 5–20 minutes. When complete:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "k8s_clusters": ["f345e6c8-fe55-47df-bc7e-2c3c5a496ff2"]
+      }
+    }
+    ```
+
+    Use the cluster name `my-k8s-cluster` (not the UUID) in all subsequent API calls.
+  </Tab>
+</Tabs>
 
 
-<Frame>![Configure profile template](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ddos-k8s.png)</Frame>
+### Step 5. Get the kubeconfig
+
+After the cluster reaches `Provisioned` status, retrieve the kubeconfig file. Save it locally and point `kubectl` to it to start managing workloads.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    kc = client.cloud.k8s.clusters.kubeconfig.get("my-k8s-cluster")
+    with open("kubeconfig.yaml", "w") as f:
+        f.write(kc.config)
+    print(f"API server: {kc.host}")
+    print(f"Expires: {kc.expires_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, "my-k8s-cluster",
+        cloud.K8SClusterKubeconfigGetParams{})
+    if err := os.WriteFile("kubeconfig.yaml", []byte(kc.Config), 0600); err != nil {
+        panic(err)
+    }
+    fmt.Printf("API server: %s\n", kc.Host)
+    fmt.Printf("Expires: %s\n", kc.ExpiresAt)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/my-k8s-cluster/config" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "host": "https://148-1186668-my-k8s-cluster.mkaas.k1.luxembourg-3.cloud.gcore.dev:443",
+      "config": "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data: ...",
+      "client_certificate": "LS0tLS1CRUdJTi...",
+      "client_key": "LS0tLS1CRUdJTi...",
+      "cluster_ca_certificate": "LS0tLS1CRUdJTi...",
+      "created_at": "2026-05-30T19:45:51Z",
+      "expires_at": "2028-05-29T19:45:51Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the `config` field to a YAML file and export the path:
+
+```bash
+export KUBECONFIG=./kubeconfig.yaml
+kubectl get nodes
+```
 
 
 </Accordion>
 
+## Clean up
 
-## Step 7. Add an SSH key
+To delete the cluster and the network resources created for it, run the following. Delete the cluster first — it holds references to the subnet and network.
 
-Configure an SSH key to enable a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on [how to connect to your VM via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh).
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    # Delete the cluster first (it holds references to the network resources)
+    task = client.cloud.k8s.clusters.delete("my-k8s-cluster")
+    client.cloud.tasks.poll(task.tasks[0])
+    print("Cluster deleted")
+
+    # Delete the network (also removes the subnet and router)
+    network_id = os.environ["NETWORK_ID"]  # saved from Step 2
+    client.cloud.networks.delete_and_poll(network_id)
+    print("Network deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    networkID := os.Getenv("NETWORK_ID") // saved from Step 2
+
+    // Delete the cluster first
+    err := client.Cloud.K8S.Clusters.DeleteAndPoll(ctx, "my-k8s-cluster",
+        cloud.K8SClusterDeleteParams{})
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Cluster deleted")
+
+    // Delete the network (also removes the subnet and router)
+    err = client.Cloud.Networks.DeleteAndPoll(ctx, networkID, cloud.NetworkDeleteParams{})
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Network deleted")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Delete the cluster first
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/my-k8s-cluster" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # Poll until FINISHED, then delete the network (removes subnet and router too)
+    curl -X DELETE "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a Kubernetes cluster with one or more worker node pools using [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster). Node pools are declared inline and scaled by updating the `count` attribute.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
 
 
-<Frame>![SSH settings for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png)</Frame>
+## Create a cluster
 
+<p>Provisions a cluster into an existing network and subnet — pass `network_id` and `subnet_id` as variables, or reference resources if the network is declared in the same configuration.</p>
 
+```hcl
+variable "network_id" { type = string }
+variable "subnet_id"  { type = string }
+variable "ssh_key_name"  { type = string }
+variable "k8s_version"   { type = string }  # use GET /cloud/v2/k8s/{project_id}/{region_id}/create_versions to list available
 
-## Step 8. Specify a cluster name
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-k8s-cluster"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+  keypair       = var.ssh_key_name
+  version       = var.k8s_version
 
-Name the cluster in the field as shown below.
+  pods_ip_pool     = "172.16.0.0/18"  # default for Calico; cannot overlap with 10.255.255.0/24 or 192.168.128.0/17
+  services_ip_pool = "172.24.0.0/18"
 
+  pools = [{
+    name               = "default-pool"
+    flavor_id          = "g2-standard-2-4"   # example; available flavors are region-specific — use GET /cloud/v1/k8s/{project_id}/{region_id}/flavors
+    servergroup_policy = "anti-affinity"     # nodes placed on different hypervisors
+    min_node_count     = 1
+    max_node_count     = 3
+    boot_volume_size   = 50
+    boot_volume_type   = "ssd_hiiops"
+    auto_healing_enabled = true
+  }]
+}
 
-<Frame>![Name for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png)</Frame>
+output "cluster_name"   { value = gcore_cloud_k8s_cluster.example.name }
+output "cluster_status" { value = gcore_cloud_k8s_cluster.example.status }
+```
 
+<p>Cluster creation takes approximately 2–20 minutes. A `cluster_status` output of `"Provisioned"` confirms the cluster is ready.</p>
 
+<Warning>
+The cluster `name` is immutable — changing it in the resource block forces a full replacement (destroy + recreate).
+</Warning>
 
-## Step 9. (Optional) Configure logging
+**Common pool fields:**
 
-Managed Logging is a paid feature that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read our [dedicated guide](/cloud/logging-as-a-service/configure-logging-and-view-your-logs). To configure Managed Logging in the Gcore Customer Portal, choose one of two options:
+| Field | Required | Description |
+|-------|----------|-------------|
+| `flavor_id` | Yes | VM flavor for worker nodes. Use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list available options |
+| `servergroup_policy` | No | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `min_node_count` / `max_node_count` | No | Autoscaler range. Set both to the same value to disable autoscaling |
+| `boot_volume_type` | No | `standard`, `ssd_hiiops`, `ssd_lowlatency`, `cold`, or `ultra` |
+| `auto_healing_enabled` | No | Automatically replace unhealthy nodes |
+| `is_public_ipv4` | No | Assign a public IPv4 to each node (default: `false`) |
 
-  * **Select an existing topic.** If you already use Managed Logging, select this option. 
-  * **Create new topic.** If you haven't used Managed Logging before, choose this option and specify the required information.
+<Accordion title="Create the network and subnet from the same configuration">
 
+<p>To provision the network alongside the cluster, declare the network and subnet resources and reference them by expression instead of using variables.</p>
 
-<Frame>![Logging for Cluster](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png)</Frame>
+```hcl
+resource "gcore_cloud_network" "k8s" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "k8s-network"
+}
 
+resource "gcore_cloud_network_subnet" "k8s" {
+  project_id      = var.project_id
+  region_id       = var.region_id
+  network_id      = gcore_cloud_network.k8s.id
+  name            = "k8s-subnet"
+  cidr            = "10.0.0.0/24"
+  enable_dhcp     = true
+  dns_nameservers = ["8.8.8.8", "8.8.4.4"]
+}
 
+resource "gcore_cloud_k8s_cluster" "example" {
+  # ...
+  fixed_network = gcore_cloud_network.k8s.id
+  fixed_subnet  = gcore_cloud_network_subnet.k8s.id
+  # ...
+}
+```
 
-## Step 10. (Optional) Configure advanced settings
+</Accordion>
 
-Enable OIDC authentication for your cluster. Follow instructions from the [Secure Kubernetes cluster with OIDC authentication](/cloud/kubernetes/clusters/secure-cluster-with-oidc) guide. 
+## Import
 
-You can also configure cluster autoscaler settings that will apply to the entire Kubernetes cluster and affect all nodes. For detailed overview of each configuration, check out [Advanced Cluster Autoscaler settings](/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings). 
+<p>Use when a cluster was created outside Terraform and needs to be managed as code. The identifier is the cluster name, not its UUID.</p>
 
-## Step 11. Finalize
+```bash
+terraform import gcore_cloud_k8s_cluster.example '<project_id>/<region_id>/<cluster_name>'
+```
 
-Check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
+## Delete a cluster
 
-The cluster will be created in just a few minutes!
+<p>Remove the resource block — Terraform deletes the cluster on the next `terraform apply`. If the network and subnet were declared in the same configuration, Terraform removes them in the correct dependency order (cluster first, then subnet, then network).</p>
+
+```hcl
+# Remove or comment out the resource block:
+# resource "gcore_cloud_k8s_cluster" "example" { ... }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>

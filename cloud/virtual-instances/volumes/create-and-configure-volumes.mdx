@@ -1,84 +1,77 @@
 ---
 title: Create and configure a volume
 sidebarTitle: Create and configure
-ai-navigation: Create and configure volumes in Gcore Cloud Storage by specifying capacity in GB, selecting volume type, setting IOPS/MBps limits and burst parameters, attaching to Virtual Machines, and adding metadata tags via the Customer Portal or API.
+ai-navigation: Create and configure block storage volumes in Gcore Cloud via Customer Portal, REST API, or Terraform, including creating, attaching, detaching, resizing, and deleting volumes.
 ---
 
-You can view, create, and manage volumes in the Gcore Customer Portal on the **Volumes** page. Here's how to navigate the page:
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-<Frame>![Volumes page with numbered UI elements](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/volumes-page-annotated.png)</Frame>
+<p>Volumes can be viewed, created, and managed in the [Gcore Customer Portal](https://portal.gcore.com) on the **Volumes** page. The following list describes the main areas of the page:</p>
 
+<Frame>![Volumes page overview with key UI areas](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/volumes-page-annotated.png)</Frame>
 
+<p>1\. **Volumes**: View all volumes created in a project.</p>
+<p>2\. **Instance**: Check if a volume is attached to a Virtual Machine.</p>
+<p>3\. **IOPS limit / burst**: Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs.</p>
+<p>4\. **MBps limit / burst**: Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.</p>
+<p>5\. **Without attachments**: View all volumes that aren't attached to a Virtual Machine.</p>
 
-1\. **Volumes** : View all volumes created in a project.
-
-2\. **Instance** : Check if a volume is attached to a Virtual Machine.
-
-3\. **IOPS limit/burst** : Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs. 
-
-4\. **MBps limit/burst** : Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.
-
-5\. **Without attachments** : View all volumes that aren't attached to a Virtual Machine.
-
-In the following sections, you'll find information on how to create and manage volumes. For a general overview of volumes and available volume types, check out our [dedicated guide](/cloud/virtual-instances/volumes/about-volumes). 
 
 ## Create a volume
 
-You can create volumes in several ways: [when creating a Virtual Machine](/cloud/virtual-instances/create-an-instance), from the **Volumes** page, or from a snapshot. The latter two approaches are described in the following sections. 
+<p>Volumes can be created in several ways: [when creating a Virtual Machine](/cloud/virtual-instances/create-an-instance), from the **Volumes** page, or from a snapshot. Creating a volume from the Volumes page and from a snapshot are described in the following sections.</p>
 
 <Info>
-**Info**
-
-You can only use a volume in the same region where a Virtual Machine is created.
+A volume can only be used in the same region where a Virtual Machine is created.
 </Info>
 
 <Tabs>
   <Tab title="From the Volumes page">
     1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-    2\. Click **Create volume**.
+    2\. Click **Create Volume**.
 
     <Frame>![Volumes page with numbered storage and create volume tabs](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-volume.png)</Frame>
 
-    3\. A new **Add volume** page will open. Here you can customize volume settings.
+    3\. The **Create volume** side panel opens on the Volumes page. Volume settings can be customized here.
 
     <Frame>![Dialog with options for configuring new volume](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-volumes-page.png)</Frame>
 
-    4\. Specify how many GB of disk space you need. If it exceeds your current limit, [send a request for quota increase](/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
+    4\. Specify the required disk space in GB. If the size exceeds the current limit, [send a request for quota increase](/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
 
     5\. Select the [volume type](/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.
 
-    6\. (Optional) Attach the volume to a Virtual Machine. A volume can only be used in the same region where a VM is created.
+    6\. (Optional) Attach the volume to an existing [Virtual&nbsp;Machine](/cloud/virtual-instances/create-an-instance) in the same region.
 
-    7\. Create a name for the volume. You can use Latin letters, numbers, underscores, spaces, and dots. The name should be between 3 and 63 characters long.
+    7\. Enter a volume name using Latin letters, numbers, underscores, spaces, and dots. The name should be between 3 and 63 characters long.
 
     <Tip>
-    **Tip**
-
-    When you add volumes via the Gcore Customer Portal or API, you don't have to keep volume names consistent in the operating system (like sda, sdb, or sdc). We recommend using Universally Unique Identifiers (UUID) instead of names for OS operations.
+    Volume names in the Customer Portal or API do not need to match device names in the operating system (such as sda, sdb, or sdc). For OS operations, use Universally Unique Identifiers (UUIDs) instead of names.
     </Tip>
 
-    8\. (Optional) To add metadata to a volume, specify tags as key-value pairs.
+    8\. (Optional) Select the **Add tags** checkbox and specify tags as key-value pairs.
 
-    9\. Click **Save**. 
+    9\. Click **Create**. 
 
-    Your volume will appear on the **Volumes** page.
+    The volume will appear on the **Volumes** page.
   </Tab>
   <Tab title="From a volume snapshot">
-    If you need to quickly duplicate or back up information on your Virtual Machine or provision new resources from pre-existing data, you can create a volume from a snapshot of an existing volume. 
+    To duplicate or back up Virtual Machine data, create a volume from an existing [snapshot](/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system). A snapshot must exist in the same region first.
 
     To create a volume:
 
-    1\. In the Gcore Customer Portal, navigate to **Cloud** > **Snapshots**.
+    1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage** > **Snapshots**.
 
-    2\. Find the snapshot you want to create volume from and click on the three-dot icon to open snapshot settings. 
+    2\. Select the target snapshot and click the three-dot icon to open snapshot settings. 
 
     <Frame>![Snapshots tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-snapshot.png)</Frame>
 
-    3\. Click **Create volume**.
+    3\. Click **Create Volume**.
 
-    4\. Select the Virtual Machine to which you want to attach a new volume.
+    4\. Select the Virtual Machine to attach the new volume to.
 
     5\. Click **Create**.
 
@@ -90,306 +83,885 @@ You can only use a volume in the same region where a Virtual Machine is created.
 
 ## Attach volumes to an existing Virtual Machine
 
-If a volume is attached to a Virtual Machine, you'll see the VM name on the **Volumes** page in the **Instance** column. Otherwise, you'll see the "Attach to instance" link. You can attach more than one volume to a Virtual Machine. However, volumes can only be used in the same region where the VM is created.
+<p>When a volume is attached to a Virtual Machine, the VM name appears on the **Volumes** page in the **Instance** column. Otherwise, the **Attach to Instance** link appears. More than one volume can be attached to a Virtual Machine. However, volumes can only be used in the same region where the VM is created.</p>
 
-You can attach volumes to a Virtual Machine either from the **Volumes** page or from the VM settings.
+<p>Volumes can be attached to a Virtual Machine either from the **Volumes** page or from the VM settings.</p>
 
 <Tabs>
   <Tab title="From the Volumes page">
     1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-    2\. Find the volume that you want to attach and click **Attach to instance**. 
+    2\. Select the volume to attach and click **Attach to Instance**. 
 
     <Frame>![Volumes page with annotated attach to Virtual Machine link](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume.png)</Frame>
 
-    3\. Select the Virtual Machine from the **Choose instance to attach to** dropdown.
+    3\. Select the Virtual Machine from the **Choose Instance to attach to** dropdown.
 
-    4\. (Optional) Add an attachment tag.
+    4\. (Optional) Enter a value in the **Tag** field.
 
     <Frame>![Attach volume dialog with options to select Virtual Machine and add a tag](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-to-instance.png)</Frame>
 
     5\. Click **Attach volume**.
 
-    You've successfully attached a volume to the Virtual Machine. 
+    The volume has been attached to the Virtual Machine. 
   </Tab>
   <Tab title="From Virtual Machine settings">
-    1\. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual instances**.
+    1\. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual Instances**.
 
-    2\. Find the Virtual Machine you want to update and click its name to open it.
+    2\. Select the target Virtual Machine and click its name to open it.
 
     <Frame>![Virtual Machines tab with two created instances](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/cloud-instances.png)</Frame>
 
     3\. Open the **Volumes** tab.
 
-    4\. Click **Add volume**.
+    4\. Click **Add Volume**.
 
     <Frame>![Volumes tab with Add volume button highlighted](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-instance-settings.png)</Frame>
 
-    5\. Click **Use existing** to attach an existing volume to an Virtual Machine. 
+    5\. Click **Select existing** to attach an existing volume to a Virtual Machine. 
 
-    You can also create a new volume here. Click **Create new** and configure the settings as described under the [Create a volume](/cloud/virtual-instances/volumes/create-and-configure-volumes#create-a-volume) section. 
+    A new volume can also be created here. Click **Create new** and configure the settings as described under the [Create a volume](/cloud/virtual-instances/volumes/create-and-configure-volumes#create-a-volume) section. 
 
-    6\. Select the volume that you want to attach to the Virtual Machine.
+    6\. Select the volume to attach to the Virtual Machine.
 
-    7\. (Optional). Add an attachment tag.
+    7\. (Optional) Enter a value in the **Tag** field.
 
 
     <Frame>![Add volume menu with options to add Virtual Machine and tags](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/add-volume-to-instance.png)</Frame>
 
-    8\. Click **Add volume**.
+    8\. Click **Add Volume**.
 
-    You've successfully attached a volume to the Virtual Machine. 
+    The volume has been attached to the Virtual Machine. 
   </Tab>
 </Tabs>
 
 ## Manage volumes
 
-The options for managing volumes differ depending on the volume you want to modify: boot or regular. 
+<p>Volume management options depend on whether the target volume is boot or regular.</p>
 
-If you have a large number of volumes, you can also search for volumes by name or UUID values to find the one you need. 
+<p>When many volumes exist, filter the list by name or UUID to locate a specific volume.</p>
 
 ### Rename a volume
 
-You can rename both boot and regular volumes:
+<p>Both boot and regular volumes can be renamed:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to rename.
+<p>2\. Click the three-dot icon next to the target volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. Click **Rename**.
+<p>3\. Click **Rename**.</p>
 
-4\. Enter a new name.
+<p>4\. Enter a new name.</p>
 
-5\. Select **Save** to apply the changes. 
+<p>5\. Select **Save** to apply the changes.</p>
 
 
 <Frame>![Rename volume dialog](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/rename-volume.png)</Frame>
 
 
 
-Your volume has been renamed. 
+<p>The volume has been renamed.</p>
+
+### Manage volume tags
+
+<p>Volume tags can be added during creation or managed later from the volume context menu:</p>
+
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
+
+<p>2\. Click the three-dot icon next to the volume.</p>
+
+<p>3\. Click **Tags**.</p>
+
+<p>4\. Add, edit, or remove key-value tag pairs and save the changes.</p>
 
 ### Detach a volume from a Virtual Machine
 
-You can only detach regular volumes. The boot volume cannot be detached from an Virtual Machine as long as the VM exists. If you want to detach a boot volume, you need to delete the VM first.
+<p>Only regular volumes can be detached. The boot volume cannot be detached from a Virtual Machine as long as the VM exists. To detach a boot volume, delete the VM first.</p>
 
-To detach a volume:
+<p>To detach a volume:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to detach.
+<p>2\. Click the three-dot icon next to the target volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-attached.png)</Frame>
 
 
 
-3\. Choose the Virtual Machine from which you want to detach a volume.
+<p>3\. Click **Detach**.</p>
 
-4\. Select **Confirm**.
-
-
-<Frame>![Dialog asking to select a VM to detach the volume from](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/detach-volume-dialog.png)</Frame>
+<p>4\. In the confirmation dialog, click **Detach** again to confirm.</p>
 
 
+<Frame>![Detach volume confirmation dialog](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/detach-volume-dialog.png)</Frame>
 
-You've detached a volume from the Virtual Machine. 
+
+
+<p>The volume has been detached from the Virtual Machine.</p>
 
 <Warning>
-**Warning**
-
-Detaching a volume will not cancel your payment unless you delete the volume. You can also add a detached volume to any Virtual Machine at any time.
+Detaching a volume does not stop billing unless the volume is deleted. A detached volume can be attached to any Virtual Machine at any time.
 </Warning>
 
 ### Resize a volume
 
-You can resize both boot and regular volumes:
+<p>Both boot and regular volumes can be resized:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to resize.
+<p>2\. Click the three-dot icon next to the target volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. In the **Resize volume** dialog that opens, you can see your current volume size in GB. Enter the new volume size. 
+<p>3\. In the **Resize volume** dialog that opens, the current volume size in GB is shown. Enter the new size.</p>
 
-4\. Click **Resize volume** to apply the changes.
+<p>4\. Click **Resize** to apply the changes.</p>
 
 
 <Frame>![Dialog asking for a new volume size](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/resize-volume.png)</Frame>
 
 
 
-You've changed your volume size. 
+<p>The volume size has been changed.</p>
 
 <Warning>
-**Warning**
-
-If you have snapshots for this volume, after you increase the size, you won't be able to [revert from the last snapshot](/cloud/virtual-instances/volumes/create-and-configure-volumes#revert-volume-from-snapshot). You can only create a new volume from this volume's snapshot.
+When snapshots exist for a volume, increasing the size prevents [revert from the last snapshot](/cloud/virtual-instances/volumes/create-and-configure-volumes#revert-volume-from-snapshot). Only a new volume can be created from this volume's snapshot.
 </Warning>
 
 ### Change volume type
 
-This option is available for regular volumes of High IOPS and Standard types. You can't change the type of boot volume. However, you can create a new volume from a volume snapshot with the required type.
+<p>This option is available for regular volumes of High IOPS and Standard types. The boot volume type cannot be changed. To use a different type, create a new volume from a volume snapshot with the required type.</p>
 
 <Info>
-**Info**
-
-Before proceeding with the following instructions, make sure that a volume is detached from a Virtual Machine. Otherwise, the **Retype** button won't appear in your settings list.
+Before proceeding with the following instructions, make sure that a volume is detached from a Virtual Machine. Otherwise, the **Retype** button does not appear in the settings list.
 </Info>
 
-To retype a volume:
+<p>To retype a volume:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to retype.
+<p>2\. Click the three-dot icon next to the target volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. Click **Retype**.
+<p>3\. Click **Retype**.</p>
 
-4\. Select the desired volume type and then click **Retype** to apply the updates.
+<p>4\. Select the desired volume type and then click **Retype** to apply the updates.</p>
 
 
 <Frame>![Dialog asking to select a new volume type](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/retype-volume.png)</Frame>
 
 
 
-You've successfully changed the volume type. 
+<p>The volume type has been changed.</p>
 
-If you have multiple volumes attached to one Virtual Machine, you can use the `rsync` and `cp` utilities to migrate data between volumes within an operating system.
+<p>When multiple volumes are attached to one Virtual Machine, use the `rsync` and `cp` utilities to migrate data between volumes within an operating system.</p>
 
 ### Take a volume snapshot
 
-You can create a volume snapshot and use it later for backup, further recovery, and deploying new Virtual Machines from snapshots of boot volumes. 
+<p>A volume snapshot can be created and used later for backup, further recovery, and deploying new Virtual Machines from snapshots of boot volumes.</p>
 
-To take a snapshot:
+<p>To take a snapshot:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the needed volume.
+<p>2\. Click the three-dot icon next to the needed volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. Click **Take snapshot**.
+<p>3\. Click **Take snapshot**.</p>
 
-4\. Enter snapshot name.
+<p>4\. Enter snapshot name.</p>
 
-5\. Click **Take snapshot**.
+<p>5\. Click **Take snapshot**.</p>
 
 
 <Frame>![Dialog asking to add a snapshot name](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/take-snapshot.png)</Frame>
 
 
 
-The snapshot will appear on the **Snapshots** page, along with the other created snapshots.
+<p>The snapshot will appear on the **Snapshots** page, along with the other created snapshots.</p>
 
 ### Revert volume to the latest snapshot
 
-In case of an accidental data loss or data corruption, you might need to restore a volume to its previous state. If you [made a snapshot of that volume](/cloud/virtual-instances/volumes/create-and-configure-volumes#take-volume-snapshot), you can roll your volume back to the state when that snapshot was taken. 
+<p>In case of an accidental data loss or data corruption, a volume may need to be restored to a previous state. When a [snapshot was taken of that volume](/cloud/virtual-instances/volumes/create-and-configure-volumes#take-volume-snapshot), the volume can be rolled back to the snapshot state.</p>
 
 <Info>
-**Info**
-
-Before proceeding with the following instructions, make sure that the volume is [detached from an instance](/cloud/virtual-instances/volumes/create-and-configure-volumes#detach-a-volume-from-an-instance) and that you have the volume's snapshot. Otherwise, you'll get an error when trying to revert the volume to its previous state.
+Before proceeding with the following instructions, make sure that the volume is [detached from an instance](/cloud/virtual-instances/volumes/create-and-configure-volumes#detach-a-volume-from-an-instance) and a snapshot of the volume exists. Otherwise, an error appears when trying to revert the volume to its previous state.
 </Info>
 
-To revert a volume:
+<p>To revert a volume:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to revert.
+<p>2\. Click the three-dot icon next to the target volume.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. Click **Revert to the latest snapshot**.
+<p>3\. Click **Revert to the latest snapshot**.</p>
 
-4\. Click **Revert**.
+<p>4\. Click **Revert**.</p>
 
 
 <Frame>![Dialog asking to confirm volume reverting](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/revert-volume.png)</Frame>
 
- <Info>
-**Info**
-
-After resizing a volume, reversion is unavailable because the latest snapshot is taken for the old size. You can only create a new volume. For the new size, create a new snapshot.
+<Info>
+After resizing a volume, reversion is unavailable because the latest snapshot is taken for the old size. Only a new volume can be created. For the new size, take a new snapshot.
 </Info>
 
 ### Create an image from a bootable volume
 
-You can create an image from a boot volume and use that image to create a new Virtual Machine. 
+<p>An image can be created from a boot volume and used to create a new Virtual Machine.</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume from which you want to create an image.
+<p>2\. Click the three-dot icon next to the volume to use as the image source.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-boot.png)</Frame>
 
 
 
-3\. Select **Create image**.
+<p>3\. Select **Create Image**.</p>
 
-4\. Specify the image name.
+<p>4\. Specify the image name.</p>
 
-5\. Select architecture.
+<p>5\. Select architecture.</p>
 
-6\. Click **Create image**.
+<p>6\. Click **Create Image**.</p>
 
 
 <Frame>![Dialog to select image and and architecture](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-image.png)</Frame>
 
 
 
-Within a few minutes, the image will be created and available on the **Images** page.
+<p>Within a few minutes, the image will be created and available on the **Images** page.</p>
 
 ### Delete volume
 
-You can delete a regular volume that's not attached to a Virtual Machine. Boot volumes can only be deleted together with the VM.
+<p>A regular volume that is not attached to a Virtual Machine can be deleted. Boot volumes cannot be deleted directly — they must be detached first, which requires deleting the Virtual Machine. When the VM is deleted, the boot volume is retained by default and can be reused to create a new Virtual Machine.</p>
 
-To delete a volume: 
+<p>To delete a volume:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
+<p>1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
 
-2\. Click the three-dot icon next to the volume you want to remove.
+<p>2\. Click the three-dot icon next to the volume to delete.</p>
 
 
 <Frame>![Volumes tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png)</Frame>
 
 
 
-3\. Click **Delete**.
+<p>3\. Click **Delete**.</p>
 
-4\. Confirm your action by typing "Delete" in the text field.
+<p>4\. Type "Delete" in the confirmation field.</p>
 
-5\. Click **Delete volume.**
+<p>5\. Click **Delete Volume**.</p>
 
 
 <Frame>![Dialog asking to confirm volume deletion](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/delete-volume.png)</Frame>
 
 
 
-The volume has been removed from the Gcore Customer Portal. 
+<p>The volume has been removed from the Gcore Customer Portal.</p>
 
 <Tip>
-**Tip**
-
-You can also use the **Actions** dropdown to delete multiple volumes at once. For this option to be active, you must have at least one regular volume that is not attached to any Virtual Machine.
+The **Group actions** button deletes multiple volumes at once. This option is available when at least one regular volume is not attached to a Virtual Machine.
 </Tip>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Volumes are persistent network-attached disks for Virtual Machines. Data survives VM reboots, and a volume can be detached from one VM and re-attached to another in the same region.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Open a bash terminal and set these as environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"
+```
+
+<Info>
+**INSTANCE\_ID** is the UUID of an existing [Virtual&nbsp;Machine](/cloud/virtual-instances/create-an-instance) in the same region. It is required only for the attach and detach steps.
+</Info>
+
+## Quickstart
+
+<p>The scripts below create a 10 GiB standard volume, attach it to the VM identified by `INSTANCE_ID`, resize it to 20 GiB, then detach and delete it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    # Step 1. Initialize the client.
+    client = Gcore()
+
+    # Step 2. Create a 10 GiB standard volume.
+    volume = client.cloud.volumes.create_and_poll(
+        name="data-volume",
+        source="new-volume",
+        size=10,
+        type_name="standard",
+    )
+    volume_id = volume.id
+    print(f"Volume: {volume_id}")
+
+    # Step 3. Attach the volume to an existing VM.
+    instance_id = os.environ["INSTANCE_ID"]
+    client.cloud.volumes.attach_to_instance_and_poll(
+        volume_id,
+        instance_id=instance_id,
+    )
+    print(f"Attached to {instance_id}")
+
+    # Step 4. Resize the volume to 20 GiB (works while attached).
+    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
+    print(f"Resized to {volume.size} GiB")
+
+    # Step 5. Detach the volume from the VM.
+    client.cloud.volumes.detach_from_instance_and_poll(
+        volume_id,
+        instance_id=instance_id,
+    )
+    print("Detached")
+
+    # Step 6. Delete the volume.
+    client.cloud.volumes.delete_and_poll(volume_id)
+    print("Deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        // Step 1. Initialize the client.
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 2. Create a 10 GiB standard volume.
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                Name:     "data-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatalf("create volume: %v", err)
+        }
+        volumeID := volume.ID
+        fmt.Printf("Volume: %s\n", volumeID)
+
+        // Step 3. Attach the volume to an existing VM.
+        instanceID := os.Getenv("INSTANCE_ID")
+        if err = client.Cloud.Volumes.AttachToInstanceAndPoll(ctx, volumeID, cloud.VolumeAttachToInstanceParams{
+            InstanceID: instanceID,
+        }); err != nil {
+            log.Fatalf("attach volume: %v", err)
+        }
+        fmt.Printf("Attached to %s\n", instanceID)
+
+        // Step 4. Resize the volume to 20 GiB (works while attached).
+        resized, err := client.Cloud.Volumes.ResizeAndPoll(ctx, volumeID, cloud.VolumeResizeParams{
+            Size: 20,
+        })
+        if err != nil {
+            log.Fatalf("resize volume: %v", err)
+        }
+        fmt.Printf("Resized to %d GiB\n", resized.Size)
+
+        // Step 5. Detach the volume from the VM.
+        if err = client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+            InstanceID: instanceID,
+        }); err != nil {
+            log.Fatalf("detach volume: %v", err)
+        }
+        fmt.Println("Detached")
+
+        // Step 6. Delete the volume.
+        if err = client.Cloud.Volumes.DeleteAndPoll(ctx, volumeID, cloud.VolumeDeleteParams{}); err != nil {
+            log.Fatalf("delete volume: %v", err)
+        }
+        fmt.Println("Deleted")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a volume
+
+A [volume](/api-reference/cloud/volumes/create-volume) must be in the same region as the VM it will attach to. Use `source: "new-volume"` for blank storage, or `"snapshot"` to restore from an existing [snapshot](/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system).
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name. Latin letters, numbers, underscores, spaces, dots. 3-63 characters. |
+| `source` | Yes | `"new-volume"` for blank storage, `"snapshot"` to create from a snapshot. |
+| `size` | Yes | Volume size in GiB. Minimum 1. |
+| `type_name` | No | `"standard"` (default), `"ssd_hiiops"`, `"cold"`, or `"ultra"`. Available types vary by region. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    volume = client.cloud.volumes.create_and_poll(
+        name="data-volume",
+        source="new-volume",
+        size=10,
+        type_name="standard",
+    )
+    volume_id = volume.id
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                Name:     "data-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatalf("create volume: %v", err)
+        }
+        volumeID := volume.ID
+        fmt.Printf("Volume: %s\n", volumeID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "data-volume",
+        "source": "new-volume",
+        "size": 10,
+        "type_name": "standard"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["278b11f6-e93b-48b6-b6fc-d045cb00156c"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "volumes": ["3298c2d7-aed9-4000-a784-9f066b0843b2"]
+      }
+    }
+    ```
+
+    Save the volume ID and export it:
+
+    ```bash
+    export VOLUME_ID="{VOLUME_ID}"
+    ```
+  </Tab>
+</Tabs>
+
+The SDK methods poll automatically and return the created volume object; read the ID from `volume.id`.
+
+### Step 2. Attach to a Virtual Machine
+
+A volume can be attached to one VM at a time; both must be in the same region. Once attached, the OS sees the volume as a new block device, such as `/dev/sdb`.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `instance_id` | Yes | UUID of the target VM. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.attach_to_instance_and_poll(
+        volume_id,
+        instance_id=os.environ["INSTANCE_ID"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.AttachToInstanceAndPoll(ctx, volumeID, cloud.VolumeAttachToInstanceParams{
+        InstanceID: os.Getenv("INSTANCE_ID"),
+    })
+    if err != nil {
+        log.Fatalf("attach volume: %v", err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/attach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"instance_id": "'"$INSTANCE_ID"'"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["c74f1abc-6d3e-4f2a-9b1e-7a83c2d15f4e"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` changes to `"in-use"` once attached.
+  </Tab>
+</Tabs>
+
+### Step 3. Resize a volume
+
+Volume size can only be increased, not decreased. Resizing works while the volume is attached to a running VM - no downtime required.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `size` | Yes | New size in GiB. Must be greater than the current size. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
+    print(f"New size: {volume.size} GiB")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    resized, err := client.Cloud.Volumes.ResizeAndPoll(ctx, volumeID, cloud.VolumeResizeParams{
+        Size: 20,
+    })
+    if err != nil {
+        log.Fatalf("resize volume: %v", err)
+    }
+    fmt.Printf("New size: %d GiB\n", resized.Size)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/extend" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"size": 20}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["e91f3abc-7d4e-5c2f-9a3b-8b85c4d37f6e"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+After resizing, extend the filesystem inside the OS to claim the new space - for example, `resize2fs` for ext4 or `xfs_growfs` for XFS.
+
+<Warning>
+If the volume has snapshots, resizing it prevents reverting to those snapshots. Only snapshots taken after the resize can be used for reversion.
+</Warning>
+
+### Step 4. Detach from a Virtual Machine
+
+Only non-boot volumes can be detached. Detaching preserves all data; the volume reverts to `"available"` status and can be re-attached to any VM in the same region.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.detach_from_instance_and_poll(
+        volume_id,
+        instance_id=os.environ["INSTANCE_ID"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+        InstanceID: os.Getenv("INSTANCE_ID"),
+    })
+    if err != nil {
+        log.Fatalf("detach volume: %v", err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/detach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"instance_id": "'"$INSTANCE_ID"'"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d85e2cde-4f3a-5b1c-8d2e-9c74f3a26e5d"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+<p>Only detached volumes can be deleted. Boot volumes cannot be deleted directly — they are retained when a Virtual Machine is deleted and must be managed separately.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.delete_and_poll(volume_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.DeleteAndPoll(ctx, volumeID, cloud.VolumeDeleteParams{})
+    if err != nil {
+        log.Fatalf("delete volume: %v", err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["f02g4bcd-8e5f-6d3a-0b4c-9c96d5e48g7f"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Billing for the volume stops immediately after deletion.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision block storage — boot volumes from an OS image, blank data disks, or restored snapshots. The full attribute reference is on the [`gcore_cloud_volume`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_volume) resource page.</p>
+
+
+## Create a volume
+
+<p>The most common use case is `source = "image"` — this creates a boot volume from an OS image and is required when provisioning a Virtual Machine. Use `"new-volume"` for a blank data volume, or `"snapshot"` to restore from an existing snapshot.</p>
+
+<p>For a boot volume, pass the image UUID via a variable. To find the UUID, open the Gcore Customer Portal, navigate to **Cloud** > **Images**, and copy the ID from the image details. IDs are region-specific — use the ID from the region where you are creating the volume.</p>
+
+```hcl
+variable "image_id" {
+  type        = string
+  description = "OS image UUID (region-specific). Find it in Cloud > Images."
+}
+
+resource "gcore_cloud_volume" "boot" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "boot-volume"
+  source     = "image"
+  image_id   = var.image_id
+  size       = 20
+  type_name  = "standard"
+}
+
+output "boot_volume_id" {
+  value = gcore_cloud_volume.boot.id
+}
+```
+
+<p>For a blank data volume:</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 10
+  type_name  = "standard"
+}
+
+output "volume_id" {
+  value = gcore_cloud_volume.example.id
+}
+```
+
+## Attach to a VM
+
+<p>Set `instance_id_to_attach_to` to attach the volume to a [Virtual Machine](/cloud/virtual-instances/create-an-instance). Both the volume and the VM must be in the same region.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id               = var.project_id
+  region_id                = var.region_id
+  name                     = "data-volume"
+  source                   = "new-volume"
+  size                     = 10
+  type_name                = "standard"
+  instance_id_to_attach_to = var.instance_id
+}
+```
+
+<p>To detach, remove the `instance_id_to_attach_to` attribute and run `terraform apply`.</p>
+
+## Resize a volume
+
+<p>Increase `size` and run `terraform apply` — volume size can only be increased.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20  # increased from 10
+  type_name  = "standard"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Change volume type
+
+<p>Change `type_name` and run `terraform apply`.</p>
+
+<Warning>
+Changing `type_name` recreates the volume — the existing volume is deleted and a new one is created with a new ID. Detach the volume from any Virtual Machine before making this change.
+</Warning>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20
+  type_name  = "ssd_hiiops"  # changed from "standard"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a volume
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the volume on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_volume" "example" {
+#   name      = "data-volume"
+#   source    = "new-volume"
+#   size      = 20
+#   type_name = "ssd_hiiops"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import a volume
+
+<p>Use when a volume was created outside Terraform and needs to be managed as code.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20
+  type_name  = "standard"
+}
+```
+
+```bash
+terraform import gcore_cloud_volume.example '<project_id>/<region_id>/<volume_id>'
+```
+
+</MethodSection>
+</MethodSwitch>

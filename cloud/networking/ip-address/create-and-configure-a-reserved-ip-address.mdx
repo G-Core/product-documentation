@@ -1,33 +1,38 @@
-﻿---
+---
 title: "Create and configure a reserved IP address"
 sidebarTitle: "Reserved IP address"
-ai-navigation: Create and assign reserved IP addresses to Virtual Machines, Bare Metal servers, or Load Balancers with configurable network type (Public, Private, Dedicated public), IP family (IPv4, IPv6, Dual), and optional custom IP selection within subnetworks.
+ai-navigation: Reserve a public or private fixed IP address in Gcore Cloud via the Customer Portal, REST API, or Terraform, and use the port ID to assign it to a Virtual Machine, Bare Metal server, or Load Balancer.
 ---
 
-A reserved IP is a dedicated address that can be assigned to a [Virtual Machine](/cloud/virtual-instances/create-an-instance), [Bare Metal server](/cloud/bare-metal-servers/create-a-bare-metal-server), or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer). It exists independently of resources, can be pre-configured in DNS or firewall rules, and remains valid when reassigned. A reserved IP can also be used as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>A reserved IP is a dedicated address that can be assigned to a [Virtual Machine](/cloud/virtual-instances/create-an-instance), [Bare Metal server](/cloud/bare-metal-servers/create-a-bare-metal-server), or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer). It exists independently of resources, can be pre-configured in DNS or firewall rules, and remains valid when reassigned. A reserved IP can also be used as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address).</p>
 
 ## Overview
 
-After a reserved IP is created, this address is exclusively allocated within the Gcore system. No other account can use it. The IP can be assigned to a resource or kept unassigned for future use. An existing port attached to a [Virtual Machine](/cloud/virtual-instances/create-an-instance) or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) can also be marked as reserved to protect it from deletion.
+<p>After a reserved IP is created, this address is exclusively allocated within the Gcore system. No other account can use it. The IP can be assigned to a resource or kept unassigned for future use. An existing port attached to a [Virtual Machine](/cloud/virtual-instances/create-an-instance) or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) can also be marked as reserved to protect it from deletion.</p>
 
 ## Billing
 
-The monthly price for the IP is displayed in the order window. Billing applies only for the time from creating an IP to deleting it.
+<p>The monthly price for the IP is displayed in the order window. Billing applies only for the time from creating an IP to deleting it.</p>
 
-If an IP is reserved and deleted after an hour, charges apply only for that hour. The price remains the same whether the IP is assigned or not.
+<p>If an IP is reserved and deleted after an hour, charges apply only for that hour. The price remains the same whether the IP is assigned or not.</p>
 
 <Frame>
-  ![How it is charged](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png)
+  ![Reserve IP dialog showing the monthly price](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-create-dialog.png)
 </Frame>
 
 ## Reserve an IP address
 
-To create a new reserved IP:
+<p>To create a new reserved IP:</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Cloud** \> **Networking**.
 
 <Frame>
-  ![Networks page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/networks-page.png)
+  ![Networks page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-networks-page.png)
 </Frame>
 
 2. Open the **Reserved IPs** page.
@@ -39,32 +44,36 @@ To create a new reserved IP:
 3. Click **Reserve new IP**.
 
 <Frame>
-  ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/reserved-ips-page.png)
+  ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-reserved-ips-page.png)
 </Frame>
 
-4. In the **Network** field, select the network type:
+4. In the **Reserve IP for** section, keep **Network interface** selected to allocate a new address. Select **Specific port on a resource** to mark an existing Virtual Machine interface as reserved — then choose the instance type, instance, and network interface.
+
+5. In the **Network type** section, select the network type:
 
 - **Public**: External network for internet-facing IP addresses.
 - **Private**: Internal network within the project. For this option, select the [network](/cloud/networking/create-and-manage-a-network) and optionally a specific [subnetwork](/cloud/networking/create-and-manage-a-subnetwork).
 - **Dedicated public**: Dedicated public network (if configured for the project).
 
-When a network is selected without specifying a subnetwork, the IP address is allocated in any available subnet of that network.
+<p>When a network is selected without specifying a subnetwork, the IP address is allocated in any available subnet of that network.</p>
 
 <Info>
 A reserved private IP works within the specified subnetwork. To request a specific address, in the **IP address to reserve** section, select **Custom** and enter the IP that belongs to that subnetwork.
 </Info>
 
-5. (Optional) In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
+6. (Optional) In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
 
-![Reserve IP dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png)
+<Frame>
+  ![Reserve IP dialog with IP Family options](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-create-dialog.png)
+</Frame>
 
-6. Click **Reserve IP**.
+7. Click **Reserve IP**.
 
 ## Assign a reserved IP to a VM
 
 <Tabs>
   <Tab title="During VM creation">
-    Refer to the [VM creation](/cloud/virtual-instances/create-an-instance#step-5-add-network-interfaces) guide.
+    The [VM creation](/cloud/virtual-instances/create-an-instance#step-5-add-network-interfaces) wizard includes a **Reserved IP** option in the **Networking** step. Select it and choose an existing reserved IP from the dropdown.
   </Tab>
   <Tab title="After VM creation">
     1. In the Virtual Machine settings, open the **Networking** tab.
@@ -83,21 +92,21 @@ If the machine is already connected to the target subnetwork, detach it first be
     </Frame>
     3. Select the reserved IP and click **Add**.
 
-    The IP will be assigned to the Virtual Machine.
+    <p>The IP will be assigned to the Virtual Machine.</p>
   </Tab>
 </Tabs>
 
 ## Configure the network interface in the operating system
 
-Manual configuration is required only when adding a private interface to an existing VM or Bare Metal server.
+<p>Manual configuration is required only when adding a private interface to an existing VM or Bare Metal server.</p>
 
-Find the interface name, IP address, and CIDR in the **Networking** tab. The gateway is the first usable IP in the subnet (`10.10.0.1` for `10.10.0.0/24`).
+<p>Find the interface name, IP address, and CIDR in the **Networking** tab. The gateway is the first usable IP in the subnet (`10.10.0.1` for `10.10.0.0/24`).</p>
 
 <Frame>
   ![Network interface details in VM settings](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/vm-interface-details.png)
 </Frame>
 
-To identify the new interface, run `ip link show` and match the MAC address shown in the portal.
+<p>To identify the new interface, run `ip link show` and match the MAC address shown in the portal.</p>
 
 <Tabs>
   <Tab title="Linux">
@@ -201,11 +210,11 @@ To identify the new interface, run `ip link show` and match the MAC address show
   </Tab>
 </Tabs>
 
-The [Virtual IP (VIP) address configuration](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address#configure-a-virtual-ip-address-for-non-windows-virtual-machines) guide contains additional configuration examples.
+<p>The [Virtual IP (VIP) address configuration](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address#configure-a-virtual-ip-address-for-non-windows-virtual-machines) guide contains additional configuration examples.</p>
 
 ## Detach a reserved IP from a VM
 
-Detaching is required before reassigning the IP to another resource or deleting it.
+<p>Detaching is required before reassigning the IP to another resource or deleting it.</p>
 
 1. Open the Virtual Machine settings.
 2. Go to the **Networking** tab.
@@ -219,32 +228,32 @@ Detaching is required before reassigning the IP to another resource or deleting 
 
 ## Assign a reserved IP to a load balancer
 
-Reserved IP assignment is available during Load Balancer creation.
+<p>Reserved IP assignment is available during Load Balancer creation.</p>
 
 <Warning>
 The IP becomes the frontend address and is tightly bound to the frontend network interface. It cannot be changed after provisioning.
 </Warning>
 
-For instructions, refer to the [Load Balancer creation](/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network) guide.
+<p>The [Load Balancer creation](/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network) wizard includes a reserved IP selector in the network configuration step (Step 4).</p>
 
 ## Find a resource with reserved IP
 
-The **Status** column on the **Reserved IPs** page shows if an IP is attached to a resource:
+<p>The **Status** column on the **Reserved IPs** page shows if an IP is attached to a resource:</p>
 
 <Frame>
   ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/attached-to-instance.png)
 </Frame>
 
-Click the resource name to view and update its settings.
+<p>Click the resource name to view and update its settings.</p>
 
 ## Delete a reserved IP
 
-After verifying that the IP is no longer attached to any resource, it can be deleted:
+<p>After verifying that the IP is no longer attached to any resource, it can be deleted:</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Cloud** \> **Networking**.
 
 <Frame>
-  ![Networks page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/networks-page.png)
+  ![Networks page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-networks-page.png)
 </Frame>
 
 2. Open the **Reserved IPs** page.
@@ -254,3 +263,545 @@ After verifying that the IP is no longer attached to any resource, it can be del
 <Frame>
   ![Delete a reserved IP button](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/delete-reserved-ip.png)
 </Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Use the Gcore API to reserve a public or private IP address, retrieve its details and assignment status, attach it to a Virtual Machine via its port ID, and release it when no longer needed.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Open a terminal and set these variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Quickstart
+
+<p>The scripts below reserve a public IPv4 address, create a Virtual Machine that uses it as its network interface, then delete both resources. Set the required environment variables before running:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export IMAGE_ID="{YOUR_IMAGE_ID}"
+export FLAVOR_ID="{YOUR_FLAVOR_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. Reserve a public IP address
+    rip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="external",
+        ip_family="ipv4",
+    )
+    print(f"Reserved: {rip.fixed_ip_address}  port_id: {rip.port_id}")
+
+    # Step 2. Create a VM using the reserved IP's port_id
+    volume = client.cloud.volumes.create_and_poll(
+        name="boot",
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        size=20,
+        type_name="ssd_hiiops",
+    )
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        interfaces=[{"type": "reserved_fixed_ip", "port_id": rip.port_id}],
+        volumes=[{"volume_id": volume.id}],
+    )
+    print(f"Instance: {instance.id}  IP: {rip.fixed_ip_address}")
+
+    # Step 3. Delete the VM, volume, and reserved IP
+    client.cloud.instances.delete_and_poll(instance.id)
+    client.cloud.volumes.delete_and_poll(volume.id)
+    client.cloud.reserved_fixed_ips.delete_and_poll(rip.port_id)
+    print("Cleaned up.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. Reserve a public IP address
+        rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+                IPFamily: cloud.InterfaceIPFamilyIpv4,
+                Type:     constant.ValueOf[constant.External](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create: %v", err)
+        }
+        fmt.Printf("Reserved: %s  port_id: %s\n", rip.FixedIPAddress, rip.PortID)
+
+        // Step 2. Create a VM using the reserved IP's port_id
+        vol, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                Name:     "boot",
+                ImageID:  os.Getenv("IMAGE_ID"),
+                Size:     20,
+                TypeName: "ssd_hiiops",
+            },
+        })
+        if err != nil {
+            log.Fatalf("create volume: %v", err)
+        }
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Name:   gcore.String("my-vm"),
+            Flavor: os.Getenv("FLAVOR_ID"),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfReservedFixedIP: &cloud.InstanceNewParamsInterfaceReservedFixedIP{
+                    PortID: rip.PortID,
+                },
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfExistingVolume: &cloud.InstanceNewParamsVolumeExistingVolume{
+                    VolumeID:  vol.ID,
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create instance: %v", err)
+        }
+        fmt.Printf("Instance: %s  IP: %s\n", instance.ID, rip.FixedIPAddress)
+
+        // Step 3. Delete the VM, volume, and reserved IP
+        client.Cloud.Instances.DeleteAndPoll(ctx, instance.ID, cloud.InstanceDeleteParams{})
+        client.Cloud.Volumes.DeleteAndPoll(ctx, vol.ID, cloud.VolumeDeleteParams{})
+        client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx, rip.PortID, cloud.ReservedFixedIPDeleteParams{})
+        fmt.Println("Cleaned up.")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Reserve an IP address
+
+Reserving an IP allocates a static address from the region pool exclusively for this project — no other account can claim it.
+
+<Tabs>
+  <Tab title="Public IP">
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `type` | Yes | `"external"` for a public address |
+| `ip_family` | No | `"ipv4"` (default), `"ipv6"`, or `"dual"` |
+| `is_vip` | No | Set to `true` to create as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) |
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        import os
+        from gcore import Gcore
+
+        client = Gcore()
+
+        rip = client.cloud.reserved_fixed_ips.create_and_poll(
+            type="external",
+            ip_family="ipv4",
+        )
+        print(f"IP: {rip.fixed_ip_address}  port_id: {rip.port_id}  status: {rip.status}")
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+                IPFamily: cloud.InterfaceIPFamilyIpv4,
+                Type:     constant.ValueOf[constant.External](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create: %v", err)
+        }
+        fmt.Printf("IP: %s  port_id: %s  status: %s\n", rip.FixedIPAddress, rip.PortID, rip.Status)
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+          -H "Authorization: APIKey $GCORE_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{"type": "external", "ip_family": "ipv4"}'
+        ```
+
+        Response:
+
+        ```json
+        {
+          "tasks": ["27ed1ca3-54a8-4a63-81b0-ef651a326757"]
+        }
+        ```
+
+        Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`:
+
+        ```json
+        {
+          "id": "27ed1ca3-54a8-4a63-81b0-ef651a326757",
+          "state": "FINISHED",
+          "created_resources": {
+            "ports": ["f7a67158-3e88-4893-95df-998eb5d49a16"]
+          }
+        }
+        ```
+
+        Save `created_resources.ports[0]` as `PORT_ID` — this is the identifier used in all subsequent calls for this reserved IP.
+      </Tab>
+    </Tabs>
+
+  </Tab>
+  <Tab title="Private IP">
+
+A private reserved IP is allocated within a specific subnet. Add `SUBNET_ID` to the environment variables:
+
+```bash
+export SUBNET_ID="{YOUR_SUBNET_ID}"
+```
+
+<Info>
+`SUBNET_ID` is the UUID of the subnetwork from which to allocate the private IP. To create a subnetwork or find its ID, see [Create and manage a subnetwork](/cloud/networking/create-and-manage-a-subnetwork).
+</Info>
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        rip = client.cloud.reserved_fixed_ips.create_and_poll(
+            type="subnet",
+            subnet_id=os.environ["SUBNET_ID"],
+        )
+        print(f"Private IP: {rip.fixed_ip_address}  port_id: {rip.port_id}")
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfSubnet: &cloud.ReservedFixedIPNewParamsBodySubnet{
+                SubnetID: os.Getenv("SUBNET_ID"),
+                Type:     constant.ValueOf[constant.Subnet](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create private: %v", err)
+        }
+        fmt.Printf("Private IP: %s  port_id: %s\n", rip.FixedIPAddress, rip.PortID)
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+          -H "Authorization: APIKey $GCORE_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "{\"type\": \"subnet\", \"subnet_id\": \"$SUBNET_ID\"}"
+        ```
+
+        Response:
+
+        ```json
+        {
+          "tasks": ["f84f8a0d-d315-4426-b73b-e7479327ae92"]
+        }
+        ```
+
+        Poll the task until `FINISHED`. Save `created_resources.ports[0]` as `PORT_ID`.
+      </Tab>
+    </Tabs>
+
+To reserve a specific address within a subnet, use `type: "ip_address"` with `network_id` and `ip_address` fields. To allocate from any available subnet, use `type: "any_subnet"` with `network_id`.
+
+  </Tab>
+</Tabs>
+
+### Step 2. Get reserved IP details
+
+Retrieving the reserved IP confirms the allocated address and shows its current assignment status.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    rip = client.cloud.reserved_fixed_ips.get(os.environ["PORT_ID"])
+    print(f"IP: {rip.fixed_ip_address}  is_external: {rip.is_external}  reservation: {rip.reservation.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    rip, err = client.Cloud.ReservedFixedIPs.Get(ctx, rip.PortID, cloud.ReservedFixedIPGetParams{})
+    if err != nil {
+        log.Fatalf("get: %v", err)
+    }
+    fmt.Printf("IP: %s  is_external: %t  reservation: %s\n",
+        rip.FixedIPAddress, rip.IsExternal, rip.Reservation.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "port_id": "f7a67158-3e88-4893-95df-998eb5d49a16",
+      "name": "reserved_fixed_ip_85.234.84.235",
+      "status": "DOWN",
+      "fixed_ip_address": "85.234.84.235",
+      "is_external": true,
+      "is_vip": false,
+      "reservation": {
+        "status": "available",
+        "resource_type": null,
+        "resource_id": null
+      },
+      "network_id": "4e16750d-2656-4038-9411-3c7f06c62643",
+      "subnet_id": "f12223d3-dc23-4833-8f35-9aa88f823de8"
+    }
+    ```
+
+    `reservation.status` is `"available"` when the IP is not attached to any resource. Once assigned, it changes to `"attached"` and `resource_type` and `resource_id` are populated.
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Use a reserved IP with a Virtual Machine
+
+<p>Each reserved IP is represented internally by a port — a virtual network endpoint identified by `port_id`. This UUID is obtained from the reservation response (see Step 1 above) and is the value passed in the `interfaces` block during VM creation. Setting `type` to `"reserved_fixed_ip"` and supplying `port_id` binds the reserved address to the VM as its network interface.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        interfaces=[{
+            "type": "reserved_fixed_ip",
+            "port_id": os.environ["PORT_ID"],
+        }],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance: {instance.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+        Flavor: os.Getenv("FLAVOR_ID"),
+        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+            OfReservedFixedIP: &cloud.InstanceNewParamsInterfaceReservedFixedIP{
+                PortID: os.Getenv("PORT_ID"),
+            },
+        }},
+        Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+            OfImage: &cloud.InstanceNewParamsVolumeImage{
+                ImageID:   os.Getenv("IMAGE_ID"),
+                Size:      gcore.Int(20),
+                BootIndex: gcore.Int(0),
+            },
+        }},
+    })
+    if err != nil {
+        log.Fatalf("create instance: %v", err)
+    }
+    fmt.Printf("Instance: %s\n", instance.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-vm",
+        "flavor": "'"$FLAVOR_ID"'",
+        "interfaces": [{"type": "reserved_fixed_ip", "port_id": "'"$PORT_ID"'"}],
+        "volumes": [{"source": "image", "image_id": "'"$IMAGE_ID"'", "size": 20, "boot_index": 0}]
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+<p>After creation, adding the reserved IP to a running VM requires attaching a new interface through the [instance API](/api-reference/cloud#tag/Instances/operation/InstanceAddInterfaceV2.post). The same operation is available in the Customer Portal on the [Portal tab](#portal): open the VM **Networking** tab and add an interface with **Use reserved IP** enabled.</p>
+
+## Clean up
+
+<p>Deleting a reserved IP releases the address and stops billing. The IP must not be attached to any resource before deletion.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.reserved_fixed_ips.delete_and_poll(os.environ["PORT_ID"])
+    print("Reserved IP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx, rip.PortID, cloud.ReservedFixedIPDeleteParams{}); err != nil {
+        log.Fatalf("delete: %v", err)
+    }
+    fmt.Println("Reserved IP deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["8c40dd47-1490-4dde-9cd5-0daee5a567a9"]
+    }
+    ```
+
+    Poll the task until `state` is `FINISHED`. The IP is permanently released and no longer billed.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Allocate a static IP that outlives individual Virtual Machines using [`gcore_cloud_reserved_fixed_ip`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_reserved_fixed_ip). The address persists until explicitly destroyed and can be reassigned to any VM in the same region.</p>
+
+
+## Reserve a public IP address
+
+<p>Setting `type = "external"` reserves a public address from the region pool. The address is exclusively allocated to the project until the resource is destroyed.</p>
+
+```hcl
+resource "gcore_cloud_reserved_fixed_ip" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  type       = "external"
+  ip_family  = "ipv4"
+}
+
+output "fixed_ip_address" {
+  value = gcore_cloud_reserved_fixed_ip.example.fixed_ip_address
+}
+
+output "port_id" {
+  value = gcore_cloud_reserved_fixed_ip.example.port_id
+}
+```
+
+<p>After `terraform apply`:</p>
+
+```bash
+fixed_ip_address = "85.234.84.181"
+port_id          = "616c00c0-e0d5-46bf-93c9-d4bc08912b45"
+```
+
+<p>`port_id` and `id` contain the same UUID — this is the identifier passed to a Virtual Machine's interface configuration (see below).</p>
+
+## Reserve a private IP address
+
+<p>Setting `type = "subnet"` and providing `subnet_id` allocates a private address from a specific subnet's CIDR range.</p>
+
+```hcl
+resource "gcore_cloud_reserved_fixed_ip" "private" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  type       = "subnet"
+  subnet_id  = "{SUBNET_ID}"
+}
+```
+
+<p>To request a specific address within the subnet, add `ip_address = "192.168.1.100"` and change `type` to `"ip_address"` with `network_id` instead of `subnet_id`.</p>
+
+## Use with a Virtual Machine
+
+<p>Pass `port_id` to a `gcore_cloud_instance` interface block to bind the reserved IP to a VM at creation time.</p>
+
+```hcl
+resource "gcore_cloud_instance" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  flavor     = "g2-standard-2-4"
+
+  volumes    = [{ volume_id = gcore_cloud_volume.boot.id }]
+  interfaces = [{
+    type    = "reserved_fixed_ip"
+    port_id = gcore_cloud_reserved_fixed_ip.example.port_id
+  }]
+}
+```
+
+<p>The reserved IP remains allocated even if the instance is destroyed. Reassign it to a new VM by updating `port_id` in a different instance resource and running `terraform apply`.</p>
+
+<Warning>
+To reserve an IP for use as a [Virtual IP](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address), set `is_vip = true` when creating the resource — this field is immutable.
+</Warning>
+
+## Delete a reserved IP
+
+<p>Remove the resource block — Terraform releases the address and stops billing on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_reserved_fixed_ip" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   type       = "external"
+#   ip_family  = "ipv4"
+# }
+```
+
+```bash
+terraform apply
+```
+
+<p>The IP must not be attached to any resource before deletion.</p>
+
+## Import an existing reserved IP
+
+<p>Use when a reserved IP was created outside Terraform and needs to be brought under configuration management.</p>
+
+```bash
+terraform import gcore_cloud_reserved_fixed_ip.example '{PROJECT_ID}/{REGION_ID}/{PORT_ID}'
+```
+
+</MethodSection>
+</MethodSwitch>

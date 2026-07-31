@@ -1,7 +1,7 @@
 ---
 title: "SRT"
 sidebarTitle: "SRT"
-ai-navigation: Configure SRT (Secure Reliable Transport) UDP-based protocol for live streaming ingestion with encoder settings including video codec, bitrate, latency window, keyframe interval, CPU preset, profile, tune, and x264/x265 options; obtain ingest URLs with server location, port 5001, stream key, and backup URL via portal or API for SRT PUSH workflows.
+ai-navigation: Configure SRT (Secure Reliable Transport) UDP-based protocol for live streaming ingestion with encoder settings including video codec, bitrate, latency window, keyframe interval, CPU preset, profile, tune, and x264/x265 options; obtain ingest URLs with server location, port 5001, stream key, and backup URL via portal or API; configure optional passphrase protection via API for SRT PUSH workflows.
 ---
 
 ## Main principles
@@ -97,6 +97,50 @@ Example of the API response:
 ```
 
 Read more in [the API documentation](/api-reference/streaming/streams/create-live-stream).
+
+
+### Protect SRT ingest with a passphrase
+
+For SRT PUSH streams, you can require a passphrase on the ingest connection. When `srt_passphrase` is set for a live stream, your encoder must send the same passphrase while connecting to the SRT ingest URL. The incoming MPEG-TS stream is then AES-encrypted by SRT between the sender and the Gcore ingester.
+
+This protects the ingest path from your encoder to Gcore. It does not encrypt playback URLs and does not replace viewer-side access protection.
+
+Passphrase requirements:
+- 10 to 80 characters
+- ASCII letters, digits, and punctuation only
+- No spaces or non-ASCII characters
+
+Set the passphrase via the API:
+
+```http
+PATCH /streaming/streams/{stream_id}
+```
+
+```json
+{
+  "stream": {
+    "srt_passphrase": "01234567890"
+  }
+}
+```
+
+To disable passphrase protection, update `srt_passphrase` to `null`.
+
+Then send the same passphrase from your encoder. In FFmpeg, pass it as a separate output option:
+
+```sh
+ffmpeg -hide_banner -re -i file.mp4 -c copy -passphrase 01234567890 -f mpegts \
+  "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719"
+```
+
+Or add it to the SRT URL:
+
+```sh
+ffmpeg -hide_banner -re -i file.mp4 -c copy -f mpegts \
+  "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719&passphrase=01234567890"
+```
+
+If the passphrase in the stream settings and the passphrase sent by the encoder do not match, the SRT ingest connection is rejected.
 
 
 ## SRT PULL
@@ -205,7 +249,7 @@ By default, both H.264 and H.265 encoders optimize compression efficiency using 
 You may already be familiar with this well-known diagram illustrating how modern video codecs structure a sequence of frames using different types of prediction to achieve compression efficiency:
 
 <Frame>
-![Video frame compression algorithm](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/compressed-frames.png)
+![Video frame compression algorithm](/images/docs/streaming-platform/live-streaming/protocols/srt/compressed-frames.png)
 </Frame>
 
 In this structure:
@@ -230,7 +274,7 @@ Together, these behaviors can add 1.3–1.5 seconds of encoder latency before th
 If the SRT sender uses a small default latency window (commonly 100–500 ms on certain encoders by default), packets emerging from the encoder will exceed SRT’s delivery deadline. Anything arriving outside the latency budget is treated as “late” and dropped, making the stream inherently non-functional regardless of network conditions.
 
 <Frame>
-![Lookahead buffer window of 40 frames](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/lookahead-40.png)
+![Lookahead buffer window of 40 frames](/images/docs/streaming-platform/live-streaming/protocols/srt/lookahead-40.png)
 </Frame>
 
 <Info>
@@ -245,7 +289,7 @@ Thus, your encoder is creating a deliberately unworkable stream.
 Always enable `-tune zerolatency` (and explicitly disable lookahead, B-frames, and reordering parameters) when sending video over SRT. This ensures the encoder outputs frames immediately and keeps all timestamps within increased SRT’s `latency` window, enabling stable, predictable ingest.
 
 <Frame>
-![Lookahead buffer window is minimized](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/lookahead-0.png)
+![Lookahead buffer window is minimized](/images/docs/streaming-platform/live-streaming/protocols/srt/lookahead-0.png)
 </Frame>
 
 <Tip>

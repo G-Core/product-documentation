@@ -1,12 +1,12 @@
 ---
 title: Manage DNS zones and records via Terraform v2
 sidebarTitle: Manage via Terraform v2
-ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
+ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA, PTR record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
 ---
 
 The Gcore Terraform provider&nbsp;v2 manages Gcore Managed DNS — zones, records, and geo-balancing — through declarative configuration files.
 
-The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA records, and geo-balancing with geographic filtering.
+The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA, PTR records, and geo-balancing with geographic filtering.
 
 Provider&nbsp;v2 uses `api_key` for authentication and `gcore_dns_zone_rrset` for DNS records; installation is in the [Terraform overview](/developer-tools/terraform/overview), and existing v0&nbsp;configurations can be updated with the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
 
@@ -243,6 +243,40 @@ resource "gcore_dns_zone_rrset" "srv" {
 
 ```sh
 terraform import gcore_dns_zone_rrset.srv example.com/_sip._tcp.example.com/SRV
+```
+
+### PTR record
+
+A PTR record maps an IP address to a hostname, used for reverse DNS lookups. PTR records require a dedicated reverse DNS zone — `<reversed-octets>.in-addr.arpa` for IPv4 or `<reversed-nibbles>.ip6.arpa` for IPv6.
+
+<Note>
+PTR support is not listed in the Terraform Registry schema for `gcore_dns_zone_rrset`, but the record type is accepted by the provider and the Gcore DNS API. It is not available in the v0 provider (`gcore_dns_zone_record`).
+</Note>
+
+```hcl
+resource "gcore_dns_zone" "ptr_zone" {
+  name    = "0.0.203.in-addr.arpa"
+  enabled = true
+}
+
+resource "gcore_dns_zone_rrset" "ptr" {
+  zone_name  = gcore_dns_zone.ptr_zone.name
+  rrset_name = "1.0.0.203.in-addr.arpa"
+  rrset_type = "PTR"
+  ttl        = 900
+
+  resource_records = [
+    { content = ["mail.example.com."] },
+  ]
+}
+```
+
+- Specify `zone_name` — the reverse DNS zone. For the `203.0.0.0/24` subnet, the zone is `0.0.203.in-addr.arpa`.
+- Specify `rrset_name` — the full reverse record name. For IP `203.0.0.1`, the name is `1.0.0.203.in-addr.arpa`.
+- Specify `content` — a single-element list with the target hostname and a trailing dot.
+
+```sh
+terraform import gcore_dns_zone_rrset.ptr 0.0.203.in-addr.arpa/1.0.0.203.in-addr.arpa/PTR
 ```
 
 ## Configure geo-balancing

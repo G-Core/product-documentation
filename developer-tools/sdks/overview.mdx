@@ -1,0 +1,112 @@
+---
+title: "Gcore API SDKs"
+sidebarTitle: "Overview"
+ai-navigation: Overview of official Gcore API SDKs for Python and Go, JavaScript fetch and axios examples, and a guide for choosing the right client for scripting, automation, or production services.
+---
+
+Gcore publishes official SDKs for Python and Go, both generated from the OpenAPI specification using [Stainless](https://www.stainless.com/). Method names and parameter names match the API reference exactly.
+
+| SDK | Package | Source | Requirements |
+|-----|---------|--------|--------------|
+| Python | [`gcore`](https://pypi.org/project/gcore/) on PyPI | [gcore-python](https://github.com/G-Core/gcore-python) | Python 3.9+ |
+| Go | [`github.com/G-Core/gcore-go`](https://pkg.go.dev/github.com/G-Core/gcore-go) | [gcore-go](https://github.com/G-Core/gcore-go) | Go 1.22+ |
+
+## Choosing a client
+
+All options call the same API — the choice depends on the context:
+
+| Situation | Recommendation |
+|-----------|----------------|
+| Scripting, automation, CI/CD | [Python SDK](/developer-tools/sdks/python) or [Go SDK](/developer-tools/sdks/go) |
+| One-off inspection, debugging | `curl` or [HTTPie](/developer-tools/rest-api/tools) |
+| Shell scripts | `curl` |
+| Production Node.js services | JavaScript `fetch` or `axios` (see below) |
+| Production Python services | [Python SDK](/developer-tools/sdks/python) (sync or async) |
+| Production Go services | [Go SDK](/developer-tools/sdks/go) |
+| Terraform-managed infrastructure | [Terraform provider](/developer-tools/terraform/overview) |
+
+## SDK coverage
+
+The Python and Go SDKs cover the full API surface: Cloud (instances, volumes, networking, Kubernetes, load balancers, and more), IAM, CDN, DNS, Object Storage, FastEdge, Streaming, and WAAP.
+
+All Cloud API endpoints have auto-generated SDK methods. The [API reference](/api-reference/cloud) code samples show the exact method name for each endpoint.
+
+---
+
+## JavaScript
+
+No dedicated JavaScript SDK is published. Use the built-in `fetch` API (Node.js 18+, all modern browsers) or [axios](https://axios-http.com).
+
+### fetch (Node.js 18+)
+
+```javascript
+const BASE_URL = 'https://api.gcore.com';
+const TOKEN = process.env.GCORE_API_KEY;
+
+// GET — verify token
+const res = await fetch(`${BASE_URL}/iam/clients/me`, {
+  headers: { Authorization: `APIKey ${TOKEN}` },
+});
+const account = await res.json();
+console.log(account.id, account.email);
+
+// POST — create a network
+const netRes = await fetch(
+  `${BASE_URL}/cloud/v1/networks/${process.env.PROJECT_ID}/${process.env.REGION_ID}`,
+  {
+    method: 'POST',
+    headers: {
+      Authorization: `APIKey ${TOKEN}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name: 'my-network' }),
+  }
+);
+const { tasks } = await netRes.json();
+console.log('Task ID:', tasks[0]);
+```
+
+### axios
+
+```bash
+npm install axios
+```
+
+```javascript
+const axios = require('axios');
+
+const client = axios.create({
+  baseURL: 'https://api.gcore.com',
+  headers: { Authorization: `APIKey ${process.env.GCORE_API_KEY}` },
+});
+
+const { data: account } = await client.get('/iam/clients/me');
+console.log(account.id, account.email);
+
+const { data } = await client.post(
+  `/cloud/v1/networks/${process.env.PROJECT_ID}/${process.env.REGION_ID}`,
+  { name: 'my-network' }
+);
+console.log('Task ID:', data.tasks[0]);
+```
+
+### Handle async operations
+
+Cloud API write operations return a task ID. Poll it until `state` is `FINISHED`:
+
+```javascript
+async function waitForTask(taskId, intervalMs = 5000) {
+  const headers = { Authorization: `APIKey ${process.env.GCORE_API_KEY}` };
+  while (true) {
+    const res = await fetch(`https://api.gcore.com/cloud/v1/tasks/${taskId}`, { headers });
+    const task = await res.json();
+    if (task.state === 'FINISHED') return task.created_resources;
+    if (task.state === 'ERROR') throw new Error(`Task failed: ${task.error}`);
+    await new Promise(r => setTimeout(r, intervalMs));
+  }
+}
+
+const { tasks } = await netRes.json();
+const resources = await waitForTask(tasks[0]);
+console.log('Network ID:', resources.networks[0]);
+```

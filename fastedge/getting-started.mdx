@@ -1,48 +1,61 @@
 ---
 title: FastEdge overview
-sidebarTitle: Getting started
-ai-navigation: Deploy WebAssembly applications on Gcore's global edge network using FastEdge for serverless execution with HTTP request/response modification, A/B testing, personalization, image conversion, and custom DNS resolving without infrastructure maintenance.
+sidebarTitle: Overview
+ai-navigation: Overview of FastEdge serverless WebAssembly execution on Gcore edge network - HTTP Applications, CDN Applications, use cases including A/B testing, personalization, authentication, and image manipulation.
 ---
 
-FastEdge is a Gcore product for serverless execution of your apps at the edge. FastEdge lets you launch your apps compiled to WebAssembly on the Gcore scalable CDN network worldwide for quick deployment. There's no need for any environment configuration or infrastructure maintenance. 
+FastEdge runs WebAssembly applications on Gcore's global edge network. Apps execute at the edge node closest to the request — no infrastructure to configure or maintain. Common use cases include A/B testing, personalization, authentication, and image processing.
 
-FastEdge can be used for CDN tasks like request modification, frontend serving, image conversion, and custom DNS resolving. See the [use cases](/fastedge/getting-started#fastedge-use-cases) section for more details.
+## Application types
 
-## How FastEdge works
+FastEdge supports two application types: HTTP and CDN. The application type determines how the application integrates with FastEdge and which setup guide to follow.
 
-There are two approaches to using FastEdge:
+**Modern HTTP applications** receive and respond to HTTP requests directly. They implement the [WASI P2](https://wasi.dev/releases/wasi-p2) `wasi:http/proxy` interface — the current recommended standard for WebAssembly HTTP applications. Supported in Rust (via the `wstd` crate) and JavaScript. Use this type for new edge services: APIs, redirects, authentication proxies, and similar workloads.
 
-  * **Without HTTP request modification**. Run select functions at the edge without modifying them. This allows for improved speed and scalability since some code requests are handled by the Edge network servers, rather than needing to arrive at the application's web server.
-  * **With HTTP request and response modification**. A FastEdge node will modify HTTP requests according to your functions' logic. Then, the modified request is sent to the application's web server. A FastEdge node gets the web server's HTTP response. It modifies the HTTP response according to your functions' logic and sends it to the end user.
+**Legacy HTTP applications** also handle HTTP requests directly, but use Gcore's own `fastedge` crate rather than the WASI standard. They target [WASI P1](https://wasi.dev/releases/wasi-p1), the original WebAssembly system interface. Use it when maintaining existing applications built on the `fastedge` crate.
 
+**CDN applications** run inside a CDN resource's request pipeline. They implement the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions — and can intercept traffic at four stages: on request headers, on request body, on response headers, and on response body. Supported in Rust and AssemblyScript. Use this type when extending an existing CDN-served site with edge logic.
 
+To get started, choose the setup guide that matches the application type and language:
 
-For both approaches, the overall concept works in broadly similar ways: 
+| App type | Language | Setup guide |
+|----------|----------|-------------|
+| Modern HTTP | Rust | [Rust (Modern HTTP)](/fastedge/getting-started/setup-rust-modern) |
+| Modern HTTP | JavaScript | [JavaScript](/fastedge/getting-started/setup-javascript) |
+| Legacy HTTP | Rust | [Rust (Legacy HTTP)](/fastedge/getting-started/setup-rust-legacy) |
+| CDN | Rust | [Rust (CDN / Proxy-Wasm)](/fastedge/getting-started/setup-rust-cdn) |
 
-  1. You add your code to our platform. 
-  2. We deploy your code on the edge servers worldwide. After that, all traffic to your app is automatically routed and load-balanced across our numerous nodes.
-  3. When a request is received from a user, the runtime environment executes the code and sends an HTTP response to the user.
-  4. FastEdge's nodes act as origins to terminate HTTP requests, or as proxies to modify them along the way.
+Both application types share the same deployment workflow:
 
-
+1. Compile the application to WebAssembly and [upload the binary](/fastedge/getting-started/create-fastedge-apps) to FastEdge.
+2. Gcore deploys it across edge nodes worldwide. Traffic is automatically routed and load-balanced.
+3. When a request arrives, the runtime executes the application and returns the result to the client.
 
 ## Key benefits
 
-  * **Low latency everywhere**. FastEdge runs over Gcore's global edge network, so your service will be closer to your users regardless of location, resulting in low latency.
-  * **Quick development**. With FastEdge, you can quickly build highly responsive and personalized apps relying heavily on dynamically generated content.
-  * **Built for innovation**. FastEdge lets you focus on coding and creativity, taking over all backend orchestration.
-  * **Enhanced security**. Each edge app runs within the WebAssembly sandbox, isolating it from other edge apps.
+- **Run code close to users.** FastEdge executes on the edge node closest to each request, reducing round-trip latency without relocating the origin.
+- **Deploy without managing servers.** Gcore handles deployment, scaling, and routing across the global network. The application binary is the only artifact to maintain.
+- **Isolated execution per application.** Each application runs in a WebAssembly sandbox, isolated from other applications on the same node.
+- **Write in Rust or JavaScript.** Both languages have first-class SDK support. Rust covers both HTTP and CDN application types; JavaScript supports HTTP applications.
 
+## Use cases
 
+### A/B testing
 
-## FastEdge use cases
+Split traffic between application versions at the edge — by percentage, geolocation, subnet, or a combination. Teams test changes on a limited audience before a full rollout, with no changes to the origin required.
 
-**A/B testing**. Say you've developed a new version of an application, but you want only a subset users to access it in order to test its performance and user satisfaction. With FastEdge's A/B testing feature, you can set the percentage of users who will receive the new version of the site when they request your application. The logic for your split can include other parameters, such as geolocation or a specific subnet.
+### Personalization
 
-**Personalization**. For a global business, it's essential to personalize content for different categories of customers. With the features in FastEdge, you can set logic based on geolocation, IP, or other HTTP request header data. You can present customers in Frankfurt with an app in German and pricing in Euros, and customers in California with English and US dollars.
+Serve region-specific content based on geolocation, IP address, or request headers — different language, currency, or product catalog per market — without modifying the origin application.
 
-**Authentication**. Imagine you've integrated an educational platform with paid courses with our CDN. To protect the content from unauthorized use, users who pay for a subscription are issued a JWT token. To grant access, your server must match the user's request parameters (IP, key, validity time) with a validation key. You can bring that validation to FastEdge for faster verification thanks to the system's distributed nature. The load on your application's web server will be eliminated because it will only process requests from validated users.
+### Authentication
 
-**Image manipulation**. If you run a pay-per-load picture stock, FastEdge's functions allow you to perform any image conversion you need, including mass converts to WebP, resizing in low resolution, and watermarks to avoid unauthorized use.
+Validate JWT tokens at the edge before a request reaches the origin. The origin processes only validated requests, reducing its load and eliminating a network round-trip for invalid ones.
 
-**Improved user experience**. Suppose your application uses a CMS that generates non-human-readable URLs for site sections. This can cause negative feedback from users. FastEdge allows you to convert URLs to a user-friendly option in the response upon user request. You can also cut off some undesirable custom HTTP headers in the responses.
+### Image manipulation
+
+Convert images at the edge node closest to the request — bulk WebP conversion, low-resolution resizing, watermarking — rather than at a central origin, reducing bandwidth and processing load.
+
+### URL rewriting and header control
+
+Rewrite non-human-readable CMS URLs to a user-friendly format in the response, and add or remove HTTP headers — without touching the origin application.

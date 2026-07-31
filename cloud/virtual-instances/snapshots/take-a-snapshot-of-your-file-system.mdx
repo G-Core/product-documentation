@@ -1,115 +1,494 @@
 ---
 title: Take a snapshot of your file system
-sidebarTitle: Take a snapshot of your file system
-ai-navigation: Create snapshots of system boot volumes and regular volumes in Gcore Cloud via Snapshots, Volumes, or Virtual Machine instances pages for backup, recovery, and VM deployment.
+sidebarTitle: Take a snapshot
+ai-navigation: Create, view, and delete volume snapshots in Gcore Cloud via the Customer Portal or REST API, including Python SDK and Go SDK examples.
 ---
 
-**Snapshot** is the state of a system at a particular point in time. The snapshot can be used for backup and further recovery, as well as for deploying new Virtual Machines from **snapshots of system volume.**
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-**Difference between system and regular volume snapshots**
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-You can make snapshots for both system (boot) volumes and regular volumes. 
+<p>A snapshot captures the full state of a volume at a point in time. Snapshots support backup and recovery, and boot volume snapshots can deploy new Virtual Machines.</p>
 
-**The system volume** is the volume which the operating system is installed. On this volume, the operating system (OS) stores everything it needs to work. 
+<Info>
+For the best data consistency, stop the Virtual Machine before taking a snapshot. Snapshots are billed at the full volume size regardless of how much data the volume contains.
+</Info>
 
-**Regular volume** contains all other information for use, except the operating system. 
+## Difference between system and regular volume snapshots
+
+<p>Snapshots can be created from both system (boot) volumes and regular data volumes.</p>
+
+<p>A snapshot of a system volume captures the operating system and its configuration, while a snapshot of a regular volume captures only the data stored on that volume. In the volume list, system volumes display the `_bootvolume` suffix in the name.</p>
 
 ## Create a snapshot
 
-### From the snapshots page
+<p>Snapshots can be taken from the **Snapshots** page, the **Volumes** page, or a Virtual Machine overview. A [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes) or [Virtual Machine](/cloud/virtual-instances/create-an-instance) must exist in the target region first.</p>
 
-To make a snapshot of the volume, go to the "Snapshots" section inside the project. 
+<Tabs>
+  <Tab title="From the Snapshots page">
+    1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Storage** > **Snapshots**.
 
+    2. In the **Take snapshot** section, open the **Volume** dropdown and select the target volume. System volumes include the `_bootvolume` suffix in the name.
 
-<Frame>![_______________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________.png)</Frame>
+    <Frame>
+      ![Snapshots page with Take snapshot form and volume dropdown](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image1.png)
+    </Frame>
 
+    3. Enter a name in the **Name** field. The Customer Portal may suggest a generated name; replace it if needed.
 
+    4. Click **Create snapshot**.
 
-In the "Take snapshot" section, select the volume to create the snapshot. **System volumes** will have the "_bootvolume" Postfix -> Enter a name for the snapshot in the "Name" field and click "Create snapshot". 
+    <p>The snapshot appears in the list once creation completes.</p>
+  </Tab>
+  <Tab title="From the Volumes page">
+    1. In the Customer Portal, navigate to **Cloud** > **Storage**.
 
+    2. Click the three-dot icon next to the target volume.
 
-<Frame>![_______________________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________________________.png)</Frame>
+    <Frame>
+      ![Volumes page with three-dot menu open on a volume row](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image3.png)
+    </Frame>
 
+    3. Click **Take snapshot**.
 
+    4. Enter a snapshot name in the dialog.
 
-### From the volumes page
+    5. Click **Take snapshot**.
 
-Inside the project, in the "Volumes" section, select the volume to create a snapshot -> on the selector on the right from the selected volume -> select the "Take snapshot" option 
+    <Frame>
+      ![Take snapshot dialog with name field and confirmation button](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image4.png)
+    </Frame>
+  </Tab>
+  <Tab title="From a Virtual Machine">
+    1. In the Customer Portal, navigate to **Cloud** > **Virtual Instances**.
 
+    2. Select the target Virtual Machine to open its overview.
 
-<Frame>![______________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/______________________.png)</Frame>
+    3. Open the **Volumes** tab.
 
+    4. Select the target volume and click **Take snapshot**.
 
+    <Frame>
+      ![Virtual Machine Volumes tab with Take snapshot action](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image5.png)
+    </Frame>
 
-In the drop-down window, enter a name for the snapshot and click "Take snapshot". 
+    5. Enter a snapshot name in the dialog.
 
+    6. Click **Take snapshot**.
 
-<Frame>![_______________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________________.png)</Frame>
+    <Frame>
+      ![Take snapshot dialog opened from a Virtual Machine volume](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image6.png)
+    </Frame>
+  </Tab>
+</Tabs>
 
+## View and manage snapshots
 
+<p>All snapshots in the project appear on the **Snapshots** page under **Cloud** > **Storage** > **Snapshots**.</p>
 
-### From the Virtual Machine
+<Frame>
+  ![Snapshots list with name, size, region, and created columns](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image7.png)
+</Frame>
 
-1\. Open the project and go to the **Instances** page and select the Virtual Machine you want to take a snapshot from.
+### Create a Virtual Machine from a boot volume snapshot
 
-2\. Click the three-dot icon and select **Overview**.
+<p>To deploy a new Virtual Machine from a boot volume snapshot:</p>
 
+1. On the **Snapshots** page, click the three-dot icon next to a boot volume snapshot.
 
-<Frame>![__________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/__________.png)</Frame>
+2. Click **Create Virtual Instance**.
 
+<Frame>
+  ![Snapshot actions menu with Create Virtual Instance option](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image8.png)
+</Frame>
 
-
-3\. Go to the **Volumes** tab and select the volume to create a snapshot.
-
-4\. Click **Take snapshot**.
-
-
-<Frame>![_______________________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________________________.png)</Frame>
-
-
-
-5/ In the window that opens, enter a name for the snapshot and click **Take snapshot**. 
-
-
-<Frame>![__________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/__________________.png)</Frame>
-
-
-
-6\. In the "Snapshots" section, you can view a list of created snapshots from VM volumes.
-
-
-<Frame>![__________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/__________________.png)</Frame>
-
-
-
-## Snapshot management
-
-A list of all created snapshots can be found in the "Snapshots" section, inside the project. 
-
-
-<Frame>![_____________________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_____________________________.png)</Frame>
-
-
-
-You can select the necessary option on the selector on the right from the snapshot: 
-
-### Create a VM from a snapshot of the system volume
-
-
-<Frame>![_________________________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_________________________________.png)</Frame>
-
-
+3. Complete the [Virtual Machine](/cloud/virtual-instances/create-an-instance) configuration form and click **Create**.
 
 ### Delete a snapshot
 
+<p>Snapshots can be deleted at any time from the **Snapshots** page.</p>
 
-<Frame>![_______.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______.png)</Frame>
+1. On the **Snapshots** page, click the three-dot icon next to the target snapshot.
 
+2. Click **Delete**.
 
+3. Confirm deletion in the dialog.
 
-**Also, you can revert a volume to the latest snapshot**. Open the "Volumes" section, detach the volume from your Virtual Machine and select the reverting option on the selector.
+<Frame>
+  ![Delete snapshot confirmation dialog](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/take-a-snapshot-of-your-file-system-image9.png)
+</Frame>
 
-Please note: if you have just resized the volume you will not be able to use the function because the last snapshot is designed for the old size. You can only create a new volume from it. For the new size volume, you need to create a new snapshot.
+### Revert a volume to the latest snapshot
 
+<p>[Volume reversion](/cloud/virtual-instances/volumes/create-and-configure-volumes#revert-volume-to-the-latest-snapshot) restores a detached volume to its most recent snapshot state.</p>
 
-<Frame>![mceclip1.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/mceclip1.png)</Frame>
+<Warning>
+After resizing a volume, reversion is unavailable because the latest snapshot reflects the previous size. Create a new volume from the snapshot instead, then take a new snapshot for the resized volume.
+</Warning>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>The Gcore REST API supports creating and deleting volume snapshots. A snapshot captures the full state of a volume at a point in time; it can later restore data or serve as the source for new volumes.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Set the following environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export VOLUME_ID="{YOUR_VOLUME_ID}"
+```
+
+<Info>
+**VOLUME\_ID** is the UUID of an existing [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes). Create one first if needed.
+</Info>
+
+## Quickstart
+
+<p>The scripts below create a snapshot from an existing volume, print the snapshot details, then delete the snapshot.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    volume_id = os.environ["VOLUME_ID"]
+
+    # Step 1. Create a snapshot from the volume.
+    snapshot = client.cloud.volume_snapshots.create_and_poll(
+        volume_id=volume_id,
+        name="my-snapshot",
+    )
+    print(f"Snapshot ID: {snapshot.id}  status: {snapshot.status}  size: {snapshot.size} GiB")
+
+    # Step 2. Retrieve snapshot details.
+    snap = client.cloud.volume_snapshots.get(snapshot.id)
+    print(f"Name: {snap.name}  volume_id: {snap.volume_id}  created_at: {snap.created_at}")
+
+    # Step 3. Delete the snapshot when it is no longer needed.
+    client.cloud.volume_snapshots.delete_and_poll(snapshot.id)
+    print(f"Deleted snapshot {snapshot.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        volumeID := os.Getenv("VOLUME_ID")
+
+        // Step 1. Create a snapshot from the volume.
+        snapshot, err := client.Cloud.VolumeSnapshots.NewAndPoll(ctx, cloud.VolumeSnapshotNewParams{
+            VolumeID: volumeID,
+            Name:     "my-snapshot",
+        })
+        if err != nil {
+            log.Fatalf("create snapshot: %v", err)
+        }
+        fmt.Printf("Snapshot ID: %s  status: %s  size: %d GiB\n", snapshot.ID, snapshot.Status, snapshot.Size)
+
+        // Step 2. Retrieve snapshot details.
+        snap, err := client.Cloud.VolumeSnapshots.Get(ctx, snapshot.ID, cloud.VolumeSnapshotGetParams{})
+        if err != nil {
+            log.Fatalf("get snapshot: %v", err)
+        }
+        fmt.Printf("Name: %s  volume_id: %s  created_at: %s\n", snap.Name, snap.VolumeID, snap.CreatedAt)
+
+        // Step 3. Delete the snapshot when it is no longer needed.
+        if err = client.Cloud.VolumeSnapshots.DeleteAndPoll(ctx, snapshot.ID, cloud.VolumeSnapshotDeleteParams{}); err != nil {
+            log.Fatalf("delete snapshot: %v", err)
+        }
+        fmt.Printf("Deleted snapshot %s\n", snapshot.ID)
+    }
+
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Find the volume ID
+
+<p>The snapshot API requires the UUID of the volume to snapshot. List volumes to find the right one — boot volumes have `is_root_volume: true`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for volume in client.cloud.volumes.list():
+        label = "boot" if volume.is_root_volume else "data"
+        print(f"[{label}] {volume.id}  {volume.name}  {volume.size} GiB  {volume.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    page, err := client.Cloud.Volumes.List(ctx, cloud.VolumeListParams{})
+    if err != nil {
+        log.Fatalf("list volumes: %v", err)
+    }
+    for _, v := range page.Results {
+        label := "data"
+        if v.IsRootVolume {
+            label = "boot"
+        }
+        fmt.Printf("[%s] %s  %s  %d GiB  %s\n", label, v.ID, v.Name, v.Size, v.Status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "2e222e06-2faa-4e80-ab2a-61463c992193",
+          "name": "my-volume",
+          "size": 10,
+          "status": "available",
+          "volume_type": "standard",
+          "is_root_volume": false,
+          "bootable": false,
+          "attachments": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Copy the `id` of the volume to use as `VOLUME_ID` in the next step.</p>
+
+### Step 2. Create a snapshot
+
+<p>The [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotViewSet.post) is created asynchronously — the API returns a task ID immediately, and the snapshot becomes available only after the task finishes.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `volume_id` | Yes | UUID of the volume to snapshot |
+| `name` | Yes | Display name for the snapshot (3–63 characters) |
+| `description` | No | Optional human-readable note |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    snapshot = client.cloud.volume_snapshots.create_and_poll(
+        volume_id=os.environ["VOLUME_ID"],
+        name="my-snapshot",
+    )
+    print(f"Snapshot ID: {snapshot.id}  status: {snapshot.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    snapshot, err := client.Cloud.VolumeSnapshots.NewAndPoll(ctx, cloud.VolumeSnapshotNewParams{
+        VolumeID: os.Getenv("VOLUME_ID"),
+        Name:     "my-snapshot",
+    })
+    if err != nil {
+        log.Fatalf("create snapshot: %v", err)
+    }
+    fmt.Printf("Snapshot ID: %s  status: %s\n", snapshot.ID, snapshot.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"my-snapshot\", \"volume_id\": \"$VOLUME_ID\"}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["90dc1f93-c2cf-438f-b196-f2569c396b6d"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 3. Poll the task
+
+<p>Both SDK methods (`create_and_poll` and `NewAndPoll`) block until the task completes and return a fully populated snapshot object — no manual polling loop is needed. The returned object has `id`, `status`, `size`, `volume_id`, and `created_at` available immediately.</p>
+
+<p>With curl, repeat the GET request below every five seconds until `state` changes to `FINISHED`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # create_and_poll returned only after the snapshot reached "available" status.
+    # The snapshot object is fully populated — print key fields to confirm.
+    print(f"Snapshot ready.")
+    print(f"  ID:         {snapshot.id}")
+    print(f"  Status:     {snapshot.status}")
+    print(f"  Size:       {snapshot.size} GiB")
+    print(f"  Volume ID:  {snapshot.volume_id}")
+    print(f"  Created at: {snapshot.created_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // NewAndPoll returned only after the snapshot reached "available" status.
+    // The *cloud.Snapshot is fully populated — print key fields to confirm.
+    fmt.Println("Snapshot ready.")
+    fmt.Printf("  ID:         %s\n", snapshot.ID)
+    fmt.Printf("  Status:     %s\n", snapshot.Status)
+    fmt.Printf("  Size:       %d GiB\n", snapshot.Size)
+    fmt.Printf("  Volume ID:  %s\n", snapshot.VolumeID)
+    fmt.Printf("  Created at: %s\n", snapshot.CreatedAt)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    While provisioning:
+
+    ```json
+    {
+      "id": "90dc1f93-c2cf-438f-b196-f2569c396b6d",
+      "state": "RUNNING",
+      "task_type": "create_snapshot"
+    }
+    ```
+
+    When complete:
+
+    ```json
+    {
+      "id": "90dc1f93-c2cf-438f-b196-f2569c396b6d",
+      "state": "FINISHED",
+      "task_type": "create_snapshot",
+      "created_resources": {
+        "snapshots": ["5ed275b8-7eed-4722-8c98-777191d4e003"]
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 4. Get snapshot details
+
+<p>Retrieve the [snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.get) to confirm its status and record its properties.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    snap = client.cloud.volume_snapshots.get(snapshot.id)
+    print(f"Name: {snap.name}  volume_id: {snap.volume_id}  size: {snap.size} GiB")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    snap, err := client.Cloud.VolumeSnapshots.Get(ctx, snapshot.ID, cloud.VolumeSnapshotGetParams{})
+    if err != nil {
+        log.Fatalf("get snapshot: %v", err)
+    }
+    fmt.Printf("Name: %s  volume_id: %s  size: %d GiB\n", snap.Name, snap.VolumeID, snap.Size)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNAPSHOT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "5ed275b8-7eed-4722-8c98-777191d4e003",
+      "name": "my-snapshot",
+      "status": "available",
+      "size": 10,
+      "volume_id": "6ca09383-85d2-4bb3-8d2d-214a2436fa4f",
+      "created_at": "2026-05-30T05:34:14+0000",
+      "updated_at": "2026-05-30T05:34:15+0000",
+      "region": "Luxembourg-3",
+      "project_id": 1186668,
+      "region_id": 148
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+<p>Delete a snapshot using the [delete snapshot](/api-reference/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.delete) API endpoint when it is no longer needed.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.volume_snapshots.delete_and_poll(snapshot_id)
+    print(f"Deleted snapshot {snapshot_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.VolumeSnapshots.DeleteAndPoll(ctx, snapshotID, cloud.VolumeSnapshotDeleteParams{}); err != nil {
+        log.Fatalf("delete snapshot: %v", err)
+    }
+    fmt.Printf("Deleted snapshot %s\n", snapshotID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNAPSHOT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["22d8a306-46f0-4e77-a5b7-c1f232b5f1c4"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Poll the returned task ID until `state` is `FINISHED` to confirm the snapshot is gone.</p>
+
+</MethodSection>
+</MethodSwitch>

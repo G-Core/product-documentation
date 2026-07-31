@@ -13,7 +13,7 @@ llms.txt files contain the full article list with ai-navigation descriptions.
 Usage:
     python scripts/generate_llms_txt.py \\
         --repo C:/Projects/product-documentation \\
-        --base-url https://gcore.com/docs
+        --base-url https://docs.gcore.com
 
 Output:
     {repo}/llms.txt                    - root index linking to per-product files
@@ -32,7 +32,7 @@ from typing import Optional
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
-BASE_URL_DEFAULT = "https://gcore.com/docs"
+BASE_URL_DEFAULT = "https://docs.gcore.com"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
 MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"

@@ -1,79 +1,352 @@
 ---
 title: Upgrade a Kubernetes cluster
 sidebarTitle: Upgrade
-ai-navigation: Upgrade Kubernetes cluster version via Managed Kubernetes portal by selecting target version and confirming the rolling update, which terminates worker nodes sequentially and may impact performance without spare capacity.
+ai-navigation: Upgrade a Kubernetes cluster to a newer version via the Customer Portal, REST API, or Terraform using a rolling update that replaces worker nodes sequentially.
 ---
 
-You can perform a Kubernetes cluster version upgrade to get the latest Kubernetes features and make sure that your cluster is secure and stable.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-## Implications for cluster APIs
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-Kubernetes version upgrades might change the Kubernetes API and features. Please check the official Kubernetes documentation to find the latest changes.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), upgrade a Managed Kubernetes cluster to a newer Kubernetes version. The rolling update replaces worker nodes one at a time.</p>
 
-## Implications for applications
+## Before upgrading
 
-We use a rolling update approach, where the update procedure terminates the existing worker nodes one by one and creates new worker nodes. While rolling upgrades won't stop all nodes at once, they can still have performance implications for your users if you don't have any spare capacity.
+<p>Gcore uses a rolling update — worker nodes are replaced one at a time, so the cluster stays available but performance may be impacted when spare capacity is limited. The upgrade may also change available Kubernetes APIs, so confirm that deprecated APIs are removed in the target version before proceeding.</p>
 
-## Best practices
+- Test the upgrade in a non-production environment first.
+- Use [Managed Logging](/cloud/logging-as-a-service/configure-logging-and-view-your-logs) to monitor activity during the upgrade.
 
-  * Plan upgrades and learn if deprecated APIs are removed in the target version.
-  * Test your upgrades in a non-production environment before attempting an upgrade in production.
-  * Use our Kubernetes logging feature to see what's happening during an upgrade.
+<Info>
+A running [Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) is required.
+</Info>
+
+## Step 1. Select a cluster
+
+1. Navigate to **Cloud** > **Managed Kubernetes**.
+2. Select a cluster from the list.
+
+<Frame>![Kubernetes Clusters page with the Create Cluster button](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-kubernetes-clusters-list.png)</Frame>
+
+<p>If a newer Kubernetes version is available, a **Change** link appears next to the version under **General Info**.</p>
+
+3. Click **Change** to open the version selector.
+
+<Frame>![Cluster General Info section with Kubernetes version and Change link](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-3.png)</Frame>
+
+<p>The **Change Kubernetes cluster version** dialog opens.</p>
+
+## Step 2. Initialize the cluster upgrade
+
+1. Select a new version from the **Kubernetes Version** dropdown.
+2. Click **Change**.
+
+<Warning>
+Downgrade is only supported for one patch version down (for example, from 1.24.9 to 1.24.8). Changing the cluster version takes several minutes, during which API access to the cluster may be unstable.
+</Warning>
+
+<Frame>![Change Kubernetes cluster version dialog with version dropdown and Change button](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-4.png)</Frame>
+
+<p>A confirmation dialog asks to confirm the version upgrade. Click **Yes, upgrade** to start the upgrade.</p>
+
+<Frame>![Upgrade cluster version confirmation dialog with Yes, upgrade button](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-5.png)</Frame>
+
+<p>When the upgrade starts, both dialogs close and a loading indicator appears while the upgrade is in progress.</p>
+
+## Step 3. Finalize
+
+<p>After the upgrade completes, confirm that the version under **General Info** matches the selected version.</p>
+
+<Frame>![Cluster General Info showing updated Kubernetes version after upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-6.png)</Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Upgrading replaces worker nodes one by one via a rolling update. Before triggering the upgrade, fetch the list of available target versions — Gcore only allows upgrading one minor version at a time, and the list reflects what is currently permitted for the cluster.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
+```
+
+<Info>
+`CLUSTER_NAME` is the cluster name set at creation — find it in the [Kubernetes clusters](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) list.
+</Info>
+
+## Quickstart
+
+<p>The scripts below list available upgrade versions and upgrade the cluster to the permitted next version, then verify the result.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    cluster_name = os.environ["CLUSTER_NAME"]
+
+    # Step 1. List versions available for upgrade.
+    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(cluster_name)
+    if versions.count == 0:
+        print("No upgrade versions available")
+        exit(0)
+    target_version = versions.results[0].version  # typically one version is returned
+    print(f"Upgrading to: {target_version}")
+
+    # Step 2. Trigger the upgrade and poll until done.
+    task = client.cloud.k8s.clusters.upgrade(cluster_name, version=target_version)
+    client.cloud.tasks.poll(task.tasks[0])
+
+    # Step 3. Verify the new version.
+    cluster = client.cloud.k8s.clusters.get(cluster_name)
+    print(f"Version: {cluster.version}  Status: {cluster.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        clusterName := os.Getenv("CLUSTER_NAME")
+
+        // Step 1. List versions available for upgrade.
+        versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
+            ctx,
+            clusterName,
+            cloud.K8SClusterListVersionsForUpgradeParams{},
+        )
+        if err != nil {
+            log.Fatal(err)
+        }
+        if versions.Count == 0 {
+            fmt.Println("No upgrade versions available")
+            return
+        }
+        targetVersion := versions.Results[0].Version // typically one version is returned
+        fmt.Printf("Upgrading to: %s\n", targetVersion)
+
+        // Step 2. Trigger upgrade and wait for completion.
+        upgraded, err := client.Cloud.K8S.Clusters.UpgradeAndPoll(
+            ctx,
+            clusterName,
+            cloud.K8SClusterUpgradeParams{
+                Version: targetVersion,
+            },
+        )
+        if err != nil {
+            log.Fatal(err)
+        }
+
+        // Step 3. Verify the new version.
+        fmt.Printf("Version: %s  Status: %s\n", upgraded.Version, upgraded.Status)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available versions for upgrade
+
+<p>This call returns the versions currently permitted for the cluster. Check this before submitting the upgrade request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    versions = client.cloud.k8s.clusters.list_versions_for_upgrade(cluster_name)
+    print(f"Count: {versions.count}")
+    for v in versions.results:
+        print(f"  {v.version}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    versions, err := client.Cloud.K8S.Clusters.ListVersionsForUpgrade(
+        ctx,
+        clusterName,
+        cloud.K8SClusterListVersionsForUpgradeParams{},
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Count: %d\n", versions.Count)
+    for _, v := range versions.Results {
+        fmt.Printf("  %s\n", v.Version)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME/upgrade_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {"version": "v1.33.10"}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Select a `version` value from the returned list and pass it to the upgrade call. The [upgrade versions](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpdateVersionViewSet.get) endpoint accepts only path parameters — no request body is required.</p>
+
+### Step 2. Upgrade the cluster
+
+<p>Submit the target version to the [upgrade](/api-reference/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpgradeActionViewSetV2.post) endpoint to start the rolling update. The API returns a task ID immediately; the actual node replacement takes several minutes.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `version` | Yes | Target Kubernetes version from Step 1 |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.k8s.clusters.upgrade(cluster_name, version=target_version)
+    print(f"Task: {task.tasks[0]}")
+
+    result = client.cloud.tasks.poll(task.tasks[0])
+    print(f"State: {result.state}")
+
+    cluster = client.cloud.k8s.clusters.get(cluster_name)
+    print(f"Version: {cluster.version}  Status: {cluster.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    upgraded, err := client.Cloud.K8S.Clusters.UpgradeAndPoll(
+        ctx,
+        clusterName,
+        cloud.K8SClusterUpgradeParams{
+            Version: targetVersion,
+        },
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Version: %s  Status: %s\n", upgraded.Version, upgraded.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v2/k8s/clusters/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$CLUSTER_NAME/upgrade" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"version": "v1.33.10"}'
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["a73025eb-071a-400d-beb3-f6818428a99f"]
+    }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The upgrade has no `created_resources` in the task response.
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/tasks/a73025eb-071a-400d-beb3-f6818428a99f" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    While running:
+
+    ```json
+    {
+      "state": "RUNNING",
+      "task_type": "upgrade_k8s_cluster"
+    }
+    ```
+
+    When complete:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "task_type": "upgrade_k8s_cluster"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>After the task finishes, the cluster returns to `"Provisioned"` status with the new version.</p>
+
+</Accordion>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Upgrade a managed Kubernetes cluster to the next minor version. Edit `version` in [`gcore_cloud_k8s_cluster`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_k8s_cluster) and run `terraform apply` to trigger a rolling node replacement.</p>
+
+<Warning>
+The rolling update creates replacement nodes before removing existing ones — confirm the project quota can accommodate a second full node pool during the transition.
+</Warning>
 
 
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-1.png)</Frame>
+## Upgrade a cluster
 
+<p>Edit the `version` field in the cluster resource block and run `terraform apply`. Terraform detects the change and triggers the rolling upgrade automatically.</p>
 
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-k8s-cluster"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+  keypair       = "my-keypair"
+  version       = "v1.33.10"  # update to the target version
 
-## How to upgrade a cluster
+  pools = [{
+    name               = "default-pool"
+    flavor_id          = "g2-standard-2-4"  # example; available flavors are region-specific
+    servergroup_policy = "anti-affinity"
+    min_node_count     = 1
+    max_node_count     = 2
+    boot_volume_size   = 50
+    boot_volume_type   = "ssd_hiiops"
+    auto_healing_enabled = true
+  }]
+}
+```
 
-To upgrade the Kubernetes version of a cluster, perform the following steps:
+```bash
+terraform apply
+```
 
-### Step 1. Select a cluster
-
-Open the **Managed Kubernetes** tab in the **Cloud** section and select a cluster from the list.
-
-
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-2.png)</Frame>
-
-
-
-If a newer version of Kubernetes is available for the cluster, a **Change** link will appear beside the version under **General Info**.
-
-Click the **Change** link to start the update.
-
-
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-3.png)</Frame>
-
-
-
-A pop-up window will open where you can select a new version.
-
-### Step 2. Initialize the cluster upgrade
-
-Select a new version and click the **Change** button.
-
-**Warning:** Downgrade is only supported for one patch version down (e.g., from 1.24.9 to 1.24.8).
-
-**Warning:** Changing your cluster version will take several minutes, during which API access to the cluster may be unstable.
-
-
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-4.png)</Frame>
-
-
-
-Clicking on the **Change** button will open another popup that asks you to confirm the version upgrade. Click on the **Yes, upgrade** button to start the upgrade.
-
-
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-5.png)</Frame>
-
-
-
-When the update starts, both popups will close. You'll see a loading indicator when the update is in progress.
-
-### Step 3. Finalize
-
-After the update, check that the version under **General Info** matches your selected version.
-
-
-<Frame>![upgrade](/images/docs/cloud/kubernetes/clusters/upgrade/upgrade-6.png)</Frame>
+</MethodSection>
+</MethodSwitch>
