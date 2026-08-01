@@ -1,0 +1,104 @@
+---
+title: Test FastEdge applications with fastedge-test
+sidebarTitle: Test framework
+ai-navigation: Test compiled FastEdge Wasm binaries in CI or a browser debugger using the fastedge-test npm package, without deploying to the edge.
+---
+
+The `@gcoredev/fastedge-test` package runs a compiled FastEdge Wasm binary directly in Node.js, so CDN (proxy-wasm) and HTTP-WASM applications can be tested without a FastEdge deployment. The binary type is detected automatically.
+
+<Info>
+Node.js 18 or later is required. Install from the [npm&nbsp;registry](https://www.npmjs.com/package/@gcoredev/fastedge-test):
+
+- `npm install @gcoredev/fastedge-test`
+- `pnpm add @gcoredev/fastedge-test`
+</Info>
+
+## Ways to use the package
+
+The package exposes three entry points, each suited to a different testing scenario:
+
+| Entry point | Use case |
+|-------------|----------|
+| `@gcoredev/fastedge-test/test` | Test suites for CI, scripts, or an existing runner (Vitest, Jest) |
+| `@gcoredev/fastedge-test` | Direct control over WASM execution, without the suite framework |
+| `npx @gcoredev/fastedge-test` (no import) | Interactive browser debugger with a request builder and log streaming |
+
+Start with `@gcoredev/fastedge-test/test` unless direct runner control is needed.
+
+## Write a headless test suite
+
+`defineTestSuite` takes a `wasmPath` (or `wasmBuffer`) and a list of tests, each receiving an isolated runner instance:
+
+```typescript
+import { defineTestSuite, runAndExit, runFlow, assertFinalStatus } from '@gcoredev/fastedge-test/test';
+
+const suite = defineTestSuite({
+  wasmPath: './build/my-cdn-app.wasm',
+  tests: [
+    {
+      name: 'blocks /admin with 403',
+      run: async (runner) => {
+        const result = await runFlow(runner, { url: 'https://example.com/admin' });
+        assertFinalStatus(result, 403);
+      },
+    },
+  ],
+});
+
+await runAndExit(suite);
+```
+
+`runFlow` derives the request pseudo-headers from the URL and runs the full CDN request/response flow in one call. HTTP-WASM applications call `runner.execute({ path, method, headers })` directly instead, since there is no proxy-wasm request/response cycle to simulate.
+
+`runAndExit` prints a pass/fail summary and exits with a zero exit code when every test passes, or a non-zero code on any failure — suitable for a CI step or `Makefile` target. `runTestSuite(suite)` returns the same result as a `SuiteResult` object instead of exiting, for use inside another test runner.
+
+## Assertion helpers
+
+Every helper throws a plain `Error` on failure, so they work inside `try/catch` or any test framework.
+
+| Category | Helpers |
+|----------|---------|
+| Request and response headers (CDN) | `assertRequestHeader`, `assertNoRequestHeader`, `assertResponseHeader`, `assertNoResponseHeader` |
+| Final response (CDN full flow) | `assertFinalStatus`, `assertFinalHeader` |
+| Hook return code | `assertReturnCode` |
+| Logs | `assertLog`, `assertNoLog`, `logsContain` |
+| CDN property access | `assertPropertyAllowed`, `assertPropertyDenied`, `hasPropertyAccessViolation` |
+
+## Run the visual debugger
+
+Once tests pass with the assertion helpers above, the same package can also launch an interactive debugger for manual inspection:
+
+```bash
+npx @gcoredev/fastedge-test
+```
+
+This opens a browser UI at `http://localhost:5179` with a request builder, response inspector, and WebSocket log streaming — the same debugger bundled with the [FastEdge&nbsp;extension](/fastedge/local-development/vscode-extension) for VS Code. If port 5179 is in use, the server tries the next port up to 5188; set the `PORT` environment variable to pin a specific port instead.
+
+Test configurations built in the debugger UI save to `fastedge-config.test.json`, which `loadConfigFile` reads back into a headless suite:
+
+```typescript
+import { loadConfigFile } from '@gcoredev/fastedge-test/test';
+
+const config = await loadConfigFile('./fastedge-config.test.json');
+```
+
+## Integrate with Vitest or Jest
+
+If a project already uses a test runner, the same assertion helpers and `createRunner` integrate directly, since they throw plain errors rather than depending on the standalone suite:
+
+```typescript
+import { describe, it } from 'vitest';
+import { createRunner } from '@gcoredev/fastedge-test';
+import { runFlow, assertFinalStatus } from '@gcoredev/fastedge-test/test';
+
+describe('my CDN app', () => {
+  it('returns 200 for homepage', async () => {
+    const runner = await createRunner('./build/app.wasm');
+    try {
+      assertFinalStatus(await runFlow(runner, { url: 'https://example.com/' }), 200);
+    } finally {
+      await runner.cleanup();
+    }
+  });
+});
+```
