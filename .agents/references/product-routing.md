@@ -21,6 +21,7 @@ Match on the article path prefix (longest match wins).
 | `waap/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `edge-ai/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `fastedge/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
+| `reseller-support/` | Admin Portal (Reseller) — BLOCKED, see note below | https://admin.gcore.top/ | SSO flow — Work domain `gcore.com` reaches a **Gcore internal staff superadmin console** (all resellers, all accounts, employee RBAC, feature toggles), not a single reseller's own scoped view. Do not use this login for regression-testing reseller-facing articles until a real reseller-scoped account or an impersonation path is confirmed. |
 | `reseller/` (future) | Reseller Portal | TBD | TBD |
 | `box/` (future) | Box Portal | TBD | TBD |
 
