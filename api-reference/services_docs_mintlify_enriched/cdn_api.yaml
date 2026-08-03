@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: f33f89db45d5
+  version: 1d7127c0c990
 servers:
 - url: https://api.gcore.com
 tags:
@@ -4343,6 +4343,28 @@ paths:
           	fmt.Printf("%+v\n", response.Message)
           }
   /cdn/presets/{preset_id}/applied/{object_id}:
+    get:
+      operationId: get-applied-preset-object
+      tags:
+      - Presets
+      summary: Get applied preset object
+      description: |-
+        Get a single object the preset is applied to.
+
+        Returns `404` if the preset is not applied to the object, so you can use this endpoint to check
+        whether the relationship exists.
+      parameters:
+      - $ref: '#/components/parameters/preset_id'
+      - $ref: '#/components/parameters/object_id'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppliedPresetObjectResponse'
+        '404':
+          description: Preset does not exist, or the preset is not applied to the object.
     delete:
       operationId: unapply-preset
       tags:
@@ -7687,29 +7709,42 @@ components:
           example:
           - options.gzipOn
           - options.browser_cache_settings
+    AppliedPresetObjectResponse:
+      type: object
+      description: A single object the preset is applied to.
+      properties:
+        preset_id:
+          $ref: '#/components/schemas/applied_preset_id'
+        object_id:
+          $ref: '#/components/schemas/applied_object_id'
+      required:
+      - preset_id
+      - object_id
     AppliedPresetResponse:
-      oneOf:
-      - title: Applied objects
-        type: object
-        properties:
-          object_type:
-            type: string
-            description: Type of objects the preset is applied to.
-            example: CDNResource
-          object_ids:
-            type: array
-            items:
-              type: integer
-            description: IDs of the objects the preset is currently applied to.
-            example:
-            - 7531
-            - 7532
-      - title: No applied objects
-        type: object
-        properties:
-          message:
-            type: string
-            example: You have no presets applied
+      type: object
+      properties:
+        object_type:
+          type: string
+          description: Type of objects the preset is applied to.
+          example: CDNResource
+        object_ids:
+          type: array
+          items:
+            type: integer
+          description: IDs of the objects the preset is currently applied to. Empty when the preset is not applied to anything.
+          example:
+          - 7531
+          - 7532
+        message:
+          type: string
+          deprecated: true
+          description: |-
+            Deprecated. Present only when `object_ids` is empty. Check `object_ids` instead. This field is kept
+            for backward compatibility and will be removed in a future version.
+          example: You have no presets applied
+      required:
+      - object_type
+      - object_ids
     ApplyPresetRequest:
       type: object
       properties:
@@ -7722,9 +7757,20 @@ components:
     ApplyPresetResponse:
       type: object
       properties:
+        preset_id:
+          $ref: '#/components/schemas/applied_preset_id'
+        object_id:
+          $ref: '#/components/schemas/applied_object_id'
         message:
           type: string
+          deprecated: true
+          description: |-
+            Deprecated. Use `preset_id` and `object_id` instead. This field is kept for backward compatibility
+            and will be removed in a future version.
           example: Preset successfully applied
+      required:
+      - preset_id
+      - object_id
     AttachLECert:
       type: object
       properties:
@@ -12683,6 +12729,14 @@ components:
         value:
         - GET
         - POST
+    applied_object_id:
+      type: integer
+      description: ID of the object (CDN resource or rule, according to the preset `object_type`) the preset is applied to.
+      example: 7531
+    applied_preset_id:
+      type: integer
+      description: ID of the preset that is applied to the object. Matches the `preset_id` path parameter.
+      example: 42
     auth:
       deprecated: true
       description: |-
