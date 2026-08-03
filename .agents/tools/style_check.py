@@ -173,15 +173,15 @@ def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
 
             words = link_text.replace("&nbsp;", " ").split()
             is_portal_link = link_text.strip() == "Gcore Customer Portal"
-            if len(words) > 2 and not is_portal_link:
+            if len(words) > 3 and not is_portal_link:
                 violations.append(Violation(
                     line=lineno,
                     rule="Link text length",
-                    detail=f"Link text '{link_text}' is {len(words)} words — max 2 words",
+                    detail=f"Link text '{link_text}' is {len(words)} words — max 3 words",
                     text=text.strip(),
                 ))
 
-            if len(words) == 2 and "&nbsp;" not in link_text and not link_text.startswith("Gcore Customer Portal"):
+            if 2 <= len(words) <= 3 and "&nbsp;" not in link_text and not link_text.startswith("Gcore Customer Portal"):
                 violations.append(Violation(
                     line=lineno,
                     rule="Link &nbsp;",
@@ -242,13 +242,14 @@ def check_meta_preamble(lines: list[tuple[int, str]]) -> list[Violation]:
 def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     measurement_units = re.compile(
-        r"\d+\s*(ms|s|min|minutes?|hours?|days?|GB|MB|KB|TB|Gbps|Mbps|vCPU|rpm|"
+        r"\d+\s*(ms|s|sec|seconds?|min|minutes?|hours?|days?|GB|MB|KB|TB|Gbps|Mbps|vCPU|rpm|"
         r"px|em|rem|%|cores?|nodes?|instances?|MB/s|KB/s)\b",
         re.IGNORECASE,
     )
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
-        r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+",
+        r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+|"
+        r"\blayer\s*\d\b|\bL\d\b",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")

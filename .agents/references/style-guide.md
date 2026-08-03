@@ -619,19 +619,19 @@ The opening paragraph must be specific to this article. A reader skimming the pa
 If a URL has already appeared as a link, all subsequent mentions are **plain text**.
 The first occurrence is the canonical link.
 
-### Link text: 1–2 words maximum
+### Link text: 1–3 words maximum
 
 The link text must be the noun or short verb phrase that names the destination.
 Never use a full clause, sentence fragment, or description.
 
 **Exception — Gcore product names:** `Gcore Customer Portal` is a three-word proper noun
 and must never be shortened. Use it in full as link text for the first mention:
-`[Gcore Customer Portal](https://portal.gcore.com)`. The 1–2 word rule does not apply
+`[Gcore Customer Portal](https://portal.gcore.com)`. The 1–3 word rule does not apply
 to registered product names.
 
 ### Non-breaking spaces in multi-word link text
 
-When link text contains two words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between the words:
+When link text contains two or three words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between every word:
 
 ```mdx
 [KV&nbsp;store](/fastedge/kv-stores/manage-kv-store)
