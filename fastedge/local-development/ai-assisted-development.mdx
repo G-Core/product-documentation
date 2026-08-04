@@ -1,10 +1,10 @@
 ---
 title: AI-assisted development for FastEdge
 sidebarTitle: AI-assisted development
-ai-navigation: Build, test, and deploy FastEdge applications using natural language via the gcore-fastedge plugin for Claude Code and Codex.
+ai-navigation: Build, test, and deploy FastEdge applications using natural language via the gcore-fastedge plugin for Claude Code, Codex, and Cursor.
 ---
 
-The `gcore-fastedge` plugin adds FastEdge-specific skills to Claude Code and Codex. A request like "scaffold a new HTTP app called my-api" or "deploy this app to FastEdge" scaffolds the project, builds the Wasm binary, and calls the FastEdge API directly, without switching to a terminal or looking up SDK syntax.
+The `gcore-fastedge` plugin adds FastEdge-specific skills to Claude Code, Codex, and Cursor. A request like "scaffold a new HTTP app called my-api" or "deploy this app to FastEdge" scaffolds the project, builds the Wasm binary, and calls the FastEdge API directly, without switching to a terminal or looking up SDK syntax.
 
 <Info>
 Docker and a FastEdge [API&nbsp;token](/account-settings/api-tokens) are required to build, deploy, or manage applications through the plugin.
@@ -20,7 +20,15 @@ Declining Docker falls back to a local toolchain (`fastedge-build`, `cargo`, `as
 
 ## Available skills
 
-Claude Code and Codex share the same skill set, invoked with the `/gcore-fastedge:` prefix in Claude Code or `$gcore-fastedge:` in Codex.
+All three clients share the same skill set, but the invocation prefix is client-specific:
+
+| Client | Prefix | Example |
+|-------|--------|---------|
+| Claude Code | `/gcore-fastedge:` | `/gcore-fastedge:deploy` |
+| Codex | `$gcore-fastedge:` | `$gcore-fastedge:deploy` |
+| Cursor | `/` | `/deploy` |
+
+The skill names below stay the same across clients — only the prefix changes:
 
 | Skill | Command | Description |
 |-------|---------|-------------|
@@ -38,7 +46,7 @@ The Docs skill works from the plugin's bundled reference docs even without the M
 
 ## Install the plugin
 
-Installing the plugin makes the skills above available. Both CLIs use the same Gcore marketplace repository:
+Installing the plugin makes the skills above available. Claude Code and Codex use the same Gcore marketplace repository; Cursor installs from the plugin repository directly:
 
 <Tabs>
 <Tab title="Claude Code">
@@ -57,6 +65,15 @@ The installation persists across sessions. Run `/plugin marketplace update gcore
 codex plugin marketplace add G-Core/gcore-marketplace
 codex plugin add gcore-fastedge@gcore-marketplace
 ```
+
+</Tab>
+<Tab title="Cursor">
+
+```bash
+agent plugin marketplace add https://github.com/G-Core/fastedge-plugin.git
+```
+
+Run `agent`, enter `/plugins`, open the **Marketplace** tab, and select **Gcore FastEdge**. Cursor prompts for an install scope — personal use or shared with project contributors — then installs the plugin; run `agent plugin marketplace update gcore-fastedge-marketplace` later to pick up new versions.
 
 </Tab>
 </Tabs>
@@ -107,6 +124,23 @@ codex mcp get fastedge-assistant
 The output shows the Docker command and `env: GCORE_API_KEY=*****`.
 
 </Tab>
+<Tab title="Cursor">
+
+Cursor CLI inherits `GCORE_API_KEY` from the shell that launches it:
+
+```bash
+export GCORE_API_KEY="your-api-key"
+```
+
+<Warning>
+On macOS, Cursor launched from Finder or the Dock does not inherit variables exported from `.zshrc`. Set the key in the GUI session instead, then fully quit and reopen Cursor:
+</Warning>
+
+```bash
+launchctl setenv GCORE_API_KEY "your-api-key"
+```
+
+</Tab>
 </Tabs>
 
 <Info>
@@ -115,7 +149,7 @@ To test against preprod instead of production, set `GCORE_API_BASE=https://api.p
 
 ## Example prompts
 
-Both CLIs accept the same natural-language requests, resolved by the plugin's skills without a fixed command syntax:
+All three clients accept the same natural-language requests, resolved by the plugin's skills without a fixed command syntax:
 
 - "Scaffold a new HTTP app called my-api" — creates a TypeScript project from an SDK blueprint
 - "Deploy this app to FastEdge" — builds the Wasm binary and deploys it to the edge
@@ -124,7 +158,7 @@ Both CLIs accept the same natural-language requests, resolved by the plugin's sk
 
 ## Connect other AI clients
 
-Claude Code and Codex are not the only supported clients. The FastEdge MCP server also runs standalone for MCP clients without plugin support, including Cursor, Claude Desktop, and VS Code. Create `.vscode/mcp.json` in the workspace:
+Claude Code, Codex, and Cursor are not the only supported clients. The FastEdge MCP server also runs standalone for MCP clients without plugin support, including Claude Desktop and VS Code. Create `.vscode/mcp.json` in the workspace:
 
 ```json
 {
