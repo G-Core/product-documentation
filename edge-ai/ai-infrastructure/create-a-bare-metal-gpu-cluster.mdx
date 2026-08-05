@@ -267,7 +267,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         "fmt"
         "os"
         "sort"
-        "strconv"
         "time"
 
         "github.com/G-Core/gcore-go"
@@ -275,8 +274,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     )
 
     func main() {
-        projectIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
         client := gcore.NewClient()
@@ -284,10 +281,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 1. List flavors — select the one with fewest GPUs
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-            cloud.GPUBaremetalClusterFlavorListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUBaremetalClusterFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -300,10 +294,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 2. List images — select the first (latest) image
         imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
-            cloud.GPUBaremetalClusterImageListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUBaremetalClusterImageListParams{})
         if err != nil {
             panic(err)
         }
@@ -313,8 +304,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         // Step 3. Create the cluster
         taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
             cloud.GPUBaremetalClusterNewParams{
-                ProjectID:    gcore.Int(projectIDInt),
-                RegionID:     gcore.Int(regionIDInt),
                 Name:         "my-gpu-cluster",
                 Flavor:       flavor.Name,
                 ImageID:      image.ID,
@@ -356,10 +345,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         // Step 5. Get the public IP and print SSH command
         ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
             clusterID,
-            cloud.GPUBaremetalClusterInterfaceListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUBaremetalClusterInterfaceListParams{})
         if err != nil {
             panic(err)
         }
@@ -407,10 +393,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   <Tab title="Go SDK">
     ```go
     flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-        cloud.GPUBaremetalClusterFlavorListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterFlavorListParams{})
     if err != nil {
         panic(err)
     }
@@ -482,10 +465,7 @@ The API returns:
   <Tab title="Go SDK">
     ```go
     imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
-        cloud.GPUBaremetalClusterImageListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterImageListParams{})
     if err != nil {
         panic(err)
     }
@@ -560,8 +540,6 @@ The API returns:
     ```go
     taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
         cloud.GPUBaremetalClusterNewParams{
-            ProjectID:    gcore.Int(projectID),
-            RegionID:     gcore.Int(regionID),
             Name:         "my-gpu-cluster",
             Flavor:       "{FLAVOR_NAME}",
             ImageID:      "{IMAGE_ID}",
@@ -658,10 +636,7 @@ curl "https://api.gcore.com/cloud/v1/tasks/e4cecbfc-5258-40bb-b78f-3cd92621c3b2"
     ```go
     ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
         "{CLUSTER_ID}",
-        cloud.GPUBaremetalClusterInterfaceListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterInterfaceListParams{})
     if err != nil {
         panic(err)
     }

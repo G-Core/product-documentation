@@ -29,8 +29,6 @@ An SSH key must be added to the project before creating a cluster — it's requi
 - Optional **file share** integration for shared storage across instances.
 
 <Warning>
-**Warning**
-
 The local data disk is a non-replicated volume that comes with every Virtual GPU instance. This disk:
 
 - Cannot be modified, detached, or used as a boot volume
@@ -268,7 +266,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         "fmt"
         "os"
         "sort"
-        "strconv"
         "time"
 
         "github.com/G-Core/gcore-go"
@@ -276,8 +273,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     )
 
     func main() {
-        projectIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
         client := gcore.NewClient()
@@ -285,10 +280,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 1. List flavors — select the one with fewest GPUs
         flavorList, err := client.Cloud.GPUVirtual.Clusters.Flavors.List(ctx,
-            cloud.GPUVirtualClusterFlavorListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUVirtualClusterFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -301,10 +293,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 2. List images — select the first (latest) image
         imageList, err := client.Cloud.GPUVirtual.Clusters.Images.List(ctx,
-            cloud.GPUVirtualClusterImageListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUVirtualClusterImageListParams{})
         if err != nil {
             panic(err)
         }
@@ -314,8 +303,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         // Step 3. Create the cluster
         taskIDList, err := client.Cloud.GPUVirtual.Clusters.New(ctx,
             cloud.GPUVirtualClusterNewParams{
-                ProjectID:    gcore.Int(projectIDInt),
-                RegionID:     gcore.Int(regionIDInt),
                 Name:         "my-gpu-cluster",
                 Flavor:       flavor.Name,
                 ServersCount: 1,
@@ -365,10 +352,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         // Step 5. Get the public IP and print SSH command
         ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(ctx,
             clusterID,
-            cloud.GPUVirtualClusterInterfaceListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUVirtualClusterInterfaceListParams{})
         if err != nil {
             panic(err)
         }
@@ -416,10 +400,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   <Tab title="Go SDK">
     ```go
     gpuVirtualFlavorList, err := client.Cloud.GPUVirtual.Clusters.Flavors.List(ctx,
-        cloud.GPUVirtualClusterFlavorListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUVirtualClusterFlavorListParams{})
     if err != nil {
         panic(err)
     }
@@ -489,10 +470,7 @@ The API returns:
   <Tab title="Go SDK">
     ```go
     imageList, err := client.Cloud.GPUVirtual.Clusters.Images.List(ctx,
-        cloud.GPUVirtualClusterImageListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUVirtualClusterImageListParams{})
     if err != nil {
         panic(err)
     }
@@ -579,8 +557,6 @@ Place `image_id` inside the volume object only; the boot volume `source` must be
     ```go
     taskIDList, err := client.Cloud.GPUVirtual.Clusters.New(ctx,
         cloud.GPUVirtualClusterNewParams{
-            ProjectID:    gcore.Int(projectID),
-            RegionID:     gcore.Int(regionID),
             Name:         "my-gpu-cluster",
             Flavor:       "{FLAVOR_NAME}",
             ServersCount: 1,
@@ -693,10 +669,7 @@ When complete:
     ```go
     ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(ctx,
         "{CLUSTER_ID}",
-        cloud.GPUVirtualClusterInterfaceListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUVirtualClusterInterfaceListParams{})
     if err != nil {
         panic(err)
     }
