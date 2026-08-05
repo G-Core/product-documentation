@@ -145,7 +145,7 @@ client.cloud.something.list(project_id=project_id, region_id=region_id)
 
 ### Go SDK
 
-As of `gcore-go` v0.55.0, `gcore.NewClient()` reads `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` automatically, the same way it already read `GCORE_API_KEY` — matching the Python SDK. **Do not pass `ProjectID`/`RegionID` in the params struct** when the three env vars are set; the client-level defaults are used.
+`gcore.NewClient()` reads `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` automatically, the same way it reads `GCORE_API_KEY` — matching the Python SDK. **Do not pass `ProjectID`/`RegionID` in the params struct** when the three env vars are set; the client-level defaults are used.
 
 **Correct pattern:**
 ```go
