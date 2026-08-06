@@ -1,0 +1,101 @@
+---
+title: FastEdge extension for VS Code
+sidebarTitle: VS Code extension
+ai-navigation: Build, run, and debug FastEdge applications locally in VS Code using a bundled debugger and request panel, before deploying to the edge.
+---
+
+The FastEdge extension for VS Code compiles Rust, JavaScript, or AssemblyScript source into a Wasm binary, serves it locally through a bundled debugger, and opens a request panel inside the editor for sending test requests and inspecting responses — no separate build tools or terminal commands required.
+
+<Info>
+The build toolchain for the target language must be installed:
+
+- Rust: `rustup target add wasm32-wasip1`
+- JavaScript: `@gcoredev/fastedge-sdk-js`
+- AssemblyScript: `assemblyscript`, `@assemblyscript/wasi-shim`, and `@gcoredev/proxy-wasm-sdk-as`
+</Info>
+
+## Supported languages and app types
+
+The extension builds both FastEdge application types, each tied to a specific language and SDK:
+
+| App type | Languages | SDK |
+|----------|-----------|-----|
+| HTTP | Rust, JavaScript | [FastEdge-sdk-rust](https://github.com/G-Core/FastEdge-sdk-rust), [FastEdge-sdk-js](https://github.com/G-Core/FastEdge-sdk-js) |
+| CDN | Rust, AssemblyScript | [proxy-wasm-sdk-rust](https://github.com/proxy-wasm/proxy-wasm-rust-sdk), [proxy-wasm-sdk-as](https://github.com/G-Core/proxy-wasm-sdk-as) |
+
+Once a project is opened, the extension detects its language automatically, from whichever signal is present: a VS Code language ID of `rust` for Rust, an `asconfig.json` file at the project root for AssemblyScript, or a JS/TS file without `asconfig.json` for JavaScript.
+
+## Install the extension
+
+Install [FastEdge&nbsp;Launcher](https://marketplace.visualstudio.com/items?itemName=G-CoreLabsSA.fastedge) from the Visual Studio Marketplace.
+
+<Info>
+Editors built on the VS Code extension host without access to the Visual Studio Marketplace can install the OS-specific `.vsix` package instead, downloaded from [GitHub&nbsp;releases](https://github.com/G-Core/FastEdge-vscode/releases): `{editor-cli} --install-extension fastedge-{os}-{version}.vsix`.
+</Info>
+
+## Initialize a workspace
+
+A `.vscode/launch.json` file is required before debugging. Create one automatically from the Command Palette (`Ctrl+Shift+P`): `FastEdge: Initialize workspace (create launch.json)`.
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastEdge App Runner: Launch",
+      "type": "fastedge",
+      "request": "launch",
+      "entrypoint": "file"
+    }
+  ]
+}
+```
+
+The `entrypoint` field is the only value the extension reads from `launch.json`:
+
+| Value | Behavior |
+|-------|----------|
+| `file` (default) | Builds the active editor file |
+| `package` | Builds from the `main` field in `package.json` — JavaScript only |
+
+## Debug an application
+
+Press `F5`, or run `Debug: Start Debug` from the Command Palette, to build the active file and open the debugger. Each running app gets an isolated local server on a port between 5179 and 5188, so multiple apps in the same workspace can be debugged at the same time.
+
+The debugger opens as a panel inside the editor for building a request — URL, method, headers, body — sending it to the running app, and inspecting the response. Test configurations can be saved and reloaded from the same panel.
+
+| Command | Description |
+|---------|-------------|
+| Debug: FastEdge App (Current File) | Builds the active file and starts the debugger |
+| Debug: FastEdge App (Package Entry) | Builds from the `package.json` main field and starts the debugger |
+| FastEdge: Initialize workspace | Creates `.vscode/launch.json` with the default configuration |
+| FastEdge (Generate mcp.json) | Adds the FastEdge MCP server to the workspace |
+| FastEdge (Setup Codespace Secrets) | Configures GitHub Codespaces secrets for FastEdge |
+
+Two more actions are available from the file explorer's right-click menu instead of the Command Palette: **FastEdge: Load in Debugger** on a `.wasm` file loads a precompiled binary directly, and **FastEdge: Load Config in Debugger** on a `*test.json` file loads a saved test configuration.
+
+## Configure runtime values
+
+Environment variables, secrets, and request or response headers are set through test configuration files, not `launch.json`. The debugger panel writes and reads these controls from a `fastedge-config.test.json` file in the app root.
+
+<p>As an alternative, the extension auto-discovers `.env` files in the app root. Add both to `.gitignore` before storing secrets in either:</p>
+
+```
+.vscode/
+.env
+.env.*
+.fastedge-debug/
+```
+
+## Connect the FastEdge MCP server
+
+Beyond local debugging, the extension can also configure the FastEdge MCP server for AI-assisted workflows. AI clients that support the Model Context Protocol can reach the server directly from VS Code. Running `FastEdge (Generate mcp.json)` from the Command Palette writes a working server configuration into the workspace — the same Docker-based setup described in [AI-assisted&nbsp;development](/fastedge/local-development/ai-assisted-development#connect-other-ai-clients) — without editing the JSON file by hand.
+
+## Settings
+
+Two settings control the bundled debugger and its generated MCP configuration:
+
+| Setting | Description |
+|---------|-------------|
+| `fastedge.cliVersion` | Version of the bundled debugger — read-only |
+| `fastedge.apiUrl` | API host the generated MCP configuration points to — defaults to `https://api.gcore.com`; override for preprod testing |

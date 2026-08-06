@@ -1,13 +1,13 @@
 ---
 title: "Make the first Gcore API call"
 sidebarTitle: "First API call"
-ai-navigation: Step-by-step walkthrough to obtain a project ID and region ID from the Cloud API, set all three required variables in the terminal, and make a verified first resource call using curl, Python SDK, Go SDK, or JavaScript.
+ai-navigation: Set up an API token, project ID, and region ID, then make the first Cloud API call using curl, Python SDK, Go SDK, or JavaScript.
 ---
 
 Three values are needed before any Cloud API call works: an API token, a project ID, and a region ID.
 
 <Info>
-A terminal must be open and `curl` must be installed. If either is unfamiliar, read [API basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
+A terminal must be open and `curl` must be installed. If either is unfamiliar, read [API&nbsp;basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
 </Info>
 
 ## Step 1. Set up the API token
@@ -39,7 +39,7 @@ The terminal will display a response. A working token returns something like:
 }
 ```
 
-If the terminal shows an error message instead, check [Authentication errors](/developer-tools/rest-api/authentication#common-authentication-errors).
+If the terminal shows an error message instead, check [Authentication&nbsp;errors](/developer-tools/rest-api/authentication#common-authentication-errors).
 
 ## Step 2. Find the project ID
 
@@ -108,7 +108,7 @@ Replace `1234567` with the actual ID from the response.
 
 Most accounts have one project named "Default", while multiple projects are used to separate environments (production, staging) or billing.
 
-## Step 3. Choose a region
+## Step 3. Select a region
 
 Cloud resources — VMs, volumes, networks — exist in a specific region (a data center location), and different regions support different features. List all available regions:
 
@@ -206,13 +206,9 @@ With all three variables set, run a real Cloud API call — list all VMs in the 
   </Tab>
   <Tab title="Go SDK">
     ```go
-    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
+    // Uses GCORE_CLOUD_PROJECT_ID and GCORE_CLOUD_REGION_ID set in Step 2 and 3
     ctx := context.Background()
-    instances, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    instances, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
     if err != nil { panic(err) }
     fmt.Printf("%d instances\n", instances.Count)
     ```
@@ -276,17 +272,14 @@ export GCORE_CLOUD_REGION_ID=148       # Read by Gcore() automatically
 
 No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
 
-**Go SDK** — `GCORE_API_KEY` is read automatically by `gcore.NewClient()`. Project ID and region ID must be read from the environment and passed explicitly to each call:
+**Go SDK** — all three values are read automatically by `gcore.NewClient()`, the same way the Python SDK reads them:
 
 ```bash
-export GCORE_API_KEY="..."
-export GCORE_CLOUD_PROJECT_ID=1234567
-export GCORE_CLOUD_REGION_ID=148
+export GCORE_API_KEY="..."             # Read by gcore.NewClient() automatically
+export GCORE_CLOUD_PROJECT_ID=1234567  # Read by gcore.NewClient() automatically
+export GCORE_CLOUD_REGION_ID=148       # Read by gcore.NewClient() automatically
 ```
 
-```go
-projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
-```
+No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
 
 Resource creation is asynchronous — the response returns a task ID, not the finished resource.

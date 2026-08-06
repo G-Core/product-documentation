@@ -1,7 +1,7 @@
 ---
 title: "Spot Bare Metal GPU"
 sidebarTitle: "Spot Bare Metal GPU"
-ai-navigation: Deploy Spot Bare Metal GPU clusters with discounted pricing for interruptible workloads via Customer Portal or REST API - check availability, create clusters when capacity allows, and understand reclamation with 24-hour notice.
+ai-navigation: Deploy discounted Spot Bare Metal GPU clusters via Customer Portal or REST API, check availability, and handle reclamation with 24-hour notice.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -145,8 +145,6 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     import (
         "context"
         "fmt"
-        "os"
-        "strconv"
         "strings"
 
         gcore "github.com/G-Core/gcore-go"
@@ -154,17 +152,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
-
         client := gcore.NewClient()
         ctx := context.Background()
 
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-            cloud.GPUBaremetalClusterFlavorListParams{
-                ProjectID: gcore.Int(projectID),
-                RegionID:  gcore.Int(regionID),
-            })
+            cloud.GPUBaremetalClusterFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -267,7 +259,6 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
         "context"
         "fmt"
         "os"
-        "strconv"
         "strings"
 
         gcore "github.com/G-Core/gcore-go"
@@ -275,8 +266,6 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
         client := gcore.NewClient()
@@ -284,10 +273,7 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
 
         // Find an available Spot flavor
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-            cloud.GPUBaremetalClusterFlavorListParams{
-                ProjectID: gcore.Int(projectID),
-                RegionID:  gcore.Int(regionID),
-            })
+            cloud.GPUBaremetalClusterFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -305,18 +291,13 @@ If `capacity` is `0` when the request is submitted, the API returns HTTP 409: `"
 
         // Get the latest image
         imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
-            cloud.GPUBaremetalClusterImageListParams{
-                ProjectID: gcore.Int(projectID),
-                RegionID:  gcore.Int(regionID),
-            })
+            cloud.GPUBaremetalClusterImageListParams{})
         if err != nil {
             panic(err)
         }
 
         taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
             cloud.GPUBaremetalClusterNewParams{
-                ProjectID:    gcore.Int(projectID),
-                RegionID:     gcore.Int(regionID),
                 Name:         "my-spot-cluster",
                 Flavor:       spotFlavor,
                 ImageID:      imageList.Results[0].ID,
