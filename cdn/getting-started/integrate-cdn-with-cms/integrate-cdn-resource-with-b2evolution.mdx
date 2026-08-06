@@ -1,27 +1,28 @@
 ---
 title: Integrate CDN resource with B2evolution
 sidebarTitle: B2evolution
-ai-navigation: Configure B2evolution CMS to serve static resources through Gcore CDN by replacing base URL variables with CNAME domain in configuration file, then verify resource URLs are rewritten to CDN CNAME in browser Network tab.
+ai-navigation: Configure B2evolution to serve static resources through the Gcore CDN CNAME by editing the site configuration file.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+<Warning>
+Back up site files and the database before making changes. The steps below work only with the default B2evolution pattern — a manually modified pattern might not integrate correctly.
+</Warning>
 
-Use your ?NAME (cdn.site.com) that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) for the following steps. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** to find the CNAME configured for the CDN resource; it typically looks like `cdn.site.com`. Confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured before starting the integration.
 
-One single file needs to be edited in order to set the path variables to point to the CDN location: `blogs/conf/_advanced.php`
+1. Open `blogs/conf/_advanced.php` in the B2evolution installation.
+2. Add a new variable near the top of the file, set to the CNAME from the Customer Portal:
 
-Add a new variable in the beginning.
+   ```php
+   $cdnurl = 'http://cdn.site.com/';
+   ```
 
-Replace the following variables in the code
+3. Replace the following variable assignments so static resources load from `$cdnurl` instead of `$baseurl`:
 
-Replace _cdnurl_ with your CNAME. For example: `http://cdn.site.com/`
+   | Before | After replacement |
+   |---|---|
+   | `$rsc_url = $baseurl.$rsc_subdir;` | `$rsc_url = $cdnurl.$rsc_subdir;` |
+   | `$skins_url = $baseurl.$skins_subdir;` | `$skins_url = $cdnurl.$skins_subdir;` |
+   | `$media_url = $baseurl.$media_subdir;` | `$media_url = $cdnurl.$media_subdir;` |
 
-**Before** | **After replacement**  
----|---  
-$rsc_url = $baseurl.$rsc_subdir; | $rsc_url = $cdnurl .$rsc_subdir;  
-$skins_url = $baseurl.$skins_subdir; | $skins_url = $cdnurl .$skins_subdir;  
-$media_url = $baseurl.$media_subdir; | $media_url = $cdnurl .$media_subdir;  
-  
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+4. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static files should now load from the CNAME instead of the original domain.
