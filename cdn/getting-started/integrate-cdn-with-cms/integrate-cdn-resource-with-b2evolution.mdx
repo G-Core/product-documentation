@@ -4,22 +4,33 @@ sidebarTitle: b2evolution
 ai-navigation: Configure b2evolution to serve static resources through a Gcore CDN custom domain by editing blogs conf advanced PHP on a stock install.
 ---
 
-This guide configures a stock b2evolution installation so static assets load from a Gcore CDN [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn). It applies when the site still uses the default layout with `blogs/conf/_advanced.php`, and the default asset URL variables (`$rsc_url`, `$skins_url`, `$media_url`) still build from `$baseurl`. Back up the site files and database before changing configuration. Newer b2evolution releases may expose an Assets URLs / CDN panel in the admin UI instead of this file edit — that path is not covered here until a verified version range is confirmed.
+Stock b2evolution installations can load static assets from a Gcore CDN [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) by changing the asset URL variables in `blogs/conf/_advanced.php`. This method applies when the site still uses the default layout with that file, and the default asset URL variables (`$rsc_url`, `$skins_url`, `$media_url`) still build from `$baseurl`. If the installation exposes an **Assets URLs / CDN** panel in the admin UI instead, configure the custom domain there — see the [b2evolution Assets URLs / CDN settings](https://b2evolution.net/man/assets-url-cdn-settings) documentation.
 
 <Warning>
-Editing `blogs/conf/_advanced.php` can take the site offline if the file is saved with a syntax error. Keep a backup of the original file and restore it if the site fails to load after the change.
+Back up the site files and database before changing configuration. Editing `blogs/conf/_advanced.php` can take the site offline if the file is saved with a syntax error — keep a copy of the original file and restore it if the site fails to load after the change.
 </Warning>
 
 Before editing b2evolution, collect the **custom domain** value to put in `$cdnurl` (for example, `cdn.example.com`):
 
-1. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
-2. Note the **custom domain** shown for the resource — this is the hostname used in asset URLs and in `$cdnurl`.
-3. Confirm DNS: the custom domain has a CNAME record that points to the account **Gcore target hostname** (`cl-****.gcdn.co` from the portal DNS setup). Do not put the `gcdn.co` hostname in `$cdnurl`.
-4. Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Copy the custom domain">
+    Note the **custom domain** shown for the resource — this is the hostname used in asset URLs and in `$cdnurl`.
+  </Step>
+  <Step title="Confirm the DNS CNAME">
+    Confirm that the custom domain has a CNAME record pointing to the value shown on the **Set up your DNS** page (`cl-****.gcdn.co`). Do not put the `gcdn.co` hostname in `$cdnurl`.
+  </Step>
+  <Step title="Confirm SSL">
+    Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+  </Step>
+</Steps>
 
 Then update the b2evolution configuration:
 
 1. Open `blogs/conf/_advanced.php` in the b2evolution installation.
+
 2. Add a new variable near the top of the file, set to the custom domain with `https://` and a trailing slash:
 
    ```php
@@ -35,4 +46,5 @@ Then update the b2evolution configuration:
    | `$media_url = $baseurl.$media_subdir;` | `$media_url = $cdnurl.$media_subdir;` |
 
 4. Save `blogs/conf/_advanced.php`.
+
 5. Confirm the integration by opening the browser developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static files should load from the custom domain over HTTPS instead of the origin domain.
