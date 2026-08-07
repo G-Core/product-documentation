@@ -1,20 +1,29 @@
 ---
-title: Integrate CDN resource with b2evolution
+title: Integrate a CDN resource with b2evolution
 sidebarTitle: b2evolution
-ai-navigation: Configure b2evolution to serve static resources through the Gcore CDN CNAME by editing the site configuration file.
+ai-navigation: Configure b2evolution to serve static resources through a Gcore CDN custom domain by editing blogs conf advanced PHP on a stock install.
 ---
 
+This guide configures a stock b2evolution installation so static assets load from a Gcore CDN [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn). It applies when the site still uses the default layout with `blogs/conf/_advanced.php`, and the default asset URL variables (`$rsc_url`, `$skins_url`, `$media_url`) still build from `$baseurl`. Back up the site files and database before changing configuration. Newer b2evolution releases may expose an Assets URLs / CDN panel in the admin UI instead of this file edit — that path is not covered here until a verified version range is confirmed.
+
 <Warning>
-Back up site files and the database before making changes. The steps below work only with the default b2evolution pattern — a manually modified pattern might not integrate correctly.
+Editing `blogs/conf/_advanced.php` can take the site offline if the file is saved with a syntax error. Keep a backup of the original file and restore it if the site fails to load after the change.
 </Warning>
 
-In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** to find the CNAME configured for the CDN resource; it typically looks like `cdn.site.com`. Confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured before starting the integration.
+Before editing b2evolution, collect the **custom domain** value to put in `$cdnurl` (for example, `cdn.example.com`):
+
+1. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+2. Note the **custom domain** shown for the resource — this is the hostname used in asset URLs and in `$cdnurl`.
+3. Confirm DNS: the custom domain has a CNAME record that points to the account **Gcore target hostname** (`cl-****.gcdn.co` from the portal DNS setup). Do not put the `gcdn.co` hostname in `$cdnurl`.
+4. Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+
+Then update the b2evolution configuration:
 
 1. Open `blogs/conf/_advanced.php` in the b2evolution installation.
-2. Add a new variable near the top of the file, set to the CNAME from the Customer Portal:
+2. Add a new variable near the top of the file, set to the custom domain with `https://` and a trailing slash:
 
    ```php
-   $cdnurl = 'http://cdn.site.com/';
+   $cdnurl = 'https://cdn.example.com/';
    ```
 
 3. Replace the following variable assignments so static resources load from `$cdnurl` instead of `$baseurl`:
@@ -25,4 +34,5 @@ In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > 
    | `$skins_url = $baseurl.$skins_subdir;` | `$skins_url = $cdnurl.$skins_subdir;` |
    | `$media_url = $baseurl.$media_subdir;` | `$media_url = $cdnurl.$media_subdir;` |
 
-4. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static files should now load from the CNAME instead of the original domain.
+4. Save `blogs/conf/_advanced.php`.
+5. Confirm the integration by opening the browser developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static files should load from the custom domain over HTTPS instead of the origin domain.
