@@ -145,30 +145,22 @@ client.cloud.something.list(project_id=project_id, region_id=region_id)
 
 ### Go SDK
 
-The Go SDK does not read `project_id`/`region_id` at client level — they must be passed explicitly in every params struct. Only `GCORE_API_KEY` is read automatically by `gcore.NewClient()`.
+`gcore.NewClient()` reads `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` automatically, the same way it reads `GCORE_API_KEY` — matching the Python SDK. **Do not pass `ProjectID`/`RegionID` in the params struct** when the three env vars are set; the client-level defaults are used.
 
 **Correct pattern:**
 ```go
 import (
     "context"
-    "os"
-    "strconv"
 
     gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/cloud"
 )
 
 func main() {
-    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
-
-    client := gcore.NewClient()       // reads GCORE_API_KEY automatically — no option.WithAPIKey
+    client := gcore.NewClient()       // reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID automatically
     ctx := context.Background()       // created once, passed to every call
 
-    result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{})   // no ProjectID/RegionID
 }
 ```
 
@@ -178,6 +170,11 @@ import "github.com/G-Core/gcore-go/option"
 client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))  // wrong — no option import needed
 
 result, err := client.Cloud.Something.Do(context.TODO(), ...)  // wrong — context.TODO() is a placeholder
+
+// wrong — redundant now that the client reads these from env; only add ProjectID/RegionID
+// when a single script must operate across more than one project or region
+projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{ProjectID: gcore.Int(projectID)})
 ```
 
 Key rules:
@@ -185,6 +182,7 @@ Key rules:
 - No `option` import
 - `ctx := context.Background()` — one variable, reused in all calls
 - `context.TODO()` is forbidden
+- Omit `ProjectID`/`RegionID` from params structs — only add them back for an example that deliberately targets a project or region different from the one set in the env vars
 
 ---
 

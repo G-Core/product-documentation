@@ -1,16 +1,12 @@
 ---
 title: "Go SDK"
 sidebarTitle: "Go"
-ai-navigation: Official Gcore Go SDK for REST API access - installation, client initialization, param.Opt and omitzero request field semantics, auto-paging list iterators, error handling with errors.As, retries, per-request and per-retry timeouts, middleware, and accessing raw HTTP response data.
+ai-navigation: Install and configure the Gcore Go SDK, covering client setup, request parameters, pagination, error handling, retries, and middleware.
 ---
 
 The `gcore-go` module provides typed access to the full Gcore REST API from Go 1.22+. Generated from the OpenAPI specification using [Stainless](https://www.stainless.com/), all request structs use Go's type system with `omitzero` semantics from Go 1.24 `encoding/json`. All responses are strongly typed structs with a `.JSON` metadata field for optional field inspection.
 
 Module: [`github.com/G-Core/gcore-go`](https://pkg.go.dev/github.com/G-Core/gcore-go) · Source: [gcore-go](https://github.com/G-Core/gcore-go) on GitHub
-
-## Requirements
-
-Go 1.22 or higher.
 
 ## Install
 
@@ -26,7 +22,7 @@ go get -u 'github.com/G-Core/gcore-go@v0.48.0'
 
 ## Initialize the client
 
-`gcore.NewClient()` returns a value type (`gcore.Client`), not a pointer. The client reads the API key from the `GCORE_API_KEY` environment variable by default:
+`gcore.NewClient()` returns a value type (`gcore.Client`), not a pointer. The client reads `GCORE_API_KEY`, `GCORE_CLOUD_PROJECT_ID`, and `GCORE_CLOUD_REGION_ID` from the environment by default:
 
 ```go
 package main
@@ -34,17 +30,13 @@ package main
 import (
     "context"
     "fmt"
-    "os"
 
-    "github.com/G-Core/gcore-go"
+    gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/cloud"
-    "github.com/G-Core/gcore-go/option"
 )
 
 func main() {
-    client := gcore.NewClient(
-        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-    )
+    client := gcore.NewClient()
 }
 ```
 
@@ -53,13 +45,9 @@ func main() {
 List all instances in a project and region:
 
 ```go
-projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-page, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
-    ProjectID: gcore.Int(projectID),
-    RegionID:  gcore.Int(regionID),
-})
+// Uses GCORE_CLOUD_PROJECT_ID and GCORE_CLOUD_REGION_ID read by gcore.NewClient()
+ctx := context.Background()
+page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
 if err != nil {
     panic(err)
 }
@@ -74,10 +62,8 @@ Required primitive fields carry the tag `` `api:"required"` `` and are always se
 
 ```go
 params := cloud.InstanceNewParams{
-    ProjectID: projectID,                   // required int64 - always serialized
-    RegionID:  regionID,                    // required int64 - always serialized
-    Flavor:    "g2-standard-2-4",           // required string
-    Name:      gcore.String("my-vm"),       // optional - use gcore.String(), gcore.Int(), etc.
+    Flavor: "g2-standard-2-4",         // required string - always serialized
+    Name:   gcore.String("my-vm"),     // optional - use gcore.String(), gcore.Int(), etc.
 }
 ```
 
@@ -96,15 +82,11 @@ Flavor IDs are region-specific. Run <code>client.Cloud.Instances.Flavors.List(ct
 Cloud API write operations return a task ID. Use `NewAndPoll` methods where available - they submit the request and block until the resource is ready:
 
 ```go
-projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
 imageID := os.Getenv("IMAGE_ID")
 
-instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
-    ProjectID: projectID,
-    RegionID:  regionID,
-    Flavor:    "g2-standard-2-4",
-    Name:      gcore.String("my-vm"),
+instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+    Flavor: "g2-standard-2-4",
+    Name:   gcore.String("my-vm"),
     Interfaces: []cloud.InstanceNewParamsInterface{
         {Type: cloud.InstanceNewParamsInterfaceTypeExternal},
     },
@@ -124,12 +106,12 @@ fmt.Println(instance.ID)
 When `NewAndPoll` is not available for a resource, poll with `client.Cloud.Tasks.Poll` directly:
 
 ```go
-taskList, err := client.Cloud.SomeResource.New(context.TODO(), params)
+taskList, err := client.Cloud.SomeResource.New(ctx, params)
 if err != nil {
     panic(err)
 }
 
-task, err := client.Cloud.Tasks.Poll(context.TODO(), taskList.Tasks[0])
+task, err := client.Cloud.Tasks.Poll(ctx, taskList.Tasks[0])
 if err != nil {
     panic(err)
 }
@@ -147,7 +129,7 @@ fmt.Println(task.CreatedResources.Instances[0])
 Use `ListAutoPaging()` to iterate across all pages automatically:
 
 ```go
-iter := client.Cloud.Projects.ListAutoPaging(context.TODO(), cloud.ProjectListParams{
+iter := client.Cloud.Projects.ListAutoPaging(ctx, cloud.ProjectListParams{
     Limit: gcore.Int(10),
 })
 for iter.Next() {
@@ -162,7 +144,7 @@ if err := iter.Err(); err != nil {
 For manual page control:
 
 ```go
-page, err := client.Cloud.Projects.List(context.TODO(), cloud.ProjectListParams{
+page, err := client.Cloud.Projects.List(ctx, cloud.ProjectListParams{
     Limit: gcore.Int(10),
 })
 for page != nil {
@@ -183,7 +165,7 @@ Use `errors.As` to inspect API errors:
 ```go
 import "errors"
 
-_, err := client.Cloud.Projects.New(context.TODO(), cloud.ProjectNewParams{
+_, err := client.Cloud.Projects.New(ctx, cloud.ProjectNewParams{
     Name: "my-project",
 })
 if err != nil {
@@ -235,7 +217,6 @@ func Logger(req *http.Request, next option.MiddlewareNext) (*http.Response, erro
 }
 
 client := gcore.NewClient(
-    option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
     option.WithMiddleware(Logger),
 )
 ```
@@ -249,7 +230,7 @@ Use `option.WithResponseInto()` to capture the raw HTTP response alongside the p
 ```go
 var response *http.Response
 project, err := client.Cloud.Projects.New(
-    context.TODO(),
+    ctx,
     cloud.ProjectNewParams{Name: "my-project"},
     option.WithResponseInto(&response),
 )
