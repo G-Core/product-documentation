@@ -1,75 +1,39 @@
 ---
 title: Integrate CDN resource with Django CMS
 sidebarTitle: Django CMS
-ai-navigation: Configure Django CMS static and media file delivery through Gcore CDN by creating a CDN resource, updating urls.py and settings.py to point to CDN CNAME, and running collectstatic to serve static assets via CDN.
+ai-navigation: Configure Django CMS STATIC_URL and MEDIA_URL to serve static and media files through the Gcore CDN CNAME.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+<Warning>
+Back up site files and the database before making changes. These steps work only with the default Django CMS pattern — a manually modified pattern might not integrate correctly.
+</Warning>
 
-First, [create a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) within the Gcore Customer Portal.
+Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration, and confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured.
 
-Configure your urls.py file to point the static files to the appropriate static folder (i.e same directory as your media folder)
+1. In `settings.py`, set `STATIC_URL` and `MEDIA_URL` to the CNAME configured for the CDN resource in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list); it typically looks like `cdn.site.com`:
 
-Before:
-    
-```
-# This is only needed when using runserver.   
-if settings.DEBUG:   
-urlpatterns = patterns('',   
-url(r'^media/(?P<path>.*)$', 'django.views.static.serve', # NOQA   
-{'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),   
-) + staticfiles_urlpatterns() + urlpatterns # NOQA   
-#urlpatterns = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-```
+   ```python
+   STATIC_URL = 'https://cdn.site.com/static/'
+   MEDIA_URL = 'https://cdn.site.com/media/'
+   ```
 
-After:
-    
-```
-# This is only needed when using runserver.
-if settings.DEBUG:
-    urlpatterns = patterns('',
-        url(r'^static/(?P<path>.*)$', 'django.views.static.serve', # NOQA
-            {'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
-        ) + urlpatterns # NOQA
-    urlpatterns = patterns('',
-        url(r'^media/(?P<path>.*)$', 'django.views.static.serve', # NOQA
-            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
-        ) + staticfiles_urlpatterns() + urlpatterns # NOQA
-    #urlpatterns = static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-```
+2. Activate the virtual environment from the Django project root:
 
-Modify the `settings.py` file to point your Django application to the CDN.
+   ```bash
+   source env/bin/activate
+   ```
 
-Find:
-    
-```
-STATIC_URL and MEDIA_URL variables and modify them to reflect your CDN url or Zonealias similar to:   
-STATIC_URL = 'http://cname/static/' MEDIA_URL = 'http://cname/media/'
-```
+3. From the directory that contains `manage.py`, collect static files into `STATIC_ROOT`:
 
-Replace CNAME with the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list).
+   ```bash
+   python manage.py collectstatic
+   ```
 
-Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration 
+4. In templates, reference static files with the `{% static %}` template tag:
 
-Now any files within the static or media folders should be delivered via the CDN. However, there are still some static files that Django uses to run the CMS. In order to complete the integration, these files should be removed to your `STATIC_ROOT` folder, defined in the settings.py file. In order to copy these static files, first, ensure you are running in a virtual environment from the Django root directory
-    
-```
-$ source env/bin/activate
-```
+   ```html
+   {% load static %}
+   <link rel="stylesheet" type="text/css" href="{% static 'test.css' %}">
+   ```
 
-Once this is complete, navigate to your app directory, where the manage.py file is stored, and run the following command:
-    
-    
-$ python manage.py collectstatic
-
-Any external static files will now be pulled into your `STATIC_ROOT` folder which will subsequently be delivered via the CDN. 
-
-Use the `STATIC_URL` within your template files in order to reference your files from the static folder, for example:
-
-```
-<link rel="stylesheet" type="text/css" href="<strong>{{ STATIC_URL }}</strong>test.css">
-```
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+5. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static and media files should now load from the CNAME instead of the original domain.
