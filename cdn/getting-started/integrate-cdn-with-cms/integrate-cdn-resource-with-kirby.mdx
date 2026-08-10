@@ -1,13 +1,62 @@
 ---
-title: Integrate CDN resource with Kirby
+title: Integrate a CDN resource with Kirby
 sidebarTitle: Kirby
-ai-navigation: Configure CDN CNAME URLs for Kirby CMS static assets by manually updating CSS and JS file paths in header.php and using the Kirby GetImages plugin for image delivery, then verify rewritten URLs in browser Network tab.
+ai-navigation: Configure Kirby media and assets URLs in index.php to serve static files through a Gcore CDN custom domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+[Kirby](https://getkirby.com) can serve `media` and `assets` from a CDN by setting custom URLs when Kirby is initialized. Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration, and confirm the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured.
 
-There is currently no plugin available for automatic CDN integration with [Kirby](https://getkirby.com). You need to change manually the path for your CSS and JS files in the header.php but there is the Kirby GetImages plugin for your images. For more details visit [GitHub](https://github.com/RobBrazier/kirby-getimage).
+<Warning>
+Back up `index.php` and the site files before making changes. If the installation uses a custom database integration, back up the database as well — default Kirby installations do not use a database. These steps assume the root `index.php` initializes Kirby with `new Kirby([...])` and has not been replaced by custom bootstrap logic. A custom bootstrap might not integrate correctly.
+</Warning>
 
-We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+Before editing Kirby, collect the **custom domain** value to put in the `media` and `assets` URLs — it typically looks like `cdn.site.com`:
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Copy the custom domain">
+    Note the **custom domain** shown for the resource — this is the hostname used in the Kirby `media` and `assets` URLs.
+  </Step>
+  <Step title="Confirm the DNS CNAME">
+    Confirm that the custom domain has a CNAME record pointing to the Gcore target hostname shown in the Customer Portal (`cl-****.gcdn.co`). Do not put the `gcdn.co` hostname in the Kirby URLs.
+  </Step>
+  <Step title="Confirm SSL">
+    Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+  </Step>
+</Steps>
+
+Then update the Kirby configuration:
+
+<Steps>
+  <Step title="Open index.php">
+    Open `index.php` in the site root.
+  </Step>
+  <Step title="Set the media and assets URLs">
+    Set the `media` and `assets` URLs to the custom domain:
+
+    ```php
+    <?php
+
+    include __DIR__ . '/kirby/bootstrap.php';
+
+    $kirby = new Kirby([
+        'urls' => [
+            'media'  => 'https://cdn.site.com/media',
+            'assets' => 'https://cdn.site.com/assets',
+        ]
+    ]);
+
+    echo $kirby->render();
+    ```
+  </Step>
+  <Step title="Save the configuration">
+    Save `index.php`.
+  </Step>
+  <Step title="Confirm the integration">
+    Open the browser developer tools (press F12), select the **Network** tab, and refresh the page — media and asset files should now load from the custom domain instead of the original domain.
+  </Step>
+</Steps>
+
+A plugin-based approach that rewrites only selected paths is described in the Kirby cookbook [Kirby&nbsp;loves&nbsp;CDN](https://getkirby.com/docs/cookbook/performance/kirby-loves-cdn).
