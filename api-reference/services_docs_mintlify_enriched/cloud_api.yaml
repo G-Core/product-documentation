@@ -2,14 +2,14 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 3e6146af7a1d
+  version: 23526a255bc8
 servers:
 - url: https://api.gcore.com
 paths:
   /cloud/v2/baremetal/{project_id}/{region_id}/{server_id}/action:
     post:
       operationId: BMInstancesActionHandler.post
-      summary: Execute Bare Metal server action
+      summary: Execute bare metal server action
       description: 'The action can be one of: start, stop, reboot or `reboot_hard`.'
       parameters:
       - in: path
@@ -60,6 +60,52 @@ paths:
               $ref: '#/components/schemas/BareMetalActionSerializer'
       tags:
       - Bare Metal
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.baremetal.servers.action(
+              server_id="024a29e-b4b7-4c91-9a46-505be123d9f8",
+              project_id=1,
+              region_id=1,
+              action="start",
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.Baremetal.Servers.Action(
+          		context.TODO(),
+          		"024a29e-b4b7-4c91-9a46-505be123d9f8",
+          		cloud.BaremetalServerActionParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v3/baremetal/{project_id}/{region_id}/{server_id}/get_console:
     get:
       operationId: BMInstanceConsoleHandler.get
@@ -23061,219 +23107,6 @@ paths:
           		panic(err.Error())
           	}
           }
-  /cloud/v1/lbpools/{project_id}/{region_id}/{pool_id}/member:
-    post:
-      operationId: LoadBalancerPoolInstanceCreateMemberView.post
-      summary: Create load balancer pool member
-      description: ''
-      parameters:
-      - in: path
-        name: project_id
-        required: true
-        description: Project ID
-        schema:
-          description: Project ID
-          example: 1
-          examples:
-          - 1
-          title: Project Id
-          type: integer
-      - in: path
-        name: region_id
-        required: true
-        description: Region ID
-        schema:
-          description: Region ID
-          example: 1
-          examples:
-          - 1
-          exclusiveMinimum: 0
-          title: Region Id
-          type: integer
-      - in: path
-        name: pool_id
-        required: true
-        description: Pool ID
-        schema:
-          description: Pool ID
-          example: 00000000-0000-4000-8000-000000000000
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          format: uuid4
-          title: Pool Id
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskIDsSerializer'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateLbPoolMemberSerializer'
-      tags:
-      - Load Balancers
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          task_id_list = client.cloud.load_balancers.pools.members.create(
-              pool_id="00000000-0000-4000-8000-000000000000",
-              project_id=1,
-              region_id=1,
-              address="192.168.40.33",
-              protocol_port=80,
-          )
-          print(task_id_list.tasks)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/cloud"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	taskIDList, err := client.Cloud.LoadBalancers.Pools.Members.New(
-          		context.TODO(),
-          		"00000000-0000-4000-8000-000000000000",
-          		cloud.LoadBalancerPoolMemberNewParams{
-          			ProjectID:    gcore.Int(1),
-          			RegionID:     gcore.Int(1),
-          			Address:      "192.168.40.33",
-          			ProtocolPort: 80,
-          		},
-          	)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", taskIDList.Tasks)
-          }
-  /cloud/v1/lbpools/{project_id}/{region_id}/{pool_id}/member/{member_id}:
-    delete:
-      operationId: LoadBalancerPoolInstanceRemoveMemberView.delete
-      summary: Delete load balancer pool member
-      description: ''
-      parameters:
-      - in: path
-        name: project_id
-        required: true
-        description: Project ID
-        schema:
-          description: Project ID
-          example: 1
-          examples:
-          - 1
-          title: Project Id
-          type: integer
-      - in: path
-        name: region_id
-        required: true
-        description: Region ID
-        schema:
-          description: Region ID
-          example: 1
-          examples:
-          - 1
-          exclusiveMinimum: 0
-          title: Region Id
-          type: integer
-      - in: path
-        name: pool_id
-        required: true
-        description: Pool ID
-        schema:
-          description: Pool ID
-          example: 00000000-0000-4000-8000-000000000000
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          format: uuid4
-          title: Pool Id
-          type: string
-      - in: path
-        name: member_id
-        required: true
-        description: Member ID
-        schema:
-          description: Member ID
-          example: 00000000-0000-4000-8000-000000000000
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          format: uuid4
-          title: Member Id
-          type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TaskIDsSerializer'
-      tags:
-      - Load Balancers
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          task_id_list = client.cloud.load_balancers.pools.members.delete(
-              member_id="00000000-0000-4000-8000-000000000000",
-              project_id=1,
-              region_id=1,
-              pool_id="00000000-0000-4000-8000-000000000000",
-          )
-          print(task_id_list.tasks)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/cloud"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	taskIDList, err := client.Cloud.LoadBalancers.Pools.Members.Delete(
-          		context.TODO(),
-          		"00000000-0000-4000-8000-000000000000",
-          		cloud.LoadBalancerPoolMemberDeleteParams{
-          			ProjectID: gcore.Int(1),
-          			RegionID:  gcore.Int(1),
-          			PoolID:    "00000000-0000-4000-8000-000000000000",
-          		},
-          	)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", taskIDList.Tasks)
-          }
   /cloud/v1/loadbalancers/{project_id}/{region_id}:
     post:
       operationId: LoadBalancerViewSet.post
@@ -24427,6 +24260,402 @@ paths:
               $ref: '#/components/schemas/CheckQuotaBeforeLoadbalancerCreationPydanticSerializer'
       tags:
       - Load Balancers
+  /cloud/v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members:
+    post:
+      operationId: LoadBalancerPoolMembersViewSet.post
+      summary: Create load balancer pool member
+      description: ''
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLbPoolMemberSerializer'
+      tags:
+      - Load Balancers
+    get:
+      operationId: LoadBalancerPoolMembersViewSet.get
+      summary: List load balancer pool members
+      description: ''
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      - in: query
+        name: limit
+        required: false
+        description: Optional. Limit the number of returned items
+        schema:
+          default: 1000
+          description: Optional. Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        description: Optional. Offset value is used to exclude the first set of records from the result
+        schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: order_by
+        required: false
+        description: Ordering pool members list result by `address` or `created_at` fields and directions (e.g. `address.desc`). Default is `address.asc`.
+        schema:
+          $ref: '#/components/schemas/LbPoolMembersListOrderByChoices'
+          default: address.asc
+          description: Ordering pool members list result by `address` or `created_at` fields and directions (e.g. `address.desc`). Default is `address.asc`.
+          examples:
+          - address.asc
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LbPoolMemberCollectionSerializer'
+      tags:
+      - Load Balancers
+    put:
+      operationId: LoadBalancerPoolMembersViewSet.put
+      summary: Replace load balancer pool members
+      description: |-
+        Replaces the full set of pool members with the provided list (declarative,
+        desired-state semantics): members present in the payload are created or updated,
+        members currently on the pool but absent from the payload are deleted.
+        If a member is unchanged (same address + port), it is kept as is without
+        recreation and downtime. If no changes are detected, no task is created and
+        an empty task list is returned.
+
+        For updating a single existing member without affecting the rest of the pool,
+        use `PATCH /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members/{member_id}` instead.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutLbPoolMembersSerializer'
+      tags:
+      - Load Balancers
+  /cloud/v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members/{member_id}:
+    get:
+      operationId: LoadBalancerPoolMemberInstanceViewSet.get
+      summary: Get load balancer pool member
+      description: ''
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      - in: path
+        name: member_id
+        required: true
+        description: Member ID
+        schema:
+          description: Member ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Member Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedLbPoolMemberSerializer'
+      tags:
+      - Load Balancers
+    patch:
+      operationId: LoadBalancerPoolMemberInstanceViewSet.patch
+      summary: Update load balancer pool member
+      description: |-
+        Updates the specified member's mutable settings. `address`, `protocol_port` and
+        `subnet_id` cannot be changed after creation. If no changes are detected, no task
+        is created and an empty task list is returned.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      - in: path
+        name: member_id
+        required: true
+        description: Member ID
+        schema:
+          description: Member ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Member Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchLbPoolMemberSerializer'
+      tags:
+      - Load Balancers
+    delete:
+      operationId: LoadBalancerPoolMemberInstanceViewSet.delete
+      summary: Delete load balancer pool member
+      description: ''
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      - in: path
+        name: member_id
+        required: true
+        description: Member ID
+        schema:
+          description: Member ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Member Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      tags:
+      - Load Balancers
   /cloud/v1/loadbalancers/{project_id}/{region_id}/status:
     get:
       operationId: LoadBalancerStatusViewSet.get
@@ -24548,6 +24777,223 @@ paths:
               $ref: '#/components/schemas/LoadBalancerPricingPreviewV2RequestSerializer'
       tags:
       - Load Balancers
+  /cloud/v1/lbpools/{project_id}/{region_id}/{pool_id}/member:
+    post:
+      operationId: LoadBalancerPoolInstanceCreateMemberView.post
+      summary: Create load balancer pool member
+      description: '**Deprecated**: Use `POST /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members` instead.'
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      deprecated: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLbPoolMemberSerializer'
+      tags:
+      - Load Balancers
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.load_balancers.pools.members.create(
+              pool_id="00000000-0000-4000-8000-000000000000",
+              project_id=1,
+              region_id=1,
+              address="192.168.40.33",
+              protocol_port=80,
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.LoadBalancers.Pools.Members.New(
+          		context.TODO(),
+          		"00000000-0000-4000-8000-000000000000",
+          		cloud.LoadBalancerPoolMemberNewParams{
+          			ProjectID:    gcore.Int(1),
+          			RegionID:     gcore.Int(1),
+          			Address:      "192.168.40.33",
+          			ProtocolPort: 80,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
+  /cloud/v1/lbpools/{project_id}/{region_id}/{pool_id}/member/{member_id}:
+    delete:
+      operationId: LoadBalancerPoolInstanceRemoveMemberView.delete
+      summary: Delete load balancer pool member
+      description: |-
+        **Deprecated**: Use `DELETE /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members/{member_id}`
+        instead.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      - in: path
+        name: member_id
+        required: true
+        description: Member ID
+        schema:
+          description: Member ID
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Member Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      deprecated: true
+      tags:
+      - Load Balancers
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.load_balancers.pools.members.delete(
+              member_id="00000000-0000-4000-8000-000000000000",
+              project_id=1,
+              region_id=1,
+              pool_id="00000000-0000-4000-8000-000000000000",
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.LoadBalancers.Pools.Members.Delete(
+          		context.TODO(),
+          		"00000000-0000-4000-8000-000000000000",
+          		cloud.LoadBalancerPoolMemberDeleteParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			PoolID:    "00000000-0000-4000-8000-000000000000",
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v2/loadbalancers/{project_id}/{region_id}/{load_balancer_id}/metadata:
     post:
       operationId: LoadbalancerMetadataHandlerV2.post
@@ -35535,7 +35981,10 @@ paths:
     patch:
       operationId: RouterRouterViewSetV2.patch
       summary: Update router
-      description: Update the configuration of an existing router.
+      description: |-
+        Update the configuration of an existing router.
+        Fields that already match the current router state are skipped. If no fields
+        change, no task is created and an empty task list is returned.
       parameters:
       - in: path
         name: project_id
@@ -40220,9 +40669,9 @@ paths:
       - in: query
         name: task_type
         required: false
-        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
         schema:
-          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
           title: Task Type
           type: string
       - in: query
@@ -40330,9 +40779,9 @@ paths:
       - in: query
         name: task_type
         required: false
-        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
         schema:
-          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
           items:
             type: string
           title: Task Type
@@ -40601,6 +41050,8 @@ paths:
           items:
             enum:
             - ai_cluster
+            - baremetal
+            - basic_vm
             - caas_container
             - caas_key
             - caas_pull_secret
@@ -40638,6 +41089,7 @@ paths:
             - reserved_fixed_ip
             - role
             - router
+            - rtbh
             - secret
             - securitygroup
             - securitygrouprule
@@ -47446,47 +47898,10 @@ components:
       type: object
     BlackholePortAlarmState:
       enum:
-      - ACK_REQ
       - ALARM
-      - ALARM_FAIL
-      - ARCHIVED
       - CLEAR
-      - CLEARING
-      - CLEARING_FAIL
-      - CLEAR_FAIL
-      - END_GRACE
-      - END_WAIT
       - MANUAL_CLEAR
-      - MANUAL_CLEARING
-      - MANUAL_CLEARING_FAIL
-      - MANUAL_CLEAR_FAIL
-      - MANUAL_MITIGATING
       - MANUAL_START
-      - MANUAL_STARTING
-      - MANUAL_STARTING_FAIL
-      - MANUAL_START_FAIL
-      - MITIGATING
-      - STARTING
-      - STARTING_FAIL
-      - START_WAIT
-      - ack_req
-      - alarm
-      - archived
-      - clear
-      - clearing
-      - clearing_fail
-      - end_grace
-      - end_wait
-      - manual_clear
-      - manual_clearing
-      - manual_clearing_fail
-      - manual_mitigating
-      - manual_starting
-      - manual_starting_fail
-      - mitigating
-      - start_wait
-      - starting
-      - starting_fail
       title: BlackholePortAlarmState
       type: string
     BlackholePortSerializer:
@@ -56719,7 +57134,6 @@ components:
           - format: ipvanyaddress
             type: string
           - type: 'null'
-          default: null
           description: An alternate IP address used for health monitoring of a backend member. Default is null which monitors the member address.
           examples:
           - null
@@ -56730,7 +57144,6 @@ components:
             minimum: 1
             type: integer
           - type: 'null'
-          default: null
           description: An alternate protocol port used for health monitoring of a backend member. Default is null which monitors the member `protocol_port`.
           examples:
           - null
@@ -56789,6 +57202,8 @@ components:
       - provisioning_status
       - admin_state_up
       - weight
+      - monitor_address
+      - monitor_port
       - subnet_id
       - backup
       title: DetailedLbPoolMemberSerializer
@@ -67817,7 +68232,8 @@ components:
           title: Loadbalancers
           type: array
         members:
-          description: Pool members
+          deprecated: true
+          description: Pool members. Deprecated. Use `GET /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members` instead.
           items:
             $ref: '#/components/schemas/DetailedLbPoolMemberSerializer'
           title: Members
@@ -67920,6 +68336,27 @@ components:
       - admin_state_up
       title: LbPoolInstanceSerializer
       type: object
+    LbPoolMemberCollectionSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/DetailedLbPoolMemberSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: LbPoolMemberCollectionSerializer
+      type: object
     LbPoolMemberSerializer:
       properties:
         id:
@@ -67934,6 +68371,14 @@ components:
       - id
       title: LbPoolMemberSerializer
       type: object
+    LbPoolMembersListOrderByChoices:
+      enum:
+      - address.asc
+      - address.desc
+      - created_at.asc
+      - created_at.desc
+      title: LbPoolMembersListOrderByChoices
+      type: string
     LbPoolProtocolEnum:
       enum:
       - HTTP
@@ -68027,7 +68472,8 @@ components:
           title: Loadbalancers
           type: array
         members:
-          description: Pool members
+          deprecated: true
+          description: Pool members. Deprecated. Use `GET /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members` instead.
           items:
             anyOf:
             - $ref: '#/components/schemas/LbPoolMemberSerializer'
@@ -72403,6 +72849,54 @@ components:
           title: User List
       title: PatchLbListenerSerializer
       type: object
+    PatchLbPoolMemberSerializer:
+      properties:
+        admin_state_up:
+          description: Administrative state of the member. Omit to leave unchanged; `false` disables the member so it receives no traffic.
+          example: true
+          examples:
+          - true
+          - false
+          title: Admin State Up
+          type: boolean
+        backup:
+          description: Set to true if the member is a backup member, to which traffic will be sent exclusively when all non-backup members will be unreachable. Omit to leave unchanged.
+          example: true
+          examples:
+          - true
+          - false
+          title: Backup
+          type: boolean
+        monitor_address:
+          anyOf:
+          - format: ipvanyaddress
+            type: string
+          - type: 'null'
+          description: Alternate IP address used for health monitoring of a backend member. Set to `null` to clear it and fall back to the member address; omit to leave unchanged.
+          title: Monitor Address
+        monitor_port:
+          anyOf:
+          - maximum: 65535
+            minimum: 1
+            type: integer
+          - type: 'null'
+          description: Alternate protocol port used for health monitoring of a backend member. Set to `null` to clear it and fall back to the member `protocol_port`; omit to leave unchanged.
+          title: Monitor Port
+        weight:
+          description: |-
+            Member weight. Valid values are 0 < `weight` <= 256. Omit to leave unchanged. Controls traffic distribution based on the pool's load balancing algorithm:
+              - `ROUND_ROBIN`: Distributes connections to each member in turn according to weights. Higher weight = more turns in the cycle. Example: weights 3 vs 1 = ~75% vs ~25% of requests.
+              - `LEAST_CONNECTIONS`: Sends new connections to the member with fewest active connections, performing round-robin within groups of the same normalized load. Higher weight = allowed to hold more simultaneous connections before being considered 'more loaded'. Example: weights 2 vs 1 means 20 vs 10 active connections is treated as balanced.
+              - `SOURCE_IP`: Routes clients consistently to the same member by hashing client source IP; hash result is modulo total weight of running members. Higher weight = more hash buckets, so more client IPs map to that member. Example: weights 2 vs 1 = roughly two-thirds of distinct client IPs map to the higher-weight member.
+          example: 1
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          maximum: 256
+          title: Weight
+          type: integer
+      title: PatchLbPoolMemberSerializer
+      type: object
     PatchLbPoolSerializer:
       properties:
         admin_state_up:
@@ -72443,7 +72937,8 @@ components:
               $ref: '#/components/schemas/CreateLbPoolMemberSerializer'
             type: array
           - type: 'null'
-          description: New sequence of load balancer pool members. If members are the same (by address + port), they will be kept as is without recreation and downtime.
+          deprecated: true
+          description: New sequence of load balancer pool members. If members are the same (by address + port), they will be kept as is without recreation and downtime. Deprecated. Use `PUT /v1/loadbalancers/{project_id}/{region_id}/pools/{pool_id}/members` instead.
           examples:
           - - address: 192.168.40.33
               id: a7e7e8d6-0bf7-4ac9-8170-831b47ee2ba9
@@ -73580,7 +74075,7 @@ components:
       type: string
     PortResourceType:
       enum:
-      - baremetal
+      - baremetal_server
       - basic_vm
       - dhcp
       - gpu_baremetal_server
@@ -74274,6 +74769,19 @@ components:
           title: Registry
       title: PullSecretUpdateSerializer
       type: object
+    PutLbPoolMembersSerializer:
+      description: New sequence of load balancer pool members. If members are the same (by address + port), they will be kept as is without recreation and downtime.
+      example: &id222
+      - address: 192.168.1.101
+        instance_id: a7e7e8d6-0bf7-4ac9-8170-831b47ee2ba9
+        protocol_port: 8000
+        weight: 2
+      examples:
+      - *id222
+      items:
+        $ref: '#/components/schemas/CreateLbPoolMemberSerializer'
+      title: PutLbPoolMembersSerializer
+      type: array
     QuotaCountForThresholdSerializer:
       properties:
         limit:
@@ -74438,11 +74946,11 @@ components:
       properties:
         capacity:
           description: List of capacities by flavor.
-          example: &id222
+          example: &id223
           - capacity: 42
             flavor_name: inference-16vcpu-232gib-1xh100-80gb
           examples:
-          - *id222
+          - *id223
           items:
             $ref: '#/components/schemas/CapacityDetailsSerializer'
           title: Capacity
@@ -76151,12 +76659,12 @@ components:
           additionalProperties:
             $ref: '#/components/schemas/RegionComponentStatus'
           description: Mapping of component names to their status in the region
-          example: &id223
+          example: &id224
             model:
               error: ''
               status: Active
           examples:
-          - *id223
+          - *id224
           title: Components
           type: object
         region_id:
@@ -78274,7 +78782,7 @@ components:
           type: integer
         tags:
           description: Artifact tags
-          example: &id224
+          example: &id225
           - artifact_id: 1
             id: 1
             name: v0.0.1
@@ -78288,7 +78796,7 @@ components:
             pushed_at: '2024-06-18T09:36:53.335000Z'
             repository_id: 5
           examples:
-          - *id224
+          - *id225
           items:
             $ref: '#/components/schemas/RegistryTagSerializer'
           title: Tags
@@ -78308,12 +78816,12 @@ components:
       properties:
         users:
           description: Set of users
-          example: &id225
+          example: &id226
           - duration: -1
             name: user1
             read_only: false
           examples:
-          - *id225
+          - *id226
           items:
             $ref: '#/components/schemas/RegistryUserCreateSerializer'
           title: Users
@@ -78890,10 +79398,10 @@ components:
       properties:
         schedule_ids:
           description: List of schedule IDs.
-          example: &id226
+          example: &id227
           - 1488e2ce-f906-47fb-ba32-c25a3f63df4f
           examples:
-          - *id226
+          - *id227
           items:
             type: string
           title: Schedule Ids
@@ -78954,7 +79462,7 @@ components:
       type: string
     ReservationCostReportTotalsRequestSerializer:
       additionalProperties: false
-      example: &id227
+      example: &id228
         regions:
         - 4
         - 5
@@ -78979,16 +79487,16 @@ components:
         - egress_traffic
         - instance
       examples:
-      - *id227
+      - *id228
       properties:
         regions:
           description: List of region IDs.
-          example: &id228
+          example: &id229
           - 1
           - 2
           - 3
           examples:
-          - *id228
+          - *id229
           items:
             type: integer
           title: Regions
@@ -79099,11 +79607,11 @@ components:
           type: string
         types:
           description: List of resource types to be filtered in the report.
-          example: &id229
+          example: &id230
           - egress_traffic
           - instance
           examples:
-          - *id229
+          - *id230
           items:
             $ref: '#/components/schemas/PrebillingResourceTypes'
           title: Types
@@ -79270,26 +79778,26 @@ components:
       properties:
         allowed_address_pairs:
           description: Group of subnet masks and/or IP addresses that share the current IP as VIP
-          example: &id230
+          example: &id231
           - ip_address: 192.168.123.20
             mac_address: 00:16:3e:f2:87:16
           - ip_address: 192.168.0.2
             mac_address: 00:16:3e:f2:87:89
           examples:
-          - *id230
+          - *id231
           items:
             $ref: '#/components/schemas/AllowedAddressPairsSerializer'
           title: Allowed Address Pairs
           type: array
         attachments:
           description: Reserved fixed IP attachment entities
-          example: &id231
+          example: &id232
           - resource_id: e3c6ee77-48cb-416b-b204-11b492cc776e3
             resource_type: instance
           - resource_id: e73a4dbd-da04-4b6e-8ef9-07e8742001b7
             resource_type: ai_cluster
           examples:
-          - *id231
+          - *id232
           items:
             $ref: '#/components/schemas/AttachmentSerializer'
           title: Attachments
@@ -85892,7 +86400,7 @@ components:
       type: object
     ResourcesPricingResponseV2Serializer:
       description: Pricing scheme for various resources
-      example: &id232
+      example: &id233
         instances:
         - currency_code: USD
           discount_percent: 0.16
@@ -85926,7 +86434,7 @@ components:
           price_without_discount_per_month: 604.8
           tax_percent: 17
       examples:
-      - *id232
+      - *id233
       properties:
         instances:
           items:
@@ -86338,14 +86846,14 @@ components:
               type: string
             type: array
           description: FaaS runtimes.
-          example: &id233
+          example: &id234
             go:
             - go1.16.6
             python:
             - python2.7.18
             - python3.7.12
           examples:
-          - *id233
+          - *id234
           title: Runtimes
           type: object
       required:
@@ -86572,10 +87080,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id234
+          example: &id235
           - bm3-ai-1xlarge-h100-80-8
           examples:
-          - *id234
+          - *id235
           items:
             type: string
           title: Values
@@ -86608,10 +87116,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id235
+          example: &id236
           - g3-ai-32-192-1500-l40s-48-1
           examples:
-          - *id235
+          - *id236
           items:
             type: string
           title: Values
@@ -86646,10 +87154,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id236
+          example: &id237
           - '10'
           examples:
-          - *id236
+          - *id237
           items:
             type: string
           title: Values
@@ -86674,10 +87182,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id237
+          example: &id238
           - bm2-hf-medium
           examples:
-          - *id237
+          - *id238
           items:
             type: string
           title: Values
@@ -86702,10 +87210,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id238
+          example: &id239
           - g2s-shared-1-2-25
           examples:
-          - *id238
+          - *id239
           items:
             type: string
           title: Values
@@ -86737,10 +87245,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id239
+          example: &id240
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id239
+          - *id240
           items:
             type: string
           title: Values
@@ -86765,10 +87273,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id240
+          example: &id241
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id240
+          - *id241
           items:
             type: string
           title: Values
@@ -86800,10 +87308,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id241
+          example: &id242
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id241
+          - *id242
           items:
             type: string
           title: Values
@@ -86828,10 +87336,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id242
+          example: &id243
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id242
+          - *id243
           items:
             type: string
           title: Values
@@ -86856,10 +87364,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id243
+          example: &id244
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id243
+          - *id244
           items:
             type: string
           title: Values
@@ -86884,10 +87392,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id244
+          example: &id245
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id244
+          - *id245
           items:
             type: string
           title: Values
@@ -86929,10 +87437,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id245
+          example: &id246
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id245
+          - *id246
           items:
             type: string
           title: Values
@@ -86967,10 +87475,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id246
+          example: &id247
           - 10.100.178.92
           examples:
-          - *id246
+          - *id247
           items:
             type: string
           title: Values
@@ -87004,10 +87512,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id247
+          example: &id248
           - '10'
           examples:
-          - *id247
+          - *id248
           items:
             type: string
           title: Values
@@ -87040,10 +87548,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id248
+          example: &id249
           - 10.100.178.92
           examples:
-          - *id248
+          - *id249
           items:
             type: string
           title: Values
@@ -87075,10 +87583,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id249
+          example: &id250
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id249
+          - *id250
           items:
             type: string
           title: Values
@@ -87110,10 +87618,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id250
+          example: &id251
           - '10'
           examples:
-          - *id250
+          - *id251
           items:
             type: string
           title: Values
@@ -87145,10 +87653,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id251
+          example: &id252
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id251
+          - *id252
           items:
             type: string
           title: Values
@@ -87181,10 +87689,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id252
+          example: &id253
           - '10'
           examples:
-          - *id252
+          - *id253
           items:
             type: string
           title: Values
@@ -87217,10 +87725,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id253
+          example: &id254
           - 066e202a-fc9a-43f2-a74d-be34afbee5c9
           examples:
-          - *id253
+          - *id254
           items:
             type: string
           title: Values
@@ -87253,10 +87761,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id254
+          example: &id255
           - g1-standard-1-2
           examples:
-          - *id254
+          - *id255
           items:
             type: string
           title: Values
@@ -87289,10 +87797,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id255
+          example: &id256
           - lb1-1-2
           examples:
-          - *id255
+          - *id256
           items:
             type: string
           title: Values
@@ -87325,10 +87833,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id256
+          example: &id257
           - '10'
           examples:
-          - *id256
+          - *id257
           items:
             type: string
           title: Values
@@ -87363,10 +87871,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id257
+          example: &id258
           - '10'
           examples:
-          - *id257
+          - *id258
           items:
             type: string
           title: Values
@@ -87401,10 +87909,10 @@ components:
           type: string
         values:
           description: List of field values to filter
-          example: &id258
+          example: &id259
           - '10'
           examples:
-          - *id258
+          - *id259
           items:
             type: string
           title: Values
@@ -87813,12 +88321,12 @@ components:
           type: array
         tags_v2:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id259
+          example: &id260
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id259
+          - *id260
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags V2
@@ -87927,13 +88435,13 @@ components:
       properties:
         instances:
           description: The list of instances in this server group.
-          example: &id260
+          example: &id261
           - instance_id: 6d14f194-6c1e-49b3-9fc7-50dc8401eb74
             instance_name: my-instance-1
           - instance_id: 142988bb-291e-4862-bffb-b1cf20036c27
             instance_name: my-instance-2
           examples:
-          - *id260
+          - *id261
           items:
             $ref: '#/components/schemas/InstanceBriefSerializer'
           title: Instances
@@ -87995,12 +88503,12 @@ components:
       properties:
         client_ids:
           description: List of client IDs to access
-          example: &id261
+          example: &id262
           - 1
           - 22
           - 333
           examples:
-          - *id261
+          - *id262
           items:
             type: integer
           title: Client Ids
@@ -88184,10 +88692,10 @@ components:
       title: SnapshotCollectionSerializer
       type: object
     SnapshotPricingRequestSerializer:
-      example: &id262
+      example: &id263
         volume_id: c23fb11d-4748-489e-a659-e888e121e825
       examples:
-      - *id262
+      - *id263
       properties:
         volume_id:
           description: Volume ID
@@ -88276,12 +88784,12 @@ components:
           - available
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id263
+          example: &id264
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id263
+          - *id264
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -88668,12 +89176,12 @@ components:
           type: string
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id264
+          example: &id265
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id264
+          - *id265
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -88750,10 +89258,10 @@ components:
           type: boolean
         security_groups:
           description: Security group UUIDs applied to this interface. If omitted (or empty), the top-level `security_groups` value applies; if both are omitted, the project's default security group is applied.
-          example: &id265
+          example: &id266
           - id: b4849ffa-89f2-45a1-951f-0ae5b7809d98
           examples:
-          - *id265
+          - *id266
           items:
             $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
           title: Security Groups
@@ -88985,12 +89493,12 @@ components:
           type: integer
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id266
+          example: &id267
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id266
+          - *id267
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -89180,7 +89688,7 @@ components:
           description: Specifies whether conditions are combined using OR (default) or AND logic.
         conditions:
           description: A list of tag filtering conditions defining how tags should match.
-          example: &id267
+          example: &id268
           - key: os_version
             strict: true
             value: '9'
@@ -89191,7 +89699,7 @@ components:
             strict: true
             value: centos
           examples:
-          - *id267
+          - *id268
           items:
             $ref: '#/components/schemas/TagsFilterConditionSerializer'
           maxItems: 10
@@ -89247,10 +89755,10 @@ components:
             List of task IDs representing asynchronous operations. Use these IDs to monitor operation progress:
               - `GET /v1/tasks/{task_id}` - Check individual task status and details
               Poll task status until completion (`FINISHED`/`ERROR`) before proceeding with dependent operations.
-          example: &id268
+          example: &id269
           - d478ae29-dedc-4869-82f0-96104425f565
           examples:
-          - *id268
+          - *id269
           items:
             type: string
           title: Tasks
@@ -93340,10 +93848,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id269
+          example: &id270
           - test_tag
           examples:
-          - *id269
+          - *id270
           items:
             type: string
           title: Tags
@@ -93388,10 +93896,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id270
+          example: &id271
           - test_tag
           examples:
-          - *id270
+          - *id271
           items:
             type: string
           title: Tags
@@ -93454,10 +93962,10 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id271
+          example: &id272
           - test_tag
           examples:
-          - *id271
+          - *id272
           items:
             type: string
           title: Tags
@@ -93495,10 +94003,10 @@ components:
           type: integer
         tags:
           description: A list of simple strings assigned to the resource.
-          example: &id272
+          example: &id273
           - test_tag
           examples:
-          - *id272
+          - *id273
           items:
             type: string
           title: Tags
@@ -93546,11 +94054,11 @@ components:
           type: string
         tags:
           description: A list of simple strings assigned to the l7 rule
-          example: &id273
+          example: &id274
           - test_tag_1
           - test_tag_2
           examples:
-          - *id273
+          - *id274
           items:
             type: string
           title: Tags
@@ -93948,7 +94456,7 @@ components:
       type: object
     UsageReportRequestSerializer:
       additionalProperties: false
-      example: &id274
+      example: &id275
         limit: 50
         offset: 0
         order_by:
@@ -93982,7 +94490,7 @@ components:
         - egress_traffic
         - instance
       examples:
-      - *id274
+      - *id275
       properties:
         enable_last_day:
           default: false
@@ -94014,11 +94522,11 @@ components:
           default:
           - project.asc
           description: List of sorting criteria in 'field.direction' format.
-          example: &id275
+          example: &id276
           - project.asc
           - region.desc
           examples:
-          - *id275
+          - *id276
           items:
             $ref: '#/components/schemas/CostReportOrderByChoices'
           title: Order By
@@ -94040,12 +94548,12 @@ components:
           title: Projects
         regions:
           description: List of region IDs.
-          example: &id276
+          example: &id277
           - 1
           - 2
           - 3
           examples:
-          - *id276
+          - *id277
           items:
             type: integer
           title: Regions
@@ -94151,11 +94659,11 @@ components:
           type: string
         types:
           description: List of resource types to be filtered in the report.
-          example: &id277
+          example: &id278
           - egress_traffic
           - instance
           examples:
-          - *id277
+          - *id278
           items:
             $ref: '#/components/schemas/PrebillingResourceTypes'
           title: Types
@@ -94296,10 +94804,10 @@ components:
       title: UsageReportResponseSerializer
       type: object
     UsageReportSortingRequestSerializer:
-      example: &id278
+      example: &id279
       - region: asc
       examples:
-      - *id278
+      - *id279
       properties:
         billing_value:
           $ref: '#/components/schemas/SortingDirections'
@@ -94404,6 +94912,8 @@ components:
         resource_type:
           description: Resource type
           enum:
+          - baremetal_server
+          - basic_vm
           - caas_container
           - caas_key
           - caas_pull_secret
@@ -94514,6 +95024,8 @@ components:
           description: API group
           enum:
           - ai_cluster
+          - baremetal
+          - basic_vm
           - caas_container
           - caas_key
           - caas_pull_secret
@@ -94551,6 +95063,7 @@ components:
           - reserved_fixed_ip
           - role
           - router
+          - rtbh
           - secret
           - securitygroup
           - securitygrouprule
@@ -95219,11 +95732,11 @@ components:
           type: integer
         servers_ids:
           description: List of cluster nodes
-          example: &id279
+          example: &id280
           - b4522653-fbcd-44a0-a949-541570a52281
           - e56192de-ed28-452a-b775-eeeacc795e3b
           examples:
-          - *id279
+          - *id280
           items:
             format: uuid4
             type: string
@@ -95238,12 +95751,12 @@ components:
           - active
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id280
+          example: &id281
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id280
+          - *id281
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -95359,11 +95872,11 @@ components:
           title: Currency Code
         discount_details:
           description: Discount details per resource.
-          example: &id281
+          example: &id282
             discount: '0.5'
             resource: ssd_hiiops
           examples:
-          - *id281
+          - *id282
           items:
             $ref: '#/components/schemas/ResourceDiscountSerializer'
           title: Discount Details
@@ -95523,13 +96036,13 @@ components:
           type: array
         ip_assignments:
           description: IP addresses assigned to this port
-          example: &id282
+          example: &id283
           - ip_address: 192.168.123.20
             subnet_id: 351b0dd7-ca09-431c-be53-935db3785067
           - ip_address: 192.168.120.16
             subnet_id: 0a641ef8-62dc-4146-91e5-6ab4b464df6d
           examples:
-          - *id282
+          - *id283
           items:
             $ref: '#/components/schemas/PortIpAssignmentSerializer'
           title: Ip Assignments
@@ -95844,10 +96357,10 @@ components:
         security_groups:
           deprecated: true
           description: Deprecated. Use per-interface `security_groups` inside `interfaces[]` instead. Cannot be combined with per-interface `security_groups`. If omitted everywhere, the project's default security group is applied.
-          example: &id283
+          example: &id284
           - id: b4849ffa-89f2-45a1-951f-0ae5b7809d98
           examples:
-          - *id283
+          - *id284
           items:
             $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
           title: Security Groups
@@ -95902,11 +96415,11 @@ components:
         security_groups:
           deprecated: true
           description: Deprecated. Deduplicated union of security groups across all interfaces; the actual assignment may differ per interface. Use `interfaces[].security_groups` for the authoritative per-interface list.
-          example: &id284
+          example: &id285
           - id: ae74714c-c380-48b4-87f8-758d656cdad6
             name: default
           examples:
-          - *id284
+          - *id285
           items:
             $ref: '#/components/schemas/GroupSecurityGroupSerializer'
           title: Security Groups
@@ -96062,10 +96575,10 @@ components:
       properties:
         volume_ids:
           description: List of volume IDs.
-          example: &id285
+          example: &id286
           - 1488e2ce-f906-47fb-ba32-c25a3f63df4f
           examples:
-          - *id285
+          - *id286
           items:
             type: string
           title: Volume Ids
@@ -96113,12 +96626,12 @@ components:
       title: VolumeLimiterStatsSerializer
       type: object
     VolumeOrSnapshotPricingRequestSerializer:
-      example: &id286
+      example: &id287
         size: 1000
         source: new-volume
         type_name: standard
       examples:
-      - *id286
+      - *id287
       properties:
         size:
           anyOf:
@@ -96194,12 +96707,12 @@ components:
           type: integer
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id287
+          example: &id288
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id287
+          - *id288
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags
@@ -96257,12 +96770,12 @@ components:
       properties:
         volumes:
           description: Prices of volumes per type over the specified period of time.
-          example: &id288
+          example: &id289
             discount: 0.1
             price: 78
             type: cold
           examples:
-          - *id288
+          - *id289
           items:
             anyOf:
             - $ref: '#/components/schemas/VolumePriceWithDiscountSerializer'
@@ -96391,12 +96904,12 @@ components:
           - available
         tags:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
-          example: &id289
+          example: &id290
           - key: my-tag
             read_only: false
             value: my-tag-value
           examples:
-          - *id289
+          - *id290
           items:
             $ref: '#/components/schemas/TagSerializer'
           title: Tags

@@ -2,13 +2,14 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 63dbb2543eed
+  version: 18e2047fa6f1
 servers:
 - url: https://api.gcore.com
 tags:
 - name: addendums
   description: Operations on client addendums
 - name: calc_rules
+- name: countries
 - name: currencies
 - name: erp-invoices
 - name: expenses
@@ -345,7 +346,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `created_at.asc` - Created at
@@ -402,7 +403,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `created_at` - Created at
@@ -687,6 +688,158 @@ paths:
           description: You do not have permission to perform this action.
         '404':
           description: The requested resource was not found.
+  /billing/org/v1/countries:
+    get:
+      operationId: v1_countries_list
+      description: |+
+        Retrieve a list of `Country` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Countrys
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: disabled
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - code.asc
+            - code.desc
+            - name.asc
+            - name.desc
+            - zone.asc
+            - zone.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code.asc` - Code
+          - `code.desc` - Code (descending)
+          - `zone.asc` - Zone
+          - `zone.desc` - Zone (descending)
+          - `name.asc` - Name
+          - `name.desc` - Name (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -code
+            - -name
+            - -zone
+            - code
+            - name
+            - zone
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code` - Code
+          - `-code` - Code (descending)
+          - `zone` - Zone
+          - `-zone` - Zone (descending)
+          - `name` - Name
+          - `-name` - Name (descending)
+        explode: false
+        style: form
+      - in: query
+        name: zone
+        schema:
+          type: string
+          x-spec-enum-id: 5f0d311a9e23c2b1
+          enum:
+          - EU
+          - OTHER
+          - RU
+        description: |-
+          Country zone
+
+          - `RU` - RU
+          - `EU` - EU
+          - `OTHER` - OTHER
+      tags:
+      - countries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCountryForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/countries/{id}:
+    get:
+      operationId: v1_countries_retrieve
+      description: Retrieve a single `Country` by ID.
+      summary: Get a single Country
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - countries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/currencies:
     get:
       operationId: v1_currencies_list
@@ -784,7 +937,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `char_code.asc` - Char code
@@ -817,7 +970,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `char_code` - Char code
@@ -955,7 +1108,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -996,7 +1149,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -1458,7 +1611,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `addendum_id.asc` - Addendum id
@@ -1543,7 +1696,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `addendum_id` - Addendum id
@@ -2052,7 +2205,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -2105,7 +2258,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -2447,7 +2600,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `uuid.asc` - Uuid
@@ -2492,7 +2645,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `uuid` - Uuid
@@ -2850,7 +3003,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -2891,7 +3044,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -3113,7 +3266,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -3170,7 +3323,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -3580,6 +3733,41 @@ components:
       - id
       - name
       - rule_type
+    CountryForOrgSerializerV1:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Country code
+          pattern: ^[A-Z]{2}$
+          maxLength: 2
+        name:
+          type: string
+          description: Name of country
+          maxLength: 255
+        zone:
+          enum:
+          - RU
+          - EU
+          - OTHER
+          type: string
+          x-spec-enum-id: 5f0d311a9e23c2b1
+          description: |-
+            Country zone
+
+            - `RU` - RU
+            - `EU` - EU
+            - `OTHER` - OTHER
+        currency_id:
+          type: integer
+        disabled:
+          type: boolean
+          description: Country activatable status
+      required:
+      - code
+      - currency_id
+      - name
+      - zone
     CurrencyCommonShort:
       type: object
       properties:
@@ -4223,6 +4411,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CalcRule'
+    PaginatedCountryForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CountryForOrgSerializerV1'
     PaginatedCurrencyForOrgList:
       type: object
       required:
@@ -4981,6 +5192,7 @@ x-tagGroups:
   tags:
   - addendums
   - calc_rules
+  - countries
   - currencies
   - erp-invoices
   - expenses
