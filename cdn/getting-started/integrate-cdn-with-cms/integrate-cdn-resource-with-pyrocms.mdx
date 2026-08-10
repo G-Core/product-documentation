@@ -1,19 +1,40 @@
 ---
 title: Integrate CDN resource with PyroCMS
 sidebarTitle: PyroCMS
-ai-navigation: Configure Gcore CDN CNAME integration in PyroCMS admin panel via Settings > Integration to rewrite static asset URLs to custom domain.
+ai-navigation: Configure PyroCMS 3 ASSET_URL or PyroCMS 2 Settings Integration to serve static assets through the Gcore CDN CNAME.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you. 
+<Warning>
+Back up site files and the database before making changes. These steps work only with the default PyroCMS pattern — a manually modified pattern might not integrate correctly.
+</Warning>
 
-Login to the PyroCMS admin panel.
+Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration, and confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured.
 
-Go to Settings –> Integration.
+**PyroCMS 3.x (current)**
 
-Type in the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+Current PyroCMS is Laravel-based. Set the asset base URL in `.env` to the CNAME from the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list); it typically looks like `cdn.site.com`:
 
-Save settings.
+1. Open the application `.env` file.
+2. Set:
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+   ```bash
+   ASSET_URL=https://cdn.site.com
+   ```
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+3. If configuration caching is used in production, refresh it:
+
+   ```bash
+   php artisan config:cache
+   ```
+
+4. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static files should now load from the CNAME instead of the original domain.
+
+**PyroCMS 2.x**
+
+Older PyroCMS 2.x installations expose a CDN field in the admin UI:
+
+1. Log in to the PyroCMS admin panel.
+2. Navigate to **Settings** > **Integration**.
+3. Enter the CNAME configured for the CDN resource.
+4. Save the settings.
+5. Confirm static files load from the CNAME in the browser **Network** tab as described above.
