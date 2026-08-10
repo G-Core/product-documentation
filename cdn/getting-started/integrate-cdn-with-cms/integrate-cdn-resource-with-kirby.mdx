@@ -1,13 +1,34 @@
 ---
 title: Integrate CDN resource with Kirby
 sidebarTitle: Kirby
-ai-navigation: Configure CDN CNAME URLs for Kirby CMS static assets by manually updating CSS and JS file paths in header.php and using the Kirby GetImages plugin for image delivery, then verify rewritten URLs in browser Network tab.
+ai-navigation: Configure Kirby media and assets URLs in index.php to serve static files through the Gcore CDN CNAME.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+<Warning>
+Back up site files and the database before making changes. These steps work only with the default Kirby pattern — a manually modified pattern might not integrate correctly.
+</Warning>
 
-There is currently no plugin available for automatic CDN integration with [Kirby](https://getkirby.com). You need to change manually the path for your CSS and JS files in the header.php but there is the Kirby GetImages plugin for your images. For more details visit [GitHub](https://github.com/RobBrazier/kirby-getimage).
+[Kirby](https://getkirby.com) can serve `media` and `assets` from a CDN by setting custom URLs when Kirby is initialized. Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration, and confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured.
 
-We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+1. In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), note the CNAME configured for the CDN resource; it typically looks like `cdn.site.com`.
+2. Open the site `index.php` and set the `media` and `assets` URLs to that CNAME:
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+   ```php
+   <?php
+
+   include __DIR__ . '/kirby/bootstrap.php';
+
+   $kirby = new Kirby([
+       'urls' => [
+           'media'  => 'https://cdn.site.com/media',
+           'assets' => 'https://cdn.site.com/assets',
+       ]
+   ]);
+
+   echo $kirby->render();
+   ```
+
+3. Save `index.php`.
+4. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — media and asset files should now load from the CNAME instead of the original domain.
+
+A plugin-based approach that rewrites only selected paths is described in the Kirby cookbook [Kirby&nbsp;loves&nbsp;CDN](https://getkirby.com/docs/cookbook/performance/kirby-loves-cdn).
