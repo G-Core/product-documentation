@@ -4,36 +4,55 @@ sidebarTitle: Django CMS
 ai-navigation: Configure Django CMS STATIC_URL and MEDIA_URL to serve static and media files through the Gcore CDN CNAME.
 ---
 
+Django CMS can deliver static files and uploaded media through a Gcore CDN resource by using the CDN domain in its asset URL settings.
+
 <Warning>
-Back up site files and the database before making changes. These steps work only with the default Django CMS pattern — a manually modified pattern might not integrate correctly.
+Back up site files and the database before making changes. These steps assume standard Django `STATIC_URL`, `STATIC_ROOT`, `MEDIA_URL`, and `MEDIA_ROOT` settings without a custom storage backend or asset pipeline.
 </Warning>
 
-Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration, and confirm the [CNAME&nbsp;record](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) is configured.
+Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration. Configure its [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) with a valid CNAME record and an active SSL certificate.
 
-1. In `settings.py`, set `STATIC_URL` and `MEDIA_URL` to the CNAME configured for the CDN resource in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list); it typically looks like `cdn.site.com`:
+1. If the project uses a virtual environment, activate it with the command appropriate to the environment. For an environment named `env` on Linux or macOS, run:
+
+   ```bash
+   source env/bin/activate
+   ```
+
+2. From the directory that contains `manage.py`, collect static files into `STATIC_ROOT`:
+
+   ```bash
+   python manage.py collectstatic
+   ```
+
+   The command copies static files into `STATIC_ROOT`; it doesn't publish that directory or process uploaded media.
+
+3. Configure the origin web server or storage service to expose both Django asset directories:
+   - Serve `STATIC_ROOT` under `/static/`.
+   - Serve `MEDIA_ROOT` under `/media/`.
+
+   The [Django&nbsp;deployment](https://docs.djangoproject.com/en/5.2/howto/static-files/deployment/) process requires a web server or storage service to serve the collected static directory. Uploaded media remains separate from `collectstatic` and must be available from `MEDIA_ROOT`.
+
+4. Before changing the public asset URLs, request a known static file and uploaded media file directly from the origin. Use the origin protocol and hostname configured for the CDN resource:
+
+   ```text
+   https://origin.example.com/static/test.css
+   https://origin.example.com/media/example.jpg
+   ```
+
+   Continue only after both origin URLs return the expected files.
+
+5. In `settings.py`, set `STATIC_URL` and `MEDIA_URL` to the custom domain configured for the CDN resource in the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com/cdn/resources/list):
 
    ```python
    STATIC_URL = 'https://cdn.site.com/static/'
    MEDIA_URL = 'https://cdn.site.com/media/'
    ```
 
-2. Activate the virtual environment from the Django project root:
-
-   ```bash
-   source env/bin/activate
-   ```
-
-3. From the directory that contains `manage.py`, collect static files into `STATIC_ROOT`:
-
-   ```bash
-   python manage.py collectstatic
-   ```
-
-4. In templates, reference static files with the `{% static %}` template tag:
+6. In templates, reference static files with the `{% static %}` template tag:
 
    ```html
    {% load static %}
    <link rel="stylesheet" type="text/css" href="{% static 'test.css' %}">
    ```
 
-5. Confirm the integration by opening the browser's developer tools (press **F12**), selecting the **Network** tab, and refreshing the page — static and media files should now load from the CNAME instead of the original domain.
+7. Confirm the integration by opening the browser's developer tools (press <kbd>F12</kbd>), selecting the **Network** tab, and refreshing the page — static and media files should now load from the custom domain instead of the origin domain.
