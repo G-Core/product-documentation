@@ -1,7 +1,7 @@
 ---
 title: "Manually add endpoints to the API base path"
 sidebarTitle: "Manually add endpoints to API base path"
-ai-navigation: Configure API base path endpoints in WAAP domains by manually adding recursive paths to define communication routes for API request protection, with support for domain-wide API settings or specific endpoint paths via the Customer Portal or API.
+ai-navigation: Configure the WAAP API base path to mark domain endpoints as API traffic via the Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,21 +9,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>If your domain uses APIs hosted on the same domain and you don't have enabled [API Discovery](/waap/api-discovery-and-protection/api-discovery), you can manually add endpoints to the API base path. This will define a communication path for WAAP to expect API requests and protect your endpoints.</p>
+<p>When a domain uses APIs hosted on the same domain without [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) enabled, endpoints can be added manually to the API base path. This defines a communication path for WAAP to expect API requests and protect those endpoints.</p>
 
 <Info>
-  **Info**
-
   This setting doesn't add API endpoints to the allowlist.
 </Info>
 
-<p>When you enter a path, note that:</p>
+<p>The following rules apply when entering a path:</p>
 
-- Paths are recursively allowed. For example, `api/` allows `api/v1/*`, `api/v2/*`, etc.
+- Paths are recursively allowed — `api/` allows `api/v1/*` and `api/v2/*`.
 - Regex/wildcard input is not accepted. Use `api/` instead of `api/*`.
 - Don't enter the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`. The domain is automatically added.
 - Paths are not case-sensitive. `API/` and `api/` are interchangeable.
-- To add multiple APIs, you must create separate entries.
+- Adding multiple APIs requires a separate entry for each one.
 
 ## Add endpoints to the base path
 
@@ -33,7 +31,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   ![Domains page in the Customer Portal](/images/docs/waap/api-discovery-and-protection/domains-page.png)
 </Frame>
 
-2. Choose a domain from the list and click its name to open it. You'll be directed to the **Overview** page.
+2. Select a domain from the list and click its name to open it. This opens the **Overview** page.
 3. In the sidebar, click **Settings**. On the page that opens, select the **API Base Path** tab.
 
 <Frame>
@@ -47,40 +45,34 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 1. Find the relevant endpoint and click the three-dot icon next to it.
 2. Select **Delete**.
-3. Confirm your action by clicking **Delete** again.
+3. Confirm the action by clicking **Delete** again.
 
-<p>After you configure the API base path, CAPTCHA and JavaScript validation will be disabled for added endpoints.</p>
+<p>After the API base path is configured, CAPTCHA and JavaScript validation is disabled for added endpoints.</p>
 
-<p>The [DDoS protection](/waap/ddos-protection), [IP reputation](/waap/waap-policies/ip-reputation), and rate limitation features will continue to protect those endpoints. Custom [WAAP rules](/waap/waap-rules/custom-rules) and [firewall rules](/waap/firewall/access-control#managing-allowed-and-blocked-ips) can also impact content delivery via API and potentially block users.</p>
+<p>The [DDoS&nbsp;protection](/waap/ddos-protection), [IP&nbsp;reputation](/waap/waap-policies/ip-reputation), and rate limitation features continue to protect those endpoints. Custom [WAAP&nbsp;rules](/waap/waap-rules/custom-rules) and [firewall&nbsp;rules](/waap/firewall/access-control#managing-allowed-and-blocked-ips) can also impact content delivery via API and potentially block users.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>If a domain uses APIs hosted on the same domain and [API Discovery](/waap/api-discovery-and-protection/api-discovery) is not enabled, manually configure the API base path via the [Domains](/api-reference/waap#domains) settings endpoints to tell WAAP which paths to treat as API traffic. WAAP then disables CAPTCHA and JavaScript validation for those paths while keeping DDoS, IP reputation, and rate limiting active. Response examples include only the fields used in each step.</p>
+<p>If a domain uses APIs hosted on the same domain and [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) is not enabled, manually configure the API base path via the [Domains](/api-reference/waap#domains) settings endpoints to tell WAAP which paths to treat as API traffic. WAAP then disables CAPTCHA and JavaScript validation for those paths while keeping DDoS, IP reputation, and rate limiting active. Response examples include only the fields used in each step.</p>
 
 <Info>
-  **Info**
-
   This setting doesn't add API paths to the allowlist.
 </Info>
 
-<p>When configuring API paths, note that:</p>
+<p>The following rules apply when configuring API paths:</p>
 
-- Paths are recursively allowed. For example, `api/` covers `api/v1/*`, `api/v2/*`, etc.
+- Paths are recursively allowed — `api/` covers `api/v1/*` and `api/v2/*`.
 - Regex/wildcard input is not accepted. Use `api/` instead of `api/*`.
 - Don't include the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`.
 - API paths are not case-sensitive. `API/` and `api/` are interchangeable.
 
 <Warning>
-  **Warning**
-
-  The `api_urls` field **replaces** the entire list on every update. Sending `{"api_urls": ["api/v3/"]}` will erase all previously configured paths, leaving only `api/v3/`. Always retrieve the current list first and include all existing paths in the update.
+  The `api_urls` field **replaces** the entire list on every update. Sending `{"api_urls": ["api/v3/"]}` erases all previously configured paths, leaving only `api/v3/`. Always retrieve the current list first and include all existing paths in the update.
 </Warning>
 
 <Info>
-  **Info**
-
-  To make API calls, an [API token](/account-settings/api-tokens) is required. To get the domain ID, use [List domains](/waap/getting-started/manage-domains#list-domains).
+  An [API&nbsp;token](/account-settings/api-tokens) is required to make API calls. To get the domain ID, use [List&nbsp;domains](/waap/getting-started/manage-domains#list-domains).
 </Info>
 
 ```bash
@@ -123,9 +115,10 @@ export DOMAIN_ID=your_domain_id
 
     func main() {
         client := gcore.NewClient()
+        ctx := context.Background()
         domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
 
-        settings, err := client.Waap.Domains.Settings.Get(context.TODO(), domainID)
+        settings, err := client.Waap.Domains.Settings.Get(ctx, domainID)
         if err != nil {
             panic(err.Error())
         }
@@ -201,15 +194,16 @@ export DOMAIN_ID=your_domain_id
 
     func main() {
         client := gcore.NewClient()
+        ctx := context.Background()
         domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
 
-        settings, err := client.Waap.Domains.Settings.Get(context.TODO(), domainID)
+        settings, err := client.Waap.Domains.Settings.Get(ctx, domainID)
         if err != nil {
             panic(err.Error())
         }
 
         // Add a path
-        err = client.Waap.Domains.Settings.Update(context.TODO(), domainID, waap.DomainSettingUpdateParams{
+        err = client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
             API: waap.DomainSettingUpdateParamsAPI{
                 APIURLs: append(settings.API.APIURLs, "api/v3/"),
             },
@@ -285,9 +279,10 @@ export DOMAIN_ID=your_domain_id
 
     func main() {
         client := gcore.NewClient()
+        ctx := context.Background()
         domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
 
-        err := client.Waap.Domains.Settings.Update(context.TODO(), domainID, waap.DomainSettingUpdateParams{
+        err := client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
             API: waap.DomainSettingUpdateParamsAPI{
                 IsAPI: gcore.Bool(true),
             },

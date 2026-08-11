@@ -15,6 +15,7 @@ jobs:
     permissions:
       issues: write
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -91,7 +92,8 @@ jobs:
             --label "api-sdk-tracker" \
             --body-file /tmp/issue_body.md
 
-      - name: Commit rebuilt doc index
+      - name: Commit rebuilt doc index (feature branch)
+        if: github.ref != 'refs/heads/main'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -100,12 +102,26 @@ jobs:
           git commit -m "chore: rebuild API/SDK doc index"
           git push
 
+      - name: Open PR with rebuilt doc index (main)
+        if: github.ref == 'refs/heads/main'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild API/SDK doc index"
+          branch: chore/rebuild-api-sdk-doc-index
+          delete-branch: true
+          title: "chore: rebuild API/SDK doc index"
+          body: "Automated update of `api-sdk-tracker/doc_index.json` triggered by a push to `main`."
+          labels: automated,api-sdk-tracker
+          add-paths: api-sdk-tracker/doc_index.json
+
   sdk-diff:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       issues: write
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -286,11 +302,14 @@ jobs:
             --label "api-sdk-tracker" \
             --body-file /tmp/issue_body.md
 
-      - name: Commit rebuilt doc index
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add api-sdk-tracker/doc_index.json
-          git diff --cached --quiet && echo "Nothing to commit" && exit 0
-          git commit -m "chore: rebuild API/SDK doc index"
-          git push
+      - name: Open PR with rebuilt doc index
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild API/SDK doc index"
+          branch: chore/rebuild-api-sdk-doc-index
+          delete-branch: true
+          title: "chore: rebuild API/SDK doc index"
+          body: "Automated update of `api-sdk-tracker/doc_index.json` from the scheduled SDK diff run."
+          labels: automated,api-sdk-tracker
+          add-paths: api-sdk-tracker/doc_index.json

@@ -198,12 +198,15 @@ jobs:
             --label "terraform" \
             --body-file /tmp/issue-body.md
 
-      - name: Commit updated schemas and doc index
+      - name: Open PR with updated schemas and doc index
         if: steps.provider.outputs.latest != steps.pinned.outputs.pinned
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add terraform-provider/
-          git diff --cached --quiet && echo "Nothing to commit" && exit 0
-          git commit -m "chore: update Terraform provider schema to v${{ steps.provider.outputs.latest }}"
-          git push
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update Terraform provider schema to v${{ steps.provider.outputs.latest }}"
+          branch: chore/update-terraform-provider-schema
+          delete-branch: true
+          title: "chore: update Terraform provider schema to v${{ steps.provider.outputs.latest }}"
+          body: "Automated update of Terraform provider schemas and `terraform-provider/doc_index.json` for v${{ steps.provider.outputs.latest }}."
+          labels: automated,terraform
+          add-paths: terraform-provider/
