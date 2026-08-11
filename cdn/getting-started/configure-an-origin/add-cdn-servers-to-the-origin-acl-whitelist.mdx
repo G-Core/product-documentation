@@ -1,38 +1,41 @@
 ---
-title: "Add CDN servers to the origin ACL whitelist"
-sidebarTitle: "Add CDN servers to ACL"
-ai-navigation: Configure origin ACL whitelist for CDN servers using HTTP headers, IP addresses, or subnets via API endpoints; HTTP header method recommended to avoid manual updates as CDN server IPs change every 30-60 minutes.
+title: Add CDN servers to the origin ACL whitelist
+sidebarTitle: Add CDN servers to ACL
+ai-navigation: Allow Gcore CDN edge servers to pull content from a restricted origin using request headers, public IP addresses, or public network ranges.
 ---
 
-If you have restrictions on your origin, there are three ways to whitelist the CDN servers:
+If the origin restricts which clients can pull content, add Gcore CDN edge servers to the origin ACL in one of these ways:
 
-- via HTTP headers (recommended)
-- via CDN servers' IP addresses
-- via CDN servers' subnets
+- HTTP request headers (recommended)
+- CDN server IP addresses
+- CDN server network ranges (subnets)
 
 <Info>
-  **Info**
-  We continually expand our network, so **the list of servers changes constantly**. If you fail to add the IP address of a new server or a subnet to the whitelist, users cannot access content from that edge server. We recommend writing a script that automatically updates your ACL. New IP addresses or subnets are added to our list 30-60 minutes before launching a new server.
+The list of CDN edge IPs and networks changes as the network expands. New addresses and subnets appear in the public lists 30–60 minutes before a new server starts serving traffic. Missing an address from the origin ACL blocks content for users served by that edge. Prefer the HTTP header method, or automate ACL updates from the public list endpoints.
 </Info>
 
-## Whitelist via HTTP headers
+## Allow via HTTP headers
 
-Use the [Add Request Headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) option to set up a custom header.
+Configure [Add&nbsp;request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) so the CDN sends a custom header on every request to the origin, then allow only that header on the origin.
 
-We recommend this method as it does not require further updates once set up. In contrast, the list of IP addresses must be regularly updated.
+This method does not need updates when CDN edge IPs change. IP and subnet lists must be refreshed regularly.
 
-## Whitelist via IP addresses
+## Allow via IP addresses
 
-You can fetch the IP addresses of the CDN servers by using this API request:
+Fetch the current CDN edge IP addresses with this public API request (no authorization required):
 
-```sh
+```bash
 curl -i -X GET https://api.gcore.com/cdn/public-ip-list
 ```
 
-## Whitelist via subnets
+The JSON response includes `addresses` (IPv4) and `addresses_v6` (IPv6). Add those values to the origin IP ACL, and refresh the list on a schedule — the set changes over time.
 
-You can fetch the IP addresses of the CDN subnets using this API request:
+## Allow via network ranges
 
-```sh
-curl -i -X GET https://api.gcore.com/cdn/public-net-list 
+Fetch the current CDN edge network ranges with this public API request (no authorization required):
+
+```bash
+curl -i -X GET https://api.gcore.com/cdn/public-net-list
 ```
+
+The JSON response includes `addresses` (IPv4 networks) and `addresses_v6` (IPv6 networks). Add those CIDR ranges to the origin ACL, and refresh the list on a schedule.
