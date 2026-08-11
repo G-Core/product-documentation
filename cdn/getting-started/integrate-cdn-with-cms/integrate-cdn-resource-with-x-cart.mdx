@@ -1,131 +1,146 @@
 ---
-title: Integrate CDN resource with X-Cart
+title: Integrate a CDN resource with X-Cart
 sidebarTitle: X-Cart
-ai-navigation: Configure Gcore CDN resource integration with X-Cart 4.4.x by setting CNAME record in Customer Portal and modifying smarty.php, func.files.php, function.get_category_image_url.php, and banner_rotator.tpl files to rewrite static asset URLs to CDN CNAME domain.
+ai-navigation: Configure X-Cart 4.4 file paths so skin, images, and cache assets load from a Gcore CDN custom domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+X-Cart 4.4.x can serve skin, image, and cache assets from a Gcore CDN [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) by editing core PHP and Smarty files. These steps apply only to X-Cart 4.4.x. X-Cart 5.x uses a different architecture and is not covered here.
 
-Type in your CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Assume that you are using  _cdn.example.com_ as CNAME for content delivery. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration. 
+Create a&nbsp;[CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration.
 
-**X-Cart 4.4.x and later - fixed path to skin2**
+<Warning>
+Back up the site files and database before making changes. Core file edits are overwritten by X-Cart upgrades — reapply them after each upgrade if needed.
+</Warning>
 
-Open  _smarty.php_ file located in the root directory of X-Cart.
+Before editing X-Cart, collect the **custom domain** value to use in the code samples — it typically looks like `cdn.site.com`. Replace every `cdn.site.com` occurrence with that hostname, and replace every `shop.example.com` occurrence with the storefront hostname:
 
-Replace the following lines
-    
-```
-$smarty->assign('ImagesDir', $xcart_web_dir . $smarty_skin_dir . '/images');
-$smarty->assign('SkinDir',  $xcart_web_dir . $smarty_skin_dir);
-```
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Copy the custom domain">
+    Note the **custom domain** shown for the resource — this is the hostname to use in the X-Cart file edits. Do not use the Gcore target hostname (`cl-****.gcdn.co`).
+  </Step>
+  <Step title="Confirm the DNS CNAME">
+    Confirm that the custom domain has a CNAME record pointing to the Gcore target hostname shown in the Customer Portal (`cl-****.gcdn.co`).
+  </Step>
+  <Step title="Confirm SSL">
+    Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+  </Step>
+</Steps>
 
-With the following lines
-    
-```
-if ($_SERVER['HTTPS'] != 'on')
-{
-    $smarty->assign("SkinDir","http://cdn.example.com/skin/ideal_comfort");
-    $smarty->assign("ImagesDir","http://cdn.example.com/skin/ideal_comfort/images");
-}
-else
-{
-    $smarty->assign("SkinDir","https://cdn.example.com/skin/ideal_comfort");
-    $smarty->assign("ImagesDir","https://cdn.example.com/skin/ideal_comfort/images");
-}
-```
+Then update X-Cart. Use either a dynamic or fixed skin path in `smarty.php`, then apply the remaining file edits.
 
-**X-Cart 4.4.x and later - dynamic path to skin**
+**Rewrite skin and image URLs in smarty.php**
 
-Open  _smarty.php_ file located in the root directory of X-Cart.
+Open `smarty.php` in the X-Cart root directory. Find:
 
-Replace the following lines
-    
-```
+```php
 $smarty->assign('ImagesDir', $xcart_web_dir . $smarty_skin_dir . '/images');
 $smarty->assign('SkinDir', $xcart_web_dir . $smarty_skin_dir);
 ```
 
-With the following lines
-    
-```
+Replace those lines with one of the following blocks.
+
+**Dynamic skin path (recommended)** — keeps the active `$smarty_skin_dir` value:
+
+```php
 if ($_SERVER['HTTPS'] != 'on')
 {
-    $smarty->assign('ImagesDir', "http://cdn.example.com" . $smarty_skin_dir . '/images');
-    $smarty->assign('SkinDir', "http://cdn.example.com" . $smarty_skin_dir);
+    $smarty->assign('ImagesDir', "http://cdn.site.com" . $smarty_skin_dir . '/images');
+    $smarty->assign('SkinDir', "http://cdn.site.com" . $smarty_skin_dir);
 }
 else
 {
-    $smarty->assign('ImagesDir', "https://cdn.example.com" . $smarty_skin_dir . '/images');
-    $smarty->assign('SkinDir', "https://cdn.example.com" . $smarty_skin_dir);
+    $smarty->assign('ImagesDir', "https://cdn.site.com" . $smarty_skin_dir . '/images');
+    $smarty->assign('SkinDir', "https://cdn.site.com" . $smarty_skin_dir);
 }
 ```
 
-Open `/include/templater/plugins/function.load_defer_code.php` file.
+**Fixed skin path** — hardcodes the `ideal_comfort` skin. If the store uses a different skin, change `ideal_comfort` to that skin directory name:
 
-Replace the following line
-    
+```php
+if ($_SERVER['HTTPS'] != 'on')
+{
+    $smarty->assign("SkinDir","http://cdn.site.com/skin/ideal_comfort");
+    $smarty->assign("ImagesDir","http://cdn.site.com/skin/ideal_comfort/images");
+}
+else
+{
+    $smarty->assign("SkinDir","https://cdn.site.com/skin/ideal_comfort");
+    $smarty->assign("ImagesDir","https://cdn.site.com/skin/ideal_comfort/images");
+}
 ```
+
+**Rewrite deferred cache URLs**
+
+Open `/include/templater/plugins/function.load_defer_code.php`. Find:
+
+```php
 $cacheWebFile = $var_dirs_web['cache'] . '/' . $label . '.' . $md5Suffix . '.' . $type;
 ```
 
-With the following lines
-    
-```
-if ($_SERVER['HTTPS'] != 'on') 
-{ 
-    $cacheWebFile = "http://cdn.example.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type; 
-} 
-else 
-{ 
-    $cacheWebFile = "https://cdn.example.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type;  
+Replace it with:
+
+```php
+if ($_SERVER['HTTPS'] != 'on')
+{
+    $cacheWebFile = "http://cdn.site.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type;
+}
+else
+{
+    $cacheWebFile = "https://cdn.site.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type;
 }
 ```
 
-Open  _/include/func/func.files.php_.
+**Rewrite the current location for file URLs**
 
-Find (do not replace) the following line
-    
-```
+Open `/include/func/func.files.php`. Find (do not replace):
+
+```php
 global $config, $sql_tbl, $xcart_dir, $current_location;
 ```
 
-And add (do not replace) the following lines
-    
-```
-if ($HTTPS) 
-    $current_location = 'https://cdn.example.com'; 
-else 
-    $current_location = 'http://cdn.example.com';
+Immediately after that line, add:
+
+```php
+if ($HTTPS)
+    $current_location = 'https://cdn.site.com';
+else
+    $current_location = 'http://cdn.site.com';
 ```
 
-Open  _/include/templater/plugins/function.get_category_image_url.php_.
+**Rewrite category image URLs**
 
-Replace the following line
-    
-```
+Open `/include/templater/plugins/function.get_category_image_url.php`. Find:
+
+```php
 return func_convert_amp(func_get_image_url($category['categoryid'], 'C', $category['image_path']));
 ```
 
-With the following line
-    
-```
-return return str_replace("domain.com ","cdn.example.com",func_convert_amp(func_get_image_url($category['categoryid'], 'C', $category['image_path'])));
+Replace it with (use the storefront hostname in place of `shop.example.com`):
+
+```php
+return str_replace("shop.example.com", "cdn.site.com", func_convert_amp(func_get_image_url($category['categoryid'], 'C', $category['image_path'])));
 ```
 
-Open  _/skin/common_files/modules/Banner_System/banner_rotator.tpl_ file
+**Rewrite banner image URLs**
 
-Replace the following line
-    
+Open `/skin/common_files/modules/Banner_System/banner_rotator.tpl`. Find:
+
 ```
 src="{$content.image_path|amp}"
 ```
 
-With the following line.
-    
+Replace it with:
+
 ```
-src="{$content.image_path|amp|replace:'domain.com':'cdn.example.com'}"
+src="{$content.image_path|amp|replace:'shop.example.com':'cdn.site.com'}"
 ```
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+**Confirm the integration**
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+1. Open the browser developer tools.
+2. Select the **Network** tab.
+3. Refresh the page.
+4. Confirm that static files load from the custom domain instead of the original domain.
