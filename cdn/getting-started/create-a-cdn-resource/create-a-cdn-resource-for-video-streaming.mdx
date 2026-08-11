@@ -1,20 +1,22 @@
 ---
 title: Create a CDN resource for video streaming
 sidebarTitle: For video streaming
-ai-navigation: Create a CDN resource for video streaming with HLS, DASH, or FLV, configuring caching, geo-restrictions, secure tokens, and Origin Shielding.
+ai-navigation: Create a Video CDN resource for HLS, MPEG-DASH, HTTP-FLV, or MP4 delivery with caching, custom domains, security, and Origin Shielding.
 ---
 
-Gcore Video CDN delivers live streams and video-on-demand content globally without transcoding, using existing HLS, DASH, or FLV output.
+Gcore Video CDN delivers prepared HLS, MPEG-DASH, HTTP-FLV, and MP4 content globally without transcoding. After setup, viewers request streams and files through a CDN domain while the CDN retrieves content from the configured origin.
+
+Prepared HLS and MPEG-DASH delivery requires approval from Gcore Support. HTTP-FLV and MP4 delivery do not require video delivery approval, although every format requires a paid CDN plan.
 
 ## Video CDN or Gcore Video Streaming
 
-Choose Video CDN when prepared streams already exist, or Gcore Video Streaming when transcoding and a hosted workflow are required.
+Select Video CDN when prepared streams already exist, or Gcore Video Streaming when transcoding and a hosted workflow are required.
 
 <Tabs>
-  <Tab title="Use Video CDN if...">
+  <Tab title="Video CDN">
     Use [Video&nbsp;CDN](/cdn/video-cdn/video-cdn-overview) when:
 
-    - Existing HLS, DASH, or FLV streams are already available
+    - Existing HLS, MPEG-DASH, HTTP-FLV, or MP4 content is already available
     - Transcoding is handled independently, outside Gcore
     - Global delivery at scale is required (thousands to millions of viewers)
     - Advanced CDN features are needed:
@@ -38,7 +40,7 @@ Choose Video CDN when prepared streams already exist, or Gcore Video Streaming w
     - Broadcasting rights require geo-restrictions
     - Offloading bandwidth from the origin is a goal
   </Tab>
-  <Tab title="Use Video Streaming if...">
+  <Tab title="Video Streaming">
     Use Gcore Video Streaming instead when:
 
     - Transcoding is needed for raw RTMP/SRT input
@@ -55,15 +57,15 @@ Choose Video CDN when prepared streams already exist, or Gcore Video Streaming w
 
 ## Quick setup
 
-Create a Video CDN resource in five steps: request activation, choose a paid plan, create the resource, set caching rules, and enable the LIVE STREAMING preset for live delivery.
+Create a Video CDN resource in five steps: request activation, select a paid plan, create the resource, set caching rules, and enable the LIVE STREAMING preset for live delivery.
 
 <Steps>
-  <Step title="Request streaming activation">
+  <Step title="Request HLS or DASH approval">
     <Warning>
-    Video delivery via CDN requires legal approval from Gcore Support before setup can continue.
+    Prepared HLS and MPEG-DASH delivery requires legal approval from Gcore Support before setup can continue.
     </Warning>
 
-    Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use the chat in the bottom-right corner and ask to enable video delivery for the CDN account. This is CDN-side approval for prepared HLS and DASH delivery.
+    Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use the account chat to request prepared HLS or MPEG-DASH delivery for the CDN account.
 
     Provide:
 
@@ -119,6 +121,8 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
     </Tabs>
 
     5. Click **Create**.
+
+    For each custom domain, create a CNAME record that points to the assigned CDN domain and issue or upload a valid SSL certificate before testing over HTTPS. The [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) procedure covers both requirements.
 
     The [static&nbsp;assets](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) guide covers the same resource creation process used for video.
   </Step>
@@ -181,7 +185,7 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
 
         3. Add these parameters: `_HLS_msn`, `_HLS_part`, `_HLS_skip`.
            - These are required for LL-HLS to work correctly
-           - All other query parameters will be ignored
+           - Other parameters are excluded from the cache key but are still forwarded to the origin
       </Tab>
       <Tab title="VOD">
         Optimized cache configuration for VOD.
@@ -196,22 +200,18 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
 
         Always online keeps cached videos available if the origin goes down, so "origin unavailable" errors do not reach viewers. This matters most for high-traffic VOD workloads.
 
-        <Warning>
-        Do not add "updating" to the error types list for VOD. When excluded, the CDN can deliver video chunks more efficiently and reduce buffering. Only add "error" and "timeout".
-        </Warning>
-
         Set long-term cache for all content:
 
         1. Still in **CDN Resource** > **Cache**.
 
-        2. Set **CDN cache expiry time** to 1 year (31,536,000 seconds).
-           - This caches all successful responses (2xx, 3xx) for 1 year
-           - VOD content does not change, so aggressive caching is safe
+        2. For immutable or versioned URLs, set **CDN cache expiry time** to 1 year (31,536,000 seconds).
+           - This caches successful responses (2xx, 3xx) for 1 year
+           - For content replaced at the same URL, use a shorter TTL or purge the cache after replacement
 
         3. Set **Custom cache time for 404 errors** to 1 second.
            - Protects the origin from repeated requests for non-existent files
 
-        A one-year TTL is safe because VOD files do not change once uploaded, so maximum cache efficiency keeps origin load low. Purge manually when a file must be replaced.
+        A one-year TTL is appropriate only when content URLs are immutable or versioned. The [cache&nbsp;purge](/cdn/purge-the-cdn-cache) procedure removes an older object after content is replaced at the same URL.
 
         (Optional) Large file optimization for MP4 progressive download:
 
@@ -234,7 +234,7 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
 
         2. Enable **Ignore query string** if VOD URLs do not use query parameters for logic, and caching `video.mp4?ref=email` and `video.mp4?ref=social` as the same file is preferred.
 
-        3. Confirm whether analytics or tracking depends on query parameters before enabling this option.
+        3. Before removing query parameters from the cache key, confirm that they are not required for analytics or access control. Ignored parameters are still forwarded to the origin.
 
         Common file extensions:
 
@@ -252,7 +252,7 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
 
         ### Chunked-Proxy module
 
-        Standard CDNs wait for files to download fully from origin before sending them to viewers (store and forward). The Chunked-Proxy module streams data immediately: the CDN edge sends bytes to viewers while receiving from origin, using Chunked Transfer Encoding (HTTP/1.1) and Framing (HTTP/2/3). Chunked-Proxy delivers the 2–4 second latency described in [low-latency&nbsp;streaming](/streaming/live-streaming/how-low-latency-streaming-works).
+        Standard CDNs wait for files to download fully from origin before sending them to viewers (store and forward). The Chunked-Proxy module streams data immediately: the CDN edge sends bytes to viewers while receiving from origin, using chunked transfer encoding and protocol framing. Chunked-Proxy delivers the 2–4 second latency described in [low-latency&nbsp;streaming](/streaming/live-streaming/how-low-latency-streaming-works).
 
         ### Chunked-Proxy activation
 
@@ -316,37 +316,37 @@ Create a Video CDN resource in five steps: request activation, choose a paid pla
 
 ---
 
-## Test the stream
+## Test video delivery
 
-Confirm that the CDN URL plays correctly before going to production.
+Confirm that the HTTPS CDN URL plays correctly before going to production.
 
 ### CDN URL
 
-Update stream URLs from origin to CDN.
+Replace the origin hostname with the CDN hostname.
 
 Before (origin):
 
 ```text
-http://live.example.com/playlist.m3u8
+https://live.example.com/playlist.m3u8
 ```
 
 After (CDN):
 
 ```text
-http://video.example.com/playlist.m3u8
+https://video.example.com/playlist.m3u8
 ```
 
 Or with an auto-generated domain:
 
 ```text
-http://123456.gcdn.co/playlist.m3u8
+https://123456.gcdn.co/playlist.m3u8
 ```
 
 ### Test playback
 
 Confirm playback in a player that supports HLS:
 
-- Browser: [VLC&nbsp;Media&nbsp;Player](https://videolan.org)
+- Desktop player: [VLC&nbsp;Media&nbsp;Player](https://videolan.org)
 - Online: [HLS.js&nbsp;demo&nbsp;player](https://hls-js.netlify.app/demo/)
 - Mobile: Native Safari (iOS) or Chrome (Android)
 
@@ -360,18 +360,18 @@ After the resource is live, Origin Shielding, geo-restrictions, and secure token
 
 ### Origin Shielding
 
-For high-traffic streams (100+ concurrent viewers), enable Origin Shielding to cut origin load.
+Origin Shielding routes cache misses through a designated shield location before requests reach the origin, consolidating requests and reducing direct origin traffic.
 
 <Steps>
   <Step title="Open Origin Shielding settings">
     Navigate to **CDN Resource** > **General** > **Origin shielding**.
   </Step>
-  <Step title="Enable and choose a location">
+  <Step title="Enable and select a location">
     Toggle **Enable origin shielding**, then select the shield location closest to the origin.
   </Step>
 </Steps>
 
-Origin Shielding reduces origin requests by 80–95%, which protects the origin from traffic spikes. Additional options, including shield location selection, are available in [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) settings.
+Select a shield location close to the origin. The [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) article explains location and failover settings.
 
 ### Geo-restrictions
 
@@ -381,7 +381,7 @@ Restrict content by country when broadcasting rights require it.
   <Step title="Open the country access policy">
     Navigate to **CDN Resource** > **Security** > **Country access policy**.
   </Step>
-  <Step title="Choose allow or block">
+  <Step title="Select allow or block">
     Select **Allow only** to make content available only in selected countries, or **Block** to block content in selected countries.
   </Step>
   <Step title="Apply the countries">
@@ -412,24 +412,28 @@ Protect content with time-limited authenticated URLs for paid content, private v
 
 ## Troubleshooting
 
-Use these checks when a stream fails to play or latency is higher than expected. Contact Gcore Support or use the chat in the bottom-right corner if the issue remains.
+Use checks that match the delivery format and determine whether failure occurs at the origin, CDN, DNS, or player. Contact Gcore Support or use the account chat if the issue remains.
 
-### Stream not playing
+### Playback failures
 
-1. Check that the origin is accessible: test the origin URL directly in a browser.
+1. Open the origin URL directly and confirm that it returns the expected content.
 
-2. Verify DNS: confirm the CNAME points to the CDN (for a custom domain).
+2. For a custom domain, confirm that its CNAME points to the CDN domain and that the SSL certificate is valid.
 
-3. Check cache rules: verify `.m3u8` and `.ts` rules are configured.
+3. Check the format-specific response:
+   - HLS — verify the `.m3u8` playlist and referenced `.ts` or `.m4s` segments
+   - MPEG-DASH — verify the `.mpd` manifest and referenced `.m4s` segments
+   - HTTP-FLV — verify that the `.flv` endpoint maintains a continuous HTTP response
+   - MP4 — verify a successful response and HTTP Range support for seeking
 
-4. Review CDN logs: check for 4xx/5xx errors in [CDN&nbsp;statistics](/cdn/view-statistics-of-a-cdn-resource).
+4. Check 4xx and 5xx responses in [CDN&nbsp;statistics](/cdn/view-statistics-of-a-cdn-resource).
 
-### High latency
+### High live-stream latency
 
-1. Enable the LIVE STREAMING preset for live streams (see the last step in Quick setup).
+1. Confirm that the **LIVE STREAMING preset** is enabled.
 
-2. Reduce playlist cache: set `.m3u8` cache to 1–2 seconds.
+2. Check that manifest cache time is appropriate for the stream.
 
-3. Enable Origin Shielding to reduce routing hops.
+3. For low-latency MPEG-DASH with an external transcoder, confirm that Chunked-Proxy is active.
 
-4. Contact Support for advanced latency optimization.
+4. Contact Gcore Support for workload-specific tuning.
