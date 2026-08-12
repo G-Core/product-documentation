@@ -27,22 +27,26 @@ Before editing X-Cart, collect the **custom domain** value to use in the code sa
   <Step title="Confirm SSL">
     Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
   </Step>
+  <Step title="Test origin asset paths">
+    Request a known skin file, image, and generated cache file directly from the configured origin. Use the same paths that X-Cart exposes for each file, and confirm that the responses contain the expected assets instead of `403` or `404` errors.
+  </Step>
 </Steps>
 
 Then update X-Cart. Use either a dynamic or fixed skin path in `smarty.php`, then apply the remaining file edits.
 
-**Rewrite skin and image URLs in smarty.php**
+<Steps>
+  <Step title="Rewrite skin and image URLs">
 
-Open `smarty.php` in the X-Cart root directory. Find:
+    Open `smarty.php` in the X-Cart root directory. Find:
 
 ```php
 $smarty->assign('ImagesDir', $xcart_web_dir . $smarty_skin_dir . '/images');
 $smarty->assign('SkinDir', $xcart_web_dir . $smarty_skin_dir);
 ```
 
-Replace those lines with one of the following blocks.
+    Replace those lines with one of the following blocks:
 
-**Dynamic skin path (recommended)** — keeps the active `$smarty_skin_dir` value:
+    1. Use the dynamic skin path to keep the active `$smarty_skin_dir` value:
 
 ```php
 if ($_SERVER['HTTPS'] != 'on')
@@ -57,7 +61,7 @@ else
 }
 ```
 
-**Fixed skin path** — hardcodes the `ideal_comfort` skin. If the store uses a different skin, change `ideal_comfort` to that skin directory name:
+    2. Use the fixed skin path to hardcode the `ideal_comfort` skin. If the store uses a different skin, change `ideal_comfort` to that skin directory name:
 
 ```php
 if ($_SERVER['HTTPS'] != 'on')
@@ -71,76 +75,88 @@ else
     $smarty->assign("ImagesDir","https://cdn.site.com/skin/ideal_comfort/images");
 }
 ```
+  </Step>
 
-**Rewrite deferred cache URLs**
+  <Step title="Rewrite deferred cache URLs">
 
-Open `/include/templater/plugins/function.load_defer_code.php`. Find:
+    Open `/include/templater/plugins/function.load_defer_code.php`. Find:
 
 ```php
 $cacheWebFile = $var_dirs_web['cache'] . '/' . $label . '.' . $md5Suffix . '.' . $type;
 ```
 
-Replace it with:
+    Replace it with the following code. It preserves `$var_dirs_web['cache']`, so the generated URL follows the configured X-Cart cache path:
 
 ```php
 if ($_SERVER['HTTPS'] != 'on')
 {
-    $cacheWebFile = "http://cdn.site.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type;
+    $cacheWebFile = "http://cdn.site.com" . $var_dirs_web['cache'] . '/' . $label . '.' . $md5Suffix . '.' . $type;
 }
 else
 {
-    $cacheWebFile = "https://cdn.site.com/var/cache" . '/' . $label . '.' . $md5Suffix . '.' . $type;
+    $cacheWebFile = "https://cdn.site.com" . $var_dirs_web['cache'] . '/' . $label . '.' . $md5Suffix . '.' . $type;
 }
 ```
+  </Step>
 
-**Rewrite the current location for file URLs**
+  <Step title="Rewrite the file URL location">
 
-Open `/include/func/func.files.php`. Find (do not replace):
+    Open `/include/func/func.files.php`. Find, but don't replace:
 
 ```php
 global $config, $sql_tbl, $xcart_dir, $current_location;
 ```
 
-Immediately after that line, add:
+    Immediately after that line, add:
 
 ```php
-if ($HTTPS)
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     $current_location = 'https://cdn.site.com';
 else
     $current_location = 'http://cdn.site.com';
 ```
+  </Step>
 
-**Rewrite category image URLs**
+  <Step title="Rewrite category image URLs">
 
-Open `/include/templater/plugins/function.get_category_image_url.php`. Find:
+    Open `/include/templater/plugins/function.get_category_image_url.php`. Find:
 
 ```php
 return func_convert_amp(func_get_image_url($category['categoryid'], 'C', $category['image_path']));
 ```
 
-Replace it with (use the storefront hostname in place of `shop.example.com`):
+    Replace it with the following code, using the storefront hostname in place of `shop.example.com`:
 
 ```php
 return str_replace("shop.example.com", "cdn.site.com", func_convert_amp(func_get_image_url($category['categoryid'], 'C', $category['image_path'])));
 ```
+  </Step>
 
-**Rewrite banner image URLs**
+  <Step title="Rewrite banner image URLs">
 
-Open `/skin/common_files/modules/Banner_System/banner_rotator.tpl`. Find:
+    Open `/skin/common_files/modules/Banner_System/banner_rotator.tpl`. Find:
 
 ```
 src="{$content.image_path|amp}"
 ```
 
-Replace it with:
+    Replace it with:
 
 ```
 src="{$content.image_path|amp|replace:'shop.example.com':'cdn.site.com'}"
 ```
+  </Step>
 
-**Confirm the integration**
+  <Step title="Clear X-Cart caches">
+    Run the `cleanup.php` utility from the X-Cart root URL to clear compiled Smarty templates. Clear the contents of `var/cache` through the store's standard deployment process if generated application cache files remain, but retain the directory and its permissions.
+  </Step>
 
-1. Open the browser developer tools.
-2. Select the **Network** tab.
-3. Refresh the page.
-4. Confirm that static files load from the custom domain instead of the original domain.
+  <Step title="Confirm the integration">
+    1. Open the browser developer tools.
+    2. Select the **Network** tab.
+    3. Refresh the page.
+    4. Confirm that static files load from the custom domain instead of the original domain.
+
+    If the browser blocks fonts referenced by skin CSS, configure CDN responses for the font files to include an `Access-Control-Allow-Origin` header. Set the header to the storefront origin, or to `*` only when unrestricted public font access is appropriate.
+  </Step>
+</Steps>
