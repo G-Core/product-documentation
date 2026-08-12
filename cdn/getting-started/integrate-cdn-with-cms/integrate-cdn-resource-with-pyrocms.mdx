@@ -1,19 +1,46 @@
 ---
-title: Integrate CDN resource with PyroCMS
+title: Integrate a CDN resource with PyroCMS 2.x
 sidebarTitle: PyroCMS
-ai-navigation: Configure Gcore CDN CNAME integration in PyroCMS admin panel via Settings > Integration to rewrite static asset URLs to custom domain.
+ai-navigation: Configure PyroCMS 2.x Integration settings to serve static assets through a Gcore CDN custom domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you. 
+PyroCMS 2.x can serve static assets through a Gcore CDN resource by setting a custom domain in the admin panel's Integration settings.
 
-Login to the PyroCMS admin panel.
+Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration. Configure its [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) with a valid CNAME record and an active SSL certificate.
 
-Go to Settings –> Integration.
+## PyroCMS 2.x
 
-Type in the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+This procedure assumes a PyroCMS 2.x installation with the standard local static-asset layout and an **Integration** CDN field in the admin panel.
 
-Save settings.
+<Warning>
+Back up site files and the database before making changes.
+</Warning>
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+<Steps>
+  <Step title="Locate the custom domain">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), find the custom domain on the [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) page.
+  </Step>
+  <Step title="Verify origin access">
+    Identify a known static asset used by the site. Request the same path directly from the protocol and hostname configured as the CDN origin:
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    ```text
+    https://origin.example.com/path/to/known-asset.css
+    ```
+
+    Continue only after the origin returns the expected file without a `403` or `404` response.
+  </Step>
+  <Step title="Open the Integration settings">
+    Log in to the PyroCMS admin panel and navigate to **Settings** > **Integration**.
+  </Step>
+  <Step title="Set the CDN domain">
+    Enter the custom domain as a hostname without the protocol or trailing slash: `cdn.site.com`.
+
+    This setting changes URLs generated through the PyroCMS Asset library. Update hardcoded asset URLs in templates separately because the Integration setting doesn't rewrite them.
+  </Step>
+  <Step title="Apply the changes">
+    Click **Save**.
+  </Step>
+  <Step title="Verify asset delivery">
+    Open the browser's developer tools by pressing <kbd>F12</kbd>, select the **Network** tab, and refresh the page. Asset-library-generated URLs should load from the custom domain instead of the origin domain.
+  </Step>
+</Steps>
