@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 18e2047fa6f1
+  version: cc6fbf30dcb2
 servers:
 - url: https://api.gcore.com
 tags:
@@ -17,6 +17,7 @@ tags:
 - name: plans
   description: Operations on tariff plans and their contents
 - name: products
+- name: regions
 - name: reports
   description: Operations involving reports and the associated background tasks that handle their processing
 - name: trials
@@ -2505,6 +2506,136 @@ paths:
           description: You do not have permission to perform this action.
         '404':
           description: The requested resource was not found.
+  /billing/org/v1/regions:
+    get:
+      operationId: v1_regions_list
+      description: |+
+        Retrieve a list of `Region` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Regions
+      parameters:
+      - in: query
+        name: country_id
+        schema:
+          type: string
+        description: Country code
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - code.asc
+            - code.desc
+            - country_id.asc
+            - country_id.desc
+            - name.asc
+            - name.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code.asc` - Code
+          - `code.desc` - Code (descending)
+          - `name.asc` - Name
+          - `name.desc` - Name (descending)
+          - `country_id.asc` - Country id
+          - `country_id.desc` - Country id (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -code
+            - -country_id
+            - -name
+            - code
+            - country_id
+            - name
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code` - Code
+          - `-code` - Code (descending)
+          - `name` - Name
+          - `-name` - Name (descending)
+          - `country_id` - Country id
+          - `-country_id` - Country id (descending)
+        explode: false
+        style: form
+      tags:
+      - regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRegionForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/regions/{id}:
+    get:
+      operationId: v1_regions_retrieve
+      description: Retrieve a single `Region` by ID.
+      summary: Get a single Region
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/reports:
     get:
       operationId: v1_reports_list
@@ -4572,6 +4703,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductForOrg'
+    PaginatedRegionForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegionForOrgSerializerV1'
     PaginatedTemplateList:
       type: object
       required:
@@ -4921,6 +5075,29 @@ components:
       - id
       - internal_name
       - name_en
+    RegionForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          description: Region code
+          pattern: ^\w{1,3}$
+          maxLength: 3
+        name:
+          type: string
+          description: Name of region
+          maxLength: 255
+        country_id:
+          type: string
+          description: Country code
+      required:
+      - code
+      - country_id
+      - id
+      - name
     RoundingRuleCommon:
       type: object
       properties:
@@ -5198,6 +5375,7 @@ x-tagGroups:
   - expenses
   - plans
   - products
+  - regions
   - reports
   - trials
 security:

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Object Storage API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: c19579667574
+  version: 93b5cc710408
 servers:
 - url: https://api.gcore.com
 paths:
@@ -2022,6 +2022,18 @@ paths:
         description: Filter by storage location/region
         schema:
           type: string
+      - name: type
+        in: query
+        description: |-
+          Filter by performance tier. "standard" returns CEPH-backed storages, "fast"
+          returns VAST-backed storages. Storages on any other backend (Backblaze,
+          Wasabi) report a "standard" type but are never returned by this filter —
+          omit the parameter to include them.
+        schema:
+          type: string
+          enum:
+          - standard
+          - fast
       - name: offset
         in: query
         description: Number of records to skip
@@ -3381,11 +3393,11 @@ paths:
         required: true
       responses:
         '201':
-          description: SFTPStorageItemV4
+          description: SFTPStorageWithPasswordV4
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SFTPStorageItemV4'
+                $ref: '#/components/schemas/SFTPStorageWithPasswordV4'
         '400':
           description: ErrResponse
           content:
@@ -3602,7 +3614,10 @@ paths:
       summary: Update SFTP storage
       description: |-
         Updates SFTP storage configuration and/or credentials including password and SSH key management.
-        Supports JSON merge patch semantics: "password": null deletes the password, "ssh_key_ids": [] clears all keys.
+        Supports JSON merge patch semantics: an absent field is left unchanged.
+        The password is changed through "password_mode": "auto" regenerates it and returns it once,
+        "none" removes it; "set" is rejected here, so an existing storage cannot be given a chosen
+        password. "ssh_key_ids": [] clears all keys.
       operationId: updateSftpStorageV4
       parameters:
       - name: storage_id
@@ -3620,11 +3635,11 @@ paths:
         required: false
       responses:
         '200':
-          description: SFTPStorageItemV4
+          description: SFTPStorageWithPasswordV4
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SFTPStorageItemV4'
+                $ref: '#/components/schemas/SFTPStorageWithPasswordV4'
         '400':
           description: ErrResponse
           content:
@@ -4665,6 +4680,7 @@ components:
       - location_name
       - name
       - provisioning_status
+      - type
       type: object
       properties:
         address:
@@ -4705,6 +4721,13 @@ components:
           - updating
           - deleting
           - deleted
+        type:
+          type: string
+          description: Performance tier of the storage, determined by the backend it is provisioned on.
+          example: standard
+          enum:
+          - standard
+          - fast
     S3StorageResV4:
       title: S3StorageResV4 S3-compatible storage with connection details and credentials. Use address and access_keys to connect.
       required:
@@ -4716,6 +4739,7 @@ components:
       - location_name
       - name
       - provisioning_status
+      - type
       type: object
       properties:
         access_keys:
@@ -4761,6 +4785,13 @@ components:
           - updating
           - deleting
           - deleted
+        type:
+          type: string
+          description: Performance tier of the storage, determined by the backend it is provisioned on.
+          example: standard
+          enum:
+          - standard
+          - fast
     SFTPStorageCreateBodyV4:
       title: SFTPStorageCreateBodyV4 Request body for creating an SFTP storage.
       required:
@@ -4789,12 +4820,17 @@ components:
           type: string
           description: User-defined name for the storage instance
           example: my-sftp-storage
+        password:
+          type: string
+          description: |-
+            SFTP password (8-63 chars). Required when `password_mode` is 'set'.
+            Must be omitted when `password_mode` is 'auto' or 'none'.
         password_mode:
           type: string
           description: |-
             Password handling mode for SFTP access:
             'auto': generate a random password (returned in the response)
-            'set': use the password provided in `sftp_password`
+            'set': use the password provided in password
             'none': no password (SSH-key-only access)
           example: auto
           enum:
@@ -4805,11 +4841,6 @@ components:
           type: string
           description: Custom domain alias for accessing the storage. Omit for no alias.
           example: my-storage.example.com
-        sftp_password:
-          type: string
-          description: |-
-            SFTP password (8-63 chars). Required when `password_mode` is 'set'.
-            Must be omitted when `password_mode` is 'auto' or 'none'.
         ssh_key_ids:
           type: array
           description: SSH key IDs to associate with this storage at creation time. If omitted, no keys are linked.
@@ -4883,10 +4914,6 @@ components:
           type: string
           description: User-defined name for the storage instance, as supplied at creation time.
           example: my-sftp-storage
-        password:
-          type: string
-          description: SFTP password. Only returned when newly generated or set (create/patch). Omitted in GET/list responses.
-          example: Xy9$mN2p!qR8
         provisioning_status:
           type: string
           description: Lifecycle status of the storage. Use this to check readiness before operations.
@@ -4974,6 +5001,98 @@ components:
         Field absent → no change
         Field present with value → set to that value
         "ssh_key_ids": [] → clear all SSH keys
+    SFTPStorageWithPasswordV4:
+      required:
+      - address
+      - created_at
+      - expires
+      - full_name
+      - has_custom_config_file
+      - has_password
+      - id
+      - is_http_disabled
+      - location_name
+      - name
+      - provisioning_status
+      - server_alias
+      - ssh_key_ids
+      type: object
+      properties:
+        address:
+          type: string
+          description: Full hostname/address for accessing the storage endpoint
+          example: luxembourg-2.storage.example.com
+        created_at:
+          type: string
+          description: ISO 8601 timestamp when the storage was created
+          format: date-time
+          example: '2025-08-05T09:17:02Z'
+        expires:
+          type: string
+          description: Duration when the storage will expire. Null if no expiration is set.
+          example: 2 years 6 months
+        full_name:
+          type: string
+          description: |-
+            Read-only internal full name of the storage, composed as "{`client_id`}-{name}".
+            Used by the SFTP backend as the login username. Clients should use this value when connecting
+            but should continue to identify the storage by `name` in their own configuration.
+          example: 696-my-sftp-storage
+        has_custom_config_file:
+          type: boolean
+          description: Whether this storage uses a custom configuration file
+          example: false
+        has_password:
+          type: boolean
+          description: Whether password authentication is configured for this storage
+          example: true
+        id:
+          type: integer
+          description: Unique identifier for the storage instance
+          format: int64
+          example: 1
+        is_http_disabled:
+          type: boolean
+          description: Whether HTTP access is disabled for this storage (HTTPS only)
+          example: false
+        location_name:
+          type: string
+          description: Geographic location code where the storage is provisioned
+          example: luxembourg-2
+        name:
+          type: string
+          description: User-defined name for the storage instance, as supplied at creation time.
+          example: my-sftp-storage
+        password:
+          type: string
+          description: SFTP password. Only present when the request generated or set one; never returned by GET or list.
+          example: Xy9$mN2p!qR8
+        provisioning_status:
+          type: string
+          description: Lifecycle status of the storage. Use this to check readiness before operations.
+          example: active
+          enum:
+          - creating
+          - active
+          - updating
+          - deleting
+          - deleted
+        server_alias:
+          type: string
+          description: Custom domain alias for accessing the storage. Null if no alias is configured.
+          example: my-storage.example.com
+        ssh_key_ids:
+          type: array
+          description: IDs of SSH keys associated with this SFTP storage
+          example:
+          - 1
+          - 2
+          items:
+            type: integer
+            format: int64
+      description: |-
+        SFTPStorageWithPasswordV4 SFTP storage as returned by create and update, which are the only
+        operations that can hand back a password. Identical to SFTPStorageItemV4 otherwise.
     SSHKeyCreateBodyV4:
       title: SSHKeyCreateBodyV4 Request body for creating an SSH key.
       required:
