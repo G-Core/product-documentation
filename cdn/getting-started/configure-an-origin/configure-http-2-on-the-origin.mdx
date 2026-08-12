@@ -1,69 +1,61 @@
 ---
-title: Сonfigure HTTP/2 on the origin
+title: Configure HTTP/2 on the origin
 sidebarTitle: HTTP/2
-ai-navigation: Enable HTTP/2 protocol on CDN origin servers by configuring Nginx 1.9.5+ with listen directive or Apache 2.4.17+ with mod_http2 module to support multiplexed content delivery over single TCP connections.
+ai-navigation: Enable HTTP 2 on Nginx or Apache origins and use HTTPS on the CDN resource so browsers can receive content over HTTP 2.
 ---
 
-Our nodes support HTTP/2. This option is enabled on all servers by default. Thus, if a user's browser supports HTTP/2, a CDN delivers content via this protocol. 
+Gcore CDN edge servers support HTTP/2 and enable it by default. When a client browser supports HTTP/2 and the CDN resource uses HTTPS, the CDN can deliver content over HTTP/2.
 
-This standard is supported by Google Chrome, Opera, Mozilla Firefox, Internet Explorer 11, Safari, Amazon Silk and Microsoft Edge. However, at present HTTP/2 works in browsers only for https requests, so to use this option, add an SSL certificate to you CDN Resource.
+Browsers use HTTP/2 only over HTTPS. Add an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) to the CDN resource before relying on HTTP/2 for client delivery.
 
-If your server doesn't support HTTP/2 but a client requests CDN content via HTTP/2, a CDN will deliver the content via HTTP/2, other content — via your server protocol. Browsers can speak different protocols to different domains, and they are able to merge the content they receive from those different domains into a single page.
+If the origin does not speak HTTP/2, the CDN can still deliver to clients over HTTP/2. Origin responses continue over the origin pull protocol configured for the resource (HTTP, HTTPS, or both). Configure HTTP/2 on the origin when the origin itself should serve multiplexed HTTPS (or cleartext `h2c`) traffic.
 
-## Server configuration
+## Configure Nginx
 
-We recommend configuring your web server so that the content could be delivered via HTTP/2 in a proper way. 
+**Requirements:** Nginx 1.9.5 or later with the HTTP/2 module.
 
-### For Nginx
+1. Open the HTTPS `server` block in the Nginx configuration (often `/etc/nginx/nginx.conf` or a file under `/etc/nginx/sites-available/`).
+2. Enable HTTP/2:
 
-**Requirements**
+   **Nginx 1.25.1 and later** (current syntax):
 
-Version: 1.9.5 or later (if you have an earlier version, please upgrade).
+   ```nginx
+   listen 443 ssl;
+   http2 on;
+   ```
 
-Setup:
+   **Nginx 1.9.5 through 1.25.0** (legacy syntax):
 
-Open `/etc/nginx/nginx.conf` and replace the line in the "Server" section
+   ```nginx
+   listen 443 ssl http2;
+   ```
 
-```
-listen 443 ssl;
-```
+3. Test and reload Nginx:
 
-with
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
 
-```
-listen 443 ssl http2;
-```
+## Configure Apache
 
-Save changes and restart Nginx with the command:
-    
-    
-```
-$ sudo service nginx reload  
-```
+**Requirements:** Apache 2.4.17 or later.
 
-### For Apache
+1. Enable the [`mod_http2`](https://httpd.apache.org/docs/2.4/mod/mod_http2.html) module (also known as `mod_h2`).
+2. Add the matching `Protocols` line to the virtual host configuration:
 
-**Requirements**
+   ```apache
+   # HTTPS
+   Protocols h2 http/1.1
+   ```
 
-Version: 2.4.17 or later (if you have an earlier version, please upgrade).
+   ```apache
+   # HTTP (cleartext HTTP/2)
+   Protocols h2c http/1.1
+   ```
 
-Setup:
+3. Restart Apache so the change takes effect.
 
-Enable the [mod_http2](https://httpd.apache.org/docs/2.4/mod/mod_http2.html) module (it also can be called mod_h2_module).
+## Benefits of HTTP/2 with CDN
 
-Add these lines to the configuration file
-
-```
-# for a https server  
-Protocols h2 http/1.1
-```
-```
-# for a http server  
-Protocols h2c http/1.1
-```
-
-Restart Apache. 
-
-## Benefits of HTTP/2 for CDN
-
-There is no need to create several CNAME records using HTTP/2. One TCP connection is set up and the load goes through it. There will not be any latency due to several simultaneous connections.
+With HTTP/2, a client can reuse a single TCP connection for many requests. That reduces connection overhead compared with opening many parallel HTTP/1.1 connections, and avoids the older pattern of splitting assets across several hostnames only to raise connection limits.
