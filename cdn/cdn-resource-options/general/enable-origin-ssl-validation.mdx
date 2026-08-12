@@ -1,54 +1,40 @@
 ---
 title: Enable origin SSL validation
 sidebarTitle: Enable SSL validation
-ai-navigation: Enable origin SSL validation for CDN resources by uploading X.509 certificates in PEM format via the Add Trusted CA Certificate API endpoint, then linking certificates to CDN resources using proxy_ssl_ca, proxy_ssl_data, and proxy_ssl_enabled parameters to verify origin server identity and prevent Man-in-the-Middle attacks.
+ai-navigation: Enable origin SSL validation for CDN resources via the REST API using trusted CA and client certificates.
 ---
 
-In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
+Origin SSL validation makes CDN edge servers verify the origin TLS certificate before completing an HTTPS pull. Without it, CDN-to-origin HTTPS traffic can still be exposed to a [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attack because edge servers do not check that the origin certificate is valid and issued for the expected host.
+
+Configure the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) to HTTPS (or HTTP and HTTPS) so edge servers pull over TLS. Origin SSL validation then adds certificate verification on that connection.
 
 <Info>
-**Info**
-
-This option is only accessible via [API](/api-reference/cdn/ssl-certificates/get-ssl-certificates-list). 
+Origin SSL validation is available only through the [CDN&nbsp;API](/api-reference/cdn/ca-certificates/get-trusted-ca-certificates-list). The [Gcore Customer Portal](https://portal.gcore.com) does not expose this option.
 </Info>
 
-If you choose the HTTPS protocol, CDN servers will send a request for the content via HTTPS protocol, such a content transfer process is encrypted, but still do not save the connection from the attack called [Man In The Middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack). 
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 
-This is because the CDN servers, by default, do not check whether the SSL certificate on the origin is valid and certified by a Certificate Authority and whether the answered server is the client's server. 
+## Compatible certificates
 
-To increase the connection security level, activate the Origin SSL Validation option. 
+Upload a trusted CA certificate that can verify the origin certificate — either a public CA or a private CA that signed a self-signed origin certificate.
 
-With the active origin validation option, the CDN server will ensure the validity of your origin certificate before completing any connection. This includes ensuring the identity of your server with your signing CA. 
+Gcore automated Let's Encrypt certificates used for client HTTPS delivery cannot be used for origin SSL validation. The client certificate referenced by `proxy_ssl_data` must be a manually uploaded SSL certificate.
 
-## Generate SSL certificate compatible with origin SSL validation
+## Connection flow
 
-You can either purchase a certificate from a Certification Authority or use a self-signed certificate, which can be obtained from a source like this one. 
+1. Upload the trusted CA certificate (PEM) with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Each certificate receives an ID stored on CDN edge servers.
+2. Upload a non-automated client SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate) for mutual TLS on the CDN-to-origin connection.
+3. On the first cache miss, a CDN edge server connects to the origin over HTTPS.
+4. The origin presents its X.509 certificate. The edge server validates the certificate chain using the trusted CA (`proxy_ssl_ca`) and presents the client certificate (`proxy_ssl_data`) when the origin requires it.
+5. If validation succeeds, the edge server pulls the content and serves it to the client.
 
-Note that Gcore's Let's Encrypt certificate isn't compatible with the origin SSL Validation option.
+## Enable origin SSL validation
 
-## How does it work
+1. Create a trusted CA certificate with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Note the returned certificate ID.
+2. Create a manually uploaded (non-automated) SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate). Note the returned certificate ID.
+3. Update the CDN resource with [Change&nbsp;CDN&nbsp;resource](/api-reference/cdn/cdn-resources/change-cdn-resource):
+   - Set `proxy_ssl_ca` to the trusted CA certificate ID.
+   - Set `proxy_ssl_data` to the client SSL certificate ID.
+   - Set `proxy_ssl_enabled` to `true`.
 
-1\. You set the part of the public key of the X.509 certificate in the system (using an API request) in the PEM format. The other part of the key you will store on your origin server. The certificates you added will receive a unique ID. We will store all the certificate information on CDN servers. At any moment, you can get a request for the certificate information or change their names. 
-
-2\. When a user sends a request for the content for the first time, a CDN server sends a request to access protected information on the origin server. 
-
-3\. The origin server presents its X.509 certificate to the CDN server. 
-
-4\. The CDN server verifies the origin server's certificate by validating the digital signature of the server's public key using CA's public key stored in the CDN system. 
-
-5\. The origin server verifies the CDN server's certificate using the same approach. 
-
-6\. If successful, the origin server gives access to the protected information to the CDN server. 
-
-7\. CDN server sends the content to the user browser.
-
-## Enable SSL validation via API
-
-1\. Upload the certificate using the [Add Trusted CA Certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate) documentation.
-
-2\. Link the certificate to the CDN resource using the _proxy_ssl_ca_ and _proxy_ssl_data_ keys according to the [Change CDN Resource](/api-reference/cdn/cdn-resources/change-cdn-resource-1) documentation.
-
-
-3\. Set the _proxy_ssl_enabled_ key to the true value for your resource according to the [Change CDN Resource](/api-reference/cdn/cdn-resources/change-cdn-resource-1) documentation.
-
-
+Both `proxy_ssl_ca` and `proxy_ssl_data` are required when `proxy_ssl_enabled` is `true`.
