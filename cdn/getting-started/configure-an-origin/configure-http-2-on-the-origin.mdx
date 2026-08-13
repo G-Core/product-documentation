@@ -6,25 +6,27 @@ ai-navigation: Enable HTTP 2 on Nginx or Apache origins and use HTTPS on the CDN
 
 Gcore CDN edge servers support HTTP/2 and enable it by default. When a client browser supports HTTP/2 and the CDN resource uses HTTPS, the CDN can deliver content over HTTP/2.
 
-Browsers use HTTP/2 only over HTTPS. Add an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) to the CDN resource before relying on HTTP/2 for client delivery.
+Browsers use HTTP/2 only over HTTPS. Add an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) to the CDN resource to secure the client-to-CDN connection.
 
-If the origin does not speak HTTP/2, the CDN can still deliver to clients over HTTP/2. Origin responses continue over the origin pull protocol configured for the resource (HTTP, HTTPS, or both). Configure HTTP/2 on the origin when the origin itself should serve multiplexed HTTPS (or cleartext `h2c`) traffic.
+Gcore CDN uses HTTP/1.1 for origin requests and does not connect to origins over HTTP/2 or cleartext `h2c`. Enabling HTTP/2 on the origin therefore does not improve the CDN-to-origin connection; it benefits clients and other services that connect directly to the origin with HTTP/2.
 
-## Configure Nginx
+For direct HTTP/2 over TLS, the origin needs its own HTTPS configuration, certificate, and ALPN-capable TLS stack. The CDN resource certificate covers only the client-to-CDN connection and does not configure HTTPS or ALPN on the origin.
 
-**Requirements:** Nginx 1.9.5 or later with the HTTP/2 module.
+## Nginx configuration
+
+Nginx 1.9.5 or later with the [HTTP/2&nbsp;module](https://nginx.org/en/docs/http/ngx_http_v2_module.html) is required.
 
 1. Open the HTTPS `server` block in the Nginx configuration (often `/etc/nginx/nginx.conf` or a file under `/etc/nginx/sites-available/`).
-2. Enable HTTP/2:
+2. Enable HTTP/2 with the syntax for the installed version.
 
-   **Nginx 1.25.1 and later** (current syntax):
+   For Nginx 1.25.1 and later, use:
 
    ```nginx
    listen 443 ssl;
    http2 on;
    ```
 
-   **Nginx 1.9.5 through 1.25.0** (legacy syntax):
+   For Nginx 1.9.5 through 1.25.0, use:
 
    ```nginx
    listen 443 ssl http2;
@@ -37,9 +39,9 @@ If the origin does not speak HTTP/2, the CDN can still deliver to clients over H
    sudo systemctl reload nginx
    ```
 
-## Configure Apache
+## Apache configuration
 
-**Requirements:** Apache 2.4.17 or later.
+Apache 2.4.17 or later with an ALPN-capable TLS library is required.
 
 1. Enable the [`mod_http2`](https://httpd.apache.org/docs/2.4/mod/mod_http2.html) module (also known as `mod_h2`).
 2. Add the matching `Protocols` line to the virtual host configuration:
@@ -54,7 +56,37 @@ If the origin does not speak HTTP/2, the CDN can still deliver to clients over H
    Protocols h2c http/1.1
    ```
 
-3. Restart Apache so the change takes effect.
+3. Check the configuration:
+
+   ```bash
+   sudo apachectl configtest
+   ```
+
+4. If the check returns `Syntax OK`, reload or restart Apache with the command for the operating system. On systems that use the `apache2` systemd service, run:
+
+   ```bash
+   sudo systemctl reload apache2
+   ```
+
+## Origin verification
+
+Test the origin directly after enabling HTTP/2.
+
+For HTTP/2 over TLS, run:
+
+```bash
+curl --http2 -I https://origin.example.com
+```
+
+Confirm that the first response status line starts with `HTTP/2`. This test uses the origin hostname and certificate, not the CDN custom domain or CDN resource certificate.
+
+If the origin supports cleartext `h2c`, test it separately:
+
+```bash
+curl --http2-prior-knowledge -I http://origin.example.com
+```
+
+Confirm that the first response status line starts with `HTTP/2`.
 
 ## Benefits of HTTP/2 with CDN
 
