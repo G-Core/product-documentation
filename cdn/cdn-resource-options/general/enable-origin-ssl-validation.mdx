@@ -6,7 +6,7 @@ ai-navigation: Enable origin SSL validation for CDN resources via the REST API u
 
 Origin SSL validation makes CDN edge servers verify the origin TLS certificate before completing an HTTPS pull. Without it, CDN-to-origin HTTPS traffic can still be exposed to a [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attack because edge servers do not check that the origin certificate is valid and issued for the expected host.
 
-Configure the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) to HTTPS (or HTTP and HTTPS) so edge servers pull over TLS. Origin SSL validation then adds certificate verification on that connection.
+Configure the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) to HTTPS to secure all origin pulls with TLS. With HTTP and HTTPS, origin SSL validation applies only when the CDN uses HTTPS for the origin request.
 
 <Info>
 Origin SSL validation is available only through the [CDN&nbsp;API](/api-reference/cdn/ca-certificates/get-trusted-ca-certificates-list). The [Gcore Customer Portal](https://portal.gcore.com) does not expose this option.
@@ -24,11 +24,15 @@ The API requires `proxy_ssl_data` when origin SSL validation is enabled, but the
 
 ## Connection flow
 
+The certificate validation process works as follows.
+
 1. On a cache miss, a CDN edge server connects to the origin over HTTPS.
 2. The origin presents its X.509 certificate. The edge server validates the certificate chain using the trusted CA (`proxy_ssl_ca`) and presents the client certificate (`proxy_ssl_data`) when the origin requires it.
 3. If validation succeeds, the edge server pulls the content and serves it to the client.
 
 ## API configuration
+
+Use the CDN API to configure the required certificates and resource fields.
 
 1. Create a trusted CA certificate with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Note the returned certificate ID.
 2. Create a manually uploaded (non-automated) SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate). Note the returned certificate ID.
