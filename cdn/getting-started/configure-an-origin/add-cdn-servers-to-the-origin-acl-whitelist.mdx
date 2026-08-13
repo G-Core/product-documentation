@@ -1,38 +1,70 @@
 ---
-title: "Add CDN servers to the origin ACL whitelist"
-sidebarTitle: "Add CDN servers to ACL"
-ai-navigation: Configure origin ACL whitelist for CDN servers using HTTP headers, IP addresses, or subnets via API endpoints; HTTP header method recommended to avoid manual updates as CDN server IPs change every 30-60 minutes.
+title: Allow Gcore CDN access to an origin
+sidebarTitle: Allow CDN origin access
+ai-navigation: Allow Gcore CDN edge servers to pull content from a restricted origin using request headers, public IP addresses, or public network ranges.
 ---
 
-If you have restrictions on your origin, there are three ways to whitelist the CDN servers:
+If the origin restricts incoming requests, grant Gcore CDN edge servers access in one of these ways:
 
-- via HTTP headers (recommended)
-- via CDN servers' IP addresses
-- via CDN servers' subnets
+- Authenticate requests with an HTTP header name-value pair (recommended)
+- Allow CDN server host CIDRs
+- Allow CDN server network ranges
 
 <Info>
-  **Info**
-  We continually expand our network, so **the list of servers changes constantly**. If you fail to add the IP address of a new server or a subnet to the whitelist, users cannot access content from that edge server. We recommend writing a script that automatically updates your ACL. New IP addresses or subnets are added to our list 30-60 minutes before launching a new server.
+The list of CDN edge host CIDRs and networks changes as the network expands. New entries appear in the public lists 30–60 minutes before a server starts serving traffic. Missing an entry from the origin allowlist blocks content for users served by that edge. Prefer the HTTP header method, or automate allowlist updates from the public endpoints.
 </Info>
 
-## Whitelist via HTTP headers
+## HTTP header access
 
-Use the [Add Request Headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) option to set up a custom header.
+Authenticate CDN requests with an unpredictable header name-value pair because a header name alone can be copied by any client. Generate a 32-byte value with a cryptographically secure generator:
 
-We recommend this method as it does not require further updates once set up. In contrast, the list of IP addresses must be regularly updated.
-
-## Whitelist via IP addresses
-
-You can fetch the IP addresses of the CDN servers by using this API request:
-
-```sh
-curl -i -X GET https://api.gcore.com/cdn/public-ip-list
+```bash
+openssl rand -hex 32
 ```
 
-## Whitelist via subnets
+Configure [request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) so Gcore sends the exact pair with every origin request.
 
-You can fetch the IP addresses of the CDN subnets using this API request:
+Configure the CDN resource to pull content from the origin over HTTPS and validate the origin certificate so the header value remains encrypted in transit. Configure the origin to accept requests only when both the header name and value match, and reject requests with a missing or incorrect pair.
 
-```sh
-curl -i -X GET https://api.gcore.com/cdn/public-net-list 
+Protect the value as a secret, avoid exposing it in logs or client-side code, and rotate it in both Gcore and the origin configuration if it is exposed.
+
+This method does not need updates when CDN edge addresses change.
+
+## IP address access
+
+The public IP endpoint returns IPv4 `/32` and IPv6 `/128` host CIDRs. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist exactly as returned:
+
+<Info>
+The IP and network commands require `jq` to extract both arrays from each JSON response. Install it before running either command.
+</Info>
+
+```bash
+curl --fail --silent --show-error https://api.gcore.com/cdn/public-ip-list \
+  | jq -r '.addresses[], .addresses_v6[]'
 ```
+
+The request requires no authorization. The JSON response stores IPv4 host CIDRs in `addresses` and IPv6 host CIDRs in `addresses_v6`.
+
+## Network range access
+
+The public network endpoint returns broader IPv4 and IPv6 CIDR ranges. Poll it every 10 minutes, apply additions immediately, and add each range to the origin allowlist exactly as returned:
+
+```bash
+curl --fail --silent --show-error https://api.gcore.com/cdn/public-net-list \
+  | jq -r '.addresses[], .addresses_v6[]'
+```
+
+The request requires no authorization. The JSON response stores IPv4 networks in `addresses` and IPv6 networks in `addresses_v6`.
+
+## Access verification
+
+Test an allowed CDN request and a blocked direct request after changing the origin rules.
+
+<Steps>
+  <Step title="Test access through the CDN">
+    Request a known file through the CDN custom domain and confirm that the response contains the expected file.
+  </Step>
+  <Step title="Test blocked direct access">
+    Request the same file directly from the origin. For HTTP header access, omit the required name-value pair or send an incorrect value. For IP or network access, send the request from a source outside the allowlist. Confirm that the origin rejects the request.
+  </Step>
+</Steps>
