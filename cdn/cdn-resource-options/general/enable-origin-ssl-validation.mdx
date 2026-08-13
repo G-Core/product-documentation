@@ -16,25 +16,41 @@ An [API&nbsp;token](/account-settings/api-tokens) is required.
 
 ## Compatible certificates
 
-Upload a trusted CA certificate that can verify the origin certificate — either a public CA or a private CA that signed a self-signed origin certificate.
+Upload the public CA certificate that issued the origin certificate. For a self-signed origin certificate, upload that certificate as the trusted certificate.
 
 Gcore automated Let's Encrypt certificates used for client HTTPS delivery cannot be used for origin SSL validation. The client certificate referenced by `proxy_ssl_data` must be a manually uploaded SSL certificate.
+
+The API requires `proxy_ssl_data` when origin SSL validation is enabled, but the origin determines whether client authentication is optional or mandatory. To require mutual TLS, configure the origin to request a client certificate, trust the CA that issued the uploaded client certificate, and reject connections that do not present a valid certificate.
 
 ## Connection flow
 
 1. Upload the trusted CA certificate (PEM) with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Each certificate receives an ID stored on CDN edge servers.
 2. Upload a non-automated client SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate) for mutual TLS on the CDN-to-origin connection.
-3. On the first cache miss, a CDN edge server connects to the origin over HTTPS.
+3. On a cache miss, a CDN edge server connects to the origin over HTTPS.
 4. The origin presents its X.509 certificate. The edge server validates the certificate chain using the trusted CA (`proxy_ssl_ca`) and presents the client certificate (`proxy_ssl_data`) when the origin requires it.
 5. If validation succeeds, the edge server pulls the content and serves it to the client.
 
-## Enable origin SSL validation
+## API configuration
 
 1. Create a trusted CA certificate with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Note the returned certificate ID.
 2. Create a manually uploaded (non-automated) SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate). Note the returned certificate ID.
 3. Update the CDN resource with [Change&nbsp;CDN&nbsp;resource](/api-reference/cdn/cdn-resources/change-cdn-resource):
+   - Set `originGroup` to the ID of the existing origin group attached to the CDN resource.
    - Set `proxy_ssl_ca` to the trusted CA certificate ID.
    - Set `proxy_ssl_data` to the client SSL certificate ID.
    - Set `proxy_ssl_enabled` to `true`.
 
-Both `proxy_ssl_ca` and `proxy_ssl_data` are required when `proxy_ssl_enabled` is `true`.
+   The minimal request body includes the existing origin-group ID and the three SSL validation fields:
+
+   ```json
+   {
+     "originGroup": 12345,
+     "proxy_ssl_ca": 67890,
+     "proxy_ssl_data": 67891,
+     "proxy_ssl_enabled": true
+   }
+   ```
+
+   Replace the numeric values with the existing origin-group ID and the certificate IDs returned in the previous steps.
+
+Both `proxy_ssl_ca` and `proxy_ssl_data` are required when `proxy_ssl_enabled` is `true`, even when the origin does not require client authentication.
