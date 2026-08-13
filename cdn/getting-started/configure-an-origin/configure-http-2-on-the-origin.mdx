@@ -1,7 +1,7 @@
 ---
 title: Configure HTTP/2 on the origin
 sidebarTitle: HTTP/2
-ai-navigation: Enable HTTP 2 on Nginx or Apache origins and use HTTPS on the CDN resource so browsers can receive content over HTTP 2.
+ai-navigation: Configure HTTP 2 over TLS or cleartext h2c on Nginx or Apache origins for clients and services that connect directly.
 ---
 
 Gcore CDN edge servers support HTTP/2 and enable it by default. When a client browser supports HTTP/2 and the CDN resource uses HTTPS, the CDN can deliver content over HTTP/2.
@@ -31,6 +31,21 @@ Nginx 1.9.5 or later with the [HTTP/2&nbsp;module](https://nginx.org/en/docs/htt
    ```nginx
    listen 443 ssl http2;
    ```
+
+   For cleartext `h2c` on Nginx 1.25.1 and later, use:
+
+   ```nginx
+   listen 80;
+   http2 on;
+   ```
+
+   For cleartext `h2c` on Nginx 1.9.5 through 1.25.0, use:
+
+   ```nginx
+   listen 80 http2;
+   ```
+
+   Nginx does not negotiate `h2c` through an HTTP/1.1 Upgrade request, so clients must start HTTP/2 with prior knowledge. In versions before 1.25.1, an `h2c` socket accepts only HTTP/2; assign a dedicated port if HTTP/1.x clients must remain supported. Starting with version 1.25.1, the socket detects the HTTP/2 connection preface and otherwise uses HTTP/1.x.
 
 3. Test and reload Nginx:
 
