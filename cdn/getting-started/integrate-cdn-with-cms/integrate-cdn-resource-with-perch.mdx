@@ -1,42 +1,50 @@
 ---
-title: Integrate CDN resource with Perch
+title: Integrate a CDN resource with Perch
 sidebarTitle: Perch
-ai-navigation: Configure Perch CMS to deliver static content through Gcore CDN by updating configuration files with CDN resource CNAME and bucket paths, then verify URL rewriting in browser developer tools.
+ai-navigation: Configure Perch PERCH_RESPATH and eligible local bucket paths to serve resources through a Gcore CDN custom domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+Perch can deliver uploaded resources through a Gcore CDN resource by adding the CDN domain to its resource paths.
 
-Login to your Perch control panel at _yoursite.com/perch_. Open this file: `perch/config/config.php`. Search the following line:
-    
-```
-define('PERCH_RESPATH', PERCH_LOGINPATH . '/resources');
-```
+<Warning>
+Back up site files and the database before making changes. These steps assume a standard local `perch/resources` directory without a custom or remote resource-storage handler.
+</Warning>
 
-Update the line to the following. Instead of cdn.site.com type in the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration
+Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before starting the integration. Configure its [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) with a valid CNAME record and an active SSL certificate.
 
-```
-define('PERCH_RESPATH', 'http://cdn.site.com' . PERCH_LOGINPATH . '/resources'); 
-```
+1. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), find the custom domain on the [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) page.
+2. Confirm that the CDN origin can retrieve a known file from the default resource directory. Perch requires this directory to be directly accessible through a URL, as described in the [resource&nbsp;documentation](https://docs.grabaperch.com/perch/resources/).
 
-Where http://cdn.site.com is the domain of your CDN resource.
+   Use the origin protocol and hostname configured for the CDN resource:
 
-In case you have custom buckets lists and want to deliver them through CDN, you need to add a prefix to `web_path` parameters.
+   ```text
+   https://origin.example.com/perch/resources/example.jpg
+   ```
 
-Open this file: `perch/config/buckets.php`. Search the following line:
-    
-    
-```
-'web_path' => '/my/bucket/path',
-```
+   Continue only after the origin URL returns the expected file.
+3. Open `perch/config/config.php` on the server and find:
 
-Update the lines as follows:
+   ```php
+   define('PERCH_RESPATH', PERCH_LOGINPATH . '/resources');
+   ```
 
-```
-'web_path' => 'http://cdn.site.com/path/to/my/bucket/', 
-```
+4. Replace it with the custom domain as the host prefix:
 
-Where http://cdn.site.com/path/to/my/bucket/ is the path to your bucket with the domain name of your CDN resource.
+   ```php
+   define('PERCH_RESPATH', 'https://cdn.site.com' . PERCH_LOGINPATH . '/resources');
+   ```
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+5. Optional — Perch [resource&nbsp;buckets](https://docs.grabaperch.com/perch/resources/buckets/) can use local directories, remote storage, private download scripts, or custom handlers. In `perch/config/buckets.php`, update only local file buckets that the same CDN origin can access, and leave remote or access-controlled buckets unchanged.
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+   Prefix the eligible bucket's `web_path` with the custom domain while keeping its original path:
+
+   ```php
+   // Before
+   'web_path' => '/my/bucket/path',
+
+   // After
+   'web_path' => 'https://cdn.site.com/my/bucket/path',
+   ```
+
+6. Save the configuration files.
+7. Confirm the integration by opening the browser's developer tools (press <kbd>F12</kbd>), selecting the **Network** tab, and refreshing the page — eligible resource URLs should now load from the custom domain instead of the origin domain.
