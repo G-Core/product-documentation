@@ -1,31 +1,29 @@
 ---
 title: "4xx error: how to solve CDN issues with the limited access and content non-existence"
 sidebarTitle: 4xx error
-ai-navigation: Diagnose and resolve 4xx errors in Gcore CDN by verifying origin content availability, allowlisting CDN edge IPs, configuring Origin Pull Protocol, and validating Host Header settings; use Reports, Log viewer, and Raw logs to track error sources.
+ai-navigation: Resolve CDN 4xx errors by checking origin content, allowlisting edge IPs, matching Origin pull protocol and Change Host header, then reviewing logs.
 ---
 
-4xx errors could be caused by a malfunction on the Origin side or incorrect CDN-resource settings.
+4xx errors can come from a malfunction on the origin or from incorrect CDN resource settings.
 
-## Check the content availability on the origin source
+## Check content availability on the origin
 
-Request the content from the origin source and ensure you get an HTTP 200 response code. 
+Request the content from the origin and confirm an HTTP 200 response.
 
-If you use IP allowlist on the origin or a DDoS Protection service ensure that CDN-edges IPs are allowlisted. Use the API request above to get the list of Public IPs. 
-    
+If the origin uses an IP allowlist or a DDoS Protection service, allowlist CDN edge IPs. Retrieve the current public IP list:
+
 ```sh
 curl -i -X GET https://api.gcore.com/cdn/public-ip-list
 ```
 
-Since we constantly update the Public IP list, we recommend you run a script for the regular allowlist updating. You can also use HTTP Request Header for the authentication on your origin. You may find out more about the [Origin ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist).
+The public IP list changes over time, so keep the allowlist updated with a recurring script. The [Origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) guide covers allowlisting CDN edges. Authentication on the origin can also use [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) that CDN adds when pulling content.
 
-## Check your CDN resource's settings
+## Check CDN resource settings
 
-  * Ensure that the CDN resource is active. If you have created a new resource, wait until its configuration is applied on CDN-edges. Usually, it takes 15 minutes. 
-  * Ensure that Origin can respond to the requests from CDN edges by choosing Origin Pull Protocol. Learn more about this option from the [article](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol). 
-  * Check the Change Host Header option. Make sure that the option is active and the value is the same as the Origin Source or match with the host that you have set up on the Origin. You may find more information about [Host Header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header). Go to the [Reports](/cdn/view-statistics-of-a-cdn-resource) tab to track the amount of 4xx errors.
+  * Confirm that the CDN resource is active. After creating a new resource, wait until the configuration is applied on CDN edges — usually about 15 minutes.
+  * Select an **Origin pull protocol** so the origin can respond to requests from CDN edges. The [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) option controls which scheme CDN uses when requesting content from the origin.
+  * Enable **Change Host header** and set a value that matches the origin or the host configured on the origin. The [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option controls which virtual host the origin uses.
 
+Open [Reports](/cdn/view-statistics-of-a-cdn-resource) → **Statistics** and select the **Response codes** report to track 4xx responses.
 
-
-
-To receive more details about users' requests to resources, use the [Log viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) — a self-serve tool available directly in the Customer Portal. For long-term log export and custom analysis, Raw logs is a paid option; the setup flow and field descriptions are [documented here](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage). To activate Raw logs, contact your account manager or send a request to [Gcore Support](mailto:support@gcore.com).
-
+The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) in the [Gcore Customer Portal](https://portal.gcore.com) shows recent request details. For long-term log export, [Logs&nbsp;uploader](/cdn/logs/logs-uploader) is a paid option that must be enabled by support. To activate it, contact the account manager or [Gcore&nbsp;Support](mailto:support@gcore.com).
