@@ -1,65 +1,41 @@
 ---
 title: "Content delivery speed is low: how to solve the issue"
 sidebarTitle: Low content delivery speed
-ai-navigation: Diagnose and resolve low CDN content delivery speed by comparing origin and CDN performance using DevTools, wget, or online speed tests, then optimize CDN-resource settings including cache hit ratio, large file delivery, and gzip/brotli compression.
+ai-navigation: Troubleshoot low CDN delivery speed by comparing origin and CDN performance, then check cache hit ratio, large files, and compression.
 ---
 
-Revise your origin to find errors or misconfigurations that may affect the content delivery speed. Contact your hosting provider or server administrator for help in the case analysis. 
+Check the origin for errors or misconfigurations that can reduce delivery speed. Contact the hosting provider or server administrator if origin-side analysis is needed.
 
-## Check the delivery speed from a CDN-resource and an origin server
+## Compare CDN and origin delivery speed
 
-1\. Measure the content delivery speed from both a CDN-resource and an origin server using:
+1. Measure delivery speed from both the CDN resource and the origin using:
 
-  * DevTools (F12->Network tab->F5).
-  * Online-services. Consider network settings and location which are chosen for the speed test. 
-  * wget –S + static file URL.
+   - Browser DevTools (open the Network tab and reload the page)
+   - An online speed test — account for the selected location and network settings
+   - `wget -S` with a static file URL
 
-```
-wget -S testsupport.cdn.com/files/test.jpg  
---2019-12-10 13:29:17-- http://testsupport.cdn.com/files/test.jpg  
-Resolving testsupport.cdn.com... 92.223.97.97  
-Connecting to testsupport.cdn.com|92.223.97.97|:80... connected.  
-HTTP request sent, awaiting response...  
-HTTP/1.1 200 OK  
-Server: nginx  
-Date: Tue, 10 Dec 2019 08:29:17 GMT  
-Content-Type: image/jpeg  
-Content-Length: 290  
-Connection: keep-alive  
-Last-Modified: Fri, 06 Dec 2019 10:12:14 GMT  
-ETag: "5dea297e-122"  
-Set-Cookie: 48c62c809b061c360cc201975b7fa802  
-Cache: MISS  
-X-ID: fr5-up-gc22  
-Accept-Ranges: bytes  
-Syntax error in Set-Cookie: 48c62c809b061c360cc201975b7fa802 at position 32.  
-Length: 290 [image/jpeg]  
-Saving to: 'test.jpg'  
-  
-test.jpg 100%[=================================================>\] 290 --.-KB/s in 0s  
-  
-2019-12-10 13:29:18 (5,38 MB/s) - 'test.jpg' saved [290/290]
+```bash
+wget -S https://cdn.example.com/files/test.jpg
 ```
 
-2\. Compare the delivery speed from CDN and the origin server. 
+2. Compare the CDN result with the origin result.
 
-3\. If the analysis confirmed issues with content delivery speed from CDN, [revise CDN-resource's settings](/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue#cdn-resources-settings-checking).
+3. If the CDN is slower than expected, review the CDN resource settings below.
 
-## CDN-resource's settings checking
+## Check CDN resource settings
 
-1\. Make sure that you don't use a VPN or proxy.   
-VPN affects the CDN Geobalancing and you may receive content from a not optimal edge with lower speed. 
+1. Confirm that a VPN or proxy is not in use. A VPN or proxy can route traffic through a suboptimal edge and reduce delivery speed.
 
-2\. Make sure that content is being cached. The cache rate is presented by [Cache Hit Ratio report](/cdn/view-statistics-of-a-cdn-resource). If you noticed that the cache rate is low, use our [instructions](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) to analyze and solve this issue. 
+2. Confirm that content is cached. Open **CDN** > **Reports** > **Statistics** and select the **Cache hit ratio** report. If the ratio is low, follow [Low&nbsp;cache&nbsp;percentage](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
 
-3\. If an issue with content delivery speed occurs with large files, we recommend you to use [Large files delivery optimization](/cdn/cdn-resource-options/optimize-large-file-delivery) and consider content [compression on CDN](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression) or the origin server. 
+3. For slow delivery of large files, turn on **Enable large files delivery optimization** and consider CDN or origin compression. Related guides: [Large&nbsp;file&nbsp;delivery](/cdn/cdn-resource-options/optimize-large-file-delivery) and [GZip&nbsp;and&nbsp;Brotli](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression).
 
 ## Diagnostic information for technical support
 
-If you revised your CDN resource's settings but are still unsatisfied with the download speed, contact [technical support](mailto:support@gcore.com) and provide the following information:
+If delivery speed is still too low after reviewing settings, contact [Gcore&nbsp;Support](mailto:support@gcore.com) and include:
 
-  * File URL
-  * Follow the link `https://gcore.com/.well-known/cdn-debug`, copy all information from the page or save a screenshot. 
-  * Follow the try speed test link, click on the Start button, save the result, and add it to the ticket.
-  * Wget –S output for the URL from your CDN-resource.
-  * Open a file or a web-page and save a [HAR file](https://toolbox.googleapps.com/apps/har_analyzer/?lang=en).
+- The file URL
+- The JSON output from `https://gcore.com/.well-known/cdn-debug/json` (open the URL and copy the full response)
+- Results from the [Gcore&nbsp;speed&nbsp;test](https://speedtest.gcore.com/) — click **Run test**, then save the result
+- `wget -S` output for the CDN resource URL
+- A [HAR&nbsp;file](https://toolbox.googleapps.com/apps/har_analyzer/?lang=en) captured while loading the file or page
