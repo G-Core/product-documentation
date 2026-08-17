@@ -1,46 +1,47 @@
 ---
-title: "Common Setup Issues"
-sidebarTitle: Common Setup Issues
-ai-navigation: Resolve CDN setup issues including 503 service unavailable errors from unreachable origins, ERR_TOO_MANY_REDIRECTS from HTTP-to-HTTPS redirect loops, incorrect MIME type headers causing file downloads, and Let's Encrypt SSL certificate validation failures due to DNS propagation delays.
+title: Common setup issues
+sidebarTitle: Common setup issues
+ai-navigation: Troubleshoot CDN setup including 503 origin reachability, HTTP-to-HTTPS redirect loops, Content-Type downloads, and Let's Encrypt SSL failures.
 ---
 
-This section describes common CDN setup issues and how to resolve them.
+Common CDN setup problems and how to resolve them.
 
 ## 503 service unavailable
 
-This error means that the CDN cannot reach your origin server.
+A 503 response means the CDN cannot reach the origin server.
 
 Possible causes:
 
 - The origin server is not accessible.
 - The origin blocks CDN IP ranges.
 - The origin port is incorrect.
-- The resource has not been fully propagated yet.
+- The resource has not fully propagated yet.
 
 Solution:
 
-- Verify that the origin server is accessible directly (for example, via browser or curl).
-- Allow CDN IP ranges in your firewall settings.
-- Confirm that the correct origin port is configured (80 or 443).
-- During initial setup, propagation can take up to ~20 minutes. Wait for resource propagation to complete, then retry the request.
+- Verify that the origin server is reachable directly — with a browser or curl.
+- [Allowlist&nbsp;CDN&nbsp;servers](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) in the origin firewall or ACL.
+- Confirm that the origin port is correct (80 or 443).
+- During initial setup, CDN resource propagation can take up to about 20 minutes. Wait for propagation to finish, then retry the request.
 
-For more details, see [5xx error: how to solve server issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues).
+Related guide: [5xx&nbsp;server&nbsp;issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues).
 
 ## ERR_TOO_MANY_REDIRECTS
 
-This issue occurs when both the CDN and the origin enforce redirects, creating a loop.
+This error occurs when both the CDN and the origin enforce redirects and create a loop.
 
 Possible cause:
 
-- Both CDN and origin redirect HTTP to HTTPS.
+- Both the CDN and the origin redirect HTTP to HTTPS.
 
 Solution:
 
-- Disable the redirect on either the CDN or the origin side.
+- Disable the redirect on either the CDN or the origin. On the CDN side, open the resource settings, navigate to **Access**, and turn off **Enable redirect HTTP to HTTPS**.
+- [HTTP&nbsp;to&nbsp;HTTPS](/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https)
 
-## Website downloads as file
+## Website downloads as a file
 
-This behavior indicates incorrect response headers from the origin.
+This behavior usually means the origin returns incorrect response headers.
 
 Possible cause:
 
@@ -48,20 +49,22 @@ Possible cause:
 
 Solution:
 
-- Check and correct MIME type configuration on the origin server.
+- Check and correct the MIME type configuration on the origin server.
 
-## SSL certificate errors (Let’s Encrypt)
+## SSL certificate errors (Let's Encrypt)
 
-SSL issues are often related to DNS configuration and certificate validation.
+SSL issues with Let's Encrypt are often related to DNS configuration and domain validation.
 
 Possible causes:
 
+- The custom domain CNAME does not point to the `*.gcdn.co` value shown in the resource setup guide.
+- A CDN rule overlaps the `/.well-known/acme-challenge/` path used for certificate issuance.
 - DNS changes have not fully propagated.
-- Let’s Encrypt cannot validate the domain.
 
 Solution:
 
-- Wait for DNS propagation to complete (up to 24–48 hours).
-- Retry certificate issuance after propagation.
+- Confirm the CNAME for the custom domain matches the value in the resource setup guide.
+- Disable any rule that matches `/.well-known/acme-challenge/`, issue the certificate, then re-enable the rule if needed.
+- After DNS changes, wait for propagation to finish, then retry certificate issuance.
 
-For more details, see [An SSL certificate isn’t working: how to solve](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue).
+Related guide: [SSL&nbsp;certificate&nbsp;issues](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue).
