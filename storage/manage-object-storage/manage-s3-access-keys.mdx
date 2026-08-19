@@ -1,0 +1,259 @@
+---
+title: Manage S3 access keys
+sidebarTitle: Access keys
+ai-navigation: Manage S3 access keys via Customer Portal, REST API, or Terraform, including read-only keys on S3 Standard.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>S3 access keys authenticate AWS CLI, SDKs, and other S3-compatible clients. An [S3 storage](/storage/create-an-s3-or-sftp-storage) is required before keys can be created.</p>
+
+<p>S3 Standard storage holds up to 10 keys, and S3 Fast storage holds up to 2 keys, so a replacement can be created before the previous key is deleted. The portal **Create key** control creates a read-write key, while a read-only access key is created on S3 Standard storage with the REST API.</p>
+
+<p>Permissions are fixed at creation, so delete a key and create another to change access.</p>
+
+<Steps>
+  <Step title="Open Access keys">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Storage** > **Object Storages**. Click **...** next to the storage name and select **Access keys**.
+  </Step>
+  <Step title="Create a key">
+    Click **Create key**. The dialog shows the access key and secret key. Click **Copy credentials** and store both values, because the secret is shown only once.
+
+    The new key is read-write, and existing keys appear in the list below.
+
+    <Frame>![Access keys dialog after creating a key](/images/docs/storage/manage-object-storage/manage-s3-access-keys/manage-s3-access-keys-image1.png)</Frame>
+  </Step>
+  <Step title="Delete a key">
+    Click the delete control next to the key. Create a replacement and update clients before deleting a key that is still in use.
+  </Step>
+</Steps>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Access keys are created and deleted on an existing S3 storage, and the numeric storage ID is returned when creating storage or from the storage list. The secret key is returned only in the create response.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Key creation
+
+<p>An empty POST body creates a read-write key, and the response sets `is_read_only` to `false`. A JSON body with `read_only` set to `true` creates a read-only key on S3 Standard storage.</p>
+
+<p>S3 Fast returns HTTP 400, because read-only keys are supported on S3 Standard only. The error body uses CEPH for S3 Standard:</p>
+
+```json
+{"error":"read-only access keys are only supported for CEPH storages"}
+```
+
+<p>When the limit is reached, the API returns HTTP 409:</p>
+
+```json
+{"error":"maximum number of access keys reached"}
+```
+
+<p>A GET request to the same `access_keys` path returns each key's `access_key`, `created_at`, and `is_read_only` fields, and omits the secret.</p>
+
+<p>The following examples create a read-write key, and the curl tab also shows a read-only key on S3 Standard:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage_id = 13864
+
+    new_key = client.storage.object_storages.access_keys.create(storage_id)
+    print(f"New access key: {new_key.access_key}")
+    print(f"New secret key: {new_key.secret_key}")
+
+    # Read-only keys are supported on S3 Standard only
+    ro_key = client.storage.object_storages.access_keys.create(
+        storage_id,
+        extra_body={"read_only": True},
+    )
+    print(f"Read-only access key: {ro_key.access_key}")
+    print(f"Read-only secret key: {ro_key.secret_key}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var storageID int64 = 13864
+
+        newKey, err := client.Storage.ObjectStorages.AccessKeys.New(ctx, storageID)
+        if err != nil {
+            log.Fatalf("create access key: %v", err)
+        }
+        fmt.Printf("New access key: %s\n", newKey.AccessKey)
+        fmt.Printf("New secret key: %s\n", newKey.SecretKey)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "access_key": "0CW9Q09ART50W9XB4O13",
+      "secret_key": "oO5jztJ4ewahrFGX9pMNIq0X3nfVVlfu9XVO9NLz",
+      "created_at": "2026-07-13T13:07:54Z",
+      "is_read_only": false
+    }
+    ```
+
+    Read-only key on S3 Standard:
+
+    ```bash
+    curl -X POST "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"read_only": true}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "access_key": "0CW9Q09ART50W9XB4O13",
+      "secret_key": "oO5jztJ4ewahrFGX9pMNIq0X3nfVVlfu9XVO9NLz",
+      "created_at": "2026-07-13T13:07:54Z",
+      "is_read_only": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Key deletion
+
+<p>Delete an access key after updating all clients to the remaining credentials. The same request deletes read-write and read-only keys.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storage_id = 13864
+    old_access_key = "L1M3FSX3T0B3TWDVINKT"
+
+    client.storage.object_storages.access_keys.delete(old_access_key, storage_id=storage_id)
+    print("Old access key deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var storageID int64 = 13864
+        oldAccessKey := "L1M3FSX3T0B3TWDVINKT"
+
+        err := client.Storage.ObjectStorages.AccessKeys.Delete(ctx, oldAccessKey, storage.ObjectStorageAccessKeyDeleteParams{
+            StorageID: storageID,
+        })
+        if err != nil {
+            log.Fatalf("delete access key: %v", err)
+        }
+        fmt.Println("Old access key deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys/$OLD_ACCESS_KEY" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Returns HTTP 204 with no response body.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Create additional S3 access keys on an existing storage with the Gcore [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. `gcore_storage_access_key` creates a read-write key, and the storage already has one key from provisioning.</p>
+
+## Additional key
+
+<p>Declare `gcore_storage_access_key` with the storage ID. Apply creates the key, and the secret is available in Terraform state.</p>
+
+```hcl
+resource "gcore_storage_access_key" "extra" {
+  storage_id = gcore_storage_object_storage.example.id
+}
+
+output "extra_access_key" {
+  value = gcore_storage_access_key.extra.access_key
+}
+
+output "extra_secret_key" {
+  value     = gcore_storage_access_key.extra.secret_key
+  sensitive = true
+}
+
+# terraform import gcore_storage_access_key.extra '<storage_id>/<access_key>'
+```
+
+```bash
+terraform apply
+```
+
+## Key rotation
+
+<p>Declare a new `gcore_storage_access_key` resource to create an additional key. Once clients are updated to use the new credentials, remove the resource block for the old key and apply to delete it.</p>
+
+```hcl
+# Add a new key resource, update clients, then remove this block:
+# resource "gcore_storage_access_key" "extra" {
+#   storage_id = gcore_storage_object_storage.example.id
+# }
+```
+
+```bash
+terraform apply
+```
+
+  </MethodSection>
+</MethodSwitch>
