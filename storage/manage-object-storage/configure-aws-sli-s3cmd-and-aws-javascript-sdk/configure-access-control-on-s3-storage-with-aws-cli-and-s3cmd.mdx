@@ -1,7 +1,7 @@
 ---
 title: Configure access control on S3 storage with AWS CLI and S3cmd
 sidebarTitle: Set the ACL and Policy
-ai-navigation: Configure Gcore Object Storage access control using AWS CLI and S3cmd with ACLs and JSON bucket policies to manage read and write permissions.
+ai-navigation: Configure Gcore Object Storage access control with AWS CLI and S3cmd using ACLs and JSON bucket policies, including IP-restricted anonymous access.
 ---
 
 Gcore Object Storage access control uses two mechanisms: ACLs for object and bucket-level permissions, and JSON policies for more granular rules. Both are configured through AWS CLI or S3cmd.
@@ -161,9 +161,21 @@ Users can list objects in the bucket but cannot read or write individual objects
 
 ### IP-based access via policy
 
+A bucket policy can also limit anonymous access by source IP address or CIDR range. Use a positive Allow statement with an `IpAddress` condition, because Deny with `NotIpAddress` does not restrict traffic on Gcore Object Storage.
+
+These conditions apply to anonymous requests, while authenticated owner credentials retain their normal permissions.
+
+<Warning>
+Keep bucket and object ACLs private, and do not combine this policy with another statement that grants broader anonymous access. `s3:*` grants every S3 operation from the permitted source, including writes and deletes.
+</Warning>
+
+Replace the example IP addresses with the source IPs that should be allowed. The condition matches the client address seen by Object Storage for virtual-hosted and path-style requests, so a client-supplied `X-Forwarded-For` header cannot bypass the restriction.
+
 <Steps>
   <Step title="Create the policy file">
-    Create a JSON file that restricts access to a specific IP address or CIDR range. Replace `10.0.0.0/24` with the actual IP or range:
+    Create a JSON file using one of the following patterns.
+
+    Grant every S3 operation from one IPv4 address:
 
     ```json
     {
@@ -178,7 +190,84 @@ Users can list objects in the bucket but cannot read or write individual objects
             "arn:aws:s3:::my_bucket/*"
           ],
           "Condition": {
-            "IpAddress": {"aws:SourceIp": "10.0.0.0/24"}
+            "IpAddress": {
+              "aws:SourceIp": "203.0.113.10/32"
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+    To allow the same operations from two IPv4 addresses, list both in `aws:SourceIp`:
+
+    ```json
+    {
+      "Statement": [
+        {
+          "Sid": "IPAllow",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:*",
+          "Resource": [
+            "arn:aws:s3:::my_bucket",
+            "arn:aws:s3:::my_bucket/*"
+          ],
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "203.0.113.10/32",
+                "203.0.113.20/32"
+              ]
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+    Grant the same operations from two CIDR networks:
+
+    ```json
+    {
+      "Statement": [
+        {
+          "Sid": "NetworkAllow",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:*",
+          "Resource": [
+            "arn:aws:s3:::my_bucket",
+            "arn:aws:s3:::my_bucket/*"
+          ],
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": [
+                "192.0.2.0/24",
+                "198.51.100.0/24"
+              ]
+            }
+          }
+        }
+      ]
+    }
+    ```
+
+    Allow anonymous object downloads from one IPv4 address, while ListBucket and writes remain denied:
+
+    ```json
+    {
+      "Statement": [
+        {
+          "Sid": "IPAllowGetObject",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:GetObject",
+          "Resource": "arn:aws:s3:::my_bucket/*",
+          "Condition": {
+            "IpAddress": {
+              "aws:SourceIp": "203.0.113.10/32"
+            }
           }
         }
       ]
@@ -199,6 +288,8 @@ Users can list objects in the bucket but cannot read or write individual objects
     ```sh
     s3cmd setpolicy policy.json s3://my_bucket/
     ```
+
+    Requests from an allowed source return HTTP 200, while requests from any other source return HTTP 403.
   </Step>
 </Steps>
 
