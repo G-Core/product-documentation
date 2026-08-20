@@ -1,34 +1,64 @@
 ---
-title: "Content delivery speed is low: how to solve the issue"
+title: Slow content delivery troubleshooting
 sidebarTitle: Low content delivery speed
 ai-navigation: Troubleshoot low CDN delivery speed by comparing origin and CDN performance, then check cache hit ratio, large files, and compression.
 ---
 
 Check the origin for errors or misconfigurations that can reduce delivery speed. Contact the hosting provider or server administrator if origin-side analysis is needed.
 
-## Compare CDN and origin delivery speed
+## CDN and origin speed comparison
 
-1. Measure delivery speed from both the CDN resource and the origin using:
+Compare the same static file under consistent test conditions so differences reflect the delivery path rather than the client, location, or object.
 
-   - Browser DevTools (open the Network tab and reload the page)
-   - An online speed test — account for the selected location and network settings
-   - `wget -S` with a static file URL
+<Steps>
+  <Step title="Select a static file">
+    Select one static file that is available through both the CDN URL and the origin URL.
+  </Step>
+  <Step title="Test CDN delivery">
+    From the test client and location, request the file through the CDN:
 
-```bash
-wget -S https://cdn.example.com/files/test.jpg
-```
+    ```bash
+    wget -S -O /dev/null https://cdn.example.com/files/test.jpg
+    ```
 
-2. Compare the CDN result with the origin result.
+    Confirm that the response headers identify a CDN cache hit.
+  </Step>
+  <Step title="Test origin delivery">
+    From the same client and location, request the same file directly from the origin:
 
-3. If the CDN is slower than expected, review the CDN resource settings below.
+    ```bash
+    wget -S -O /dev/null https://origin.example.com/files/test.jpg
+    ```
+  </Step>
+  <Step title="Repeat and compare">
+    Repeat both tests to reduce the effect of temporary network variation, then compare the transfer results. If CDN delivery remains slower, review the settings below.
+  </Step>
+</Steps>
 
-## Check CDN resource settings
+## CDN resource settings
 
-1. Confirm that a VPN or proxy is not in use. A VPN or proxy can route traffic through a suboptimal edge and reduce delivery speed.
+Confirm that a VPN or proxy is not in use, because either can route traffic through a suboptimal edge and reduce delivery speed.
 
-2. Confirm that content is cached. Open **CDN** > **Reports** > **Statistics** and select the **Cache hit ratio** report. If the ratio is low, follow [Low&nbsp;cache&nbsp;percentage](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
+Check the cache hit ratio in the Customer Portal:
 
-3. For slow delivery of large files, turn on **Enable large files delivery optimization** and consider CDN or origin compression. Related guides: [Large&nbsp;file&nbsp;delivery](/cdn/cdn-resource-options/optimize-large-file-delivery) and [GZip&nbsp;and&nbsp;Brotli](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression).
+<Steps>
+  <Step title="Open CDN">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN**.
+  </Step>
+  <Step title="Open Statistics">
+    Expand **Reports** and select **Statistics**.
+  </Step>
+  <Step title="Select the cache report">
+    Select **Cache hit ratio**.
+  </Step>
+</Steps>
+
+A low [cache&nbsp;hit&nbsp;ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) means more requests reach the origin, which can increase delivery time.
+
+For slow delivery of large files, select one of these alternatives for the same CDN resource or rule:
+
+- The [large&nbsp;file&nbsp;delivery](/cdn/cdn-resource-options/optimize-large-file-delivery) settings enable **Large files delivery optimization**, which is incompatible with **Fetch Compressed**, **Gzip**, and **Brotli**
+- [Gzip&nbsp;and&nbsp;Brotli](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression) reduce transfer size for compressible content and must be used without Large File Delivery Optimization in the same resource or rule
 
 ## Diagnostic information for technical support
 
@@ -37,5 +67,5 @@ If delivery speed is still too low after reviewing settings, contact [Gcore&nbsp
 - The file URL
 - The JSON output from `https://gcore.com/.well-known/cdn-debug/json` (open the URL and copy the full response)
 - Results from the [Gcore&nbsp;speed&nbsp;test](https://speedtest.gcore.com/) — click **Run test**, then save the result
-- `wget -S` output for the CDN resource URL
-- A [HAR&nbsp;file](https://toolbox.googleapps.com/apps/har_analyzer/?lang=en) captured while loading the file or page
+- `wget -S` output for both the CDN and origin URLs
+- A HAR file exported while loading the file or page. In browser DevTools, open the **Network** panel, reload the page, and select **Export HAR**
