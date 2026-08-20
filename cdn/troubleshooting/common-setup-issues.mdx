@@ -4,7 +4,7 @@ sidebarTitle: Common setup issues
 ai-navigation: Troubleshoot CDN setup including 503 origin reachability, HTTP-to-HTTPS redirect loops, Content-Type downloads, and Let's Encrypt SSL failures.
 ---
 
-Common CDN setup problems and how to resolve them.
+CDN setup issues commonly result from origin connectivity, redirect, response-header, or certificate-validation problems.
 
 ## 503 service unavailable
 
@@ -19,12 +19,12 @@ Possible causes:
 
 Solution:
 
-- Verify that the origin server is reachable directly — with a browser or curl.
+- Verify that the origin server is reachable directly — with a browser or `curl`.
 - [Allowlist&nbsp;CDN&nbsp;servers](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) in the origin firewall or ACL.
 - Confirm that the origin port is correct (80 or 443).
 - During initial setup, CDN resource propagation can take up to about 20 minutes. Wait for propagation to finish, then retry the request.
 
-Related guide: [5xx&nbsp;server&nbsp;issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues).
+The [5xx&nbsp;troubleshooting&nbsp;guide](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues) covers other origin and CDN server failures.
 
 ## ERR_TOO_MANY_REDIRECTS
 
@@ -36,8 +36,21 @@ Possible cause:
 
 Solution:
 
-- Disable the redirect on either the CDN or the origin. On the CDN side, open the resource settings, navigate to **Access**, and turn off **Enable redirect HTTP to HTTPS**.
-- [HTTP&nbsp;to&nbsp;HTTPS](/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https)
+Disable the redirect on either the CDN or the origin. To disable the CDN redirect:
+
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Open the access settings">
+    Navigate to **Access**.
+  </Step>
+  <Step title="Disable the redirect">
+    Turn off **Enable redirect HTTP to HTTPS**.
+  </Step>
+</Steps>
+
+The [HTTP&nbsp;to&nbsp;HTTPS](/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https) guide explains how to configure the CDN redirect when it is required.
 
 ## Website downloads as a file
 
@@ -58,13 +71,13 @@ SSL issues with Let's Encrypt are often related to DNS configuration and domain 
 Possible causes:
 
 - The custom domain CNAME does not point to the `*.gcdn.co` value shown in the resource setup guide.
-- A CDN rule overlaps the `/.well-known/acme-challenge/` path used for certificate issuance.
+- A CDN rule blocks, redirects, or otherwise interferes with validation requests to the `/.well-known/acme-challenge/` path.
 - DNS changes have not fully propagated.
 
 Solution:
 
 - Confirm the CNAME for the custom domain matches the value in the resource setup guide.
-- Disable any rule that matches `/.well-known/acme-challenge/`, issue the certificate, then re-enable the rule if needed.
+- Disable or narrow only rules that interfere with `/.well-known/acme-challenge/` validation requests, issue the certificate, then restore the rule if needed.
 - After DNS changes, wait for propagation to finish, then retry certificate issuance.
 
-Related guide: [SSL&nbsp;certificate&nbsp;issues](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue).
+The [SSL&nbsp;troubleshooting&nbsp;guide](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue) covers other certificate validation and HTTPS delivery failures.
