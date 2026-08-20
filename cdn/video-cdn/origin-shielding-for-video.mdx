@@ -1,24 +1,21 @@
 ---
 title: Origin shielding for video delivery
 sidebarTitle: Origin shielding
-description: Protect your video origin during Live broadcast events and high-demand VOD releases by routing CDN edge requests through a shield server
-ai-navigation: Enable origin shielding for video CDN delivery to add a precache shield server between origin and edge locations, reducing concurrent origin requests, origin egress costs, and improving reliability during live events and VOD cache misses.
+ai-navigation: Configure origin shielding for video CDN delivery so a precache shield sits between origin and edge locations during live events and VOD cache misses.
 ---
 
-## Activate origin shielding for video
-
-Origin shielding adds a shield, also called a precache server, between your video origin and Gcore CDN edge servers. Viewers still receive video from nearby CDN edges, but edge cache misses go to the shield first, not directly to your origin.
+Origin shielding adds a shield, also called a precache server, between the video origin and Gcore CDN edge servers. Viewers still receive video from nearby CDN edges, but edge cache misses reach the shield first, not the origin directly.
 
 | Benefit | Why it matters |
 |---------|----------------|
 | Protects the origin | Repeated CDN edge misses are absorbed by the shield instead of hitting the origin from many locations. |
-| Minimizes origin requests | The shield requests the origin only when the object isn't already cached there. |
-| Reduces egress costs | Less traffic is pulled from your origin, which matters when origin egress is costly. |
+| Minimizes origin requests | The shield requests the origin only when the object is not already cached there. |
+| Reduces egress costs | Less traffic is pulled from the origin, which matters when origin egress is costly. |
 | Improves reliability | A less overloaded origin reduces the risk of slow segments, timeouts, and playback errors. |
 
 ## Origin shielding request flow
 
-Without shielding, every CDN edge location that misses cache can request the same manifest, segment, or video file from your origin. During a live event or a popular VOD release, this can create a large number of concurrent origin requests.
+Without shielding, every CDN edge location that misses cache can request the same manifest, segment, or video file from the origin. During a live event or a popular VOD release, this can create a large number of concurrent origin requests.
 
 With shielding, edge servers pull missed objects through one shield location. If the shield has the object, it serves the edge from cache. If not, it makes one origin request, caches the response, and shares it with other CDN edges.
 
@@ -28,7 +25,7 @@ With shielding:    Viewer -> CDN edge -> Shield -> Origin
 ```
 
 <Info>
-Origin shielding doesn't replace origin capacity planning. Your origin still serves the first request for uncached or expired content.
+Origin shielding does not replace origin capacity planning. The origin still serves the first request for uncached or expired content.
 </Info>
 
 ## Use cases
@@ -37,30 +34,18 @@ Origin shielding doesn't replace origin capacity planning. Your origin still ser
 
 A national TV broadcaster used origin shielding for live sports events with a very large concurrent audience. During match peaks, many viewers requested the same live playlists and segments at the same time from different regions.
 
-Shielding helped concentrate repeated CDN edge misses through the shield server instead of sending them all to the broadcaster's origin. This reduced bandwidth pressure on the origin and helped keep the live stream available during the highest-traffic moments of the event.
+Shielding helped concentrate repeated CDN edge misses through the shield server instead of sending them all to the broadcaster origin. This reduced bandwidth pressure on the origin and helped keep the live stream available during the highest-traffic moments of the event.
 
 ### VOD libraries
 
-A large VOD platform used origin shielding for a several PB-sized video library. Hot content was usually served from CDN edge cache, but cold or previously hot titles could be evicted from edge caches and then requested again from different regions. Shielding let one missed request warm the shield cache, so other CDN edges reused that copy instead of repeatedly pulling the same files from origin.
+A large VOD service used origin shielding for a several PB-sized video library. Hot content was usually served from CDN edge cache, but cold or previously hot titles could be evicted from edge caches and then requested again from different regions. Shielding let one missed request warm the shield cache, so other CDN edges reused that copy instead of repeatedly pulling the same files from origin.
 
-## When to enable shielding
+## Shielding recommendations
 
-Enable origin shielding when you expect a large live audience, release VOD content that may become hot, have limited origin bandwidth, pay significant origin egress costs, or see [low cache hit ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) across multiple CDN edge locations.
+Enable origin shielding when a large live audience is expected, when VOD content may become hot, when origin bandwidth is limited, when origin egress costs are significant, or when a [low&nbsp;hit&nbsp;ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) appears across multiple CDN edge locations.
 
-Choose a shield location close to your origin server. For live streaming, use short but cacheable TTLs for manifests and longer TTLs for segments where your workflow allows it. For VOD, make sure video files and segments can stay cached long enough to serve repeated requests.
+Select a shield location close to the origin server. For live streaming, use short but cacheable TTLs for manifests and longer TTLs for segments where the workflow allows it. For VOD, keep video files and segments cached long enough to serve repeated requests.
 
-To enable and configure the feature, see [Enable and configure origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
+In the Customer Portal, Origin Shielding sits under CDN resource settings as **Enable Origin Shielding**. Full setup steps are in [Enable&nbsp;origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
 
-## Related pages
-
-<CardGroup cols={2}>
-  <Card title="Enable origin shielding" icon="shield" href="/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding">
-    Configure the shield server for your CDN resource
-  </Card>
-  <Card title="Low cache hit ratio" icon="chart-bar" href="/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue">
-    Diagnose cache misses and improve CDN cache efficiency
-  </Card>
-  <Card title="Improve video delivery speed" icon="gauge" href="/cdn/video-cdn/improve-video-delivery-speed">
-    Learn how cache hits and misses affect video playback
-  </Card>
-</CardGroup>
+Cache hit and miss behavior for video playback is covered in [video&nbsp;delivery&nbsp;speed](/cdn/video-cdn/improve-video-delivery-speed).
