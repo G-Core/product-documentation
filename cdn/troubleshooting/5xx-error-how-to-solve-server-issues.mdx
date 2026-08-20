@@ -1,47 +1,86 @@
 ---
-title: "5xx error: how to solve server issues"
-sidebarTitle: 5xx error
-ai-navigation: Resolve CDN HTTP 5xx errors by checking Status Page incidents, origin availability and timeouts, allowlisting edge IPs, and verifying Host header settings.
+title: "CDN 5xx response troubleshooting"
+sidebarTitle: CDN 5xx responses
+ai-navigation: Resolve CDN 5xx responses by checking Gcore service status, origin availability, timeouts, TLS settings, and CDN resource settings.
 ---
 
 HTTP 5xx codes can come from an error on an origin server or on CDN edge servers.
 
-## Check for incidents or maintenance
+## Response-specific causes
+
+The response code helps identify which origin behavior or CDN setting to investigate.
+
+* `500 Internal Server Error`: Check the origin application and server logs for failures.
+* `502 Bad Gateway`: Check for an invalid origin response, TLS or Server Name Indication (SNI) mismatch, or connection failure.
+* `503 Service Unavailable`: Check whether the origin is unavailable or overloaded.
+* `504 Gateway Timeout`: Check for an origin connection or read timeout.
+
+## Gcore service status
 
 If 5xx responses increase sharply or end users report widespread failures, the [Status&nbsp;Page](https://status.gcore.com) lists incidents or maintenance that affect:
 
   * CDN
   * Other Gcore services used as an origin (Object Storage, VPS, Dedicated Server, or Cloud)
 
-## Check the origin server
+## Origin server availability
 
-Confirm that the origin is available.
+Request content directly from the origin and inspect the response headers. For an HTTP origin that uses name-based virtual hosting, send the expected Host header:
 
-If the origin is not responding or returns an HTTP error, contact the hosting provider or server administrator.
+```bash
+curl -sS -D - -o /dev/null http://192.0.2.10/path/to/content \
+  -H "Host: origin.example.com"
+```
 
-  * An HTTP 504 response usually means the origin did not answer within CDN [timeout&nbsp;defaults](/cdn/getting-started/cdn-timeouts) — 5 seconds to establish a connection (`proxy_connect_timeout`) and 30 seconds between successive reads while receiving the origin response (`proxy_read_timeout`). Tune the origin so it responds in time, or adjust [Custom&nbsp;connection&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) / **Custom read timeout** in the CDN resource settings when the plan allows.
-  * If access to the origin is restricted by IP or a DDoS Protection service, allowlist CDN edge IPs. Retrieve the current public IP list:
+For HTTPS, use `--resolve` to connect to the origin IP while preserving the hostname for the Host header and TLS SNI:
 
-```sh
+```bash
+curl -sS -D - -o /dev/null \
+  --resolve origin.example.com:443:192.0.2.10 \
+  https://origin.example.com/path/to/content
+```
+
+If the origin doesn't return the expected successful response, check its application and server logs or contact the hosting provider.
+
+An HTTP `504` response can occur when the origin exceeds the CDN [timeout&nbsp;defaults](/cdn/getting-started/cdn-timeouts) — 5 seconds to establish a connection and 30 seconds between successive reads. On standard plans, [custom&nbsp;timeouts](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) can only reduce these limits, so they cannot resolve a slow origin; increasing the limits requires an Enterprise plan and assistance from [Gcore&nbsp;Support](mailto:support@gcore.com).
+
+If access to the origin is restricted by IP or a DDoS Protection service, allowlist CDN edge IPs. Retrieve the current public IP list:
+
+```bash
 curl -i -X GET https://api.gcore.com/cdn/public-ip-list
 ```
 
-The public IP list changes over time, so keep the allowlist updated with a recurring script. The [Origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) guide covers allowlisting CDN edges. Authentication on the origin can also use [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) that CDN adds when pulling content.
+The public IP list changes over time, so keep the allowlist updated with a recurring script. The [Origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) guide covers allowlisting CDN edges. Origin access control can also use [request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) that the CDN adds when pulling content.
 
-## Check CDN resource settings
+## CDN resource settings
 
 Incorrect CDN resource settings can also cause HTTP 5xx errors. Review the common cases below.
 
 ### Incorrect Origin pull protocol
 
-In the resource settings, select an **Origin pull protocol** that matches the protocol the origin uses. The [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) option controls which scheme CDN uses when requesting content from the origin.
+In the resource settings, select an **Origin pull protocol** that matches the protocol the origin uses. The [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) option controls which scheme the CDN uses when requesting content from the origin.
 
-If Cloudflare or CloudFront is the origin, select **HTTP** as the Origin pull protocol. If the origin supports only HTTPS, or redirects HTTP to HTTPS, contact [Gcore&nbsp;Support](mailto:support@gcore.com) for additional settings.
+For an HTTPS origin behind Cloudflare or CloudFront, keep **Origin pull protocol** set to **HTTPS** and configure **Change SNI hostname** with the hostname expected by that service. Select **HTTP** only when the origin is configured to accept unencrypted HTTP requests.
 
 ### Incorrect Host header
 
 Enable **Change Host header** and set a value that matches the origin or the host configured on the origin. The [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option controls which virtual host the origin uses.
 
-Open [Reports](/cdn/view-statistics-of-a-cdn-resource) → **Statistics** and select the **Response codes** report to track 5xx responses.
+After changing **Origin pull protocol**, **Change SNI hostname**, or **Change Host header**, click **Save changes** before retesting the request.
 
-The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) in the [Gcore Customer Portal](https://portal.gcore.com) shows recent request details. For long-term log export, [Logs&nbsp;uploader](/cdn/logs/logs-uploader) is a paid option that must be enabled by support. To activate it, contact the account manager or [Gcore&nbsp;Support](mailto:support@gcore.com).
+## 5xx response tracking and logs
+
+The **Response codes** report tracks 5xx responses for CDN resources.
+
+<Steps>
+  <Step title="Open CDN">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), select **CDN**.
+  </Step>
+  <Step title="Open CDN statistics">
+    Navigate to **Reports** → **Statistics**.
+  </Step>
+  <Step title="View response codes">
+    Select **Response codes**.
+  </Step>
+</Steps>
+
+The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) shows recent request details. For long-term log export, [Logs&nbsp;uploader](/cdn/logs/logs-uploader) is a paid option that must be enabled by support. To activate it, contact the account manager or Gcore Support.
