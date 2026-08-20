@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Object Storage API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 93b5cc710408
+  version: de4f3bcca1e7
 servers:
 - url: https://api.gcore.com
 paths:
@@ -2466,7 +2466,8 @@ paths:
       summary: Create access key
       description: |-
         Creates a new access key for an S3-compatible storage.
-        Returns the new access key and secret key. Maximum 2 access keys per storage.
+        Returns the new access key and secret key. VAST storages are limited to 2 access keys;
+        CEPH storages have no such limit.
       operationId: createAccessKeyV4
       parameters:
       - name: storage_id
@@ -2476,6 +2477,12 @@ paths:
         schema:
           type: integer
           format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessKeyCreateBodyV4'
+        required: false
       responses:
         '201':
           description: AccessKeyCreateDataV4
@@ -2507,6 +2514,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
+      x-codegen-request-body-name: Body
       x-codeSamples:
       - lang: Python
         source: |-
@@ -4017,11 +4025,22 @@ paths:
           }
 components:
   schemas:
+    AccessKeyCreateBodyV4:
+      title: AccessKeyCreateBodyV4 optional request body for creating an access key.
+      type: object
+      properties:
+        read_only:
+          type: boolean
+          description: |-
+            Request a key scoped to read-only data access. Only supported for CEPH storages; a VAST
+            storage rejects true. Defaults to false (full read-write) when omitted.
+          example: false
     AccessKeyCreateDataV4:
       title: AccessKeyCreateDataV4 Newly created access key pair. Save the secret_key now — it is only returned once at creation time.
       required:
       - access_key
       - created_at
+      - is_read_only
       - secret_key
       type: object
       properties:
@@ -4034,6 +4053,9 @@ components:
           description: ISO 8601 timestamp when the access key was created
           format: date-time
           example: '2025-08-05T09:17:02Z'
+        is_read_only:
+          type: boolean
+          description: True for a key scoped to read-only data access.
         secret_key:
           type: string
           description: Secret key used as the password in S3 authentication. Save this now — it cannot be retrieved again.
@@ -4060,6 +4082,7 @@ components:
       required:
       - access_key
       - created_at
+      - is_read_only
       type: object
       properties:
         access_key:
@@ -4071,6 +4094,9 @@ components:
           description: ISO 8601 timestamp when the access key was created
           format: date-time
           example: '2025-08-05T09:17:02Z'
+        is_read_only:
+          type: boolean
+          description: True for a key scoped to read-only data access.
     BucketCORSPatchV4:
       title: BucketCORSPatchV4 Update CORS origins browsers can use for requests to this bucket. Empty array removes CORS.
       type: object
