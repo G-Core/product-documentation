@@ -1,29 +1,74 @@
 ---
-title: "4xx error: how to solve CDN issues with the limited access and content non-existence"
-sidebarTitle: 4xx error
-ai-navigation: Resolve CDN 4xx errors by checking origin content, allowlisting edge IPs, matching Origin pull protocol and Change Host header, then reviewing logs.
+title: "CDN 4xx response troubleshooting"
+sidebarTitle: CDN 4xx responses
+ai-navigation: Resolve CDN 4xx responses by checking status-specific causes, origin availability, resource settings, response reports, and logs.
 ---
 
-4xx errors can come from a malfunction on the origin or from incorrect CDN resource settings.
+A 4xx response can come from the CDN or origin when a request is invalid, access is denied, or the requested content does not exist.
 
-## Check content availability on the origin
+## Status-specific causes
 
-Request the content from the origin and confirm an HTTP 200 response.
+The response code helps identify which request or access setting to check.
+
+* `400 Bad Request`: Verify the request syntax and the Host header expected by the origin.
+* `401 Unauthorized` and `403 Forbidden`: Check authentication credentials, CDN access policies, secure tokens, and origin access control lists (ACLs).
+* `404 Not Found`: Verify that the requested path is correct and that the content exists on the origin.
+* `405 Method Not Allowed`: Verify that the CDN resource and origin support the request method.
+
+## Origin content availability
+
+Request the affected content directly from the origin and confirm an HTTP `200` response:
+
+```bash
+curl -I https://origin.example.com/path/to/content
+```
+
+When the origin uses name-based virtual hosting, send its expected Host header:
+
+```bash
+curl -I http://192.0.2.10/path/to/content \
+  -H "Host: origin.example.com"
+```
+
+For HTTPS, use `--resolve` to connect to the origin IP while preserving the hostname for the Host header and TLS:
+
+```bash
+curl -I --resolve origin.example.com:443:192.0.2.10 \
+  https://origin.example.com/path/to/content
+```
 
 If the origin uses an IP allowlist or a DDoS Protection service, allowlist CDN edge IPs. Retrieve the current public IP list:
 
-```sh
+```bash
 curl -i -X GET https://api.gcore.com/cdn/public-ip-list
 ```
 
 The public IP list changes over time, so keep the allowlist updated with a recurring script. The [Origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) guide covers allowlisting CDN edges. Authentication on the origin can also use [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) that CDN adds when pulling content.
 
-## Check CDN resource settings
+## CDN resource settings
+
+Check the resource status and origin request settings before retesting the affected URL.
 
   * Confirm that the CDN resource is active. After creating a new resource, wait until the configuration is applied on CDN edges — usually about 15 minutes.
-  * Select an **Origin pull protocol** so the origin can respond to requests from CDN edges. The [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) option controls which scheme CDN uses when requesting content from the origin.
+  * Select an **Origin pull protocol** so the origin can respond to requests from CDN edges. The [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) option controls which scheme the CDN uses when requesting content from the origin.
   * Enable **Change Host header** and set a value that matches the origin or the host configured on the origin. The [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option controls which virtual host the origin uses.
 
-Open [Reports](/cdn/view-statistics-of-a-cdn-resource) → **Statistics** and select the **Response codes** report to track 4xx responses.
+After changing **Origin pull protocol** or **Change Host header**, click **Save changes** before retesting the request.
 
-The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) in the [Gcore Customer Portal](https://portal.gcore.com) shows recent request details. For long-term log export, [Logs&nbsp;uploader](/cdn/logs/logs-uploader) is a paid option that must be enabled by support. To activate it, contact the account manager or [Gcore&nbsp;Support](mailto:support@gcore.com).
+## 4xx response tracking and logs
+
+The **Response codes** report tracks 4xx responses for CDN resources.
+
+<Steps>
+  <Step title="Open CDN">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), select **CDN**.
+  </Step>
+  <Step title="Open CDN statistics">
+    Navigate to **Reports** → **Statistics**.
+  </Step>
+  <Step title="View response codes">
+    Select **Response codes**.
+  </Step>
+</Steps>
+
+The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) shows recent request details. For long-term log export, [Logs&nbsp;uploader](/cdn/logs/logs-uploader) is a paid option that must be enabled by support. To activate it, contact the account manager or [Gcore&nbsp;Support](mailto:support@gcore.com).
