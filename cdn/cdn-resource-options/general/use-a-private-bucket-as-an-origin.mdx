@@ -22,7 +22,7 @@ The required authentication data is available in the S3 storage account.
     <Caution>
     **Caution**
 
-    Gcore does not store the secret key after it is shown, so copy it when the key is created. For a Gcore Object Storage origin, use a read-only key on S3 Standard, created with the REST API.
+    Gcore does not store the secret key after it is shown, so copy it when the key is created. For a Gcore Object Storage origin, use a read-only key on S3 Standard.
     </Caution>
   </Tab>
 </Tabs>
@@ -82,8 +82,6 @@ The required authentication data is available in the S3 storage account.
     5\. If the per-origin Host header override is not used, go to the resource settings and open the **Host header** option in the **HTTP headers** section. Enter the storage hostname in the format shown in step 2e above, then click **Save changes**.
 
     <Frame>![Save changes](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png)</Frame>
-
-    6\. To replace the origin credentials later, create the replacement storage key first, then go to **CDN** > **Origin groups** and open the group. Saved **Access Key ID** and **Secret access key** values are masked. Click the pencil icon next to each field, enter the new values, and click **Save changes**. After the origin uses the new key, delete the old storage key.
   </Tab>
   <Tab title="API">
     An [API token](/account-settings/api-tokens) is required. Create an origin group with `POST https://api.gcore.com/cdn/origin_groups`. Each S3 origin uses `origin_type` `s3` and a `config` object. Set `s3_type` to `other` for Gcore Object Storage, or `amazon` for AWS S3. The [origin groups](/api-reference/cdn/origins/create-origin-group) reference lists every field.
@@ -154,10 +152,19 @@ The required authentication data is available in the S3 storage account.
         ]
       }'
     ```
+  </Tab>
+</Tabs>
 
-    **Replace origin credentials**
+## Key replacement in private origins
 
-    Create the replacement storage key first. Then PATCH the origin group and send the `sources` array with the new `s3_access_key_id` and `s3_secret_access_key` in `config`. After the origin uses the new key, delete the old storage key.
+Origin credentials can be rotated without recreating the origin group. Create a replacement storage key first, then update the origin with the new Access Key ID and Secret Access Key, and delete the old key after the origin uses the new credentials.
+
+<Tabs>
+  <Tab title="Customer Portal">
+    Go to **CDN** > **Origin groups** and open the group. Saved **Access Key ID** and **Secret access key** values are masked. Click the pencil icon next to each field, enter the new values, and click **Save changes**.
+  </Tab>
+  <Tab title="API">
+    PATCH the origin group and send the `sources` array with the new `s3_access_key_id` and `s3_secret_access_key` in `config`.
 
     ```bash
     curl -X PATCH https://api.gcore.com/cdn/origin_groups/ORIGIN_GROUP_ID \
@@ -185,7 +192,6 @@ The required authentication data is available in the S3 storage account.
     ```
   </Tab>
 </Tabs>
-
 
 ## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
 
