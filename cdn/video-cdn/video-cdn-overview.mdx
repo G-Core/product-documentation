@@ -4,26 +4,30 @@ sidebarTitle: Overview
 ai-navigation: Configure Video CDN to deliver prepared HLS, DASH, HTTP-FLV, and MP4 through Gcore CDN with Support enablement, low-latency options, and access control.
 ---
 
-Edge locations cache and distribute already-prepared live streams and VOD files so playback stays stable and origin load stays lower. Video CDN is that video-delivery use of standard Gcore CDN. Topics include supported formats, cache guidance, origin protection, security, and troubleshooting for HLS, DASH, MP4, and related workflows. Transcoding belongs in [Gcore&nbsp;Video&nbsp;Streaming](/streaming).
+Video CDN refers to using standard Gcore CDN to deliver already-prepared video streams and files. Edge locations cache and distribute this content to lower origin load, while transcoding belongs in [Gcore&nbsp;Video&nbsp;Streaming](/streaming).
 
 ## Legal requirement
+
+Video CDN delivery requires account-level approval before the resource can serve streaming file types.
 
 <Info>
 Before delivering HLS, DASH, or other video streams via CDN, ask Gcore Support to enable video delivery for the CDN account. Approval verifies the use case, content rights, and anti-piracy requirements.
 </Info>
 
-Request activation from [Request&nbsp;streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation) in the setup guide. Contact Support and provide Account ID, domain name, company name, content type, sample stream URL, viewer geography, and a broadcasting license or content compliance policy. For sports, TV channels, events, or other third-party protected content, Support may ask for license or rights confirmation before enabling delivery.
+The [streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation) procedure requires contacting Support with the Client ID, domain name, company name, content type, sample stream URL, viewer geography, abuse or copyright contact email address, and a broadcasting license or content compliance policy. For sports, TV channels, events, or other third-party protected content, Support may ask for license or rights confirmation before enabling delivery.
 
 If video delivery is not enabled yet, CDN requests for streaming file types can return `402`. Status-code guidance is in [Gcore&nbsp;error&nbsp;codes](/cdn/troubleshooting/gcore-error-status-codes#other-errors-402-504-508-556-557).
 
 ## Supported video formats
 
+Video CDN supports the following live and VOD formats after activation.
+
 | Format | Live | VOD | Use case |
 |--------|------|-----|----------|
-| **HLS** (HTTP Live Streaming) | Yes | Yes | Wide device support, Apple-native |
-| **MPEG-DASH** | Yes | Yes | Common standard for non-Apple devices |
-| **HTTP-FLV** | Yes | Yes | Ultra-low latency (1–3 s), high concurrency |
-| **MP4** | Limited | Yes | Direct downloads, progressive playback |
+| HLS (HTTP Live Streaming) | Yes | Yes | Wide device support, Apple-native |
+| MPEG-DASH | Yes | Yes | Common standard for non-Apple devices |
+| HTTP-FLV | Yes | Yes | Ultra-low latency (1–3 s), high concurrency |
+| MP4 | No | Yes | Direct downloads, progressive playback |
 
 <Info>
 HLS files (`.m3u8`, `.ts`, `.m4s`) are delivered by CDN as HTTP content. Gcore Video Streaming is not required when HLS files are already prepared and transcoding is not needed. Video CDN delivery must still be enabled for the CDN account by Gcore Support so the use case can be verified and the CDN protected from piracy and fraud.
@@ -35,45 +39,56 @@ MP4 is not a live streaming format for Video CDN, but VOD2Live-style playback is
 
 ## Low-latency streaming
 
-Gcore Video CDN supports ultra-low latency live delivery:
+Gcore Video CDN supports separate low-latency configurations for HLS and MPEG-DASH.
 
-**Low-Latency HLS (LL-HLS)**
+### Low-Latency HLS
 
-- 2–4 second glass-to-glass latency
-- Native support on iOS and modern browsers
-- Uses CMAF segments with immediate streaming
+LL-HLS uses CMAF segments with its own query parameters and caching configuration, as described in [HLS&nbsp;and&nbsp;LL-HLS](/cdn/video-cdn/hls).
 
-**Low-Latency MPEG-DASH (LL-DASH)**
+* 2–4 second glass-to-glass latency
+* Native support on iOS and modern browsers
+* Immediate streaming of CMAF segments
 
-- 2–4 second glass-to-glass latency
-- Broad device compatibility (Android, Smart TVs, web browsers)
-- Requires Chunked-Proxy module activation
+### Low-Latency MPEG-DASH
 
-Both protocols use Chunked-Proxy to stream content as soon as it arrives from the origin, which cuts the typical store-and-forward delay from about 10–15 seconds down to 2–4 seconds. Configuration details are in [DASH&nbsp;and&nbsp;LL-DASH](/cdn/video-cdn/dash).
+LL-DASH requires Chunked-Proxy activation to stream content as it arrives from the origin. The [DASH&nbsp;and&nbsp;LL-DASH](/cdn/video-cdn/dash) configuration also defines the required cache settings.
+
+* 2–4 second glass-to-glass latency
+* Broad device compatibility across Android, Smart TVs, and web browsers
 
 ## Key features
 
+Video CDN combines global delivery, video-specific cache behavior, access controls, and resource-level settings.
+
 ### Global CDN delivery
+
+Gcore routes video requests through its global edge network to serve content near viewers.
 
 - 210+ edge locations across six continents
 - Automatic routing to the nearest edge server
 
 ### Optimized for video
 
+Video-focused delivery options support live cache windows, seekable files, large VOD assets, and protected origins.
+
 - Sliding window caching for live streams (RAM-based)
 - Range request support for efficient seeking
 - Large file optimization for VOD delivery
-- Origin shielding to reduce origin load by 80–99%
+- Origin Shielding to reduce requests to the origin
 
 ### Security and access control
 
-- **Country access policy**: Restrict content by country
-- **Secure token**: Time-limited authenticated URLs
-- **Referrer access policy**: Limit unauthorized embedding
-- **IP access policy**: Allowlist or blocklist specific IPs
+Access controls restrict where content can be viewed, how long URLs remain valid, and which clients can request it.
+
+- Country access policy: Restrict content by country
+- Secure token: Time-limited authenticated URLs
+- Referrer access policy: Limit unauthorized embedding
+- IP access policy: Allowlist or blocklist specific IPs
 - DDoS protection against volumetric attacks
 
 ### Advanced configuration
+
+Resource-level settings adapt delivery behavior to the domain, cache policy, protocol, and monitoring requirements.
 
 - Custom domains (CNAMEs)
 - Custom cache rules per file type
@@ -83,23 +98,41 @@ Both protocols use Chunked-Proxy to stream content as soon as it arrives from th
 
 ## Setup path
 
-1. Select a streaming format: [HLS&nbsp;and&nbsp;LL-HLS](/cdn/video-cdn/hls), [DASH&nbsp;and&nbsp;LL-DASH](/cdn/video-cdn/dash), or [FLV&nbsp;streaming](/cdn/video-cdn/flv-streaming).
-2. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) to enable Video CDN delivery for the CDN account. This is CDN-side approval, not activation of Gcore Video Streaming. Provide domain and company name, content type, sample stream URL, expected viewer geography, and a broadcasting license or content compliance policy.
-3. Create the resource with the [video&nbsp;CDN&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming) guide.
-4. Set cache TTLs that match the workflow — playlists (`.m3u8`) at 1–2 seconds (live) or 5–60 seconds (VOD), and segments (`.ts`, `.m4s`) at 60 seconds (live) or 1–24 hours (VOD).
-5. Test the stream with the CDN URL, then deploy to production.
+Set up Video CDN by selecting a format, requesting activation, creating a CDN resource, and applying format-specific delivery settings.
 
-Related configuration topics include [CDN&nbsp;resources](/cdn/getting-started/create-a-cdn-resource/overview), [Secure&nbsp;token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token), [Origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding), and [Reports](/cdn/view-statistics-of-a-cdn-resource).
+<Steps>
+  <Step title="Select a streaming format">
+    Select [HLS&nbsp;and&nbsp;LL-HLS](/cdn/video-cdn/hls), [DASH&nbsp;and&nbsp;LL-DASH](/cdn/video-cdn/dash), or [FLV&nbsp;streaming](/cdn/video-cdn/flv-streaming).
+  </Step>
+  <Step title="Request Video CDN activation">
+    Contact [Gcore&nbsp;Support](mailto:support@gcore.com) to enable Video CDN delivery for the CDN account. Provide the Client ID, domain name, company name, content type, sample stream URL, expected viewer geography, abuse or copyright contact email address, and a broadcasting license or content compliance policy.
+  </Step>
+  <Step title="Create a CDN resource">
+    Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview) with the [video&nbsp;CDN&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming) instructions.
+  </Step>
+  <Step title="Configure delivery settings">
+    Set cache TTLs that match the workflow — playlists (`.m3u8`) at 1–2 seconds for live delivery or 5–60 seconds for VOD, and segments (`.ts`, `.m4s`) at 60 seconds for live delivery or 1–24 hours for VOD. Add a [Secure&nbsp;token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) for time-limited access or [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to reduce requests to the origin.
+  </Step>
+  <Step title="Test the stream">
+    Test playback through the CDN URL, then use [Reports](/cdn/view-statistics-of-a-cdn-resource) to monitor delivery after deployment.
+  </Step>
+</Steps>
 
 ## Use cases
 
+Video CDN supports live and on-demand delivery for media workloads with different access and scaling requirements.
+
 ### Live sports broadcasting
+
+Live sports delivery combines large-audience distribution with regional access controls and origin protection.
 
 - Deliver sports events to large concurrent audiences
 - Apply country restrictions based on broadcasting rights
-- Use origin shielding to protect the origin during traffic spikes
+- Use Origin Shielding to protect the origin during traffic spikes
 
-### Educational platforms
+### Education
+
+Education services can distribute live courses and webinars while controlling paid access and presentation.
 
 - Stream courses and webinars globally
 - Use secure tokens for paid content access
@@ -107,24 +140,30 @@ Related configuration topics include [CDN&nbsp;resources](/cdn/getting-started/c
 
 ### Entertainment and media
 
+Entertainment delivery supports on-demand catalogs with regional licensing and sharing controls.
+
 - Deliver movies and TV shows on demand
 - Apply country access policies for regional licensing
 - Use secure tokens to limit unauthorized sharing
 
 ### User-generated content
 
-- Scale delivery for social platforms
+User-generated media workloads need delivery capacity that can absorb sudden changes in audience demand.
+
+- Scale delivery for social media services
 - Handle spiky traffic efficiently
-- Reduce origin bandwidth costs by 80–95%
+- Reduce origin bandwidth by serving cached content from edge locations
 
 ## Pricing
 
-Video CDN pricing is based on:
+Video CDN pricing depends on delivered traffic and any optional services added to the resource.
 
-- **CDN traffic volume**: Bandwidth delivered to viewers
-- **Optional features**: Origin shielding, custom SSL certificates
+- CDN traffic volume: Bandwidth delivered to viewers
+- Optional features: Origin Shielding, custom SSL certificates
 
 ## Video CDN vs Video Streaming
+
+Video CDN distributes prepared content, while Video Streaming provides an ingest, transcoding, packaging, and delivery pipeline.
 
 | | Video CDN (this section) | Video Streaming |
 |---|--------------------------|----------------|
@@ -133,4 +172,4 @@ Video CDN pricing is based on:
 | Formats | HLS, DASH, FLV, MP4, and other HTTP video | Packages into HLS and MPEG-DASH with a built-in player |
 | Best when | Streams are already packaged; full CDN control is required | An all-in-one hosted pipeline with DVR or recording is required |
 
-Select Video CDN when a media server already produces HLS/DASH/FLV, when migrating or adding multi-CDN, or when geo restrictions and custom access policies are required. Select [Video&nbsp;Streaming](/streaming) when raw encoder input, automatic ABR, DVR, or a hosted player pipeline is required.
+Select Video CDN when a media server already produces HLS/DASH/FLV, when migrating or adding multi-CDN, or when geo restrictions and custom access policies are required. Select Video Streaming when raw encoder input, automatic ABR, DVR, or a hosted player pipeline is required.
