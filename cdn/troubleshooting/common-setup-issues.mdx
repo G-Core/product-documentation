@@ -1,67 +1,88 @@
 ---
-title: "Common Setup Issues"
-sidebarTitle: Common Setup Issues
-ai-navigation: Resolve CDN setup issues including 503 service unavailable errors from unreachable origins, ERR_TOO_MANY_REDIRECTS from HTTP-to-HTTPS redirect loops, incorrect MIME type headers causing file downloads, and Let's Encrypt SSL certificate validation failures due to DNS propagation delays.
+title: Common setup issues
+sidebarTitle: Common setup issues
+ai-navigation: Troubleshoot CDN setup issues involving 503 responses, redirect loops, forced downloads, and Let's Encrypt validation failures.
 ---
 
-This section describes common CDN setup issues and how to resolve them.
+CDN setup issues commonly result from origin connectivity, redirect, response-header, or certificate-validation problems.
 
 ## 503 service unavailable
 
-This error means that the CDN cannot reach your origin server.
+During setup, a 503 response often indicates that the CDN cannot reach an available origin.
 
 Possible causes:
 
 - The origin server is not accessible.
 - The origin blocks CDN IP ranges.
 - The origin port is incorrect.
-- The resource has not been fully propagated yet.
+- The resource has not fully propagated yet.
 
 Solution:
 
-- Verify that the origin server is accessible directly (for example, via browser or curl).
-- Allow CDN IP ranges in your firewall settings.
-- Confirm that the correct origin port is configured (80 or 443).
-- During initial setup, propagation can take up to ~20 minutes. Wait for resource propagation to complete, then retry the request.
+- Verify that the origin server is reachable directly — with a browser or `curl`.
+- [Allowlist&nbsp;CDN&nbsp;servers](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist) in the origin firewall or ACL.
+- Confirm that the configured origin port matches the port on which the origin listens. For ports other than 80 or 443, configure a custom origin port.
+- During initial setup, CDN resource propagation can take up to about 20 minutes. Wait for propagation to finish, then retry the request.
 
-For more details, see [5xx error: how to solve server issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues).
+The [5xx&nbsp;troubleshooting&nbsp;guide](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues) covers other origin and CDN server failures.
 
 ## ERR_TOO_MANY_REDIRECTS
 
-This issue occurs when both the CDN and the origin enforce redirects, creating a loop.
+This error can occur when both the CDN and the origin enforce redirects and create a loop.
 
 Possible cause:
 
-- Both CDN and origin redirect HTTP to HTTPS.
+- Both the CDN and the origin redirect HTTP to HTTPS.
 
 Solution:
 
-- Disable the redirect on either the CDN or the origin side.
+Disable the redirect on either the CDN or the origin. To disable the CDN redirect:
 
-## Website downloads as file
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Open the access settings">
+    Navigate to **Access**.
+  </Step>
+  <Step title="Disable the redirect">
+    Turn off **Enable redirect HTTP to HTTPS**.
+  </Step>
+  <Step title="Apply the change">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
-This behavior indicates incorrect response headers from the origin.
+The [HTTP&nbsp;to&nbsp;HTTPS](/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https) guide explains how to configure the CDN redirect when it is required.
 
-Possible cause:
+## Website downloads as a file
 
-- The origin returns an incorrect `Content-Type` header.
-
-Solution:
-
-- Check and correct MIME type configuration on the origin server.
-
-## SSL certificate errors (Let’s Encrypt)
-
-SSL issues are often related to DNS configuration and certificate validation.
+This behavior usually means the origin returns incorrect response headers.
 
 Possible causes:
 
-- DNS changes have not fully propagated.
-- Let’s Encrypt cannot validate the domain.
+- The origin returns an incorrect `Content-Type` header.
+- The origin returns a `Content-Disposition: attachment` header.
 
 Solution:
 
-- Wait for DNS propagation to complete (up to 24–48 hours).
-- Retry certificate issuance after propagation.
+- Check and correct the MIME type configuration on the origin server.
+- Remove or correct the `Content-Disposition` header when content should display inline.
 
-For more details, see [An SSL certificate isn’t working: how to solve](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue).
+## SSL certificate errors (Let's Encrypt)
+
+SSL issues with Let's Encrypt are often related to DNS configuration and domain validation.
+
+Possible causes:
+
+- The custom domain CNAME does not point to the `*.gcdn.co` value shown in the CDN resource's **Setup guide**.
+- A CDN rule blocks, redirects, or otherwise interferes with validation requests to the `/.well-known/acme-challenge/` path.
+- DNS changes have not fully propagated.
+
+Solution:
+
+- Confirm that the custom domain CNAME matches the `*.gcdn.co` value shown in the CDN resource's **Setup guide**.
+- Keep `/.well-known/acme-challenge/` accessible by narrowing interfering rules or adding an exception. If a rule was disabled for issuance, add the exception before re-enabling it so automatic renewal can complete.
+- After DNS changes, wait for propagation to finish, then retry certificate issuance.
+
+The [SSL&nbsp;troubleshooting&nbsp;guide](/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue) covers other certificate validation and HTTPS delivery failures.
