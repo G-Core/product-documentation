@@ -1,123 +1,87 @@
 ---
 title: Create and set a custom domain for the content delivery via CDN
 sidebarTitle: Create a custom domain (CNAME)
-ai-navigation: Create custom domains and additional domains for CDN static content delivery by specifying domain names in the CDN resource configuration and adding CNAME records pointing to the account-specific gcdn.co endpoint.
+ai-navigation: Configure custom and additional domains for CDN resources by entering domain names and creating CNAME records pointing to the assigned gcdn.co endpoint.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
 
-## What is a custom domain?
+## Custom domain overview
 
-A custom domain is a unique, branded domain name used for content delivery through a CDN. For example, if you have a website with the domain mywebsite.com, you create a CDN resource for static content delivery and specify a custom domain for it, such as cdn.mywebsite.com. This way, your static assets will be delivered to end users with URLs like cdn.mywebsite.com/sample.jpg. 
+A custom domain is a unique, branded domain name used for content delivery through a CDN. A website at `mywebsite.com` can configure a CDN resource for static content with the custom domain `cdn.mywebsite.com`. Static assets are then delivered with URLs like `cdn.mywebsite.com/sample.jpg`.
 
-When specifying a custom domain, you can use any domain or subdomain for which you can edit the DNS records. For CNAME-based [CDN resources](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), a third-level domain is typical, e.g. `cdn.mywebsite.com`. For CDN resources using DNS delegation to Gcore, a second-level domain is used, e.g. `mywebsite.com`. 
+Any domain or subdomain for which DNS records can be edited is valid as a custom domain. For CNAME-based [CDN&nbsp;resources](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), a third-level domain is typical, e.g. `cdn.mywebsite.com`. For CDN resources using DNS delegation to Gcore, a second-level domain is used, e.g. `mywebsite.com`.
 
 <Caution>
-**Caution**
-
-You cannot change the custom domain once the CDN resource has been created. If you need to change domains, use [additional (multiple) domains](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain). This option is only available for CDN resources for static content, not for CDN resources integrated with the entire sites.
+The custom domain cannot be changed after the CDN resource has been created. To use a different domain, add it as an [additional&nbsp;domain](#specify-additional-domains-only-for-static-cdn-resources). This option is only available for CDN resources for static content, not for CDN resources integrated with entire sites.
 </Caution>
 
-## Set a custom domain (only for static CDN recources)
+## Set a custom domain (for static CDN resources)
 
-The instructions below describe how to set up a custom domain for CNAME-based CDN resources. For CDN resources using DNS delegation to Gcore, the custom domain is set via nameserver change at the domain registrar instead. See the [CDN resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource#step-5-complete-dns-setup) for details on both options. 
+The instructions below apply to CNAME-based CDN resources. For CDN resources using DNS delegation to Gcore, the custom domain is set via nameserver change at the domain registrar. [CDN&nbsp;resource&nbsp;creation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource#step-5-complete-dns-setup) covers both DNS delegation and CNAME-based setup.
 
-1\. When [creating a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), enter your desired domain or subdomain name in the **Custom domain** section. Specify additional domains by clicking the **+** icon. 
+1. During [CDN&nbsp;resource&nbsp;creation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), enter the domain or subdomain name in the **Add domain*** section. To add multiple custom domains, click **Add CNAME**.
 
 <Warning>
-**Warning**
+Multiple custom domains can only be added when creating a CDN resource for static assets. For CDN resources covering an entire site, adding additional custom domains is not supported.
+</Warning>
 
-You can only add additional (multiple) custom domains if you are creating a CDN resource for static assets. If you are creating a CDN resource for the entire site, adding additional custom domains is not possible.
-</Warning> 
-<Frame>![Custom domain](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865716431377.png)</Frame>
+<Frame>![CDN resource creation form — Add domain section](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image2.png)</Frame>
 
+2. Click **Create**. The **Resource was created** page appears, showing the CNAME value assigned to the resource (formatted as `cl-XXXX.gcdn.co`) along with step-by-step DNS setup instructions and an example in BIND zone file format.
 
+<Frame>![Resource was created page showing the assigned CNAME value](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image3.png)</Frame>
 
-2\. Copy the value _cl-****.gcdn.co_ (which is unique for every account and the same for all custom domains of your account) from the **Set up your DNS** page. Click **Confirm**.
+3. At the DNS provider's website, create a [CNAME&nbsp;record](https://gcore.com/learning/dns-cname-record-explained) for the custom domain pointing to the value shown on the **Resource was created** page:
 
-
-<Frame>![Copy the value](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865779424017.png)</Frame>
-
-
-
-3\. Go to your DNS provider's website and create a [CNAME record](https://gcore.com/learning/dns-cname-record-explained) for the custom domain with the value in the previous step. The CNAME record should be specified as follows:
-    
 ```
-cdn.mywebsite.com. cl-****.gcdn.co 
+cdn.mywebsite.com. cl-XXXX.gcdn.co
 ```
 
-Replace _cl-****.gcdn.co_ with the value specific to your account.
+Replace `cl-XXXX.gcdn.co` with the value specific to the account.
 
-If you specified multiple custom domains in step 1, add CNAME records for all additional custom domains.
+If multiple custom domains were added in step 1, create CNAME records for all of them.
 
-Use the `dig` command in the terminal or an [online dig tool](https://gcore.com/dev-tools/dns-lookup) to check the record. If the record was added correctly, you will receive a response similar to the one specified above.
-
-4\. Complete the CDN resource creation. You will see the following pop-up window when all configurations are completed:
-
-
-<Frame>![Complete the CDN resource creation](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865856535057.png)</Frame>
-
-
+Verify the record with `dig` or the Gcore [DNS&nbsp;lookup](https://gcore.com/dev-tools/dns-lookup) tool.
 
 ## Check the DNS setup status
 
-Our setup guide will verify that the configuration was completed successfully and identify any issues requiring resolution.
+The Setup guide in resource settings verifies that the DNS configuration was completed successfully and identifies any issues.
 
-1\. Open the settings of the CDN resource that you created.
+1. Open the settings of the CDN resource.
 
-2\. Click **Setup guide**.
+2. Click **Setup guide**.
 
+<Frame>![CDN resource settings with Setup guide button](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image4.png)</Frame>
 
-<Frame>![Setup guide](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865899219729.png)</Frame>
+3. A 3-step wizard opens. Navigate to **Check DNS setup status** and click the button to run the DNS check.
 
+<Frame>![Setup guide wizard showing the Set up your DNS step](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image5.png)</Frame>
 
+If the message "DNS record hasn't been set up" appears, check the DNS settings for configuration errors.
 
-3\. A checklist will open, displaying each step of the configuration process. A check mark indicates that the step was successful. If any stage lacks a check mark, click on the step and follow the instructions to complete the configuration. When you're done, click **Check DNS setup status**.
+<Frame>![Setup guide showing DNS record has not been set up](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image6.png)</Frame>
 
+If "DNS record has been successfully set up" appears, the configuration is complete.
 
-<Frame>![Setup Status](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865917904145.png)</Frame>
+To verify the frontend of the integrated website, right-click any static file and select **Inspect**. This shows the content delivery URL from which the file is served.
 
+## Specify additional domains (only for static CDN resources)
 
+Additional custom domains can be added to an existing CDN resource at any time through the resource settings.
 
-If you see the message "DNS record hasn't been set up", check your Managed DNS settings for configuration errors.
+1. In the [CDN&nbsp;resource&nbsp;list](https://portal.gcore.com/cdn/resources/list), click the CNAME value of the resource to configure.
 
+<Frame>![CDN resource list showing resources with CNAME values](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image1.png)</Frame>
 
-<Frame>![check the DNS](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865924935057.png)</Frame>
+2. In the **Custom domain (to create a CNAME record)** section, click **+** and enter the domain name.
 
+<Frame>![Custom domain section in CDN resource settings with the add button](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn-image7.png)</Frame>
 
-
-If you see the message "DNS record has been successfully set up", the configuration has been completed correctly.
-
-
-<Frame>![completed correctly](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865958946065.png)</Frame>
-
-
-
-To check the frontend of your integrated website, right-click on any static files and choose **Inspect**. This will show you the content delivery URL where your file is served.
-
-## Specify additional domain (only for static CDN resources)
-
-1\. Go to the [CDN resource list](https://portal.gcore.com/cdn/resources/list) and click on the custom domain of the resource you want to configure.
-
-
-<Frame>![CDN resource list ](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/cdn-resource-name.png)</Frame>
-
-
-
-2\. In the **Custom domain** section, click the plus sign (+) next to the **Domain** field and enter your desired domain name(s).
-
-
-<Frame>![Custom domain](/images/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12866081938961.png)</Frame>
-
-
-
-3\. Click **Save changes** at the bottom of the page.
+3. Click **Save changes** at the bottom of the page.
 
 <Note>
-**Note**
-
-Add a CNAME record to your DNS following the [instructions above](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#set-a-custom-domain) for each additional domain.
+For each additional domain, create a CNAME record following the [instructions&nbsp;above](#set-a-custom-domain-for-static-cdn-resources).
 </Note>
 
-Once the additional domains are set up, you can configure your website to deliver different types of static files from separate domains.
-
+Once the additional domains are set up, the website can deliver different types of static files from separate domains.
