@@ -185,13 +185,13 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-FastEdge CDN applications run inside the CDN request pipeline and modify requests and responses before they reach the origin or client.
+<p>FastEdge CDN applications run inside the CDN request pipeline and modify requests and responses before they reach the origin or client.</p>
 
-A CDN resource configured for the origin is required; the [Create CDN&nbsp;resource](/api-reference/cdn/cdn-resources/create-cdn-resource) endpoint covers the parameters.
+<p>A CDN resource configured for the origin is required; the [Create CDN&nbsp;resource](/api-reference/cdn/cdn-resources/create-cdn-resource) endpoint covers the parameters.</p>
 
 ## Request lifecycle
 
-The CDN runtime invokes a CDN application at five stages:
+<p>The CDN runtime invokes a CDN application at five stages:</p>
 
 - **on_request_headers:** when the CDN receives request headers, before cache.
 - **on_request_headers_after_cache:** when the CDN receives request headers, after cache.
@@ -201,13 +201,275 @@ The CDN runtime invokes a CDN application at five stages:
 
 <Info>CDN applications are built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions.</Info>
 
-Each stage has an independent application slot.
+<p>Each stage has an independent application slot.</p>
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-## Step 1. Upload a binary
+<p>The following steps configure FastEdge using the FastEdge API and the CDN API.</p>
 
-<p>Upload the compiled `.wasm` file to the FastEdge binary store. The API automatically detects the binary type from the file contents.</p>
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of an existing [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview).
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Quickstart
+
+<p>Scripts that create a FastEdge application from the JWT authentication template and enable it on a CDN resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore import Gcore
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+client = Gcore()
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+# Step 1. Find the JWT template and create an application
+templates = list(client.fastedge.templates.list())
+jwt_template = next(t for t in templates if "validate jwt" in t.name.lower())
+
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    template=jwt_template.id,
+    status=1,
+    env={"secret": "your-signing-key"},
+)
+print(f"app id={app.id}")
+
+# Step 2. Enable FastEdge on the CDN resource
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(
+            enabled=True,
+            on_request_headers=cdn_params.OptionsFastedgeOnRequestHeaders(
+                app_id=str(app.id),
+                interrupt_on_error=True,
+            ),
+        )
+    ),
+)
+print(f"FastEdge enabled on resource {resource_id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+    "strings"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cdn"
+    "github.com/G-Core/gcore-go/fastedge"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+    resourceID, _ := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+
+    // Step 1. Find the JWT template and create an application
+    var templateID int64
+    pager := client.Fastedge.Templates.ListAutoPaging(ctx, fastedge.TemplateListParams{})
+    for pager.Next() {
+        t := pager.Current()
+        if strings.Contains(strings.ToLower(t.Name), "validate jwt") {
+            templateID = t.ID
+            break
+        }
+    }
+    if err := pager.Err(); err != nil {
+        panic(err)
+    }
+
+    app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+        App: fastedge.AppParam{
+            Name:     gcore.String("my-cdn-app-1"),
+            Template: gcore.Int(templateID),
+            Status:   gcore.Int(1),
+            Env:      map[string]string{"secret": "your-signing-key"},
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("app id=%d\n", app.ID)
+
+    // Step 2. Enable FastEdge on the CDN resource
+    _, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+        Options: cdn.CDNResourceUpdateParamsOptions{
+            Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+                Enabled: true,
+                OnRequestHeaders: cdn.CDNResourceUpdateParamsOptionsFastedgeOnRequestHeaders{
+                    AppID: strconv.FormatInt(app.ID, 10),
+                },
+            },
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("FastEdge enabled on resource %d\n", resourceID)
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a FastEdge application
+
+<p>Deploy an application from a predefined template or upload a custom Proxy-Wasm binary.</p>
+
+**From a template**
+
+<p>List available templates to find the template ID:</p>
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The response lists all available templates with their IDs and names:</p>
+
+```json
+{
+  "count": 7,
+  "values": [
+    { "id": 10, "name": "Validate JWT in Authorization header", "api_type": "proxy-wasm" },
+    { "id": 111, "name": "Basic HTTP authentication", "api_type": "proxy-wasm" }
+  ]
+}
+```
+
+<p>Create the application using the template ID. The `env` object holds values for the template's pre-defined variables (the JWT template requires a `secret` key):</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Application name — alphanumeric, hyphens allowed |
+| `template` | Yes | Template ID from the listing |
+| `status` | Yes | Set to active to deploy immediately; inactive saves as draft |
+| `env` | No | Template environment variables as key-value pairs |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    template=10,  # Validate JWT in Authorization header
+    status=1,
+    env={"secret": "your-signing-key"},
+)
+print(f"app id={app.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+    App: fastedge.AppParam{
+        Name:     gcore.String("my-cdn-app-1"),
+        Template: gcore.Int(10), // Validate JWT in Authorization header
+        Status:   gcore.Int(1),
+        Env:      map[string]string{"secret": "your-signing-key"},
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/apps \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-cdn-app-1",
+    "template": 10,
+    "status": 1,
+    "env": { "secret": "your-signing-key" }
+  }'
+```
+
+  </Tab>
+</Tabs>
+
+<p>The API returns the application ID used in Step 2:</p>
+
+```json
+{
+  "id": 67890,
+  "name": "my-cdn-app-1",
+  "status": 1,
+  "api_type": "proxy-wasm"
+}
+```
+
+**Upload a custom binary**
+
+<p>Upload the compiled `.wasm` file to the FastEdge binary store. The binary must conform to the Proxy-Wasm specification:</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| Request body | Yes | Raw `.wasm` file with `Content-Type: application/octet-stream` |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+with open("app.wasm", "rb") as f:
+    binary = client.fastedge.binaries.create(body=f)
+print(f"binary id={binary.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+import "os"
+
+f, err := os.Open("app.wasm")
+if err != nil {
+    panic(err)
+}
+defer f.Close()
+
+binary, err := client.Fastedge.Binaries.New(ctx, f)
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
 curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
@@ -216,7 +478,10 @@ curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
   --data-binary @app.wasm
 ```
 
-<p>The response includes the binary ID used in the next step:</p>
+  </Tab>
+</Tabs>
+
+<p>The API returns the binary ID needed in the next call:</p>
 
 ```json
 {
@@ -225,43 +490,127 @@ curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
 }
 ```
 
-<p>To deploy from the predefined JWT template instead, list available templates with <code>GET&nbsp;https://api.gcore.com/fastedge/v1/template</code>, note the template's `binary` field, and use that binary ID in Step 2.</p>
+<p>Create the application using the binary ID:</p>
 
-## Step 2. Create a FastEdge application
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Application name — alphanumeric, hyphens allowed |
+| `binary` | Yes | Binary ID from the upload response |
+| `status` | Yes | Set to active to deploy immediately; inactive saves as draft |
+| `env` | No | Environment variables as key-value pairs |
 
-<p>Create the application using the binary ID from the previous step. Set `status` to active to deploy it immediately.</p>
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    binary=binary.id,
+    status=1,
+    env={"MY_VARIABLE": "value"},
+)
+print(f"app id={app.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+    App: fastedge.AppParam{
+        Name:   gcore.String("my-cdn-app-1"),
+        Binary: gcore.Int(binary.ID),
+        Status: gcore.Int(1),
+        Env:    map[string]string{"MY_VARIABLE": "value"},
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
 curl -X POST https://api.gcore.com/fastedge/v1/apps \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "my-cdn-app",
+    "name": "my-cdn-app-1",
     "binary": 12345,
     "status": 1,
-    "env": {
-      "MY_VARIABLE": "value"
-    }
+    "env": { "MY_VARIABLE": "value" }
   }'
 ```
 
-<p>The response includes the application ID (`id`), which is needed to configure the CDN resource:</p>
+  </Tab>
+</Tabs>
+
+<p>The API returns the application ID used in Step 2:</p>
 
 ```json
 {
   "id": 67890,
-  "name": "my-cdn-app",
+  "name": "my-cdn-app-1",
   "status": 1,
   "api_type": "proxy-wasm"
 }
 ```
 
-## Step 3. Enable FastEdge for a CDN resource
+### Step 2. Enable FastEdge for a CDN resource
 
-<p>Update the CDN resource to route traffic through the FastEdge application. The `fastedge` option accepts five trigger stages — configure the ones the application handles.</p>
+<p>Update the CDN resource to route traffic through the FastEdge application. The `fastedge` option accepts five processing stages — configure the stages the application handles.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `fastedge.enabled` | Yes | `true` activates FastEdge on the resource |
+| `on_request_headers.app_id` | Yes | Application ID from Step 1 |
+| `on_request_headers.interrupt_on_error` | No | Default `true`. When `false`, errors are ignored and the request forwards to origin |
+| `on_request_headers.execute_on_edge` | No | Default `true`. Runs the application on CDN edge nodes |
+| `on_request_headers.execute_on_shield` | No | Default `false`. Runs the application on shield (precache) nodes |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(
+            enabled=True,
+            on_request_headers=cdn_params.OptionsFastedgeOnRequestHeaders(
+                app_id=str(app.id),
+                interrupt_on_error=True,
+            ),
+        )
+    ),
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+_, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+    Options: cdn.CDNResourceUpdateParamsOptions{
+        Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+            Enabled: true,
+            OnRequestHeaders: cdn.CDNResourceUpdateParamsOptionsFastedgeOnRequestHeaders{
+                AppID: strconv.FormatInt(app.ID, 10),
+            },
+        },
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
-curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
+curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -278,20 +627,54 @@ curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
   }'
 ```
 
-<p>Replace `RESOURCE_ID` with the CDN resource ID. Per-stage optional fields:</p>
+  </Tab>
+</Tabs>
 
-- `interrupt_on_error` — default `true`. When `true`, errors on the FastEdge side return the relevant response code to the client. When `false`, the CDN ignores the error and forwards the request to the origin. Keep `true` for security-sensitive applications.
-- `execute_on_edge` — default `true`. Runs the application on CDN edge nodes.
-- `execute_on_shield` — default `false`. Runs the application on CDN shield (precache) nodes in addition to edge nodes.
+<p>The five supported stages are `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage accepts the same `app_id`, `interrupt_on_error`, `execute_on_edge`, and `execute_on_shield` parameters.</p>
 
 <p>To apply FastEdge only to specific URL paths, create a CDN rule with <code>POST&nbsp;https://api.gcore.com/cdn/resources/RESOURCE_ID/rules</code> and include the `fastedge` option in the rule's `options` object.</p>
 
+</Accordion>
+
 ## Disable FastEdge integration
 
-<p>Set `fastedge.enabled` to `false` to stop FastEdge processing on a CDN resource:</p>
+<p>Setting `fastedge.enabled` to `false` stops FastEdge processing on a CDN resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(enabled=False),
+    ),
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+_, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+    Options: cdn.CDNResourceUpdateParamsOptions{
+        Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+            Enabled: false,
+        },
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
-curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
+curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -303,16 +686,39 @@ curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
   }'
 ```
 
+  </Tab>
+</Tabs>
+
 ## Delete a CDN application
 
 <Info>
 An enabled FastEdge application linked to a CDN resource cannot be deleted. Disable the FastEdge integration on the CDN resource before deleting the application.
 </Info>
 
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+client.fastedge.apps.delete(app_id)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+err = client.Fastedge.Apps.Delete(ctx, appID)
+```
+
+  </Tab>
+  <Tab title="curl">
+
 ```bash
-curl -X DELETE https://api.gcore.com/fastedge/v1/apps/APP_ID \
+curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$APP_ID \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
+
+  </Tab>
+</Tabs>
 
 <p>A `204 No Content` response confirms the application was deleted.</p>
 
