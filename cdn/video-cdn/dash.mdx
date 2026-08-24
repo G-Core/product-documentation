@@ -10,10 +10,8 @@ Low-Latency MPEG-DASH (LL-DASH) is the live mode that streams Common Media Appli
 
 ## Suitable use cases
 
-Use Video CDN for DASH when streams are already packaged and the origin, not Gcore Video Streaming, handles transcoding.
+Use Video CDN for DASH when the origin already produces `.mpd` manifests and media segments, and transcoding stays outside Gcore Video Streaming.
 
-- DASH streams (`.mpd` manifests and media segments) are already packaged
-- Transcoding and packaging run outside Gcore Video Streaming
 - Broad device compatibility is required (Android, smart TVs, web browsers, or custom players)
 - CDN features including [Country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy), secure tokens, Origin Shielding, or custom domains are required
 
@@ -50,40 +48,48 @@ Chunked-Proxy activation is mandatory for LL-DASH. Without it, DASH still delive
 
 ## Activation and CDN configuration
 
-LL-DASH setup includes Chunked-Proxy activation and format-specific cache settings.
-
-### Request Chunked-Proxy activation
-
-For an external transcoder, Support must enable Chunked-Proxy on the resource before LL-DASH can stream at low latency.
-
-Contact [Gcore&nbsp;Support](mailto:support@gcore.com) with:
-
-- CDN resource ID or domain
-- Confirmation that LL-DASH with CMAF segments is in use
-- Origin transcoder details (Wowza, Nginx-RTMP, FFmpeg, or similar)
-
-Processing time is usually 1–2 business days.
-
-<Info>
-With [Gcore&nbsp;Video&nbsp;Streaming](/streaming) and Gcore transcoding, Chunked-Proxy is already enabled by default. Activation is required only for an external transcoder.
-</Info>
-
-### Configure the CDN resource
-
-Create the resource with the [video&nbsp;CDN&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming) guide, then apply these cache settings. The setup article’s **For Live MPEG-DASH CMAF Streaming** tab has the matching portal clicks.
+Complete video-delivery approval and create the CDN resource before requesting Chunked-Proxy, because Support enables the module on a specific resource. Cache settings and a playback check come after that.
 
 <Steps>
-  <Step title="Open Cache settings">
-    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN Resource** > **Cache**.
+  <Step title="Request video-delivery approval">
+    Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use chat in the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) to enable prepared DASH delivery for the CDN account. Provide:
+
+    - **Account ID** (shown in the profile menu at the top right)
+    - Domain name and company name
+    - Content type
+    - Sample stream URL
+    - Viewer geography
+    - Broadcasting license or content compliance policy
+    - Abuse or copyright contact email address
+
+    Processing time is usually 1–2 business days.
   </Step>
-  <Step title="Enable Always online">
-    Enable **Always online** and select **Error** and **Timeout**. Leave **Updating** cleared so live manifests are not served stale during playlist refresh.
+  <Step title="Activate a paid CDN plan">
+    In the Customer Portal, open **CDN** and upgrade from the free plan to **Start** (1.5 TB included traffic) or **Pro** (5 TB included traffic) if a paid plan is not already active. Video bandwidth follows [CDN&nbsp;billing](/cdn/how-the-cdn-service-and-its-additional-options-are-billed).
   </Step>
-  <Step title="Set manifest and segment cache times">
-    Set manifest (`.mpd`) cache time to 2 s and segment (`.m4s`) cache time to 60 s.
+  <Step title="Create the CDN resource">
+    Create the resource with the [video&nbsp;CDN&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming) guide. The **For Live MPEG-DASH CMAF Streaming** tab in the linked setup guide shows the corresponding Customer Portal settings.
   </Step>
-  <Step title="Enable the LIVE STREAMING preset">
-    Enable the **LIVE STREAMING** preset so live segments cache in RAM instead of on disk.
+  <Step title="Request Chunked-Proxy activation for LL-DASH">
+    For an external transcoder, Support must enable Chunked-Proxy on the resource after it exists. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) with:
+
+    - CDN resource ID or domain
+    - Confirmation that LL-DASH with CMAF segments is in use
+    - Origin transcoder details (Wowza, Nginx-RTMP, FFmpeg, or similar)
+
+    <Info>
+    With [Gcore&nbsp;Video&nbsp;Streaming](/streaming) and Gcore transcoding, Chunked-Proxy is already enabled by default. Activation is required only for an external transcoder.
+    </Info>
+  </Step>
+  <Step title="Configure caching and the LIVE STREAMING preset">
+    In the Customer Portal, navigate to **CDN Resource** > **Cache**, then:
+
+    1. Enable **Always online** and select **Error** and **Timeout**. Leave **Updating** cleared so live manifests are not served stale during manifest refresh.
+    2. Set manifest (`.mpd`) cache time to 2 s and segment (`.m4s`) cache time to 60 s.
+    3. Enable the **LIVE STREAMING** preset so live segments cache in RAM instead of on disk.
+  </Step>
+  <Step title="Test the CDN .mpd URL">
+    Load the CDN `.mpd` URL in a compatible DASH player. Confirm that manifests and segments return successfully, and verify the expected latency.
   </Step>
 </Steps>
 
