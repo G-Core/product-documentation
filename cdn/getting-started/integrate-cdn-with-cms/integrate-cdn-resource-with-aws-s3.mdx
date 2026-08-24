@@ -1,79 +1,114 @@
 ---
-title: Integrate CDN resource with AWS S3
-sidebarTitle: AWS S3
-ai-navigation: Configure Gcore CDN resource with AWS S3 bucket as origin by creating S3 bucket, enabling Static Website Hosting, setting bucket policy, and using S3 Endpoint URL as CDN origin source with CNAME record.
+title: Use an AWS S3 static website as a CDN origin
+sidebarTitle: AWS S3 static website
+ai-navigation: Configure Gcore CDN to deliver public Amazon S3 static website content through an HTTP origin and a custom CDN domain.
 ---
 
-Before you start, please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+Gcore CDN can cache and deliver objects from a public Amazon S3 static website endpoint. A [private&nbsp;S3&nbsp;origin](/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin) is required when objects must not be exposed by a public-read bucket policy.
 
-Login to the [AWS Console](https://console.aws.amazon.com) and navigate to S3.
+<Warning>
+The public-read policy in this procedure allows anyone to retrieve matching bucket objects. Do not use it for private or sensitive content.
+</Warning>
 
-Create an S3 bucket (define the Bucket Name and the Region you want)
+<Steps>
+  <Step title="Create and populate the S3 bucket">
+    1. Log in to the [AWS&nbsp;Management&nbsp;Console](https://console.aws.amazon.com/) and open **Amazon S3**.
 
+    2. Create a general purpose bucket and select its AWS Region.
 
-<Frame>![Create an S3 bucket](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/create-s3.png)</Frame>
+    3. Upload the objects to deliver through the CDN, including `index.html` and a `logo.png` verification object.
+  </Step>
 
+  <Step title="Allow public website access">
+    Account-level Block Public Access settings must permit public bucket policies. If those settings are centrally managed, contact the AWS account administrator before changing the bucket.
 
+    1. Open the bucket and select **Permissions**.
 
-Upload content to your S3 bucket.
+    2. Under **Block public access (bucket settings)**, click **Edit**.
 
+    3. Clear **Block all public access**.
 
-<Frame>![Upload content to your S3 bucket](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png)</Frame>
+    4. Save the changes and confirm the warning.
+  </Step>
 
- 
-<Frame>![Upload content to your S3 bucket](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png)</Frame>
+  <Step title="Enable static website hosting">
+    1. Open the bucket's **Properties** tab.
 
- 
-<Frame>![Upload content to your S3 bucket](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png)</Frame>
+    2. Under **Static website hosting**, click **Edit**.
 
+    3. Set **Static website hosting** to **Enable**.
 
+    4. Set **Hosting type** to **Host a static website**.
 
-Enable Website Hosting and define the Index Document (does not need to exist e.g., index.html) for your S3 bucket under Properties > Static Website Hosting.
+    5. In **Index document**, enter `index.html` or the name of another uploaded default object.
 
+    6. Save the changes and copy the **Bucket website endpoint**.
 
-<Frame>![Enable Website Hosting](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-enable-hosting1.png)</Frame>
+    Use the endpoint provided by AWS instead of constructing it manually because its format depends on the Region.
+  </Step>
 
+  <Step title="Add a public-read bucket policy">
+    On the **Permissions** tab, click **Edit** under **Bucket policy**. Replace `example-bucket` with the bucket name in this policy:
 
+    ```json
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "PublicReadGetObject",
+          "Effect": "Allow",
+          "Principal": "*",
+          "Action": "s3:GetObject",
+          "Resource": "arn:aws:s3:::example-bucket/*"
+        }
+      ]
+    }
+    ```
 
-Use the following example to set a Bucket Policy (replace "example-bucket" with your S3 bucket name):
-    
-```
-{
+    Click **Save changes**.
+  </Step>
 
- "Version":"2012-10-17",  
- "Statement":[{  
-   "Sid":"PublicReadGetObject",  
-       "Effect":"Allow",  
-     "Principal": "*",  
-     "Action":["s3:GetObject"],  
-     "Resource":["arn:aws:s3:::example-bucket/*"  
-     ]  
-   }  
- ]  
-}   
-```
+  <Step title="Test the S3 website endpoint">
+    Append `/logo.png` to the HTTP website endpoint copied from AWS and open the resulting URL.
 
-Add the bucket policy in the Permissions drop-down menu.
+    Confirm that the object loads without a `403` or `404` response. Amazon S3 website endpoints support HTTP but not HTTPS.
+  </Step>
 
+  <Step title="Create the CDN resource">
+    1. Log in to the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) and select **CDN** > **CDN resources**.
 
-<Frame>![Permissions drop-down menu](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/add-s3-bucket-policy.png)</Frame>
+    2. Click **Create CDN resource**.
 
- 
-<Frame>![Permissions drop-down menu](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-bucket-policy-example.png)</Frame>
+    3. In **Add domain**, enter the custom domain.
 
+    4. In **Origin**, keep **Specify content origin** selected.
 
+    5. Select **URL**.
 
-Check accessibility of the file at the URL link in the browser. For example, the link for the file from this guide is bucket.s3-website.eu-central-1.amazonaws.com/logo.png
+    6. Select **HTTP** as the origin pull protocol.
 
+    7. In **Origin source**, enter the S3 website endpoint without `http://` and without an object path.
 
-<Frame>![Check accessibility ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png)</Frame>
+    8. Click **Create**.
 
+    The resource may initially have the **Processing** status. Wait until its status changes to **Active** before testing delivery.
+  </Step>
 
+  <Step title="Configure the custom domain">
+    1. Configure the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) by pointing its CNAME record to the `*.gcdn.co` hostname shown in the CDN resource's **Setup guide**.
 
-Log in to the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) and [create a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource). Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
+    2. For HTTPS delivery, attach an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) to the custom domain.
+  </Step>
 
-As soon as you create a Resource check accessibility of the content through the CDN by opening the URL link in the browser. For example, CNAME: awss3.site.com/logo.png. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) properly before using it for integration.
+  <Step title="Test delivery through the CDN">
+    1. Open the verification object through the custom CDN domain:
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+       ```text
+       https://cdn.example.com/logo.png
+       ```
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    2. Confirm that the object loads.
+
+    3. (Optional) Configure the application to use the CDN domain, then use the browser's **Network** panel to confirm that asset requests use that domain. Creating a CDN resource does not rewrite asset URLs in HTML or application code.
+  </Step>
+</Steps>
