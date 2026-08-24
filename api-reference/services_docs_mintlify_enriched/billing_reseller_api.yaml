@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: b995fbd95644
+  version: dcb85d8b849e
 servers:
 - url: https://api.gcore.com
 tags:
@@ -15,6 +15,7 @@ tags:
 - name: erp-invoices
 - name: expenses
   description: Operations on expenses
+- name: payment-bindings
 - name: plans
   description: Operations on tariff plans and their contents
 - name: products
@@ -934,6 +935,143 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AddendumForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
+  /billing/org/v1/bindings:
+    get:
+      operationId: v1_bindings_list
+      description: |+
+        Retrieve a list of `Binding` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Bindings
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - created_at.asc
+            - created_at.desc
+            - updated_at.asc
+            - updated_at.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `created_at.asc` - Created at
+          - `created_at.desc` - Created at (descending)
+          - `updated_at.asc` - Updated at
+          - `updated_at.desc` - Updated at (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -created_at
+            - -updated_at
+            - created_at
+            - updated_at
+        description: |-
+          Order by `created_at` or `updated_at`
+
+          - `created_at` - Created at
+          - `-created_at` - Created at (descending)
+          - `updated_at` - Updated at
+          - `-updated_at` - Updated at (descending)
+        explode: false
+        style: form
+      - in: query
+        name: payment_method_id
+        schema:
+          type: integer
+      - in: query
+        name: payment_resource_id
+        schema:
+          type: integer
+      - in: query
+        name: process_id
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          x-spec-enum-id: ccf999977cdd925c
+          enum:
+          - error
+          - finished
+          - new
+          - waiting_details
+          - waiting_notification
+        description: |-
+          - `error` - error
+          - `finished` - finished
+          - `new` - new
+          - `waiting_details` - `waiting_details`
+          - `waiting_notification` - `waiting_notification`
+      tags:
+      - payment-bindings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBindingForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/bindings/{process_id}:
+    get:
+      operationId: v1_bindings_retrieve
+      description: Retrieve a single `Binding` by ID.
+      summary: Get a single Binding
+      parameters:
+      - in: path
+        name: process_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - payment-bindings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BindingForOrgSerializerV1'
           description: Request successful.
         '401':
           description: Authentication credentials were not provided or are invalid.
@@ -4299,6 +4437,48 @@ components:
       - debit_amount
       - service
       - unit_code
+    BindingForOrgSerializerV1:
+      type: object
+      properties:
+        process_id:
+          type: string
+          readOnly: true
+        client_id:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: ID of client in API service
+          readOnly: true
+        status:
+          enum:
+          - error
+          - finished
+          - new
+          - waiting_details
+          - waiting_notification
+          type: string
+          description: |-
+            - `error` - error
+            - `finished` - finished
+            - `new` - new
+            - `waiting_details` - `waiting_details`
+            - `waiting_notification` - `waiting_notification`
+          x-spec-enum-id: ccf999977cdd925c
+          readOnly: true
+        payment_method_id:
+          type: integer
+          readOnly: true
+        payment_resource:
+          $ref: '#/components/schemas/PaymentResource'
+        result:
+          readOnly: true
+      required:
+      - client_id
+      - payment_method_id
+      - payment_resource
+      - process_id
+      - result
+      - status
     CalcRule:
       type: object
       properties:
@@ -5037,6 +5217,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/BalanceForOrgSerializerV1'
+    PaginatedBindingForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BindingForOrgSerializerV1'
     PaginatedCalcRuleList:
       type: object
       required:
@@ -5429,6 +5632,61 @@ components:
           minimum: 0
           writeOnly: true
           description: Value for the trial option `WAAP_TRIAL_VOLUME_LIMIT`. If not provided, the trial option will not be updated.
+    PaymentResource:
+      type: object
+      description: Serializer for payment resources.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          enum:
+          - adyen
+          - bank
+          - card
+          - paypal
+          - wallet
+          - alipay
+          - googlepay
+          - applepay
+          type: string
+          x-spec-enum-id: 2575771a35f0651c
+          readOnly: true
+          description: |-
+            Type of payment resource
+
+            - `adyen` - adyen
+            - `bank` - bank
+            - `card` - card
+            - `paypal` - paypal
+            - `wallet` - wallet
+            - `alipay` - alipay
+            - `googlepay` - googlepay
+            - `applepay` - applepay
+        payment_method:
+          type: integer
+          readOnly: true
+          description: Payment method that this resource is related to
+        config:
+          type: object
+          additionalProperties: {}
+          description: Retrieve the public configuration of the payment resource.
+          readOnly: true
+        archive:
+          type: boolean
+          readOnly: true
+          description: Mark object as archieved.
+        locked_fraud:
+          type: boolean
+          readOnly: true
+          description: Payment resource locked for fraud
+      required:
+      - archive
+      - config
+      - id
+      - locked_fraud
+      - payment_method
+      - type
     PlanCommonShort:
       type: object
       properties:
@@ -5970,6 +6228,7 @@ x-tagGroups:
   - currencies
   - erp-invoices
   - expenses
+  - payment-bindings
   - plans
   - products
   - regions
