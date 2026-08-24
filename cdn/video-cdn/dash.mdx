@@ -6,40 +6,51 @@ ai-navigation: Configure MPEG-DASH and LL-DASH on Gcore CDN with CMAF segments a
 
 MPEG-DASH (Dynamic Adaptive Streaming over HTTP) is an HTTP-based adaptive protocol for live and video on demand (VOD) delivery. A DASH stream uses an `.mpd` manifest and media segments, so Gcore CDN can cache and deliver it like other HTTP video formats.
 
-Low-Latency MPEG-DASH (LL-DASH) is the live mode that streams Common Media Application Format (CMAF) segments as they arrive. Gcore Chunked-Proxy is the edge module that forwards those bytes to viewers instead of waiting for a complete segment download. For HLS on Apple devices, see [HLS&nbsp;and&nbsp;LL-HLS](/cdn/video-cdn/hls). For the wider Video CDN model, see [Video&nbsp;CDN&nbsp;overview](/cdn/video-cdn/video-cdn-overview).
+Low-Latency MPEG-DASH (LL-DASH) is the live mode that streams Common Media Application Format (CMAF) segments as they arrive. Gcore Chunked-Proxy is the edge module that forwards those bytes to viewers instead of waiting for a complete segment download.
 
-## DASH and LL-DASH fit
+## Suitable use cases
 
-Video CDN for DASH is the right choice when streams are already packaged and the origin, not Gcore Video Streaming, handles transcoding.
+Use Video CDN for DASH when streams are already packaged and the origin, not Gcore Video Streaming, handles transcoding.
 
 - DASH streams (`.mpd` manifests and media segments) are already packaged
 - Transcoding and packaging run outside Gcore Video Streaming
 - Broad device compatibility is required (Android, smart TVs, web browsers, or custom players)
-- CDN features including [Country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy), secure tokens, origin shielding, or custom domains are required
+- CDN features including [Country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy), secure tokens, Origin Shielding, or custom domains are required
 
-LL-DASH fits live events (sports, auctions, gaming, or interactive broadcasts) when the transcoder produces MPEG-DASH with CMAF segments and 2–4-second latency is required.
+Use LL-DASH for live events when the transcoder produces MPEG-DASH with CMAF segments and 2–4-second latency is required. Typical cases include sports, auctions, gaming, and interactive broadcasts.
 
 Use [Video&nbsp;Streaming](/streaming) instead when Real-Time Messaging Protocol (RTMP) or Secure Reliable Transport (SRT) ingest, automatic adaptive bitrate (ABR) ladders, or a hosted transcoding pipeline is required.
 
 ## Setup requirements
 
-Standard DASH needs a paid plan and video-delivery approval. LL-DASH also needs Chunked-Proxy on the CDN resource.
+DASH delivery has format constraints plus account-level activation. Split those so the packaging requirements stay separate from plan and Support enablement.
+
+### Delivery formats
+
+Standard DASH uses MPEG-DASH manifests and segments. LL-DASH additionally requires CMAF packaging.
+
+| Format | Details |
+|--------|---------|
+| Standard DASH | MPEG-DASH (`.mpd` manifests and media segments, including `.m4s`) |
+| LL-DASH | MPEG-DASH with CMAF segments (`.mpd`, `.m4s`) |
+
+### Account and activation
+
+A paid plan and video delivery approval apply to both modes. Chunked-Proxy applies only to LL-DASH.
 
 | Requirement | Details |
 |-------------|---------|
-| Standard DASH | MPEG-DASH (`.mpd` manifests and media segments, including `.m4s`) |
-| LL-DASH | MPEG-DASH with CMAF segments (`.mpd`, `.m4s`) |
-| Chunked-Proxy | Required only for LL-DASH — contact [Gcore&nbsp;Support](mailto:support@gcore.com) |
 | Paid CDN plan | Any paid subscription |
-| Legal approval | Video delivery enablement from Gcore Support |
+| Video delivery approval | Enablement from Gcore Support |
+| Chunked-Proxy | Required only for LL-DASH — contact [Gcore&nbsp;Support](mailto:support@gcore.com) |
 
 <Warning>
 Chunked-Proxy activation is mandatory for LL-DASH. Without it, DASH still delivers, but the edge uses store-and-forward instead of streaming bytes as they arrive.
 </Warning>
 
-## Activation
+## Activation and CDN configuration
 
-Activation covers Chunked-Proxy (LL-DASH only) and the cache settings that keep manifests fresh while segments stay reusable.
+LL-DASH setup includes Chunked-Proxy activation and format-specific cache settings.
 
 ### Request Chunked-Proxy activation
 
@@ -61,10 +72,20 @@ With [Gcore&nbsp;Video&nbsp;Streaming](/streaming) and Gcore transcoding, Chunke
 
 Create the resource with the [video&nbsp;CDN&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming) guide, then apply these cache settings. The setup article’s **For Live MPEG-DASH CMAF Streaming** tab has the matching portal clicks.
 
-1. Navigate to **CDN Resource** > **Cache**.
-2. Enable **Always online** and select **Error** and **Timeout**. Leave **Updating** cleared so live manifests are not served stale during playlist refresh.
-3. Set manifest (`.mpd`) cache time to 2 s and segment (`.m4s`) cache time to 60 s.
-4. Enable the **LIVE STREAMING** preset so live segments cache in RAM instead of on disk.
+<Steps>
+  <Step title="Open Cache settings">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN Resource** > **Cache**.
+  </Step>
+  <Step title="Enable Always online">
+    Enable **Always online** and select **Error** and **Timeout**. Leave **Updating** cleared so live manifests are not served stale during playlist refresh.
+  </Step>
+  <Step title="Set manifest and segment cache times">
+    Set manifest (`.mpd`) cache time to 2 s and segment (`.m4s`) cache time to 60 s.
+  </Step>
+  <Step title="Enable the LIVE STREAMING preset">
+    Enable the **LIVE STREAMING** preset so live segments cache in RAM instead of on disk.
+  </Step>
+</Steps>
 
 ## Supported file formats
 
@@ -75,7 +96,7 @@ DASH packages a manifest plus CMAF media objects. The CDN caches each object typ
 | Manifests | `.mpd` | DASH Media Presentation Description |
 | Video segments | `.m4s`, `.m4v` | CMAF video segments |
 | Audio segments | `.m4a`, `.m4s` | CMAF audio segments |
-| Initialization | `.mp4` | Initialization segments for fMP4 streams |
+| Initialization | `.mp4` | Initialization segments for fragmented MP4 (fMP4) streams |
 
 ## Latency model
 
@@ -92,7 +113,7 @@ The table below compares viewer-delivery methods only. Implementation detail is 
 |-----------------|-----------------|----------|
 | LL-DASH (Chunked-Proxy) | 2–4 seconds | Live sports, auctions, interactive events |
 | Standard DASH (no Chunked-Proxy) | 10–15 seconds | News, conferences, less interactive content |
-| HTTP-FLV | 1–3 seconds | Ultra-low latency for specific use cases |
+| HTTP Flash Video (HTTP-FLV) | 1–3 seconds | Ultra-low latency for specific use cases |
 
 ## Best practices
 
@@ -108,9 +129,9 @@ Shorter CMAF segments and chunked encoding on the origin give the edge a continu
 
 ### CDN optimization
 
-Shielding and reporting reduce origin load and make latency regressions visible. Gcore operates more than 210 edge locations, where content is cached in response to viewer requests.
+Origin Shielding and reporting reduce origin load and make latency regressions visible. Gcore operates more than 210 edge locations, where content is cached in response to viewer requests.
 
-- Enable origin shielding for 100 or more concurrent viewers
+- Enable Origin Shielding for 100 or more concurrent viewers
 - Use [Reports](/cdn/view-statistics-of-a-cdn-resource) to track cache hit ratio and origin traffic
 
 ### Player compatibility
@@ -121,7 +142,7 @@ AVPlayer does not natively play MPEG-DASH. Apple’s AVFoundation stack uses HLS
 
 ## Troubleshooting
 
-Check Chunked-Proxy, origin encoding, and cache TTLs before assuming a player bug.
+Check Chunked-Proxy, origin encoding, and cache time to live (TTL) values before assuming a player bug.
 
 ### High latency (over 10 seconds)
 
@@ -129,7 +150,7 @@ Latency in this range usually means the edge is still waiting for complete segme
 
 1. Confirm Support activated Chunked-Proxy.
 2. Confirm the origin supports chunked encoding.
-3. Confirm CMAF segments are used (not MPEG-TS).
+3. Confirm CMAF segments are used, not MPEG transport stream (MPEG-TS).
 4. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) for diagnostics.
 
 ### Buffering or playback issues
