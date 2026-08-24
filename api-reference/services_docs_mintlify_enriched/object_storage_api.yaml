@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Object Storage API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: de4f3bcca1e7
+  version: d875c4b904ec
 servers:
 - url: https://api.gcore.com
 paths:
@@ -2025,8 +2025,8 @@ paths:
       - name: type
         in: query
         description: |-
-          Filter by performance tier. "standard" returns CEPH-backed storages, "fast"
-          returns VAST-backed storages. Storages on any other backend (Backblaze,
+          Filter by performance tier. "standard" returns Standard storages, "fast"
+          returns Fast storages. Storages on any other backend (Backblaze,
           Wasabi) report a "standard" type but are never returned by this filter —
           omit the parameter to include them.
         schema:
@@ -2466,8 +2466,8 @@ paths:
       summary: Create access key
       description: |-
         Creates a new access key for an S3-compatible storage.
-        Returns the new access key and secret key. VAST storages are limited to 2 access keys;
-        CEPH storages have no such limit.
+        Returns the new access key and secret key. Standard storages are limited to 10 access
+        keys; Fast storages are limited to 2 access keys.
       operationId: createAccessKeyV4
       parameters:
       - name: storage_id
@@ -3624,8 +3624,8 @@ paths:
         Updates SFTP storage configuration and/or credentials including password and SSH key management.
         Supports JSON merge patch semantics: an absent field is left unchanged.
         The password is changed through "password_mode": "auto" regenerates it and returns it once,
-        "none" removes it; "set" is rejected here, so an existing storage cannot be given a chosen
-        password. "ssh_key_ids": [] clears all keys.
+        "set" uses the "password" field and returns it once, "none" removes it. "password" is only
+        read when `password_mode` is "set" and must be omitted otherwise. "ssh_key_ids": [] clears all keys.
       operationId: updateSftpStorageV4
       parameters:
       - name: storage_id
@@ -4032,15 +4032,15 @@ components:
         read_only:
           type: boolean
           description: |-
-            Request a key scoped to read-only data access. Only supported for CEPH storages; a VAST
-            storage rejects true. Defaults to false (full read-write) when omitted.
+            Request a key scoped to read-only data access. Only supported for Standard storages; a
+            Fast storage rejects true. Defaults to false (full read-write) when omitted.
           example: false
     AccessKeyCreateDataV4:
       title: AccessKeyCreateDataV4 Newly created access key pair. Save the secret_key now — it is only returned once at creation time.
       required:
       - access_key
       - created_at
-      - is_read_only
+      - read_only
       - secret_key
       type: object
       properties:
@@ -4053,7 +4053,7 @@ components:
           description: ISO 8601 timestamp when the access key was created
           format: date-time
           example: '2025-08-05T09:17:02Z'
-        is_read_only:
+        read_only:
           type: boolean
           description: True for a key scoped to read-only data access.
         secret_key:
@@ -4082,7 +4082,7 @@ components:
       required:
       - access_key
       - created_at
-      - is_read_only
+      - read_only
       type: object
       properties:
         access_key:
@@ -4094,7 +4094,7 @@ components:
           description: ISO 8601 timestamp when the access key was created
           format: date-time
           example: '2025-08-05T09:17:02Z'
-        is_read_only:
+        read_only:
           type: boolean
           description: True for a key scoped to read-only data access.
     BucketCORSPatchV4:
@@ -4996,16 +4996,23 @@ components:
           type: boolean
           description: Whether HTTP access should be disabled (HTTPS only)
           example: false
+        password:
+          type: string
+          description: |-
+            SFTP password (8-63 chars). Only read when `password_mode` is 'set'; must be omitted
+            for any other `password_mode` (or when `password_mode` is absent).
+          example: Xy9$mN2p!qR8
         password_mode:
           type: string
           description: |-
             Password handling mode. Omit to leave password unchanged.
             'auto': regenerate password (returned in response)
+            'set': use the password provided in password (returned in response)
             'none': remove password
-            Note: 'set' is not allowed in PATCH.
           example: auto
           enum:
           - auto
+          - set
           - none
         server_alias:
           type: string

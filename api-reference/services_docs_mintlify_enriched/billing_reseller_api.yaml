@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: dcb85d8b849e
+  version: 9a7b099ba1ce
 servers:
 - url: https://api.gcore.com
 tags:
@@ -24,6 +24,7 @@ tags:
   description: Operations involving reports and the associated background tasks that handle their processing
 - name: statistic-regions
 - name: trials
+- name: units
 paths:
   /billing/org/v1/accounting/balances:
     get:
@@ -4234,6 +4235,123 @@ paths:
           description: Authentication credentials were not provided or are invalid.
         '403':
           description: You do not have permission to perform this action.
+  /billing/org/v1/units:
+    get:
+      operationId: v1_units_list
+      description: |+
+        Retrieve a list of `Unit` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Units
+      parameters:
+      - in: query
+        name: internal_name
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: name_en
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - name_en.asc
+            - name_en.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `name_en.asc` - Name en
+          - `name_en.desc` - Name en (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -name_en
+            - name_en
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `name_en` - Name en
+          - `-name_en` - Name en (descending)
+        explode: false
+        style: form
+      tags:
+      - units
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUnitForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/units/{id}:
+    get:
+      operationId: v1_units_retrieve
+      description: Retrieve a single `Unit` by ID.
+      summary: Get a single Unit
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - units
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
 components:
   schemas:
     Action:
@@ -5539,6 +5657,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TrialForOrgSerializerV1'
+    PaginatedUnitForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitForOrgSerializerV1'
     PatchedTrialUpdateForOrgSerializerV1Request:
       type: object
       properties:
@@ -6192,6 +6333,39 @@ components:
       - id
       - internal_name
       - name
+    UnitForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_en:
+          type: string
+          readOnly: true
+        internal_name:
+          type: string
+          readOnly: true
+        base_unit:
+          type: integer
+          readOnly: true
+          nullable: true
+        base_multiplier:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,24}(?:\.\d{0,12})?$
+          readOnly: true
+          nullable: true
+        si_code:
+          type: string
+          readOnly: true
+          nullable: true
+      required:
+      - base_multiplier
+      - base_unit
+      - id
+      - internal_name
+      - name_en
+      - si_code
     Usage:
       type: object
       description: Resolve a Unit from an Expense via `plan_item` or subscription.`price_json`.
@@ -6235,5 +6409,6 @@ x-tagGroups:
   - reports
   - statistic-regions
   - trials
+  - units
 security:
 - APIKey: []
