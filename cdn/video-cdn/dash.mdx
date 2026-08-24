@@ -23,7 +23,7 @@ Use [Video&nbsp;Streaming](/streaming) instead when Real-Time Messaging Protocol
 
 ## Setup requirements
 
-DASH delivery has format constraints plus account-level activation. Split those so the packaging requirements stay separate from plan and Support enablement.
+Standard DASH and LL-DASH use different packaging, while both require a paid plan and video-delivery approval.
 
 ### Delivery formats
 
@@ -100,14 +100,9 @@ DASH packages a manifest plus CMAF media objects. The CDN caches each object typ
 
 ## Latency model
 
-Store-and-forward CDNs wait until a full segment arrives from the origin (often 2–6 s) before sending it to viewers. Chunked-Proxy starts delivering bytes while the origin transfer is still open, using HTTP/1.1 chunked transfer encoding, HTTP/2 DATA frames, or HTTP/3 over QUIC. That is the difference between typical 10–15-second latency and 2–4-second glass-to-glass latency.
+Store-and-forward CDNs wait until a full segment arrives from the origin (often 2–6 s) before sending it to viewers. Chunked-Proxy starts delivering bytes while the origin transfer is still open, using HTTP/1.1 chunked transfer encoding, HTTP/2 DATA frames, or HTTP/3 over QUIC. That is the difference between typical 10–15-second latency and 2–4-second glass-to-glass latency — the total delay from video capture to viewer playback.
 
-```
-Without Chunked-Proxy: Origin → [CDN waits for full file] → Viewer
-With Chunked-Proxy:    Origin → [CDN streams immediately] → Viewer
-```
-
-The table below compares viewer-delivery methods only. Implementation detail is in [Optimizing HLS and DASH for 3-second latency](https://gcore.com/blog/optimizing-hls-dash-3sec).
+The table below compares viewer-delivery methods only. The engineering analysis in [Optimizing HLS and DASH for 3-second latency](https://gcore.com/blog/optimizing-hls-dash-3sec) explains how chunked transfer encoding and HTTP framing produce these latency ranges.
 
 | Delivery method | Typical latency | Use case |
 |-----------------|-----------------|----------|
@@ -129,7 +124,7 @@ Shorter CMAF segments and chunked encoding on the origin give the edge a continu
 
 ### CDN optimization
 
-Origin Shielding and reporting reduce origin load and make latency regressions visible. Gcore operates more than 210 edge locations, where content is cached in response to viewer requests.
+Origin Shielding reduces origin load, while reporting helps identify latency regressions. Gcore operates more than 210 edge locations, where content is cached in response to viewer requests.
 
 - Enable Origin Shielding for 100 or more concurrent viewers
 - Use [Reports](/cdn/view-statistics-of-a-cdn-resource) to track cache hit ratio and origin traffic
