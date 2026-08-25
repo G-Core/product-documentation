@@ -1,7 +1,7 @@
 ---
 title: Create an object or SFTP storage
 sidebarTitle: Create Object Storage
-ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - includes S3 access key rotation and SFTP password management.
+ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - includes SFTP password management.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -42,22 +42,22 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Frame>![Location dropdown in the Add new object storage dialog showing S3 and SFTP location options](/images/docs/storage/create-an-s3-or-sftp-storage/location-dropdown.png)</Frame>
 
-<p>A **Details** dialog opens immediately, showing the storage credentials: access key, secret key, hostname, and location. Click **Copy object storage data** to copy all credentials at once. Save the keys — regenerating them invalidates the existing credentials.</p>
+<p>A **Details** dialog opens immediately, showing the storage credentials: access key, secret key, hostname, and location. Click **Copy object storage data** to copy all credentials at once.</p>
+
+<p>Store the secret key, because it is returned only when a key is created. The initial key has read-write access. Additional [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) — read-write or read-only — can be created after the storage exists. Read-only keys are supported on S3 Standard only.</p>
 
 <Frame>![Details dialog showing S3 storage credentials including access key, secret key, and hostname](/images/docs/storage/create-an-s3-or-sftp-storage/s3-storage-created-10.png)</Frame>
 
-#### S3 management options
+**S3 management options**
 
 <p>The created storage appears in the storage list. To manage it, click **...** (three dots) next to the storage name and select an option:</p>
 
 | Option | Description |
 |---|---|
-| Details | View the access key, secret key, hostname, and location. |
-| Generate new keys | Replace the current access and secret keys. A confirmation dialog warns that the existing key will be deactivated. Click **Yes** to proceed; the new keys appear in the **Details** dialog. |
+| Details | View **Object Storage User name**, **Location**, and **Hostname**. |
+| Access keys | Create and delete read-write or read-only S3 access keys. Read-only keys are supported on S3 Standard only. The secret is returned only when a key is created. |
 | Buckets | Manage the storage's [buckets](/storage/manage-object-storage/manage-buckets-via-the-control-panel). |
 | Delete object storage | Permanently delete the storage and all its contents. This action cannot be undone. |
-
-<Frame>![Object storage list with actions dropdown showing Details, Generate new keys, Buckets, and Delete object storage](/images/docs/storage/create-an-s3-or-sftp-storage/s3-storage-settings-20.png)</Frame>
 
 ### SFTP storage
 
@@ -116,7 +116,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>S3-compatible and SFTP storages are provisioned with a single API call. For S3 storage, the secret key is returned only at creation time and when a new access key is created — it cannot be retrieved later.</p>
+<p>S3-compatible and SFTP storages are provisioned with a single API call. For S3 storage, the secret key is returned only at creation time, so it cannot be retrieved later.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -373,133 +373,13 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
     ```bash
     export STORAGE_ID=13864
-    export OLD_ACCESS_KEY="L1M3FSX3T0B3TWDVINKT"
     ```
   </Tab>
 </Tabs>
 
 </Accordion>
 
-## Rotate access keys
-
-<p>Each S3 storage supports up to two active access keys, which allows rotating credentials without downtime — create the new key first, update clients, then delete the old one. The secret key is returned only when the key is created.</p>
-
-<p>**Create a new access key:**</p>
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    from gcore import Gcore
-
-    client = Gcore()
-
-    storage_id = 13864
-
-    new_key = client.storage.object_storages.access_keys.create(storage_id)
-    print(f"New access key: {new_key.access_key}")
-    print(f"New secret key: {new_key.secret_key}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-        "context"
-        "fmt"
-        "log"
-
-        gcore "github.com/G-Core/gcore-go"
-    )
-
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
-
-        var storageID int64 = 13864
-
-        newKey, err := client.Storage.ObjectStorages.AccessKeys.New(ctx, storageID)
-        if err != nil {
-            log.Fatalf("create access key: %v", err)
-        }
-        fmt.Printf("New access key: %s\n", newKey.AccessKey)
-        fmt.Printf("New secret key: %s\n", newKey.SecretKey)
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X POST "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response:
-
-    ```json
-    {
-      "access_key": "0CW9Q09ART50W9XB4O13",
-      "secret_key": "oO5jztJ4ewahrFGX9pMNIq0X3nfVVlfu9XVO9NLz",
-      "created_at": "2026-07-13T13:07:54Z"
-    }
-    ```
-  </Tab>
-</Tabs>
-
-<p>**Delete the old access key** after updating all clients to the new credentials:</p>
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    from gcore import Gcore
-
-    client = Gcore()
-
-    storage_id = 13864
-    old_access_key = "L1M3FSX3T0B3TWDVINKT"
-
-    client.storage.object_storages.access_keys.delete(old_access_key, storage_id=storage_id)
-    print("Old access key deleted")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-        "context"
-        "fmt"
-        "log"
-
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/storage"
-    )
-
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
-
-        var storageID int64 = 13864
-        oldAccessKey := "L1M3FSX3T0B3TWDVINKT"
-
-        err := client.Storage.ObjectStorages.AccessKeys.Delete(ctx, oldAccessKey, storage.ObjectStorageAccessKeyDeleteParams{
-            StorageID: storageID,
-        })
-        if err != nil {
-            log.Fatalf("delete access key: %v", err)
-        }
-        fmt.Println("Old access key deleted")
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys/$OLD_ACCESS_KEY" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Returns HTTP 204 with no response body.
-  </Tab>
-</Tabs>
+<p>The initial key in the response has read-write access. Additional keys — read-write or read-only — can be created using the [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) endpoint. Read-only keys are supported on S3 Standard only.</p>
 
 ## Create SFTP storage
 
@@ -696,17 +576,12 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Create S3 storage
 
-<p>Declares an S3 storage and an optional additional access key for zero-downtime credential rotation. The storage is provisioned with one key automatically; `gcore_storage_access_key` creates a second one.</p>
+<p>Declares an S3 storage. The storage is provisioned with one access key automatically.</p>
 
 ```hcl
 resource "gcore_storage_object_storage" "example" {
   location_name = "luxembourg-2"
   name          = "my-storage"
-}
-
-# Optional: second access key for zero-downtime rotation
-resource "gcore_storage_access_key" "extra" {
-  storage_id = gcore_storage_object_storage.example.id
 }
 
 output "s3_endpoint" {
@@ -722,32 +597,7 @@ output "s3_secret_key" {
   sensitive = true
 }
 
-output "extra_access_key" {
-  value = gcore_storage_access_key.extra.access_key
-}
-
-output "extra_secret_key" {
-  value     = gcore_storage_access_key.extra.secret_key
-  sensitive = true
-}
-
 # terraform import gcore_storage_object_storage.example '<storage_id>'
-# terraform import gcore_storage_access_key.extra '<storage_id>/<access_key>'
-```
-
-```bash
-terraform apply
-```
-
-## Rotate access keys
-
-<p>Declare a new `gcore_storage_access_key` resource to create a second key. Once clients are updated to use the new credentials, remove the resource block for the old key and apply to delete it.</p>
-
-```hcl
-# Add a new key resource, update clients, then remove this block:
-# resource "gcore_storage_access_key" "extra" {
-#   storage_id = gcore_storage_object_storage.example.id
-# }
 ```
 
 ```bash
@@ -756,11 +606,10 @@ terraform apply
 
 ## Delete S3 storage
 
-<p>Remove both resource blocks — Terraform deletes the extra access key first, then the storage.</p>
+<p>Remove the resource block. Terraform deletes the storage on the next apply.</p>
 
 ```hcl
-# Remove or comment out both blocks:
-# resource "gcore_storage_access_key" "extra" { ... }
+# Remove or comment out this block:
 # resource "gcore_storage_object_storage" "example" { ... }
 ```
 

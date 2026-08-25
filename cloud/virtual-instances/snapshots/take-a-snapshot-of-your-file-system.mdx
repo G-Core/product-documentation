@@ -1,7 +1,7 @@
 ---
 title: Take a snapshot of your file system
 sidebarTitle: Take a snapshot
-ai-navigation: Create, view, and delete volume snapshots in Gcore Cloud via the Customer Portal or REST API, including Python SDK and Go SDK examples.
+ai-navigation: Create, view, and delete volume snapshots in Gcore Cloud via the Customer Portal, REST API, or Terraform, including Python SDK and Go SDK examples.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -489,6 +489,117 @@ export VOLUME_ID="{YOUR_VOLUME_ID}"
 </Tabs>
 
 <p>Poll the returned task ID until `state` is `FINISHED` to confirm the snapshot is gone.</p>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Create and manage volume snapshots with the [`gcore_cloud_volume_snapshot`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_volume_snapshot) resource from the [Terraform&nbsp;provider&nbsp;v2](/developer-tools/terraform/overview).</p>
+
+<Info>
+`volume_id` is the UUID of an existing [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes).
+</Info>
+
+## Create a snapshot
+
+<p>Provision a snapshot from an existing volume for backup or as a source for new volumes.</p>
+
+```hcl
+resource "gcore_cloud_volume_snapshot" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  volume_id  = "<volume-id>"
+  name       = "my-snapshot"
+
+  tags = {
+    environment = "production"
+  }
+}
+
+output "snapshot_id" {
+  value = gcore_cloud_volume_snapshot.example.id
+}
+```
+
+## Update a snapshot
+
+<p>Edit `name` or `tags` in the resource block and run `terraform apply` — both update in place. Changing `description` or `volume_id` replaces the snapshot: Terraform deletes the existing one and creates a new one from the volume's current state.</p>
+
+```hcl
+resource "gcore_cloud_volume_snapshot" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  volume_id  = "<volume-id>"
+  name       = "my-snapshot-renamed"
+
+  tags = {
+    environment = "production"
+    owner       = "infra-team"
+  }
+}
+```
+
+## List snapshots
+
+<p>Returns every snapshot for a volume, with each snapshot's ID, name, status, and size.</p>
+
+```hcl
+data "gcore_cloud_volume_snapshots" "all" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  volume_id  = "<volume-id>"
+}
+
+output "snapshots" {
+  value = [for s in data.gcore_cloud_volume_snapshots.all.items : {
+    id     = s.id
+    name   = s.name
+    status = s.status
+    size   = s.size
+  }]
+}
+```
+
+## Get snapshot details
+
+<p>Returns full details for a single snapshot by ID.</p>
+
+```hcl
+data "gcore_cloud_volume_snapshot" "existing" {
+  project_id  = var.project_id
+  region_id   = var.region_id
+  snapshot_id = "<snapshot-id>"
+}
+
+output "snapshot_status" {
+  value = data.gcore_cloud_volume_snapshot.existing.status
+}
+```
+
+## Delete a snapshot
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the snapshot on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_volume_snapshot" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   volume_id  = "<volume-id>"
+#   name       = "my-snapshot"
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing snapshot
+
+<p>Use when a snapshot was created outside Terraform and needs to be managed as code.</p>
+
+```hcl
+# terraform import gcore_cloud_volume_snapshot.example '<project_id>/<region_id>/<snapshot_id>'
+```
 
 </MethodSection>
 </MethodSwitch>

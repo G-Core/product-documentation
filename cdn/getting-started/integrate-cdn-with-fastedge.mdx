@@ -13,9 +13,9 @@ FastEdge CDN applications run inside the CDN request pipeline and modify request
 
 A CDN resource configured for the origin is required. To create one, follow the [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview) guide.
 
-## How it works
+## Request lifecycle
 
-The CDN runtime invokes a CDN application at five stages of the request lifecycle:
+The CDN runtime invokes a CDN application at five stages:
 
 - **On request headers (before cache):** when the CDN receives request headers, before the cache is checked.
 - **On request headers (after cache):** when the CDN receives request headers, after the cache is checked.
@@ -24,6 +24,8 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 - **On response body:** before the CDN sends the response body to the client.
 
 <Info>CDN applications are built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions.</Info>
+
+Each stage has an independent application slot.
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
@@ -34,21 +36,21 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 <Tabs>
   <Tab title="Deploy from template">
 
-<p>A predefined template is available for JWT authentication. It verifies the JSON Web Token in the request `Authorization` header before the request reaches the origin.</p>
+<p>Several predefined templates are available for common use cases, including JWT authentication, basic HTTP authentication, and header manipulation. The JWT template verifies the JSON Web Token in the request `Authorization` header before the request reaches the origin.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge**.
 2. Open the **CDN Applications** page and click **Create new application**.
 
 <Frame>![CDN Applications page with Create new application button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-page-create-app.png)</Frame>
 
-3. In the **Create from a template** section, select **Validate JWT in Authorization header**.
+3. In the **Create from a template** section, select a template. For JWT authentication, select **Validate JWT in Authorization header**.
 
-<Frame>![Create from a template section showing Validate JWT template option](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/validate-jwt.png)</Frame>
+<Frame>![Create from a template section showing available template options](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/validate-jwt.png)</Frame>
 
 4. Enter a name for the application and, optionally, a description.
-5. Add the required environment variables, such as a token signing key for authentication checks.
+5. Fill in the **Template environment variables** section. The variables are pre-defined by the template — for the JWT template, enter the token signing key in the **secret** field. Custom environment variables and secrets can be added in the **Environment variables** and **Secrets** sections.
 
-<Frame>![JWT template configuration form with Name and environment variables fields](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-from-template-setup.png)</Frame>
+<Frame>![JWT template configuration form with Name, template environment variables, and optional sections](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-from-template-setup.png)</Frame>
 
 6. Click **Save and deploy**.
 
@@ -56,14 +58,14 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 
 <Frame>![Application overview page showing active status](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-created.png)</Frame>
 
-<p>To adjust the configuration later, click **Actions** > **Edit application**.</p>
+<p>To adjust the configuration later, click the three-dot icon (...) next to the application, select **Manage**, then click **Actions** > **Edit application**.</p>
 
 <Frame>![Application overview page with Actions menu showing Edit application option](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app-from-template.png)</Frame>
 
   </Tab>
   <Tab title="Deploy custom binary">
 
-<p>Custom implementations are available in the [FastEdge-sdk-rust examples](https://github.com/G-Core/FastEdge-sdk-rust/examples) and [proxy-wasm-sdk-as examples](https://github.com/G-Core/proxy-wasm-sdk-as/examples) repositories.</p>
+<p>Custom implementations are available in the [FastEdge-sdk-rust&nbsp;examples](https://github.com/G-Core/FastEdge-sdk-rust/examples) and [proxy-wasm-sdk-as&nbsp;examples](https://github.com/G-Core/proxy-wasm-sdk-as/examples) repositories.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge**.
 2. Open the **CDN Applications** page and click **Create new application**.
@@ -85,14 +87,14 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 
 7. Click **Save and deploy**.
 
-<p>The application is deployed and ready to be linked to a CDN resource. To adjust the configuration later, click **Actions** > **Edit application**.</p>
+<p>The application is deployed and ready to be linked to a CDN resource. To adjust the configuration later, click the three-dot icon (...) next to the application, select **Manage**, then click **Actions** > **Edit application**.</p>
 
 <Frame>![Application overview page with Actions menu showing Edit application option](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app.png)</Frame>
 
   </Tab>
 </Tabs>
 
-## Step 2. Enable FastEdge for your CDN resource
+## Step 2. Enable FastEdge for a CDN resource
 
 <p>FastEdge can be enabled for all requests on a CDN resource, or limited to specific URL paths using CDN rules.</p>
 
@@ -104,26 +106,26 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 
 <Frame>![CDN resources list with resource settings button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
 
-3. Scroll to the **FastEdge apps** section and enable the toggle for the required stage.
+3. Scroll to the **FastEdge apps** section and enable the **FastEdge** checkbox to activate the feature.
 
-<Frame>![CDN resource settings showing FastEdge apps section with event toggles](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-fast-edge-1.png)</Frame>
+<Frame>![CDN resource settings showing FastEdge apps section with the top-level FastEdge checkbox](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-fast-edge-1.png)</Frame>
 
-4. Select the application from the dropdown.
+4. Enable the checkbox for the required processing stage. For the most common use case, enable **On request headers (before cache)**.
+5. Select the application from the dropdown.
 
 <Frame>![FastEdge apps section with On request headers enabled and application dropdown](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-fast-edge-2.png)</Frame>
 
-5. (Optional) Select the **Interrupt request processing in case of error** checkbox.
+6. (Optional) Configure additional stage options:
+   - **Interrupt request processing in case of error** — enabled by default. When active, errors on the FastEdge side return the relevant response code to the client. When disabled, the CDN ignores the error and forwards the request to the origin. Keep this enabled for security-sensitive applications.
+   - **Invoke FastEdge app on edges** — enabled by default. Runs the application on CDN edge nodes.
+   - **Invoke FastEdge app on shield** — disabled by default. Runs the application on CDN shield (precache) nodes in addition to edge nodes.
 
-<Info>
-The **Interrupt request processing in case of error** checkbox is enabled by default. When active, errors on the FastEdge side return the relevant response code to the client. When disabled, the CDN ignores the error and forwards the request to the origin. For security-sensitive applications, keep this checkbox enabled.
-</Info>
-
-6. Click **Save**.
+7. Click **Save**.
 
   </Tab>
   <Tab title="For specific URL paths">
 
-<p>URL-specific rules apply FastEdge logic only to certain paths — for example, protecting `/api/` with JWT validation while leaving other paths unaffected.</p>
+<p>URL-specific rules apply FastEdge logic only to certain paths — protecting `/api/` with JWT validation while leaving static assets unaffected, for instance.</p>
 
 1. In the Customer Portal, navigate to **CDN**.
 2. Find the resource and open its settings.
@@ -135,38 +137,33 @@ The **Interrupt request processing in case of error** checkbox is enabled by def
 5. Enter a rule name.
 6. In the **Match criteria** section, specify the URL paths affected by the application.
 7. In the **Options** section, click **Add option**.
-8. Scroll to the **FastEdge apps** section and enable the toggle for the required stage.
+8. Scroll to the **FastEdge apps** section.
 
-<Frame>![CDN resource settings showing FastEdge apps section with event toggles](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-fast-edge-1.png)</Frame>
+<Frame>![Add option panel showing FastEdge apps section](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/rule-options-fastedge-app-enable.png)</Frame>
 
-9. Select the application from the dropdown.
+9. Enable the checkbox for the required processing stage. For the most common use case, enable **On request headers (before cache)**.
+10. Select the application from the dropdown.
+11. (Optional) Configure additional stage options:
+    - **Interrupt request processing in case of error** — enabled by default. When active, errors on the FastEdge side return the relevant response code to the client. When disabled, the CDN ignores the error and forwards the request to the origin.
+    - **Invoke FastEdge app on edges** — enabled by default. Runs the application on CDN edge nodes.
+    - **Invoke FastEdge app on shield** — disabled by default. Runs the application on CDN shield (precache) nodes in addition to edge nodes.
 
-<Frame>![FastEdge apps section with On request headers enabled and application dropdown](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-fast-edge-2.png)</Frame>
-
-10. (Optional) Select the **Interrupt request processing in case of error** checkbox.
-
-<Frame>![Add option dialog showing FastEdge apps section](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/rule-options-fastedge-app-enable.png)</Frame>
-
-<Info>
-The **Interrupt request processing in case of error** checkbox is enabled by default. When active, errors on the FastEdge side return the relevant response code to the client. When disabled, the CDN ignores the error and forwards the request to the origin.
-</Info>
-
-11. Click **Create rule**.
+12. Click **Create rule**.
 
   </Tab>
 </Tabs>
 
 ## Disconnect FastEdge from CDN
 
-<p>To stop FastEdge processing on a CDN resource, disable the configured toggles and save.</p>
+<p>To stop FastEdge processing on a CDN resource, disable the FastEdge checkbox and save.</p>
 
 1. In the Customer Portal, navigate to **CDN**.
 2. Find the resource and open its settings.
 
 <Frame>![CDN resources list with resource settings button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
 
-3. To disable FastEdge for the **whole CDN resource**, disable the toggles in the **FastEdge apps** section.
-4. To disable FastEdge for **specific URL paths**, open the **Rules** page and disable the toggle for the relevant rule.
+3. To disable FastEdge for the **whole CDN resource**, scroll to the **FastEdge apps** section and clear the **FastEdge** checkbox.
+4. To disable FastEdge for **specific URL paths**, open the **Rules** page and disable the relevant rule.
 5. Click **Save changes**.
 
 ## Delete a CDN application
@@ -188,13 +185,13 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-FastEdge CDN applications run inside the CDN request pipeline and modify requests and responses before they reach the origin or client.
+<p>FastEdge CDN applications run inside the CDN request pipeline and modify requests and responses before they reach the origin or client.</p>
 
-A CDN resource configured for the origin is required. To create one, use the [Create CDN&nbsp;resource](/api-reference/cdn/cdn-resources/create-cdn-resource) API endpoint.
+<p>A CDN resource configured for the origin is required; the [Create CDN&nbsp;resource](/api-reference/cdn/cdn-resources/create-cdn-resource) endpoint covers the parameters.</p>
 
-## How it works
+## Request lifecycle
 
-The CDN runtime invokes a CDN application at five stages of the request lifecycle:
+<p>The CDN runtime invokes a CDN application at five stages:</p>
 
 - **on_request_headers:** when the CDN receives request headers, before cache.
 - **on_request_headers_after_cache:** when the CDN receives request headers, after cache.
@@ -204,11 +201,275 @@ The CDN runtime invokes a CDN application at five stages of the request lifecycl
 
 <Info>CDN applications are built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions.</Info>
 
+<p>Each stage has an independent application slot.</p>
+
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-## Step 1. Upload a binary
+<p>The following steps configure FastEdge using the FastEdge API and the CDN API.</p>
 
-<p>Upload the compiled `.wasm` file to the FastEdge binary store. The API automatically detects the binary type from the file contents.</p>
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of an existing [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview).
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Quickstart
+
+<p>Scripts that create a FastEdge application from the JWT authentication template and enable it on a CDN resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore import Gcore
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+client = Gcore()
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+# Step 1. Find the JWT template and create an application
+templates = list(client.fastedge.templates.list())
+jwt_template = next(t for t in templates if "validate jwt" in t.name.lower())
+
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    template=jwt_template.id,
+    status=1,
+    env={"secret": "your-signing-key"},
+)
+print(f"app id={app.id}")
+
+# Step 2. Enable FastEdge on the CDN resource
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(
+            enabled=True,
+            on_request_headers=cdn_params.OptionsFastedgeOnRequestHeaders(
+                app_id=str(app.id),
+                interrupt_on_error=True,
+            ),
+        )
+    ),
+)
+print(f"FastEdge enabled on resource {resource_id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+    "strings"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cdn"
+    "github.com/G-Core/gcore-go/fastedge"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+    resourceID, _ := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+
+    // Step 1. Find the JWT template and create an application
+    var templateID int64
+    pager := client.Fastedge.Templates.ListAutoPaging(ctx, fastedge.TemplateListParams{})
+    for pager.Next() {
+        t := pager.Current()
+        if strings.Contains(strings.ToLower(t.Name), "validate jwt") {
+            templateID = t.ID
+            break
+        }
+    }
+    if err := pager.Err(); err != nil {
+        panic(err)
+    }
+
+    app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+        App: fastedge.AppParam{
+            Name:     gcore.String("my-cdn-app-1"),
+            Template: gcore.Int(templateID),
+            Status:   gcore.Int(1),
+            Env:      map[string]string{"secret": "your-signing-key"},
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("app id=%d\n", app.ID)
+
+    // Step 2. Enable FastEdge on the CDN resource
+    _, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+        Options: cdn.CDNResourceUpdateParamsOptions{
+            Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+                Enabled: true,
+                OnRequestHeaders: cdn.CDNResourceUpdateParamsOptionsFastedgeOnRequestHeaders{
+                    AppID: strconv.FormatInt(app.ID, 10),
+                },
+            },
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("FastEdge enabled on resource %d\n", resourceID)
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a FastEdge application
+
+<p>Deploy an application from a predefined template or upload a custom Proxy-Wasm binary.</p>
+
+**From a template**
+
+<p>List available templates to find the template ID:</p>
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The response lists all available templates with their IDs and names:</p>
+
+```json
+{
+  "count": 7,
+  "values": [
+    { "id": 10, "name": "Validate JWT in Authorization header", "api_type": "proxy-wasm" },
+    { "id": 111, "name": "Basic HTTP authentication", "api_type": "proxy-wasm" }
+  ]
+}
+```
+
+<p>Create the application using the template ID. The `env` object holds values for the template's pre-defined variables (the JWT template requires a `secret` key):</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Application name — alphanumeric, hyphens allowed |
+| `template` | Yes | Template ID from the listing |
+| `status` | Yes | Set to active to deploy immediately; inactive saves as draft |
+| `env` | No | Template environment variables as key-value pairs |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    template=10,  # Validate JWT in Authorization header
+    status=1,
+    env={"secret": "your-signing-key"},
+)
+print(f"app id={app.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+    App: fastedge.AppParam{
+        Name:     gcore.String("my-cdn-app-1"),
+        Template: gcore.Int(10), // Validate JWT in Authorization header
+        Status:   gcore.Int(1),
+        Env:      map[string]string{"secret": "your-signing-key"},
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/apps \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-cdn-app-1",
+    "template": 10,
+    "status": 1,
+    "env": { "secret": "your-signing-key" }
+  }'
+```
+
+  </Tab>
+</Tabs>
+
+<p>The API returns the application ID used in Step 2:</p>
+
+```json
+{
+  "id": 67890,
+  "name": "my-cdn-app-1",
+  "status": 1,
+  "api_type": "proxy-wasm"
+}
+```
+
+**Upload a custom binary**
+
+<p>Upload the compiled `.wasm` file to the FastEdge binary store. The binary must conform to the Proxy-Wasm specification:</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| Request body | Yes | Raw `.wasm` file with `Content-Type: application/octet-stream` |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+with open("app.wasm", "rb") as f:
+    binary = client.fastedge.binaries.create(body=f)
+print(f"binary id={binary.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+import "os"
+
+f, err := os.Open("app.wasm")
+if err != nil {
+    panic(err)
+}
+defer f.Close()
+
+binary, err := client.Fastedge.Binaries.New(ctx, f)
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
 curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
@@ -217,7 +478,10 @@ curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
   --data-binary @app.wasm
 ```
 
-<p>The response includes the binary ID used in the next step:</p>
+  </Tab>
+</Tabs>
+
+<p>The API returns the binary ID needed in the next call:</p>
 
 ```json
 {
@@ -226,43 +490,127 @@ curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
 }
 ```
 
-<p>To deploy from the predefined JWT template instead, list available templates with <code>GET&nbsp;https://api.gcore.com/fastedge/v1/template</code>, note the template's `binary` field, and use that binary ID in Step 2.</p>
+<p>Create the application using the binary ID:</p>
 
-## Step 2. Create a FastEdge application
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Application name — alphanumeric, hyphens allowed |
+| `binary` | Yes | Binary ID from the upload response |
+| `status` | Yes | Set to active to deploy immediately; inactive saves as draft |
+| `env` | No | Environment variables as key-value pairs |
 
-<p>Create the application using the binary ID from Step 1. Set `status` to `1` to activate the application immediately.</p>
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+app = client.fastedge.apps.create(
+    name="my-cdn-app-1",
+    binary=binary.id,
+    status=1,
+    env={"MY_VARIABLE": "value"},
+)
+print(f"app id={app.id}")
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+app, err := client.Fastedge.Apps.New(ctx, fastedge.AppNewParams{
+    App: fastedge.AppParam{
+        Name:   gcore.String("my-cdn-app-1"),
+        Binary: gcore.Int(binary.ID),
+        Status: gcore.Int(1),
+        Env:    map[string]string{"MY_VARIABLE": "value"},
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
 curl -X POST https://api.gcore.com/fastedge/v1/apps \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "my-cdn-app",
+    "name": "my-cdn-app-1",
     "binary": 12345,
     "status": 1,
-    "env": {
-      "MY_VARIABLE": "value"
-    }
+    "env": { "MY_VARIABLE": "value" }
   }'
 ```
 
-<p>The response includes the application ID (`id`), which is needed to configure the CDN resource:</p>
+  </Tab>
+</Tabs>
+
+<p>The API returns the application ID used in Step 2:</p>
 
 ```json
 {
   "id": 67890,
-  "name": "my-cdn-app",
+  "name": "my-cdn-app-1",
   "status": 1,
   "api_type": "proxy-wasm"
 }
 ```
 
-## Step 3. Enable FastEdge for your CDN resource
+### Step 2. Enable FastEdge for a CDN resource
 
-<p>Update the CDN resource to route traffic through the FastEdge application. The `fastedge` option accepts five trigger stages — configure the ones the application handles.</p>
+<p>Update the CDN resource to route traffic through the FastEdge application. The `fastedge` option accepts five processing stages — configure the stages the application handles.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `fastedge.enabled` | Yes | `true` activates FastEdge on the resource |
+| `on_request_headers.app_id` | Yes | Application ID from Step 1 |
+| `on_request_headers.interrupt_on_error` | No | Default `true`. When `false`, errors are ignored and the request forwards to origin |
+| `on_request_headers.execute_on_edge` | No | Default `true`. Runs the application on CDN edge nodes |
+| `on_request_headers.execute_on_shield` | No | Default `false`. Runs the application on shield (precache) nodes |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(
+            enabled=True,
+            on_request_headers=cdn_params.OptionsFastedgeOnRequestHeaders(
+                app_id=str(app.id),
+                interrupt_on_error=True,
+            ),
+        )
+    ),
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+_, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+    Options: cdn.CDNResourceUpdateParamsOptions{
+        Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+            Enabled: true,
+            OnRequestHeaders: cdn.CDNResourceUpdateParamsOptionsFastedgeOnRequestHeaders{
+                AppID: strconv.FormatInt(app.ID, 10),
+            },
+        },
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
-curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
+curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -279,16 +627,54 @@ curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
   }'
 ```
 
-<p>Replace `RESOURCE_ID` with the CDN resource ID. The `interrupt_on_error` field controls behavior on error: `true` returns the FastEdge error to the client, `false` forwards the request to the origin. For security-sensitive applications, set it to `true`.</p>
+  </Tab>
+</Tabs>
+
+<p>The five supported stages are `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage accepts the same `app_id`, `interrupt_on_error`, `execute_on_edge`, and `execute_on_shield` parameters.</p>
 
 <p>To apply FastEdge only to specific URL paths, create a CDN rule with <code>POST&nbsp;https://api.gcore.com/cdn/resources/RESOURCE_ID/rules</code> and include the `fastedge` option in the rule's `options` object.</p>
 
+</Accordion>
+
 ## Disable FastEdge integration
 
-<p>Set `fastedge.enabled` to `false` to stop FastEdge processing on a CDN resource:</p>
+<p>Setting `fastedge.enabled` to `false` stops FastEdge processing on a CDN resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+import os
+from gcore.types.cdn import cdn_resource_update_params as cdn_params
+
+resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+client.cdn.cdn_resources.update(
+    resource_id,
+    options=cdn_params.Options(
+        fastedge=cdn_params.OptionsFastedge(enabled=False),
+    ),
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+_, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+    Options: cdn.CDNResourceUpdateParamsOptions{
+        Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
+            Enabled: false,
+        },
+    },
+})
+```
+
+  </Tab>
+  <Tab title="curl">
 
 ```bash
-curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
+curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -300,16 +686,39 @@ curl -X PATCH https://api.gcore.com/cdn/resources/RESOURCE_ID \
   }'
 ```
 
+  </Tab>
+</Tabs>
+
 ## Delete a CDN application
 
 <Info>
 An enabled FastEdge application linked to a CDN resource cannot be deleted. Disable the FastEdge integration on the CDN resource before deleting the application.
 </Info>
 
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+client.fastedge.apps.delete(app_id)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+err = client.Fastedge.Apps.Delete(ctx, appID)
+```
+
+  </Tab>
+  <Tab title="curl">
+
 ```bash
-curl -X DELETE https://api.gcore.com/fastedge/v1/apps/APP_ID \
+curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$APP_ID \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
+
+  </Tab>
+</Tabs>
 
 <p>A `204 No Content` response confirms the application was deleted.</p>
 

@@ -1,7 +1,7 @@
 ---
 title: "Custom Rules"
 sidebarTitle: Custom Rules
-ai-navigation: Create and manage WAAP custom rules to filter requests by IP, country, URL, and user agent via Customer Portal or REST API.
+ai-navigation: Create and manage WAAP custom rules and actions via Customer Portal or REST API, including how Allow skips all security checks.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -35,17 +35,21 @@ You can create the following types of custom rules:
 
 **Action** | **Description** | **Priority level**
 ---|---|---
-Allow | Allows specified traffic to view the application's content and exclude the user from any security checks. | Second
+Allow | Lets matched traffic through and excludes it from all WAAP security checks, including WAF, bot protection, IP reputation, and CSRF. | Second
 Block | Blocks specified traffic from accessing the application's content. | Third
 Captcha | Displays a CAPTCHA challenge before the user can view the application's content. | Fourth
 JS Challenge | Displays a JavaScript challenge before the user can view the application's content. | Fifth
-Tag | Tags a request with the custom user-defined tag you specify. This action type doesn't send any challenge to the user and only adds information to a request. <br/>All tag action rules run first before any other action type. They don't stop the rule engine even after the condition has been met and the tag has been applied. Thus, the user-defined tags that are generated in this run can be used in the "user-defined tag" condition of the same run (during the same request processing). | N/A <br/>Tags work in parallel — if a request is blocked, it can still be tagged.
+Tag | Tags a request with the custom user-defined tag you specify. This action type doesn't send any challenge to the user and only adds information to a request — it does not bypass security checks. <br/>All tag action rules run first before any other action type. They don't stop the rule engine even after the condition has been met and the tag has been applied. Thus, the user-defined tags that are generated in this run can be used in the "user-defined tag" condition of the same run (during the same request processing). | N/A <br/>Tags work in parallel — if a request is blocked, it can still be tagged.
 
 <Tip>
 **Tip**
 
 The **Tag** action doesn't challenge requests. Thus, it has no assigned priority level.
 </Tip>
+
+<Note>
+Each custom rule action applies to matched traffic as a whole. The **Allow** action skips every rules-engine check for that traffic; **Tag** only labels it. When CSRF blocks traffic between www and non-www hostnames, canonicalize with a 301 redirect or disable the CSRF policy for the domain — see [CSRF checks for www and non-www hostnames](/waap/waap-policies/waf-and-owasp-top-threats#csrf-checks-for-www-and-non-www-hostnames).
+</Note>
 
 ## Rule conditions
 

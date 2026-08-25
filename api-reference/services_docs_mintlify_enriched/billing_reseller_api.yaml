@@ -2,24 +2,342 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 84c6fa2981f9
+  version: 69d376182a7d
 servers:
 - url: https://api.gcore.com
 tags:
+- name: accounting
 - name: addendums
   description: Operations on client addendums
+- name: bonuses
 - name: calc_rules
+- name: countries
 - name: currencies
 - name: erp-invoices
 - name: expenses
   description: Operations on expenses
+- name: payment-bindings
 - name: plans
   description: Operations on tariff plans and their contents
 - name: products
+- name: regions
 - name: reports
   description: Operations involving reports and the associated background tasks that handle their processing
+- name: statistic-regions
 - name: trials
+- name: units
 paths:
+  /billing/org/v1/accounting/balances:
+    get:
+      operationId: v1_accounting_balances_list
+      description: |+
+        Retrieve a list of `Balance` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Balances
+      parameters:
+      - in: query
+        name: acc
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - acc.asc
+            - acc.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `acc.asc` - Acc
+          - `acc.desc` - Acc (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -acc
+            - acc
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `acc` - Acc
+          - `-acc` - Acc (descending)
+        explode: false
+        style: form
+      - in: query
+        name: unit_code
+        schema:
+          type: string
+      tags:
+      - accounting
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBalanceForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/accounting/operations:
+    get:
+      operationId: v1_accounting_operations_list
+      description: |+
+        Retrieve a list of `Operation` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Operations
+      parameters:
+      - in: query
+        name: acc
+        schema:
+          type: string
+      - in: query
+        name: actual_only
+        schema:
+          type: boolean
+      - in: query
+        name: applying_at
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: applying_at__from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: applying_at__to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: company_name
+        schema:
+          type: string
+      - in: query
+        name: created_at__from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: id
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - applying_at.asc
+            - applying_at.desc
+            - client_id.asc
+            - client_id.desc
+            - created_at.asc
+            - created_at.desc
+            - credit.asc
+            - credit.desc
+            - debit.asc
+            - debit.desc
+            - value.asc
+            - value.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `created_at.asc` - Created at
+          - `created_at.desc` - Created at (descending)
+          - `applying_at.asc` - Applying at
+          - `applying_at.desc` - Applying at (descending)
+          - `client_id.asc` - Client id
+          - `client_id.desc` - Client id (descending)
+          - `debit.asc` - Debit
+          - `debit.desc` - Debit (descending)
+          - `credit.asc` - Credit
+          - `credit.desc` - Credit (descending)
+          - `value.asc` - Value
+          - `value.desc` - Value (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -applying_at
+            - -client_id
+            - -created_at
+            - -credit
+            - -debit
+            - -value
+            - applying_at
+            - client_id
+            - created_at
+            - credit
+            - debit
+            - value
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `created_at` - Created at
+          - `-created_at` - Created at (descending)
+          - `applying_at` - Applying at
+          - `-applying_at` - Applying at (descending)
+          - `client_id` - Client id
+          - `-client_id` - Client id (descending)
+          - `debit` - Debit
+          - `-debit` - Debit (descending)
+          - `credit` - Credit
+          - `-credit` - Credit (descending)
+          - `value` - Value
+          - `-value` - Value (descending)
+        explode: false
+        style: form
+      - in: query
+        name: unit_code
+        schema:
+          type: string
+      - in: query
+        name: value
+        schema:
+          type: string
+      - in: query
+        name: value__exact
+        schema:
+          type: number
+      - in: query
+        name: value__gt
+        schema:
+          type: number
+      - in: query
+        name: value__gte
+        schema:
+          type: number
+      - in: query
+        name: value__lt
+        schema:
+          type: number
+      - in: query
+        name: value__lte
+        schema:
+          type: number
+      tags:
+      - accounting
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOperationForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/accounting/operations/{id}:
+    get:
+      operationId: v1_accounting_operations_retrieve
+      description: Retrieve a single `Operation` by ID.
+      summary: Get a single Operation
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - accounting
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OperationForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/addendums:
     get:
       operationId: v1_addendums_list
@@ -286,7 +604,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -345,7 +663,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `created_at.asc` - Created at
@@ -402,7 +720,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `created_at` - Created at
@@ -626,6 +944,528 @@ paths:
           description: You do not have permission to perform this action.
         '404':
           description: The requested resource was not found.
+  /billing/org/v1/bindings:
+    get:
+      operationId: v1_bindings_list
+      description: |+
+        Retrieve a list of `Binding` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Bindings
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - created_at.asc
+            - created_at.desc
+            - updated_at.asc
+            - updated_at.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `created_at.asc` - Created at
+          - `created_at.desc` - Created at (descending)
+          - `updated_at.asc` - Updated at
+          - `updated_at.desc` - Updated at (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -created_at
+            - -updated_at
+            - created_at
+            - updated_at
+        description: |-
+          Order by `created_at` or `updated_at`
+
+          - `created_at` - Created at
+          - `-created_at` - Created at (descending)
+          - `updated_at` - Updated at
+          - `-updated_at` - Updated at (descending)
+        explode: false
+        style: form
+      - in: query
+        name: payment_method_id
+        schema:
+          type: integer
+      - in: query
+        name: payment_resource_id
+        schema:
+          type: integer
+      - in: query
+        name: process_id
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          x-spec-enum-id: ccf999977cdd925c
+          enum:
+          - error
+          - finished
+          - new
+          - waiting_details
+          - waiting_notification
+        description: |-
+          - `error` - error
+          - `finished` - finished
+          - `new` - new
+          - `waiting_details` - `waiting_details`
+          - `waiting_notification` - `waiting_notification`
+      tags:
+      - payment-bindings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBindingForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/bindings/{process_id}:
+    get:
+      operationId: v1_bindings_retrieve
+      description: Retrieve a single `Binding` by ID.
+      summary: Get a single Binding
+      parameters:
+      - in: path
+        name: process_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - payment-bindings
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BindingForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
+  /billing/org/v1/bonuses:
+    get:
+      operationId: v1_bonuses_list
+      description: |+
+        Retrieve a list of `Bonus` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Bonuses
+      parameters:
+      - in: query
+        name: active_after
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items active after the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space, or just a date.
+
+
+          **Examples:**
+
+          - `&active_after=2025-05-15 12:00:00`
+          - `&active_after=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_at
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items active at the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+
+          **Examples:**
+
+
+          - `&active_at=2025-05-15 12:00:00`
+          - `&active_at=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_before
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items active before the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space, or just a date.
+
+
+          **Examples:**
+
+          - `&active_before=2025-05-15 12:00:00`
+          - `&active_before=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_end_from
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items with the end of the active period on or after the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+          **Examples:**
+
+          - `&active_end_from=2025-05-15 12:00:00`
+          - `&active_end_from=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_end_to
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items with the end of the active period on or before the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+          **Examples:**
+
+          - `&active_end_to=2025-05-15 12:00:00`
+          - `&active_end_to=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: active_from__from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: active_from__to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: active_start_from
+        schema:
+          type: string
+          format: date-time
+        description: |+
+          Filter by active period.
+
+          Returns items with the start of the active period on or after the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+
+          **Examples:**
+
+          - `&active_start_from=2025-05-15 12:00:00`
+          - `&active_start_from=2025-05-15T12:00:00Z`
+
+      - in: query
+        name: active_start_to
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items with the start of the active period on or before the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+
+          **Examples:**
+
+          - `&active_start_to=2025-05-15 12:00:00`
+          - `&active_start_to=2025-05-15T12:00:00Z`
+      - in: query
+        name: active_to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: active_to__from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: active_to__to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: client_id
+        schema:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        description: ID of client in API service
+      - in: query
+        name: created_at
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__from
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: created_at__to
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: currency_char_code
+        schema:
+          type: string
+      - in: query
+        name: description
+        schema:
+          type: string
+        description: Filter by description. Case insensitive, partial match.
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: not_active_at
+        schema:
+          type: string
+          format: date-time
+        description: |-
+          Filter by active period.
+
+          Returns items not active at the specified date-time (ISO 8601/RFC 3339 format, UTC.)
+
+
+          You can specify a date with a time separated by a space.
+
+
+          **Examples:**
+
+          - `&not_active_at=2025-05-15 12:00:00`
+          - `&not_active_at=2025-05-15T12:00:00Z`
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - active_from.asc
+            - active_from.desc
+            - active_to.asc
+            - active_to.desc
+            - amount.asc
+            - amount.desc
+            - client_company.asc
+            - client_company.desc
+            - client_id.asc
+            - client_id.desc
+            - created_at.asc
+            - created_at.desc
+            - id.asc
+            - id.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `id.asc` - Id
+          - `id.desc` - Id (descending)
+          - `created_at.asc` - Created at
+          - `created_at.desc` - Created at (descending)
+          - `active_from.asc` - Active from
+          - `active_from.desc` - Active from (descending)
+          - `active_to.asc` - Active to
+          - `active_to.desc` - Active to (descending)
+          - `client_id.asc` - Client id
+          - `client_id.desc` - Client id (descending)
+          - `amount.asc` - Amount
+          - `amount.desc` - Amount (descending)
+          - `client_company.asc` - Client company
+          - `client_company.desc` - Client company (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -active_from
+            - -active_to
+            - -amount
+            - -client_company
+            - -client_id
+            - -created_at
+            - -id
+            - active_from
+            - active_to
+            - amount
+            - client_company
+            - client_id
+            - created_at
+            - id
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `id` - Id
+          - `-id` - Id (descending)
+          - `created_at` - Created at
+          - `-created_at` - Created at (descending)
+          - `active_from` - Active from
+          - `-active_from` - Active from (descending)
+          - `active_to` - Active to
+          - `-active_to` - Active to (descending)
+          - `client_id` - Client id
+          - `-client_id` - Client id (descending)
+          - `amount` - Amount
+          - `-amount` - Amount (descending)
+          - `client_company` - Client company
+          - `-client_company` - Client company (descending)
+        explode: false
+        style: form
+      - in: query
+        name: product_category_external_id
+        schema:
+          type: string
+        description: Filter by product category external ID. Case insensitive. Supports partial matches.
+      - in: query
+        name: product_category_id
+        schema:
+          type: array
+          items:
+            type: integer
+        description: Filter by Product Category ID. Can be multiple.
+        explode: true
+        style: form
+      - in: query
+        name: product_category_name
+        schema:
+          type: string
+        description: Filter by product category name. Case insensitive. Supports partial matches.
+      tags:
+      - bonuses
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBonusForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/bonuses/{id}:
+    get:
+      operationId: v1_bonuses_retrieve
+      description: Retrieve a single `Bonus` by ID.
+      summary: Get a single Bonus
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bonuses
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BonusForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/calc-rules:
     get:
       operationId: v1_calc_rules_list
@@ -639,7 +1479,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - name: offset
@@ -687,13 +1527,166 @@ paths:
           description: You do not have permission to perform this action.
         '404':
           description: The requested resource was not found.
+  /billing/org/v1/countries:
+    get:
+      operationId: v1_countries_list
+      description: |+
+        Retrieve a list of `Country` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Countries
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: disabled
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - code.asc
+            - code.desc
+            - name.asc
+            - name.desc
+            - zone.asc
+            - zone.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code.asc` - Code
+          - `code.desc` - Code (descending)
+          - `zone.asc` - Zone
+          - `zone.desc` - Zone (descending)
+          - `name.asc` - Name
+          - `name.desc` - Name (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -code
+            - -name
+            - -zone
+            - code
+            - name
+            - zone
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code` - Code
+          - `-code` - Code (descending)
+          - `zone` - Zone
+          - `-zone` - Zone (descending)
+          - `name` - Name
+          - `-name` - Name (descending)
+        explode: false
+        style: form
+      - in: query
+        name: zone
+        schema:
+          type: string
+          x-spec-enum-id: 5f0d311a9e23c2b1
+          enum:
+          - EU
+          - OTHER
+          - RU
+        description: |-
+          Country zone
+
+          - `RU` - RU
+          - `EU` - EU
+          - `OTHER` - OTHER
+      tags:
+      - countries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCountryForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/countries/{id}:
+    get:
+      operationId: v1_countries_retrieve
+      description: Retrieve a single `Country` by ID.
+      summary: Get a single Country
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - countries
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountryForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/currencies:
     get:
       operationId: v1_currencies_list
-      description: |-
+      description: |+
         Retrieve a list of `Currency` objects.
 
         You can use query parameters to filter, sort, and paginate the results.
+
       summary: List Currencies
       parameters:
       - in: query
@@ -751,7 +1744,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -784,7 +1777,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `char_code.asc` - Char code
@@ -817,7 +1810,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `char_code` - Char code
@@ -835,7 +1828,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedCurrencyForOrgList'
+                $ref: '#/components/schemas/PaginatedCurrencyForOrgSerializerV1List'
           description: Request successful.
         '401':
           description: Authentication credentials were not provided or are invalid.
@@ -859,7 +1852,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrencyForOrg'
+                $ref: '#/components/schemas/CurrencyForOrgSerializerV1'
           description: Request successful.
         '401':
           description: Authentication credentials were not provided or are invalid.
@@ -909,7 +1902,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -955,7 +1948,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -996,7 +1989,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -1377,7 +2370,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -1458,7 +2451,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `addendum_id.asc` - Addendum id
@@ -1543,7 +2536,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `addendum_id` - Addendum id
@@ -1998,7 +2991,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -2052,7 +3045,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -2105,7 +3098,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -2304,7 +3297,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - name: offset
@@ -2320,7 +3313,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaginatedProductForOrgList'
+                $ref: '#/components/schemas/PaginatedProductCommonList'
           description: Request successful.
         '401':
           description: Authentication credentials were not provided or are invalid.
@@ -2344,7 +3337,137 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProductForOrg'
+                $ref: '#/components/schemas/ProductCommon'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
+  /billing/org/v1/regions:
+    get:
+      operationId: v1_regions_list
+      description: |+
+        Retrieve a list of `Region` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Regions
+      parameters:
+      - in: query
+        name: country_id
+        schema:
+          type: string
+        description: Country code
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - code.asc
+            - code.desc
+            - country_id.asc
+            - country_id.desc
+            - name.asc
+            - name.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code.asc` - Code
+          - `code.desc` - Code (descending)
+          - `name.asc` - Name
+          - `name.desc` - Name (descending)
+          - `country_id.asc` - Country id
+          - `country_id.desc` - Country id (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -code
+            - -country_id
+            - -name
+            - code
+            - country_id
+            - name
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `code` - Code
+          - `-code` - Code (descending)
+          - `name` - Name
+          - `-name` - Name (descending)
+          - `country_id` - Country id
+          - `-country_id` - Country id (descending)
+        explode: false
+        style: form
+      tags:
+      - regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRegionForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/regions/{id}:
+    get:
+      operationId: v1_regions_retrieve
+      description: Retrieve a single `Region` by ID.
+      summary: Get a single Region
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionForOrgSerializerV1'
           description: Request successful.
         '401':
           description: Authentication credentials were not provided or are invalid.
@@ -2412,7 +3535,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - name: offset
@@ -2447,7 +3570,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `uuid.asc` - Uuid
@@ -2492,7 +3615,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `uuid` - Uuid
@@ -2813,7 +3936,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -2850,7 +3973,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -2891,7 +4014,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -2919,6 +4042,80 @@ paths:
           description: Authentication credentials were not provided or are invalid.
         '403':
           description: You do not have permission to perform this action.
+  /billing/org/v1/statistics/regions:
+    get:
+      operationId: v1_statistics_regions_list
+      description: |+
+        Retrieve a list of `StatisticRegion` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List StatisticRegions
+      parameters:
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: product_id
+        schema:
+          type: array
+          items:
+            type: integer
+        description: Product
+        explode: true
+        style: form
+      - in: query
+        name: product_name
+        schema:
+          type: string
+      tags:
+      - statistic-regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStatisticRegionForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/statistics/regions/{id}:
+    get:
+      operationId: v1_statistics_regions_retrieve
+      description: Retrieve a single `StatisticRegion` by ID.
+      summary: Get a single StatisticRegion
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - statistic-regions
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticRegionForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/trials:
     get:
       operationId: v1_trials_list
@@ -3054,7 +4251,7 @@ paths:
       - name: limit
         required: false
         in: query
-        description: Number of results to return per page. Maximum is `100`.
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
         schema:
           type: integer
       - in: query
@@ -3113,7 +4310,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id.asc` - Id
@@ -3170,7 +4367,7 @@ paths:
 
           For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
 
-          Final stable tiebreak ordering by primary key is added except when queryset DISTINCT ON/GROUP BY is used or pk sorting used.
+          Final stable tiebreak ordering is added except when pk sorting used.
 
 
           - `id` - Id
@@ -3424,8 +4621,172 @@ paths:
           description: Authentication credentials were not provided or are invalid.
         '403':
           description: You do not have permission to perform this action.
+  /billing/org/v1/units:
+    get:
+      operationId: v1_units_list
+      description: |+
+        Retrieve a list of `Unit` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List Units
+      parameters:
+      - in: query
+        name: internal_name
+        schema:
+          type: string
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: name_en
+        schema:
+          type: string
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: order_by
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - name_en.asc
+            - name_en.desc
+        description: |-
+          Ordering of the results.
+
+          For ascending sort order use `field.asc`, for descending sort order use `field.desc`.
+
+          For sorting by multiple parameters write them as comma separated string: `client_id.asc,id.desc`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `name_en.asc` - Name en
+          - `name_en.desc` - Name en (descending)
+        explode: false
+        style: form
+      - in: query
+        name: ordering
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - -name_en
+            - name_en
+        description: |-
+          Ordering of the results.
+
+          This field is left for compatibility and can be deprecated in future versions. Use `order_by` instead.
+
+          Default sort order is ascending. Put `-` before value for descending sort order: `-id`.
+
+          For sorting by multiple parameters write them as comma separated string: `-client_id,id`.
+
+          Final stable tiebreak ordering is added except when pk sorting used.
+
+
+          - `name_en` - Name en
+          - `-name_en` - Name en (descending)
+        explode: false
+        style: form
+      tags:
+      - units
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUnitForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/units/{id}:
+    get:
+      operationId: v1_units_retrieve
+      description: Retrieve a single `Unit` by ID.
+      summary: Get a single Unit
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - units
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnitForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
 components:
   schemas:
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          description: UUID
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Created at time
+        parent:
+          type: string
+          format: uuid
+          description: Parent action
+          nullable: true
+        applying_at:
+          type: string
+          format: date-time
+          description: Applying at time
+        type_code:
+          type: string
+          description: Type code
+          maxLength: 255
+        details_json:
+          nullable: true
+          description: Details in JSON format
+        deleted:
+          type: boolean
+          readOnly: true
+        object_id:
+          type: string
+          nullable: true
+          description: Linked object ID
+          maxLength: 255
+        object_type:
+          type: string
+          nullable: true
+          description: Linked object type
+          maxLength: 255
+      required:
+      - created_at
+      - deleted
+      - id
+      - type_code
     AddendumCommonShort:
       type: object
       properties:
@@ -3551,6 +4912,127 @@ components:
       required:
       - default
       - id
+    BalanceForOrgSerializerV1:
+      type: object
+      properties:
+        acc:
+          type: string
+          readOnly: true
+          description: Account code identifier (e.g., 'bonus.active'). Categorizes financial transactions.
+        unit_code:
+          type: string
+          readOnly: true
+        service:
+          type: string
+          readOnly: true
+        credit_amount:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+        debit_amount:
+          type: number
+          format: double
+          nullable: true
+          readOnly: true
+      required:
+      - acc
+      - credit_amount
+      - debit_amount
+      - service
+      - unit_code
+    BindingForOrgSerializerV1:
+      type: object
+      properties:
+        process_id:
+          type: string
+          readOnly: true
+        client_id:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: ID of client in API service
+          readOnly: true
+        status:
+          enum:
+          - error
+          - finished
+          - new
+          - waiting_details
+          - waiting_notification
+          type: string
+          description: |-
+            - `error` - error
+            - `finished` - finished
+            - `new` - new
+            - `waiting_details` - `waiting_details`
+            - `waiting_notification` - `waiting_notification`
+          x-spec-enum-id: ccf999977cdd925c
+          readOnly: true
+        payment_method_id:
+          type: integer
+          readOnly: true
+        payment_resource:
+          $ref: '#/components/schemas/PaymentResource'
+        result:
+          readOnly: true
+      required:
+      - client_id
+      - payment_method_id
+      - payment_resource
+      - process_id
+      - result
+      - status
+    BonusForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        active_from:
+          type: string
+          format: date-time
+        active_to:
+          type: string
+          format: date-time
+        client_id:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          description: ID of client in API service
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,24}(?:\.\d{0,12})?$
+        currency_char_code:
+          type: string
+          description: Currency iso4217 char code
+        description:
+          type: string
+          nullable: true
+          maxLength: 255
+        client_company:
+          type: string
+          nullable: true
+          description: Client name in english
+          readOnly: true
+        product_category_ids:
+          type: array
+          items:
+            type: integer
+            title: ID
+      required:
+      - active_from
+      - active_to
+      - amount
+      - client_company
+      - client_id
+      - created_at
+      - id
     CalcRule:
       type: object
       properties:
@@ -3580,6 +5062,41 @@ components:
       - id
       - name
       - rule_type
+    CountryForOrgSerializerV1:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Country code
+          pattern: ^[A-Z]{2}$
+          maxLength: 2
+        name:
+          type: string
+          description: Name of country
+          maxLength: 255
+        zone:
+          enum:
+          - RU
+          - EU
+          - OTHER
+          type: string
+          x-spec-enum-id: 5f0d311a9e23c2b1
+          description: |-
+            Country zone
+
+            - `RU` - RU
+            - `EU` - EU
+            - `OTHER` - OTHER
+        currency_id:
+          type: integer
+        disabled:
+          type: boolean
+          description: Country activatable status
+      required:
+      - code
+      - currency_id
+      - name
+      - zone
     CurrencyCommonShort:
       type: object
       properties:
@@ -3599,7 +5116,7 @@ components:
       required:
       - char_code
       - id
-    CurrencyForOrg:
+    CurrencyForOrgSerializerV1:
       type: object
       properties:
         id:
@@ -3638,9 +5155,8 @@ components:
           readOnly: true
         company_name:
           type: string
-          nullable: true
-          description: Return the company name of the primary payer if available.
           readOnly: true
+          nullable: true
       required:
       - company_name
       - id
@@ -4074,7 +5590,7 @@ components:
           properties:
             type:
               type: string
-              description: Report type code (e.g., 'ResellerExpenses', 'ResellerPlans', 'ResellerCredits', 'ResellerStatistics').
+              description: Report type code (e.g., 'ResellerExpenses', 'ResellerPlans', 'ResellerCredits', 'ResellerStatisticsV2').
             date_from:
               type: string
               format: date
@@ -4147,6 +5663,38 @@ components:
       - invoice_date
       - invoice_id
       - invoice_item_id
+    OperationForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        action:
+          $ref: '#/components/schemas/Action'
+        acc:
+          type: string
+          maxLength: 255
+        unit_code:
+          type: string
+          maxLength: 255
+        analytics: {}
+        debit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,24}(?:\.\d{0,12})?$
+          nullable: true
+        credit:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,24}(?:\.\d{0,12})?$
+          nullable: true
+      required:
+      - acc
+      - action
+      - analytics
+      - id
+      - unit_code
     OrgReportTaskRequest:
       type: object
       properties:
@@ -4200,6 +5748,75 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AddendumForOrgSerializerV1'
+    PaginatedBalanceForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceForOrgSerializerV1'
+    PaginatedBindingForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BindingForOrgSerializerV1'
+    PaginatedBonusForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BonusForOrgSerializerV1'
     PaginatedCalcRuleList:
       type: object
       required:
@@ -4223,7 +5840,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CalcRule'
-    PaginatedCurrencyForOrgList:
+    PaginatedCountryForOrgSerializerV1List:
       type: object
       required:
       - count
@@ -4245,7 +5862,30 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/CurrencyForOrg'
+            $ref: '#/components/schemas/CountryForOrgSerializerV1'
+    PaginatedCurrencyForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurrencyForOrgSerializerV1'
     PaginatedErpInvoiceExternalList:
       type: object
       required:
@@ -4315,6 +5955,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FileTask'
+    PaginatedOperationForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OperationForOrgSerializerV1'
     PaginatedPlanContentForOrgSerializerV1List:
       type: object
       required:
@@ -4338,7 +6001,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlanContentForOrgSerializerV1'
-    PaginatedProductForOrgList:
+    PaginatedProductCommonList:
       type: object
       required:
       - count
@@ -4360,7 +6023,53 @@ components:
         results:
           type: array
           items:
-            $ref: '#/components/schemas/ProductForOrg'
+            $ref: '#/components/schemas/ProductCommon'
+    PaginatedRegionForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegionForOrgSerializerV1'
+    PaginatedStatisticRegionForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatisticRegionForOrgSerializerV1'
     PaginatedTemplateList:
       type: object
       required:
@@ -4407,6 +6116,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TrialForOrgSerializerV1'
+    PaginatedUnitForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnitForOrgSerializerV1'
     PatchedTrialUpdateForOrgSerializerV1Request:
       type: object
       properties:
@@ -4500,6 +6232,61 @@ components:
           minimum: 0
           writeOnly: true
           description: Value for the trial option `WAAP_TRIAL_VOLUME_LIMIT`. If not provided, the trial option will not be updated.
+    PaymentResource:
+      type: object
+      description: Serializer for payment resources.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        type:
+          enum:
+          - adyen
+          - bank
+          - card
+          - paypal
+          - wallet
+          - alipay
+          - googlepay
+          - applepay
+          type: string
+          x-spec-enum-id: 2575771a35f0651c
+          readOnly: true
+          description: |-
+            Type of payment resource
+
+            - `adyen` - adyen
+            - `bank` - bank
+            - `card` - card
+            - `paypal` - paypal
+            - `wallet` - wallet
+            - `alipay` - alipay
+            - `googlepay` - googlepay
+            - `applepay` - applepay
+        payment_method:
+          type: integer
+          readOnly: true
+          description: Payment method that this resource is related to
+        config:
+          type: object
+          additionalProperties: {}
+          description: Retrieve the public configuration of the payment resource.
+          readOnly: true
+        archive:
+          type: boolean
+          readOnly: true
+          description: Mark object as archieved.
+        locked_fraud:
+          type: boolean
+          readOnly: true
+          description: Payment resource locked for fraud
+      required:
+      - archive
+      - config
+      - id
+      - locked_fraud
+      - payment_method
+      - type
     PlanCommonShort:
       type: object
       properties:
@@ -4675,23 +6462,7 @@ components:
       required:
       - id
       - name
-    ProductCommonShort:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        name:
-          type: string
-          readOnly: true
-        internal_name:
-          type: string
-          maxLength: 25
-      required:
-      - id
-      - internal_name
-      - name
-    ProductForOrg:
+    ProductCommon:
       type: object
       properties:
         id:
@@ -4710,6 +6481,45 @@ components:
       - id
       - internal_name
       - name_en
+    ProductCommonShort:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        internal_name:
+          type: string
+          maxLength: 25
+      required:
+      - id
+      - internal_name
+      - name
+    RegionForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          description: Region code
+          pattern: ^\w{1,3}$
+          maxLength: 3
+        name:
+          type: string
+          description: Name of region
+          maxLength: 255
+        country_id:
+          type: string
+          description: Country code
+      required:
+      - code
+      - country_id
+      - id
+      - name
     RoundingRuleCommon:
       type: object
       properties:
@@ -4751,6 +6561,38 @@ components:
       - external_name
       - id
       - name
+    StatisticRegionForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+        int_name:
+          type: string
+          description: region internal name for compatibility with ISP
+          maxLength: 255
+        ext_name:
+          type: string
+          description: region external name for compatibility wit Gstat
+          maxLength: 255
+        name_en:
+          type: string
+          nullable: true
+          description: human readable region name in english
+          maxLength: 255
+        product:
+          type: integer
+          nullable: true
+      required:
+      - ext_name
+      - id
+      - int_name
+      - product
+      - uuid
     Template:
       type: object
       description: Serializer for report template model.
@@ -4950,6 +6792,39 @@ components:
       - id
       - internal_name
       - name
+    UnitForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name_en:
+          type: string
+          readOnly: true
+        internal_name:
+          type: string
+          readOnly: true
+        base_unit:
+          type: integer
+          readOnly: true
+          nullable: true
+        base_multiplier:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,24}(?:\.\d{0,12})?$
+          readOnly: true
+          nullable: true
+        si_code:
+          type: string
+          readOnly: true
+          nullable: true
+      required:
+      - base_multiplier
+      - base_unit
+      - id
+      - internal_name
+      - name_en
+      - si_code
     Usage:
       type: object
       description: Resolve a Unit from an Expense via `plan_item` or subscription.`price_json`.
@@ -4979,14 +6854,21 @@ components:
 x-tagGroups:
 - name: Billing Reseller API
   tags:
+  - accounting
   - addendums
+  - bonuses
   - calc_rules
+  - countries
   - currencies
   - erp-invoices
   - expenses
+  - payment-bindings
   - plans
   - products
+  - regions
   - reports
+  - statistic-regions
   - trials
+  - units
 security:
 - APIKey: []

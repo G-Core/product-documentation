@@ -21,6 +21,7 @@ Match on the article path prefix (longest match wins).
 | `waap/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `edge-ai/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `fastedge/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
+| `reseller-support/` | Admin Portal (Reseller) — BLOCKED, see note below | https://admin.gcore.top/ | SSO flow — Work domain `gcore.com` reaches a **Gcore internal staff superadmin console** (all resellers, all accounts, employee RBAC, feature toggles), not a single reseller's own scoped view. Do not use this login for regression-testing reseller-facing articles until a real reseller-scoped account or an impersonation path is confirmed. |
 | `reseller/` (future) | Reseller Portal | TBD | TBD |
 | `box/` (future) | Box Portal | TBD | TBD |
 
@@ -44,7 +45,7 @@ Use these values when filling `create_edge_cloud_regression_ticket.py` in Phase 
 |---------------------|----------|----------------|------|-----------|---------|
 | `hosting/` | 16036 | Cloud | DOC-1701 | 12504 | sergey.kostichev@gcore.lu |
 | `cloud/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
-| `cdn/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
+| `cdn/` | 16037 | Edge Network | DOC-1936 | 12504 | maria.jose.mendez@gcore.lu |
 | `dns/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `storage/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `waap/` | 16035 | Security | TBD | 12504 | sergey.kostichev@gcore.lu |
@@ -53,6 +54,11 @@ Use these values when filling `create_edge_cloud_regression_ticket.py` in Phase 
 
 **TBD epics:** fill in the EPIC value before running the script for non-hosting products.
 Check Jira for the current active epic for that product area.
+
+**CDN regression-test batch note:** every ticket created for the `cdn/` batch also
+gets a secondary "relates to" issue link to `DOC-1349` (the umbrella documentation
+epic), in addition to the `DOC-1936` Epic Link above. Jira allows only one Epic Link
+per issue, so `DOC-1349` is attached as a regular issue link, not a second Epic Link.
 
 ---
 

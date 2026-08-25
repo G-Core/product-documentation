@@ -1,7 +1,7 @@
 ---
 title: Create a GPU Kubernetes cluster
 sidebarTitle: Create a cluster
-ai-navigation: Create GPU Kubernetes clusters with Bare Metal GPU pools via Customer Portal, REST API, or Terraform - configure version, pools, network, and download kubeconfig.
+ai-navigation: Create GPU Kubernetes clusters with Bare Metal GPU pools via Customer Portal, REST API, or Terraform, then download the kubeconfig.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -359,7 +359,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         "context"
         "fmt"
         "os"
-        "strconv"
         "strings"
         "time"
 
@@ -368,18 +367,13 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
         client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. Select the latest available Kubernetes version
-        versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{})
         if err != nil {
             panic(err)
         }
@@ -387,10 +381,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 2. Select a GPU Bare Metal flavor (non-spot)
         // IDs are region-specific; selects the first non-spot GPU BM flavor
-        flavors, err := client.Cloud.K8S.Flavors.List(ctx, cloud.K8SFlavorListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        flavors, err := client.Cloud.K8S.Flavors.List(ctx, cloud.K8SFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -403,19 +394,13 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         }
 
         // Step 3. Select the first available network and subnet
-        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{})
         if err != nil {
             panic(err)
         }
         networkID := networks.Results[0].ID
 
-        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{})
         if err != nil {
             panic(err)
         }
@@ -423,8 +408,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 4. Create the cluster
         taskIDList, err := client.Cloud.K8S.Clusters.New(ctx, cloud.K8SClusterNewParams{
-            ProjectID:    gcore.Int(projectID),
-            RegionID:     gcore.Int(regionID),
             Name:         "my-gpu-k8s",
             Version:      version,
             Keypair:      sshKeyName,
@@ -459,10 +442,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 6. Download kubeconfig
         kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, "my-gpu-k8s",
-            cloud.K8SClusterKubeconfigGetParams{
-                ProjectID: gcore.Int(projectID),
-                RegionID:  gcore.Int(regionID),
-            })
+            cloud.K8SClusterKubeconfigGetParams{})
         if err != nil {
             panic(err)
         }
@@ -499,10 +479,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   </Tab>
   <Tab title="Go SDK">
     ```go
-    versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{})
     if err != nil {
         panic(err)
     }
@@ -554,10 +531,7 @@ The API returns:
   </Tab>
   <Tab title="Go SDK">
     ```go
-    flavors, err := client.Cloud.K8S.Flavors.List(ctx, cloud.K8SFlavorListParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    flavors, err := client.Cloud.K8S.Flavors.List(ctx, cloud.K8SFlavorListParams{})
     if err != nil {
         panic(err)
     }
@@ -639,8 +613,6 @@ The `version` field must include the `v` prefix (e.g. `v1.35.3`). Omitting it re
   <Tab title="Go SDK">
     ```go
     taskIDList, err := client.Cloud.K8S.Clusters.New(ctx, cloud.K8SClusterNewParams{
-        ProjectID:    gcore.Int(projectID),
-        RegionID:     gcore.Int(regionID),
         Name:         "my-gpu-k8s",
         Version:      "v1.35.3",
         Keypair:      os.Getenv("GCORE_SSH_KEY_NAME"),
@@ -761,10 +733,7 @@ When complete:
   <Tab title="Go SDK">
     ```go
     kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, "my-gpu-k8s",
-        cloud.K8SClusterKubeconfigGetParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.K8SClusterKubeconfigGetParams{})
     if err != nil {
         panic(err)
     }
