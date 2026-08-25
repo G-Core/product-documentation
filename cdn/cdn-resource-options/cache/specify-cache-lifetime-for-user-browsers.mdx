@@ -1,72 +1,68 @@
 ---
 title: "Specify cache lifetime for user browsers"
 sidebarTitle: "Configure browser caching"
-ai-navigation: Configure browser cache lifetime using Origin controlled mode with Cache-Control headers or CDN controlled mode with custom max-age values in seconds, controlling Cache-Control, Expires, and X-Cached-Since response headers for HTTP status codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308.
+ai-navigation: Configure browser cache lifetime on CDN resources via the Gcore Customer Portal using Origin controlled or CDN controlled modes.
 ---
 
-## What is the browser caching option
+The Browser caching option sets how long CDN content is stored in end users' browsers. Two modes are available: **Origin controlled** uses the `Cache-Control` header from the origin server, and **CDN controlled** uses a fixed expiry set in the Customer Portal.
 
-The Browser Caching option defines how long content is cached in end users’ browsers. It has two modes: Origin controlled (set on the source site´s configuration) and CDN controlled (set in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list)).
+When **Origin controlled** is active, browsers cache content according to the origin's `Cache-Control` header. If the header is absent, browsers fall back to the `Last-Modified` header. Content is not cached if the origin provides neither header.
 
-### Origin controlled
+When **CDN controlled** is active, the following headers are added to the response:
 
-If you choose the Origin controlled mode, the content will be cached based on the origin settings specified in the Cache-Control header. For example, if your Cache-Control header is set as _Cache-Control: max-age=172800_ on your origin in seconds, the content will be cached for 2 days on the CDN servers.
-
-If the Cache-Control header is not specified, then most browsers will consider the Last-Modified header to decide how to handle files in the cache.
-
-<Note>
-  **Note**
-
-  The content will not be cached if there are no cache settings on your origin.
-</Note>
-
-### CDN controlled
-
-If you choose the CDN controlled mode, the content will be cached based on the cache duration set for this option in the Customer Portal. You can select a value from the list or set a custom value in seconds.
+- `Cache-Control` — specifies the maximum cache time. A 12-hour expiry returns `Cache-Control: max-age=43200`.
+- `X-Cached-Since` — the timestamp when the object was cached on CDN servers.
+- `Expires` — calculated as `NOW() + Cache-Control max-age`.
+- `Cache: HIT` or `Cache: MISS` — indicates whether the file was served from CDN cache or the origin.
 
 <Note>
-  **Note**
-
-  Here are the HTTP response codes that can be cached in browsers: 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Other response codes will not be cached.
+  HTTP response codes that can be cached in browsers: 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Other response codes will not be cached.
 </Note>
 
-If the CDN controlled is selected, the following will be added to the response headers:
+## Enable browser caching
 
-- **Cache-Control**. This header specifies the maximum time the object should remain in the local cache as valid. For a 12 hours expiry period, you will see _Cache-Control: max-age=43200_
-- **X-Cached-Since**. This header contains the timestamp when the object was initially cached in the CDN cache
-- **Expires**. This is a timestamp resulting from `"NOW()" + Cache-Control->max-age` telling the client browser to keep this object in cache for the amount of time specified by the max-age parameter in the Cache-Control header.
-- **Cache:HIT** or **Cache:MISS**. This shows if the file was delivered from the CDN cache or had to be pulled from the origin. It's not relevant to the actual caching.
+To enable and configure browser caching on a CDN resource:
 
-## How to configure the browser caching option
+<Steps>
+  <Step title="Navigate to CDN resources">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** and click the custom domain of the target resource.
 
-1. Go to the [CDN resources](https://portal.gcore.com/cdn/resources/list) section.
-2. Click the custom domain name of the CDN resource for which you want to configure Browser Caching.
+    <Frame>
+      ![CDN resources list with custom domain names](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image1.png)
+    </Frame>
+  </Step>
 
-<Frame>
-  ![CDN resources tab from where you can open settings](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/browser-caching-10.png)
-</Frame>
+  <Step title="Open browser caching settings">
+    In the **Cache** section, click **Browser caching**.
 
-The new page opens. Perform the remaining steps there.
+    <Frame>
+      ![CDN resource settings with Browser caching toggle enabled and Origin controlled dropdown](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image2.png)
+    </Frame>
+  </Step>
 
-<Frame>
-  ![Configure Browser Caching Option](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/browser-caching-20.png)
-</Frame>
+  <Step title="Enable the toggle">
+    Turn on the **Enable browser caching** toggle.
+  </Step>
 
-3. Click on the **Cache** and then select the **Browser Caching** option.
-4. Toggle on **Enable browser caching**.
-5. Select **Origin controlled** or **CDN controlled** in the list. If you set Origin controlled, the configuration is complete; continue to step six. If you select CDN controlled, follow the instructions in the expandable block.
+  <Step title="Select the caching mode">
+    From the dropdown, select **Origin controlled** or **CDN controlled**. If Origin controlled is selected, the configuration is complete — proceed to save. For CDN controlled, configure the expiry using the expandable block.
 
-<Accordion title="Configure CDN controlled mode">
-  Choose one of the options from the list. The recommended value is four days.
+    <Accordion title="Configure CDN controlled mode">
+      From the list, select an expiry period. The recommended value is four days.
 
-  <Frame>
-    ![CDN Controlled Cache Expiry](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/cdn-controlled-cache-expiry.png)
-  </Frame>
-  You can also choose **Custom value** to set an expiry period not presented in the list. For a custom value, specify the cache expiration time in seconds. For example, to cache content for one day, enter 86400.
+      <Frame>
+        ![Cache expiry dropdown in CDN controlled mode showing duration options](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image3.png)
+      </Frame>
 
-  <Frame>
-    ![CDN Controlled Cache Expiry Custom](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/cdn-controlled-cache-expiry-custom.png)
-  </Frame>
-</Accordion>
+      To set a duration not in the list, select **Custom value** and enter the cache expiration time in seconds — to cache content for one day, enter `86400`.
 
-6. Save changes.
+      <Frame>
+        ![Custom value field in CDN controlled mode with 86400 seconds entered](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image4.png)
+      </Frame>
+    </Accordion>
+  </Step>
+
+  <Step title="Save">
+    Click **Save changes**.
+  </Step>
+</Steps>
