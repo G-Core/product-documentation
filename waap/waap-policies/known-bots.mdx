@@ -11,17 +11,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>This policy group functions uniquely in WAAP. Instead of challenging or blocking incoming traffic like other policy groups, it's designed to recognize and allow traffic from legitimate automated services, such as search engine crawlers, AI agents, social media preview fetchers, monitoring tools, and payment processors.</p>
 
-<p>These services access your domain to gather information and are generally beneficial or necessary for normal web activity. For each bot, you choose how WAAP treats its traffic once the bot has been recognized and verified.</p>
+<p>These services access a domain to gather information and are generally beneficial or necessary for normal web activity. For each bot, configure how WAAP treats its traffic once the bot has been recognized and verified.</p>
 
 <Info>
-  **Info**
-
-  This policy group is available in the Pro and Enterprise plans. More details on the [Security pricing page](https://gcore.com/pricing/security#waap).
+  This policy group is available in the Pro and Enterprise plans.
 </Info>
 
 ## Bot categories
 
-<p>Known bots are grouped into intent-based categories so you can understand what each bot does and make informed policy decisions. Each bot belongs to exactly one category. Policies are managed per bot; category-level policy management is not available.</p>
+<p>Known bots are grouped into intent-based categories to clarify each bot's purpose and help with policy decisions. Each bot belongs to exactly one category, with policies configured at the individual bot level.</p>
 
 | Category | Description |
 |---|---|
@@ -39,14 +37,14 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Each known bot can be set to one of two actions:</p>
 
-- **Allow** — the request bypasses all WAAP processing layers, including DDoS protection, behavioral analytics, OWASP checks, and other handlers. Use this only for bots you fully trust.
-- **Policy-based** — the request is inspected, but the bot-detection checks that only apply to *unknown* automation are skipped (see below). Signature-based WAF and OWASP protections, IP-reputation threat signals, and your custom rules still apply.
+- **Allow** — the request bypasses all WAAP processing layers, including DDoS protection, behavioral analytics, OWASP checks, and other handlers. Recommended only for fully trusted bots.
+- **Policy-based** — the request is inspected, but the bot-detection checks that only apply to *unknown* automation are skipped (see below). Signature-based WAF and OWASP protections, IP-reputation threat signals, and custom rules still apply.
 
-<p>Some bots are set to **Policy-based** by default, and you can switch a bot to **Allow** to fully permit its traffic. AI Search and AI Training bots are set to **Allow** by default, while User-triggered AI bots are set to **Policy-based**. In some cases you might want to restrict a bot — for example, to enforce data-protection requirements, protect a domain from a service you don't use, or keep paid content from being scraped. In that case, adjust the action for the individual bot.</p>
+<p>Some bots are set to **Policy-based** by default; switch a bot to **Allow** to fully permit its traffic. AI Search and AI Training bots default to **Allow**, while User-triggered AI bots default to **Policy-based**. To restrict a bot — to enforce data-protection requirements, block an unused service, or protect paid content from scraping — adjust the action for that bot.</p>
 
-## How Policy-based mode interacts with other protections
+## Policy-based mode and other protections
 
-<p>Most bot-detection checks are designed to identify *unknown* automated traffic. Once a request is matched to a verified known bot, running those same checks again produces guaranteed false positives rather than added security. For example, cloud-hosted AI fetchers would trip **Traffic from hosting services**, search crawlers would trip **Anti-scraping** (indexing pages is scraping by definition), and any high-volume crawler would trip **Traffic anomaly**.</p>
+<p>Most bot-detection checks are designed to identify *unknown* automated traffic. Once a request is matched to a verified known bot, running those same checks again produces guaranteed false positives rather than added security. Cloud-hosted AI fetchers would trip **Traffic from hosting services**, search crawlers would trip **Anti-scraping** (indexing pages is scraping by definition), and any high-volume crawler would trip **Traffic anomaly**.</p>
 
 <p>For this reason, when a request is matched to a known bot set to **Policy-based**, the following checks are excluded — they do not evaluate, do not generate block events, do not increment detection counters, and do not appear as triggered in the event log:</p>
 
@@ -62,8 +60,6 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - Custom rules — a custom rule that targets a known-bot pattern is never suppressed
 
 <Info>
-**Info**
-
 Exclusions apply only to traffic that passes verification. If a request carries a known-bot User-Agent but fails verification, it is not treated as a known bot and every check evaluates normally.
 </Info>
 
@@ -79,15 +75,13 @@ Exclusions apply only to traffic that passes verification. If a request carries 
 
 ## Configure Known Bots
 
-<p>You can review and configure relevant bots in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard):</p>
+<p>Review and configure relevant bots in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard):</p>
 
 1. Navigate to **WAAP** \> **Bot Management**.
 
 2. In the domain dropdown at the top of the page, select the needed domain.
 
 3. Click the **Known Bots** tab to view bots grouped by category and adjust each bot's action.
-
-<p>Learn more about the related detection policies in the [Anti-automation and bot protection](/waap/waap-policies/anti-automation-and-bot-protection) section.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -171,8 +165,6 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 <p>The API returns all policies in the group. `mode: true` means Allow; `mode: false` means Policy-based.</p>
 
 <Info>
-**Info**
-
 `mode: false` (Policy-based) carries the detector-exclusion behavior described in the Customer Portal tab: unknown-automation detection checks are skipped for verified known-bot traffic, while signature-based WAF, OWASP protections, IP-reputation threat signals, and custom rules still apply.
 </Info>
 
