@@ -1,7 +1,7 @@
 ---
 title: Getting started with Managed DNS
 sidebarTitle: Getting started (Create a DNS zone)
-ai-navigation: Create and manage DNS zones in Gcore Managed DNS - add a zone, update NS records to Gcore nameservers, and manage records, TTL, and zone status.
+ai-navigation: Create and manage DNS zones in Gcore Managed DNS, add a zone, update NS records, and verify zone delegation status.
 ---
 
 To use Managed DNS, create a DNS zone for a domain or subdomain in the [Gcore Customer Portal](https://portal.gcore.com) and point the domain to Gcore's nameservers. The zone can then serve DNS queries through Gcore's global network.
@@ -54,3 +54,34 @@ DNS zones are managed in the [All&nbsp;zones](https://portal.gcore.com/dns/zones
 - **Delete zone.** Delete the zone.
 
 <Frame>![Manage DNS zones](/images/docs/dns/manage-a-dns-zone/getting-started-dns-60.png)</Frame>
+
+## Zone delegation status
+
+Check whether a DNS zone is active and correctly delegated to Gcore.
+
+The **All zones** section of the Customer Portal shows a status indicator next to each zone. This reflects the zone's operational state in Gcore: a zone that has been turned off does not serve records until re-enabled, regardless of how NS records are configured at the registrar.
+
+To confirm that NS records at the registrar point to Gcore nameservers, use the [Delegation status](/api-reference/dns/analyze/check-delegation-status) endpoint:
+
+```bash
+curl -s "https://api.gcore.com/dns/v2/analyze/{name}/delegation-status" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The response includes the following fields:
+
+```json
+{
+  "zone_exists": true,
+  "gcore_authorized_count": 2,
+  "non_gcore_authorized_count": 0,
+  "is_whitelabel_delegation": false,
+  "authoritative_name_servers": [
+    { "name": "ns1.gcorelabs.net", "ipv4Addresses": ["..."] },
+    { "name": "ns2.gcdn.services", "ipv4Addresses": ["..."] }
+  ]
+}
+```
+
+- `gcore_authorized_count`: number of Gcore nameservers currently authoritative for the zone. A value of `0` means NS records at the registrar have not been updated to point to Gcore, or propagation is still in progress (up to 24 hours).
+- `is_whitelabel_delegation`: `true` when the zone is served through white-label nameservers on an Enterprise plan instead of the default `ns1.gcorelabs.net` and `ns2.gcdn.services`.
