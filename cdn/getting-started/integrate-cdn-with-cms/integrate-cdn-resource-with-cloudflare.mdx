@@ -1,22 +1,74 @@
 ---
-title: Integrate CDN resource with Cloudflare
+title: Integrate a CDN resource with Cloudflare
 sidebarTitle: Cloudflare
-ai-navigation: Configure Gcore CDN integration with Cloudflare by disabling DNS proxying on CNAME records and setting Origin Pull Protocol to HTTP or adding Change SNI Hostname in Security settings to avoid 502 errors.
+ai-navigation: Configure a Gcore CDN resource with Cloudflare DNS using a DNS-only CNAME and compatible origin protocol, host header, and SNI settings.
 ---
+
+Cloudflare can remain the DNS provider while Gcore delivers content through CDN. An existing Gcore CDN resource, its generated `*.gcdn.co` hostname, and access to the Cloudflare DNS zone are required.
+
+Cloudflare can proxy eligible A, AAAA, and CNAME records individually. Set the CDN CNAME record to **DNS only** so requests resolve directly to Gcore instead of passing through the Cloudflare proxy first.
 
 ## CNAME record setup
 
-If you use the Cloudflare DNS service, the Cloudflare servers function as proxy for all DNS records. The Cloudflare's DDoS protection and CDN services are based on that.
+Add the custom domain from the Gcore resource to the Cloudflare DNS zone.
 
-If you want to use Gcore as your CDN provider, disable the proxying in the Cloudflare DNS settings by clicking the cloud icon during the [CNAME record creation](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
+<Steps>
+  <Step title="Open the Cloudflare DNS records">
+    In the Cloudflare dashboard:
 
+    1. Select the account.
+    2. Select the domain.
+    3. Navigate to **DNS** > **Records**.
+  </Step>
 
-<Frame>![CNAME record setup](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cloudflare/1574936519330.png)</Frame>
+  <Step title="Add the CNAME record">
+    Click **Add record** and configure the record:
 
+    1. Set **Type** to **CNAME**.
+    2. In **Name**, enter the CDN subdomain configured in Gcore — `cdn` for `cdn.example.com`.
+    3. In **Target**, enter the generated `*.gcdn.co` hostname shown in the Gcore activation instructions.
+    4. Set **Proxy status** to **DNS only**.
+    5. Click **Save**.
+  </Step>
 
+  <Step title="Verify the DNS record">
+    Confirm that the saved CNAME points to the generated Gcore hostname and shows **DNS only**. Gcore uses this record to validate the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
+  </Step>
+</Steps>
 
-## Origin pull protocol setup
+## Proxied origin settings
 
-Due to the differences in our and Cloudflare's infrastructures, if you set HTTPS as your "Origin Pull Protocol", you will likely start getting 502 errors. 
+When Cloudflare only hosts DNS for the CDN CNAME, keep the existing Gcore origin settings. When Cloudflare also proxies the origin hostname, align the origin protocol, host header, and SNI hostname in the Customer Portal.
 
-To avoid it, add the [Change SNI Hostname](/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server) option in the "Security" section or change "Origin Pull Protocol" to HTTP.
+<Steps>
+  <Step title="Open the CDN resource settings">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the resource CNAME.
+  </Step>
+
+  <Step title="Select the origin pull protocol">
+    In **General** > **Origin pull protocol**, select a protocol accepted by the Cloudflare-proxied origin:
+
+    - **HTTP** sends unencrypted requests to the origin.
+    - **HTTPS** encrypts requests to the origin.
+    - **HTTP and HTTPS** supports pulls over both protocols when the origin accepts both.
+
+    <Frame>
+      ![Origin pull protocol with HTTP, HTTPS, and HTTP and HTTPS options](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cloudflare/integrate-cdn-resource-with-cloudflare-image1.png)
+    </Frame>
+  </Step>
+
+  <Step title="Configure SNI for HTTPS">
+    When using HTTPS, navigate to **Access** > **SNI hostname** and enable **Change SNI hostname**:
+
+    - Select **Dynamic SNI hostname** when the **Change Host header** value already matches a hostname covered by the origin certificate.
+    - Select **Custom SNI hostname** to specify a different hostname covered by the origin certificate.
+
+    <Frame>
+      ![SNI hostname settings with dynamic and custom hostname options](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cloudflare/integrate-cdn-resource-with-cloudflare-image2.png)
+    </Frame>
+  </Step>
+
+  <Step title="Save and test delivery">
+    Click **Save changes**, then request a known asset through the CDN domain. If the request returns a 502 response, verify that the origin accepts the selected protocol and that the Host header and SNI hostname match the origin certificate.
+  </Step>
+</Steps>
