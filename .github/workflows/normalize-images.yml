@@ -37,11 +37,19 @@ jobs:
       - name: Detect changed files
         id: changed
         run: |
-          # Write to temp files instead of GITHUB_OUTPUT to avoid ARG_MAX limits.
-          # Large PRs can produce thousands of paths; env vars and argv both count
-          # against ARG_MAX (~2 MB on Linux), causing "Argument list too long".
-          git diff --name-only \
+          # Use merge-base so we only diff what the PR branch actually changed,
+          # not everything that diverged in main since the PR was opened.
+          # Without this, base.sha vs head.sha includes all of main's commits
+          # since the PR was created, which can be thousands of files.
+          #
+          # Write to temp files (not GITHUB_OUTPUT / env vars) to avoid ARG_MAX.
+          # The combined env+argv size has a ~2 MB kernel limit; large file lists
+          # in environment variables cause "Argument list too long" on bash startup.
+          MERGE_BASE=$(git merge-base \
             ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }})
+
+          git diff --name-only "$MERGE_BASE" \
             ${{ github.event.pull_request.head.sha }} \
             > /tmp/changed_files.txt
 
