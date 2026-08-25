@@ -1,13 +1,13 @@
 ---
 title: "Make the first Gcore API call"
 sidebarTitle: "First API call"
-ai-navigation: Step-by-step walkthrough to obtain a project ID and region ID from the Cloud API, set all three required variables in the terminal, and make a verified first resource call using curl, Python SDK, Go SDK, or JavaScript.
+ai-navigation: Set up an API token, project ID, and region ID, then make the first Cloud API call using curl, Python SDK, Go SDK, or JavaScript.
 ---
 
 Three values are needed before any Cloud API call works: an API token, a project ID, and a region ID.
 
 <Info>
-A terminal must be open and `curl` must be installed. If either is unfamiliar, read [API basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
+A terminal must be open and `curl` must be installed. If either is unfamiliar, read [API&nbsp;basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
 </Info>
 
 ## Step 1. Set up the API token
@@ -39,7 +39,7 @@ The terminal will display a response. A working token returns something like:
 }
 ```
 
-If the terminal shows an error message instead, check [Authentication errors](/developer-tools/rest-api/authentication#common-authentication-errors).
+If the terminal shows an error message instead, check [Authentication&nbsp;errors](/developer-tools/rest-api/authentication#common-authentication-errors).
 
 ## Step 2. Find the project ID
 
@@ -54,9 +54,8 @@ Cloud API URLs include a project ID — a number that identifies the account's p
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()
     projects = client.cloud.projects.list()
     for p in projects.results:
         print(p.id, p.name, p.is_default)
@@ -64,7 +63,7 @@ Cloud API URLs include a project ID — a number that identifies the account's p
   </Tab>
   <Tab title="Go SDK">
     ```go
-    projects, err := client.Cloud.Projects.List(context.TODO(), cloud.ProjectListParams{})
+    projects, err := client.Cloud.Projects.List(ctx, cloud.ProjectListParams{})
     if err != nil { panic(err) }
     for _, p := range projects.Results {
         fmt.Println(p.ID, p.Name, p.IsDefault)
@@ -98,17 +97,18 @@ The terminal outputs:
 }
 ```
 
-Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set it as a variable:
+Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set the appropriate variable for the method being used:
 
 ```bash
-export PROJECT_ID=1234567
+export PROJECT_ID=1234567              # curl and JavaScript
+export GCORE_CLOUD_PROJECT_ID=1234567  # Python SDK and Go SDK
 ```
 
 Replace `1234567` with the actual ID from the response.
 
 Most accounts have one project named "Default", while multiple projects are used to separate environments (production, staging) or billing.
 
-## Step 3. Choose a region
+## Step 3. Select a region
 
 Cloud resources — VMs, volumes, networks — exist in a specific region (a data center location), and different regions support different features. List all available regions:
 
@@ -129,7 +129,7 @@ Cloud resources — VMs, volumes, networks — exist in a specific region (a dat
   </Tab>
   <Tab title="Go SDK">
     ```go
-    regions, err := client.Cloud.Regions.List(context.TODO(), cloud.RegionListParams{
+    regions, err := client.Cloud.Regions.List(ctx, cloud.RegionListParams{
         Limit: gcore.Int(50),
     })
     if err != nil { panic(err) }
@@ -177,10 +177,11 @@ The fields that matter for choosing:
 | `has_k8s` | `true` means Managed Kubernetes is available |
 | `has_dbaas` | `true` means Managed PostgreSQL is available |
 
-Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Then set it:
+Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Set the appropriate variable for the method being used:
 
 ```bash
-export REGION_ID=148
+export REGION_ID=148              # curl and JavaScript
+export GCORE_CLOUD_REGION_ID=148  # Python SDK and Go SDK
 ```
 
 Replace `148` with the chosen region's `id`.
@@ -198,21 +199,16 @@ With all three variables set, run a real Cloud API call — list all VMs in the 
   </Tab>
   <Tab title="Python SDK">
     ```python
-    instances = client.cloud.instances.list(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
+    # Uses GCORE_CLOUD_PROJECT_ID and GCORE_CLOUD_REGION_ID set in Step 2 and 3
+    instances = client.cloud.instances.list()
     print(f"{instances.count} instances")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    var projectID int64 = 1234567
-    var regionID  int64 = 148
-    instances, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    // Uses GCORE_CLOUD_PROJECT_ID and GCORE_CLOUD_REGION_ID set in Step 2 and 3
+    ctx := context.Background()
+    instances, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
     if err != nil { panic(err) }
     fmt.Printf("%d instances\n", instances.Count)
     ```
@@ -240,31 +236,50 @@ The terminal outputs:
 
 An empty list is expected on a new project — no VMs have been created yet. A `200 OK` response with valid JSON confirms the token, project ID, and region ID are all correct.
 
-## API URL structure
+## Environment variables reference
 
-These three environment variables appear in every Cloud API call throughout these guides:
+The three values set in Steps 1–3 are required for every Cloud API call. The variable names differ depending on the method used.
+
+**curl and JavaScript** — project and region IDs are embedded in the URL path:
 
 ```bash
-export GCORE_API_KEY="..."    # Who is making the request (authentication)
-export PROJECT_ID=1234567     # Which project the resource belongs to
-export REGION_ID=148          # Which data center location to use
+export GCORE_API_KEY="..."    # Authentication
+export PROJECT_ID=1234567     # Goes into the URL path
+export REGION_ID=148          # Goes into the URL path
 ```
 
-The API URL always follows this pattern:
+The curl URL pattern:
 
 ```
 https://api.gcore.com/cloud/v1/{resource_type}/{PROJECT_ID}/{REGION_ID}
 ```
 
-With the three variables exported, the shell substitutes them automatically in every call:
+Example:
 
 ```bash
-$ curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
-    -H "Authorization: APIKey $GCORE_API_KEY"
-
-# Shell sends:
-# GET https://api.gcore.com/cloud/v1/instances/1234567/148
-# Authorization: APIKey 29841$c767...
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+# Sends: GET https://api.gcore.com/cloud/v1/instances/1234567/148
 ```
+
+**Python SDK** — all three values are read automatically from environment variables:
+
+```bash
+export GCORE_API_KEY="..."           # Read by Gcore() automatically
+export GCORE_CLOUD_PROJECT_ID=1234567  # Read by Gcore() automatically
+export GCORE_CLOUD_REGION_ID=148       # Read by Gcore() automatically
+```
+
+No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
+
+**Go SDK** — all three values are read automatically by `gcore.NewClient()`, the same way the Python SDK reads them:
+
+```bash
+export GCORE_API_KEY="..."             # Read by gcore.NewClient() automatically
+export GCORE_CLOUD_PROJECT_ID=1234567  # Read by gcore.NewClient() automatically
+export GCORE_CLOUD_REGION_ID=148       # Read by gcore.NewClient() automatically
+```
+
+No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
 
 Resource creation is asynchronous — the response returns a task ID, not the finished resource.

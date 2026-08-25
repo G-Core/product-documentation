@@ -1,33 +1,40 @@
 ---
-title: "4xx errors: how to solve storage issues"
+title: Storage 4xx error troubleshooting
 sidebarTitle: Troubleshooting
-ai-navigation: Resolve HTTP 404 and HTTP 403 errors when requesting content from Gcore Object Storage or SFTP storage by verifying file uploads, using correct regional URLs, and configuring bucket and file ACL rules for public access via AWS CLI or s3cmd.
+ai-navigation: Resolve HTTP 404 and HTTP 403 errors from Gcore Object Storage and SFTP Storage by checking file uploads, request URLs, and ACL rules for public access.
 ---
 
-If you request content from Object Storage or SFTP storage and receive an error in return, check if there are open incidents or maintenance connected with Object Storage on the Status Page. 
+If Object Storage or SFTP Storage returns an error, first check the [Gcore Status Page](https://status.gcore.com) for active incidents or maintenance.
 
 ## HTTP 404
 
-1\. Make sure that a file was uploaded to storage. You may use any applications that support Object Storage or SFTP Storage for that purpose 2\. Make sure you use the correct URL form for the request. The scheme for direct storage requests is described in the article. Notice that the Global 2 location includes three regions: use the host of the region, where the file was uploaded. The region's URL is described in the [article](/storage/request-content-directly-from-the-storage). 
+A 404 error means the storage cannot find the requested file. Two common causes:
+
+1. The file hasn't been uploaded yet — confirm the file exists via the [Gcore Customer Portal](https://portal.gcore.com) or an S3-compatible client.
+2. The request URL is malformed — Object Storage files are accessed as `http(s)://<bucket-name>.<hostname>`, where the hostname for each location is in the **Details** section of the storage in the Customer Portal or in the [URL&nbsp;format](/storage/request-content-directly-from-the-storage) reference.
 
 ## HTTP 403
 
-By default, buckets and files in Object Storage are private and respond with 403 code on external requests. You can set up ACL rules for bucket or file with your S3-application documentation. 
+A 403 error means the file or bucket is private — Object Storage buckets and files block external access by default.
 
-  * To add a rule for public reading via AWS CLI:
+To allow public access, set an ACL (Access Control List) rule on the bucket or file. Both AWS CLI and s3cmd support this operation.
 
+### AWS CLI
+
+Run `put-object-acl` with `--acl public-read` to grant public read access:
 
 ```sh
 aws s3api put-object-acl --bucket my_bucket --key file.jpg --acl public-read --endpoint-url=https://s3-ed1.cloud.gcore.lu
- ```
+```
 
-Where `my_bucket` is the name of the bucket, `file.jpg` is the name of the file, and `s-ed1.cloud.gcore.lu` is the service URL.
+Replace `my_bucket` with the bucket name, `file.jpg` with the filename, and `s3-ed1.cloud.gcore.lu` with the service URL for the storage location.
 
-  * To add a rule for public reading via s3cmd:
+### s3cmd
 
+Run `setacl --acl-public` to grant public read access:
 
 ```sh
 s3cmd setacl --acl-public s3://my_bucket/file.jpg
- ```
+```
 
-Where `my_bucket` is the name of the bucket and `file.jpg` is the name of the file.
+Replace `my_bucket` with the bucket name and `file.jpg` with the filename.

@@ -1,5 +1,6 @@
 """
 normalize_images.py — Enforce image folder hygiene in product-documentation.
+# codeowners-test
 
 Convention:
     images/docs/{product}/{article-slug}/
@@ -39,6 +40,13 @@ log = logging.getLogger(__name__)
 IMAGES_ROOT = "images/docs"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
+# Folders under images/docs/ that are shared-asset libraries, not article
+# screenshot folders.  The normalizer never moves or deletes files here.
+PROTECTED_IMAGE_FOLDERS: set[str] = {
+    "images/docs/portal-icons",
+    "images/docs/home",
+}
+
 # Image product folder names that differ from MDX product folder names.
 PRODUCT_FOLDER_MAP: dict[str, str] = {
     "streaming-platform": "streaming",
@@ -50,8 +58,11 @@ MDX_TO_IMAGE_PRODUCT: dict[str, str] = {v: k for k, v in PRODUCT_FOLDER_MAP.item
 # Regex patterns to extract image paths from MDX content.
 _IMAGE_REF_PATTERNS = [
     re.compile(r'!\[[^\]]*\]\((/images/docs/[^)\s"\']+)\)'),        # ![alt](/images/...)
-    re.compile(r'src=["\']([^"\']*?/images/docs/[^"\']+)["\']'),    # src="/images/..."
-    re.compile(r'href=["\']([^"\']*?/images/docs/[^"\']+)["\']'),   # href="/images/..."
+    # Any JSX/HTML attribute value, e.g. src="...", href="...", icon="...",
+    # img="...". Covers Mintlify components (Card icon, etc.) as well as
+    # plain HTML, so image paths referenced via component props aren't
+    # mistaken for orphaned files and deleted.
+    re.compile(r'\w+=["\']([^"\']*?/images/docs/[^"\']+)["\']'),
 ]
 
 
@@ -186,6 +197,12 @@ def compute_plan(
 
     for folder in sorted(affected_folders):
         if not folder.is_dir():
+            continue
+
+        # Skip shared-asset folders that must not be renamed or deleted.
+        folder_rel = str(folder.relative_to(repo_root)).replace("\\", "/")
+        if any(folder_rel == p or folder_rel.startswith(p + "/") for p in PROTECTED_IMAGE_FOLDERS):
+            log.info("SKIP protected folder: %s", folder_rel)
             continue
 
         images_in_folder = sorted(

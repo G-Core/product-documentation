@@ -161,20 +161,30 @@ If the change spans multiple products, list the two most prominent: `[Cloud, CDN
 
 ---
 
-## Step 3 — Ensure main is up to date and prepare branch name
+## Step 3 — Ensure main is up to date and determine the branch name
 
-Determine the branch name based on what was done:
+**Branch names are always Jira ticket keys. No exceptions.**
 
-| What was done | Branch name |
-|---------------|-------------|
-| New article | `new-article/{product}-{slug}` |
-| Added API tab | `api-tab/{product}-{slug}` |
-| Updated article | `update/{product}-{slug}` |
-| GitHub issue work | `issue/{number}-{short-slug}` |
-| Audited article | `audit/{product}-{slug}` |
-| Feature draft (contributor) | `feature-draft/{ticket-id-or-slug}` |
+The branch name is the Jira ticket key assigned to this work — for example `DOC-1865`.
+Never use slug-based names (`update/...`, `audit/...`, `new-article/...`, or any other pattern).
 
-Where `{slug}` is the article filename without `.mdx`.
+### If a Jira ticket already exists
+
+Use that ticket key as the branch name. Done.
+
+### If no Jira ticket exists — create one first
+
+Do not proceed to git operations without a ticket. Use the creation script:
+
+```powershell
+cd C:\Projects\docops-agent2\scripts\hosting-audit
+..\..\venv\Scripts\python.exe create_edge_cloud_regression_ticket.py --dry-run
+```
+
+Fill in `SUMMARY`, `DESCRIPTION`, `EPIC`, and `ORG_UNIT` in the script before running.
+Run without `--dry-run` to create the ticket. The script prints the created ticket key — use it as the branch name.
+
+Reset the script constants back to placeholder values after the ticket is created.
 
 ---
 

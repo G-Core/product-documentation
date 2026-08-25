@@ -1,4 +1,4 @@
-name: Sanitize ai-navigation YAML
+name: Sanitize MDX files
 
 on:
   push:
@@ -17,26 +17,40 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fix ai-navigation YAML special characters
+      - name: Fix UTF-8 BOM and ai-navigation YAML special characters
         run: |
           python3 - <<'EOF'
           import re, pathlib, sys
 
+          BOM = b"\xef\xbb\xbf"
+
           root = pathlib.Path(".")
-          fixed = []
+          bom_fixed = []
+          yaml_fixed = []
           encoding_errors = []
+
           for f in root.rglob("*.mdx"):
+              raw = f.read_bytes()
+
+              # Strip UTF-8 BOM if present.
+              if raw.startswith(BOM):
+                  raw = raw[3:]
+                  f.write_bytes(raw)
+                  bom_fixed.append(str(f))
+
               try:
-                  text = f.read_text(encoding="utf-8")
+                  text = raw.decode("utf-8")
               except UnicodeDecodeError as e:
                   encoding_errors.append((str(f), str(e)))
                   continue
+
               def fix(m):
                   return "ai-navigation: " + re.sub(r"[:#]", " -", m.group(1))
+
               new = re.sub(r"^ai-navigation: (.+)$", fix, text, flags=re.MULTILINE)
               if new != text:
                   f.write_text(new, encoding="utf-8")
-                  fixed.append(str(f))
+                  yaml_fixed.append(str(f))
 
           if encoding_errors:
               print("ERROR: the following .mdx files are not valid UTF-8.", file=sys.stderr)
@@ -46,11 +60,17 @@ jobs:
                   print(f"  {path}: {detail}", file=sys.stderr)
               sys.exit(1)
 
-          if fixed:
-              print(f"Fixed {len(fixed)} files:")
-              for name in fixed:
+          if bom_fixed:
+              print(f"Stripped UTF-8 BOM from {len(bom_fixed)} files:")
+              for name in bom_fixed:
                   print(f"  {name}")
-          else:
+
+          if yaml_fixed:
+              print(f"Fixed ai-navigation YAML in {len(yaml_fixed)} files:")
+              for name in yaml_fixed:
+                  print(f"  {name}")
+
+          if not bom_fixed and not yaml_fixed:
               print("No issues found.")
           EOF
 
@@ -60,6 +80,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git diff --quiet && echo "Nothing to commit" || (
             git add -A
-            git commit -m "Auto-fix: sanitize ai-navigation YAML special characters"
+            git commit -m "Auto-fix: strip UTF-8 BOM and sanitize ai-navigation YAML"
             git push
           )

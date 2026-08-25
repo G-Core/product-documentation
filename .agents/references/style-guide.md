@@ -438,6 +438,178 @@ These headings must never appear:
 - Prerequisites go in the opening paragraph as plain text, not a separate section
 - Every article opens with its own unique sentence — never a template sentence that could appear in three different articles
 
+### No artificial scenarios in the opening sentence
+
+The reader already knows why they opened the article. Do not write a life scenario to justify the feature's existence.
+
+**Bad — scenario that adds no information:**
+```
+Multiple people often need access to the same hosting account — for example, a site
+administrator or a billing contact. Adding a sub-user gives each person separate
+login credentials instead of sharing a single password.
+```
+
+**Good — one sentence stating what the feature does:**
+```
+Sub-users allow multiple people to access the same hosting account with separate login credentials.
+```
+
+The test: could this opening sentence appear unchanged in three other articles in the same product? If yes, it is a scenario — rewrite it as a direct statement of what the feature does or enables.
+
+### No navigation chains in prose
+
+Never embed a multi-step navigation path (three or more steps) inside a prose sentence. A sentence like "...found on the General information page, reached by clicking the avatar, selecting Profile, then navigating to Account > General information" is a hidden procedure — the reader cannot follow it without re-reading.
+
+**Bad — navigation chain buried in prose:**
+```
+The tax location and its rate appear in the Tax location field, in the Tax and currency
+section of the General information page, reached by clicking the avatar in the top-right
+corner of the Gcore Customer Portal, selecting Profile, then Account > General information.
+```
+
+**Good — one-sentence intro, then numbered steps:**
+```
+Every Gcore account has a tax location — the country whose tax regulations apply to the account.
+
+To view it:
+
+1. Click the avatar in the top-right corner of the Gcore Customer Portal.
+2. Select **Profile**.
+3. Navigate to **Account** > **General information**.
+4. Find the **Tax location** field in the **Tax and currency** section.
+```
+
+### Never nest `<Steps>` inside `<Steps>`
+
+Mintlify `<Steps>` components must never be nested inside another `<Steps>` component.
+When a `<Step>` body contains a sequential sub-procedure (e.g., form fields inside a tab),
+use a plain **numbered list** — not another `<Steps>` + `<Step>` block.
+
+**Wrong — nested Steps inside a Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    <Steps>
+      <Step title="Set the port">
+      In the "Port" field, enter 443.
+      </Step>
+      <Step title="Save">
+      </Step>
+    </Steps>
+  </Step>
+</Steps>
+```
+
+**Correct — numbered list inside the Step body:**
+```mdx
+<Steps>
+  <Step title="Configure the record">
+    1. In the "Port" field, enter 443.
+    2. Click **Save**.
+  </Step>
+</Steps>
+```
+
+This also applies inside `<Tab>` components that are themselves inside a `<Step>`.
+
+### Use `<Steps>` for portal procedures
+
+For any Customer Portal procedure with two or more sequential steps, use the Mintlify
+`<Steps>` + `<Step>` components instead of a plain numbered list. This renders numbered
+UI blocks with visible titles and is significantly more scannable than prose.
+
+```mdx
+<Steps>
+  <Step title="Navigate to the page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** → **Managed DNS**
+    and click the zone name.
+  </Step>
+  <Step title="Configure the record">
+    Click **Add record** and fill in the form:
+
+    1. Set **Type** to **CNAME**.
+    2. In the **Name** field, enter the root domain.
+    3. In the **Content** field, enter the target domain.
+    4. Click **Add**.
+
+    <Frame>![Add CNAME record form](/images/docs/...)</Frame>
+  </Step>
+</Steps>
+```
+
+**Rules for `<Step>` bodies:**
+
+- When a step involves a single UI action — write it as a plain sentence inside `<Step>`.
+- When a step involves filling a form or performing three or more sequential sub-actions
+  — use a **numbered list** (not bullets) inside the `<Step>` body.
+- Never use bullet points for sequential sub-actions. Bullets imply the order does not
+  matter; numbered lists signal required order.
+- A `<Frame>` screenshot goes inside the `<Step>` that it illustrates, after the instructions.
+- Each `<Step title="...">` uses sentence case. The title names the goal, not the first
+  micro-action: "Add a CNAME record", not "Click Add record".
+
+**What not to do inside `<Step>`:**
+
+```
+# Wrong — three or more sequential actions in one sentence
+<Step title="Configure the record">
+  Click **Add record**, set Type to CNAME, enter the root domain in Name,
+  enter the target in Content, and click Add.
+</Step>
+
+# Wrong — bullets for sequential sub-steps
+<Step title="Configure the record">
+  - Set **Type** to **CNAME**.
+  - Enter the **Name**.
+  - Click **Add**.
+</Step>
+
+# Correct — numbered sub-list
+<Step title="Configure the record">
+  Click **Add record** and fill in the form:
+
+  1. Set **Type** to **CNAME**.
+  2. In the **Name** field, enter the root domain.
+  3. Click **Add**.
+</Step>
+```
+
+### Article must open with a prose paragraph
+
+The `title:` field in the frontmatter renders as the page H1. The first element in the article body must be a prose paragraph — never a heading, list, table, or code block.
+
+Jumping from the page title straight to a `##` section heading gives the reader no context. The opening paragraph must establish what the feature does, what problem the article addresses, or what situation the reader is in — without meta-preamble (see [No meta-preamble openers](#no-meta-preamble-openers)).
+
+**Forbidden opening patterns for the paragraph:**
+- `This article covers...`
+- `This guide explains the following scenarios...`
+- `The sections below describe...`
+- `Here you will find...`
+
+These are still meta-preamble, just placed in a paragraph instead of a heading.
+
+**Bad — body opens with a heading:**
+```
+---
+title: Troubleshoot issues with an SSH connection
+---
+
+## Recommended SSH connection method
+```
+
+**Good — prose paragraph before the first heading:**
+```
+---
+title: Troubleshoot issues with an SSH connection
+---
+
+SSH connections to Gcore Virtual Machines use key-based authentication by default. Most failures trace back to a misconfigured key, the wrong default username, a missing floating IP, or a blocked firewall port.
+
+## Recommended SSH connection method
+```
+
+The opening paragraph must be specific to this article. A reader skimming the page title and the first two sentences should understand both the topic and the scope — without reading a single heading.
+
 ---
 
 ## Links
@@ -447,14 +619,19 @@ These headings must never appear:
 If a URL has already appeared as a link, all subsequent mentions are **plain text**.
 The first occurrence is the canonical link.
 
-### Link text: 1–2 words maximum
+### Link text: 1–3 words maximum
 
 The link text must be the noun or short verb phrase that names the destination.
 Never use a full clause, sentence fragment, or description.
 
+**Exception — Gcore product names:** `Gcore Customer Portal` is a three-word proper noun
+and must never be shortened. Use it in full as link text for the first mention:
+`[Gcore Customer Portal](https://portal.gcore.com)`. The 1–3 word rule does not apply
+to registered product names.
+
 ### Non-breaking spaces in multi-word link text
 
-When link text contains two words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between the words:
+When link text contains two or three words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between every word:
 
 ```mdx
 [KV&nbsp;store](/fastedge/kv-stores/manage-kv-store)
@@ -471,24 +648,37 @@ Plain space inside `[...]` allows the browser to break the link mid-text, which 
 
 ### Banned link sentence patterns
 
-These create empty sentences. Merge the link into the previous sentence instead.
+These create empty sentences. The test: if the link were removed, would the sentence still carry real information? If no — it is a banned pattern.
+
+The ban covers **any verb** that just routes the reader to a destination:
 
 - `For more details, see [X]`
 - `See [X] for more information`
 - `Learn more in [X]`
 - `For details, see [X]`
 - `Refer to [X] for`
+- `Use the [X] to ...`
+- `Open the [X] to ...`
+- `Read the [X] for ...`
+- `Check the [X] for ...`
+- `The same data is available via the [X].`
+- `The same log is available programmatically via the [X].`
 - Any standalone sentence whose only purpose is to host a link
 
-**Bad:**
+**Bad — verb-routes-to-destination pattern:**
 ```
 For more details, see [API tokens](/account-settings/api-tokens).
+Use the [Cloud API](/api-reference/cloud) to retrieve audit records.
+The same log is available via the [Cloud API](/api-reference/cloud).
 ```
 
-**Good:**
+**Good — link is an attribute of the subject, not the destination:**
 ```
 Generate an [API token](/account-settings/api-tokens) in account settings.
+The same events are exposed by the [Cloud API](/api-reference/cloud) audit endpoint.
 ```
+
+**The rule in one sentence:** the link must describe what the linked thing IS or DOES as part of a sentence that already makes a point — not tell the reader to go there.
 
 ### Links must carry meaning
 
@@ -503,6 +693,15 @@ Embed the link into an existing content sentence as a natural part of the text.
 |---------|-----|
 | First mention in article | `[Gcore Customer Portal](https://portal.gcore.com)` |
 | All subsequent mentions | plain text: "the Customer Portal" (no link, no "Gcore" prefix) |
+
+### Gcore Hosting Portal naming
+
+The Gcore Hosting Portal (`https://hosting.gcore.com`) is the portal for Dedicated Servers and Virtual Servers. Follow the same pattern as the Customer Portal.
+
+| Context | Use |
+|---------|-----|
+| First mention in article | `[Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr)` |
+| All subsequent mentions | plain text: "the Hosting Portal" (no link, no "Gcore" prefix) |
 
 ---
 
@@ -548,8 +747,8 @@ Info block is visually disproportionate. Use plain prose instead.
 ```mdx
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
-[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
-and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
+[project ID](/api-reference/cloud/projects/list-projects)
+and a [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
 Set the following environment variables before running the examples:
@@ -612,6 +811,7 @@ sentence before the next code block or table.
 - Keep column headers short
 - Row labels in the first column: plain text, no bold
 - Every table needs a real intro sentence — not one that just restates what the table shows
+- **No terminal period in table cell descriptions.** Single-sentence descriptions in reference tables (field definitions, parameter lists, option lists) do not end with a period. Multi-sentence descriptions use periods between sentences but omit the final period.
 
 ---
 
@@ -678,8 +878,10 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 
 | Context | Use |
 |---------|-----|
-| First mention of portal | Gcore Customer Portal |
-| Subsequent mentions | the Customer Portal |
+| First mention of Customer Portal | Gcore Customer Portal |
+| Subsequent mentions of Customer Portal | the Customer Portal |
+| First mention of Hosting Portal | Gcore Hosting Portal |
+| Subsequent mentions of Hosting Portal | the Hosting Portal |
 | Company as subject | Gcore (not "the platform", "the system", "we") |
 | API | Gcore API |
 

@@ -8,36 +8,32 @@ Gcore Cloud provides several IP address types in addition to the public IP autom
 
 ## Comparison
 
+The three IP types differ in how they're allocated, which resources they can attach to, and how billing works when unassigned.
+
 |  | Floating IP | Reserved IP | Virtual IP |
 | --- | --- | --- | --- |
 | What it is | Public IP mapped to a private IP using network address translation (DNAT) | Pre-allocated IP reserved in a regional pool, not assigned to a compute instance | A Reserved IP shared across multiple VMs |
 | Assigned to | VMs, Bare Metal, Load Balancers (private interfaces) | VMs, Bare Metal, Load Balancers | Multiple VMs |
 | Subnet | Public (via DNAT) | Public or private | Public or private |
-| Failover | No, but can be reassigned via [API](/api-reference/cloud/floating-ips/update-floating-ip) or [Customer Portal](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address#assign-a-floating-ip-to-a-virtual-machine) | No (manual reassignment) | Yes (shared ownership enables failover) |
+| Failover | No, but can be reassigned via [API](/api-reference/cloud/floating-ips/update-floating-ip) or [Gcore&nbsp;Customer&nbsp;Portal](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address#assign-a-floating-ip-to-a-virtual-machine) | No (manual reassignment) | Yes (shared ownership enables failover) |
 | Requires private network | Yes | No | No |
 | Billed when unassigned | No, it exists only when assigned | Yes | Yes |
 | Bare Metal support | Yes | Yes | No |
 
-## How to choose
+## Use cases
 
-If a VM has a public interface and requires external access, no additional configuration is needed. The platform assigns one public IP per VM.
+If a VM has a public interface and requires external access, no additional configuration is needed. Gcore Cloud assigns one public IP per VM.
 
-If a VM runs in a private subnet and requires external access, use a floating IP. It maps a public IP to the private IP without changing the VM configuration.
+If a VM runs in a private subnet and requires external access, a [floating IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) adds external connectivity — it maps a public IP to the private IP without modifying the VM configuration.
 
-If an IP address must remain available for later use or reassignment, use a reserved IP. It stays allocated until released.
+A [Reserved IP](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) persists in the regional pool until explicitly released, so the address stays available across resource changes and reassignments.
 
-If multiple VMs must share the same IP for high availability, use a virtual IP. A failover mechanism such as Keepalived controls which node is active.
+Multiple VMs share a single [Virtual IP](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) for high availability. A failover daemon — Keepalived is a common choice — controls which node holds the address.
 
 If additional public IPs are required on a VM, attach floating IPs. For Bare Metal servers, contact [support](https://support.gcore.com/).
 
-## Notes on public IP assignment
+## Public IP assignment
 
 All Gcore Cloud IP addresses are native and correspond to the physical location of the deployed resource. This minimizes latency and optimizes routing.
 
-Public IPs are allocated from a shared regional pool and remain assigned for the lifetime of the network interface. If the interface is deleted, the IP is released and a new one is assigned. To retain an IP address, convert it to a reserved IP before deleting the interface.
-
-## Related articles
-
-- [Create and configure a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address)
-- [Create and configure a virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address)
-- [Create and configure a reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address)
+Public IPs are allocated from a shared regional pool and remain assigned for the lifetime of the network interface. If the interface is deleted, the IP is released and a new one is assigned. To retain an IP address, convert it to a Reserved IP before deleting the interface.

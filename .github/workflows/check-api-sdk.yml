@@ -1,0 +1,315 @@
+name: Check API and SDK coverage
+
+on:
+  push:
+    paths:
+      - 'api-reference/services_documented/**'
+  schedule:
+    - cron: '30 9 * * *'  # daily at 09:30 UTC, offset from the Terraform tracker's 09:00 run
+  workflow_dispatch:
+
+jobs:
+  api-diff:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install -r .github/scripts/api-sdk/requirements.txt
+
+      - name: Rebuild doc index
+        run: python3 .github/scripts/api-sdk/build_doc_index.py
+
+      - name: Snapshot pre-push spec versions
+        run: |
+          mkdir -p /tmp/spec-old /tmp/spec-new
+          BASE_SHA="${{ github.event.before }}"
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="HEAD^"
+          fi
+          for f in api-reference/services_documented/*.yaml; do
+            name=$(basename "$f")
+            git show "$BASE_SHA:$f" > "/tmp/spec-old/$name" 2>/dev/null || true
+            cp "$f" "/tmp/spec-new/$name"
+          done
+
+      - name: Diff API spec
+        id: diff
+        run: |
+          set +e
+          python3 .github/scripts/api-sdk/diff_api_spec.py \
+            /tmp/spec-old /tmp/spec-new api-sdk-tracker/doc_index.json > /tmp/api_diff.md
+          EXIT=$?
+          if [ $EXIT -eq 1 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          elif [ $EXIT -eq 0 ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            exit $EXIT
+          fi
+
+      - name: Ensure api-sdk-tracker label exists
+        if: steps.diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "api-sdk-tracker" \
+            --repo "$GITHUB_REPOSITORY" \
+            --description "REST API spec or SDK coverage drift" \
+            --color "0E8A16" \
+            --force
+
+      - name: Assemble issue body
+        if: steps.diff.outputs.has_changes == 'true'
+        run: |
+          python3 .github/scripts/api-sdk/assemble_issue.py \
+            --api-diff /tmp/api_diff.md \
+            --output /tmp/issue_body.md
+
+      - name: Create issue
+        if: steps.diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="[API] Spec changes $(date -u +%F) ($(git rev-parse --short HEAD))"
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TITLE" \
+            --label "api-sdk-tracker" \
+            --body-file /tmp/issue_body.md
+
+      - name: Commit rebuilt doc index (feature branch)
+        if: github.ref != 'refs/heads/main'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add api-sdk-tracker/doc_index.json
+          git diff --cached --quiet && echo "Nothing to commit" && exit 0
+          git commit -m "chore: rebuild API/SDK doc index"
+          git push
+
+      - name: Open PR with rebuilt doc index (main)
+        if: github.ref == 'refs/heads/main'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild API/SDK doc index"
+          branch: chore/rebuild-api-sdk-doc-index
+          delete-branch: true
+          title: "chore: rebuild API/SDK doc index"
+          body: "Automated update of `api-sdk-tracker/doc_index.json` triggered by a push to `main`."
+          labels: automated,api-sdk-tracker
+          add-paths: api-sdk-tracker/doc_index.json
+
+  sdk-diff:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python dependencies
+        run: pip install -r .github/scripts/api-sdk/requirements.txt
+
+      - name: Rebuild doc index
+        run: python3 .github/scripts/api-sdk/build_doc_index.py
+
+      - name: Get latest Python SDK version
+        id: py_latest
+        run: |
+          LATEST=$(curl -s https://pypi.org/pypi/gcore/json | jq -r '.info.version')
+          echo "version=v$LATEST" >> "$GITHUB_OUTPUT"
+
+      - name: Get latest Go SDK version
+        id: go_latest
+        run: |
+          LATEST=$(curl -s -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/G-Core/gcore-go/releases/latest" | jq -r '.tag_name')
+          echo "version=$LATEST" >> "$GITHUB_OUTPUT"
+
+      - name: Get pinned versions
+        id: pinned
+        run: |
+          echo "python=$(cat api-sdk-tracker/.gcore-python-sdk-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+          echo "go=$(cat api-sdk-tracker/.gcore-go-sdk-version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if both SDKs are up to date
+        if: |
+          steps.py_latest.outputs.version == steps.pinned.outputs.python &&
+          steps.go_latest.outputs.version == steps.pinned.outputs.go
+        run: echo "Both SDKs match their pinned version. Nothing to do."
+
+      - name: Build endpoint index at pinned versions
+        if: |
+          steps.py_latest.outputs.version != steps.pinned.outputs.python ||
+          steps.go_latest.outputs.version != steps.pinned.outputs.go
+        run: |
+          python3 .github/scripts/api-sdk/build_endpoint_index.py \
+            --python-ref "${{ steps.pinned.outputs.python }}" \
+            --go-ref "${{ steps.pinned.outputs.go }}" \
+            --output /tmp/endpoint_index_old.json
+
+      - name: Build endpoint index at latest versions
+        if: |
+          steps.py_latest.outputs.version != steps.pinned.outputs.python ||
+          steps.go_latest.outputs.version != steps.pinned.outputs.go
+        run: |
+          python3 .github/scripts/api-sdk/build_endpoint_index.py \
+            --python-ref "${{ steps.py_latest.outputs.version }}" \
+            --go-ref "${{ steps.go_latest.outputs.version }}" \
+            --output /tmp/endpoint_index_new.json
+
+      - name: Diff Python SDK
+        id: py_diff
+        if: steps.py_latest.outputs.version != steps.pinned.outputs.python
+        run: |
+          set +e
+          python3 .github/scripts/api-sdk/diff_sdk.py python \
+            --pinned-ref "${{ steps.pinned.outputs.python }}" \
+            --latest-ref "${{ steps.py_latest.outputs.version }}" \
+            --doc-index api-sdk-tracker/doc_index.json \
+            --old-endpoint-index /tmp/endpoint_index_old.json \
+            --new-endpoint-index /tmp/endpoint_index_new.json \
+            --repo G-Core/gcore-python > /tmp/python_diff.md
+          EXIT=$?
+          if [ $EXIT -eq 1 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          elif [ $EXIT -eq 0 ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            exit $EXIT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Diff Go SDK
+        id: go_diff
+        if: steps.go_latest.outputs.version != steps.pinned.outputs.go
+        run: |
+          set +e
+          python3 .github/scripts/api-sdk/diff_sdk.py go \
+            --pinned-ref "${{ steps.pinned.outputs.go }}" \
+            --latest-ref "${{ steps.go_latest.outputs.version }}" \
+            --doc-index api-sdk-tracker/doc_index.json \
+            --old-endpoint-index /tmp/endpoint_index_old.json \
+            --new-endpoint-index /tmp/endpoint_index_new.json \
+            --repo G-Core/gcore-go > /tmp/go_diff.md
+          EXIT=$?
+          if [ $EXIT -eq 1 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          elif [ $EXIT -eq 0 ]; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            exit $EXIT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Ensure api-sdk-tracker label exists
+        if: steps.py_diff.outputs.has_changes == 'true' || steps.go_diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "api-sdk-tracker" \
+            --repo "$GITHUB_REPOSITORY" \
+            --description "REST API spec or SDK coverage drift" \
+            --color "0E8A16" \
+            --force
+
+      - name: Build issue title
+        id: title
+        if: steps.py_diff.outputs.has_changes == 'true' || steps.go_diff.outputs.has_changes == 'true'
+        run: |
+          PARTS=""
+          if [ "${{ steps.py_diff.outputs.has_changes }}" = "true" ]; then
+            PARTS="Python ${{ steps.py_latest.outputs.version }}"
+          fi
+          if [ "${{ steps.go_diff.outputs.has_changes }}" = "true" ]; then
+            if [ -n "$PARTS" ]; then PARTS="$PARTS, "; fi
+            PARTS="${PARTS}Go ${{ steps.go_latest.outputs.version }}"
+          fi
+          echo "title=[SDK] Updated to $PARTS" >> "$GITHUB_OUTPUT"
+
+      - name: Check if issue already open
+        id: existing
+        if: steps.py_diff.outputs.has_changes == 'true' || steps.go_diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="${{ steps.title.outputs.title }}"
+          EXISTS=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --label "api-sdk-tracker" \
+            --state open \
+            --search "$TITLE" \
+            --json title \
+            | jq -r '.[0].title // empty')
+          if [ "$EXISTS" = "$TITLE" ]; then
+            echo "Issue already exists. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Assemble issue body
+        if: |
+          steps.existing.outputs.skip == 'false' &&
+          (steps.py_diff.outputs.has_changes == 'true' || steps.go_diff.outputs.has_changes == 'true')
+        run: |
+          ARGS=""
+          if [ "${{ steps.py_diff.outputs.has_changes }}" = "true" ]; then
+            ARGS="$ARGS --python-diff /tmp/python_diff.md"
+          fi
+          if [ "${{ steps.go_diff.outputs.has_changes }}" = "true" ]; then
+            ARGS="$ARGS --go-diff /tmp/go_diff.md"
+          fi
+          python3 .github/scripts/api-sdk/assemble_issue.py $ARGS --output /tmp/issue_body.md
+
+      - name: Create issue
+        if: |
+          steps.existing.outputs.skip == 'false' &&
+          (steps.py_diff.outputs.has_changes == 'true' || steps.go_diff.outputs.has_changes == 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "${{ steps.title.outputs.title }}" \
+            --label "api-sdk-tracker" \
+            --body-file /tmp/issue_body.md
+
+      - name: Open PR with rebuilt doc index
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: rebuild API/SDK doc index"
+          branch: chore/rebuild-api-sdk-doc-index
+          delete-branch: true
+          title: "chore: rebuild API/SDK doc index"
+          body: "Automated update of `api-sdk-tracker/doc_index.json` from the scheduled SDK diff run."
+          labels: automated,api-sdk-tracker
+          add-paths: api-sdk-tracker/doc_index.json

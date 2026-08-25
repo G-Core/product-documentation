@@ -32,28 +32,28 @@ pip install gcore
 
 ## Initialize the client
 
-Set `cloud_project_id` and `cloud_region_id` on the client once so they do not need to be repeated in every subsequent call:
+The SDK constructor reads three environment variables automatically — no arguments needed:
 
-```python
-import os
-from gcore import Gcore
-
-client = Gcore(
-    api_key=os.environ["GCORE_API_KEY"],
-    cloud_project_id=int(os.environ["PROJECT_ID"]),
-    cloud_region_id=int(os.environ["REGION_ID"]),
-)
+```bash
+export GCORE_API_KEY="..."
+export GCORE_CLOUD_PROJECT_ID=1234567
+export GCORE_CLOUD_REGION_ID=148
 ```
 
-With these defaults set, Cloud API methods inherit the project and region automatically:
+```python
+from gcore import Gcore
+
+client = Gcore()
+```
+
+With `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` set, Cloud API methods use them automatically — no project ID or region ID is passed to individual calls:
 
 ```python
-# No project_id or region_id needed — inherited from the client
 network = client.cloud.networks.create_and_poll(name="my-network")
 instance = client.cloud.instances.create_and_poll(name="my-vm", ...)
 ```
 
-Read credentials from environment variables — never hardcode them in source files. Store `GCORE_API_KEY`, `PROJECT_ID`, and `REGION_ID` in a `.env` file and load them with [python-dotenv](https://pypi.org/project/python-dotenv/).
+Never hardcode credentials in source files. Store the three variables in a `.env` file and load them with [python-dotenv](https://pypi.org/project/python-dotenv/).
 
 ## First call
 
@@ -95,6 +95,8 @@ The [API reference](/api-reference/cloud) code samples show the exact SDK method
 Cloud API write operations return a task ID instead of the created resource directly. Use `_and_poll` convenience methods where available - they submit the request and block until the resource is ready:
 
 ```python
+import os
+
 instance = client.cloud.instances.create_and_poll(
     flavor="g2-standard-2-4",
     ssh_key_name="my-key",
@@ -113,6 +115,8 @@ print(instance.id)
 When `_and_poll` is not available for a resource, use `tasks.poll()` directly as an alternative:
 
 ```python
+import os
+
 result = client.cloud.instances.create(
     flavor="g2-standard-2-4",
     ssh_key_name="my-key",
@@ -171,11 +175,7 @@ All errors inherit from `gcore.APIError`:
 import gcore
 from gcore import Gcore
 
-client = Gcore(
-    api_key=os.environ["GCORE_API_KEY"],
-    cloud_project_id=int(os.environ["PROJECT_ID"]),
-    cloud_region_id=int(os.environ["REGION_ID"]),
-)
+client = Gcore()
 
 try:
     client.cloud.projects.create(name="my-project")
@@ -217,15 +217,11 @@ client = Gcore(timeout=20.0)
 Use `AsyncGcore` for concurrent operations or when integrating with async frameworks such as FastAPI or aiohttp. All method signatures are identical to `Gcore` - add `await` and use `async with`:
 
 ```python
-import asyncio, os
+import asyncio
 from gcore import AsyncGcore
 
 async def main():
-    async with AsyncGcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    ) as client:
+    async with AsyncGcore() as client:
         me = await client.iam.get_account_overview()
         print(me.email)
 
@@ -235,15 +231,11 @@ asyncio.run(main())
 The main advantage of the async client is running multiple API calls concurrently with `asyncio.gather()`. The example below creates three networks in parallel instead of sequentially:
 
 ```python
-import asyncio, os
+import asyncio
 from gcore import AsyncGcore
 
 async def main():
-    async with AsyncGcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    ) as client:
+    async with AsyncGcore() as client:
         results = await asyncio.gather(
             client.cloud.networks.create(name="net-a"),
             client.cloud.networks.create(name="net-b"),
@@ -264,11 +256,6 @@ pip install gcore[aiohttp]
 ```python
 from gcore import AsyncGcore, DefaultAioHttpClient
 
-async with AsyncGcore(
-    api_key=os.environ["GCORE_API_KEY"],
-    cloud_project_id=int(os.environ["PROJECT_ID"]),
-    cloud_region_id=int(os.environ["REGION_ID"]),
-    http_client=DefaultAioHttpClient(),
-) as client:
+async with AsyncGcore(http_client=DefaultAioHttpClient()) as client:
     ...
 ```

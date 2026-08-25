@@ -74,7 +74,7 @@ Wait for the answer before proceeding.
 
 **If no → spec only:**
 - Mark steps that cannot be verified from the spec as `{TODO: verify in live environment}`
-- These will need a follow-up `full-audit` run to verify
+- These will need a follow-up `regression-test` run to verify
 
 ---
 
@@ -105,6 +105,87 @@ Select-String -Path "api-reference\services_documented\cloud_api.yaml" `
 
 ---
 
+## SDK code patterns (mandatory — do not deviate)
+
+These patterns are canonical. Every Python and Go example must follow them exactly.
+Deviating from these patterns requires fixing all examples retroactively.
+
+### Python SDK
+
+The SDK constructor `Gcore()` reads three environment variables automatically:
+- `GCORE_API_KEY` → `api_key`
+- `GCORE_CLOUD_PROJECT_ID` → `cloud_project_id`
+- `GCORE_CLOUD_REGION_ID` → `cloud_region_id`
+
+Because `cloud_project_id` and `cloud_region_id` are set at client level, **they must not be passed to individual API calls**. Any method that accepts `project_id` and `region_id` as optional parameters will use the client-level values when they are omitted.
+
+**Correct pattern:**
+```python
+from gcore import Gcore
+
+client = Gcore()  # reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID
+
+clusters = client.cloud.gpu_virtual.clusters.list()          # no project_id/region_id
+cluster  = client.cloud.gpu_virtual.clusters.get("{ID}")     # no project_id/region_id
+```
+
+**When `import os` is needed:** only when the code reads additional env vars that the SDK does not handle automatically — for example `GCORE_SSH_KEY_NAME`, `GCORE_CLUSTER_NAME`, `CLUSTER_NAME`. Do not import `os` just for `GCORE_CLOUD_PROJECT_ID` or `GCORE_CLOUD_REGION_ID`.
+
+**Never write:**
+```python
+# wrong — SDK reads api_key automatically
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+# wrong — project_id/region_id are already set at client level
+project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+region_id  = int(os.environ["GCORE_CLOUD_REGION_ID"])
+client.cloud.something.list(project_id=project_id, region_id=region_id)
+```
+
+### Go SDK
+
+`gcore.NewClient()` reads `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` automatically, the same way it reads `GCORE_API_KEY` — matching the Python SDK. **Do not pass `ProjectID`/`RegionID` in the params struct** when the three env vars are set; the client-level defaults are used.
+
+**Correct pattern:**
+```go
+import (
+    "context"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+    client := gcore.NewClient()       // reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID automatically
+    ctx := context.Background()       // created once, passed to every call
+
+    result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{})   // no ProjectID/RegionID
+}
+```
+
+**Never write:**
+```go
+import "github.com/G-Core/gcore-go/option"
+client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))  // wrong — no option import needed
+
+result, err := client.Cloud.Something.Do(context.TODO(), ...)  // wrong — context.TODO() is a placeholder
+
+// wrong — redundant now that the client reads these from env; only add ProjectID/RegionID
+// when a single script must operate across more than one project or region
+projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{ProjectID: gcore.Int(projectID)})
+```
+
+Key rules:
+- `gcore.NewClient()` — no arguments; never pass `option.WithAPIKey`
+- No `option` import
+- `ctx := context.Background()` — one variable, reused in all calls
+- `context.TODO()` is forbidden
+- Omit `ProjectID`/`RegionID` from params structs — only add them back for an example that deliberately targets a project or region different from the one set in the env vars
+
+---
+
 ## Phase 4 — Write the API section
 
 ### Structure A — Sequential creation flow
@@ -125,8 +206,8 @@ Bad: `"The steps below create a subnet and configure DNS."` ← starts with "The
 ```mdx
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a
-[project ID](/api-reference/cloud#tag/Projects/operation/ProjectsListV1.get)
-and a [region ID](/api-reference/cloud#tag/Regions/operation/RegionListV1.get).
+[project ID](/api-reference/cloud/projects/list-projects)
+and a [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 ```
 If the flow requires an existing resource (e.g. a network), add it:
