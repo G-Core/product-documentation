@@ -1,48 +1,54 @@
 ---
 title: "WebSockets: allow permanent connections with the origin"
 sidebarTitle: WebSockets
-ai-navigation: Enable or disable WebSocket protocol support on CDN resources to allow persistent bidirectional TCP connections between clients and origin servers for real-time data exchange.
+ai-navigation: Enable or disable WebSocket support on CDN resources via the Gcore Customer Portal for persistent bidirectional connections between clients and origin servers.
 ---
 
-## What is WebSocket?
+WebSockets is a CDN resource option that allows persistent TCP connections between clients and origin servers. When enabled, the CDN proxies WebSocket upgrade requests to the origin, maintaining the connection for the full duration of the session.
 
-WebSocket is a connection protocol based on TCP. It is designed to transfer data between a client (e.g., a browser) and a server over a persistent TCP connection. A persistent connection only needs to be established once, and then data can be transmitted without breaking the connection or making additional requests. Such connections continue until one of the participants terminates it.
+## WebSocket protocol
 
-WebSocket is suitable for services that require constant data exchange, such as chat rooms, online games, real-time trading platforms, etc. For static or slowly updated data on a website (e.g., in a blog or product catalog), WebSocket connections could be more optimal. To receive updates, the client only needs to reload the page manually.
+WebSocket is a connection protocol based on TCP. Unlike HTTP, which requires a new connection for every request, WebSocket establishes a single persistent connection that remains open until either party terminates it.
 
-## How is WebSocket different from HTTP?
+WebSocket is well-suited for applications requiring constant data exchange — chat rooms, online games, real-time trading platforms, and collaborative tools. For static or infrequently updated content — blogs and product catalogs — HTTP is more efficient because connections are short-lived and require no persistent state.
 
-1\. WebSocket protocol is bidirectional, which means that clients and servers can send data to each other anytime during the connection. HTTP protocol is unidirectional, as the server sends data only when it receives the client's request. With WebSocket, you can leave a page with a chat or social network open and receive messages when they are sent. If HTTP were used, you would have to refresh the page every time to see if a message arrived.
+<Frame>
+![Side-by-side comparison of HTTP polling and WebSocket persistent connection](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image3.png)
+</Frame>
 
-2\. WebSocket establishes one connection and keeps it open permanently. HTTP establishes a new connection every time the client makes a request and breaks it after the server responds.
+## Persistent vs. short-lived connections
 
+HTTP and WebSocket differ in two fundamental ways.
 
-<Frame>![How is WebSocket different from HTTP](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/4.png)</Frame>
+**Connection direction:** WebSocket is bidirectional — both client and server can send data at any time without waiting for the other party to request it. HTTP is unidirectional: the server sends data only in response to a client request. A real-time chat or notification feed that uses WebSocket can push messages to all connected clients as they arrive; with HTTP, each client must repeatedly poll the server to check for updates.
 
+**Connection lifecycle:** WebSocket establishes one connection and holds it open for the session. HTTP establishes a new connection for every request and closes it once the server responds.
 
+## Default behavior
 
-## Manage the WebSockets feature
+By default:
 
-By default, the WebSocket feature is enabled for CDN resources using DNS delegation and disabled for CNAME-based CDN resources. You can manage this feature depending on your setup: disable it for resources with DNS delegation or enable it for CNAME-based resources. See the [CDN resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) for details on each setup type.
+- WebSocket is enabled for CDN resources using DNS delegation.
+- WebSocket is disabled for CNAME-based CDN resources.
 
-To manage the WebSocket feature:
+Both setup types are described in the [CDN&nbsp;resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
 
-1\. Go to the [CDN](https://portal.gcore.com/cdn/resources/list) section in the Gcore Customer Portal and open the settings of the resource for which you want to manage WebSockets by clicking its custom domain.
+## Enable or disable WebSockets
 
+1. Navigate to **CDN** in the [Gcore Customer Portal](https://portal.gcore.com) and click the custom domain of the target resource.
 
-<Frame>![Manage the WebSockets feature](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/cdn-resource-name.png)</Frame>
+<Frame>
+![CDN resources list with custom domain names highlighted](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image1.png)
+</Frame>
 
+2. In the **Content** section, find **WebSockets** and enable or disable the toggle.
 
+<Frame>
+![WebSockets toggle inside the Content section of CDN resource settings](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image2.png)
+</Frame>
 
-The new page opens. Do the remaining steps on it.
+3. Click **Save changes**.
 
+## Keep connections alive
 
-<Frame>![Manage the WebSockets feature](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167716346385.png)</Frame>
-
-
-
-2\. Open the "Content" section and click **Websockets**.
-
-3\. Enable or disable the feature.
-
-4\. Save changes.
+WebSocket connections may be closed after a period of inactivity by the CDN or by intermediate network components. To maintain long-lived connections during idle periods, implement a client-side heartbeat — have the client send a ping frame at a regular interval and confirm receipt of the server's pong response. A 30-second ping interval is sufficient to prevent most idle timeouts.
