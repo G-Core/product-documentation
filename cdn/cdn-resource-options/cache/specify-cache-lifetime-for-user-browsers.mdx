@@ -4,19 +4,19 @@ sidebarTitle: "Configure browser caching"
 ai-navigation: Configure browser cache lifetime on CDN resources via the Gcore Customer Portal using Origin controlled or CDN controlled modes.
 ---
 
-The Browser caching option sets how long CDN content is stored in end users' browsers. Two modes are available: **Origin controlled** uses the `Cache-Control` header from the origin server, and **CDN controlled** uses a fixed expiry set in the Customer Portal.
+The Browser caching option controls how long CDN content is stored in end users' browsers. Two modes are available: **Origin controlled** and **CDN controlled**.
 
-When **Origin controlled** is active, browsers cache content according to the origin's `Cache-Control` header. If the header is absent, browsers fall back to the `Last-Modified` header. Content is not cached if the origin provides neither header.
+Use **Origin controlled** when the origin server already manages browser cache duration through response headers. Use **CDN controlled** to set a fixed expiry independently of origin configuration.
 
-When **CDN controlled** is active, the following headers are added to the response:
+When **Origin controlled** is active, Gcore CDN passes the origin's `Cache-Control` header to browsers unchanged. If the origin sends no `Cache-Control`, browsers may apply heuristic caching if a `Last-Modified` header is present. If neither header is present, content is not cached in the browser.
 
-- `Cache-Control` — specifies the maximum cache time. A 12-hour expiry returns `Cache-Control: max-age=43200`.
-- `X-Cached-Since` — the timestamp when the object was cached on CDN servers.
-- `Expires` — calculated as `NOW() + Cache-Control max-age`.
-- `Cache: HIT` or `Cache: MISS` — indicates whether the file was served from CDN cache or the origin.
+When **CDN controlled** is active, Gcore CDN overrides origin cache headers and adds the following to each response:
+
+- `Cache-Control` — sets the maximum browser cache time. A 12-hour expiry returns `Cache-Control: max-age=43200`.
+- `Expires` — calculated from the current time plus the `max-age` value.
 
 <Note>
-  HTTP response codes that can be cached in browsers: 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Other response codes will not be cached.
+  Browser caching applies to responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Responses with other codes will not be cached.
 </Note>
 
 ## Enable browser caching
