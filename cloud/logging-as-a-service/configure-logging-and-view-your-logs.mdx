@@ -1,106 +1,120 @@
 ---
 title: Configure logging and view logs
 sidebarTitle: Configure
-ai-navigation: Configure Gcore Managed Logging by selecting a region, creating a human-readable namespace (2-32 lowercase alphanumeric characters), creating Kafka topics, generating credentials, and connecting log shippers (Fluent Bit, Filebeat, Logstash) with Kafka endpoints to export logs to OpenSearch Dashboards with @timestamp indexing.
+ai-navigation: Configure Gcore Managed Logging - create a namespace, add topics, generate credentials, connect log shippers, and view logs in OpenSearch Dashboards.
 ---
 
-This guide describes how to set up Managed Logging, connect a log shipper, and view logs in OpenSearch Dashboards.
+Managed Logging collects logs from infrastructure components, delivers them to Kafka topics, and makes them searchable in OpenSearch Dashboards.
 
-1\. Select the region under the project name. This is the location of the data center for deploying log storage.
+<Steps>
+<Step title="Select the region">
 
-<Note>Logging may be unavailable in some regions. Choose the region that is geographically closest to the equipment.</Note>
+Select the region where logs will be stored.
 
-2\. In the **Cloud** menu, navigate to **Managed Logging** and click **Set up Managed Logging**. A "Create namespace" dialog appears.
+<Note>Logging may be unavailable in some regions. Select the region that is geographically closest to the equipment.</Note>
 
+</Step>
+
+<Step title="Create a namespace">
+
+In the **Cloud** menu, navigate to **Managed Logging** and click **Set up Managed Logging**. A "Create namespace" dialog appears.
 
 <Accordion title="What is a namespace">
-A _namespace_ is a prefix applied to all topic names in the region. Previously, Managed Logging automatically generated a non-human-readable namespace string (e.g., `cbc25c71af8d4f7ca6cbbcdc5a4d68fe`). Human-readable namespaces are now supported (e.g., `namespace123`), which produces topic names such as `namespace123.your-topic`.
+A _namespace_ is a prefix applied to all topic names in the region. Previously, Managed Logging automatically generated a non-human-readable namespace string (e.g., `cbc25c71af8d4f7ca6cbbcdc5a4d68fe`). Human-readable namespaces are now supported (e.g., `namespace123`), which produces topic names in the format `namespace123.topic-name`.
 
 <Note>A human-readable namespace can only be created for a new project that does not already have a default namespace assigned. Once created, the namespace name cannot be changed.</Note>
 </Accordion>
 
+Enter the namespace name according to the following restrictions:
 
-To create a namespace, input the namespace name according to the following restrictions:
-
-  * Lowercase Latin letters and digits can be used
-  * Underscore and spaces are prohibited
-  * Length is between 2–32
-  * The name must be unique for the destination region. If it is already used, the system will suggest a different name.
-
-
+* Lowercase Latin letters and digits can be used
+* Underscores and spaces are prohibited
+* Length is between 2–32 characters
+* The name must be unique for the destination region. If it is already used, the system will suggest a different name.
 
 Click **Create**.
 
+<Frame>![Create namespace dialog](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image1.png)</Frame>
 
-<Frame>![Create namespace](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/logging-create-namespace.png)</Frame>
+</Step>
 
+<Step title="Create a topic">
 
+In the **Topics** section, click **Create topic**, enter a name, set the retention period, and click **Save**. Gcore automatically creates an index pattern for the topic in OpenSearch Dashboards using "@timestamp" as the time field.
 
-3\. In the **Topics** section, click **Create topic**, name it, and click **Save**. An index pattern is created for the topic in OpenSearch Dashboards with "@timestamp" as the default time field.
+<Frame>![Logging page showing the Topics section with a created topic](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image2.png)</Frame>
 
+</Step>
 
-<Frame>![OpenSearch Dashboards](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/14420358788881.png)</Frame>
+<Step title="Generate credentials">
 
+Click **Generate credentials** in the upper-right corner. A warning dialog appears — click **Confirm** to proceed. A "Credentials" dialog shows a login (the namespace name) and password for the storage. Save the credentials immediately — they cannot be retrieved after closing the window.
 
+Use these credentials to authenticate log shippers that send logs to Managed Logging.
 
-4\. Click **Generate credentials** in the upper-right corner to get a login and password for the storage. Save the credentials immediately — they cannot be retrieved after closing the window.
+If the credentials are lost, click **Generate credentials** again to generate a new pair. The previous credentials are deactivated automatically. Update the credentials in the settings of the installed log shippers.
 
-These credentials are used to connect log delivery systems to the topic for log export.
+If Managed Logging is used in multiple regions, each region has separate storage and requires its own credentials.
 
-If the credentials are lost, click **Generate credentials** again to generate a new pair. Update the credentials in the settings of the installed log shippers.
+</Step>
 
-If Managed Logging is used in multiple regions (Step 2), a new storage is created in each region, and unique credentials must be generated for each one.
+<Step title="Configure a log shipper">
 
-5\. Select a log shipper (e.g. [Fluent Bit](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-fluent-bit), [Filebeat](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-filebeat), or [Logstash](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-logstash)) that supports Kafka output.
+Select a log shipper (e.g. [Fluent&nbsp;Bit](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-fluent-bit), [Filebeat](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-filebeat), or [Logstash](/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-logstash)) that supports Kafka output.
 
-Configure the log shipper with the Kafka endpoints, credentials generated at Step 4, and target topic name `<namespace>.<topic>`. The recommended default time field is "@timestamp". To use a different time field, delete the pre-created index pattern and create a new one with the desired time field.
+Configure the log shipper with the Kafka endpoint, credentials generated in step 4, and target topic name `<namespace>.<topic>`. To find the Kafka endpoint, navigate to the Logging page and open the **Kafka endpoint** tab in the **How to use Managed Logging** section.
 
-<Note>Log message size is max 1 MB in text/JSON format, limited to 225 fields. After the log shipper is configured, logs flow automatically from the device to the Kafka topic, and then to OpenSearch for indexing — no additional steps are required.</Note>
+<Note>Log message size is max 1 MB in text/JSON format, limited to 225 fields. After the log shipper is configured, logs flow automatically from the device to the Kafka topic, and then to OpenSearch for indexing.</Note>
 
-6\. Go to the OpenSearch Dashboards by using the URL specified on the Logging page.
+The pre-created index pattern uses "@timestamp" as the time field. If the log shipper sends a field named `@timestamp` in each log record — which most shippers do by default — no additional configuration is required in OpenSearch. If the logs use a different field name for the timestamp, a custom index pattern must be created after signing in to OpenSearch Dashboards.
 
+</Step>
 
-<Frame>![Logging page](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/14420497971473.png)</Frame>
+<Step title="Open OpenSearch Dashboards">
 
+Navigate to OpenSearch Dashboards using the URL from the **Dashboards** field under the **OpenSearch endpoints** tab on the Logging page.
 
+<Frame>![Logging page showing OpenSearch endpoints tab with the Dashboards URL](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image3.png)</Frame>
 
-To log in, use the credentials generated at Step 4.
+Log in using the credentials generated in step 4.
 
-7\. If the time field was set to "@timestamp" at Step 5, the pre-created pattern appears on the dashboard. The setup is complete — proceed to Step 11.
+<Frame>![OpenSearch Dashboards login page](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image4.png)</Frame>
 
-If a different time field was selected, delete the pre-created index pattern first and then create a new one. To do this, click **Manage** on the home page → **Index Patterns**.
+<Note>On first login, a dialog prompting tenant selection appears. Select **Private** and click **Confirm** to proceed.</Note>
 
+OpenSearch Dashboards uses index patterns to determine which indices to display in Discover. Gcore automatically creates an index pattern for each topic using "@timestamp" as the time field. If that matches the timestamp field in the logs, the setup is complete — proceed to step 7.
 
-<Frame>![Manage on the home page ](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/14420742939281.png)</Frame>
+If the logs use a different timestamp field, create a custom index pattern before viewing logs.
 
+<Accordion title="Create a custom index pattern">
 
+**Navigate to Index patterns.** Click **Manage** in the upper-right corner of the home page, then select **Index patterns** from the left menu.
 
-8\. Click **Create an index pattern** at the bottom of the screen.
+<Frame>![OpenSearch Dashboards home page with Manage link in the upper-right corner](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image5.png)</Frame>
 
+**Delete the pre-created pattern.** Click the existing pattern name in the list to open it, then click the delete icon in the upper-right corner and confirm.
 
-<Frame>![Create an index pattern](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/image_1469.png)</Frame>
+**Open the creation form.** Click **+ Create index pattern** in the upper-right corner.
 
+<Frame>![Index patterns management page with Create index pattern button](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image6.png)</Frame>
 
+Logs are stored in an index that shares the name of the topic. The index pattern is a filter that tells OpenSearch Dashboards which index to display in Discover.
 
-On the OpenSearch server, logs are linked to the personal index, which has the same name as the topic. By creating an index pattern, a filter is set up that helps OpenSearch Dashboards display logs with the required index.
+**Enter the pattern name.** In the **Index pattern name** field, enter the namespace created in step 2, followed by a dot (.) and the topic name from step 3, followed by an asterisk (*). If the namespace is `mylogging1` and the topic is `my-app-logs-1`, enter `mylogging1.my-app-logs-1*`. Click **Next step** to proceed.
 
-9\. In the **index-pattern** field, enter the username from the credentials generated at Step 4. Then, add a dot (.) and the name of the topic created at Step 3, followed by an asterisk (*).
+<Frame>![Create index pattern form with the pattern entered](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image7.png)</Frame>
 
-For example, if the namespace is "5361abe12401476388fab78460deed9a" and the topic is named "exampletopic", enter "5361abe12401476388fab78460deed9a.exampletopic*" in the field. Click **Next step** to proceed.
+**Select the timestamp field.** Select the timestamp field from the dropdown list, and click **Create index pattern**.
 
+</Accordion>
 
-<Frame>![Create an index pattern](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/14420777278097.png)</Frame>
+</Step>
 
+<Step title="View logs">
 
+To view logs, navigate to the main menu and select **Discover**.
 
-10\. Select the date and time format from the dropdown list, and click **Create index pattern** to make logs accessible in OpenSearch Dashboards. The pattern is saved and does not need to be set up again on subsequent logins.
+<Frame>![Discover view showing the index pattern with log data](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/configure-logging-and-view-your-logs-image8.png)</Frame>
 
-
-<Frame>![Create an index pattern](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/image_1475.png)</Frame>
-
-
-
-11\. Setup is complete. To view logs, go to the main menu and select **Discover**.
-
-
-<Frame>![Discover](/images/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs/image_1478.png)</Frame>
+</Step>
+</Steps>
