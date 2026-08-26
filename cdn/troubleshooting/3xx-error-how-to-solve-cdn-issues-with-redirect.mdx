@@ -1,29 +1,37 @@
 ---
-title: "3xx error: how to solve CDN issues with redirect"
+title: Resolve 3xx CDN redirect issues
 sidebarTitle: 3xx error
-ai-navigation: Resolve CDN 3xx redirect errors by configuring origin pull protocol (HTTP or HTTPS) to match origin redirect settings, updating Host Header to match the origin domain, and setting the correct Origin source for redirected domains.
----
+ai-navigation: Resolve CDN 3xx redirects by matching Origin pull protocol and Host header to origin settings, then review Response codes in Statistics.
 ---
 
-If you request content from CDN and receive a redirect (301 or 302 HTTP codes) to the Origin source, check the following CDN resource's settings. 
+A 301 or 302 from the CDN often means the origin redirected the pull request instead of returning the object, so match the pull request to a direct origin request in the [Gcore Customer Portal](https://portal.gcore.com).
 
 ## Origin pull protocol
 
-Choose an origin pull protocol that matches redirect settings on your origin. 
+**Origin pull protocol** is in the **General** section of the CDN resource **OPTIONS** tab. Match HTTP, HTTPS, or HTTP and HTTPS to origin redirects in [origin settings](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol).
 
-  * Choose HTTPS if your origin redirects HTTP requests to HTTPS. 
-  * Choose HTTP if your origin redirects HTTPS requests to HTTP.
+- Select **HTTPS** when the origin redirects HTTP requests to HTTPS.
+- Select **HTTP** when the origin redirects HTTPS requests to HTTP.
+- Select **HTTP and HTTPS** only when the origin serves both protocols without a redirect. With this value, the CDN uses the protocol from the client request, so an origin that still redirects one protocol will keep returning 3xx.
 
+## Change Host header
 
+**Change Host header** is in **HTTP headers** on the **OPTIONS** tab. The [Host header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) sent to the origin usually matches the origin hostname and does not update automatically when the origin changes.
 
-## Change host header
+If the origin hostname changes, update **Custom Host header** to the new hostname. Leave **Forward Host header** off unless the origin must receive the same Host header that the client sent to the CDN.
 
-Usually, the Host Header matches the Origin Source's domain. Specify the correct Host Header or configure the processing of already specified Host Header on the origin source.
+## Origin source after a redirect
 
-If your Origin redirects requests to another domain put this end-domain as Origin of the CDN-resource. 
+If the origin redirects one hostname to another, set the CDN origin to the destination hostname. For example, when `domain.com` redirects to `www.domain.com`, use `www.domain.com` as the origin and set **Custom Host header** to `www.domain.com`.
 
-For example, if requests to  _domain.com_ are redirected to  _[www.domain.com](http://www.domain.com)_, put  _[www.domain.com](http://www.domain.com)_ as the Origin source. 
+Leaving the origin on the hostname that issues the redirect causes the CDN to follow that 3xx on every pull.
 
-Go to the [Reports](/cdn/view-statistics-of-a-cdn-resource) tab to track the amount of 3xx codes.
+## Response codes in Statistics
 
-To receive more details about user's requests to CDN-resources you may use the Raw logs. This is the paid feature. The Raw log receiving setup flow and the description of logs' fields are [specified here](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage). If you want to activate this feature, contact your account manager or send a request to the [technical support](mailto:support@gcore.com).
+Open **CDN** > **Reports** > [Statistics](/cdn/view-statistics-of-a-cdn-resource), select the resource, then select the **Response codes** report.
+
+## Request logs
+
+[Log viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) lists recent requests to the resource, including status code. Filter on 301 or 302 to confirm whether the redirect is still occurring after a settings change.
+
+[Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export is a paid option. Contact the account manager or [Gcore Support](mailto:support@gcore.com) to activate it.
