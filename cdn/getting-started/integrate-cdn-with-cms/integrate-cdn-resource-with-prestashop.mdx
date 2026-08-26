@@ -1,31 +1,53 @@
 ---
-title: Integrate CDN resource with PrestaShop
+title: Integrate a CDN resource with PrestaShop
 sidebarTitle: PrestaShop
-ai-navigation: Configure Gcore CDN integration with PrestaShop by enabling CCC (Combine, Compress and Cache) settings in Advanced Parameters/Performance and entering the CDN CNAME in the Media Server field to rewrite static asset URLs.
+ai-navigation: Configure PrestaShop static asset delivery through Gcore CDN by assigning an HTTPS custom domain as the media server.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+PrestaShop can rewrite static asset URLs to an external media server. Configure a Gcore CDN resource as that media server to cache and deliver store images, theme files, and module assets.
 
-Log into your PrestaShop admin bar (back-office).
+<Info>
+These instructions apply to PrestaShop v9. Back up the store files and database before changing performance settings, and test the storefront after enabling any Combine, Compress and Cache (CCC) option.
+</Info>
 
-Go to Advanced Parameters/Performance.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the Gcore Customer Portal, create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the PrestaShop store as its origin.
 
-Configure CCC (Combine, Compress and Cache) settings as in the picture below. 
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve files from the `/img`, `/themes`, and `/modules` directories.
+  </Step>
 
+  <Step title="Open the Performance page">
+    Sign in to the PrestaShop Back Office and navigate to **Advanced Parameters** > **Performance**.
+  </Step>
 
-<Frame>![Media Server](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop.jpeg)</Frame>
+  <Step title="Review the CCC settings">
+    In the **Combine, Compress and Cache (CCC)** section, enable the optimizations supported by the active theme.
 
+    Test the storefront after enabling **Smart cache for JavaScript**. Combining JavaScript files can cause errors in themes or modules that rely on a specific loading order.
+  </Step>
 
+  <Step title="Set the media server">
+    In the **Media servers** section, enter the custom CDN hostname in the first **Media server** field — `cdn.example.com`.
 
-Type in the CNAME in the Media Server#1 field that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration. 
+    Enter only the hostname. Don't include `https://`, a path, or a trailing slash. PrestaShop v9 supports one media server by default.
+  </Step>
 
+  <Step title="Save and clear the cache">
+    Select **Save**, and then select **Clear cache** at the top of the **Performance** page.
+  </Step>
 
-<Frame>![Media Server](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop2v1.jpeg)</Frame>
+  <Step title="Verify CDN delivery">
+    Open the storefront in a private browser window. Open the browser developer tools, select **Network**, and reload the page.
 
+    Filter requests by `cdn.example.com`. Confirm that static files use the CDN hostname and return successful HTTP responses.
+  </Step>
+</Steps>
 
+## Troubleshooting
 
-Click **Save** at the top of the page.
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+- **Static files return 404**: Confirm that the origin contains the requested path and that the CDN can retrieve the `/img`, `/themes`, and `/modules` directories.
+- **Requests return 502**: Check the origin hostname, origin pull protocol, port, and host header in the CDN resource.
+- **The browser blocks requests**: Confirm that the custom CDN domain has a valid TLS certificate and the storefront uses HTTPS URLs.
+- **Old assets remain visible**: Clear the PrestaShop cache and [purge&nbsp;CDN&nbsp;cache](/cdn/cdn-resource-options/cache/clear-cdn-cache).
+- **Only some URLs use the CDN**: Check theme and module compatibility with the PrestaShop media-server feature. Custom absolute URLs aren't rewritten.
