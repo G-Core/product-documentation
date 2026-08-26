@@ -1,44 +1,77 @@
 ---
-title: Integrate CDN resource with Typo3
-sidebarTitle: Typo3
-ai-navigation: Configure Gcore CDN integration with Typo3 using the smile_cdn extension by installing the plugin, defining the CDN CNAME record, setting asset filters, and flushing frontend caches to rewrite static resource URLs.
+title: Integrate a CDN resource with TYPO3
+sidebarTitle: TYPO3
+ai-navigation: Configure TYPO3 static asset delivery through Gcore CDN with the Replacer extension and scoped TypoScript URL rules.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+TYPO3 can rewrite public asset URLs in rendered pages through the [Replacer&nbsp;extension](https://extensions.typo3.org/extension/replacer). Configure scoped replacement rules to deliver generated assets, extension resources, and public files through Gcore CDN.
 
-This tutorial guides you through the CDN integration of [Typo3](https://typo3.org) with the [smile_cdn](https://typo3.org/extensions/repository/view/smile_cdn) extension. We used Typo3 6.2 LTS and smile_cdn version 2.1.0 in the following example.
+<Info>
+These instructions apply to TYPO3 v13 and v14. Back up the project files and database before installing the extension or changing TypoScript.
+</Info>
 
-Login to the Typo3 backend.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the Gcore Customer Portal, create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the TYPO3 site as its origin.
 
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve representative files from `/_assets/`, `/fileadmin/`, and `/typo3temp/assets/` when those directories exist.
+  </Step>
 
-<Frame>![Login to the Typo3 backend](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-login.png)</Frame>
+  <Step title="Install the Replacer extension">
+    For a Composer-based installation, run:
 
+    ```bash
+    composer require jweiland/replacer
+    vendor/bin/typo3 extension:setup --extension=replacer
+    ```
 
+    For a non-Composer installation, sign in to the TYPO3 backend as an administrator, open **Extensions**, search for `replacer`, and install the extension.
+  </Step>
 
-Navigate to Extension Manager and install the extension smile_cdn.
+  <Step title="Add the CDN replacement rules">
+    Add the following TypoScript to the root site package or the setup record that applies to the required pages:
 
+    ```typoscript
+    config.tx_replacer {
+      search {
+        10 = /"\/?(_assets|fileadmin|typo3temp\/assets)/
+        10.enable_regex = 1
+      }
 
-<Frame>![ Extension Manage](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-get-extension-smile_cdn-1024x612.png)</Frame>
+      replace {
+        10 = "https://cdn.example.com/$1
+      }
+    }
+    ```
 
- 
-<Frame>![Get extensions](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-install-smile-cdn-1024x186.png)</Frame>
+    The expression rewrites only the listed public asset directories in generated HTML.
 
+    <Warning>
+    Don't replace every relative URL. Broad rules can send page links and form actions through the CDN or add the CDN hostname to an already rewritten URL.
+    </Warning>
+  </Step>
 
+  <Step title="Flush the TYPO3 caches">
+    In a Composer-based installation, run:
 
-Configure the smile_cdn extension by defining the CNAME (without `http://`) that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) and the desired filters to offload your assets. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    ```bash
+    vendor/bin/typo3 cache:flush
+    ```
 
+    Alternatively, use the cache menu in the TYPO3 backend to flush all caches available to the administrator account.
+  </Step>
 
-<Frame>![ Control panel a](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-configure-smile-cdn-1024x858.png)</Frame>
+  <Step title="Verify CDN delivery">
+    Open the site in a private browser window. Open the browser developer tools, select **Network**, and reload the page.
 
+    Filter requests by `cdn.example.com`. Confirm that the targeted asset paths use the CDN hostname and return successful HTTP responses. Also inspect the generated HTML to confirm that page links and form actions still use the site hostname.
+  </Step>
+</Steps>
 
+## Troubleshooting
 
-Click Flush the Frontend Caches in the Typo3 backend.
-
-
-<Frame>![Typo3 backend](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-flush-cache-300x127.png)</Frame>
-
-
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+- **Assets return 404**: Confirm that the requested public path exists on the origin and that the regular expression preserves the full path.
+- **Requests return 502**: Check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- **Fonts or scripts are blocked**: Configure the required CORS and Content Security Policy headers for `cdn.example.com`.
+- **Asset URLs don't change**: Confirm that the Replacer TypoScript is active on the page, and then flush the TYPO3 and CDN caches.
+- **A URL contains the CDN hostname twice**: Narrow the search expression so it matches only local paths that begin with a quotation mark and an optional slash.
