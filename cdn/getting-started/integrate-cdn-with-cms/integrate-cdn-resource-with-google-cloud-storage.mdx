@@ -1,34 +1,119 @@
 ---
-title: Integrate CDN resource with Google Cloud Storage
+title: Integrate a CDN resource with Google Cloud Storage
 sidebarTitle: Google Cloud Storage
-ai-navigation: Configure Gcore CDN resource with Google Cloud Storage bucket as origin, create CNAME record for custom domain, and optionally use Rewrite option to hide bucket name.
+ai-navigation: Configure Google Cloud Storage as a Gcore CDN origin by publishing bucket objects, mapping paths, setting DNS, and verifying delivery.
 ---
 
-This guide describes how you could use [Google Cloud Storage](https://cloud.google.com/storage) as an origin server. 
+Google Cloud Storage can store public assets while Gcore CDN caches and delivers them through a custom domain. This setup uses the public path-style endpoint, so origin requests follow `storage.googleapis.com/bucket-name/object-name`.
 
-Create a Google Cloud Storage (GCS) bucket.
+Access to a Google Cloud project with permission to create buckets and edit bucket IAM policies, an active CDN subscription, and control of the DNS zone for the CDN domain are required.
 
+<Steps>
+  <Step title="Create a Google Cloud Storage bucket">
+    In the [Google&nbsp;Cloud&nbsp;console](https://console.cloud.google.com/storage/browser), navigate to **Cloud Storage** > **Buckets** and click **Create**. Configure the bucket:
 
-<Frame>![Create a Google Cloud Storage \(GCS\) bucket.](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-create-bucket-1024x363.png)</Frame>
+    1. Enter a globally unique bucket name.
 
- 
-<Frame>![Create a Google Cloud Storage \(GCS\) bucket.](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-bucket-settings-1024x863.png)</Frame>
+    2. Select the location and storage class for the content.
 
+    3. Select uniform bucket-level access.
 
+    4. Configure public access prevention so it isn't enforced for this bucket.
 
-Upload your data and mark it as Shared publicly.
+    5. Configure the required data protection settings and click **Create**.
 
+    If an organization policy enforces public access prevention, use a different project or ask a Google Cloud administrator to allow public access for the project.
+  </Step>
 
-<Frame>![Upload your data and mark it as Shared publicly](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-upload-file.png)</Frame>
+  <Step title="Upload the content">
+    Open the bucket, click **Upload files** or **Upload folder**, and upload the assets to deliver through CDN.
+  </Step>
 
+  <Step title="Allow public object access">
+    On the bucket page, open **Permissions** and click **Grant access**:
 
+    1. In **New principals**, enter `allUsers`.
 
-Login to [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) at our site and [create a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) using `storage.googleapis.com` as origin.
+    2. In **Select a role**, select **Storage Object Viewer**.
 
-When your CDN resource is created, check the accessibility of files through CDN. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    3. Click **Save**, then click **Allow public access**.
 
-**Note** : If you want to hide your cloud bucket name, use our [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) option.
+    <Warning>
+      This IAM binding makes every object in the bucket anonymously readable. Store only content intended for public delivery in the bucket.
+    </Warning>
+  </Step>
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+  <Step title="Verify the Google Cloud Storage URL">
+    Open a public object through the path-style endpoint:
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    ```text
+    https://storage.googleapis.com/my-bucket-1/images/image.png
+    ```
+
+    Replace `my-bucket-1/images/image.png` with the bucket name and object path. The request must return the object without requiring Google authentication.
+  </Step>
+
+  <Step title="Create the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), click **Create CDN resource** and configure the resource:
+
+    1. In **Add domain**, enter the CDN domain — `cdn.example.com`.
+
+    2. Select **Do not delegate** to keep DNS at the current provider.
+
+    3. Under **Origin**, select **Specify content origin** and **URL**.
+
+    4. In **Origin source**, enter `storage.googleapis.com`.
+
+    5. Keep **Use default port** enabled.
+
+    6. In **Host header override**, enter `storage.googleapis.com`.
+
+    7. Click **Create**.
+
+    <Frame>
+      ![URL origin configured with storage.googleapis.com as the source and host header](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-cloud-storage-origin.png)
+    </Frame>
+
+    After creation, open the resource settings. Under **General** > **Origin pull protocol**, select **HTTPS**, then click **Save changes**.
+  </Step>
+
+  <Step title="Configure DNS">
+    At the DNS provider, create a CNAME record for `cdn.example.com` that points to the generated `*.gcdn.co` hostname shown by the Customer Portal.
+
+    Follow the [custom&nbsp;domain&nbsp;setup](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) to verify the DNS record and resource activation.
+  </Step>
+
+  <Step title="Verify the CDN object path">
+    Keep the bucket name in the CDN URL when Rewrite isn't configured:
+
+    ```text
+    https://cdn.example.com/my-bucket-1/images/image.png
+    ```
+
+    The path after the CDN domain is forwarded to `storage.googleapis.com`, so it must match the bucket name and object path.
+  </Step>
+
+  <Step title="(Optional) Hide the bucket name">
+    To expose `/images/image.png` instead of `/my-bucket-1/images/image.png`, open the resource settings and navigate to **Content**. Add the **Rewrite** option and enter:
+
+    ```nginx
+    /(.*) /my-bucket-1/$1
+    ```
+
+    Replace `my-bucket-1` with the bucket name. The public URL becomes `https://cdn.example.com/images/image.png`, while the origin request uses `/my-bucket-1/images/image.png`.
+  </Step>
+
+  <Step title="Update asset URLs and verify delivery">
+    Update the website or application to use the CDN URLs. In the browser developer tools:
+
+    1. Open the **Network** panel.
+
+    2. Reload the page.
+
+    3. Select an asset request.
+
+    4. Confirm that the request uses `cdn.example.com` and returns a successful response.
+
+    If the request returns 403, verify the bucket IAM policy and public access prevention. For a 404 response, compare the CDN request path with the bucket name and object path.
+  </Step>
+</Steps>
