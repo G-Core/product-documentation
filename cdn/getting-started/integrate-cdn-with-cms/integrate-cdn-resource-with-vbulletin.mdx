@@ -1,42 +1,54 @@
 ---
-title: Integrate CDN resource with vBulletin
+title: Integrate a CDN resource with vBulletin
 sidebarTitle: vBulletin
-ai-navigation: Configure CDN resource integration with vBulletin by creating replacement variables in Styles > Replacement Variable Manager to rewrite static file URLs from origin to Gcore CDN CNAME domain.
+ai-navigation: Configure vBulletin 6 public static asset delivery through Gcore CDN by assigning an HTTPS CDN URL in server optimization settings.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with the default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+vBulletin v6 can rewrite public static asset URLs to a CDN domain. Gcore then retrieves those files from the forum origin on request and caches them at edge locations.
 
-1\. Login to your vBulletin control panel.
+<Info>
+These instructions apply to self-hosted vBulletin v6. AdminCP access with permission to modify options and clear the cache is required. Back up the forum files and database before changing server optimization settings.
+</Info>
 
-2\. Go to Styles, then to Replacement Variable Manager.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the vBulletin forum as its origin.
 
-3\. Choose Add New Replacement Variable.
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve representative public CSS, JavaScript, and image files from the origin.
+  </Step>
+
+  <Step title="Open the server optimization options">
+    Sign in to vBulletin AdminCP and navigate to **Settings** > **Options** > **Server Settings and Optimization Options**.
+  </Step>
+
+  <Step title="Set the CDN URL">
+    In the **CDN URL** setting, enter `https://cdn.example.com`, and then save the options.
+
+    vBulletin changes the URLs of supported static elements but doesn't copy files. Gcore pull CDN retrieves each requested path from the configured origin.
+
+    <Warning>
+    Don't cache access-controlled attachments or other private content with public cache rules. Verify which paths vBulletin rewrites before enabling caching for user-generated files.
+    </Warning>
+  </Step>
+
+  <Step title="Clear the vBulletin cache">
+    In AdminCP, navigate to **Maintenance** > **Clear System Cache**, clear the system cache, and then reload the forum.
+  </Step>
+
+  <Step title="Verify CDN delivery">
+    Open the forum in a private browser window. Open the browser developer tools, select **Network**, disable the browser cache, and reload the page.
+
+    Filter requests by `cdn.example.com`. Confirm that public static assets use the CDN hostname and return successful HTTP responses. Request a cacheable asset again and verify that the `Cache` response header is `HIT`. Also confirm that forum pages, forms, and protected content continue to use the forum hostname.
+  </Step>
+</Steps>
+
+## Troubleshooting
 
 
-<Frame>![Integrate CDN resource with vBulletin](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/vbulletin.png)</Frame>
-
-
-
-Using your CNAME from the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) (`cdn.site.com`). Create a new replacement variable for each item in the following table. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
-
-
-<Frame>![Gcore Customer Portal ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/bulletin_______.png)</Frame>
-
- Find in the text | Replace with  
----|---  
-`src="customavatars/` | `src="<http://cdn.site.com/customavatars/>`  
-`src="customprofilepics/` | `src="<http://cdn.site.com/customprofilepics/>`  
-`src="images/` | `src="<http://cdn.site.com/images/>`  
-`url("clientscript` | `url("cdn.site.com`  
-`src="clientscript/` | `src="<http://cdn.site.com/>`  
-`src="{vb:raw vboptions.bburl}/clientscript/` | `src="<http://cdn.site.com/>`  
-`href="clientscript/` | `href="<http://cdn.site.com/>`  
-`url(./images/` | `url(<http://cdn.site.com/images/>`  
-`url(images/` | `url(<http://cdn.site.com/images/>`  
-`var IMGDIR_MISC="images/misc";`<br/>`var IMGDIR_BUTTON="images/buttons";` | `var IMGDIR_MISC="[http://cdn.site.com/images/misc";var](http://cdn.site.com/images/misc%22;var)`<br/>`IMGDIR_BUTTON="<http://cdn.site.com/images/buttons>";`  
-  
-4\. If you have more directories for your images repeat the process for each of them.
-
-5\. Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+- **Static assets return 404**: Confirm that the requested path exists on the forum origin and that the CDN resource preserves the path.
+- **Requests return 502**: Check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- **The forum appears without styles**: Confirm that the CDN URL includes `https://`, the TLS certificate is valid, and CSS files return successful responses.
+- **Fonts are blocked by CORS**: Inspect the browser console, and then configure the required CORS response header for `cdn.example.com`.
+- **Scripts are blocked by Content Security Policy**: Inspect the browser console, and then allow `cdn.example.com` in the applicable Content Security Policy directive.
+- **Old assets remain visible**: Clear the vBulletin cache and [purge&nbsp;CDN&nbsp;cache](/cdn/cdn-resource-options/cache/clear-cdn-cache).
+- **Private content is cached**: Exclude the affected paths from caching, purge existing cached responses, and confirm that requests require authorization at the origin.
