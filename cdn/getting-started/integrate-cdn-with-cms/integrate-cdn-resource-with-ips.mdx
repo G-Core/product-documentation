@@ -1,38 +1,72 @@
 ---
-title: Integrate CDN resource with IPS
+title: Integrate a CDN resource with Invision Community Classic
 sidebarTitle: IPS
-ai-navigation: Configure Gcore CDN CNAME integration with IPS Community by entering the custom domain in System Settings General Configuration CDN Settings and verifying URL rewriting in browser developer tools.
+ai-navigation: Configure Invision Community Classic file delivery through Gcore CDN by assigning an HTTPS custom URL to supported storage configurations.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+Invision Community Classic 4.x can generate public file URLs through Gcore CDN by assigning a custom URL to each file-storage configuration. This setting applies to the file areas that use the updated configuration rather than every application resource.
 
-Login to your IPS Community Admin area.
+<Info>
+  Invision Community Cloud includes a managed global CDN and doesn't require this setup. The exact AdminCP labels in the current Classic release can differ from this verified 4.x workflow.
+</Info>
 
-Click **System/System Settings** as in the picture below 
+Administrator access to the self-hosted Invision Community installation, an active CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. Back up the community files and database before changing storage settings.
 
+<Steps>
+  <Step title="Prepare the CDN resource">
+    Configure the community hostname — `community.example.com` — as the CDN origin. Set the origin host header to the same hostname when the web server uses name-based virtual hosting.
 
-<Frame>![System Settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-settings.jpeg)</Frame>
+    Activate `cdn.example.com` as the HTTPS custom domain and confirm that a known file path returns successfully through both the origin and CDN domains.
+  </Step>
 
+  <Step title="Open the storage configurations">
+    Log in to the Invision Community AdminCP and navigate to **System** > **Overview** > **Files** > **Storage Settings** > **Configurations**.
+  </Step>
 
+  <Step title="Select a supported storage configuration">
+    Edit the file-storage configuration used by the content to deliver through CDN. File System, FTP, and Amazon S3 configurations support a custom URL, while Database storage doesn't.
 
-Click **General Configuration** as in the picture below.
+    When several configurations serve different file areas, update each required configuration separately.
+  </Step>
 
+  <Step title="Set the custom URL">
+    Enable **Use a custom URL** and enter the full HTTPS CDN URL that maps to the same path as the storage configuration.
 
-<Frame>![General Configuration](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-general-configuration.jpeg)</Frame>
+    For files stored under `/uploads`, enter:
 
+    ```text
+    https://cdn.example.com/uploads
+    ```
 
+    Click **Save**.
+  </Step>
 
-Scroll down to CDN Settings.
+  <Step title="Check file-area assignments">
+    On **Storage Settings**, confirm that each required file area uses a configuration with the CDN custom URL.
 
-Type in your CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration. 
+    Changing the assigned storage configuration can start a background task that moves existing files. Wait for the task to finish because old and new URLs can coexist during the move.
+  </Step>
 
+  <Step title="(Optional) Refresh cached file URLs">
+    If rendered pages still contain the origin domain, run the AdminCP support tool to clear the system cache, then clear any full-page or application cache in front of the community.
+  </Step>
 
-<Frame>![CDN Settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-cdn-settingsv1.jpeg)</Frame>
+  <Step title="Verify CDN delivery">
+    Open a community page that contains a file from the updated storage configuration and use the browser developer tools:
 
+    1. Open the **Network** panel.
 
+    2. Reload the page.
 
-Click the **Update Settings** button at the bottom of the page.
+    3. Select an affected image, stylesheet, script, attachment, or theme file.
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+    4. Confirm that the request URL uses `cdn.example.com` and returns a successful response.
+  </Step>
+</Steps>
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+## Troubleshoot the integration
+
+- If only some files use the CDN domain, identify their file areas under **Storage Settings** and update the associated configurations.
+- For a 404 response, compare the custom URL path with the original storage URL and the CDN origin path.
+- For a 502 response, verify the origin pull protocol and host header in the CDN resource.
+- If pages retain old URLs after clearing the cache, wait for any active storage move or background queue to finish.
