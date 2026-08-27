@@ -1,46 +1,53 @@
 ---
 title: Integrate CDN resource with XenForo
 sidebarTitle: XenForo
-ai-navigation: Configure Gcore CDN resource integration with XenForo by editing config.php, updating Style General Settings with CDN CNAME domain, and verifying static file URLs are rewritten to the configured CNAME record.
+ai-navigation: Configure XenForo data and JavaScript URLs in config.php so static files load from a Gcore CDN custom domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+[XenForo](https://xenforo.com) serves avatars, attachment thumbnails, and JavaScript from URLs set in `src/config.php`. Point those URLs at a Gcore CDN custom domain so browsers request the files from CDN instead of the origin. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) must exist first, and the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) must have a CNAME record pointing at the assigned `cl-****.gcdn.co` hostname.
 
-Connect to your FTP account.
+<Warning>
+Back up `src/config.php` and the database before editing. Incorrect URL values can break avatars and JavaScript.
+</Warning>
 
-Go to library folder.
+Before editing XenForo, collect the **custom domain** value for the CDN URLs. It typically looks like `cdn.example.com`:
 
-Edit config.php file and add two lines as in the example below:
-    
-```
-$config ['externalDataUrl'] = 'http://cdn.site.com/data';  
-$config ['javaScriptUrl'] = 'http://cdn.site.com/js';
-```
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+  </Step>
+  <Step title="Copy the custom domain">
+    Note the **custom domain** shown for the resource, because that hostname is used in `externalDataUrl` and `javaScriptUrl`.
+  </Step>
+  <Step title="Confirm the DNS CNAME">
+    Confirm that the custom domain has a CNAME record pointing to the Gcore target hostname shown in the Customer Portal (`cl-****.gcdn.co`). Do not put the `gcdn.co` hostname in the XenForo URLs.
+  </Step>
+  <Step title="Confirm SSL">
+    Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS.
+  </Step>
+</Steps>
 
-Login to your XenForo admin area.
+Then update the XenForo configuration. `externalDataUrl` is the public URL for the `data` directory (avatars and attachment thumbnails), and `javaScriptUrl` is the public URL for the `js` directory.
 
+<Steps>
+  <Step title="Open the configuration file">
+    Open `src/config.php` in the XenForo installation.
+  </Step>
+  <Step title="Set the CDN URLs">
+    Add or update the following keys, using the custom domain and no trailing slash after the directory name. If XenForo is installed in a subdirectory, include that path in both URLs:
 
-<Frame>![Login to your XenForo admin area](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xenadmin.png)</Frame>
-
-
-
-Navigate to Style -> General -> Settings.
-
-
-<Frame>![Settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xensettings.png)</Frame>
-
-
-
-Replace the Path to images field existing record (_/styles/default_) with the following:
-    
-```
-http://cdn.site.com/styles/default
-```
-
-Instead of cdn.site.com type in the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
-
-Click **Update Style Properties** to save your settings.
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    ```php
+    $config['externalDataUrl'] = 'https://cdn.example.com/data';
+    $config['javaScriptUrl'] = 'https://cdn.example.com/js';
+    ```
+  </Step>
+  <Step title="Save the configuration">
+    Save `src/config.php`.
+  </Step>
+  <Step title="Set style image URLs">
+    (Optional) Log in to the XenForo admin control panel, navigate to **Appearance** > **Style properties** > **Basic options**, and set logo and related image URLs to the custom domain when those assets should also load from CDN.
+  </Step>
+  <Step title="Confirm rewritten URLs">
+    Open the site, press F12, select the **Network** tab, and refresh. Avatar, thumbnail, and JavaScript requests should load from the custom domain instead of the origin hostname.
+  </Step>
+</Steps>
