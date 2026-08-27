@@ -1,7 +1,7 @@
 ---
-title: "Create and manage a subnetwork"
-sidebarTitle: "Subnetwork"
-ai-navigation: Create, update, and delete subnetworks in Gcore Cloud via the Customer Portal, REST API, or Terraform.
+title: "Create and manage a subnet"
+sidebarTitle: "Subnet"
+ai-navigation: Create, update, and delete subnets in Gcore Cloud via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -10,30 +10,30 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSection id="portal" label="Customer Portal">
 
-<p>A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines in the cloud.</p>
+<p>A subnet is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines in the cloud.</p>
 
-## Create a subnetwork
+## Create a subnet
 
-<p>A subnetwork can be created [during Virtual Machine creation](/cloud/virtual-instances/create-an-instance) or from the **Networks** page.</p>
+<p>A subnet can be created [during Virtual Machine creation](/cloud/virtual-instances/create-an-instance) or from the **Networks** page.</p>
 
 ### Step 1. Open the network
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Networking**.
 
 <Frame>
-  ![Networks page open in the Customer Portal](/images/docs/cloud/networking/create-and-manage-a-subnetwork/networks-page.png)
+  ![Networks page open in the Customer Portal](/images/docs/cloud/networking/create-and-manage-a-subnet/networks-page.png)
 </Frame>
 
 2. Find the network and click its name to open it.
 3. Click **Create subnet**. The **Create Subnet** dialog opens.
 
 <Frame>
-  ![Network settings section with the highlighted Create subnet button](/images/docs/cloud/networking/create-and-manage-a-subnetwork/network-settings-create-subnet.png)
+  ![Network settings section with the highlighted Create subnet button](/images/docs/cloud/networking/create-and-manage-a-subnet/network-settings-create-subnet.png)
 </Frame>
 
 ### Step 2. Set name and CIDR
 
-1. Enter the subnetwork name.
+1. Enter the subnet name.
 2. Set a CIDR within one of the supported ranges:
 
 - 10.0.0.0/8
@@ -42,44 +42,44 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - fc00::/7
 
 <Frame>
-  ![Create a subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png)
+  ![Create a subnet dialog](/images/docs/cloud/networking/create-and-manage-a-subnet/create-subnet.png)
 </Frame>
 
 #### CIDR requirements
 
-- The CIDR must not overlap with other subnetworks in the same network — overlapping ranges cause network conflicts and break connectivity.
-- The CIDR cannot be changed after the subnetwork is created.
+- The CIDR must not overlap with other subnets in the same network — overlapping ranges cause network conflicts and break connectivity.
+- The CIDR cannot be changed after the subnet is created.
 - The prefix length must stay within the range of its base: /8–/32 for 10.0.0.0/8, /12–/32 for 172.16.0.0/12, and /16–/32 for 192.168.0.0/16.
-- Subnets with a /31 or /32 mask require the gateway to be disabled.
+- Subnets with a /31 or /32 mask require both the gateway and DHCP to be disabled — DHCP is incompatible with these prefix lengths.
 
 ### Step 3. Configure DHCP and router
 
 1. (Optional) Select the **Enable DHCP** checkbox to assign IP addresses to machines in the subnet automatically.
 
 <Warning>
-  For IPv6 networks, DHCP can only be enabled or disabled during subnetwork creation. Changing this setting later requires recreating the IPv6 subnetwork.
+  For IPv6 networks, DHCP can only be enabled or disabled during subnet creation. Changing this setting later requires recreating the IPv6 subnet.
 </Warning>
 
 2. (Optional) Select the **Connect to network router** checkbox to automatically connect this subnet to the network router if one exists. This gives VMs internet access through the router and enables L3 routing between subnets connected to the same router. When selected, specify a custom **Gateway IP** address or leave it set to **Automatically** to assign one automatically.
 
 <Frame>
-  ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png)
+  ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnet/create-subnet-name-cidr-dhcp.png)
 </Frame>
 
 #### Gateway
 
-<p>The gateway IP must meet these requirements before saving the subnetwork configuration.</p>
+<p>The gateway IP must meet these requirements before saving the subnet configuration.</p>
 
-- The gateway IP must fall within the subnetwork's CIDR range. For 192.168.0.0/24, the valid range is 192.168.0.1–192.168.0.254. The network address (.0) and broadcast address (.255) are not valid.
-- Assigning a **Specific** gateway to more than one subnetwork in the same network causes routing conflicts — only one subnetwork should use a specific gateway IP.
-- When a Gcore Virtual Machine or Bare Metal server has both public and private interfaces, disable the default gateway on all private subnetworks — a conflict with the server's default gateway will prevent access.
+- The gateway IP must fall within the subnet's CIDR range. For 192.168.0.0/24, the valid range is 192.168.0.1–192.168.0.254. The network address (.0) and broadcast address (.255) are not valid.
+- Assigning a **Specific** gateway to more than one subnet in the same network causes routing conflicts — only one subnet should use a specific gateway IP.
+- When a Gcore Virtual Machine or Bare Metal server has both public and private interfaces, disable the default gateway on all private subnets — a conflict with the server's default gateway will prevent access.
 
 <Frame>
-  ![Edit subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/disable-router-gateway.png)
+  ![Edit subnet dialog](/images/docs/cloud/networking/create-and-manage-a-subnet/disable-router-gateway.png)
 </Frame>
 
 <Frame>
-  ![Gateway IP validation error](/images/docs/cloud/networking/create-and-manage-a-subnetwork/gateway-ip-validation-error.png)
+  ![Gateway IP validation error](/images/docs/cloud/networking/create-and-manage-a-subnet/gateway-ip-validation-error.png)
 </Frame>
 
 <Warning>
@@ -95,22 +95,22 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - Deselect **Connect to network router** to create an isolated subnet with no router connectivity.
 
 <Frame>
-  ![Create subnetwork dialog showing non-routable option](/images/docs/cloud/networking/create-and-manage-a-subnetwork/enable-non-routable-subnetwork.png)
+  ![Create subnet dialog showing non-routable option](/images/docs/cloud/networking/create-and-manage-a-subnet/enable-non-routable-subnet.png)
 </Frame>
 
 ### Step 4. Configure DNS, host routes, and tags
 
-1. (Optional) Specify custom DNS servers for the subnetwork. If left blank, DNS servers are assigned automatically based on the subnet configuration.
+1. (Optional) Specify custom DNS servers for the subnet. If left blank, DNS servers are assigned automatically based on the subnet configuration.
 2. (Optional) Define host routes to control how traffic is distributed within the network:
 
 - **Destination:** Specify the network or host where the traffic is intended to go.
 - **Nexthop:** Choose the intermediate device — a router or gateway — through which traffic must pass to reach the destination.
 
-3. (Optional) Select **Add tags** to add metadata to the subnetwork.
+3. (Optional) Select **Add tags** to add metadata to the subnet.
 4. Click **Create subnet**.
 
 <Frame>
-  ![Custom DNS and host routes fields in the Create Subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-custom-dns.png)
+  ![Custom DNS and host routes fields in the Create Subnet dialog](/images/docs/cloud/networking/create-and-manage-a-subnet/create-subnet-custom-dns.png)
 </Frame>
 
 #### Host routes
@@ -124,46 +124,46 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 | Destination | CIDR notation | `10.10.0.0/24` |
 | Nexthop | IP address reachable from within the subnet | `192.168.10.254` |
 
-<p>Each subnetwork supports up to 20 host routes. If the next-hop IP is unreachable from the subnet, traffic to that destination will fail.</p>
+<p>Each subnet supports up to 20 host routes. If the next-hop IP is unreachable from the subnet, traffic to that destination will fail.</p>
 
-## Manage subnetworks
+## Manage subnets
 
-<p>Subnetworks are managed from the **Networking** page of the Customer Portal.</p>
+<p>Subnets are managed from the **Networking** page of the Customer Portal.</p>
 
-### Rename a subnetwork
+### Rename a subnet
 
 1. In the Customer Portal, navigate to **Cloud** > **Networking**.
 
 <Frame>
-  ![Networks page open in the Customer Portal](/images/docs/cloud/networking/create-and-manage-a-subnetwork/networks-page.png)
+  ![Networks page open in the Customer Portal](/images/docs/cloud/networking/create-and-manage-a-subnet/networks-page.png)
 </Frame>
 
-2. Find the network containing the subnetwork and click its name to open it.
-3. Click the three-dot icon next to the subnetwork, then click **Edit**.
+2. Find the network containing the subnet and click its name to open it.
+3. Click the three-dot icon next to the subnet, then click **Edit**.
 
 <Frame>
-  ![Network settings with the highlighted edit button](/images/docs/cloud/networking/create-and-manage-a-subnetwork/rename-subnetwork.png)
+  ![Network settings with the highlighted edit button](/images/docs/cloud/networking/create-and-manage-a-subnet/rename-subnet.png)
 </Frame>
 
-4. Update the subnetwork's name.
+4. Update the subnet's name.
 5. Click **Save**.
 
-<p>The subnetwork has been renamed.</p>
+<p>The subnet has been renamed.</p>
 
-### Delete a subnetwork
+### Delete a subnet
 
-<p>A subnetwork cannot be deleted if any of its IP addresses are in use — for example, if a Virtual Machine, load balancer, or other resource still has a port in that subnet.</p>
+<p>A subnet cannot be deleted if any of its IP addresses are in use — for example, if a Virtual Machine, load balancer, or other resource still has a port in that subnet.</p>
 
 1. In the Customer Portal, navigate to **Cloud** > **Networking**.
-2. Find the network containing the subnetwork and click its name to open it.
-3. Click the three-dot icon next to the subnetwork, then click **Delete**.
+2. Find the network containing the subnet and click its name to open it.
+3. Click the three-dot icon next to the subnet, then click **Delete**.
 4. Click **Delete** again to confirm.
 
 <Frame>
-  ![Delete subnetwork confirmation dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/confirm-subnetwork-deletion.png)
+  ![Delete subnet confirmation dialog](/images/docs/cloud/networking/create-and-manage-a-subnet/confirm-subnet-deletion.png)
 </Frame>
 
-<p>The subnetwork has been removed.</p>
+<p>The subnet has been removed.</p>
 
 ## IPv4 and IPv6 reference
 
@@ -199,7 +199,7 @@ export NETWORK_ID="{YOUR_NETWORK_ID}"
 ```
 
 <Info>
-**NETWORK\_ID** is the UUID of the [network](/cloud/networking/create-and-manage-a-network) in which to create the subnetwork.
+**NETWORK\_ID** is the UUID of the [network](/cloud/networking/create-and-manage-a-network) in which to create the subnet.
 </Info>
 
 ## Quickstart
@@ -310,7 +310,9 @@ func main() {
 | `name` | Yes | Name for the subnet. |
 | `network_id` | Yes | ID of the network to attach this subnet to. |
 | `enable_dhcp` | No | Set to `true` to have DHCP assign IP addresses to VMs automatically. For IPv6 subnets this cannot be changed after creation. |
+| `ip_version` | No | IP version: `4` (default) or `6`. |
 | `connect_to_network_router` | No | Set to `false` to make the subnet non-routable (no internet access). Omit to use the network's default routing. |
+| `router_id_to_connect` | No | UUID of a specific router to connect this subnet to. Requires `connect_to_network_router: true`. If omitted, the router created with the network is used. |
 | `dns_nameservers` | No | DNS servers to advertise via DHCP. Omit or pass `null` to auto-assign defaults: DHCP-enabled subnets use the local DHCP server as resolver; subnets with DHCP disabled but a gateway receive `95.85.95.85` and `8.8.8.8`; subnets with DHCP disabled and no gateway receive no DNS servers. Pass `[]` to explicitly disable DNS. |
 
 <Tabs>
