@@ -1,28 +1,76 @@
 ---
-title: Integrate CDN resource with WordPress (Rocket plugin)
-sidebarTitle: Rocket plugin
-ai-navigation: Configure Gcore CDN resource integration with WordPress using WP Rocket plugin by entering CNAME from Control Panel, updating Replace Site's Hostname field, and verifying static file URLs are rewritten to CDN CNAME domain.
+title: Integrate a CDN resource with WordPress using WP Rocket
+sidebarTitle: WP Rocket
+ai-navigation: Configure WP Rocket to rewrite WordPress static asset URLs through a Gcore CDN custom domain and verify cached delivery.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+WP Rocket rewrites eligible static asset URLs in cached WordPress pages so Gcore CDN can retrieve and deliver the assets from edge locations. An active WP Rocket license and the plugin ZIP from the [WP&nbsp;Rocket&nbsp;account](https://wp-rocket.me/account/) are required.
 
-[Create a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) before you start the CDN integration.
+<Warning>
+Back up the WordPress files and database before installing or reconfiguring plugins.
+</Warning>
 
-Login to your WordPress admin dashboard and navigate to Plugins > Add New.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    Prepare a CDN hostname for WP Rocket:
 
-Upload the plugin.
+    1. Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the WordPress site as its origin.
+    2. Configure an HTTPS [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), `cdn.example.com`.
+    3. Confirm that the custom domain can retrieve a public static asset from the origin.
 
-When the plugin is activated, please go to the configuration area of the plugin.
+    Use an HTTPS CDN domain when the WordPress site uses HTTPS to prevent mixed-content errors.
+  </Step>
 
-Go to CDN and type in the CNAME from the Gcore [Control panel](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+  <Step title="Download WP Rocket">
+    Sign in to the WP Rocket account and download the plugin ZIP. Keep the archive compressed for the WordPress upload.
+  </Step>
 
-Update the Replace Site's Hostname field. 
+  <Step title="Install WP Rocket">
+    In WordPress Admin:
 
+    1. Navigate to **Plugins** > **Add Plugin**.
+    2. Select **Upload Plugin** and select the WP Rocket ZIP.
+    3. Select **Install Now**.
+    4. Select **Activate Plugin**.
+  </Step>
 
-<Frame>![CDN ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-rocket-plugin/WPRocket.png)</Frame>
+  <Step title="Add the CDN hostname">
+    In WP Rocket:
 
+    1. Open **Content Delivery** and select **Other CDN**.
+    2. Select **ADD CNAME**.
+    3. In **CDN CNAME(S)**, enter the Gcore custom domain without a path — `cdn.example.com`.
+    4. Keep **For All Files** selected to rewrite supported images, CSS, and JavaScript files.
+    5. Select **SAVE CHANGES**.
 
+    <Frame>
+      ![WP Rocket Content Delivery settings for another CDN](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-rocket-plugin/integrate-cdn-resource-with-wordpress-rocket-plugin-image1.png)
+    </Frame>
+  </Step>
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+  <Step title="Verify CDN delivery">
+    Verify the result on a cached page:
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    1. Clear the WP Rocket cache.
+    2. Open the WordPress site in a logged-out private browser window.
+    3. In browser developer tools, open **Network**, disable the browser cache, and reload the page.
+    4. Select a configured image, CSS file, or JavaScript file and confirm:
+       - The request URL uses `cdn.example.com`.
+       - The response has a successful HTTP status.
+       - A repeated request to a cacheable asset returns `HIT` in the `Cache` response header.
+  </Step>
+</Steps>
+
+## URL rewriting logic
+
+WP Rocket changes eligible asset URLs in cached HTML to the configured CDN hostname. Gcore CDN retrieves each matching asset from the WordPress origin when the asset is first requested.
+
+Assets loaded through AJAX or inserted dynamically after the HTML is generated might retain the origin hostname. WP Rocket does not upload or remove origin files.
+
+## Troubleshooting
+
+- **Asset URLs keep the origin hostname:** Clear the WP Rocket cache and test while logged out. Confirm that the asset hostname matches the **Site Address** value in **Settings** > **General**, including the `www` variant.
+- **Only some assets use CDN:** Confirm that **For All Files** is selected. Assets loaded through AJAX or inserted dynamically might require application-level changes.
+- **The browser reports mixed content:** Use HTTPS for the WordPress site and the Gcore CDN domain.
+- **Fonts fail to load:** Allow the CDN domain in the origin's cross-origin resource sharing configuration.
+- **Updated assets remain stale:** Purge the affected Gcore CDN cache and clear the WP Rocket cache.
