@@ -52,7 +52,8 @@ jobs:
         run: |
           set +e
           python3 .github/scripts/api-sdk/diff_api_spec.py \
-            /tmp/spec-old /tmp/spec-new api-sdk-tracker/doc_index.json > /tmp/api_diff.md
+            /tmp/spec-old /tmp/spec-new api-sdk-tracker/doc_index.json \
+            --json-out /tmp/api_diff.json > /tmp/api_diff.md
           EXIT=$?
           if [ $EXIT -eq 1 ]; then
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
@@ -61,6 +62,16 @@ jobs:
           else
             exit $EXIT
           fi
+
+      - name: Route changes via semantic verifier mapping
+        if: steps.diff.outputs.has_changes == 'true'
+        run: |
+          set +e
+          python3 .github/scripts/api-sdk/route_spec_changes.py \
+            --diff    /tmp/api_diff.json \
+            --map     data/spec-article-map.json \
+            --output  /tmp/route_additions.md
+          echo "has_additions=$( [ $? -eq 1 ] && echo true || echo false )" >> "$GITHUB_ENV"
 
       - name: Ensure api-sdk-tracker label exists
         if: steps.diff.outputs.has_changes == 'true'
@@ -79,6 +90,9 @@ jobs:
           python3 .github/scripts/api-sdk/assemble_issue.py \
             --api-diff /tmp/api_diff.md \
             --output /tmp/issue_body.md
+          if [ "$has_additions" = "true" ] && [ -s /tmp/route_additions.md ]; then
+            cat /tmp/route_additions.md >> /tmp/issue_body.md
+          fi
 
       - name: Create issue
         if: steps.diff.outputs.has_changes == 'true'
