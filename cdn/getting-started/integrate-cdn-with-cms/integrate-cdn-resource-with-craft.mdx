@@ -19,21 +19,25 @@ Administrator access to Craft CMS, an existing CDN resource, and an HTTPS-enable
     Log in to the Craft control panel and navigate to **Settings** > **Filesystems**. Create a filesystem or open the filesystem used by the required assets, then configure it:
 
     1. Enable **Files in this filesystem have public URLs**.
-    2. In **Base URL**, enter the HTTPS CDN domain and asset path — `https://cdn.example.com/uploads/`.
+    2. In **Base URL**, enter a value that resolves to a stable absolute CDN URL — `https://cdn.example.com/uploads/`, an environment variable, or a dedicated alias such as `@cdn`.
     3. For a local filesystem, set **Base Path** to the matching server directory — `@webroot/uploads`.
     4. Save the filesystem.
 
-    Use a stable absolute Base URL. Craft discourages using the automatically determined `@web` alias for asset filesystems because its value can differ between sites.
+    Craft supports environment variables and aliases in filesystem Base URL fields. Avoid the automatically determined `@web` alias, because its value can differ between sites. Craft documents these options in the [asset filesystem settings](https://craftcms.com/docs/5.x/reference/element-types/assets).
   </Step>
 
   <Step title="Attach an asset volume">
     Navigate to **Settings** > **Assets**. Create a volume or open an existing volume, attach it to the configured filesystem, and save the volume.
 
     When several volumes use the same filesystem, assign each one a unique, non-overlapping base path.
+
+    A volume can store image transforms in a separate filesystem. Transformed images in that filesystem do not automatically use the CDN URL of the original assets. Configure the transform filesystem with public URLs and a **Base URL** that also resolves to the CDN domain. If the transform filesystem is left unchanged, this procedure covers only files stored in the selected filesystem.
   </Step>
 
   <Step title="Upload or select an asset">
     Navigate to **Assets**, select the configured volume, and upload a file. Existing assets in a volume attached to this filesystem use the new Base URL automatically.
+
+    Replacing an asset at the same path can leave the previous file in the CDN cache. Enable Craft's [`revAssetUrls`](https://craftcms.com/docs/5.x/reference/config/general#revasseturls) setting so asset URLs change after a replacement, or [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL from Gcore.
   </Step>
 
   <Step title="Use the Craft-generated asset URL">
