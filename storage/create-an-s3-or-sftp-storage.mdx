@@ -1,7 +1,7 @@
 ---
-title: Create an object or SFTP storage
+title: Create and manage an object or SFTP storage
 sidebarTitle: Create Object Storage
-ai-navigation: Create S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - includes SFTP password management.
+ai-navigation: Create and manage S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - covers creation, access keys, SFTP password updates, and deletion.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -63,15 +63,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>SFTP storage requires choosing an authentication method during creation — password or SSH key. Both can be managed after creation.</p>
 
+<p>In the **Location** dropdown, select an **SFTP** location and enter a name as described in the general steps above. Then select the authentication method:</p>
+
 <Steps>
-  <Step title="Select a location">
-    In the **Location** dropdown, select an **SFTP** location.
-  </Step>
-  <Step title="Enter a name">
-    Enter the storage name in the **Name** field.
-  </Step>
   <Step title="Select authentication method">
-    Select **Password** or **SSH Key** as the authentication method. Leave the password field empty to generate one automatically.
+    Select **Password** or **SSH Key**. Leave the password field empty to generate one automatically.
   </Step>
   <Step title="Create">
     Click **Create** at the bottom of the dialog.
@@ -116,7 +112,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>S3-compatible and SFTP storages are provisioned with a single API call. For S3 storage, the secret key is returned only at creation time, so it cannot be retrieved later.</p>
+<p>Each S3-compatible or SFTP storage is provisioned with a single API call. S3 and SFTP use different endpoints. For S3 storage, the secret key is returned only at creation time and cannot be retrieved later.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -200,6 +196,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     ```
   </Tab>
 </Tabs>
+
+<p>The sections below cover the individual API operations: S3 creation with step-by-step detail, SFTP creation, SFTP password updates, and deletion for both storage types.</p>
 
 ## Step-by-step
 
@@ -288,8 +286,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `location_name` | Yes | Location `name` value from Step 1 — `luxembourg-2` for S3 Standard in Luxembourg |
-| `name` | Yes | Storage name. The API prefixes it with the account ID to form `full_name`, which is the bucket path used in S3 clients |
+| `location_name` | Yes | Location `name` value from Step 1. S3 Standard and S3 Fast use the same endpoint — the storage type is determined by the location name (e.g. `luxembourg-2` for S3 Standard, `sines-2` for S3 Fast) |
+| `name` | Yes | Storage name. The API prefixes it with the account ID to form `full_name`, which is the storage identifier used as the path prefix in S3 client connections |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -640,7 +638,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Create S3 storage
 
-<p>Declares an S3 storage. The storage is provisioned with one access key automatically.</p>
+<p>Declares an S3 storage. The storage is provisioned with one access key automatically. To create an S3 Fast storage instead of S3 Standard, set `location_name` to an S3 Fast location name (e.g. `sines-2`) — the resource type is the same.</p>
 
 ```hcl
 resource "gcore_storage_object_storage" "example" {
@@ -671,6 +669,10 @@ terraform apply
 ## Delete S3 storage
 
 <p>Remove the resource block. Terraform deletes the storage on the next apply.</p>
+
+<Warning>
+Deleting the storage permanently removes all buckets and objects it contains. This action cannot be undone.
+</Warning>
 
 ```hcl
 # Remove or comment out this block:
@@ -732,6 +734,10 @@ terraform apply
 ## Delete SFTP storage
 
 <p>Remove the resource block — Terraform deletes the storage on the next apply.</p>
+
+<Warning>
+Deleting the storage permanently removes all its contents. This action cannot be undone.
+</Warning>
 
 ```hcl
 # Remove or comment out this block:
