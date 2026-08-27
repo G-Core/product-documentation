@@ -1,36 +1,43 @@
 ---
-title: Upload a custom SSL certificate
+title: Custom SSL certificate configuration
 sidebarTitle: Custom SSL certificate
-ai-navigation: Upload a custom SSL certificate in PEM format, attach it to a CDN resource, then renew or delete certificates from SSL certificates.
+ai-navigation: Configure a custom SSL certificate in PEM format, attach it to CDN resources, then renew or delete certificates.
 ---
 
-A custom SSL certificate must be issued for the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) of the CDN resource (`cdn.example.com`). A wildcard certificate covers all subdomains, including `*.example.com`.
+A custom SSL certificate must be issued for the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) of the CDN resource (`cdn.example.com`). A certificate for `*.example.com` covers one DNS label under that domain (`cdn.example.com`). It does not cover the apex domain `example.com` or a nested hostname `assets.cdn.example.com`. Confirm the hostnames on the certificate Subject Alternative Names. Wildcard matching follows [RFC&nbsp;9525](https://www.rfc-editor.org/rfc/rfc9525).
 
 Upload the certificate in the [Gcore Customer Portal](https://portal.gcore.com), then attach it on an existing CDN resource, because custom SSL is not selected on the create-resource form.
 
 ## Upload an SSL certificate
 
-Open **CDN** > **SSL certificates** and click **Add SSL certificate**.
+<Steps>
+  <Step title="Open SSL certificates">
+    In the Customer Portal, navigate to **CDN** > **SSL certificates**.
 
-<Frame>![SSL certificates list with Add SSL certificate](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
+    <Frame>![SSL certificates list with Add SSL certificate](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
+  </Step>
+  <Step title="Open the create form">
+    Click **Add SSL certificate**. The **Create SSL Certificate** form opens.
 
-The **Create SSL Certificate** form opens.
+    <Frame>![Create SSL Certificate form with Name, Certificate, and Private key](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image2.png)</Frame>
+  </Step>
+  <Step title="Enter the certificate data">
+    Enter the values from the certificate authority:
 
-<Frame>![Create SSL Certificate form with Name, Certificate, and Private key](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image2.png)</Frame>
+    - **Name**: a label used only in the Customer Portal.
+    - **Certificate**: the certificate chain in [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) format (personal certificate, intermediate CA, root CA).
+    - **Private key**: the matching private key.
 
-Enter the certificate data from the certificate authority:
+    Paste the chain and key as described in [Certificate&nbsp;chain](#certificate-chain-and-key). Leave **Signed by a trusted CA.** checked when the certificate is from a trusted CA. Clear the checkbox when it is not.
 
-- **Name**: a label used only in the Customer Portal.
-- **Certificate**: the certificate chain in [PEM](https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail) format (personal certificate, intermediate CA, root CA).
-- **Private key**: the matching private key.
+    <Frame>![Create SSL Certificate form filled with name, certificate chain, and private key](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image3.png)</Frame>
+  </Step>
+  <Step title="Create the certificate">
+    Click **Create SSL Certificate**. The certificate appears in the SSL certificates list.
 
-Paste the chain and key as described in [Certificate&nbsp;chain](#certificate-chain-and-key). Leave **Signed by a trusted CA.** checked when the certificate is from a trusted CA. Clear the checkbox when it is not.
-
-<Frame>![Create SSL Certificate form filled with name, certificate chain, and private key](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image3.png)</Frame>
-
-Click **Create SSL Certificate**. The certificate appears in the SSL certificates list.
-
-<Frame>![SSL certificate in the certificates list](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
+    <Frame>![SSL certificate in the certificates list](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
+  </Step>
+</Steps>
 
 Attach the certificate to a CDN resource after upload, because an uploaded certificate is not used until it is selected on a resource.
 
@@ -44,25 +51,36 @@ Copy the chain in this order: personal certificate, intermediate CA, root CA. Pa
 
 Add a new line at the end of the chain.
 
-Open the private key file (`.key`) in a text editor. Paste the full contents into **Private key**, including the `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----` tags.
+Open the private key file (`.key`) in a text editor. Paste the full contents into **Private key**, and keep the exact `BEGIN` and `END` lines from the key file. Common delimiters include `-----BEGIN PRIVATE KEY-----` and `-----BEGIN RSA PRIVATE KEY-----`.
 
 ## SSL certificate on a CDN resource
 
 Create the [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) first. On the create form, enter the hostname in **Add domain**. After the resource exists, attach the custom certificate in the resource SSL settings.
 
-Open **CDN** > **CDN resources** and click the resource **CNAME**.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the Customer Portal, navigate to **CDN** > **CDN resources** and click the resource **CNAME**.
 
-<Frame>![CDN resources list with CNAME column](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image6.png)</Frame>
+    <Frame>![CDN resources list with CNAME column](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image6.png)</Frame>
+  </Step>
+  <Step title="Open SSL settings">
+    On the **OPTIONS** tab, open **SSL** under **General**.
+  </Step>
+  <Step title="Select the custom certificate">
+    Turn on **Enable HTTPS** and select **Custom SSL certificate**. If a certificate is already uploaded, select it in the certificate dropdown. If none are uploaded, click **Add SSL certificate**.
 
-On the **OPTIONS** tab, open **SSL** under **General**. Turn on **Enable HTTPS** and select **Custom SSL certificate**. If a certificate is already uploaded, select it in the certificate dropdown and click **Save changes**. If none are uploaded, click **Add SSL certificate**.
+    <Frame>![Enable HTTPS and Custom SSL certificate on an existing resource](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image7.png)</Frame>
 
-<Frame>![Enable HTTPS and Custom SSL certificate on an existing resource](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image7.png)</Frame>
+    <Accordion title="Certificate not uploaded yet">
+      Click **Add SSL certificate**, paste the chain and key in the dialog, then click **Add SSL certificate**. The paste rules match [Certificate&nbsp;chain](#certificate-chain-and-key).
 
-<Accordion title="Certificate not uploaded yet">
-Click **Add SSL certificate**, paste the chain and key in the dialog, then click **Add SSL certificate**. Use the same paste rules as Certificate chain and key.
-
-<Frame>![Add SSL certificate dialog on an existing resource](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image8.png)</Frame>
-</Accordion>
+      <Frame>![Add SSL certificate dialog on an existing resource](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image8.png)</Frame>
+    </Accordion>
+  </Step>
+  <Step title="Save the SSL settings">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 ## Certificate management
 
@@ -70,13 +88,29 @@ Uploaded certificates are listed under **CDN** > **SSL certificates**. The table
 
 <Frame>![SSL certificates table with ID, name, resources, start, and expire](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
 
+The certificate name can be changed from **Settings** on the certificate row, while the certificate and private key values cannot be edited after upload.
+
 ### SSL certificate renewal
 
-The certificate name can be changed from **Settings** on the certificate row, while the certificate and private key values cannot be edited after upload. Before expiration, upload a new certificate, open the resource **SSL** settings, select the new certificate, and click **Save changes**. Wait at least 15 minutes.
+Before expiration, upload a replacement certificate and select it on every resource listed under **CDN resources** for the old certificate.
 
-To confirm the new certificate is bound, open `https://cdn.example.com` in a browser, click the lock icon, open **Connection is secure**, then **Certificate is valid**.
-
-Compare the displayed data with the new certificate. If the values match, [delete](#delete-an-ssl-certificate) the old certificate. Delete the old certificate only after content is served with the new one, because removing it too early interrupts HTTPS delivery.
+<Steps>
+  <Step title="Upload a replacement certificate">
+    Add the replacement in [SSL&nbsp;certificates](#upload-an-ssl-certificate). Do not delete the old certificate yet.
+  </Step>
+  <Step title="Replace it on every connected resource">
+    On the old certificate row, note every resource under **CDN resources**. For each listed resource, open **SSL** settings, select the new certificate, and click **Save changes**.
+  </Step>
+  <Step title="Wait for HTTPS to use the new certificate">
+    Wait at least 15 minutes after the last resource is saved.
+  </Step>
+  <Step title="Verify each hostname">
+    For each hostname on the connected resources, open the site over HTTPS, click the lock icon, open **Connection is secure**, then **Certificate is valid**. Compare the displayed data with the new certificate.
+  </Step>
+  <Step title="Delete the old certificate">
+    After every hostname matches the new certificate, [delete](#delete-an-ssl-certificate) the old certificate. Removing it earlier interrupts HTTPS delivery on any resource that still selects it.
+  </Step>
+</Steps>
 
 ### Expiration notifications
 
@@ -86,10 +120,22 @@ A red exclamation mark marks an expired certificate, while a yellow warning mark
 
 ### Delete an SSL certificate
 
-Click the three dots next to the certificate, then click **Delete**. The same menu includes **Settings**.
+A certificate that is selected on a CDN resource cannot be deleted. Replace it on every connected resource first.
 
-<Frame>![Settings and Delete actions on an SSL certificate row](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image5.png)</Frame>
+<Warning>
+Turning off **Enable HTTPS** stops HTTPS delivery on that resource. To detach a certificate, select a replacement certificate on every connected resource. Turn off **Enable HTTPS** only when HTTPS delivery is being removed.
+</Warning>
 
-A confirmation dialog opens. Click **Yes, delete**.
+<Steps>
+  <Step title="Detach the certificate from every resource">
+    On the certificate row, note every resource under **CDN resources**. For each listed resource, open **SSL** settings and select a replacement certificate, then click **Save changes**. Turn off **Enable HTTPS** only when HTTPS delivery is being removed from that resource.
+  </Step>
+  <Step title="Open the delete action">
+    Click the three dots next to the certificate, then click **Delete**. The same menu includes **Settings**.
 
-A certificate that is attached to a CDN resource cannot be deleted. Open **SSL** on that resource and turn off **Enable HTTPS** first, then delete the certificate.
+    <Frame>![Settings and Delete actions on an SSL certificate row](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image5.png)</Frame>
+  </Step>
+  <Step title="Confirm deletion">
+    In the confirmation dialog, click **Yes, delete**.
+  </Step>
+</Steps>
