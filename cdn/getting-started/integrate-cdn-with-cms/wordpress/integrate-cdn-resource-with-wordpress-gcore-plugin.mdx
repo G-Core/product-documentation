@@ -1,108 +1,106 @@
 ---
-title: Integrate CDN resource with WordPress (Gcore plugin)
+title: Integrate a CDN resource with WordPress using the Gcore plugin
 sidebarTitle: Gcore plugin
-ai-navigation: Install and configure the Gcore CDN WordPress plugin to enable CDN delivery by setting Enable CDN checkbox, Personal domain, file types (basic or advanced mode with custom extensions), folder paths, and exception URLs.
+ai-navigation: Configure the Gcore CDN plugin for WordPress to rewrite selected static asset URLs through an HTTPS CDN domain and verify delivery.
 ---
 
-## Install the plugin
+The Gcore CDN plugin rewrites eligible static asset URLs in rendered WordPress pages so the assets are requested through a Gcore CDN domain.
 
-Go to your WordPress admin panel, select Plugins - > Add new. In the plugin search box, type "Gcore CDN". Install the found plugin.
+<Warning>
+The current plugin release is version 1.1.10. WordPress.org lists it as tested through WordPress 6.2.11 and not tested with the latest three major WordPress releases. Test the plugin with the site's theme and other plugins in a staging environment before enabling it in production.
+</Warning>
 
-To activate the plugin, click on the Activate button or go to Plugins -> Installed.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    Create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the WordPress site as its origin. Add an HTTPS custom domain, `cdn.example.com`, and confirm that this domain can retrieve public static assets from the origin.
 
+    Use the same protocol as the WordPress site. An HTTPS site requires an HTTPS CDN domain to prevent mixed-content errors.
+  </Step>
 
-<Frame>![Install the plugin](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/________________.png)</Frame>
+  <Step title="Install the Gcore CDN plugin">
+    In WordPress Admin, navigate to **Plugins** > **Add Plugin**. Search for `Gcore CDN`, then install and activate **Gcore CDN** by `gcorewpress`.
 
+    The plugin is also available from the [WordPress plugin&nbsp;directory](https://wordpress.org/plugins/g-core-labs-cdn/).
+  </Step>
 
+  <Step title="Enable CDN URL rewriting">
+    Navigate to **Gcore** > **CDN settings**. On the **General** tab:
 
-You can also download the Gcore plugin via the [link](https://wordpress.org/plugins/g-core-labs-cdn). After successful installation, you will see the Gcore plugin in the WordPress menu.
+    1. Turn on **Enable CDN**.
+    2. In **Personal domain**, enter the complete CDN URL with its protocol and a trailing slash — `https://cdn.example.com/`.
 
-## Working with the plugin
+    Settings save automatically.
 
-### Integration with CDN
+    <Frame>
+      ![Enable CDN URL rewriting and enter the CDN domain](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/integrate-cdn-resource-with-wordpress-gcore-plugin-image1.png)
+    </Frame>
+  </Step>
 
-To integrate your site with the Gcore CDN, go to the plugin settings: find it in the menu and click on CDN Settings > General.
+  <Step title="Select file types">
+    Open the **File types** tab and select the categories to deliver through CDN: **Images**, **Video**, **Audio**, **JS**, **CSS**, or **Archives**.
 
-**Note** : All changes in plugin settings are automatically saved.
+    To define individual extensions instead, turn on **Advanced settings**, enter an extension without a leading period — `avif` — and select **Add**. Advanced mode replaces the basic category selections.
 
-Activate the Enable CDN checkbox, fill in the Personal domain field, and click Save.
+    <Frame>
+      ![Select file types for CDN delivery](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/integrate-cdn-resource-with-wordpress-gcore-plugin-image2.png)
+    </Frame>
+  </Step>
 
+  <Step title="Select folders">
+    Open the **Folders** tab and select the WordPress directories whose assets can use CDN:
 
-<Frame>![Integration with CDN](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/___________________.png)</Frame>
+    - **Templates** maps to `/wp-content/themes/`.
+    - **Plugins** maps to `/wp-content/plugins/`.
+    - **Content** maps to `/wp-content/uploads/`.
+    - **Folder WordPress** maps to `/wp-includes/`.
 
+    To define another directory, turn on **Advanced settings**, enter its root-relative path with leading and trailing slashes — `/assets/` — and select **Add**.
 
+    <Info>
+    A URL must match both a selected folder and a selected file type. If no folder is selected, assets from any folder can be rewritten when their file type matches.
+    </Info>
 
-### File types
+    <Frame>
+      ![Select WordPress folders for CDN delivery](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/integrate-cdn-resource-with-wordpress-gcore-plugin-image3.png)
+    </Frame>
+  </Step>
 
-Specify the file extensions that you want to distribute via CDN.
+  <Step title="Add URL exceptions">
+    Open the **Exceptions** tab to keep specific files on the origin hostname. Enter each complete origin URL — `https://www.example.com/wp-content/uploads/private-image.jpg` — and select **Add**.
 
-There are available two configuration modes: basic and advanced.
+    <Frame>
+      ![Add an origin URL to the CDN exceptions list](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/integrate-cdn-resource-with-wordpress-gcore-plugin-image4.png)
+    </Frame>
+  </Step>
 
-1\. In basic mode, you can select file extensions offered on the page.
+  <Step title="Verify CDN delivery">
+    Clear any WordPress page cache, then open the site in a private browser window. In browser developer tools, open **Network**, disable the browser cache, and reload the page.
 
+    Select a configured static asset and confirm:
 
-<Frame>![Specify the file extensions ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/________________________.png)</Frame>
+    - The request URL uses the configured CDN hostname, `cdn.example.com`.
+    - The response has a successful HTTP status.
+    - A second request to a cacheable asset returns `HIT` in the `Cache` response header.
 
+    Confirm that an exception URL continues to use the WordPress origin hostname.
+  </Step>
+</Steps>
 
+## URL rewriting logic
 
-2\. Use advanced mode if you need to add specific file extensions.
+The plugin changes an origin URL to the configured CDN domain only when all applicable conditions are met:
 
-To do this, activate the Advanced settings:
+- The URL belongs to the WordPress site.
+- The complete URL is not in **Exceptions**.
+- The path matches a selected folder, unless no folder is selected.
+- The file extension matches a selected file type.
 
+The plugin changes URLs in rendered page output. It does not upload files to CDN or remove them from the WordPress origin. Gcore CDN retrieves matching assets from the origin when they are first requested.
 
-<Frame>![Advanced settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_________________________________.png)</Frame>
+## Troubleshooting
 
-
-
-Add the extensions one by one. They will be displayed in the "File types" section.
-
-### Folders
-
-Specify the paths to the folders you want to deliver over the CDN in the "Folders" section.
-
-Two configuration modes are available: basic and advanced.
-
-1\. In basic mode, you can select folders offered on the page.
-
-
-<Frame>![Folders](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/__________________.png)</Frame>
-
-
-
-2\. Use advanced mode if you need to add specific folders paths.
-
-To do this, activate the advanced settings:
-
-
-<Frame>![advanced settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_____________________.png)</Frame>
-
-
-
-Add the paths one by one. The added folders will be displayed in the section.
-
-**Note** : If you do not specify a folder, adding a personal domain indicated in the General section to the URL of files will depend on the file extension.
-
-### Exceptions
-
-Specify URLs of the files that should not be delivered over the CDN in the "Exceptions" section. Add the URLs one by one. 
-
-
-<Frame>![Exceptions](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_______________.png)</Frame>
-
-
-
-### Plugin workflow
-
-If you want to deliver a file over the CDN, your domain name in the file URL will be replaced with the personal domain that you specified in the General section.
-
-Request processing logic:
-
-  * Is the URL from which the content is requested in the Exceptions section?
-    * If yes, the domain name substitution does not occur, the file is distributed as usual.
-    * If not, or exceptions are not specified, then check the next point.
-  * Is the content in the folder listed under Folders?
-    * If yes, the domain name substitution does not occur, the file is distributed as usual.
-    * If not, or folders are not specified, then check the next point.
-  * Are extensions included in the list of extensions for which the URL changes?
-    * If yes, the domain name substitution does not occur, the file is distributed as usual.
-    * If yes, then a personal CDN domain is substituted.
+- **The CDN hostname does not appear:** Confirm that **Enable CDN** is on, then check the selected file type, folder, and exceptions. Clear WordPress page caches after changing plugin settings.
+- **Assets return 404 or 502 errors:** Confirm that the CDN resource origin can retrieve the same asset path from the WordPress site.
+- **The browser blocks mixed content:** Use HTTPS for both the WordPress site and the CDN domain.
+- **Styles, scripts, or fonts fail to load:** Check the browser console for cross-origin resource sharing or Content Security Policy errors. Allow the CDN domain in the relevant origin or policy configuration.
+- **Updated assets remain stale:** Purge the affected CDN cache and clear any WordPress page cache.
