@@ -44,7 +44,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>A **Details** dialog opens immediately, showing the storage credentials: access key, secret key, hostname, and location. Click **Copy object storage data** to copy all credentials at once.</p>
 
-<p>Store the secret key, because it is returned only when a key is created. The initial key has read-write access. Additional [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) — read-write or read-only — can be created after the storage exists. Read-only keys are supported on S3 Standard only.</p>
+<p>Store the secret key, because it is returned only when a key is created. The initial key has read-write access. Additional [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) — read-write or read-only — can be created after the storage exists: up to 10 keys for S3 Standard, up to 2 for S3 Fast. Read-only keys are supported on S3 Standard only.</p>
 
 <Frame>![Details dialog showing S3 storage credentials including access key, secret key, and hostname](/images/docs/storage/create-an-s3-or-sftp-storage/s3-storage-created-10.png)</Frame>
 
@@ -55,7 +55,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 | Option | Description |
 |---|---|
 | Details | View **Object Storage User name**, **Location**, and **Hostname**. |
-| Access keys | Create and delete read-write or read-only S3 access keys. Read-only keys are supported on S3 Standard only. The secret is returned only when a key is created. |
+| Access keys | Create and delete read-write or read-only S3 access keys. S3 Standard supports up to 10 access keys; S3 Fast supports up to 2. Read-only keys are supported on S3 Standard only. The secret is returned only when a key is created. |
 | Buckets | Manage the storage's [buckets](/storage/manage-object-storage/manage-buckets-via-the-control-panel). |
 | Delete object storage | Permanently delete the storage and all its contents. This action cannot be undone. |
 
@@ -379,7 +379,9 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 </Accordion>
 
-<p>The initial key in the response has read-write access. Additional keys — read-write or read-only — can be created using the [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) endpoint. Read-only keys are supported on S3 Standard only.</p>
+<p>The initial key in the response has read-write access. Additional keys — read-write or read-only — can be created using the [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) endpoint. S3 Standard supports up to 10 access keys per storage; S3 Fast supports up to 2. Read-only keys are supported on S3 Standard only.</p>
+
+<p>The access key request body uses the field name <code>read_only</code>. The response returns the same concept as <code>is_read_only</code> — note this naming difference when building API clients.</p>
 
 ## Create SFTP storage
 
@@ -462,6 +464,68 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     ```bash
     sftp -P 2200 1000503-my-sftp-storage@ams.origin.gcdn.co
     ```
+  </Tab>
+</Tabs>
+
+## Update SFTP password
+
+<p>Use <code>PATCH /v4/sftp_storages/{storage_id}</code> to replace an SFTP storage's password. Set <code>password_mode</code> to <code>set</code> and provide the new value in <code>password</code>. The <code>password</code> field is only accepted when <code>password_mode</code> is <code>set</code>.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    sftp_id = 13865
+    client.storage.sftp_storages.update(
+        sftp_id,
+        password_mode="set",
+        password="MyNewPassword123",
+    )
+    print("Password updated")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        var sftpID int64 = 13865
+
+        _, err := client.Storage.SftpStorages.Update(ctx, sftpID, storage.SftpStorageUpdateParams{
+            PasswordMode: storage.SftpStorageUpdateParamsPasswordModeSet,
+            Password:     gcore.String("MyNewPassword123"),
+        })
+        if err != nil {
+            log.Fatalf("update SFTP password: %v", err)
+        }
+        fmt.Println("Password updated")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/storage/v4/sftp_storages/$SFTP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"password_mode": "set", "password": "MyNewPassword123"}'
+    ```
+
+    Returns HTTP 200 with the updated storage object.
   </Tab>
 </Tabs>
 
@@ -642,6 +706,23 @@ output "sftp_password" {
 }
 
 # terraform import gcore_storage_sftp.example '<storage_id>'
+```
+
+```bash
+terraform apply
+```
+
+## Update SFTP password
+
+<p>To change the SFTP storage password, set <code>password_mode</code> to <code>set</code> and add a <code>password</code> attribute, then apply.</p>
+
+```hcl
+resource "gcore_storage_sftp" "example" {
+  location_name = "ams"
+  name          = "my-sftp-storage"
+  password_mode = "set"
+  password      = var.sftp_password
+}
 ```
 
 ```bash
