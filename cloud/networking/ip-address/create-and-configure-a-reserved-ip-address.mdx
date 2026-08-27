@@ -1,4 +1,4 @@
----
+﻿---
 title: "Create and configure a reserved IP address"
 sidebarTitle: "Reserved IP address"
 ai-navigation: Reserve a public or private fixed IP address in Gcore Cloud via the Customer Portal, REST API, or Terraform, and use the port ID to assign it to a Virtual Machine, Bare Metal server, or Load Balancer.
@@ -47,18 +47,18 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/rip-reserved-ips-page.png)
 </Frame>
 
-4. In the **Reserve IP for** section, keep **Network interface** selected to allocate a new address. Select **Specific port on a resource** to mark an existing Virtual Machine interface as reserved — then choose the instance type, instance, and network interface.
+4. In the **Reserve IP for** section, keep **Network interface** selected to allocate a new address. Select **Specific port on a resource** to mark an existing Virtual Machine interface as reserved â€” then choose the instance type, instance, and network interface.
 
 5. In the **Network type** section, select the network type:
 
 - **Public**: External network for internet-facing IP addresses.
-- **Private**: Internal network within the project. For this option, select the [network](/cloud/networking/create-and-manage-a-network) and optionally a specific [subnetwork](/cloud/networking/create-and-manage-a-subnetwork).
+- **Private**: Internal network within the project. For this option, select the [network](/cloud/networking/create-and-manage-a-network) and optionally a specific [subnet](/cloud/networking/create-and-manage-a-subnet).
 - **Dedicated public**: Dedicated public network (if configured for the project).
 
-<p>When a network is selected without specifying a subnetwork, the IP address is allocated in any available subnet of that network.</p>
+<p>When a network is selected without specifying a subnet, the IP address is allocated in any available subnet of that network.</p>
 
 <Info>
-A reserved private IP works within the specified subnetwork. To request a specific address, in the **IP address to reserve** section, select **Custom** and enter the IP that belongs to that subnetwork.
+A reserved private IP works within the specified subnet. To request a specific address, in the **IP address to reserve** section, select **Custom** and enter the IP that belongs to that subnet.
 </Info>
 
 6. (Optional) In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
@@ -88,9 +88,9 @@ A reserved private IP works within the specified subnetwork. To request a specif
     <p>The reserved IP is assigned as a new public interface alongside any existing interfaces.</p>
 
     <Warning>
-A reserved IP is a standalone network port. If the VM already has an interface on the same public network (pub_net), adding a second reserved IP from that network will be rejected — the reserved IP port cannot be merged with the existing port. To assign a specific reserved IP when the network is already in use, detach the existing public subnetwork first, then add the new interface with the reserved IP.
+A reserved IP is a standalone network port. If the VM already has an interface on the same public network (pub_net), adding a second reserved IP from that network will be rejected â€” the reserved IP port cannot be merged with the existing port. To assign a specific reserved IP when the network is already in use, detach the existing public subnet first, then add the new interface with the reserved IP.
 
-This restriction applies to the standard public network. In a dedicated external network, additional IP addresses can be added without detaching the existing interface — they are assigned to the same port automatically.
+This restriction applies to the standard public network. In a dedicated external network, additional IP addresses can be added without detaching the existing interface â€” they are assigned to the same port automatically.
 </Warning>
   </Tab>
 </Tabs>
@@ -218,11 +218,11 @@ This restriction applies to the standard public network. In a dedicated external
 1. Open the Virtual Machine settings.
 2. Go to the **Networking** tab.
 3. Expand the interface that contains the reserved IP.
-4. Click the three-dot menu next to the subnetwork row.
-5. Select **Detach Subnetwork**.
+4. Click the three-dot menu next to the subnet row.
+5. Select **Detach subnet**.
 
 <Frame>
-  ![Detach from the Virtual Machine](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/detach-subnetwork.png)
+  ![Detach from the Virtual Machine](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/detach-subnet.png)
 </Frame>
 
 ## Assign a reserved IP to a load balancer
@@ -411,7 +411,7 @@ export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 
 ### Step 1. Reserve an IP address
 
-Reserving an IP allocates a static address from the region pool exclusively for this project — no other account can claim it.
+Reserving an IP allocates a static address from the region pool exclusively for this project â€” no other account can claim it.
 
 <Tabs>
   <Tab title="Public IP">
@@ -479,7 +479,7 @@ Reserving an IP allocates a static address from the region pool exclusively for 
         }
         ```
 
-        Save `created_resources.ports[0]` as `PORT_ID` — this is the identifier used in all subsequent calls for this reserved IP.
+        Save `created_resources.ports[0]` as `PORT_ID` â€” this is the identifier used in all subsequent calls for this reserved IP.
       </Tab>
     </Tabs>
 
@@ -493,7 +493,7 @@ export SUBNET_ID="{YOUR_SUBNET_ID}"
 ```
 
 <Info>
-`SUBNET_ID` is the UUID of the subnetwork from which to allocate the private IP. To create a subnetwork or find its ID, see [Create and manage a subnetwork](/cloud/networking/create-and-manage-a-subnetwork).
+`SUBNET_ID` is the UUID of the subnet from which to allocate the private IP. To create a subnet or find its ID, see [Create and manage a subnet](/cloud/networking/create-and-manage-a-subnet).
 </Info>
 
     <Tabs>
@@ -600,7 +600,7 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
 
 ## Use a reserved IP with a Virtual Machine
 
-<p>Each reserved IP is represented internally by a port — a virtual network endpoint identified by `port_id`. This UUID is obtained from the reservation response (see Step 1 above) and is the value passed in the `interfaces` block during VM creation. Setting `type` to `"reserved_fixed_ip"` and supplying `port_id` binds the reserved address to the VM as its network interface.</p>
+<p>Each reserved IP is represented internally by a port â€” a virtual network endpoint identified by `port_id`. This UUID is obtained from the reservation response (see Step 1 above) and is the value passed in the `interfaces` block during VM creation. Setting `type` to `"reserved_fixed_ip"` and supplying `port_id` binds the reserved address to the VM as its network interface.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -733,7 +733,7 @@ fixed_ip_address = "85.234.84.181"
 port_id          = "616c00c0-e0d5-46bf-93c9-d4bc08912b45"
 ```
 
-<p>`port_id` and `id` contain the same UUID — this is the identifier passed to a Virtual Machine's interface configuration (see below).</p>
+<p>`port_id` and `id` contain the same UUID â€” this is the identifier passed to a Virtual Machine's interface configuration (see below).</p>
 
 ## Reserve a private IP address
 
@@ -771,12 +771,12 @@ resource "gcore_cloud_instance" "example" {
 <p>The reserved IP remains allocated even if the instance is destroyed. Reassign it to a new VM by updating `port_id` in a different instance resource and running `terraform apply`.</p>
 
 <Warning>
-To reserve an IP for use as a [Virtual IP](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address), set `is_vip = true` when creating the resource — this field is immutable.
+To reserve an IP for use as a [Virtual IP](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address), set `is_vip = true` when creating the resource. This field can be changed after creation via PATCH — the resource is updated in place without recreation.
 </Warning>
 
 ## Delete a reserved IP
 
-<p>Remove the resource block — Terraform releases the address and stops billing on the next `terraform apply`.</p>
+<p>Remove the resource block â€” Terraform releases the address and stops billing on the next `terraform apply`.</p>
 
 ```hcl
 # Remove or comment out this block:

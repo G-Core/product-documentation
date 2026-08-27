@@ -51,14 +51,14 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 |---|---|---|---|
 | **High IOPS SSD** | Latency-sensitive transactional workloads (60 IOPS/GiB; 2.5 MB/s per GiB) | 9,000 | 500 MB/s |
 | **Standard** | General-purpose workloads with stable random I/O (6 IOPS/GiB; 0.4 MB/s per GiB) | 4,500 | 300 MB/s |
-| **SSD Low-Latency** | Real-time data processing requiring sub-millisecond latency (avg. 300 µs) | 50,000 | — |
+| **SSD Low-Latency** | Real-time data processing requiring sub-millisecond latency (avg. 300 µs) | 5,000 | — |
 
 <p>For **Bare metal instances**, select a flavor from the [available configurations](/cloud/kubernetes/bare-metal-kubernetes#available-configurations).</p>
 
 <Frame>![Pools section with worker node type, flavor, volume, and placement policy fields](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-pools.png)</Frame>
 
 <Info>
-If [IPv6 dual-stack](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) is required, at least one pool must have a public IPv4 address.
+If [IPv6 dual-stack](/cloud/kubernetes/clusters/networking#enable-ipv6-dual-stack) is required, at least one pool must have a public IPv4 address.
 </Info>
 
 ## Step 5. Select the CNI provider
@@ -89,7 +89,7 @@ The CNI provider cannot be changed after the cluster has been created.
 
 <p>Under **Network settings**, configure **Interface 1** for the cluster.</p>
 
-<p>If a [network](/cloud/networking/create-and-manage-a-network) already exists, select it from the **Network** dropdown and select a [subnetwork](/cloud/networking/create-and-manage-a-subnetwork) from the **Subnet** dropdown.</p>
+<p>If a [network](/cloud/networking/create-and-manage-a-network) already exists, select it from the **Network** dropdown and select a subnet from the **Subnet** dropdown.</p>
 
 <Frame>![Network settings section with network and subnet dropdowns](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network.png)</Frame>
 
@@ -103,7 +103,7 @@ The CNI provider cannot be changed after the cluster has been created.
 
 <Frame>![Create network dialog with network name, Bare Metal Network, and Create router options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-network-dialog.png)</Frame>
 
-<p>(Optional) Enable **Enable IPv6 dual-stack** to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the toggle is unavailable, at least one pool must have a public IPv4 address. If the cluster connects only to a private network, configure and add an IPv6 subnetwork.</p>
+<p>(Optional) Enable **Enable IPv6 dual-stack** to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the toggle is unavailable, at least one pool must have a public IPv4 address. If the cluster connects only to a private network, configure and add an IPv6 subnet.</p>
 
 <p>Basic DDoS Protection is included for the cluster network.</p>
 
@@ -125,7 +125,15 @@ The CNI provider cannot be changed after the cluster has been created.
 
 <Frame>![Logging section with Enable Logging checkbox and topic options](/images/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-cluster-logging.png)</Frame>
 
-## Step 10. (Optional) Configure advanced settings
+## Step 10. (Optional) Enable VAST storage
+
+<p>In regions with GPU Bare Metal nodes, a **VAST storage** toggle is available. Enable it to provision a VAST file share alongside the cluster. The share is accessible from all worker nodes through a dedicated VAST network interface that is attached automatically.</p>
+
+<Info>
+VAST storage is available only in GPU-enabled regions. If the toggle does not appear, the region does not support VAST file shares.
+</Info>
+
+## Step 11. (Optional) Configure advanced settings
 
 <p>Under **Advanced settings**, expand [OIDC authentication](/cloud/kubernetes/clusters/secure-cluster-with-oidc) or [Cluster Autoscaler](/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings) to configure optional cluster-wide settings.</p>
 
@@ -482,7 +490,11 @@ A cluster requires a node pool with at least one node. The pool defines the VM f
 | `fixed_subnet` | Yes | Subnet ID from Step 3 |
 | `pools[].flavor_id` | Yes | Node VM flavor. Flavor IDs are region-specific — use `GET /cloud/v1/k8s/{project_id}/{region_id}/flavors` to list available options |
 | `pools[].min_node_count` | Yes | Minimum nodes for autoscaling |
-| `pools[].servergroup_policy` | Yes | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `pools[].max_node_count` | No | Maximum nodes for autoscaling. Set equal to `min_node_count` to disable autoscaling |
+| `pools[].boot_volume_size` | No | Boot volume size in GiB |
+| `pools[].boot_volume_type` | No | Boot volume type: `standard`, `ssd_hiiops`, `ssd_lowlatency`, `cold`, or `ultra` |
+| `pools[].servergroup_policy` | No | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `pools[].auto_healing_enabled` | No | Automatically replace unhealthy nodes |
 | `pods_ip_pool` | No | CIDR for pod IPs. Default for Calico: `172.16.0.0/18`. Cannot overlap with `10.255.255.0/24` or `192.168.128.0/17` |
 | `services_ip_pool` | No | CIDR for service IPs. Default for Calico: `172.24.0.0/18` |
 
