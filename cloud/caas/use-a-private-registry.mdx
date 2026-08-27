@@ -1,0 +1,499 @@
+---
+title: Use a private container registry
+sidebarTitle: Use a private registry
+ai-navigation: Set up registry credentials and pull secrets to deploy CaaS containers from private image registries via Customer Portal or REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>Deploying a container from a private image requires registry credentials so CaaS can authenticate when pulling the image. Credentials store the registry URL, username, and password and can be reused across containers.</p>
+
+## Step 1. Create registry credentials
+
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Container as a Service** > **Registry Credentials** and click **Create credentials**.</p>
+
+<Frame>![Registry Credentials list page](/images/docs/cloud/caas/use-a-private-registry/registry-credentials-page.png)</Frame>
+
+<p>Fill in the dialog:</p>
+
+  * **Image registry name** — a label that identifies this credential set in the **Credentials** dropdown when creating or editing containers.
+  * **Image registry URL** — the registry hostname, for example `registry.luxembourg-2.cloud.gcore.dev`.
+  * **Image registry username** — the username for authenticating with the registry.
+  * **Image registry password** — the password for the registry user.
+
+<Frame>![Create credentials dialog with registry name, URL, username, and password fields](/images/docs/cloud/caas/use-a-private-registry/create-credentials-dialog.png)</Frame>
+
+<p>Click **Create credentials** to save.</p>
+
+## Step 2. Create a container with registry credentials
+
+<p>When [creating a container](/cloud/caas/create-a-container), select **Private** as the image type in the **Container image** section, then select the credentials created in Step 1 from the **Credentials** dropdown.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>The example below creates a Gcore [Container&nbsp;Registry](/cloud/container-registry/create-a-registry) and uses it as the private registry for a CaaS container. If a private registry already exists, skip Steps 1–3 and start from Step 4. Container Registry and CaaS must be in the same region — Luxembourg-2 supports both.</p>
+
+<Info>
+An [API&nbsp;token](/developer-tools/rest-api/authentication) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. Create a Container Registry
+
+<p>A Container Registry stores the Docker image before CaaS pulls it.</p>
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Registry name, lowercase letters and hyphens. Becomes part of the registry URL |
+| `storage_limit` | No | Maximum storage in GiB. Defaults to 10 |
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+    import requests  # pip install requests
+
+    API_KEY = os.environ["GCORE_API_KEY"]
+    PROJECT_ID = os.environ["GCORE_CLOUD_PROJECT_ID"]
+    REGION_ID = os.environ["GCORE_CLOUD_REGION_ID"]
+    HDR = {"Authorization": f"APIKey {API_KEY}"}
+
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}",
+        headers=HDR,
+        json={"name": "my-registry", "storage_limit": 10},
+    )
+    resp.raise_for_status()
+    registry = resp.json()
+    REGISTRY_ID = registry["id"]
+    REGISTRY_URL = registry["url"].rstrip("/")
+    print("Registry URL:", REGISTRY_URL)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "os"
+        "strings"
+    )
+
+    func main() {
+        apiKey := os.Getenv("GCORE_API_KEY")
+        projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+        regionID := os.Getenv("GCORE_CLOUD_REGION_ID")
+        client := &http.Client{}
+
+        payload, _ := json.Marshal(map[string]any{"name": "my-registry", "storage_limit": 10})
+        req, _ := http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ := client.Do(req)
+        body, _ := io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var registry struct {
+            ID  int    `json:"id"`
+            URL string `json:"url"`
+        }
+        json.Unmarshal(body, &registry)
+        registryID := registry.ID
+        registryURL := strings.TrimSuffix(registry.URL, "/")
+        fmt.Printf("Registry ID: %d, URL: %s\n", registryID, registryURL)
+
+        // Steps 2–5 continue inside this main() function
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-registry", "storage_limit": 10}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": 606,
+      "name": "my-registry",
+      "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+```bash
+export REGISTRY_ID="606"
+export REGISTRY_URL="registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry"
+```
+
+## Step 2. Create a registry user
+
+<p>A registry user provides Docker login credentials. The `secret` is returned only once — copy it immediately.</p>
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Username suffix, lowercase alphanumeric, max 16 characters |
+| `duration` | Yes | Credential lifetime in days. Use `-1` for no expiration |
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}/users",
+        headers=HDR,
+        json={"name": "pusher", "duration": -1},
+    )
+    resp.raise_for_status()
+    user = resp.json()
+    DOCKER_USERNAME = user["name"]
+    DOCKER_PASSWORD = user["secret"]
+    print("Username:", DOCKER_USERNAME)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    // Add inside main(), after Step 1
+
+        payload, _ = json.Marshal(map[string]any{"name": "pusher", "duration": -1})
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d/users",
+                projectID, regionID, registryID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var regUser struct {
+            Name   string `json:"name"`
+            Secret string `json:"secret"`
+        }
+        json.Unmarshal(body, &regUser)
+        dockerUsername := regUser.Name
+        dockerPassword := regUser.Secret
+        fmt.Println("Username:", dockerUsername)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "pusher", "duration": -1}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "name": "r_1000503-1186668-76-my-registry+pusher",
+      "secret": "gVa7zL5meW9cBOJLGiQx9AcvPFSehcgg"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+The `secret` field cannot be retrieved after this response. Save it immediately. If lost, delete the user and create a new one.
+</Warning>
+
+```bash
+export DOCKER_USERNAME="r_1000503-1186668-76-my-registry+pusher"
+export DOCKER_PASSWORD="{secret_from_response}"
+```
+
+## Step 3. Push an image
+
+<p>Log in to the registry, tag a local image, and push it. Requires [Docker](https://docs.docker.com/get-started/get-docker/) installed locally.</p>
+
+```bash
+echo "$DOCKER_PASSWORD" | docker login "$REGISTRY_URL" \
+  --username "$DOCKER_USERNAME" --password-stdin
+
+docker tag nginx:latest "$REGISTRY_URL/nginx:latest"
+docker push "$REGISTRY_URL/nginx:latest"
+```
+
+## Step 4. Create a pull secret
+
+<p>A pull secret stores registry credentials inside the CaaS region, letting CaaS authenticate when pulling the private image.</p>
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Secret identifier referenced in the container spec. Pattern `^[a-z][-a-z0-9]{0,24}[a-z0-9]$` |
+| `registry` | Yes | Registry hostname without path |
+| `login` | Yes | Full Docker username from Step 2 |
+| `password` | Yes | Secret from Step 2 |
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/caas/secrets/{PROJECT_ID}/{REGION_ID}",
+        headers=HDR,
+        json={
+            "name": "my-registry-secret",
+            "registry": "registry.luxembourg-2.cloud.gcore.dev",
+            "login": DOCKER_USERNAME,
+            "password": DOCKER_PASSWORD,
+        },
+    )
+    resp.raise_for_status()
+    PULL_SECRET_NAME = resp.json()["name"]
+    print("Pull secret:", PULL_SECRET_NAME)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    // Add inside main(), after Step 3
+
+        payload, _ = json.Marshal(map[string]any{
+            "name":     "my-registry-secret",
+            "registry": "registry.luxembourg-2.cloud.gcore.dev",
+            "login":    dockerUsername,
+            "password": dockerPassword,
+        })
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/secrets/%s/%s", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var secret struct{ Name string `json:"name"` }
+        json.Unmarshal(body, &secret)
+        pullSecretName := secret.Name
+        fmt.Println("Pull secret:", pullSecretName)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"my-registry-secret\",
+        \"registry\": \"registry.luxembourg-2.cloud.gcore.dev\",
+        \"login\": \"$DOCKER_USERNAME\",
+        \"password\": \"$DOCKER_PASSWORD\"
+      }"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "name": "my-registry-secret",
+      "registry": "registry.luxembourg-2.cloud.gcore.dev",
+      "login": "r_1000503-1186668-76-my-registry+pusher"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+```bash
+export PULL_SECRET_NAME="my-registry-secret"
+```
+
+## Step 5. Create a container
+
+<p>Pass the pull secret name and the full private image path in the container spec. The `pull_secret` field references the name created in Step 4.</p>
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers",
+        headers=HDR,
+        json={
+            "name": "my-nginx",
+            "image": f"{REGISTRY_URL}/nginx:latest",
+            "listening_port": 80,
+            "flavor": "80mCPU-128MiB",
+            "scale": {"min": 1, "max": 2},
+            "pull_secret": PULL_SECRET_NAME,
+        },
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+    print("Task ID:", task_id)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    // Add inside main(), after Step 4
+
+        payload, _ = json.Marshal(map[string]any{
+            "name":           "my-nginx",
+            "image":          registryURL + "/nginx:latest",
+            "listening_port": 80,
+            "flavor":         "80mCPU-128MiB",
+            "scale":          map[string]int{"min": 1, "max": 2},
+            "pull_secret":    pullSecretName,
+        })
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var taskResp struct{ Tasks []string `json:"tasks"` }
+        json.Unmarshal(body, &taskResp)
+        taskID := taskResp.Tasks[0]
+        fmt.Println("Task ID:", taskID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"my-nginx\",
+        \"image\": \"$REGISTRY_URL/nginx:latest\",
+        \"listening_port\": 80,
+        \"flavor\": \"80mCPU-128MiB\",
+        \"scale\": {\"min\": 1, \"max\": 2},
+        \"pull_secret\": \"$PULL_SECRET_NAME\"
+      }"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["bf1bbc44-3a20-4c90-bbb9-3781e208fd16"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`, then call <code>GET /cloud/v1/caas/{project_id}/{region_id}/containers/my-nginx</code> to retrieve the public endpoint. Both polling and endpoint retrieval are shown in [create a container](/cloud/caas/create-a-container).</p>
+
+## Clean up
+
+<p>Delete the resources in this order: container first, then the pull secret, then the registry user, then the registry itself.</p>
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    # Delete container
+    resp = requests.delete(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers/my-nginx",
+        headers=HDR,
+    )
+    resp.raise_for_status()
+    # Poll resp.json()["tasks"][0] until FINISHED (same as Step 5)
+
+    # Delete pull secret
+    requests.delete(
+        f"https://api.gcore.com/cloud/v1/caas/secrets/{PROJECT_ID}/{REGION_ID}/{PULL_SECRET_NAME}",
+        headers=HDR,
+    ).raise_for_status()
+
+    # Delete registry user, then registry
+    requests.delete(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}/users/pusher",
+        headers=HDR,
+    ).raise_for_status()
+
+    requests.delete(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}",
+        headers=HDR,
+    ).raise_for_status()
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    // Add inside main(), after Step 5
+
+        // Delete container
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/my-nginx",
+                projectID, regionID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+        // Poll the returned task ID until FINISHED (same as Step 5)
+
+        // Delete pull secret
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/secrets/%s/%s/%s",
+                projectID, regionID, pullSecretName),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+
+        // Delete registry user, then registry
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d/users/pusher",
+                projectID, regionID, registryID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d",
+                projectID, regionID, registryID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Delete container
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers/my-nginx" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    # Poll the returned task ID until FINISHED
+
+    # Delete pull secret
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/caas/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PULL_SECRET_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # Delete registry user, then registry
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/pusher" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
