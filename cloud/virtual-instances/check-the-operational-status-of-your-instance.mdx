@@ -1,7 +1,7 @@
 ---
 title: Check the operational status of a Virtual Machine
 sidebarTitle: Check the status
-ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column, the Gcore Cloud REST API instances endpoint, or Terraform using the gcore_cloud_instance data source.
+ai-navigation: Check Virtual Machine operational status via the Customer Portal, REST API, or Terraform using the gcore_cloud_instances or gcore_cloud_instance data sources.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -15,7 +15,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <Frame>![Virtual Instances list showing the Status column with a Power on badge](/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-list-status-column.png)</Frame>
 
 <Tip>
-If a Virtual Machine enters the `Error` state, contact [Gcore support](mailto:support@gcore.com) for assistance.
+If a Virtual Machine enters the `Error` state, contact [Gcore&nbsp;support](mailto:support@gcore.com) for assistance.
 </Tip>
 
 </MethodSection>
@@ -24,7 +24,7 @@ If a Virtual Machine enters the `Error` state, contact [Gcore support](mailto:su
 
 <p>Two endpoints expose instance status. The list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
 
-<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).</Info>
+<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).</Info>
 
 <p>Set these variables before running the examples:</p>
 
@@ -145,7 +145,33 @@ Response:
 
 <MethodSection id="terraform" label="Terraform">
 
-<p>Read a Virtual Machine's current `status` and `vm_state` without managing it. The [`gcore_cloud_instance`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instance) data source fetches live state from the API and exposes it as Terraform outputs.</p>
+<p>Read Virtual Machine status without managing the instance. Two data sources are available: [`gcore_cloud_instances`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instances) returns all VMs for a project and region; [`gcore_cloud_instance`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instance) fetches a single VM by ID.</p>
+
+## List instance statuses
+
+<p>Returns all Virtual Machines in the project and region with their current `status` and `vm_state`. Use to check or map statuses across multiple instances.</p>
+
+```hcl
+data "gcore_cloud_instances" "all" {
+  project_id = var.project_id
+  region_id  = var.region_id
+}
+
+output "instance_statuses" {
+  value = {
+    for inst in data.gcore_cloud_instances.all.items :
+    inst.name => inst.status
+  }
+}
+```
+
+<p>Run `terraform apply` — Terraform queries the API and prints the current status for each instance:</p>
+
+```bash
+instance_statuses = {
+  "my-instance" = "ACTIVE"
+}
+```
 
 ## Get instance status
 
@@ -174,7 +200,7 @@ instance_status     = "ACTIVE"
 instance_task_state = tostring(null)
 ```
 
-<p>The `status` and `vm_state` constants are listed in [Status values](#status-values) below.</p>
+<p>The `status` and `vm_state` constants are listed in [Status&nbsp;values](#status-values) below.</p>
 
 ## Check state of a managed instance
 
