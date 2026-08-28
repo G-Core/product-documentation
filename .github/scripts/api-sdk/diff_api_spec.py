@@ -236,23 +236,99 @@ def diff_product(
     return lines, has_changes, has_doc_impact
 
 
-def main() -> None:
-    if len(sys.argv) != 4:
-        log.error("Usage: diff_api_spec.py <old_specs_dir> <new_specs_dir> <doc_index.json>")
-        sys.exit(2)
+def _normalize_to_spec_path(method: str, raw_path: str) -> str:
+    """Convert method + raw path to spec-article-map.json path format."""
+    encoded = raw_path.replace("/", "~1").replace("{", "{").replace("}", "}")
+    return f"paths/{encoded}/{method.lower()}"
 
-    old_dir, new_dir, doc_index_path = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]
-    doc_index = load_json(doc_index_path)
+
+def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Diff OpenAPI specs and map changes to documented articles.",
+    )
+    parser.add_argument("old_specs_dir", type=Path)
+    parser.add_argument("new_specs_dir", type=Path)
+    parser.add_argument("doc_index", type=str)
+    parser.add_argument(
+        "--json-out", metavar="FILE",
+        help="Write structured JSON diff to FILE for downstream routing scripts.",
+    )
+    args = parser.parse_args()
+
+    doc_index = load_json(args.doc_index)
 
     all_lines: list[str] = []
     has_changes = False
     has_doc_impact = False
+    structured: list[dict] = []
 
-    for new_file in sorted(new_dir.glob("*.yaml")):
+    for new_file in sorted(args.new_specs_dir.glob("*.yaml")):
         product = new_file.stem
-        old_file = old_dir / new_file.name
+        old_file = args.old_specs_dir / new_file.name
         old_spec = load_yaml(old_file)
         new_spec = load_yaml(new_file)
+
+        old_ops = extract_operations(old_spec)
+        new_ops = extract_operations(new_spec)
+        old_components = (old_spec.get("components", {}) or {}).get("schemas", {}) or {}
+        new_components = (new_spec.get("components", {}) or {}).get("schemas", {}) or {}
+
+        # Collect structured entries before building markdown.
+        for method, path in sorted(set(old_ops) - set(new_ops)):
+            arts = articles_using_operation(doc_index, method, path)
+            structured.append({
+                "product": product,
+                "spec_file": f"{product}_api.yaml",
+                "spec_path": _normalize_to_spec_path(method, old_ops[(method, path)]["raw_path"]),
+                "method": method,
+                "path": path,
+                "change_type": "operation_removed",
+                "field": None,
+                "articles_doc_index": arts,
+            })
+
+        for method, path in sorted(set(new_ops) - set(old_ops)):
+            structured.append({
+                "product": product,
+                "spec_file": f"{product}_api.yaml",
+                "spec_path": _normalize_to_spec_path(method, new_ops[(method, path)]["raw_path"]),
+                "method": method,
+                "path": path,
+                "change_type": "operation_added",
+                "field": None,
+                "articles_doc_index": [],
+            })
+
+        for method, path in sorted(set(old_ops) & set(new_ops)):
+            old_fields = get_param_names(old_ops[(method, path)]) | get_request_fields(old_ops[(method, path)], old_components)
+            new_fields = get_param_names(new_ops[(method, path)]) | get_request_fields(new_ops[(method, path)], new_components)
+            raw_path = new_ops[(method, path)]["raw_path"]
+            spec_path = _normalize_to_spec_path(method, raw_path)
+            for f in sorted(new_fields - old_fields):
+                structured.append({
+                    "product": product,
+                    "spec_file": f"{product}_api.yaml",
+                    "spec_path": spec_path,
+                    "method": method,
+                    "path": path,
+                    "change_type": "field_added",
+                    "field": f,
+                    "articles_doc_index": articles_using_operation(doc_index, method, path),
+                })
+            for f in sorted(old_fields - new_fields):
+                arts = articles_using_field(doc_index, method, path, f)
+                structured.append({
+                    "product": product,
+                    "spec_file": f"{product}_api.yaml",
+                    "spec_path": spec_path,
+                    "method": method,
+                    "path": path,
+                    "change_type": "field_removed",
+                    "field": f,
+                    "articles_doc_index": arts,
+                })
 
         lines, changed, impact = diff_product(product, old_spec, new_spec, doc_index)
         if changed:
@@ -266,6 +342,12 @@ def main() -> None:
 
     output = "\n".join(all_lines)
     print(output)
+
+    if args.json_out and structured:
+        Path(args.json_out).write_text(
+            json.dumps({"changes": structured}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
 
     github_output = os.environ.get("GITHUB_OUTPUT")
     if github_output:
