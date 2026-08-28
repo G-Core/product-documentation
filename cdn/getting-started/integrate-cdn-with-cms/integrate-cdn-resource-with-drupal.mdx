@@ -6,23 +6,35 @@ ai-navigation: Configure Drupal public file delivery through Gcore CDN by instal
 
 The Drupal CDN module rewrites public file URLs so CSS, JavaScript, images, fonts, and videos load through a Gcore CDN domain, while HTML pages, REST responses, and private files continue from Drupal.
 
-Administrator access to Drupal, Composer, an active CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. The CDN resource must use the Drupal site as its origin and forward query strings so image style derivatives continue to work. Back up the Drupal files and database before installing the module.
+Administrator access to Drupal, Composer, an active CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. The CDN resource must use the Drupal site as its origin. Back up the Drupal files and database before installing the module.
 
 <Steps>
+  <Step title="Send query strings to the origin">
+    Drupal image styles append an `itok` query parameter. The CDN must send that parameter to the origin, or derivative requests fail.
+
+    In the [Gcore Customer Portal](https://portal.gcore.com), open the CDN resource. Under **Cache**, open **Query string**.
+
+    Leave [Ignore&nbsp;query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) disabled so Drupal's `itok` parameter reaches the origin.
+  </Step>
+
   <Step title="Install the CDN module">
     From the Drupal project root, run the command for the installed Drupal version.
 
-    For Drupal 9.4 or Drupal 10, install the stable 4.1 release:
+    For Drupal 9.4 through Drupal 10, including 10.3, install [CDN&nbsp;4.1.0](https://www.drupal.org/project/cdn/releases/4.1.0):
 
     ```bash
     composer require 'drupal/cdn:^4.1'
     ```
 
-    For Drupal 10.3 or Drupal 11, the compatible 5.0 release is currently an alpha version:
+    For Drupal 11, PHP 8.3 is required for [CDN&nbsp;5.0.0-alpha1](https://www.drupal.org/project/cdn/releases/5.0.0-alpha1), because Composer rejects the package on an older PHP version:
 
     ```bash
     composer require 'drupal/cdn:^5.0@alpha'
     ```
+
+    <Warning>
+      `drupal/cdn:^5.0@alpha` is a prerelease.
+    </Warning>
   </Step>
 
   <Step title="Enable the configuration modules">
@@ -42,7 +54,7 @@ Administrator access to Drupal, Composer, an active CDN resource, and an HTTPS-e
   </Step>
 
   <Step title="(Optional) Set file caching">
-    Enable the far-future or forever-cacheable files option to generate long-lived, immutable asset URLs.
+    On the CDN settings page, enable **Forever cacheable files** to generate long-lived, immutable asset URLs.
 
     For sites with many files, this option can increase origin load because Drupal may serve cache misses through PHP. Leave it disabled unless the origin can handle that behavior or the web server is configured to serve the generated paths directly.
   </Step>
@@ -58,6 +70,7 @@ Administrator access to Drupal, Composer, an active CDN resource, and an HTTPS-e
     2. Reload the page.
     3. Filter requests for CSS, JavaScript, images, fonts, or videos.
     4. Confirm that public file URLs use `cdn.example.com` and return successful responses.
+    5. Request an image-style URL that contains `?itok=` through the CDN domain and confirm that the derivative is returned.
 
     If assets still use the Drupal origin, clear the Drupal cache and verify that the CDN module is enabled and the mapping URL is saved.
   </Step>
