@@ -1,57 +1,57 @@
 ---
-title: Integrate CDN resource with Craft
+title: Integrate a CDN resource with Craft CMS
 sidebarTitle: Craft
-ai-navigation: Configure Gcore CDN resource integration with Craft CMS by creating a new asset source with CDN CNAME, uploading static files, and replacing asset URLs to enable content delivery through the CDN endpoint.
+ai-navigation: Configure Craft CMS 5 asset delivery through Gcore CDN by mapping paths, setting the filesystem Base URL, attaching a volume, and verifying requests.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+Craft CMS 5 generates public asset URLs from the filesystem assigned to each asset volume. Configure the filesystem Base URL with a Gcore CDN domain so Craft templates return CDN URLs for those assets.
 
-Login to your Craft admin panel.
+Administrator access to Craft CMS, an existing CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. Back up the Craft files and database before changing storage settings.
 
+<Steps>
+  <Step title="Map the CDN resource to the asset location">
+    Identify the public path where Craft stores the assets — `/uploads/` in a typical local setup. In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), configure the CDN origin so the same path resolves to that asset directory.
 
-<Frame>![Craft admin panel login](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/1.JPG)</Frame>
+    The CDN domain and the Craft filesystem must use matching paths. If the CDN domain is `cdn.example.com` and the asset path is `/uploads/`, an origin request for `/uploads/image.jpg` must return the corresponding file.
+  </Step>
 
+  <Step title="Configure the Craft filesystem">
+    Log in to the Craft control panel and navigate to **Settings** > **Filesystems**. Create a filesystem or open the filesystem used by the required assets, then configure it:
 
+    1. Enable **Files in this filesystem have public URLs**.
+    2. In **Base URL**, enter a value that resolves to a stable absolute CDN URL — `https://cdn.example.com/uploads/`, an environment variable, or a dedicated alias such as `@cdn`.
+    3. For a local filesystem, set **Base Path** to the matching server directory — `@webroot/uploads`.
+    4. Save the filesystem.
 
-Go to "Assets" by clicking on the arrow next to the gear in the top right corner of the control panel.
+    Craft supports environment variables and aliases in filesystem Base URL fields. Avoid the automatically determined `@web` alias, because its value can differ between sites. Craft documents these options in the [asset filesystem settings](https://craftcms.com/docs/5.x/reference/element-types/assets).
+  </Step>
 
+  <Step title="Attach an asset volume">
+    Navigate to **Settings** > **Assets**. Create a volume or open an existing volume, attach it to the configured filesystem, and save the volume.
 
-<Frame>![Assets](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/22.JPG)</Frame>
+    When several volumes use the same filesystem, assign each one a unique, non-overlapping base path.
 
+    A volume can store image transforms in a separate filesystem. Transformed images in that filesystem do not automatically use the CDN URL of the original assets. Configure the transform filesystem with public URLs and a **Base URL** that also resolves to the CDN domain. If the transform filesystem is left unchanged, this procedure covers only files stored in the selected filesystem.
+  </Step>
 
+  <Step title="Upload or select an asset">
+    Navigate to **Assets**, select the configured volume, and upload a file. Existing assets in a volume attached to this filesystem use the new Base URL automatically.
 
-Click **+New Source** to create a new folder for your static files.
+    Replacing an asset at the same path can leave the previous file in the CDN cache. Enable Craft's [`revAssetUrls`](https://craftcms.com/docs/5.x/reference/config/general#revasseturls) setting so asset URLs change after a replacement, or [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL from Gcore.
+  </Step>
 
+  <Step title="Use the Craft-generated asset URL">
+    In Craft templates, render the asset URL with `asset.url` or `asset.getUrl()`. Hardcoded origin URLs bypass the filesystem Base URL and must be replaced with Craft-generated URLs.
+  </Step>
 
-<Frame>![Source ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/3.JPG)</Frame>
+  <Step title="Verify CDN delivery">
+    Open a page that contains the asset and use the browser developer tools:
 
+    1. Open the **Network** panel.
+    2. Reload the page.
+    3. Select the asset request.
+    4. Confirm that the request URL uses the CDN domain and returns a successful response.
 
-
-In the URL field type in the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration (e.g., `http://cdn.site.com/path/to/your/assets`).
-
-
-<Frame>![Create a new assets source](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/4.JPG)</Frame>
-
-
-
-Go to the "Assets" tab, find previously created asset source and download your files. 
-
-
-<Frame>![Assets](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/5.JPG)</Frame>
-
-
-
-Now you can use your asset at the website.
-
-If you have already had created assets, edit them replacing URL with CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). 
-
-
-<Frame>![Site assets](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/6.JPG)</Frame>
-
-
-
-Save changes.
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    If the URL is empty, verify that public URLs are enabled and the filesystem has a Base URL. For a 404 response, compare the Base URL path, volume base path, and CDN origin path.
+  </Step>
+</Steps>
