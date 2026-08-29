@@ -1,0 +1,612 @@
+---
+title: Create and manage volumes
+sidebarTitle: Volumes
+ai-navigation: Create and manage block storage volumes for GPU Cloud clusters via Customer Portal, REST API, or Terraform - attach to nodes, resize, and delete.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Volumes provide persistent block storage for GPU cluster nodes. Unlike local NVMe disks on cluster nodes, volumes persist when a cluster is powered off or rebuilt — making them suitable for training datasets, model checkpoints, and shared output directories.</p>
+
+## Create a volume
+
+<Info>
+A volume can only be attached to cluster nodes in the same region where it was created.
+</Info>
+
+<Steps>
+  <Step title="Open the Volumes page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud** > **Storage** > **Volumes**.
+  </Step>
+  <Step title="Open the creation form">
+    Click **Create Volume**.
+  </Step>
+  <Step title="Configure the volume">
+    Fill in the volume settings:
+
+    1. Enter a volume name using Latin letters, numbers, underscores, spaces, and dots (3–63 characters).
+    2. Enter the volume size in GiB. To increase the available quota, submit a [quota&nbsp;increase request](/cloud/getting-started/request-a-quota-increase).
+    3. Select the volume type:
+
+       | Type | Use case |
+       |------|----------|
+       | High IOPS SSD | Training workloads, checkpoint I/O, and latency-sensitive storage |
+       | SSD Low-Latency | Real-time data processing requiring very low latency |
+       | Standard | Archival data and infrequently accessed datasets |
+
+    4. (Optional) Select a cluster node from the instance dropdown to attach the volume immediately.
+    5. (Optional) Enable **Add tags** and specify key-value pairs.
+
+    <Frame>
+      ![Create volume form](/images/docs/edge-ai/storage/create-and-manage-volumes/create-and-manage-volumes-image2.png)
+    </Frame>
+  </Step>
+  <Step title="Confirm creation">
+    Click **Create**.
+
+    The volume appears on the **Volumes** page with status **Available**.
+
+    <Frame>
+      ![Volumes list showing the newly created volume](/images/docs/edge-ai/storage/create-and-manage-volumes/create-and-manage-volumes-image1.png)
+    </Frame>
+  </Step>
+</Steps>
+
+## Attach a volume to a cluster node
+
+<p>A volume can be attached to a node while the node is running. Each node supports multiple attached volumes; a volume can only be attached to one node at a time.</p>
+
+<Steps>
+  <Step title="Open the Volumes page">
+    In the Customer Portal, navigate to **GPU Cloud** > **Storage** > **Volumes**.
+  </Step>
+  <Step title="Open the attach form">
+    Click the three-dot icon next to the target volume and select **Attach to Instance**.
+  </Step>
+  <Step title="Select the instance">
+    In the dialog, select the target cluster node from the dropdown and click **Attach volume**.
+
+    The volume status changes to **In-use** and the attached instance name appears in the **Instance** column.
+
+    After the volume appears in the OS, prepare it for use over SSH:
+
+    - **New volume (no filesystem):** find the device name with `lsblk`, create a filesystem (`mkfs.ext4 /dev/sdX`), create a mount point, and mount it.
+    - **Existing volume (already formatted):** mount it directly to the desired directory.
+  </Step>
+</Steps>
+
+## Detach a volume from a cluster node
+
+<p>Detaching a volume does not delete it — the volume remains available and can be re-attached to any node in the same region. Billing continues until the volume is deleted.</p>
+
+<Warning>
+Unmount the volume inside the node OS before detaching it to prevent data loss or filesystem corruption: `umount /mount/point`.
+</Warning>
+
+<Steps>
+  <Step title="Open the Volumes page">
+    In the Customer Portal, navigate to **GPU Cloud** > **Storage** > **Volumes**.
+  </Step>
+  <Step title="Detach the volume">
+    Click the three-dot icon next to the volume and select **Detach**.
+  </Step>
+  <Step title="Confirm">
+    In the confirmation dialog, click **Detach**.
+
+    The volume status returns to **Available**.
+  </Step>
+</Steps>
+
+## Resize a volume
+
+<p>Volume size can only be increased, not decreased. The resize operation takes effect without detaching the volume from the node.</p>
+
+<Steps>
+  <Step title="Open the Volumes page">
+    In the Customer Portal, navigate to **GPU Cloud** > **Storage** > **Volumes**.
+  </Step>
+  <Step title="Resize the volume">
+    Click the three-dot icon next to the target volume and select **Resize**.
+
+    In the dialog, enter the new size in GiB and click **Resize**.
+  </Step>
+</Steps>
+
+<Warning>
+Resizing is irreversible — a volume cannot be reduced after it has been extended. After resizing, extend the filesystem on the node to use the additional space. The resize operation changes the block device size only — the filesystem is not expanded automatically.
+</Warning>
+
+## Delete a volume
+
+<p>Only volumes with **Available** status (not attached to any node) can be deleted.</p>
+
+<Steps>
+  <Step title="Open the Volumes page">
+    In the Customer Portal, navigate to **GPU Cloud** > **Storage** > **Volumes**.
+  </Step>
+  <Step title="Start deletion">
+    Click the three-dot icon next to the target volume and select **Delete**.
+  </Step>
+  <Step title="Confirm deletion">
+    In the dialog, type `Delete` in the confirmation field and click **Delete Volume**.
+
+    <Frame>
+      ![Delete volume confirmation dialog](/images/docs/edge-ai/storage/create-and-manage-volumes/create-and-manage-volumes-image4.png)
+    </Frame>
+
+    The volume is removed permanently and disappears from the list.
+  </Step>
+</Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Volumes for GPU Cloud clusters are managed through the standard Gcore Cloud Volumes API — the same endpoints used for all Cloud resources.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Create a volume
+
+<p>Create a standalone volume that can be attached to a cluster node at any time.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `size` | Yes | Volume size in GiB |
+| `volume_type` | Yes | Storage type: `ssd_hiiops` for training workloads, `ssd_lowlatency` for real-time processing, `standard` for archival data |
+| `name` | Yes | Volume name (3–63 characters) |
+| `source` | Yes | Must be `new-volume` when creating an empty volume |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    task = client.cloud.volumes.create(
+        size=100,
+        type_name="ssd_hiiops",
+        name="training-data-vol",
+        source="new-volume",
+    )
+    print(task)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        vol, err := client.Cloud.Volumes.NewAndPoll(context.Background(), cloud.VolumeNewParams{
+            OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                Name:     "training-data-vol",
+                Size:     100,
+                TypeName: "ssd_hiiops",
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Created volume %s (%d GiB)\n", vol.ID, vol.Size)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "source": "new-volume",
+        "size": 100,
+        "volume_type": "ssd_hiiops",
+        "name": "training-data-vol"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["a7e7e8d9-1b2c-4f5e-9a3b-1234567890ab"]}
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. The completed task response includes the `created_resources.volumes` field with the new volume ID.
+  </Tab>
+</Tabs>
+
+## List volumes
+
+<p>List all volumes in the region. To filter by cluster, append <code>?cluster_id={CLUSTER_ID}</code> to the request URL. To filter by instance, use <code>?instance_id={INSTANCE_ID}</code>.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    vols = client.cloud.volumes.list()
+    for vol in vols:
+        print(vol.id, vol.name, vol.status)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        page, err := client.Cloud.Volumes.List(context.Background(), cloud.VolumeListParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        for _, v := range page.Results {
+            fmt.Printf("%s  %s  %d GiB  %s\n", v.ID, v.Name, v.Size, v.Status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "726ecfcc-7fd0-4e30-a86e-7892524aa483",
+          "name": "training-data-vol",
+          "status": "available",
+          "size": 100,
+          "volume_type": "ssd_hiiops",
+          "attachments": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Attach a volume to a cluster node
+
+<p>Attach a volume to a specific server within a GPU cluster. The server ID is available in the cluster details response. After the volume appears in the OS, prepare it for use over SSH:</p>
+
+- **New volume (no filesystem):** find the device name with `lsblk`, create a filesystem (`mkfs.ext4 /dev/sdX`), create a mount point, and mount it.
+- **Existing volume (already formatted):** mount it directly to the desired directory.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `instance_id` | Yes | ID of the cluster server (node) to attach the volume to |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    task = client.cloud.volumes.attach_to_instance(
+        volume_id="{VOLUME_ID}",
+        instance_id="{SERVER_ID}",
+    )
+    print(task)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        err := client.Cloud.Volumes.AttachToInstanceAndPoll(context.Background(), "{VOLUME_ID}",
+            cloud.VolumeAttachToInstanceParams{InstanceID: "{SERVER_ID}"})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println("Volume attached")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{VOLUME_ID}/attach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"instance_id": "{SERVER_ID}"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["b3c4d5e6-2c3d-5g6h-0b4c-2345678901bc"]}
+    ```
+  </Tab>
+</Tabs>
+
+## Detach a volume from a cluster node
+
+<p>Detach a volume from a cluster node. The volume returns to **available** status and can be attached to another node or deleted.</p>
+
+<Warning>
+Unmount the volume inside the node OS before detaching it to prevent data loss or filesystem corruption: `umount /mount/point`.
+</Warning>
+
+<Warning>
+Detaching a volume does not stop billing. Delete the volume to stop charges.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    task = client.cloud.volumes.detach_from_instance(
+        volume_id="{VOLUME_ID}",
+        instance_id="{SERVER_ID}",
+    )
+    print(task)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        err := client.Cloud.Volumes.DetachFromInstanceAndPoll(context.Background(), "{VOLUME_ID}",
+            cloud.VolumeDetachFromInstanceParams{InstanceID: "{SERVER_ID}"})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println("Volume detached")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{VOLUME_ID}/detach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"instance_id": "{SERVER_ID}"}'
+    ```
+  </Tab>
+</Tabs>
+
+## Resize a volume
+
+<p>Increase the size of an existing volume. The volume can be attached or detached during the resize — the operation does not require downtime.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `size` | Yes | New size in GiB. Must be greater than the current size |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    task = client.cloud.volumes.resize(
+        volume_id="{VOLUME_ID}",
+        size=200,
+    )
+    print(task)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        vol, err := client.Cloud.Volumes.ResizeAndPoll(context.Background(), "{VOLUME_ID}",
+            cloud.VolumeResizeParams{Size: 200})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Volume resized to %d GiB\n", vol.Size)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{VOLUME_ID}/extend" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"size": 200}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>After the resize completes, extend the filesystem on the node to use the additional space — the block device size changes but the filesystem is not expanded automatically.</p>
+
+## Delete a volume
+
+<p>Delete a volume that is no longer needed. The volume must be detached from all cluster nodes before deletion.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cloud.volumes.delete(volume_id="{VOLUME_ID}")
+    print("Volume deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        err := client.Cloud.Volumes.DeleteAndPoll(context.Background(), "{VOLUME_ID}",
+            cloud.VolumeDeleteParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println("Volume deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{VOLUME_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare block storage volumes for GPU cluster nodes using [`gcore_cloud_volume`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_volume) from the [Terraform&nbsp;provider](/developer-tools/terraform/overview).</p>
+
+## Create a volume
+
+<p>Declares a standalone data volume. Set `type_name` to `ssd_hiiops` for training workloads, `ssd_lowlatency` for real-time processing, or `standard` for archival data.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "training-data-vol"
+  source     = "new-volume"
+  size       = 100
+  type_name  = "ssd_hiiops"
+
+  # terraform import gcore_cloud_volume.example '<project_id>/<region_id>/<volume_id>'
+}
+```
+
+<p>To attach the volume to a cluster node at creation time, add `instance_id_to_attach_to` with the target server ID. Managing attachments on an existing volume — attaching or detaching after creation — requires the Customer Portal or REST API.</p>
+
+## Resize a volume
+
+<p>Edit `size` in the resource block and run `terraform apply`. Size can only be increased. After Terraform applies, extend the filesystem on the node to use the additional space — the resize operation changes the block device only.</p>
+
+<Warning>
+Resizing is irreversible — a volume cannot be reduced after it has been extended.
+</Warning>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "training-data-vol"
+  source     = "new-volume"
+  size       = 200  # increased from 100
+  type_name  = "ssd_hiiops"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a volume
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the volume on the next `terraform apply`. The volume must not be attached to any cluster node before deletion.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_volume" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   name       = "training-data-vol"
+#   source     = "new-volume"
+#   size       = 200
+#   type_name  = "ssd_hiiops"
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>
