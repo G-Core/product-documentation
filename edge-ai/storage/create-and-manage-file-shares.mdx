@@ -1,0 +1,476 @@
+---
+title: Create and manage file shares
+sidebarTitle: File shares
+ai-navigation: Create and manage VAST NFS file shares for GPU Cloud clusters via Customer Portal, REST API, or Terraform - mount to cluster nodes, resize, and delete.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>VAST file shares provide high-performance NFS shared storage for GPU cluster nodes. Unlike block volumes, a single VAST file share can be mounted on multiple nodes simultaneously — making it suitable for shared training datasets, model checkpoints, and distributed output directories.</p>
+
+<Info>
+VAST file shares are available only in regions with GPU support. The dedicated VAST network is assigned automatically at creation — no private network configuration is required.
+</Info>
+
+## Create a file share
+
+<Steps>
+  <Step title="Open the File Shares page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Storage** > **File Shares** and click **Create File Share**.
+  </Step>
+  <Step title="Configure the file share">
+    In the **Basic settings** panel:
+
+    1. Enter a file share name.
+    2. Specify the size in GiB.
+    3. Select **VAST** as the **File Share type**.
+
+    <Frame>
+      ![Create VAST file share form](/images/docs/edge-ai/storage/create-and-manage-file-shares/create-and-manage-file-shares-image1.png)
+    </Frame>
+
+    When **VAST** is selected, the **Network settings** and **Access** panels are disabled — the network is assigned automatically. Access rules are not configurable; the file share is always available in read/write mode within its assigned network.
+  </Step>
+  <Step title="Confirm creation">
+    Click **Create File Share**. The file share appears in the list with status **Available**.
+  </Step>
+</Steps>
+
+## Add VAST network to a cluster node
+
+<p>After creating the file share, attach the VAST network interface to the GPU cluster node. Full instructions for adding the interface, DHCP configuration, and manual setup are in [Configuring&nbsp;file&nbsp;shares](/cloud/file-shares/configure-file-shares#configure-vast-file-shares).</p>
+
+## Install VAST NFS client and mount
+
+<Steps>
+  <Step title="Install VAST NFS client">
+    Connect to the cluster node via SSH and run:
+
+    ```bash
+    sudo apt-get update && sudo apt-get install nfs-common -y
+    sudo apt install dkms debhelper dh-dkms build-essential linux-headers-$(uname -r) -y
+    curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --
+    ```
+  </Step>
+  <Step title="Mount the file share">
+    Create a mount point:
+
+    ```bash
+    sudo mkdir -p /mount/path
+    ```
+
+    Copy the mount command from the file share **Overview** tab and run it:
+
+    ```bash
+    sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend \
+      ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /mount/path
+    ```
+
+    Replace the connection point with the value from the **Overview** tab and `/mount/path` with the target directory.
+
+
+    <Info>
+    Always use NFS v3 (`vers=3`) when mounting VAST file shares.
+    </Info>
+  </Step>
+</Steps>
+
+## Resize a file share
+
+<p>Size can only be increased. Unmount the file share before resizing and remount it afterwards.</p>
+
+<Steps>
+  <Step title="Open the file share">
+    Navigate to **Cloud** > **Storage** > **File Shares** and click the file share to be resized.
+  </Step>
+  <Step title="Resize">
+    In the **Overview** tab, click **Resize**, enter the new size in GiB, and confirm.
+  </Step>
+</Steps>
+
+## Delete a file share
+
+<Steps>
+  <Step title="Open the File Shares page">
+    Navigate to **Cloud** > **Storage** > **File Shares**.
+  </Step>
+  <Step title="Delete">
+    Click the three-dot icon next to the file share and select **Delete**.
+
+    <Frame>
+      ![File share context menu with Delete option](/images/docs/edge-ai/storage/create-and-manage-file-shares/create-and-manage-file-shares-image2.png)
+    </Frame>
+
+    In the confirmation dialog, type `Delete` and click **Delete**.
+
+    <Warning>
+    Unmount the file share from all cluster nodes before deleting it.
+    </Warning>
+  </Step>
+</Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>VAST file shares are created through the standard Gcore Cloud File Shares API. No network or access rule configuration is required — the VAST network and read/write access are assigned automatically.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project&nbsp;ID](/api-reference/cloud/projects/list-projects)
+and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Create a file share
+
+<p>Create a VAST file share. The network is assigned automatically — no `network` or `access` fields are required.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | File share name |
+| `protocol` | Yes | Must be `NFS` |
+| `size` | Yes | Size in GiB |
+| `type_name` | Yes | Must be `vast` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    task_id_list = client.cloud.file_shares.create(
+        name="my-vast-share",
+        protocol="NFS",
+        size=50,
+        type_name="vast",
+    )
+    task = client.cloud.tasks.poll(task_id_list.tasks[0])
+    share_id = task.created_resources.file_shares[0]
+    print(f"File share ID: {share_id}")
+
+    share = client.cloud.file_shares.get(file_share_id=share_id)
+    print(f"Connection point: {share.connection_point}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        share, err := client.Cloud.FileShares.NewAndPoll(ctx, cloud.FileShareNewParams{
+            OfCreateVastFileShareSerializer: &cloud.FileShareNewParamsBodyCreateVastFileShareSerializer{
+                Name:     "my-vast-share",
+                Protocol: constant.ValueOf[constant.Nfs](),
+                Size:     50,
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("File share ID: %s\n", share.ID)
+        fmt.Printf("Connection point: %s\n", share.ConnectionPoint)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-vast-share",
+        "protocol": "NFS",
+        "size": 50,
+        "type_name": "vast"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["a7e7e8d9-1b2c-4f5e-9a3b-1234567890ab"]}
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. The completed task response includes the `created_resources.file_shares` field with the new file share ID.
+  </Tab>
+</Tabs>
+
+<Info>
+Before mounting, add the VAST network interface to the cluster node — instructions are in [Configuring&nbsp;file&nbsp;shares](/cloud/file-shares/configure-file-shares#configure-vast-file-shares). Use the `connection_point` value from the file share details as the mount source.
+</Info>
+
+## List file shares
+
+<p>List all file shares in the region.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    shares = client.cloud.file_shares.list()
+    for share in shares:
+        print(share.id, share.name, share.status, share.size)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        page, err := client.Cloud.FileShares.List(context.Background(), cloud.FileShareListParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        for _, s := range page.Results {
+            fmt.Printf("%s  %s  %d GiB  %s\n", s.ID, s.Name, s.Size, s.Status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "726ecfcc-7fd0-4e30-a86e-7892524aa483",
+          "name": "my-vast-share",
+          "status": "available",
+          "size": 50,
+          "volume_type": "vast",
+          "connection_point": "ndp1-2-vast.cloud.gc.onl:/manila/manila-726ecfcc-7fd0-4e30-a86e-7892524aa483"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Resize a file share
+
+<p>Increase the size of an existing file share. Size can only be increased. Unmount the file share before resizing.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `size` | Yes | New size in GiB. Must be greater than the current size |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resize_tasks = client.cloud.file_shares.resize(file_share_id="{FILE_SHARE_ID}", size=100)
+    client.cloud.tasks.poll(resize_tasks.tasks[0])
+    resized = client.cloud.file_shares.get(file_share_id="{FILE_SHARE_ID}")
+    print(resized.size)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        resized, err := client.Cloud.FileShares.ResizeAndPoll(context.Background(), "{FILE_SHARE_ID}",
+            cloud.FileShareResizeParams{Size: 100})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("New size: %d GiB\n", resized.Size)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}/extend" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"size": 100}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["bd7e55a5-2c3d-4e5f-6g7h-890123456789"]}
+    ```
+  </Tab>
+</Tabs>
+
+## Delete a file share
+
+<p>Delete a file share that is no longer needed. Unmount the file share from all cluster nodes before deletion.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    del_tasks = client.cloud.file_shares.delete(file_share_id="{FILE_SHARE_ID}")
+    client.cloud.tasks.poll(del_tasks.tasks[0])
+    print("File share deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+
+        err := client.Cloud.FileShares.DeleteAndPoll(context.Background(), "{FILE_SHARE_ID}",
+            cloud.FileShareDeleteParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println("File share deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare VAST NFS file shares for GPU cluster nodes using [`gcore_cloud_file_share`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_file_share) from the [Terraform&nbsp;provider](/developer-tools/terraform/overview).</p>
+
+## Create a file share
+
+<p>Declares a VAST file share. No network or access rule configuration is required — the VAST network and read/write access are assigned automatically at creation.</p>
+
+```hcl
+resource "gcore_cloud_file_share" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-vast-share"
+  protocol   = "NFS"
+  size       = 50
+  type_name  = "vast"
+
+  # terraform import gcore_cloud_file_share.example '<project_id>/<region_id>/<file_share_id>'
+}
+
+output "connection_point" {
+  value = gcore_cloud_file_share.example.connection_point
+}
+```
+
+<p>After `terraform apply`, `connection_point` holds the NFS server address and share path for the mount command. File share creation takes 60–90 seconds.</p>
+
+<Info>
+Before mounting, add the VAST network interface to the cluster node — instructions are in [Configuring&nbsp;file&nbsp;shares](/cloud/file-shares/configure-file-shares#configure-vast-file-shares).
+</Info>
+
+## Resize a file share
+
+<p>Edit `size` in the resource block and run `terraform apply`. Size can only be increased. Unmount the file share before resizing.</p>
+
+```hcl
+resource "gcore_cloud_file_share" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-vast-share"
+  protocol   = "NFS"
+  size       = 100  # increased from 50
+  type_name  = "vast"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a file share
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the file share on the next `terraform apply`. Unmount the file share from all cluster nodes before deletion.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_file_share" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   name       = "my-vast-share"
+#   protocol   = "NFS"
+#   size       = 100
+#   type_name  = "vast"
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>
