@@ -16,7 +16,7 @@ Secure token restricts content access to URLs that contain a valid MD5 hash and 
 
 4. In the **Enter a key** field, enter a key of 6–32 characters. This key is used in the hash formula on the origin server.
 
-5. To allow access from any IP address, leave **Add a client's IP to the token** unchecked. To restrict access to a single IP address, check it — the allowlisted IP is added to the hash formula in the [generation&nbsp;scripts](#scripts-for-link-generation).
+5. To allow access from any IP address, leave **Add a client's IP to the token** unchecked. To restrict access to a single IP address, check it — the allowlisted IP is added to the hash formula in the [generation&nbsp;scripts](#scripts-for-link-generation). Enterprise customers with mobile audiences have an [IP&nbsp;binding](#ip-binding-and-mobile-networks) mode that ties tokens to a subnet rather than a single IP.
 
    <Frame>
      <img src="/images/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/configure-and-use-secure-token-image1.png" alt="Secure token section with Enable secure token on and Enter a key field" width="70%" />
@@ -44,7 +44,7 @@ Where:
 
 The [link&nbsp;generation&nbsp;scripts](#scripts-for-link-generation) below contain ready-to-use PHP, Python, and OpenSSL examples.
 
-On the origin server, configure content delivery so that protected files are accessible only over signed links. At the same time, confirm the CDN can pull content from the origin without a token — the CDN validates the token on the client side, then fetches the content from origin directly.
+On the origin server, block direct client access to the origin — restricting inbound connections to CDN server IP ranges is one approach. The CDN validates the token at the edge before forwarding the request to the origin, so the origin does not need to perform token validation and must remain reachable by CDN servers without a token.
 
 ## Secure token URL matching
 
@@ -54,7 +54,12 @@ Secure token validates three things from the request URL:
 - `expires`: the Unix timestamp until which the URL is valid
 - Path: the file path or directory path used when the token was generated
 
-The path is important. The CDN validates the token against the path used in the hash string. If the token was generated for an exact file, it works only for that file. If the token was generated for a directory and Query String Forwarding is enabled, it can work for files inside that directory and pass the same query parameters to related HLS or MPEG-DASH files.
+The path is important. The CDN validates the token against the path used in the hash string. Two modes exist:
+
+- **Exact path**: the token is generated for a specific file path (e.g. `/images/poster.jpeg`). The CDN recomputes the hash using the requested path and rejects any request where the paths do not match exactly.
+- **Directory path**: when the path ends with `/` (e.g. `/videos/video-1/`), the CDN uses prefix matching — any request whose path starts with that prefix is accepted with the same token. This is a property of Secure Token itself, not of Query String Forwarding.
+
+[Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) is a separate mechanism: it copies `md5` and `expires` from playlist body links to the actual media segment requests. This allows a video player to receive the token with the master manifest and have the CDN automatically propagate it to all nested requests — but each of those requests is still validated by Secure Token using directory prefix matching against the original path.
 
 ### Token for exact file
 
@@ -242,7 +247,7 @@ In these scripts:
 - `$secret` is the secret key
 - `$path` is the path to the file
 - `$ip` is the IP address allowed to access the content
-- `$expires` is the link expiry time (in seconds)
+- `$expires` is the link expiration time as a Unix timestamp
 - `$url` is the address of the file
 
 ### Python
@@ -287,7 +292,7 @@ In these scripts:
 - `secret` is the secret key
 - `path` is the path to the file
 - `ip` is the IP address allowed to access the content
-- `expires` is the link expiry time (in seconds)
+- `expires` is the link expiration time as a Unix timestamp
 - `secured_url` is the link to the file
 
 ### OpenSSL
