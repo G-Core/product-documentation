@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 02ae19475349
+  version: 14dc90086307
 servers:
 - url: https://api.gcore.com
 tags:
@@ -742,6 +742,7 @@ paths:
                 - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
                 - $ref: '#/components/schemas/S3ConfigRequiredError'
                 - $ref: '#/components/schemas/S3BucketNameDuplicateError'
+                - $ref: '#/components/schemas/S3SourceAmbiguousError'
                 - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
         '403':
           $ref: '#/components/responses/NoPermissions'
@@ -870,6 +871,7 @@ paths:
                 - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
                 - $ref: '#/components/schemas/S3ConfigRequiredError'
                 - $ref: '#/components/schemas/S3BucketNameDuplicateError'
+                - $ref: '#/components/schemas/S3SourceAmbiguousError'
                 - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
         '403':
           $ref: '#/components/responses/NoPermissions'
@@ -4305,11 +4307,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.cdn.presets.applied.apply(
+          applied_preset_created = client.cdn.presets.applied.apply(
               preset_id=0,
               object_id=7531,
           )
-          print(response.object_id)
+          print(applied_preset_created.object_id)
       - lang: Go
         source: |
           package main
@@ -4327,7 +4329,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.CDN.Presets.Applied.Apply(
+          	appliedPresetCreated, err := client.CDN.Presets.Applied.Apply(
           		context.TODO(),
           		0,
           		cdn.PresetAppliedApplyParams{
@@ -4337,7 +4339,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.ObjectID)
+          	fmt.Printf("%+v\n", appliedPresetCreated.ObjectID)
           }
   /cdn/presets/{preset_id}/applied/{object_id}:
     get:
@@ -4362,6 +4364,49 @@ paths:
                 $ref: '#/components/schemas/AppliedPresetObjectResponse'
         '404':
           description: Preset does not exist, or the preset is not applied to the object.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          applied_preset_object = client.cdn.presets.applied.get(
+              object_id=0,
+              preset_id=0,
+          )
+          print(applied_preset_object.object_id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cdn"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	appliedPresetObject, err := client.CDN.Presets.Applied.Get(
+          		context.TODO(),
+          		0,
+          		cdn.PresetAppliedGetParams{
+          			PresetID: 0,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", appliedPresetObject.ObjectID)
+          }
     delete:
       operationId: unapply-preset
       tags:
@@ -11307,18 +11352,17 @@ components:
           type: object
           properties:
             sources:
-              type: object
-              properties:
-                my-bucket:
-                  type: object
-                  properties:
-                    origin_type:
-                      type: array
-                      items:
-                        type: string
-                      description: Provide `origin_type` explicitly when adding new S3 sources to an existing origin group.
-                      example:
-                      - No existing S3 source with bucket "my-bucket". Provide origin_type explicitly for new S3 sources.
+              type: array
+              items:
+                type: object
+                properties:
+                  origin_type:
+                    type: array
+                    items:
+                      type: string
+                    description: Provide `origin_type` explicitly when adding new S3 sources to an existing origin group.
+                    example:
+                    - No existing S3 source with bucket "my-bucket". Provide origin_type explicitly for new S3 sources.
     PaginatedResponse:
       type: object
       properties:
@@ -12238,7 +12282,7 @@ components:
           type: string
           nullable: true
     S3BucketNameDuplicateError:
-      title: S3 bucket names must be unique within origin group
+      title: S3 sources must be distinct within origin group
       type: object
       properties:
         errors:
@@ -12254,7 +12298,7 @@ components:
                       type: array
                       items:
                         type: string
-                      description: The S3 bucket name must be unique within the origin group.
+                      description: 'Two S3 sources can share a bucket name when they reach it through different storages: an `amazon` source alongside an `other` source, or two `other` sources with different `s3_storage_hostname` values. Sources reaching the same storage must use different bucket names.'
                       example:
                       - The S3 bucket name must be unique inside group of origins.
     S3Config:
@@ -12333,18 +12377,17 @@ components:
           type: object
           properties:
             sources:
-              type: object
-              properties:
-                s3_entry_0:
-                  type: object
-                  properties:
-                    config:
-                      type: array
-                      items:
-                        type: string
-                      description: The config field is required when `origin_type` is s3.
-                      example:
-                      - This field is required.
+              type: array
+              items:
+                type: object
+                properties:
+                  config:
+                    type: array
+                    items:
+                      type: string
+                    description: The config field is required when `origin_type` is s3.
+                    example:
+                    - This field is required.
     S3GcoreConfig:
       title: S3 Gcore Config
       allOf:
@@ -12419,6 +12462,35 @@ components:
       title: S3 Other Config
       allOf:
       - $ref: '#/components/schemas/S3GcoreConfigResponse'
+    S3SourceAmbiguousError:
+      title: S3 source to update is ambiguous
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  config:
+                    type: object
+                    properties:
+                      s3_storage_hostname:
+                        type: array
+                        items:
+                          type: string
+                        description: Several S3 sources in the group use this bucket name, so the update cannot tell which of them it targets. Send `s3_storage_hostname` to identify one.
+                        example:
+                        - Several S3 sources use bucket "my-bucket". Provide s3_storage_hostname to identify which one.
+                      s3_type:
+                        type: array
+                        items:
+                          type: string
+                        description: 'Returned alongside `s3_storage_hostname` when one of the sources sharing the bucket name is an `amazon` source, which no hostname can identify. Send `s3_type: amazon` to target that one; the others are identified by their host.'
+                        example:
+                        - 'Several S3 sources use bucket "my-bucket". Provide s3_type: amazon for the Amazon source, or s3_storage_hostname for the others.'
     S3SourceResponse:
       type: object
       title: S3 Source
@@ -15556,7 +15628,7 @@ components:
     NoPermissions:
       description: You do not have permission to perform this action.
     OriginGroupNotFound:
-      description: Origin group is not found in the current account.
+      description: Origin group is not found.
     ResourceNotFound:
       description: The specified CDN resource is not found in the current account.
   securitySchemes:
