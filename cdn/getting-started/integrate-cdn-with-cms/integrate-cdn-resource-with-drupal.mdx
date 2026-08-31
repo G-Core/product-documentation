@@ -1,104 +1,79 @@
 ---
-title: Integrate CDN resource with Drupal
+title: Integrate a CDN resource with Drupal
 sidebarTitle: Drupal
-ai-navigation: Enable Gcore CDN integration with Drupal by installing the CDN Module, configuring Origin Pull mode with CNAME from Gcore Customer Portal, setting Far Future expiration, and enabling HTTPS for SSL support.
+ai-navigation: Configure Drupal public file delivery through Gcore CDN by installing the CDN module, mapping an HTTPS domain, and verifying asset requests.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+The Drupal CDN module rewrites public file URLs so CSS, JavaScript, images, fonts, and videos load through a Gcore CDN domain, while HTML pages, REST responses, and private files continue from Drupal.
 
-Login to your Drupal site.
+Administrator access to Drupal, Composer, an active CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. The CDN resource must use the Drupal site as its origin. Back up the Drupal files and database before installing the module.
 
+<Steps>
+  <Step title="Configure query string caching">
+    Drupal image styles append an `itok` query parameter. The [Ignore&nbsp;query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) option controls whether query parameters are included in the CDN cache key.
 
-<Frame>![Login to your Drupal site](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/1.png)</Frame>
+    In the [Gcore Customer Portal](https://portal.gcore.com), open the CDN resource. Under **Cache**, open **Query string**.
 
+    Leave **Ignore query string** disabled so each `itok` value stays in the cache key.
 
+    On a cache miss, the CDN forwards the original query string to the origin, including `itok`.
+  </Step>
 
-Choose Modules in your Administration bar on top of the page.
+  <Step title="Install the CDN module">
+    From the Drupal project root, run the command for the installed Drupal version.
 
+    For Drupal 9.4 through Drupal 10, including 10.3, install [CDN&nbsp;4.1.0](https://www.drupal.org/project/cdn/releases/4.1.0):
 
-<Frame>![Modules in your Administration bar](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/2.png)</Frame>
+    ```bash
+    composer require 'drupal/cdn:^4.1'
+    ```
 
+    For Drupal 11, PHP 8.3 is required for [CDN&nbsp;5.0.0-alpha1](https://www.drupal.org/project/cdn/releases/5.0.0-alpha1), because Composer rejects the package on an older PHP version:
 
+    ```bash
+    composer require 'drupal/cdn:^5.0@alpha'
+    ```
 
-As soon as you have downloaded CDN Module from Drupal.org, choose **Install new module** and download `.zip`. 
+    <Warning>
+      `drupal/cdn:^5.0@alpha` is a prerelease.
+    </Warning>
+  </Step>
 
+  <Step title="Enable the configuration modules">
+    In the Drupal administration panel, navigate to **Manage** > **Extend**. Select **CDN** and **CDN UI**, then click **Install**.
 
-<Frame>![ CDN Module](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/3.png)</Frame>
+    CDN UI provides the browser-based settings and can be uninstalled after the CDN configuration is complete.
+  </Step>
 
+  <Step title="Open the CDN settings">
+    Navigate to **Configuration** > **Development** > **CDN**, or open `/admin/config/development/cdn`.
+  </Step>
 
+  <Step title="Configure the CDN mapping">
+    Enable the CDN module and configure a simple Origin Pull mapping. In the CDN mapping field, enter the full HTTPS custom-domain URL — `https://cdn.example.com`.
 
-Upload CDN Module from your browser and install it. 
+    Use the same custom domain configured for the Gcore CDN resource. The HTTPS scheme prevents mixed-content errors when Drupal pages load over HTTPS.
+  </Step>
 
+  <Step title="(Optional) Set file caching">
+    On the CDN settings page, enable **Forever cacheable files** to generate long-lived, immutable asset URLs.
 
-<Frame>![Upload CDN Module](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/4.png)</Frame>
+    For sites with many files, this option can increase origin load because Drupal may serve cache misses through PHP. Leave it disabled unless the origin can handle that behavior or the web server is configured to serve the generated paths directly.
+  </Step>
 
+  <Step title="Review and save the settings">
+    Confirm that the module status is enabled and the mapping uses the HTTPS CDN domain, then click **Save configuration**.
+  </Step>
 
+  <Step title="Verify CDN delivery">
+    Open a public Drupal page and use the browser developer tools:
 
-If the installation was successful, you will see the following. 
+    1. Open the **Network** panel.
+    2. Reload the page.
+    3. Filter requests for CSS, JavaScript, images, fonts, or videos.
+    4. Confirm that public file URLs use `cdn.example.com` and return successful responses.
+    5. Request an image-style URL that contains `?itok=` through the CDN domain and confirm that the derivative is returned.
 
-
-<Frame>![successful](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/5.png)</Frame>
-
-
-
-As soon as the CDN Module is successfully installed, get back to the modules list and scroll down to CDN. Choose **Enable** and Save configuration.
-
-
-<Frame>![get back to the modules list](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/6.png)</Frame>
-
-
-
-Select Configure in the CDN Module.
-
-
-<Frame>![Select Configure in the CDN Module](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/7.png)</Frame>
-
-
-
-Change the CDN module status to Enabled and save the setting by hitting the Save Configuration button.
-
-
-<Frame>![Change the CDN module status](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/8.png)</Frame>
-
-
-
-Choose the "Details" tab on the right of the screen.
-
-
-<Frame>![Details](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/9.png)</Frame>
-
-
-
-For the Mode choose Origin Pull and enter CNAME specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list).
-
-Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration. 
-
-
-<Frame>![Mode choose ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/10.PNG)</Frame>
-
-
-
-Scroll down and choose Far Future expiration, then click Save Configuration.
-
-
-<Frame>![ Far Future expiration](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/11.png)</Frame>
-
-
-
-These steps are needed if you are going to deliver your CDN content via HTTPS. Choose the Other tab on the right of the CDN Module configuration screen. 
-
-
-<Frame>![Other ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/12.png)</Frame>
-
-
-
-Enable HTTPS to support SSL.
-
-
-<Frame>![Enable HTTPS to support SSL.](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/13.png)</Frame>
-
-
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    If assets still use the Drupal origin, clear the Drupal cache and verify that the CDN module is enabled and the mapping URL is saved.
+  </Step>
+</Steps>
