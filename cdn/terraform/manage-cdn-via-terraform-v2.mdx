@@ -1,14 +1,14 @@
 ---
-title: Manage CDN resources with Terraform v2
+title: Manage CDN with Terraform v2
 sidebarTitle: Manage via Terraform v2
-ai-navigation: Create and manage Gcore CDN resources using Terraform provider v2. Covers origin groups with host and S3 sources using list syntax, CDN resources with map-style options, SSL certificates with write-only fields, CA certificates, CDN resource rules, and rule templates. Uses gcore_cdn_origin_group, gcore_cdn_resource, gcore_cdn_certificate, gcore_cdn_trusted_ca_certificate, gcore_cdn_resource_rule, gcore_cdn_rule_template resources. Key v2 changes from v0 include map-syntax options, write-only S3 credentials, and renamed certificate fields.
+ai-navigation: Create and manage Gcore CDN resources using Terraform provider v2 - origin groups, CDN resources, SSL certificates, CA certificates, rules, and rule templates.
 ---
 
 The Gcore Terraform provider v2 manages CDN resources using a modernized schema with cleaner attribute names, write-only credential fields, and a map-based options syntax.
 
 The following resources are supported: origin groups, CDN resources with delivery options, SSL certificates, CA certificates, rules, and rule templates.
 
-Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview); for migration from v0, use the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
+Provider installation and authentication are covered in the [Terraform&nbsp;overview](/developer-tools/terraform/overview). The [migration&nbsp;guide](/developer-tools/terraform/migrate-v0-to-v2) describes the steps to migrate from v0.
 
 ## Key differences from provider v0
 
@@ -25,7 +25,7 @@ Provider v2 introduces changes to resource names, authentication, options syntax
 | S3 credentials | Stored in state | Write-only (not stored in state) |
 | SSL cert fields | `cert`, `private_key` | `ssl_certificate_wo`, `ssl_private_key_wo` |
 
-Resources not yet available in v2: `gcore_cdn_applied_preset`, `gcore_cdn_client_config`, `gcore_cdn_originshielding`, and `gcore_cdn_logs_uploader_*`.
+Resources not yet available in v2: `gcore_cdn_applied_preset`, `gcore_cdn_client_config`, and `gcore_cdn_originshielding`.
 
 ## Workflow
 
@@ -125,8 +125,8 @@ resource "gcore_cdn_origin_group" "s3_example" {
         s3_type              = "amazon"
         s3_bucket_name       = "my-bucket"
         s3_region            = "us-east-1"
-        s3_access_key_id     = "AKIAIOSFODNN7EXAMPLE"
-        s3_secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        s3_access_key_id     = var.s3_access_key_id
+        s3_secret_access_key = var.s3_secret_access_key
       }
     }
   ]
@@ -233,10 +233,17 @@ resource "gcore_cdn_resource" "example" {
 ```
 
 <Note>
-Every option object uses two fields: `enabled` determines whether the option is configured on the resource (`true` = active, `false` = present but inactive), and `value` holds the actual setting (a boolean, string, or list depending on the option). Setting an option to `null` removes it from the CDN resource entirely and reverts to account-level defaults. Options not listed in the `options` map are not modified.
+Each option object uses two fields: `enabled` controls the option's active state, and `value` holds the actual setting (a boolean, string, or list depending on the option).
+
+| Configuration | Effect |
+|---|---|
+| `enabled = true` | Option is active and applied to delivery. |
+| `enabled = false` | Option is present in configuration but not applied. |
+| `option_name = null` | Option is removed from the resource; account-level default applies. |
+| Option omitted from `options` map | Current setting is left unchanged. |
 </Note>
 
-The following table lists commonly used options. The full list is in the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource).
+The following table lists commonly used options. The full list is in the [Terraform&nbsp;Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource).
 
 | Option | Description |
 |---|---|
@@ -245,30 +252,16 @@ The following table lists commonly used options. The full list is in the [Terraf
 | `gzip_on` | Gzip compression. Set `value = true`. |
 | `brotli_compression` | Brotli compression. Set `value` to a list of MIME types. |
 | `redirect_http_to_https` | Redirect HTTP to HTTPS. Set `value = true`. |
-| `tls_versions` | Restrict accepted TLS versions. Set `value` to a list: `["TLSv1.2", "TLSv1.3"]`. |
+| `tls_versions` | Restrict accepted TLS versions. Set `value` to a list (e.g., `["TLSv1.2", "TLSv1.3"]`). |
 | `cors` | CORS. Set `value` to a list of allowed origins; use `["*"]` for all. |
 | `allowed_http_methods` | Restrict allowed HTTP methods. Set `value` to a list. |
 | `country_acl` | Allow or deny access by country. Set `policy_type` and `excepted_values`. |
-| `ip_address_acl` | Allow or deny access by IP. Set `policy_type` and `excepted_values`. |
-| `referrer_acl` | Allow or deny access by referrer. Set `policy_type` and `excepted_values`. |
-| `user_agent_acl` | Allow or deny access by user agent. |
-| `secure_key` | Token authentication. Set `key` and `type`. |
-| `stale` | Serve stale content on specified conditions (e.g., `["http_500", "updating"]`). |
-| `host_header` | Override the `Host` header sent to the origin. |
-| `sni` | SNI settings. Set `sni_type` to `"dynamic"` or `"custom"`. |
-| `rewrite` | URL rewriting. Set `body` with rewrite pattern and `flag`. |
-| `static_request_headers` | Add headers to origin requests. Set `value` to a map. |
-| `static_response_headers` | Add headers to CDN responses. Set `value` to a list of objects. |
-| `response_headers_hiding_policy` | Hide response headers from clients. |
-| `limit_bandwidth` | Bandwidth throttling. Set `limit_type`, `speed`, and `buffer`. |
-| `follow_origin_redirect` | Follow redirects from the origin. Set `codes` to a list of redirect codes. |
 | `websockets` | Enable WebSocket pass-through. Set `value = true`. |
-| `http3_enabled` | Enable HTTP/3 (QUIC). Requires `ssl_enabled = true`. Set `value = true`. |
-| `image_stack` | Image optimization. Set `quality`, `avif_enabled`, `webp_enabled`. |
-| `proxy_connect_timeout` | Timeout for connecting to the origin (e.g., `"4s"`). |
-| `proxy_read_timeout` | Timeout for reading from the origin (e.g., `"10s"`). |
+| `http3_enabled` | Enable HTTP/3 (QUIC) delivery. Requires `ssl_enabled = true`. Set `value = true`. |
 
 ### Enable SSL delivery
+
+Create a certificate first as described in [Manage&nbsp;SSL&nbsp;certificates](#manage-ssl-certificates), then reference its ID in the CDN resource.
 
 Set `ssl_enabled` and reference the certificate ID to deliver content over HTTPS.
 
@@ -286,6 +279,8 @@ resource "gcore_cdn_resource" "example" {
 - Set `ssl_data` to the ID of a `gcore_cdn_certificate` resource.
 
 ### Enable origin SSL verification
+
+This example requires a CA certificate (`gcore_cdn_trusted_ca_certificate`) and a client certificate (`gcore_cdn_certificate`) — create both first as described in [Manage&nbsp;SSL&nbsp;certificates](#manage-ssl-certificates) and [Manage&nbsp;CA&nbsp;certificates](#manage-ca-certificates-for-origin-verification).
 
 Set `proxy_ssl_enabled` to verify the origin server's SSL certificate before serving content.
 
@@ -306,7 +301,7 @@ resource "gcore_cdn_resource" "example" {
 
 ### Enable HTTP/3
 
-HTTP/3 (QUIC) improves delivery for clients that support it. The option requires SSL to be enabled on the CDN resource — configure `ssl_enabled` and `ssl_data` before activating HTTP/3.
+The `http3_enabled` option enables HTTP/3 (QUIC) delivery for clients that support it. SSL must be enabled on the CDN resource — configure `ssl_enabled` and `ssl_data` first.
 
 ```hcl
 resource "gcore_cdn_resource" "example" {
@@ -325,7 +320,7 @@ resource "gcore_cdn_resource" "example" {
 }
 ```
 
-To disable HTTP/3 without removing the option, set `value = false` while keeping `enabled = true`. The same setting is available in the Customer Portal under the **HTTP/3** option in the **General** section of CDN resource settings.
+To disable HTTP/3 without removing the option, set `value = false` while keeping `enabled = true`. The same setting is available in the Customer Portal under **HTTP/3** in the **General** section of CDN resource settings.
 
 ## Manage SSL certificates
 
@@ -375,7 +370,7 @@ To rotate a certificate, update `ssl_certificate_wo` and `ssl_private_key_wo`, t
 
 ## Manage CA certificates for origin verification
 
-A CA certificate (`gcore_cdn_trusted_ca_certificate`) is used to verify the origin server's SSL certificate or to authenticate mutual TLS connections.
+A CA certificate (`gcore_cdn_trusted_ca_certificate`) defines the trust anchor the CDN uses to verify the origin server's SSL certificate.
 
 ```hcl
 resource "gcore_cdn_trusted_ca_certificate" "example" {
@@ -422,9 +417,7 @@ Configure the rule:
 - Specify `resource_id` — the ID of the CDN resource the rule belongs to.
 - Specify `name` — the display name in the Customer Portal.
 - Specify `rule` — the path pattern. Must start with `/`.
-- Set `rule_type`:
-  - `0` — path pattern with wildcards (e.g., `/images/*.png`).
-  - `1` — regular expression (must start with `^/`).
+- Set `rule_type = 0` for path patterns with wildcards (e.g., `/images/*.png`), or `rule_type = 1` for regular expressions (must start with `^/`).
 - (optional) Add an `options` map with the same options available on the CDN resource.
 - (optional) Set `active = false` to disable the rule without deleting it.
 - (optional) Set `weight` — rule execution priority. Lower number = higher priority.
@@ -458,7 +451,7 @@ Configure the rule template:
 
 - (optional) Specify `name` — the template display name.
 - Specify `rule` — the path pattern.
-- Set `rule_type` — `0` for path patterns, `1` for regular expressions.
+- Set `rule_type = 0` for path patterns, or `rule_type = 1` for regular expressions.
 - Add an `options` map with the delivery options to apply.
 - (optional) Set `weight` — execution priority.
 - (optional) Set `override_origin_protocol` — override the origin protocol.

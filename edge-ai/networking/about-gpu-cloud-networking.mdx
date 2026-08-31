@@ -1,0 +1,37 @@
+---
+title: About GPU Cloud networking
+sidebarTitle: About networking
+ai-navigation: Configure private networks, routers, floating IPs, and security groups for GPU Cloud clusters, and connect VAST file shares via the dedicated network interface.
+---
+
+Configure networking for GPU cluster nodes using public and private networks, routers, floating IPs, and security groups.
+
+## Network interfaces on a cluster node
+
+Each node in a GPU cluster can have multiple network interfaces attached simultaneously:
+
+| Interface type | Purpose |
+| --- | --- |
+| Public network | Direct internet connectivity. Nodes are accessible from the internet via their public IP. |
+| Private network | Internal connectivity between cluster nodes and other Cloud resources in the same region. No direct internet access by default — attach a router for outbound connectivity or assign a floating IP to expose a specific node. |
+| VAST network | A dedicated third network, available after a VAST file share is created. Required for mounting VAST NFS file shares. |
+
+Private networks use VxLAN on Virtual GPU clusters and VLAN on Bare Metal GPU clusters.
+
+## Connect cluster nodes to a private network
+
+A [private&nbsp;network](/cloud/networking/create-and-manage-a-network) with a [subnet](/cloud/networking/create-and-manage-a-subnetwork) isolates cluster nodes and provides a fixed IP address range. Without a [router](/cloud/networking/create-and-manage-a-router) attached to the subnet, nodes cannot initiate outbound connections — attach one when nodes need to reach package repositories, object storage, or external APIs.
+
+For inbound SSH access, assign a [floating&nbsp;IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to the head node and use a [security&nbsp;group](/cloud/networking/add-and-configure-a-firewall) to allow SSH only from trusted IP addresses.
+
+## Use a public network
+
+A public network interface assigns each node a direct public IP, so no router or floating IP is needed. Use this when all nodes must pull external resources independently — container images, datasets, or model weights on each node separately.
+
+## Connect VAST file shares
+
+After creating a [VAST&nbsp;file&nbsp;share](/edge-ai/storage/create-and-manage-file-shares), a dedicated network interface becomes available in the node's network settings. Attach it to each node that needs to mount the share — this interface does not appear until the file share exists.
+
+## Cluster networking and GPU interconnect
+
+Multi-node GPU communication uses [InfiniBand](/edge-ai/networking/about-infiniband) on supported configurations and is set up automatically when the cluster is created. This interconnect is separate from the Cloud networking described above — it does not appear in network settings and requires no manual configuration.
