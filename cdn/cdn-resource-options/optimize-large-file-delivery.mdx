@@ -1,12 +1,12 @@
 ---
 title: Optimize large file delivery
 sidebarTitle: Large files delivery
-ai-navigation: Enable Large File Delivery Optimization in Gcore CDN to serve files larger than 10 MB using HTTP Range requests with 10 MB chunks, requiring origin support for Range Requests, consistent Content-Length and Etag headers, and incompatibility with Fetch Compressed, Gzip Compression, and Brotli Compression options.
+ai-navigation: Enable or disable Large File Delivery Optimization for a CDN resource in the Gcore Customer Portal to cache files in 10 MB chunks via HTTP Range requests.
 ---
 
-We recommend using the Large File Delivery Optimization feature if you are serving content larger than 10 MB. With this option enabled, Gcore CDN will make range requests to the origin to retrieve 10 MB chunks of content. These chunks are then collected in the cache, and once the CDN has the necessary portions of the requested content, the response is assembled and returned to the end user.
+Large File Delivery Optimization is the recommended option for serving content larger than 10 MB. When enabled, Gcore CDN makes range requests to the origin to retrieve content in 10 MB chunks. These chunks are cached individually, and once the CDN has the required portions of the requested content, the response is assembled and returned to the end user.
 
-A range request includes the _Range_ HTTP header to indicate the byte or part of the content to be returned. For example, if the request has a _Range: bytes=123537047-123545047_ header, the CDN will request a 10 MB chunk from the origin (byte range 115343360-125829119), cache this chunk, and serve the requested range (123537047-123545047) to the end user.
+A range request includes the _Range_ HTTP header to indicate which byte range to return. A request with a _Range: bytes=123537047-123545047_ header, for instance, causes the CDN to request a 10 MB chunk from the origin (byte range 115343360-125829119), cache this chunk, and serve the requested range (123537047-123545047) to the end user.
 
 For this option to work, the origin server must support range requests.
 
@@ -14,17 +14,17 @@ For this option to work, the origin server must support range requests.
 
 Large File Delivery Optimization can be configured in the Resource Settings and Rules. Review the following requirements and recommendations before configuring the option:
 
-  * The origin server must support HTTP Range Requests.
-  * The _Content-Length_ and _Etag_ headers must be consistent across the origin.
-  * Large File Delivery Optimization will be applied to all contents in the CDN resource, which could lead to an increased load on the origin. Therefore, consider activating [Origin Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) before using this feature, or make any updates during off-peak hours.
-  * Remember to [purge the resource cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after enabling Large File Delivery Optimization.
-  * Large File Delivery Optimization cannot be used in conjunction with [Fetch Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression), [Gzip Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip), and [Brotli Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli) within the Resource Settings or within the same rule.
-  * **HLS and MPEG-DASH don't need slicing** — those streams are already split into small segments that the CDN caches individually.
+* The origin server must support HTTP Range requests.
+* If an origin group is used for the resource, the Content-Length and Etag headers must be consistent across all origins in the group.
+* Enabling or disabling Large File Delivery Optimization invalidates all cached content for the resource. The CDN must refetch content from the origin until the cache is rebuilt, which can temporarily increase the origin load. Consider activating [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) before enabling this feature, or make changes during off-peak hours.
+* After enabling Large File Delivery Optimization, [purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all).
+* Large File Delivery Optimization cannot be used together with [Fetch&nbsp;Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression), [Gzip&nbsp;Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip), or [Brotli&nbsp;Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli) within the same Resource Settings or rule.
+* HLS and MPEG-DASH don't need slicing — those streams are already split into small segments that the CDN caches individually.
 
 
 ## Example of large file slicing
 
-Example of a video file which is a progressive MP4 of several GB. CDN fetches the file from origin in fixed-size chunks using HTTP Range requests, caches each chunk independently, and serves the requested byte range to the viewer.
+The following diagram shows a progressive MP4 of several GB being served through CDN. The CDN fetches the file from origin in fixed-size chunks using HTTP Range requests, caches each chunk independently, and serves the requested byte range to the viewer.
 
 When a viewer requests a byte range of a large file, the CDN maps it to the 10 MB chunk(s) that contain it, fetches only those chunks from origin (through the shield), caches them, and assembles the response:
 
@@ -51,29 +51,26 @@ Later: viewer seeks to bytes 1-2 MB or 2-3 MB → data is taken from the same al
 
 ## Configuration steps
 
-To enable Large File Delivery Optimization option via the Gcore Customer Portal, follow these three steps:
+To enable Large File Delivery Optimization via the [Gcore Customer Portal](https://portal.gcore.com):
 
-1\. Go to CDN and select the CDN resource you want to configure.
+<Steps>
+  <Step title="Select a CDN resource">
+    Navigate to **CDN** and select the CDN resource to configure.
 
+    <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-delivery-image1.png)</Frame>
+  </Step>
+  <Step title="Open Large files delivery optimization">
+    In the navigation panel, under **Content**, click **Large files delivery optimization**.
 
-<Frame>![ CDN resource ](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12478782810513.png)</Frame>
+    <Frame>![CDN resource settings with Content section expanded in the navigation panel](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-delivery-image2.png)</Frame>
+  </Step>
+  <Step title="Enable the option">
+    Turn on the toggle for **Enable large files delivery optimization**.
 
+    <Frame>![Enable large files delivery optimization toggle](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-delivery-image3.png)</Frame>
+  </Step>
+</Steps>
 
-
-2\. In the navigation panel, under **Content**, click **Large files delivery optimization**.
-
-
-<Frame>![Content section](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479228932497.png)</Frame>
-
-
-
-3\. Turn on the toggle for **Enable Large files delivery optimization**.
-
-
-<Frame>![Enable Large files delivery optimization ](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479601956241.png)</Frame>
-
- <Warning>
-**Warning**
-
-When Large File delivery optimization is enabled, the HTTP _Etag_ header will be concealed in responses.
+<Warning>
+When Large File Delivery Optimization is enabled, the HTTP _Etag_ header is concealed in responses.
 </Warning>
