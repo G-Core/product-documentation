@@ -1,42 +1,67 @@
 ---
-title: Integrate CDN resource with vBulletin
+title: Integrate a CDN resource with vBulletin
 sidebarTitle: vBulletin
-ai-navigation: Configure CDN resource integration with vBulletin by creating replacement variables in Styles > Replacement Variable Manager to rewrite static file URLs from origin to Gcore CDN CNAME domain.
+ai-navigation: Configure vBulletin 6 public static asset delivery through Gcore CDN by assigning an HTTPS CDN URL in server optimization settings.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with the default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+vBulletin 6 can rewrite public static asset URLs to a CDN domain. Gcore then retrieves those files from the forum origin on request and caches them at edge locations.
 
-1\. Login to your vBulletin control panel.
+<Info>
+These instructions apply to self-hosted vBulletin 6. AdminCP access with permission to modify options and clear the cache is required. Back up the forum files and database before changing server optimization settings.
+</Info>
 
-2\. Go to Styles, then to Replacement Variable Manager.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the vBulletin forum as its origin.
 
-3\. Choose Add New Replacement Variable.
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve representative files from the default public paths `/js/`, `/core/cache/css/`, and `/core/images/`, plus any extra public font, theme, or extension directories used by the forum.
+  </Step>
 
+  <Step title="Restrict CDN caching">
+    Configure [CDN&nbsp;rules](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) before enabling the vBulletin CDN URL.
 
-<Frame>![Integrate CDN resource with vBulletin](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/vbulletin.png)</Frame>
+    Apply **CDN caching** to the default public paths that vBulletin 6 rewrites: `/js/` for JavaScript, `/core/cache/css/` for CSS stored as files, and `/core/images/` for core and style images. Custom styles and extensions can use additional public font, theme, or extension directories. Identify those paths in the forum HTML source, and allow them in the cache rules before activating the CDN URL.
 
+    Set **CDN caching** to **Do not cache** for attachments, avatars, custom profile pictures, and other authenticated content. The directory under **Attachments** > **Attachment Storage Type** is a server filesystem path, not a request URL, so do not paste it into a Gcore rule. The same applies to the directories under **Avatars** > **User Picture Storage Type**.
 
+    Open the forum, select **Network**, request an attachment, an avatar, and a profile picture, and copy each request URL path. Create a **Do not cache** rule for those URL paths. vBulletin checks permissions for attachments even when they are stored as files.
 
-Using your CNAME from the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) (`cdn.site.com`). Create a new replacement variable for each item in the following table. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    If a template rewrites avatars or other protected content to the CDN hostname, either remove that rewrite so the files stay on the forum origin, or leave the CDN hostname and apply **Do not cache** so the origin still authorizes each request. A **Do not cache** rule does not restore the original hostname.
+  </Step>
 
+  <Step title="Open the server optimization options">
+    Sign in to vBulletin AdminCP and navigate to **Settings** > **Options** > **Server Settings and Optimization Options**.
+  </Step>
 
-<Frame>![Gcore Customer Portal ](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/bulletin_______.png)</Frame>
+  <Step title="Set the CDN URL">
+    In the **CDN URL** setting, enter `https://cdn.example.com`, and then save the options.
 
- Find in the text | Replace with  
----|---  
-`src="customavatars/` | `src="<http://cdn.site.com/customavatars/>`  
-`src="customprofilepics/` | `src="<http://cdn.site.com/customprofilepics/>`  
-`src="images/` | `src="<http://cdn.site.com/images/>`  
-`url("clientscript` | `url("cdn.site.com`  
-`src="clientscript/` | `src="<http://cdn.site.com/>`  
-`src="{vb:raw vboptions.bburl}/clientscript/` | `src="<http://cdn.site.com/>`  
-`href="clientscript/` | `href="<http://cdn.site.com/>`  
-`url(./images/` | `url(<http://cdn.site.com/images/>`  
-`url(images/` | `url(<http://cdn.site.com/images/>`  
-`var IMGDIR_MISC="images/misc";`<br/>`var IMGDIR_BUTTON="images/buttons";` | `var IMGDIR_MISC="[http://cdn.site.com/images/misc";var](http://cdn.site.com/images/misc%22;var)`<br/>`IMGDIR_BUTTON="<http://cdn.site.com/images/buttons>";`  
-  
-4\. If you have more directories for your images repeat the process for each of them.
+    vBulletin 6 changes the URLs of public JavaScript, CSS stored as files, core and style images, and font files, but it does not copy files. Default rewritten paths include `/js/`, `/core/cache/css/`, and `/core/images/`. Custom styles and extensions can rewrite additional public directories. Gcore pull CDN retrieves each requested path from the configured origin. Forum pages and forms must continue to use the forum hostname. Attachments, avatars, and other user-generated content must not be cached. If those files appear on the CDN hostname, the request must bypass caching and the origin must still authorize it.
 
-5\. Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+    <Warning>
+    Do not cache attachments, avatars, custom profile pictures, or other authenticated content with public cache rules. Complete the **Do not cache** rules for the attachment, avatar, and profile-picture request URL paths identified in **Network** before enabling this setting. Do not use the filesystem directory from **Attachment Storage Type** as a rule path.
+    </Warning>
+  </Step>
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+  <Step title="Clear the vBulletin cache">
+    In AdminCP, navigate to **Maintenance** > **Clear System Cache**, clear the system cache, and then reload the forum.
+  </Step>
+
+  <Step title="Verify CDN delivery">
+    Open the forum in a private browser window. Open the browser developer tools, select **Network**, select **Disable cache**, and reload the page.
+
+    Filter requests by `cdn.example.com`. Confirm that files under the default public paths `/js/`, `/core/cache/css/`, and `/core/images/` — and any extra public font, theme, or extension paths that were allowed — use the CDN hostname and return successful HTTP responses. Request a cacheable asset again and verify that the `Cache` response header is `HIT`. Confirm that forum pages and forms continue to use the forum hostname. Confirm that attachments, avatars, and other protected content either remain on the forum hostname or use the CDN hostname with a cache bypass, not `HIT`, and still require authorization at the origin.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+When static files fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a mixed-content or TLS failure, a CORS header that does not allow the forum origin, a Content Security Policy that omits the CDN hostname, a cache that still serves the previous URL, or a public cache rule that includes private content.
+
+- For a `404` response, confirm that the requested path exists on the forum origin and that the CDN resource preserves the path.
+- For a `502` response, check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- If the forum appears without styles, confirm that the CDN URL includes `https://`, the TLS certificate is valid, and CSS files return successful responses.
+- If fonts are blocked by CORS, inspect the browser console, and then add an `Access-Control-Allow-Origin` response header that allows the forum origin — `https://forum.example.com`.
+- If scripts are blocked by Content Security Policy, inspect the browser console, and then allow `cdn.example.com` in the applicable Content Security Policy directive.
+- If old assets remain visible, clear the vBulletin cache and [purge&nbsp;CDN&nbsp;cache](/cdn/cdn-resource-options/cache/clear-cdn-cache).
+- If private content is cached, identify the attachment, avatar, and profile-picture request URL paths in **Network**, set **Do not cache** for those URL paths, purge existing cached responses, and confirm that those requests require authorization at the origin. If a template rewrite sent protected content to the CDN hostname and that rewrite is not required, remove it so the files stay on the forum origin.

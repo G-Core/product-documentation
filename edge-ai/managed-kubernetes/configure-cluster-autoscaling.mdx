@@ -89,13 +89,12 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     import gcore
 
     client = gcore.Gcore()
     cluster_name = os.environ["CLUSTER_NAME"]
 
-    result = client.cloud.k8s.clusters.update(
+    cluster = client.cloud.k8s.clusters.update_and_poll(
         cluster_name=cluster_name,
         autoscaler_config={
             "scan-interval": "20s",
@@ -105,14 +104,7 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
         },
     )
 
-    task_id = result.tasks[0]
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state in ("FINISHED", "ERROR"):
-            break
-        time.sleep(5)
-
-    print("Autoscaling configured:", task.state)
+    print(f"Autoscaling configured for cluster: {cluster.name}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -123,7 +115,6 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
         "context"
         "fmt"
         "os"
-        "time"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -135,7 +126,7 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        result, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, cloud.K8SClusterUpdateParams{
+        cluster, err := client.Cloud.K8S.Clusters.UpdateAndPoll(ctx, clusterName, cloud.K8SClusterUpdateParams{
             AutoscalerConfig: map[string]string{
                 "scan-interval":                    "20s",
                 "scale-down-unneeded-time":         "10m",
@@ -148,15 +139,7 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
             os.Exit(1)
         }
 
-        taskID := result.Tasks[0]
-        for {
-            task, _ := client.Cloud.Tasks.Get(ctx, taskID)
-            if task.State == "FINISHED" || task.State == "ERROR" {
-                fmt.Println("Autoscaling configured:", task.State)
-                break
-            }
-            time.Sleep(5 * time.Second)
-        }
+        fmt.Printf("Autoscaling configured for cluster: %s\n", cluster.Name)
     }
     ```
   </Tab>
