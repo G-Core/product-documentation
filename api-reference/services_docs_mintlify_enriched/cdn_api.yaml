@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 14dc90086307
+  version: 70e93db9a94f
 servers:
 - url: https://api.gcore.com
 tags:
@@ -2154,7 +2154,10 @@ paths:
       tags:
       - Logs uploader
       summary: Get policy fields
-      description: Get list of available fields for logs uploader policy.
+      description: |-
+        Get list of available fields for logs uploader policy.
+
+        `/cdn/v2/logs_uploader/policies/fields` returns the same fields together with the conversion types each one permits.
       responses:
         '200':
           description: Successful.
@@ -2199,6 +2202,29 @@ paths:
           	}
           	fmt.Printf("%+v\n", response)
           }
+  /cdn/v2/logs_uploader/policies/fields:
+    get:
+      operationId: get-policy-fields-v2
+      tags:
+      - Logs uploader
+      summary: Get policy fields with allowed conversions
+      description: |-
+        Get the available fields for a logs uploader policy, each with the conversion types it permits in `field_conversions`.
+
+        Supersedes `/cdn/logs_uploader/policies/fields`, which returns field names only.
+
+        `-` is the placeholder for a skipped column: it may appear in `fields` and permits no conversion.
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogsUploaderPolicyField'
+        '403':
+          description: Feature is disabled for your account.
   /cdn/logs_uploader/targets:
     get:
       operationId: get-targets-list
@@ -8845,6 +8871,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -8883,11 +8911,28 @@ components:
         field_separator: ;
         fields:
         - remote_addr
-        - status
+        - request_time
+        - upstream_cache_status
         file_name_template: '{{YYYY}}_{{MM}}_{{DD}}_{{HH}}_{{mm}}_{{ss}}_access.log.gz'
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions:
+          request_time:
+            conversions:
+            - type: scale
+              config:
+                factor: 1000
+                precision: 0
+                rounding: nearest
+          upstream_cache_status:
+            conversions:
+            - type: replace
+              config:
+                values:
+                  HIT: cached
+                  MISS: uncached
+                default: other
         log_sample_rate: 1
     CreateLogsUploaderTarget:
       type: object
@@ -9200,6 +9245,47 @@ components:
           $ref: '#/components/schemas/enabled'
         host_header_override:
           $ref: '#/components/schemas/host_header_override'
+    FieldConversionPipeline:
+      type: object
+      additionalProperties: false
+      required:
+      - conversions
+      properties:
+        conversions:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/ScaleFieldConversion'
+            - $ref: '#/components/schemas/ReplaceFieldConversion'
+            discriminator:
+              propertyName: type
+              mapping:
+                scale: '#/components/schemas/ScaleFieldConversion'
+                replace: '#/components/schemas/ReplaceFieldConversion'
+    FieldConversions:
+      type: object
+      maxProperties: 50
+      description: 'Per-field value conversions for exported logs. Maps a canonical Gcore field name to the pipeline applied to its values. Field names are limited to 255 characters and must not be empty. Each key must be present in `fields`, and each conversion type must be listed in that field''s `allowed_conversions` from `/cdn/v2/logs_uploader/policies/fields`. Conversions in a pipeline are applied in array order. Values are converted independently of `field_remap`, which renames the exported field: both are keyed on the canonical field name.'
+      additionalProperties:
+        $ref: '#/components/schemas/FieldConversionPipeline'
+      example:
+        request_time:
+          conversions:
+          - type: scale
+            config:
+              factor: 1000
+              precision: 0
+              rounding: nearest
+        upstream_cache_status:
+          conversions:
+          - type: replace
+            config:
+              values:
+                HIT: cached
+                MISS: uncached
+              default: other
     FullCustomResourceDeletionFailed:
       title: Resource has a custom configuration
       type: object
@@ -10401,6 +10487,29 @@ components:
           - $ref: '#/components/schemas/LogsUploaderValidationResponse'
           - type: object
             description: Validation status of the logs uploader config.
+    LogsUploaderPolicyField:
+      type: object
+      required:
+      - name
+      - allowed_conversions
+      properties:
+        name:
+          type: string
+          description: Canonical Gcore field name, or `-` as the skipped-column placeholder, selectable in a policy's `fields`.
+          maxLength: 255
+        allowed_conversions:
+          type: array
+          description: Conversion types this field permits in `field_conversions`. Empty when the field permits none.
+          items:
+            type: string
+            enum:
+            - scale
+            - replace
+      example:
+        name: request_time
+        allowed_conversions:
+        - scale
+        - replace
     LogsUploaderPolicyListResponse:
       oneOf:
       - title: Plain list
@@ -10430,6 +10539,7 @@ components:
           format_type: json
           tags: {}
           field_remap: {}
+          field_conversions: {}
           log_sample_rate: 1
           related_uploader_configs:
           - 123
@@ -10469,6 +10579,7 @@ components:
             format_type: json
             tags: {}
             field_remap: {}
+            field_conversions: {}
             log_sample_rate: 1
             related_uploader_configs:
             - 123
@@ -10576,6 +10687,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -10626,6 +10739,7 @@ components:
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions: {}
         log_sample_rate: 1
         related_uploader_configs:
         - 123
@@ -11494,6 +11608,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -11535,6 +11651,7 @@ components:
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions: {}
         log_sample_rate: 0.5
     PatchLogsUploaderTarget:
       type: object
@@ -11787,6 +11904,37 @@ components:
     RemoteIPAddress:
       type: string
       description: IP address from which the request was made.
+    ReplaceFieldConversion:
+      type: object
+      additionalProperties: false
+      required:
+      - type
+      - config
+      properties:
+        type:
+          type: string
+          enum:
+          - replace
+        config:
+          $ref: '#/components/schemas/ReplaceFieldConversionConfig'
+    ReplaceFieldConversionConfig:
+      type: object
+      additionalProperties: false
+      required:
+      - values
+      properties:
+        values:
+          type: object
+          minProperties: 1
+          maxProperties: 50
+          description: Exact, case-sensitive replacements, matched and written without trimming. Keys must not be empty and are limited to 255 characters; values are limited to 100 characters and may be empty.
+          additionalProperties:
+            type: string
+            maxLength: 100
+        default:
+          type: string
+          maxLength: 100
+          description: Value used when the input does not match any key in `values`.
     RequestedAt:
       type: string
       description: Date and time when the request was made.
@@ -12637,6 +12785,47 @@ components:
             - status
       required:
       - resources
+    ScaleFieldConversion:
+      type: object
+      additionalProperties: false
+      required:
+      - type
+      - config
+      properties:
+        type:
+          type: string
+          enum:
+          - scale
+        config:
+          $ref: '#/components/schemas/ScaleFieldConversionConfig'
+    ScaleFieldConversionConfig:
+      type: object
+      additionalProperties: false
+      required:
+      - factor
+      properties:
+        factor:
+          type: number
+          format: double
+          minimum: 1.0e-15
+          maximum: 1000000000000000
+          description: Multiplier applied to the field value.
+        precision:
+          type: integer
+          minimum: 0
+          maximum: 9
+          nullable: true
+          default: null
+          description: Optional number of decimal places in the converted value. Must be specified together with `rounding`; returned as `null` when unspecified.
+        rounding:
+          type: string
+          enum:
+          - nearest
+          - down
+          - up
+          nullable: true
+          default: null
+          description: Optional rounding mode. Must be specified together with `precision`; returned as `null` when unspecified.
     SecondaryCnameAlreadyExistsError:
       title: Hostname already exists
       type: object
