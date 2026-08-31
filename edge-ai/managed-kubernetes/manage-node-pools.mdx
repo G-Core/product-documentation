@@ -335,32 +335,20 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     from gcore import Gcore
 
     client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
     # GPU Bare Metal pool
-    task_list = client.cloud.k8s.clusters.pools.create(
+    pool = client.cloud.k8s.clusters.pools.create_and_poll(
         cluster_name=CLUSTER,
         name="gpu-pool",
         flavor_id="g2a-gpu-1-24-1",    # select a GPU flavor for the region
         min_node_count=1,
         max_node_count=2,
     )
-    task_id = task_list.tasks[0]
-    print(f"Pool creation started: {task_id}")
-
-    # Poll until provisioned
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            print(f"Pool created: {task.created_resources}")
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(f"Pool creation failed: {task}")
-        time.sleep(10)
+    print(f"Pool created: {pool.name}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -368,53 +356,37 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     package main
 
     import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"time"
+	"context"
+	"fmt"
+	"os"
 
-    	gcore "github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/cloud"
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
     )
 
     func main() {
-    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient()
-    	ctx := context.Background()
+	client := gcore.NewClient()
+	ctx := context.Background()
 
-    	// GPU Bare Metal pool
-    	taskList, err := client.Cloud.K8S.Clusters.Pools.New(
-    		ctx,
-    		clusterName,
-    		cloud.K8SClusterPoolNewParams{
-    			Name:         "gpu-pool",
-    			FlavorID:     "g2a-gpu-1-24-1",    // select a GPU flavor for the region
-    			MinNodeCount: 1,
-    			MaxNodeCount: gcore.Int(2),
-    		},
-    	)
-    	if err != nil {
-    		panic(err)
-    	}
-    	taskID := taskList.Tasks[0]
-    	fmt.Printf("Pool creation started: %s\n", taskID)
+	// GPU Bare Metal pool
+	pool, err := client.Cloud.K8S.Clusters.Pools.NewAndPoll(
+		ctx,
+		clusterName,
+		cloud.K8SClusterPoolNewParams{
+			Name:         "gpu-pool",
+			FlavorID:     "g2a-gpu-1-24-1", // select a GPU flavor for the region
+			MinNodeCount: 1,
+			MaxNodeCount: gcore.Int(2),
+			ClusterName:  clusterName,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
 
-    	// Poll until provisioned
-    	for {
-    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
-    		if err != nil {
-    			panic(err)
-    		}
-    		if task.State == "FINISHED" {
-    			fmt.Printf("Pool created: %+v\n", task.CreatedResources)
-    			break
-    		}
-    		if task.State == "ERROR" {
-    			panic(fmt.Sprintf("Pool creation failed: %+v", task))
-    		}
-    		time.Sleep(10 * time.Second)
-    	}
+	fmt.Printf("Pool created: %s\n", pool.Name)
     }
     ```
   </Tab>
@@ -636,26 +608,16 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     from gcore import Gcore
 
     client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
-    task_list = client.cloud.k8s.clusters.pools.delete(
+    client.cloud.k8s.clusters.pools.delete_and_poll(
         pool_name="gpu-pool",
         cluster_name=CLUSTER,
     )
-    task_id = task_list.tasks[0]
-
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            print("Pool deleted.")
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(f"Pool deletion failed: {task}")
-        time.sleep(10)
+    print("Pool deleted.")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -663,47 +625,32 @@ GPU Bare Metal pools do not require `servergroup_policy`, `boot_volume_type`, or
     package main
 
     import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"time"
+	"context"
+	"fmt"
+	"os"
 
-    	gcore "github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/cloud"
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
     )
 
     func main() {
-    	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
+	clusterName := os.Getenv("GCORE_CLUSTER_NAME")
 
-    	client := gcore.NewClient()
-    	ctx := context.Background()
+	client := gcore.NewClient()
+	ctx := context.Background()
 
-    	taskList, err := client.Cloud.K8S.Clusters.Pools.Delete(
-    		ctx,
-    		"gpu-pool",
-    		cloud.K8SClusterPoolDeleteParams{
-    			ClusterName: clusterName,
-    		},
-    	)
-    	if err != nil {
-    		panic(err)
-    	}
-    	taskID := taskList.Tasks[0]
+	err := client.Cloud.K8S.Clusters.Pools.DeleteAndPoll(
+		ctx,
+		"gpu-pool",
+		cloud.K8SClusterPoolDeleteParams{
+			ClusterName: clusterName,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
 
-    	for {
-    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
-    		if err != nil {
-    			panic(err)
-    		}
-    		if task.State == "FINISHED" {
-    			fmt.Println("Pool deleted.")
-    			break
-    		}
-    		if task.State == "ERROR" {
-    			panic(fmt.Sprintf("Pool deletion failed: %+v", task))
-    		}
-    		time.Sleep(10 * time.Second)
-    	}
+	fmt.Println("Pool deleted.")
     }
     ```
   </Tab>
