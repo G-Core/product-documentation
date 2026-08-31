@@ -54,12 +54,12 @@ Secure token validates three things from the request URL:
 - `expires`: the Unix timestamp until which the URL is valid
 - Path: the file path or directory path used when the token was generated
 
-The path is important. The CDN validates the token against the path used in the hash string. Two modes exist:
+The path is important. The CDN recomputes the hash using the path that was used to generate the token, not necessarily the full requested path:
 
-- **Exact path**: the token is generated for a specific file path (e.g. `/images/poster.jpeg`). The CDN recomputes the hash using the requested path and rejects any request where the paths do not match exactly.
-- **Directory path**: when the path ends with `/` (e.g. `/videos/video-1/`), the CDN uses prefix matching — any request whose path starts with that prefix is accepted with the same token. This is a property of Secure Token itself, not of Query String Forwarding.
+- If the token was generated for an exact file path (e.g. `/images/poster.jpeg`), the CDN computes the hash with that same path on every request. Only requests for that exact file pass.
+- If the token was generated for a directory path ending with `/` (e.g. `/videos/video-1/`), the CDN computes the hash using the **directory component** of the requested path. A request for `/videos/video-1/segment-001.ts` uses `/videos/video-1/` as the path in the hash and passes. A request for `/videos/video-1/360p/segment.ts` uses `/videos/video-1/360p/` as the directory component — that does not match the token generated for `/videos/video-1/`, so it returns `403 Forbidden`.
 
-[Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) is a separate mechanism: it copies `md5` and `expires` from playlist body links to the actual media segment requests. This allows a video player to receive the token with the master manifest and have the CDN automatically propagate it to all nested requests — but each of those requests is still validated by Secure Token using directory prefix matching against the original path.
+[Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) is a separate mechanism that copies `md5` and `expires` from playlist body links to the actual media segment requests. It allows a player to receive the token with the master manifest and automatically propagate it to nested requests, each of which is still individually validated against the token path.
 
 ### Token for exact file
 
@@ -91,7 +91,7 @@ https://cdn.example.com/images/poster.png       → 403 Forbidden
 https://cdn.example.com/images/master.m3u8      → 403 Forbidden
 ```
 
-### Token with Query String Forwarding
+### Protect HLS and MPEG-DASH content
 
 Use a token with Query String Forwarding enabled for HLS and MPEG-DASH when the player must request a master manifest, nested rendition manifests, media segments, and subtitles under the same path.
 
