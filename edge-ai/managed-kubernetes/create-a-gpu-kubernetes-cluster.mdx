@@ -317,8 +317,8 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     subnets = client.cloud.networks.subnets.list(network_id=network.id)
     subnet = subnets.results[0]
 
-    # Step 4. Create the cluster
-    task_id_list = client.cloud.k8s.clusters.create(
+    # Step 4. Create the cluster and wait until provisioned
+    cluster = client.cloud.k8s.clusters.create_and_poll(
         name="my-gpu-k8s",
         version=version,
         keypair=SSH_KEY,
@@ -331,20 +331,9 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
             "max_node_count": 3,
         }],
     )
-    task_id = task_id_list.tasks[0]
-    print(f"Task: {task_id}")
+    print(f"Cluster provisioned: {cluster.name}")
 
-    # Step 5. Poll until provisioned
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            cluster_id = task.created_resources.k8s_clusters[0]
-            print(f"Cluster provisioned: {cluster_id}")
-            break
-        print(f"State: {task.state} — waiting...")
-        time.sleep(15)
-
-    # Step 6. Download kubeconfig
+    # Step 5. Download kubeconfig
     kc = client.cloud.k8s.clusters.kubeconfig.get("my-gpu-k8s")
     with open("k8sConfig.yml", "w") as f:
         f.write(kc.config)
@@ -356,14 +345,13 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     package main
 
     import (
-        "context"
-        "fmt"
-        "os"
-        "strings"
-        "time"
+	"context"
+	"fmt"
+	"os"
+	"strings"
 
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/cloud"
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
     )
 
     func main() {
@@ -406,41 +394,26 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         }
         subnetID := subnets.Results[0].ID
 
-        // Step 4. Create the cluster
-        taskIDList, err := client.Cloud.K8S.Clusters.New(ctx, cloud.K8SClusterNewParams{
-            Name:         "my-gpu-k8s",
-            Version:      version,
-            Keypair:      sshKeyName,
-            FixedNetwork: gcore.String(networkID),
-            FixedSubnet:  gcore.String(subnetID),
-            Pools: []cloud.K8SClusterNewParamsPool{{
-                Name:         "gpu-pool",
-                FlavorID:     flavorID,
-                MinNodeCount: 1,
-                MaxNodeCount: gcore.Int(3),
-            }},
-        })
-        if err != nil {
-            panic(err)
-        }
-        taskID := taskIDList.Tasks[0]
-        fmt.Printf("Task: %s\n", taskID)
+	// Step 4. Create the cluster and wait until provisioned
+	cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, cloud.K8SClusterNewParams{
+		Name:         "my-gpu-k8s",
+		Version:      version,
+		Keypair:      sshKeyName,
+		FixedNetwork: gcore.String(networkID),
+		FixedSubnet:  gcore.String(subnetID),
+		Pools: []cloud.K8SClusterNewParamsPool{{
+			Name:         "gpu-pool",
+			FlavorID:     flavorID,
+			MinNodeCount: 1,
+			MaxNodeCount: gcore.Int(3),
+		}},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Cluster provisioned: %s\n", cluster.Name)
 
-        // Step 5. Poll until provisioned
-        for {
-            task, err := client.Cloud.Tasks.Get(ctx, taskID)
-            if err != nil {
-                panic(err)
-            }
-            if task.State == "FINISHED" {
-                fmt.Printf("Cluster provisioned: %s\n", task.CreatedResources.K8SClusters[0])
-                break
-            }
-            fmt.Printf("State: %s — waiting...\n", task.State)
-            time.Sleep(15 * time.Second)
-        }
-
-        // Step 6. Download kubeconfig
+	// Step 5. Download kubeconfig
         kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, "my-gpu-k8s",
             cloud.K8SClusterKubeconfigGetParams{})
         if err != nil {

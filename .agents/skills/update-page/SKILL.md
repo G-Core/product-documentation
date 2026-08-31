@@ -11,7 +11,8 @@ Update existing articles based on provided context about product or UI changes.
 2. The article file(s) identified during Phase 1
 3. `.agents/references/style-guide.md` — when rewriting prose or restructuring
 4. `.agents/references/mdx-rules.md` — when editing MethodSwitch structure or frontmatter
-5. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
+5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+6. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
 
 Do not read other articles for context unless they are directly linked from the
 article being updated.
@@ -102,6 +103,12 @@ new API parameters) → skip this phase entirely.
 
 Apply only what was described in the input. Do not fix unrelated issues you notice
 along the way — note them separately at the end.
+
+**If updating SDK code examples:**
+Read `.agents/references/sdk-best-practices.md` BEFORE making changes.
+- Replace manual polling with `*_and_poll()` / `*AndPoll()` methods
+- Remove `import time` when using `*_and_poll()`
+- Remove `os.environ["GCORE_API_KEY"]` - SDK reads it automatically
 
 For each change:
 

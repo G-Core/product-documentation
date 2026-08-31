@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 02ae19475349
+  version: 70e93db9a94f
 servers:
 - url: https://api.gcore.com
 tags:
@@ -742,6 +742,7 @@ paths:
                 - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
                 - $ref: '#/components/schemas/S3ConfigRequiredError'
                 - $ref: '#/components/schemas/S3BucketNameDuplicateError'
+                - $ref: '#/components/schemas/S3SourceAmbiguousError'
                 - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
         '403':
           $ref: '#/components/responses/NoPermissions'
@@ -870,6 +871,7 @@ paths:
                 - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
                 - $ref: '#/components/schemas/S3ConfigRequiredError'
                 - $ref: '#/components/schemas/S3BucketNameDuplicateError'
+                - $ref: '#/components/schemas/S3SourceAmbiguousError'
                 - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
         '403':
           $ref: '#/components/responses/NoPermissions'
@@ -2152,7 +2154,10 @@ paths:
       tags:
       - Logs uploader
       summary: Get policy fields
-      description: Get list of available fields for logs uploader policy.
+      description: |-
+        Get list of available fields for logs uploader policy.
+
+        `/cdn/v2/logs_uploader/policies/fields` returns the same fields together with the conversion types each one permits.
       responses:
         '200':
           description: Successful.
@@ -2197,6 +2202,29 @@ paths:
           	}
           	fmt.Printf("%+v\n", response)
           }
+  /cdn/v2/logs_uploader/policies/fields:
+    get:
+      operationId: get-policy-fields-v2
+      tags:
+      - Logs uploader
+      summary: Get policy fields with allowed conversions
+      description: |-
+        Get the available fields for a logs uploader policy, each with the conversion types it permits in `field_conversions`.
+
+        Supersedes `/cdn/logs_uploader/policies/fields`, which returns field names only.
+
+        `-` is the placeholder for a skipped column: it may appear in `fields` and permits no conversion.
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogsUploaderPolicyField'
+        '403':
+          description: Feature is disabled for your account.
   /cdn/logs_uploader/targets:
     get:
       operationId: get-targets-list
@@ -4305,11 +4333,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.cdn.presets.applied.apply(
+          applied_preset_created = client.cdn.presets.applied.apply(
               preset_id=0,
               object_id=7531,
           )
-          print(response.object_id)
+          print(applied_preset_created.object_id)
       - lang: Go
         source: |
           package main
@@ -4327,7 +4355,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.CDN.Presets.Applied.Apply(
+          	appliedPresetCreated, err := client.CDN.Presets.Applied.Apply(
           		context.TODO(),
           		0,
           		cdn.PresetAppliedApplyParams{
@@ -4337,7 +4365,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.ObjectID)
+          	fmt.Printf("%+v\n", appliedPresetCreated.ObjectID)
           }
   /cdn/presets/{preset_id}/applied/{object_id}:
     get:
@@ -4362,6 +4390,49 @@ paths:
                 $ref: '#/components/schemas/AppliedPresetObjectResponse'
         '404':
           description: Preset does not exist, or the preset is not applied to the object.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          applied_preset_object = client.cdn.presets.applied.get(
+              object_id=0,
+              preset_id=0,
+          )
+          print(applied_preset_object.object_id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cdn"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	appliedPresetObject, err := client.CDN.Presets.Applied.Get(
+          		context.TODO(),
+          		0,
+          		cdn.PresetAppliedGetParams{
+          			PresetID: 0,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", appliedPresetObject.ObjectID)
+          }
     delete:
       operationId: unapply-preset
       tags:
@@ -8800,6 +8871,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -8838,11 +8911,28 @@ components:
         field_separator: ;
         fields:
         - remote_addr
-        - status
+        - request_time
+        - upstream_cache_status
         file_name_template: '{{YYYY}}_{{MM}}_{{DD}}_{{HH}}_{{mm}}_{{ss}}_access.log.gz'
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions:
+          request_time:
+            conversions:
+            - type: scale
+              config:
+                factor: 1000
+                precision: 0
+                rounding: nearest
+          upstream_cache_status:
+            conversions:
+            - type: replace
+              config:
+                values:
+                  HIT: cached
+                  MISS: uncached
+                default: other
         log_sample_rate: 1
     CreateLogsUploaderTarget:
       type: object
@@ -9155,6 +9245,47 @@ components:
           $ref: '#/components/schemas/enabled'
         host_header_override:
           $ref: '#/components/schemas/host_header_override'
+    FieldConversionPipeline:
+      type: object
+      additionalProperties: false
+      required:
+      - conversions
+      properties:
+        conversions:
+          type: array
+          minItems: 1
+          maxItems: 3
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/ScaleFieldConversion'
+            - $ref: '#/components/schemas/ReplaceFieldConversion'
+            discriminator:
+              propertyName: type
+              mapping:
+                scale: '#/components/schemas/ScaleFieldConversion'
+                replace: '#/components/schemas/ReplaceFieldConversion'
+    FieldConversions:
+      type: object
+      maxProperties: 50
+      description: 'Per-field value conversions for exported logs. Maps a canonical Gcore field name to the pipeline applied to its values. Field names are limited to 255 characters and must not be empty. Each key must be present in `fields`, and each conversion type must be listed in that field''s `allowed_conversions` from `/cdn/v2/logs_uploader/policies/fields`. Conversions in a pipeline are applied in array order. Values are converted independently of `field_remap`, which renames the exported field: both are keyed on the canonical field name.'
+      additionalProperties:
+        $ref: '#/components/schemas/FieldConversionPipeline'
+      example:
+        request_time:
+          conversions:
+          - type: scale
+            config:
+              factor: 1000
+              precision: 0
+              rounding: nearest
+        upstream_cache_status:
+          conversions:
+          - type: replace
+            config:
+              values:
+                HIT: cached
+                MISS: uncached
+              default: other
     FullCustomResourceDeletionFailed:
       title: Resource has a custom configuration
       type: object
@@ -10356,6 +10487,29 @@ components:
           - $ref: '#/components/schemas/LogsUploaderValidationResponse'
           - type: object
             description: Validation status of the logs uploader config.
+    LogsUploaderPolicyField:
+      type: object
+      required:
+      - name
+      - allowed_conversions
+      properties:
+        name:
+          type: string
+          description: Canonical Gcore field name, or `-` as the skipped-column placeholder, selectable in a policy's `fields`.
+          maxLength: 255
+        allowed_conversions:
+          type: array
+          description: Conversion types this field permits in `field_conversions`. Empty when the field permits none.
+          items:
+            type: string
+            enum:
+            - scale
+            - replace
+      example:
+        name: request_time
+        allowed_conversions:
+        - scale
+        - replace
     LogsUploaderPolicyListResponse:
       oneOf:
       - title: Plain list
@@ -10385,6 +10539,7 @@ components:
           format_type: json
           tags: {}
           field_remap: {}
+          field_conversions: {}
           log_sample_rate: 1
           related_uploader_configs:
           - 123
@@ -10424,6 +10579,7 @@ components:
             format_type: json
             tags: {}
             field_remap: {}
+            field_conversions: {}
             log_sample_rate: 1
             related_uploader_configs:
             - 123
@@ -10531,6 +10687,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -10581,6 +10739,7 @@ components:
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions: {}
         log_sample_rate: 1
         related_uploader_configs:
         - 123
@@ -11307,18 +11466,17 @@ components:
           type: object
           properties:
             sources:
-              type: object
-              properties:
-                my-bucket:
-                  type: object
-                  properties:
-                    origin_type:
-                      type: array
-                      items:
-                        type: string
-                      description: Provide `origin_type` explicitly when adding new S3 sources to an existing origin group.
-                      example:
-                      - No existing S3 source with bucket "my-bucket". Provide origin_type explicitly for new S3 sources.
+              type: array
+              items:
+                type: object
+                properties:
+                  origin_type:
+                    type: array
+                    items:
+                      type: string
+                    description: Provide `origin_type` explicitly when adding new S3 sources to an existing origin group.
+                    example:
+                    - No existing S3 source with bucket "my-bucket". Provide origin_type explicitly for new S3 sources.
     PaginatedResponse:
       type: object
       properties:
@@ -11450,6 +11608,8 @@ components:
             type: string
             minLength: 1
             maxLength: 255
+        field_conversions:
+          $ref: '#/components/schemas/FieldConversions'
         escape_special_characters:
           type: boolean
           description: |-
@@ -11491,6 +11651,7 @@ components:
         format_type: json
         tags: {}
         field_remap: {}
+        field_conversions: {}
         log_sample_rate: 0.5
     PatchLogsUploaderTarget:
       type: object
@@ -11743,6 +11904,37 @@ components:
     RemoteIPAddress:
       type: string
       description: IP address from which the request was made.
+    ReplaceFieldConversion:
+      type: object
+      additionalProperties: false
+      required:
+      - type
+      - config
+      properties:
+        type:
+          type: string
+          enum:
+          - replace
+        config:
+          $ref: '#/components/schemas/ReplaceFieldConversionConfig'
+    ReplaceFieldConversionConfig:
+      type: object
+      additionalProperties: false
+      required:
+      - values
+      properties:
+        values:
+          type: object
+          minProperties: 1
+          maxProperties: 50
+          description: Exact, case-sensitive replacements, matched and written without trimming. Keys must not be empty and are limited to 255 characters; values are limited to 100 characters and may be empty.
+          additionalProperties:
+            type: string
+            maxLength: 100
+        default:
+          type: string
+          maxLength: 100
+          description: Value used when the input does not match any key in `values`.
     RequestedAt:
       type: string
       description: Date and time when the request was made.
@@ -12238,7 +12430,7 @@ components:
           type: string
           nullable: true
     S3BucketNameDuplicateError:
-      title: S3 bucket names must be unique within origin group
+      title: S3 sources must be distinct within origin group
       type: object
       properties:
         errors:
@@ -12254,7 +12446,7 @@ components:
                       type: array
                       items:
                         type: string
-                      description: The S3 bucket name must be unique within the origin group.
+                      description: 'Two S3 sources can share a bucket name when they reach it through different storages: an `amazon` source alongside an `other` source, or two `other` sources with different `s3_storage_hostname` values. Sources reaching the same storage must use different bucket names.'
                       example:
                       - The S3 bucket name must be unique inside group of origins.
     S3Config:
@@ -12333,18 +12525,17 @@ components:
           type: object
           properties:
             sources:
-              type: object
-              properties:
-                s3_entry_0:
-                  type: object
-                  properties:
-                    config:
-                      type: array
-                      items:
-                        type: string
-                      description: The config field is required when `origin_type` is s3.
-                      example:
-                      - This field is required.
+              type: array
+              items:
+                type: object
+                properties:
+                  config:
+                    type: array
+                    items:
+                      type: string
+                    description: The config field is required when `origin_type` is s3.
+                    example:
+                    - This field is required.
     S3GcoreConfig:
       title: S3 Gcore Config
       allOf:
@@ -12419,6 +12610,35 @@ components:
       title: S3 Other Config
       allOf:
       - $ref: '#/components/schemas/S3GcoreConfigResponse'
+    S3SourceAmbiguousError:
+      title: S3 source to update is ambiguous
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sources:
+              type: array
+              items:
+                type: object
+                properties:
+                  config:
+                    type: object
+                    properties:
+                      s3_storage_hostname:
+                        type: array
+                        items:
+                          type: string
+                        description: Several S3 sources in the group use this bucket name, so the update cannot tell which of them it targets. Send `s3_storage_hostname` to identify one.
+                        example:
+                        - Several S3 sources use bucket "my-bucket". Provide s3_storage_hostname to identify which one.
+                      s3_type:
+                        type: array
+                        items:
+                          type: string
+                        description: 'Returned alongside `s3_storage_hostname` when one of the sources sharing the bucket name is an `amazon` source, which no hostname can identify. Send `s3_type: amazon` to target that one; the others are identified by their host.'
+                        example:
+                        - 'Several S3 sources use bucket "my-bucket". Provide s3_type: amazon for the Amazon source, or s3_storage_hostname for the others.'
     S3SourceResponse:
       type: object
       title: S3 Source
@@ -12565,6 +12785,47 @@ components:
             - status
       required:
       - resources
+    ScaleFieldConversion:
+      type: object
+      additionalProperties: false
+      required:
+      - type
+      - config
+      properties:
+        type:
+          type: string
+          enum:
+          - scale
+        config:
+          $ref: '#/components/schemas/ScaleFieldConversionConfig'
+    ScaleFieldConversionConfig:
+      type: object
+      additionalProperties: false
+      required:
+      - factor
+      properties:
+        factor:
+          type: number
+          format: double
+          minimum: 1.0e-15
+          maximum: 1000000000000000
+          description: Multiplier applied to the field value.
+        precision:
+          type: integer
+          minimum: 0
+          maximum: 9
+          nullable: true
+          default: null
+          description: Optional number of decimal places in the converted value. Must be specified together with `rounding`; returned as `null` when unspecified.
+        rounding:
+          type: string
+          enum:
+          - nearest
+          - down
+          - up
+          nullable: true
+          default: null
+          description: Optional rounding mode. Must be specified together with `precision`; returned as `null` when unspecified.
     SecondaryCnameAlreadyExistsError:
       title: Hostname already exists
       type: object
@@ -15556,7 +15817,7 @@ components:
     NoPermissions:
       description: You do not have permission to perform this action.
     OriginGroupNotFound:
-      description: Origin group is not found in the current account.
+      description: Origin group is not found.
     ResourceNotFound:
       description: The specified CDN resource is not found in the current account.
   securitySchemes:
