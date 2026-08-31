@@ -7,29 +7,38 @@ ai-navigation: Configure TYPO3 static asset delivery through Gcore CDN with the 
 TYPO3 can rewrite public asset URLs in rendered pages through the [Replacer&nbsp;extension](https://extensions.typo3.org/extension/replacer). Configure scoped replacement rules to deliver generated assets, extension resources, and public files through Gcore CDN.
 
 <Info>
-These instructions apply to TYPO3 v13 and v14. Back up the project files and database before installing the extension or changing TypoScript.
+These instructions apply to TYPO3 13 with Replacer 4.x and TYPO3 14 with Replacer 5.x. Replacer 5.x supports TYPO3 14 only. Back up the project files and database before installing the extension or changing TypoScript.
 </Info>
 
 <Steps>
   <Step title="Prepare the CDN resource">
-    In the Gcore Customer Portal, create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the TYPO3 site as its origin.
+    In the [Gcore Customer Portal](https://portal.gcore.com), create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the TYPO3 site as its origin.
 
     Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve representative files from `/_assets/`, `/fileadmin/`, and `/typo3temp/assets/` when those directories exist.
   </Step>
 
   <Step title="Install the Replacer extension">
-    For a Composer-based installation, run:
+    For a Composer-based installation, require Replacer 4.x on TYPO3 13 or Replacer 5.x on TYPO3 14.
+
+    TYPO3 13:
 
     ```bash
-    composer require jweiland/replacer
+    composer require jweiland/replacer:^4.0
     vendor/bin/typo3 extension:setup --extension=replacer
     ```
 
-    For a non-Composer installation, sign in to the TYPO3 backend as an administrator, open **Extensions**, search for `replacer`, and install the extension.
+    TYPO3 14:
+
+    ```bash
+    composer require jweiland/replacer:^5.0
+    vendor/bin/typo3 extension:setup --extension=replacer
+    ```
+
+    For a non-Composer installation, sign in to the TYPO3 backend as an administrator, open **Extensions**, search for `replacer`, and install Replacer 4.x on TYPO3 13 or Replacer 5.x on TYPO3 14.
   </Step>
 
   <Step title="Add the CDN replacement rules">
-    Add the following TypoScript to the root site package or the setup record that applies to the required pages:
+    Add the following TypoScript to `setup.typoscript` in the site configuration directory — the file next to `config.yaml` — or to `setup.typoscript` in the active site-package set. A root TypoScript template record is the legacy alternative and is applied after site TypoScript.
 
     ```typoscript
     config.tx_replacer {
@@ -47,7 +56,7 @@ These instructions apply to TYPO3 v13 and v14. Back up the project files and dat
     The expression rewrites only the listed public asset directories in generated HTML.
 
     <Warning>
-    Don't replace every relative URL. Broad rules can send page links and form actions through the CDN or add the CDN hostname to an already rewritten URL.
+    Do not replace every relative URL. Broad rules can send page links and form actions through the CDN or add the CDN hostname to an already rewritten URL.
     </Warning>
   </Step>
 
@@ -70,8 +79,11 @@ These instructions apply to TYPO3 v13 and v14. Back up the project files and dat
 
 ## Troubleshooting
 
-- **Assets return 404**: Confirm that the requested public path exists on the origin and that the regular expression preserves the full path.
-- **Requests return 502**: Check the origin hostname, pull protocol, port, and host header in the CDN resource.
-- **Fonts or scripts are blocked**: Configure the required CORS and Content Security Policy headers for `cdn.example.com`.
-- **Asset URLs don't change**: Confirm that the Replacer TypoScript is active on the page, and then flush the TYPO3 and CDN caches.
-- **A URL contains the CDN hostname twice**: Narrow the search expression so it matches only local paths that begin with a quotation mark and an optional slash.
+When rewritten assets fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a CORS restriction on the CDN response, a Content Security Policy that omits the CDN hostname, inactive TypoScript, or a search expression that matches an already rewritten URL.
+
+- For a `404` response, confirm that the requested public path exists on the origin and that the regular expression preserves the full path.
+- For a `502` response, check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- If fonts or scripts are blocked by CORS, configure the origin or CDN so the asset response includes an `Access-Control-Allow-Origin` header.
+- If the browser reports a Content Security Policy violation, add `cdn.example.com` to the site CSP directives that apply to scripts, styles, fonts, or images.
+- If asset URLs do not change, confirm that the Replacer TypoScript is active on the page, and then flush the TYPO3 and CDN caches.
+- If a URL contains the CDN hostname twice, narrow the search expression so it matches only local paths that begin with a quotation mark and an optional slash.
