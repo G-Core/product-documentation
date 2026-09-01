@@ -1,36 +1,54 @@
 ---
-title: Integrate CDN resource with WordPress (WP SuperCache plugin)
-sidebarTitle: WP SuperCache plugin
-ai-navigation: Configure WP Super Cache plugin CDN integration by enabling CDN Support, entering Gcore CDN CNAME in Off-site URL field, and verifying static asset URLs are rewritten to the custom domain.
+title: Integrate CDN resource with WordPress (WP Super Cache plugin)
+sidebarTitle: WP Super Cache plugin
+ai-navigation: Integrate a Gcore CDN resource with WordPress using WP Super Cache Simple CDN and the Off-site URL field.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+WP Super Cache is a WordPress plugin that rewrites static file URLs so browsers request those files from a Gcore CDN custom domain instead of the origin. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) must exist first, and the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) must have a CNAME record pointing at the assigned `cl-****.gcdn.co` hostname.
 
-Install the WP Super Cache plugin (there are two options to accomplish this)Log into your WordPress administration dashboard.
+<Warning>
+Back up the WordPress files and database before installing the plugin. These steps assume a default WordPress file layout. A heavily customized layout might not rewrite URLs correctly.
+</Warning>
 
-  1. Click Search link below the Install Plugin title.
-  2. Enter WP Super Cache in the input and click on Search Plugins. 
-  3. Press Select and Install now. 
-  4. Click Activate to enable the plugin.
+## WP Super Cache plugin setup
 
+WP Super Cache adds a **WP Super Cache** item under **Settings** after it is activated.
 
+<Steps>
+  <Step title="Open the plugin installer">
+    Log in to WordPress admin (`example.com/wp-admin`) and navigate to **Plugins** > **Add Plugin**.
+  </Step>
+  <Step title="Install and activate the plugin">
+    In **Search Plugins**, enter `WP Super Cache`. On the WP Super Cache card by Automattic, click **Install Now**, then **Activate**.
+  </Step>
+</Steps>
 
-Click "Settings" in the left navigation bar and select WP Super Cache.
+## WP Super Cache CDN settings
 
-Select the "CDN" tab.
+Simple CDN is the WP Super Cache form used with Gcore. It replaces origin hostnames in static file URLs with the value in **Off-site URL**.
 
-Check **Enable CDN Support**.
+<Steps>
+  <Step title="Open Simple CDN">
+    Navigate to **Settings** > **WP Super Cache** and select the **CDN** tab. Gcore settings are in the **Simple CDN** section.
+  </Step>
+  <Step title="Enter the custom domain">
+    Fill in the Simple CDN form:
 
-Enter your CNAME in the Off-site URL field that you specified in the Gcore [Customer Portal](https://portal.gcore.com/cdn/resources/list). Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    1. Select **Enable CDN Support**.
 
-Check "Skip Https URLs To Avoid Mixed Content Errors", if you do not use custom SSL in your CDN settings.
+    2. Leave **Site URL** as the WordPress origin URL, with no trailing slash.
 
-Click **Save Changes**.   
+    3. In **Off-site URL**, enter the custom domain from the [Gcore Customer Portal](https://portal.gcore.com) (**CDN** > **CDN resources**), including the `https://` scheme and with no trailing slash. Use the custom domain (`cdn.example.com`), not the `gcdn.co` hostname.
 
-<Frame>![Cache](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-wp-supercache-plugin/wp-super-cache.png)</Frame>
+    4. (Optional) Select **Skip https URLs to avoid "mixed content" errors** when the custom domain has no SSL certificate. That option keeps HTTPS origin URLs on the origin. Attach a certificate to the custom domain to rewrite HTTPS assets onto CDN.
 
+    5. Click **Save Changes**.
 
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+    <Frame>
+      ![Simple CDN form with Enable CDN Support selected and Off-site URL set to a custom domain](/images/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-wp-supercache-plugin/wp-super-cache.png)
+    </Frame>
+  </Step>
+  <Step title="Confirm CDN delivery">
+    Open the site, then open browser developer tools and select the **Network** tab. Refresh. Static files should request the custom domain instead of the origin hostname, and those requests should return HTTP 200.
+  </Step>
+</Steps>
