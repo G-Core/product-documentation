@@ -12,11 +12,13 @@ A higher ratio means more requests are served from cache, which lowers origin lo
 
 ## Effect of a low ratio
 
-A low ratio means many requests are proxied to the origin instead of being served from cache. A cached request follows User → CDN edge → User. An uncached request follows User → CDN edge → Origin → CDN edge → User, so latency rises with the extra hop.
+A low ratio means many requests are proxied to the origin instead of being served from cache. A cached request is served from the edge back to the client. An uncached request adds an origin fetch, so latency rises with that extra hop.
 
 ## Checks for a low ratio
 
-Work through the checks in order. Compare **Cache hit ratio** with **Traffic** and **Requests** in Statistics so a quiet period is not mistaken for a cache problem. Below 80% is a useful starting threshold, while the right value depends on the workload.
+Work through the checks in order. Compare **Cache hit ratio** with **Traffic** and **Requests** in Statistics so a quiet period is not mistaken for a cache problem.
+
+Statistics marks cache hit rates below 60% in red on Overview as a visual highlight, not as a diagnostic cutoff. For this troubleshooting flow, start investigating when the ratio stays below about 80% after the cache has had time to fill, because that is where origin-bypass causes usually show up. The right target still depends on the workload.
 
 1. Inspect caching headers with `curl -I`. Pin the request to one edge server, because consecutive requests in the same region can land on different servers and mix HIT and MISS.
 
@@ -42,34 +44,33 @@ curl -Ik -H "Host: cdn.example.com" "https://{ip-address}/assets/sample-image.pn
 Compare `Cache-Control` and `Cache` with the table below.
 </Accordion>
 
-Focus on `Cache-Control` and `Cache` values that stop or split caching:
+Focus on `Cache-Control` and `Cache` values that stop shared caching or force origin revalidation:
 
 | Value | Meaning |
 |---|---|
-| Cache-Control: max-age=0 | The origin forbids CDN caching. This can drop the cache hit ratio. In some workloads this value is intentional. |
-| Cache-Control: no-cache | The origin forbids CDN caching. This can drop the cache hit ratio. In some workloads this value is intentional. |
-| Cache-Control: no-store | The origin forbids CDN caching. This can drop the cache hit ratio. In some workloads this value is intentional. |
-| Cache-Control: private | Content is cached in the client browser only, not on CDN edges. A request that also sends custom `X-*` headers is treated as unique and is forwarded to the origin, similar to a cookie. |
-| Cache: MISS | The response came from the origin. Gcore CDN caches the object on the first request, so the first request is MISS and later requests for the same object on that edge are HIT. |
+| Cache-Control: max-age=0 | The object is immediately stale, so the CDN revalidates with the origin before reuse. That extra origin contact lowers the hit ratio. In some workloads this value is intentional |
+| Cache-Control: no-cache | Stored copies must be revalidated with the origin before reuse. On a shared CDN cache this often produces a MISS or revalidation on each request, which lowers the hit ratio. In some workloads this value is intentional |
+| Cache-Control: no-store | The origin forbids storing the object, so the CDN cannot keep a reusable copy |
+| Cache-Control: private | Shared caches must not store the object, so CDN edges fetch from the origin |
+| Custom `X-*` request headers | A request that also sends custom `X-*` headers is treated as unique and is forwarded to the origin, similar to a cookie |
+| Cache: MISS | The response came from the origin. Gcore CDN caches the object on the first request, so the first request is MISS and later requests for the same object on that edge are HIT |
 
 Those headers show whether the origin or the CDN is preventing a HIT.
 
-2. Open the resource **OPTIONS** tab and check [CDN caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) under **Cache**. The option must be enabled. For **CDN controlled**, do not set cache expiry to `0`. For **Origin controlled**, do not use `max-age=0`, `no-cache`, `no-store`, or `private` on the origin unless that is required.
+2. Open the resource **OPTIONS** tab and check [CDN caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) under **Cache**. The option must be enabled. For **CDN controlled**, do not set cache expiry to `0`. For **Origin controlled**, `max-age=0`, `no-cache`, `no-store`, or `private` on the origin reduce shared-cache HITs unless that behavior is required.
 
 3. If URLs differ only by query string or `Set-Cookie`, enable **Ignore query string** and **Ignore Set-Cookie** in **Cache**. When those options are off, each query string or cookie variant is stored as a separate object. Configuration is in the [query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) article.
 
 If delivery is slow but the cache hit ratio is healthy, use the [delivery speed](/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue) checks instead.
 
-## Causes of a low ratio
+## Other causes of a low ratio
 
-The table lists common causes and the matching fix.
+After the header and option checks above, these traffic patterns can still keep the ratio low.
 
 | Cause | Solution |
 |---|---|
-| Traffic started less than two days ago, so the cache is still filling | Wait for traffic to populate edges. Around 48 hours after integration is typical, but the time depends on request patterns. Sending more traffic through CDN also fills the cache faster. |
-| Content is requested too rarely, so per-edge cache stays cold | Increase request volume, or use paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to concentrate origin pulls. Low-traffic video is covered in [video delivery](/cdn/video-cdn/improve-video-delivery-speed). |
-| Cache-Control on the origin forbids CDN caching | Enable **CDN caching**. For **CDN controlled**, do not set cache expiry to `0`. For **Origin controlled**, do not send `max-age=0`, `no-cache`, `no-store`, or `private`. |
-| Query strings or Set-Cookie make each request a new cache object | Enable **Ignore query string** and **Ignore Set-Cookie** so one object is stored regardless of parameters and cookies. |
-| The origin sends Vary, so the same URL is cached in multiple variants | Change Vary on the origin, or use [Hide headers](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers). Enable **Response headers (hide)**, select **Hide only**, add **Vary**, then click **Save changes**. |
+| Traffic started recently, so the cache is still filling | Wait for traffic to populate edges. The Statistics report often needs about two days of traffic before the ratio is a reliable signal. Sending more traffic through CDN also fills the cache faster |
+| Content is requested too rarely, so per-edge cache stays cold | Increase request volume, or use paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to concentrate origin pulls. Low-traffic video is covered in [video delivery](/cdn/video-cdn/improve-video-delivery-speed) |
+| The origin sends Vary, so the same URL is cached in multiple variants | Change Vary on the origin, or use [Hide headers](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers). Enable **Response headers (hide)**, select **Hide only**, add **Vary**, then click **Save changes** |
 
 <Frame>![Hide only mode for response headers](/images/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png)</Frame>
