@@ -33,15 +33,17 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Steps>
 </MethodSection>
   <MethodSection id="api" label="REST API">
-  <p>The Log viewer API lists request logs in JSON and downloads the same data as CSV or TSV. <code>from</code> and <code>to</code> are required, must be UTC in ISO 8601 or RFC 3339 format, and cannot span more than six hours. Logs are available for the last three days. Filter operators and field names are in the [Log&nbsp;viewer](/api-reference/cdn/log-viewer/get-cdn-logs) API reference.</p>
+  <p>The Log viewer API lists request logs in JSON and downloads the same log fields as CSV or TSV. JSON list requests return at most 1,000 rows. Downloads return at most 10,000 rows.</p>
+  **Authentication**
   <p>All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 ```
 
-  **List logs**
-
+  **Filters and limits**
+  <p><code>from</code> and <code>to</code> are required, must be UTC in ISO 8601 or RFC 3339 format, and cannot span more than six hours. Logs are available for the last three days. Filter operators and field names are in the [Log&nbsp;viewer](/api-reference/cdn/log-viewer/get-cdn-logs) API reference.</p>
+  **JSON list**
   <p>GET <code>https://api.gcore.com/cdn/advanced/v1/logs</code> returns matching log rows. The <code>limit</code> default is 100 and the maximum is 1,000.</p>
 
   <Tabs>
@@ -55,10 +57,11 @@ client = Gcore(
     api_key=os.environ.get("GCORE_API_KEY"),
 )
 page = client.cdn.logs.list(
-    from_="2026-08-27T06:00:00Z",
-    to="2026-08-27T12:00:00Z",
+    from_="2025-01-15T06:00:00Z",
+    to="2025-01-15T12:00:00Z",
 )
-print(page.data[0].resource_id)
+if page.data:
+    print(page.data[0].resource_id)
 ```
 
     </Tab>
@@ -82,8 +85,8 @@ func main() {
 		option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
 	)
 	page, err := client.CDN.Logs.List(context.TODO(), cdn.LogListParams{
-		From: "2026-08-27T06:00:00Z",
-		To:   "2026-08-27T12:00:00Z",
+		From: "2025-01-15T06:00:00Z",
+		To:   "2025-01-15T12:00:00Z",
 	})
 	if err != nil {
 		panic(err.Error())
@@ -97,15 +100,14 @@ func main() {
 
 ```bash
 curl --request GET \
-  --url "https://api.gcore.com/cdn/advanced/v1/logs?from=2026-08-27T06:00:00Z&to=2026-08-27T12:00:00Z" \
+  --url "https://api.gcore.com/cdn/advanced/v1/logs?from=2025-01-15T06:00:00Z&to=2025-01-15T12:00:00Z" \
   --header "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
     </Tab>
   </Tabs>
 
-  **Download logs**
-
+  **Download**
   <p>GET <code>https://api.gcore.com/cdn/advanced/v1/logs/download</code> returns a zip file. <code>format</code> is required (<code>csv</code> or <code>tsv</code>). The <code>limit</code> default and maximum is 10,000.</p>
 
   <Tabs>
@@ -120,8 +122,8 @@ client = Gcore(
 )
 response = client.cdn.logs.download(
     format="csv",
-    from_="2026-08-27T06:00:00Z",
-    to="2026-08-27T12:00:00Z",
+    from_="2025-01-15T06:00:00Z",
+    to="2025-01-15T12:00:00Z",
 )
 content = response.read()
 ```
@@ -148,8 +150,8 @@ func main() {
 	)
 	response, err := client.CDN.Logs.Download(context.TODO(), cdn.LogDownloadParams{
 		Format: "csv",
-		From:   "2026-08-27T06:00:00Z",
-		To:     "2026-08-27T12:00:00Z",
+		From:   "2025-01-15T06:00:00Z",
+		To:     "2025-01-15T12:00:00Z",
 	})
 	if err != nil {
 		panic(err.Error())
@@ -163,7 +165,7 @@ func main() {
 
 ```bash
 curl --request GET \
-  --url "https://api.gcore.com/cdn/advanced/v1/logs/download?from=2026-08-27T06:00:00Z&to=2026-08-27T12:00:00Z&format=csv" \
+  --url "https://api.gcore.com/cdn/advanced/v1/logs/download?from=2025-01-15T06:00:00Z&to=2025-01-15T12:00:00Z&format=csv" \
   --header "Authorization: APIKey ${GCORE_API_KEY}" \
   --output cdn-logs.zip
 ```
