@@ -4,7 +4,7 @@ sidebarTitle: Error status codes
 ai-navigation: Resolve CDN HTTP 403, 404, 402, 504, 508, 556, and 557 errors using Log viewer and resource settings.
 ---
 
-HTTP status codes in CDN logs identify misconfiguration in the resource, origin, or video delivery settings, which means each code below maps to a cause and a fix.
+HTTP status codes in CDN logs show the outcome of a request. Several causes can produce the same code, so each table lists the usual Gcore-specific causes and the matching fix.
 
 ## Status codes in Log viewer
 
@@ -31,23 +31,30 @@ Each policy supports an allow list or a block list in [access&nbsp;policies](/cd
 
 ### 404 errors
 
-Unlike 403, which is an access decision on the CDN, 404 often means the origin could not return the object, or an origin option is wrong.
+Unlike 403, which is an access decision on the CDN, 404 can mean the origin has no object at that path. Some CDN options also return 404 when the origin fetch fails.
+
+A missing object on the origin is the usual case:
 
 | Cause | Details | Solution |
 |---|---|---|
-| The origin does not have the requested file. | The HTML file links to an object through the CDN, but that path does not exist on the origin. Example: `website.example.cdn/files/image.png` when `image.png` is missing from the `files` directory. | Place the object on the origin at the same name and path as the HTML link, or edit the HTML link. To stop delivering the object through CDN, remove the link from the page. |
+| The origin does not have the requested file. | The HTML file links to an object through the CDN, but that path does not exist on the origin. Example: `https://cdn.example.com/files/image.png` when `image.png` is missing from the `files` directory. | Place the object on the origin at the same name and path as the HTML link, or edit the HTML link. To stop delivering the object through CDN, remove the link from the page. |
+
+These resource options can also produce 404 even when the path exists:
+
+| Cause | Details | Solution |
+|---|---|---|
 | WebP compression and WebSockets conflict. | [WebP&nbsp;compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) and [WebSockets](/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin) cannot be enabled at the same time. | Disable one of the two options. |
 | The Host header is incorrect. | The **Host header** option tells CDN nodes which origin hostname to request. If the origin hostname and Host header do not match, origin responses fail. Example: origin `mycontent.com` with Host header `website.com`. The header does not change automatically when the origin changes. | Set the correct value in the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option. |
 | Origin access is restricted for the CDN. | The CDN cannot fetch content when the origin ACL blocks Gcore addresses. This case can also return 504. | Allowlist CDN servers in the [origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist). If IP allowlisting is not practical, send an identifying header with [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin). |
 
 ### Other errors (402, 504, 508, 556, 557)
 
-The remaining codes each have a single primary cause. 504 is the same origin-access case as the 404 row above.
+The remaining codes each have a primary cause. A 504 means the CDN did not get a timely origin response. A blocked origin ACL is one cause. Timeouts, an unreachable origin, or origin overload can produce the same code.
 
 | Status code | Cause | Details | Solution |
 |---|---|---|---|
 | 402 | Video delivery is not enabled for the CDN account. | HLS and DASH types `.m3u8`, `.mpd`, `.ts`, `.m4s`, `.m4v`, and `.m4a` can return `402` until Gcore Support enables video delivery. | Request enablement in [streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation). |
-| 504 | Origin access is restricted for the CDN. | The CDN cannot reach a blocked origin. This case can also return 404. | Apply the origin ACL or Request headers fix from the 404 table. |
+| 504 | The origin did not respond in time. | The CDN timed out waiting for the origin. A blocked origin ACL is one cause. An unreachable origin, a slow origin, or origin overload can also return 504. | Confirm the origin is reachable from CDN. If an ACL blocks Gcore addresses, apply the origin ACL or Request headers fix from the 404 table. |
 | 508 | The CDN hostname and origin form a loop. | A CNAME that points the origin and the CDN hostname at each other sends requests back and forth. Example: a CNAME that uses the origin domain instead of the CDN hostname from [resource&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource). | Fix the personal domain CNAME in [content&nbsp;unavailability](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#1-check-the-configuration-of-the-personal-domain). Confirm the CDN hostname CNAME matches the value in the Customer Portal. |
 | 556 | Origin connections exceeded the limit. | Origin request timeouts increase the number of open connections. | Confirm the origin responds within five seconds. |
 | 557 | Simultaneous connections exceeded 10,000. | A single origin in a location rejects further connections with `557` after 10,000 simultaneous connections. | Add origins in the [origin&nbsp;group](/cdn/add-an-origin-group). |
@@ -58,4 +65,4 @@ Requests for HLS or DASH manifests and segments can return `402` even when the f
 
 #### TypeScript source files and 402
 
-The `.ts` extension is also used for TypeScript source files. If TypeScript files return `402`, rename or build them to JavaScript (`.js`) before delivery, or contact [Gcore&nbsp;Support](mailto:support@gcore.com) to review the CDN resource configuration.
+HLS media playlists often request MPEG Transport Stream segments with a `.ts` extension, so Gcore treats `.ts` as video delivery. Those requests can return `402` until streaming is enabled. The same extension is also used for TypeScript source files. If TypeScript files return `402`, rename or build them to JavaScript (`.js`) before delivery, or contact [Gcore&nbsp;Support](mailto:support@gcore.com) to review the CDN resource configuration.
