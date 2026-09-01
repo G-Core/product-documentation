@@ -1,10 +1,17 @@
 ---
-title: Resolve 3xx CDN redirect issues
-sidebarTitle: 3xx error
-ai-navigation: Resolve CDN 3xx redirects by matching Origin pull protocol and Host header to origin settings, then review Response codes in Statistics.
+title: Resolve 301 and 302 CDN redirects
+sidebarTitle: 301 and 302 redirects
+ai-navigation: Resolve CDN 301 and 302 redirects by matching Origin pull protocol and Host header to origin settings, then review Response codes in Statistics.
 ---
 
-A 301 or 302 from the CDN often means the origin redirected the pull request instead of returning the object, so match the pull request to a direct origin request in the [Gcore Customer Portal](https://portal.gcore.com).
+A 301 or 302 from the CDN often means the origin redirected the pull request instead of returning the object. Compare a CDN request with a request that goes straight to the origin before changing settings.
+
+```sh
+curl -I https://cdn.example.com/image.png
+curl -I https://example.com/image.png
+```
+
+Replace `cdn.example.com` with the CDN hostname and `example.com` with the origin hostname. If both return 301 or 302 to the same `Location`, the origin is redirecting the pull. Then match **Origin pull protocol** and **Host header** in the [Gcore Customer Portal](https://portal.gcore.com).
 
 ## Origin pull protocol
 
@@ -12,7 +19,7 @@ A 301 or 302 from the CDN often means the origin redirected the pull request ins
 
 - Select **HTTPS** when the origin redirects HTTP requests to HTTPS.
 - Select **HTTP** when the origin redirects HTTPS requests to HTTP.
-- Select **HTTP and HTTPS** only when the origin serves both protocols without a redirect. With this value, the CDN uses the protocol from the client request, so an origin that still redirects one protocol will keep returning 3xx.
+- Select **HTTP and HTTPS** only when the origin serves both protocols without a redirect. With this value, the CDN uses the protocol from the client request, so an origin that still redirects one protocol will keep returning 301 or 302.
 
 ## Change Host header
 
@@ -22,16 +29,18 @@ If the origin hostname changes, update **Custom Host header** to the new hostnam
 
 ## Origin source after a redirect
 
-If the origin redirects one hostname to another, set the CDN origin to the destination hostname. For example, when `domain.com` redirects to `www.domain.com`, use `www.domain.com` as the origin and set **Custom Host header** to `www.domain.com`.
+If the origin redirects one hostname to another, set the CDN origin to the destination hostname. When `domain.com` redirects to `www.domain.com`, use `www.domain.com` as the origin and set **Custom Host header** to `www.domain.com`.
 
-Leaving the origin on the hostname that issues the redirect causes the CDN to follow that 3xx on every pull.
+Leaving the origin on the hostname that issues the redirect causes the CDN to follow that 301 or 302 on every pull.
 
 ## Response codes in Statistics
 
-Open **CDN** > **Reports** > [Statistics](/cdn/view-statistics-of-a-cdn-resource), select the resource, then select the **Response codes** report.
+Open **CDN** > **Reports** > [Statistics](/cdn/view-statistics-of-a-cdn-resource), select the resource, then select the **Response codes** report. Check the share of 301 and 302 compared with 200. A large or persistent redirect share means the origin is still issuing 301 or 302 on the pull.
 
-## Request logs
+After a protocol or Host header change, [Log viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) lists recent requests to the resource, including status code. Filter on 301 or 302 to confirm whether the redirect is still occurring.
 
-[Log viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) lists recent requests to the resource, including status code. Filter on 301 or 302 to confirm whether the redirect is still occurring after a settings change.
+[Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export is a paid option for the same status codes over a longer window. Contact the account manager or [Gcore Support](mailto:support@gcore.com) to activate it.
 
-[Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export is a paid option. Contact the account manager or [Gcore Support](mailto:support@gcore.com) to activate it.
+## Successful pull after the change
+
+Request the CDN URL again with `curl -I`. A 200 (or another non-redirect success) means the pull no longer follows a 301 or 302. If 301 or 302 remains, repeat the origin comparison and check `Location`.
