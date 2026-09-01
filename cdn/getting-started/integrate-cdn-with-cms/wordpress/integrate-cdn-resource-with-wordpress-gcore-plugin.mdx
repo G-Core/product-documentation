@@ -8,6 +8,8 @@ The Gcore CDN plugin rewrites eligible static asset URLs in rendered WordPress p
 
 <Warning>
 The current plugin release is version 1.1.10, last updated in September 2023. The [WordPress plugin&nbsp;directory](https://wordpress.org/plugins/g-core-labs-cdn/) lists it as tested through WordPress 6.2.11 and not tested with the latest three major WordPress releases. WordPress.org states that the plugin may no longer be maintained or supported and may have compatibility issues with more recent WordPress versions. Test the plugin with the site's theme and other plugins in a staging environment before enabling it in production. If staging tests fail, deactivate **Gcore CDN** in **Plugins** so rendered pages revert to origin URLs.
+
+The plugin does not rewrite URLs when the WordPress Home URL includes a subdirectory — `https://example.com/blog` — because it compares that complete Home URL with a parsed origin that contains only the scheme, hostname, and port.
 </Warning>
 
 <Steps>
@@ -90,8 +92,7 @@ The current plugin release is version 1.1.10, last updated in September 2023. Th
 
 The plugin changes an origin URL to the configured CDN domain only when all applicable conditions are met:
 
-- The URL in rendered output is absolute and begins with `http://`, `https://`, or `ftp://`. Relative URLs and protocol-relative URLs that begin with `//` are not rewritten.
-- The URL belongs to the WordPress site.
+- The URL in rendered output is an absolute URL with the same scheme and hostname as the WordPress Home URL. Relative URLs and protocol-relative URLs that begin with `//` are not rewritten.
 - The complete URL is not in **Exceptions**.
 - The path matches a selected folder, unless no folder is selected.
 - The file extension matches a selected file type.
@@ -100,10 +101,11 @@ The plugin changes URLs in rendered page output. It does not upload files to CDN
 
 ## Troubleshooting
 
-When rewritten assets fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a mixed-content or TLS failure, a CORS header that does not allow the WordPress origin, a Content Security Policy that omits the CDN hostname, a relative or protocol-relative URL that the plugin does not rewrite, or a cache that still serves the previous URL.
+When rewritten assets fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a mixed-content or TLS failure, a CORS header that does not allow the WordPress origin, a Content Security Policy that omits the CDN hostname, a relative or protocol-relative URL that the plugin does not rewrite, a WordPress Home URL that includes a subdirectory, or a cache that still serves the previous URL.
 
 - If the CDN hostname does not appear, confirm that **Enable CDN** is on, then check the selected file type, folder, and exceptions. Clear WordPress page caches after changing plugin settings.
-- If an asset URL stays on the origin hostname, confirm that the rendered HTML uses an absolute URL that begins with `http://`, `https://`, or `ftp://`. Relative and protocol-relative URLs are not rewritten.
+- If an asset URL stays on the origin hostname, confirm that the rendered HTML uses an absolute URL with the same scheme and hostname as the WordPress Home URL. Relative and protocol-relative URLs are not rewritten.
+- If no URLs are rewritten and WordPress is installed in a subdirectory — `https://example.com/blog` — the plugin cannot match the Home URL to the asset origin. It compares that complete Home URL with a parsed origin that contains only the scheme, hostname, and port.
 - For a `404` response, confirm that the origin contains the requested path and that the CDN can retrieve it.
 - For a `502` response, check the origin hostname, origin pull protocol, port, and host header in the CDN resource.
 - If the browser blocks mixed content, use HTTPS for both the WordPress site and the CDN domain.
