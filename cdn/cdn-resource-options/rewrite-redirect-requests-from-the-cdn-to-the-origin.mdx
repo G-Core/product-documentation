@@ -1,21 +1,21 @@
 ---
 title: "Rewrite: redirect requests from the CDN to the origin"
 sidebarTitle: Rewrite
-ai-navigation: Configure CDN Rewrite option with nginx-compatible regular expressions to redirect request paths from CDN to origin, using space-separated directives with capture groups ($1, $2) and optional flags like break, last, redirect, permanent.
+ai-navigation: Configure CDN Rewrite to rewrite request paths using nginx regular expressions, capture groups, and rewrite flags - break, last, redirect, permanent.
 ---
 
-Rewrite option is useful for changing or redirecting query paths. The option works accordingly to [nginx](https://nginx.ru/en/docs/http/ngx_http_rewrite_module.html) configuration.
+The Rewrite option changes or redirects request paths before the CDN fetches content from the origin. It operates according to [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.
 
-To enable Rewrite click **Add Option** in "Content" section and choose Enable Rewrite. You also can set up Rewrite in the Rules section.
+To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same setting is available in the **Rules** section.
 
-After the option activation, some default values are shown in Rewrite body field. Clear the field and enter two space-separated directives: a path the Rewrite option is applied to and a path to be used instead. Use regular expressions. 
+<Frame>![CDN resource Options tab with Rewrite enabled, showing the Rewrite body field and Rewrite flag dropdown](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image1.png)</Frame>
 
+The **Rewrite body** field pre-fills with `/(.*) /$1` as an example. Replace it with two space-separated directives using regular expressions:
 
-<Frame>![Rewrite body field](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/Screenshot-2018-1-7_G-Core_Labs___________CDN-___________________1_.png)</Frame>
+1. The path the Rewrite applies to.
+2. The replacement path.
 
-
-
-For example, you need to apply Rewrite to all the resource and make CDN-servers get the content from the certain directory on your origin. Let's say that origin is example.com and directory is /media/, to set up Rewrite fill the "Rewrite" field with the following:
+To redirect all requests to a `/media/` directory on `example.com`, use:
 
 ```
 /(.*) /media/$1
@@ -23,11 +23,13 @@ For example, you need to apply Rewrite to all the resource and make CDN-servers 
 
 where:
 
-  * **`/(.)`**: is the group of variables for which one Rewrite is applied. With this (.) group Rewrite; will be applied for all of the possible variants which can appear after / in example.com/;
-  * **`/media/`**: is the directory, where CDN servers will go for the content;
-  * **`$1`**: is the number of the group of variables. If you have more than one group, the next numbers will be $2, $3 and so on.
+- **`/(.*)`** — matches all paths after `/`. The `(.*)` group captures everything that follows the slash.
+- **`/media/`** — the directory on the origin where CDN servers look for content.
+- **`$1`** — references the first capture group. Use `$2` and `$3` for the second and third groups.
 
+In the **Rewrite flag** dropdown, select the nginx flag that controls how the rewrite is applied:
 
-
-
-Break flag is applied to the option by default. It is not shown in the field. You may apply to the option any other ngnix flags via [API documentation](/api-reference/cdn/cdn-resources/change-cdn-resource-1).
+- **break** (default) — stops processing further rewrite rules after this one.
+- **last** — stops processing rewrite rules and starts a new location search.
+- **redirect** — returns a 302 temporary redirect to the client.
+- **permanent** — returns a 301 permanent redirect to the client.
