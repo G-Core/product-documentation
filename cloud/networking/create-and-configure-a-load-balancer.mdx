@@ -982,18 +982,18 @@ output "vip_address" {
 | `lb1-4-8` | 4 | 8 GiB | 10 Gbps |
 | `lb1-8-16` | 8 | 16 GiB | 10 Gbps |
 
-<p>To attach a public floating IP to the load balancer's VIP:</p>
+<p>To attach a public floating IP to the load balancer's VIP, use the dedicated `gcore_cloud_floating_ip` resource:</p>
 
 ```hcl
-resource "gcore_cloud_load_balancer" "example" {
-  project_id = var.project_id
-  region_id  = var.region_id
-  name       = "my-lb"
-  flavor     = "lb1-1-2"
+resource "gcore_cloud_floating_ip" "lb_fip" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  fixed_ip_address = gcore_cloud_load_balancer.example.vip_address
+  port_id          = gcore_cloud_load_balancer.example.vip_port_id
+}
 
-  floating_ip = {
-    source = "new"  # use "existing" and set existing_floating_id to reuse one
-  }
+output "lb_floating_ip" {
+  value = gcore_cloud_floating_ip.lb_fip.floating_ip_address
 }
 ```
 
