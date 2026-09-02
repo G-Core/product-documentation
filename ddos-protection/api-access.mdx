@@ -1,0 +1,153 @@
+---
+title: API Access
+sidebarTitle: API Access
+ai-navigation: Authenticate to the DDoS Protection REST API, list and retrieve event logs, and open the API reference.
+---
+
+Automate DDoS Protection operations with the REST API, including protected networks, protection profiles, and event logs.
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+Generate a token in the [Gcore Customer Portal](https://portal.gcore.com) and send it in the `Authorization` header of each request to `https://api.gcore.com`.
+
+Open a terminal and set the token as an environment variable before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## List event logs
+
+Each item maps to a DDoS Attack (`ddos_alert`) or RTBH (`rtbh_alert`) row in the [events log](/ddos-protection/events-log), so the same incidents can be pulled into an external monitoring system.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `date_from` | No | Start of the time window |
+| `date_to` | No | End of the time window |
+| `alert_type` | No | `ddos_alert` or `rtbh_alert` |
+| `targeted_ip_addresses` | No | Target IP to match |
+| `limit` | No | Page size, 1–500. Default is 10 |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    page = client.security.events.list()
+    for event in page.results:
+        print(event.id, event.alert_type, event.targeted_ip_addresses)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/security"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        page, err := client.Security.Events.List(context.TODO(), security.EventListParams{})
+        if err != nil {
+            log.Fatalf("list event logs: %v", err)
+        }
+        for _, event := range page.Results {
+            fmt.Println(event.ID, event.AlertType)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/security/notifier/v1/event_logs?limit=10&ordering=-attack_start_time" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 1,
+      "limit": 10,
+      "offset": 0,
+      "results": [
+        {
+          "id": "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+          "alert_type": "ddos_alert",
+          "client_id": 12345,
+          "notification_type": null,
+          "attack_start_time": "2026-08-15T12:00:00Z",
+          "attack_power_bps": 1500000,
+          "attack_power_pps": 4200,
+          "number_of_ip_involved_in_attack": 18,
+          "targeted_ip_addresses": "203.0.113.10"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Get event log details
+
+Pass an event log ID from the list response to retrieve the same summary fields plus traffic breakdown arrays such as `attack_traffic` and `attack_top_source_countries`.
+
+```bash
+export EVENT_LOG_ID="{EVENT_LOG_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    event_log_id = os.environ["EVENT_LOG_ID"]
+
+    event_log = client.security.events.get(event_log_id)
+    print(event_log.id, event_log.alert_type)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        eventLog, err := client.Security.Events.Get(context.TODO(), os.Getenv("EVENT_LOG_ID"))
+        if err != nil {
+            log.Fatalf("get event log: %v", err)
+        }
+        fmt.Println(eventLog.ID, eventLog.AlertType)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/security/notifier/v1/event_logs/$EVENT_LOG_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+Request and response schemas for protected networks, BGP announces, protection profiles, and templates are in the DDoS Protection [API reference](/api-reference/ddos-protection).
