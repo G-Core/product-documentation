@@ -225,6 +225,7 @@ Maintained by the agent. Update after each triage or merge.
 | 1846 | Dictionary use in FastEdge | FastEdge | 2026-02-12 | Open | — | New section; needs list of supported dictionary values from SME |
 | 1849 | Describe WASI-HTTP rust app | documentation, FastEdge | 2026-02-16 | Open | — | New guide; replace SDK process interface; HuggingFace POC as example |
 | 1872 | Add BYOD description to Edge Storage | FastEdge | 2026-02-19 | Open | — | Edge Storage BYOD configuration underdocumented |
+| 2650 | Terraform Provider updated to v2.0.0-rc.1 | terraform | 2026-09-01 | PR open | `issue/2650-terraform-lb-floating-ip` | Replaced `floating_ip` inline block in `gcore_cloud_load_balancer` with `gcore_cloud_floating_ip` resource. Updated `.terraform-provider-version` to `2.0.0-rc.1`. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -233,6 +234,15 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-09-02 — Issue #2650: Terraform provider v2.0.0-rc.1
+
+- Fetched issue from GitHub. Breaking change: `floating_ip` inline block removed from `gcore_cloud_load_balancer`.
+- Only article affected: `cloud/networking/create-and-configure-a-load-balancer.mdx` (Terraform tab, Step 1).
+- Replaced `floating_ip = { source = "new" }` block with `gcore_cloud_floating_ip` resource using `port_id` and `fixed_ip_address`.
+- Updated `.terraform-provider-version` from `2.0.0-alpha.15` to `2.0.0-rc.1`.
+- Validated with `terraform validate` and schema inspection against real provider v2.0.0-rc.1.
+- Branch: `issue/2650-terraform-lb-floating-ip` — pushed, ready for PR.
 
 ### 2026-06-10 — Skill created, queue inventoried
 
