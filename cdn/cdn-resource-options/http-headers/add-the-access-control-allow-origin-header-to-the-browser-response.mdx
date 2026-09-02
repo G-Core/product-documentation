@@ -4,7 +4,7 @@ sidebarTitle: Activate CORS
 ai-navigation: Configure CORS headers in Gcore CDN via resource settings, rules, or origin server to allow cross-origin requests from specific domains or all origins.
 ---
 
-CORS (Cross-Origin Resource Sharing) is a mechanism that uses the HTTP header `Access-Control-Allow-Origin` to allow or deny end-user browsers from accessing a domain other than the one from which the browser sent the request.
+CORS (Cross-Origin Resource Sharing) is a browser security mechanism. When a browser makes a cross-origin request, it checks the `Access-Control-Allow-Origin` response header to decide whether the calling page is permitted to read the response. Without this header, the browser blocks cross-origin access — even if the server returned a `200 OK` with the full content.
 
 Consider a user visiting `http://site-a.com` who requests an image hosted at `http://cdn.site-b.com/image.jpg`. The browser sends a request to `http://cdn.site-b.com/`:
 
@@ -21,10 +21,10 @@ Referer: http://site-a.com/examples/access-control/test.html
 Origin: http://site-a.com
 ```
 
-The `Origin` header tells the server that the request came from `http://site-a.com`. The `http://cdn.site-b.com` server checks the `Origin` header and decides whether to accept or deny the request.
+The `Origin` header tells the server which site sent the request. The `http://cdn.site-b.com` server uses this value to decide whether to include `Access-Control-Allow-Origin` in the response.
 
-- If the server is configured for cross-origin requests, it adds the CORS header with the allowing value — _Access-Control-Allow-Origin: *_ — to the response. The requested image is then displayed at `http://site-a.com`.
-- If the server is not configured for cross-origin requests, the response contains no `Access-Control-Allow-Origin` header or no permission for `http://site-a.com`, and the requested image is not displayed.
+- If the header is present and permits `http://site-a.com`, the browser allows the page to read the response and the image is displayed.
+- If the header is absent or does not permit `http://site-a.com`, the browser blocks access to the response — even though the server returned a `200 OK` with the image.
 
 The Gcore CDN CORS header support feature adds the `Access-Control-Allow-Origin` header to browser responses. Use it to protect content from use on third-party sites or to prevent errors — _XMLHttpRequest cannot load http://domain.com_ and _No `Access-Control-Allow-Origin` header is present on the requested resource_ — that appear when web fonts load in Firefox or Internet Explorer from CDN servers.
 
@@ -50,7 +50,7 @@ Use this method to apply the configuration to all files delivered over the CDN.
 
 <AccordionGroup>
   <Accordion title="*, for all domains">
-    Content is delivered for requests from any domain. The following line is added to the response header.
+    The CDN includes `Access-Control-Allow-Origin: *` in every response, allowing browsers from any origin to read it.
 
     ```
     HTTP/1.1 200 OK
@@ -64,9 +64,9 @@ Use this method to apply the configuration to all files delivered over the CDN.
     ```
   </Accordion>
   <Accordion title="'$http_origin' if an origin is listed below">
-    Enter the domain name from which requests are allowed — `site-a.com` is an example. Up to 20 domains are supported. Content is delivered only for requests from the domains listed in the field. When CDN servers receive a request, they check the value of the `Origin` header to determine which site the request came from.
+    Enter the domain name from which cross-origin requests are permitted — `site-a.com` is an example. Up to 20 domains are supported. When CDN servers receive a request, they check the value of the `Origin` header to determine which site the request came from.
 
-    - If it matches any of the listed domains, content is delivered and the response contains the following line:
+    - If it matches any of the listed domains, the CDN includes `Access-Control-Allow-Origin` in the response set to the matched origin, and the browser allows the page to read the response:
 
       ```
       HTTP/1.1 200 OK
@@ -79,11 +79,11 @@ Use this method to apply the configuration to all files delivered over the CDN.
       Content-Type: application/xml
       ```
 
-    - If it does not match, the `Access-Control-Allow-Origin` header is not added to the response, and content is not delivered.
+    - If it does not match, the `Access-Control-Allow-Origin` header is omitted from the response. The browser blocks cross-origin access.
 
   </Accordion>
   <Accordion title="'$http_origin', for all domains">
-    This option is similar to the first one, but use it when the `*` parameter is unsuitable for certain filters configured on a server. Content is delivered for requests from any domain, and the domain from which the request was sent is added to the `Access-Control-Allow-Origin` header in the response. If a user requests content from `http://site-b.com`, the response looks as follows:
+    Similar to the first option, but use it when the `*` value is unsuitable — for example, when requests include credentials. The CDN echoes the request's `Origin` value in the `Access-Control-Allow-Origin` header, allowing browsers from any origin to read the response. If a request comes from `http://site-b.com`, the response looks as follows:
 
     ```
     HTTP/1.1 200 OK
@@ -176,15 +176,15 @@ Clear the CDN resource or file cache according to the [clear&nbsp;CDN&nbsp;cache
 
 1. Open a terminal on macOS or Command Prompt on Windows.
 
-2. Run the following command:
+2. Run the following command, substituting the file URL and the origin of your website:
 
 ```sh
-curl -I http://cdn.testdomain.com/assets/image.jpg
+curl -I -H "Origin: https://site-a.com" https://cdn.testdomain.com/assets/image.jpg
 ```
 
-where `http://cdn.testdomain.com/assets/image.jpg` is the URL of a file delivered via CDN.
+The `-H "Origin: ..."` flag simulates a browser cross-origin request. It is required for the `$http_origin`-based modes — without it, the CDN omits the `Access-Control-Allow-Origin` header even when the configuration is correct. For the `*` mode the header is returned regardless of whether `Origin` is present.
 
-3. In the output, check whether the `Access-Control-Allow-Origin` header is present. If the header appears, the configuration was successful.
+3. In the output, confirm the `Access-Control-Allow-Origin` header appears. If it is present, the configuration was successful.
 
 ```
 HTTP/1.1 200 OK
