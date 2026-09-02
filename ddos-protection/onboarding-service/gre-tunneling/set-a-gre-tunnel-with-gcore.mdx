@@ -1,10 +1,12 @@
 ---
 title: "Set a GRE tunnel with Gcore"
 sidebarTitle: Set a GRE tunnel
-ai-navigation: Configure GRE tunnel between Cisco routers with tunnel ID, source/destination IP addresses, MTU 1476 bytes, MSS 1436 bytes, and BGP peering session with AS numbers and prefix-list policies for route advertisement.
+ai-navigation: Configure a GRE tunnel and BGP peering session with Gcore on Cisco routers or Ubuntu Linux endpoints for DDoS Protection.
 ---
 
-Use the following instructions to set up the GRE (Generic Routing Encapsulation) tunnel using Gcore infrastructure. 
+Generic Routing Encapsulation (GRE) tunneling creates a virtual point-to-point connection between two endpoints over the internet, encapsulating traffic in GRE packets so it can travel between them. Gcore DDoS Protection uses a GRE tunnel together with Border Gateway Protocol (BGP) routing to protect entire networks: after BGP announces the protected network prefixes, inbound traffic to those prefixes routes through the Gcore scrubbing center, which filters malicious traffic and forwards legitimate traffic back through the GRE tunnel. Outbound traffic from the network continues to route through its own default gateway rather than through Gcore.
+
+The following instructions configure the GRE tunnel and BGP session with Gcore.
 
 ## Configure a GRE tunnel on Cisco routers
 
@@ -58,11 +60,11 @@ interface Tunnel 10
       tunnel destination 40.0.0.1
  ```
 
-When you configure both ends of the tunnel with matching parameters, the GRE tunnel between two routers will be established.
+When both ends of the tunnel are configured with matching parameters, the GRE tunnel between the two routers is established.
 
 ### Step 3. Set the MTU and MSS limits
 
-Tunneling adds an extra header to the original IP packet, resulting in overhead. If you don't adjust MTU and MSS limits, it may lead to packet delivery issues. Set the following MTU and MSS limits:
+Tunneling adds an extra header to the original IP packet, resulting in overhead, so unadjusted MTU and MSS limits can lead to packet delivery issues. Set the following MTU and MSS limits:
 
 ```sh
 interface Tunnel10
@@ -72,19 +74,19 @@ interface Tunnel10
 
 
 <Accordion title="Why these values?">
-The standard MTU size allowed on the internet is 1500 bytes. When using GRE, typically an additional 24 bytes are added to the packet, consisting of 20 bytes of additional an outer IP header and 4 bytes of GRE itself. This means we must reduce the maximum allowed packet size over our GRE tunnel to 1476 bytes. Since we do not use any encryption in our example, no more headers are considered. If there was encryption, there would be 4 more bytes, but this is out of the scope of this article.
+The standard MTU size allowed on the internet is 1500 bytes. When using GRE, typically an additional 24 bytes are added to the packet, consisting of 20 bytes for an outer IP header and 4 bytes for GRE itself, so the maximum allowed packet size over the GRE tunnel is reduced to 1476 bytes. This example does not use encryption, so no additional headers apply; encryption would add 4 more bytes, which is out of scope for this article.
 
-For TCP, the maximum segment size (MSS) value is 40 bytes less than the MTU size, as the TCP header is 40 bytes. Thus, the MSS value must be explicitly specified in the configuration. In our case, the MSS value must be 1436 bytes (1476 [the GRE MTU size] - 40 = 1436).
+For TCP, the maximum segment size (MSS) value is 40 bytes less than the MTU size, as the TCP header is 40 bytes, so the MSS value must be explicitly specified in the configuration. In this example, the MSS value is 1436 bytes (1476 [the GRE MTU size] - 40 = 1436).
 </Accordion>
 
 
 ### Step 4. Configure BGP
 
-Open a BGP peering session, configure your BGP neighbor by specifying their IP address and number of remote AS, set BGP policies that will determine the best path for routing, and advertise network prefixes.
+Open a BGP peering session, configure the BGP neighbor by specifying its IP address and remote AS number, set BGP policies that determine the best path for routing, and advertise network prefixes.
 
-For example, imagine Side A (AS 10) and Side B (AS 20) on the two ends of the tunnel. Side A provides DDoS Protection, so it accepts specific routes from clients, denies the default for the routing security purposes, and does not advertise anything. On the other hand, Side B advertises only its own routes.
+For example, imagine Side A (AS 10) and Side B (AS 20) on the two ends of the tunnel. Side A provides DDoS Protection, so it accepts specific routes from clients, denies the default route for routing security, and does not advertise anything. Side B advertises only its own routes.
 
-Let's start with the Side A configuration. 
+Configure Side A first. 
 
 1\. Define the neighbor routes:
 
@@ -156,11 +158,11 @@ router bgp 20
   neighbor 10.20.30.1 route-map SIDE_B_POLICY_OUTBOUND out
  ```
 
-The configuration lines provided above enable you to establish BGP sessions with Gcore over GRE tunnels to protect your applications and servers from DDoS attacks and other types of malicious traffic.
+The configuration above establishes BGP sessions with Gcore over GRE tunnels, protecting applications and servers from DDoS attacks and other malicious traffic.
 
 ## Set a GRE tunnel on Ubuntu
 
-Establish a tunnel on Linux-based servers functioning as endpoints in your network. 
+Establish a tunnel on Linux-based servers functioning as endpoints in the network. 
 
 ### Step 1. Install required tools
 
@@ -201,7 +203,7 @@ sudo ip tunnel add gre1 mode gre local 50.0.0.1 remote 40.0.0.1 ttl 255
 
 ### Step 3. Enable IP forwarding
 
-If the GRE tunnel is being used for routing, ensure that IP forwarding is enabled on both endpoints. Run the following command: 
+If the GRE tunnel is being used for routing, verify that IP forwarding is enabled on both endpoints. Run the following command: 
 
 ```sh
 sudo sysctl -w net.ipv4.ip_forward=1 
@@ -231,7 +233,7 @@ ping 10.20.30.1 # From endpoint 50.0.0.1
 
 ### Step 6. Configure routing (optional)
 
-If you need to route specific traffic through the GRE tunnel, add routing rules. For example: 
+To route specific traffic through the GRE tunnel, add routing rules. For example: 
 
 ```sh
 sudo ip route add <destination-network> via 10.20.30.2 dev gre1
