@@ -226,6 +226,7 @@ Maintained by the agent. Update after each triage or merge.
 | 1849 | Describe WASI-HTTP rust app | documentation, FastEdge | 2026-02-16 | Open | — | New guide; replace SDK process interface; HuggingFace POC as example |
 | 1872 | Add BYOD description to Edge Storage | FastEdge | 2026-02-19 | Open | — | Edge Storage BYOD configuration underdocumented |
 | 2650 | Terraform Provider updated to v2.0.0-rc.1 | terraform | 2026-09-01 | PR open | `issue/2650-terraform-lb-floating-ip` | Replaced `floating_ip` inline block in `gcore_cloud_load_balancer` with `gcore_cloud_floating_ip` resource. Updated `.terraform-provider-version` to `2.0.0-rc.1`. |
+| 2652 | SDK updated to Python v0.56.0, Go v0.56.0 | api-sdk-tracker | 2026-09-01 | In progress | `issue/2652-sdk-waap-breaking-changes` | Breaking: `policies.toggle()` now requires `mode: bool` (Python) and `WaapDomainPolicySettingsParam{Mode}` (Go). Updated 10 WAAP policy articles. Updated prose in advanced-rules.mdx, custom-rules.mdx, ip-allowlist-and-blocklist.mdx. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -234,6 +235,19 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-09-02 — Issue #2652: SDK v0.56.0 WAAP breaking changes
+
+- Fetched issue body from upload. Breaking changes: `policies.toggle()` now requires `mode: bool` (Python) / `WaapDomainPolicySettingsParam{Mode}` (Go); endpoint changed from `/policies/{id}/toggle` to `/policies/{id}` with `{"mode": bool}` body.
+- Confirmed exact signatures from Go SDK source (`domainpolicy.go`) and Python SDK source (`policies.py`).
+- Updated 10 WAAP policy articles: `behavioral-waf`, `waf-and-owasp-top-threats`, `protocol-validation`, `cms-protection`, `invalid-user-agent-and-unknown-user-agent`, `advanced-api-protection`, `anti-automation-and-bot-protection`, `waap-policies/ip-reputation`, `firewall/ip-reputation`, `known-bots`.
+  - Section renamed from "Toggle a policy" to "Enable or disable a policy" (or "Set bot mode" for known-bots).
+  - Python: added `mode=True` parameter.
+  - Go: added `WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}` to params struct.
+  - curl: updated URL (removed `/toggle`), added `Content-Type` header and `{"mode": true}` body.
+  - Removed Warning boxes about toggling.
+- Updated prose in `advanced-rules.mdx`, `custom-rules.mdx`, `ip-allowlist-and-blocklist.mdx`: changed "returns 204 with no body" to accurate descriptions for Update/Toggle methods that now return typed results.
+- Branch: `issue/2652-sdk-waap-breaking-changes` — in progress.
 
 ### 2026-09-02 — Issue #2650: Terraform provider v2.0.0-rc.1
 
