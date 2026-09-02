@@ -96,7 +96,7 @@ If an image cannot be processed, CDN serves the original image from the origin. 
 
 - **Original quality is lower than the target quality.** If the original image quality is 45 and the target is 80, processing would increase the file size rather than decrease it.
 - **Gzip compression is applied to the original image.** If the image contains the `Content-Encoding: gzip` header, Image Stack cannot unzip the original.
-- **The browser does not support the target format.** If request headers do not include `image/webp` or `image/avif`, the browser does not support WebP or AVIF formats.
+- **The browser does not support the target format.** If the request does not advertise support for `image/webp` or `image/avif`, Image Stack does not convert the image to the corresponding format.
 - **Unsupported image format.** Image Stack processes only JPG and PNG files. GIF and other formats are served as-is.
 
 Use the `Img-Skip-Reason` response header to identify why an image was not transformed.
@@ -107,9 +107,9 @@ Use the `Img-Skip-Reason` response header to identify why an image was not trans
 
 ## Conflict with the Rewrite option
 
-Beyond image-level constraints, Image Stack can conflict with other resource settings when enabled for the entire resource. add the `Accept: image/webp, image/avif` header to all requests — including requests for static files like PHP and JS scripts, not only images. When Image Stack is enabled for the entire resource, those requests are also routed to the Image Processor.
+Google Chrome and other browsers add the `Accept: image/webp, image/avif` header to all requests — including requests for static files like PHP and JS scripts, not only images. When Image Stack is enabled for the entire resource, those requests are routed to the Image Processor.
 
-If the origin returns a `3xx` redirect for a PHP or JS file, the Image Processor cannot forward it to the client. It follows the redirect in a loop until it receives a non-3xx response, making the file inaccessible.
+The conflict occurs when the [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) option is also active. The Rewrite option redirects requests to the origin, which responds with a `3xx` code. The Image Processor cannot return `3xx` responses to clients — it follows the redirect in a loop until receiving a non-3xx response, making PHP and JS files inaccessible.
 
 To avoid this, configure Image Stack as a rule scoped to `image/jpeg` and `image/png` MIME types rather than enabling it for the entire resource. The [Enable&nbsp;Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) article covers the rules configuration.
 
