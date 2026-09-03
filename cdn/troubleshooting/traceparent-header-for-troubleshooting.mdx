@@ -14,13 +14,19 @@ Gcore CDN forwards the `tracestate` request header, which is part of the same sp
 
 The [traceparent header](https://www.w3.org/TR/trace-context/#traceparent-header) has four fields: `version`, `trace-id`, `parent-id`, and `trace-flags`. The fields are defined in [ABNF notation](https://www.w3.org/TR/trace-context/#bib-rfc5234) and identify a request in a tracing system.
 
-When a client sends a valid `traceparent` request header, the Gcore Edge Network keeps `trace-id` and changes only `parent-id`, then forwards the header to the origin. The trace stays intact as the request moves through the CDN.
+The [parent-id](https://www.w3.org/TR/trace-context/#parent-id) is the ID of the current request as known by the caller — in many tracing systems, the span ID of that caller. When a client sends a valid `traceparent` request header, the Gcore Edge Network keeps `trace-id` and replaces `parent-id` with an ID that represents the CDN operation, then forwards the header to the origin. That forwarded `parent-id` becomes the parent of the origin's span. The origin's own span ID is new and therefore differs, while its parent span ID matches the CDN-generated `parent-id`. The `trace-id` stays the same, so the trace stays intact as the request moves through the CDN.
 
 If the client omits `traceparent` or the value is invalid, the CDN generates a header that matches the specification.
 
 ## Response header
 
-Every response that went through the Gcore network includes `traceparent`. Read the value in browser developer tools (Chrome DevTools) or with curl.
+The W3C Trace Context specification defines `traceparent` propagation on requests. Returning `traceparent` on CDN responses is Gcore-specific behavior and is not part of that request-propagation standard.
+
+Every response that went through the Gcore network includes `traceparent`. Read the value in browser developer tools (Chrome DevTools) or with curl. This command makes a normal GET request and prints only the response headers:
+
+```curl
+curl -sS -D - -o /dev/null https://cdn.example.com/path/to/file
+```
 
 <Frame>![traceparent header in Chrome DevTools](/images/docs/cdn/troubleshooting/traceparent-header-for-troubleshooting/traceparent-devtools.png)</Frame>
 
@@ -30,10 +36,12 @@ Copy the `traceparent` response header and send it to Gcore Support when opening
 
 ## Traceparent in Raw logs
 
-[Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) include the `$http_traceparent` field. A sample value looks like this:
+[Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) include the `$http_traceparent` field. That field stores the `traceparent` header from the incoming client request — the value the CDN received. It is not the rewritten header forwarded to the origin, and it is not the `traceparent` returned in the CDN response.
+
+A sample value looks like this:
 
 ```
 00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01
 ```
 
-In this example, `d5fe1dc9035165ce36952daf29686b6c` is the 16-byte `trace-id`, and `14330be33197dd1a` is the 8-byte `parent-id`. The `trace-id` stays the same for the whole request. Match it to origin or APM traces that follow W3C Trace Context. The `parent-id` identifies the CDN span, so it will differ from the parent ID recorded by the origin.
+In this example, `d5fe1dc9035165ce36952daf29686b6c` is the 16-byte `trace-id`, and `14330be33197dd1a` is the 8-byte `parent-id` from the client's request. The `trace-id` stays the same for the whole request, so it can be matched to origin or APM traces that follow W3C Trace Context. The `parent-id` in `$http_traceparent` is the caller's ID as received from the client. The CDN-generated `parent-id` that the origin records as its parent span ID is in the header forwarded to the origin, not in this log field.
