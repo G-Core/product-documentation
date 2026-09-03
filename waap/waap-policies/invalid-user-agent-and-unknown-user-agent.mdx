@@ -143,13 +143,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
   </Tab>
 </Tabs>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Switch a policy between enabled and disabled. Each call flips the current state. Use the policy ID from the View policy states response or from the table below.</p>
+<p>Sets the policy to enabled or disabled by specifying the target state. Use the policy ID from the View policy states response or from the table below.</p>
 
-<Warning>
-This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, retrieve the current policy state first using the View policy states request above.
-</Warning>
+| Parameter | Required | Description |
+|---|---|---|
+| `policy_id` | Yes | ID of the policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -163,9 +165,8 @@ This endpoint toggles the current state rather than setting a specific value. If
     # S3008869 = Invalid user agent, S3008870 = Unknown user agent
     policy_id = "S3008869"
 
-    result = client.waap.domains.policies.toggle(policy_id, domain_id=domain_id)
-    status = "enabled" if result.mode else "disabled"
-    print(f"Invalid user agent is now {status}")
+    result = client.waap.domains.policies.toggle(policy_id, domain_id=domain_id, mode=True)
+    print(f"Invalid user agent is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -189,7 +190,7 @@ This endpoint toggles the current state rather than setting a specific value. If
         // S3008869 = Invalid user agent, S3008870 = Unknown user agent
         policyID := "S3008869"
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -203,8 +204,10 @@ This endpoint toggles the current state rather than setting a specific value. If
     # Set POLICY_ID to S3008869 (Invalid user agent) or S3008870 (Unknown user agent)
     export POLICY_ID="{POLICY_ID}"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
 
     The API returns the updated policy state. `mode: true` confirms enabled; `mode: false` confirms disabled:

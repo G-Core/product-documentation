@@ -155,14 +155,15 @@ Response:
 
 <p>The response contains all rule sets for the domain. Filter by `resource_slug` value `behavioral-waf` to find the Behavioral WAF group. Each rule has a `mode` field ? `true` means enabled, `false` means disabled.</p>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Flips the state of one policy ? enabled becomes disabled, disabled becomes enabled. No request body is required.</p>
+<p>Sets the policy to enabled or disabled by specifying the target state. Pass `mode: true` to enable and `mode: false` to disable.</p>
 
 | Parameter | Required | Description |
 |---|---|---|
-| `policy_id` | Yes | ID of the policy to toggle, obtained from the [View policy states](#view-policy-states) response. |
+| `policy_id` | Yes | ID of the policy to configure, obtained from the [View policy states](#view-policy-states) response. |
 | `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
 <Tab title="Python SDK">
@@ -180,9 +181,8 @@ behavioral_set = next(
 )
 policy = next(r for r in behavioral_set.rules if r.name == "Repeated violations")
 
-result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
-status = "enabled" if result.mode else "disabled"
-print(f"Policy is now {status}")
+result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+print(f"Policy is now {'enabled' if result.mode else 'disabled'}")
 ```
 </Tab>
 <Tab title="Go SDK">
@@ -223,7 +223,10 @@ func main() {
 	result, err := client.Waap.Domains.Policies.Toggle(
 		context.Background(),
 		policyID,
-		waap.DomainPolicyToggleParams{DomainID: domainID},
+		waap.DomainPolicyToggleParams{
+			DomainID:                 domainID,
+			WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true},
+		},
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -240,8 +243,10 @@ func main() {
 <Tab title="curl">
 ```bash
 # Set POLICY_ID to the ID from the View policy states response or the policy reference below
-curl -X PATCH "https://api.gcore.com/waap/v1/domains/$WAAP_DOMAIN_ID/policies/$POLICY_ID/toggle" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
+curl -X PATCH "https://api.gcore.com/waap/v1/domains/$WAAP_DOMAIN_ID/policies/$POLICY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"mode": true}'
 ```
 
 Response:
@@ -252,7 +257,7 @@ Response:
 </Tab>
 </Tabs>
 
-<p>The API returns the updated policy state. Call the endpoint again to flip the policy back.</p>
+<p>The API returns the updated policy state.</p>
 
 ## Policy reference
 
