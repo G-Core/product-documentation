@@ -66,13 +66,15 @@ When both ends of the tunnel are configured with matching parameters, the GRE tu
 
 ### Step 3. Set the MTU and MSS limits
 
-Tunneling adds an extra header to the original IP packet, resulting in overhead, so unadjusted MTU and MSS limits can lead to packet delivery issues. Set the following MTU and MSS limits:
+Tunneling adds an extra header to the original IP packet, resulting in overhead, so unadjusted MTU and MSS limits can lead to packet delivery issues. Set these limits on the exit interface towards the internet/ISP — the path outbound traffic uses. Do not set them on the GRE tunnel interface.
 
 ```sh
-interface Tunnel10
+interface GigabitEthernet0/0
   ip mtu 1476
   ip tcp adjust-mss 1436
 ```
+
+Replace `GigabitEthernet0/0` with the name of that internet-facing interface.
 
 <Accordion title="Why these values?">
 The standard MTU size allowed on the internet is 1500 bytes. When using GRE, typically an additional 24 bytes are added to the packet, consisting of 20 bytes for an outer IP header and 4 bytes for GRE itself, so the maximum allowed packet size over the GRE tunnel is reduced to 1476 bytes. This example does not use encryption. Encrypted tunnels add extra header bytes that vary by protocol, which is out of scope for this article.
