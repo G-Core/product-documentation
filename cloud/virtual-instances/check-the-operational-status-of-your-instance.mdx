@@ -1,7 +1,7 @@
 ---
 title: Check the operational status of a Virtual Machine
 sidebarTitle: Check the status
-ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column, the Gcore Cloud REST API instances endpoint, or Terraform using the gcore_cloud_instance data source.
+ai-navigation: Check Virtual Machine operational status via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -14,8 +14,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Frame>![Virtual Instances list showing the Status column with a Power on badge](/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-list-status-column.png)</Frame>
 
+<p>[Status&nbsp;values](#status-values) lists the meaning of each status.</p>
+
 <Tip>
-If a Virtual Machine enters the `Error` state, contact [Gcore support](mailto:support@gcore.com) for assistance.
+If a Virtual Machine enters the `Error` state, contact [Gcore&nbsp;support](mailto:support@gcore.com) for assistance.
 </Tip>
 
 </MethodSection>
@@ -24,7 +26,7 @@ If a Virtual Machine enters the `Error` state, contact [Gcore support](mailto:su
 
 <p>Two endpoints expose instance status. The list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
 
-<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).</Info>
+<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).</Info>
 
 <p>Set these variables before running the examples:</p>
 
@@ -88,12 +90,22 @@ Response:
 
 ```json
 {
-  "count": 1,
+  "count": 2,
   "results": [
     {
       "id": "4f89fc5a-3f68-4ae5-8b32-6e5304987872",
       "name": "my-instance",
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "managed_by": null
+    },
+    {
+      "id": "9a1bc2d3-4e5f-6789-abcd-ef0123456789",
+      "name": "prod-cluster-worker-1",
+      "status": "ACTIVE",
+      "managed_by": {
+        "type": "k8s_cluster",
+        "resource_name": "prod-cluster"
+      }
     }
   ]
 }
@@ -135,7 +147,8 @@ Response:
   "name": "my-instance",
   "status": "ACTIVE",
   "vm_state": "active",
-  "task_state": null
+  "task_state": null,
+  "managed_by": null
 }
 ```
   </Tab>
@@ -145,7 +158,33 @@ Response:
 
 <MethodSection id="terraform" label="Terraform">
 
-<p>Read a Virtual Machine's current `status` and `vm_state` without managing it. The [`gcore_cloud_instance`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instance) data source fetches live state from the API and exposes it as Terraform outputs.</p>
+<p>Read Virtual Machine status without managing the instance. Two data sources are available: [`gcore_cloud_instances`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instances) returns all VMs for a project and region; [`gcore_cloud_instance`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/cloud_instance) fetches a single VM by ID.</p>
+
+## List instance statuses
+
+<p>Returns all Virtual Machines in the project and region with their current `status` and `vm_state`. Use to check or map statuses across multiple instances.</p>
+
+```hcl
+data "gcore_cloud_instances" "all" {
+  project_id = var.project_id
+  region_id  = var.region_id
+}
+
+output "instance_statuses" {
+  value = {
+    for inst in data.gcore_cloud_instances.all.items :
+    inst.name => inst.status
+  }
+}
+```
+
+<p>Save this as a standalone `.tf` file containing only the data source, then run `terraform apply`. Terraform queries the API and prints the current status for each instance:</p>
+
+```bash
+instance_statuses = {
+  "my-instance" = "ACTIVE"
+}
+```
 
 ## Get instance status
 
@@ -167,14 +206,14 @@ output "instance_task_state" {
 }
 ```
 
-<p>Run `terraform apply` — Terraform queries the API and prints:</p>
+<p>Save this as a standalone `.tf` file and run `terraform apply`. Terraform queries the API and prints:</p>
 
 ```bash
 instance_status     = "ACTIVE"
 instance_task_state = tostring(null)
 ```
 
-<p>The `status` and `vm_state` constants are listed in [Status values](#status-values) below.</p>
+<p>The `status` and `vm_state` constants are listed in [Status&nbsp;values](#status-values) below.</p>
 
 ## Check state of a managed instance
 
@@ -197,7 +236,7 @@ terraform apply -refresh-only
 
 The `status` field uses uppercase string constants. The `vm_state` field provides stable state context and is returned by the single-instance detail endpoint and the `data "gcore_cloud_instance"` Terraform data source.
 
-`task_state` is non-null only during a background operation. A VM can show `status: ACTIVE` while `task_state: "rebooting"` — check both fields to determine whether the VM has fully settled.
+`task_state` is non-null only during a background operation. Operations like `REBOOT` and `REBUILD` transition `status` out of `ACTIVE` to a dedicated value. Other operations — live migration, snapshot creation — keep `status: ACTIVE` while `task_state` carries the operation name. Check both fields when the VM has not fully settled.
 
 | `status` | `vm_state` | Portal label | Meaning |
 |----------|------------|--------------|---------|
@@ -205,12 +244,10 @@ The `status` field uses uppercase string constants. The `vm_state` field provide
 | `SHUTOFF` | `stopped` | Power off | The VM is powered off. |
 | `BUILD` | `building` | Building | The VM is being allocated. |
 | `ERROR` | `error` | Error | Resource allocation failed. |
-| `DELETED` | `deleted` | Deleted | The VM was deleted. |
 | `PAUSED` | `paused` | — | The VM is paused in memory. |
-| `REBOOT` | `active` | — | Soft reboot in progress; `task_state` carries the operation name. |
-| `HARD_REBOOT` | `active` | — | Hard reboot in progress; `task_state` carries the operation name. |
+| `REBOOT` | `active` | — | Soft reboot in progress. |
+| `HARD_REBOOT` | `active` | — | Hard reboot in progress. |
 | `REBUILD` | `active` | — | VM is being rebuilt from an image. |
 | `RESIZE` | `resized` | — | VM flavor is being changed. |
-| `MIGRATING` | `active` | — | VM is being migrated to another host. |
+| `MIGRATING` | `active` | — | VM is being live-migrated to another host. |
 | `SUSPENDED` | `suspended` | — | VM is suspended. |
-| `SOFT_DELETED` | `soft-deleted` | — | VM is pending permanent deletion. |

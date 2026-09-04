@@ -1,25 +1,25 @@
 ---
 title: "Authenticate to the Gcore API"
 sidebarTitle: "Authentication"
-ai-navigation: Create a permanent API token in the Gcore Customer Portal, store it as an environment variable, verify the token, and understand token roles, expiry limits, and SSO account behavior.
+ai-navigation: Create an API token in the Gcore Customer Portal, store it as an environment variable, and verify it works.
 ---
 
-Every Gcore API request requires a permanent API token. The token goes in the `Authorization` header and works across all products — Cloud, CDN, DNS, Storage, and others.
+Every Gcore API request requires an API token. The token goes in the `Authorization` header and works across all products — Cloud, CDN, DNS, Storage, and others.
 
 ## Step 1. Create a token
 
-1. Open the [Gcore Customer Portal](https://portal.gcore.com) and sign in.
-2. Click the account icon in the top-right corner and go to **Profile**.
+1. Sign in to the [Gcore Customer Portal](https://portal.gcore.com).
+2. Click the account icon in the top-right corner and navigate to **Profile**.
 3. Select the **API tokens** tab.
 4. Click **Create token**.
-5. Give the token a name, choose a role (use `Administrators` for full access), and set an expiration date if needed.
+5. Give the token a name, select a role (use `Administrators` for full access), and set an expiration date if needed.
 6. Click **Create**. A dialog shows the token value — copy it before closing. It will not be shown again.
 
 <Info>
 The token value is shown only once — store it somewhere secure (a password manager or secrets vault) before closing the dialog.
 </Info>
 
-## Step 2. Set the token as an environment variable
+## Step 2. Set an environment variable
 
 Store the token in an environment variable so it can be used in every command without re-typing or hardcoding it in scripts.
 
@@ -34,7 +34,7 @@ Replace `29841_c767...` with the actual token value copied in Step 1.
 <Info>
 Environment variables are session-scoped — they disappear when the terminal is closed, so to persist across sessions, add the `export` line to `~/.zshrc` (macOS/Linux) or the PowerShell profile file (Windows).
 
-Not sure what these concepts mean? [API basics](/developer-tools/rest-api/api-basics) covers terminals and environment variables from scratch.
+Not sure what these concepts mean? [API&nbsp;basics](/developer-tools/rest-api/api-basics) covers terminals and environment variables from scratch.
 </Info>
 
 ## Step 3. Verify the token
@@ -50,10 +50,9 @@ Confirm the token is valid and see which account it belongs to:
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()  # SDK reads GCORE_API_KEY automatically
     me = client.iam.get_account_overview()
     print(me.id, me.email, me.status)
     ```
@@ -63,13 +62,12 @@ Confirm the token is valid and see which account it belongs to:
     import (
         "context"
         "fmt"
-        "os"
         gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/option"
     )
 
-    client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
-    me, err := client.Iam.GetAccountOverview(context.TODO())
+    client := gcore.NewClient()
+    ctx := context.Background()
+    me, err := client.Iam.GetAccountOverview(ctx)
     if err != nil { panic(err) }
     fmt.Println(me.ID, me.Email, me.Status)
     ```
@@ -105,7 +103,7 @@ If the command returns an error instead, the table below shows the most common c
 | Error message | Cause | Fix |
 |---------------|-------|-----|
 | `Authentication credentials were not provided.` | No `Authorization` header sent | Check that `-H "Authorization: APIKey $GCORE_API_KEY"` is present |
-| `Bad permanent token: 29841` | Token value is incomplete | Verify the full token value was copied correctly in Step 1 |
+| `Bad token: 29841` | Token value is incomplete | Verify the full token value was copied correctly in Step 1 |
 | `Token is invalid or expired` | Token was deleted or has passed its expiry date | Create a new token in the portal |
 | `Given token not valid for any token type` | Using `Bearer` instead of `APIKey` | The scheme must be `APIKey`, not `Bearer` |
 
@@ -134,4 +132,4 @@ A token cannot have a higher role than the user who created it. For automation t
 
 ## SSO accounts
 
-When signing in via SAML SSO, the identity provider controls portal access but permanent API tokens operate independently, so revoking a user's SSO access does not invalidate their tokens. To block API access for an SSO user, delete their tokens manually in the [API tokens](/account-settings/api-tokens) section.
+When signing in via SAML SSO, the identity provider controls portal access but API tokens operate independently, so revoking a user's SSO access does not invalidate their tokens. To block API access for an SSO user, delete their tokens manually in the [API&nbsp;tokens](/account-settings/api-tokens) section.
