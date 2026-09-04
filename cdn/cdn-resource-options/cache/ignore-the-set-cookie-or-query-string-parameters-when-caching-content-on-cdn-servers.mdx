@@ -1,105 +1,102 @@
 ---
 title: Ignore the set cookie or query string parameters when caching content on CDN servers
 sidebarTitle: Ignore Set Cookie or Query string
-ai-navigation: Configure CDN query string caching behavior using Ignore All, Ignore All Except, or Ignore Only modes to control cache key generation for URLs with query parameters.
+ai-navigation: Configure query string caching modes (Ignore all, Ignore all except, Ignore only) and Set-Cookie caching behavior for CDN resources in the Customer Portal.
 ---
+
+The **Ignore query string** and **Ignore Set-Cookie** options control how query parameters and `Set-Cookie` response headers affect CDN caching. Both are available in the **Cache** section of CDN resource settings.
 
 ## Query string setting
 
-The "Ignore Query String" option determines how the CDN will cache URLs that have query parameters. Query parameters are optional pairs of key and value separated by an equal sign (=) and joined by an ampersand (&), that appear at the end of a URL following a question mark (?). For example:
-    
+The **Ignore query string** option determines how the CDN caches URLs that have query parameters. Query parameters are optional key-value pairs separated by `=` and joined by `&`, appearing at the end of a URL after a `?`:
+
 ```
 http://cdn.example.com/photo.jpeg?id=6&color=blue
 ```
 
-This option is disabled by default. To enable it in the Gcore Customer Portal:
+When disabled, the full query string is included in the cache key, so URLs with different query parameter values are cached as separate objects.
 
-1\. Go to CDN and select the CDN resource you want to configure.
+To enable it in the [Gcore Customer Portal](https://portal.gcore.com):
 
+1. In the left sidebar, select **CDN**, then click the CDN resource to configure.
 
-<Frame>![CDN resource ](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12414969223185.png)</Frame>
+<Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image1.png)</Frame>
 
+2. In the sidebar, under **Cache**, click **Query string**.
 
+<Frame>![Resource settings — Query string section in the Cache group](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image2.png)</Frame>
 
-2\. In the sidebar, under the "Cache" section, click **Query string**.
+3. Enable the **Ignore query string** toggle.
 
+<Warning>Enabling or changing this option may invalidate cached content for URLs with query strings. CDN servers will request those files from the origin again, which can increase origin load.</Warning>
 
-<Frame>![Cache](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png)</Frame>
+4. Click **Save changes**.
 
+The enabled option has three modes:
 
+| Mode | Parameters in the list | Other parameters |
+|------|------------------------|-----------------|
+| Ignore all | — | Ignored |
+| Ignore all except | Included in cache key | Ignored |
+| Ignore only | Ignored | Included in cache key |
 
-The enabled option has 3 modes:
+- **Ignore all** (default). Files with different query parameters are cached as a single object, regardless of parameter values.
 
-  * **Ignore All**. Selected by default. Files with different query parameters are cached as objects with the same key, regardless of the parameter value.
+<Frame>![Ignore all mode selected](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image3.png)</Frame>
 
+  The following URLs are cached as a single object because all parameters are ignored:
 
-<Frame>![Ignore All](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415341115665.png)</Frame>
+  ```
+  http://cdn.example.com/photo.jpeg?id=6&color=blue
+  http://cdn.example.com/photo.jpeg?id=1&color=blue
+  ```
 
+- **Ignore all except**. Files with the specified query parameters are cached as separate objects; files with other parameters are cached as a single object.
 
+  Enter each parameter name on a separate line in the text field that appears.
 
-For example, the following files will be cached as objects with a single cache key because all parameters will be ignored:
-    
-    
-```
-http://cdn.example.com/photo.jpeg?id=6&color=blue  
-http://cdn.example.com/photo.jpeg?id=1&color=blue
-```
+<Frame>![Ignore all except mode with parameter text field](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image4.png)</Frame>
 
-  * **Ignore All Except**. Files with the specified query parameters are cached as objects with different keys; files with other parameters are cached as objects with the same key.
+  With `id` in the text field: the following URLs are cached as separate objects because the `id` values differ, and the `color` parameter is ignored:
 
+  ```
+  http://cdn.example.com/photo.jpeg?id=6&color=blue
+  http://cdn.example.com/photo.jpeg?id=1&color=blue
+  ```
 
+  With `color` in the text field: the following URLs are cached as a single object because the `color` values are the same, and the `id` parameter is ignored:
 
-In the **Parameter** field, enter each parameter on a separate line.
+  ```
+  http://cdn.example.com/photo.jpeg?id=6&color=blue
+  http://cdn.example.com/photo.jpeg?id=1&color=blue
+  ```
 
+- **Ignore only**. Files with the specified query parameters are cached as a single object; files with other parameters are cached as separate objects.
 
-<Frame>![ Parameter field,](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415729590801.png)</Frame>
+  Enter each parameter name on a separate line in the text field that appears.
 
+<Frame>![Ignore only mode with parameter text field](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image5.png)</Frame>
 
+  With `id` in the text field: the following URLs are cached as a single object because the `id` values are ignored, and the `color` values are the same:
 
-For example, you specified _id_ in the Parameter field. The following files will be cached as objects with different keys because the values of the _id_ parameter are different, and the value of the _color_ parameter will be ignored.
-    
-    
-```
-http://cdn.example.com/photo.jpeg?id=6&color=blue  
-http://cdn.example.com/photo.jpeg?id=1&color=blue
-```
+  ```
+  http://cdn.example.com/photo.jpeg?id=6&color=blue
+  http://cdn.example.com/photo.jpeg?id=1&color=blue
+  ```
 
-For example, you specified _color_ in the Parameter field. The following files will be cached as objects with the same keys because the values of the _color_ parameter are the same, and the _id_ parameter will be ignored.
-    
-```
-http://cdn.example.com/photo.jpeg?id=6&color=blue  
-http://cdn.example.com/photo.jpeg?id=1&color=blue
-```
+  With `color` in the text field: the following URLs are cached as separate objects because the `color` values are ignored, and the `id` values differ:
 
-  * **Ignore only**. Files with the specified query parameters are cached as objects with the same key, files with other parameters are cached as objects with different keys.
+  ```
+  http://cdn.example.com/photo.jpeg?id=6&color=blue
+  http://cdn.example.com/photo.jpeg?id=1&color=blue
+  ```
 
+## Set-Cookie setting
 
-In the **Parameter** field, enter each parameter on a separate line.
+By default, the CDN caches files with different `Set-Cookie` header values as separate objects. This means multiple cached copies of the same content can accumulate for different cookie values, reducing the cache hit ratio.
 
+The **Ignore Set-Cookie** option changes this behavior: files are cached as a single object regardless of the `Set-Cookie` header value. Gcore recommends enabling this option for the best cache hit ratio.
 
-<Frame>![ Parameter field](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415745809041.png)</Frame>
+To enable it, open the CDN resource settings (same page as the **Query string** option), enable the **Ignore Set-Cookie** toggle in the **Cache** section, then click **Save changes**.
 
-For example, you specified _id_ in the Parameter field. The following files will be cached as objects with the same keys because the values of the _id_ parameter will be ignored, and the values of the _color_ parameters are the same.
-    
-    
-```
-http://cdn.example.com/photo.jpeg?id=6&color=blue  
-http://cdn.example.com/photo.jpeg?id=1&color=blue
-```
-
-For example, you specified _color_ in the Parameter field. The following files will be cached as objects with different keys because the values of the _color_ parameter will be ignored, and the values of the _id_ parameters are different.
-    
-    
-```
-http://cdn.example.com/photo.jpeg?id=6&color=blue  
-http://cdn.example.com/photo.jpeg?id=1&color=blue
-```
-
-## Set-cookie setting
-
-A CDN defines a file with the Set-Cookies header as a unique one. As a result, each user's request goes to the origin. This option defines whether we will cache files with the Set-Cookies header as one file or as different ones. In most cases, it is not effective to have copies of the same file with different cookies on the server.
-
-Enable Ignore Set-Cookie option and files with cookies will be cached like one object. Go to CDN Resources, choose a CDN Resource and press Settings, open Advanced Settings and check Ignore Set-Cookies.
-
-
-<Frame>![Set-Cookie setting](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/Screenshot-2018.png)</Frame>
+<Frame>![Set-Cookie section with Ignore Set-Cookie toggle](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image6.png)</Frame>
