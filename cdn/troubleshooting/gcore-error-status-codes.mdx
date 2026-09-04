@@ -1,7 +1,7 @@
 ---
 title: Gcore CDN error status codes
 sidebarTitle: Error status codes
-ai-navigation: Resolve selected Gcore CDN errors including 403, 404, 402, 504, 508, 556, and 557 using Log viewer and resource settings.
+ai-navigation: Resolve selected Gcore CDN errors including 403, 404, 410, 402, 504, 508, 556, and 557 using Log viewer and resource settings.
 ---
 
 HTTP status codes in CDN logs show the outcome of a request. This article covers selected codes that have Gcore-specific causes or resolution steps. Several causes can produce the same code, so each table lists the Gcore-specific causes and the matching fix.
@@ -16,7 +16,7 @@ In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > 
 
 ## Error status codes
 
-Status codes `403` and `404` each cover more than one cause. The tables list the cause, what it means, and how to resolve it.
+Status codes `403`, `404`, and `410` each cover more than one cause. The tables list the cause, what it means, and how to resolve it.
 
 ### 403 errors
 
@@ -26,9 +26,17 @@ A `403` can originate from the CDN or from the origin. CDN-side causes include a
 |---|---|---|
 | The CDN resource is suspended. | The **Content availability** toggle controls whether the resource serves content. When the toggle is off, the resource does not serve content. | In **CDN** > **CDN resources**, select the resource. Enable **Content availability**. Automatic and manual [resource&nbsp;suspension](/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually) share this toggle. |
 | An access policy blocks the client. | Country, referrer, IP, or user-agent policies can return `403`. | In resource settings, open **Access** and review **Country access policy**, **Referrer access policy**, **IP access policy**, and **User agents policy**. Disable or adjust the policy that matches the blocked client. If a country policy blocks Angola, clients in Angola receive `403`. |
-| Secure Token validation fails. | A [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) request is rejected when the token is missing, invalid, or expired; when the request path does not match the signed path; or when the client IP does not match the IP bound to the token. | Review the token generation logic in [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token). Verify the token is present, has not expired, covers the correct path, and — if IP binding is enabled — matches the client IP. |
+| Secure Token validation fails. | A [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) request is rejected when the token is missing or invalid, when the request path does not match the signed path, or when the client IP does not match the IP bound to the token. An expired token returns `403` or `410` depending on the CDN resource configuration. | Review the token generation logic in [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token). Verify the token is present, covers the correct path, and — if IP binding is enabled — matches the client IP. For expired tokens, check the expiry time and whether the resource is configured to return `403` or `410`. |
 
 Each policy supports an allow list or a block list in [access&nbsp;policies](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies).
+
+### 410 errors
+
+A `410` from Gcore CDN means a [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) request was rejected because the token has expired, and the CDN resource is configured to return `410` for expired tokens. Resources configured to return `403` for the same condition will not produce `410`.
+
+| Cause | Details | Solution |
+|---|---|---|
+| The Secure Token has expired and the resource returns `410` for expired tokens. | Token expiry produces `403` or `410` depending on the CDN resource configuration. | Regenerate a valid token. In [Secure&nbsp;Token&nbsp;settings](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token), check the expiry time and adjust the configured response code if needed. |
 
 ### 404 errors
 
@@ -55,7 +63,7 @@ These additional codes each have a primary cause. A `504` means the CDN did not 
 | Status code | Cause | Details | Solution |
 |---|---|---|---|
 | `402` | Video delivery is not enabled for the CDN account. | HLS and DASH types `.m3u8`, `.mpd`, `.ts`, `.m4s`, `.m4v`, and `.m4a` can return `402` until Gcore Support enables video delivery. | Request enablement in [streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation). |
-| `504` | The origin did not respond in time. | The CDN timed out waiting for the origin. A blocked origin ACL is one cause. An unreachable origin, a slow origin, or origin overload can also return `504`. | Test the origin directly with the correct TLS SNI by targeting the origin IP while keeping the origin hostname in the URL: `curl -sS -D - -o /dev/null --resolve origin.example.com:443:origin-ip https://origin.example.com/path`. If the origin does not respond, check its reachability and firewall rules. If an ACL blocks Gcore addresses, apply the origin ACL or Request headers fix from the `404` table above. |
+| `504` | The origin did not respond in time. | The CDN timed out waiting for the origin. A blocked origin ACL is one cause. An unreachable origin, a slow origin, or origin overload can also return `504`. | Test the origin directly with the correct TLS SNI by targeting the origin IP while keeping the origin hostname in the URL: `curl -sS -D - -o /dev/null --resolve origin.example.com:443:192.0.2.10 https://origin.example.com/path`. If the origin does not respond, check its reachability and firewall rules. If an ACL blocks Gcore addresses, apply the origin ACL or Request headers fix from the `404` table above. |
 | `508` | The configured origin resolves back to the same CDN resource, forming a loop. | A loop occurs when the custom domain or Gcore-provided CDN hostname is set as the resource origin instead of the actual origin server. The custom domain CNAME must point to the Gcore target shown in [resource&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), and the resource origin must identify the actual origin server — not the CDN hostname or custom domain. | Set the resource origin to the actual origin server address. Fix the custom domain CNAME in [content&nbsp;unavailability](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#1-check-the-configuration-of-the-personal-domain). Confirm that the custom domain's CNAME record points to the `*.gcdn.co` target shown in the resource's **Setup guide**. |
 | `556` | The origin did not respond within the configured timeout. | Slow origins or overloaded servers can exceed connection or read limits. The default connection timeout is 5 seconds (time allowed to establish a connection). The default read timeout is 30 seconds between successive read operations from the origin. | Review the [connection and read timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) settings for the CDN resource and confirm the origin responds reliably within those limits. |
 | `557` | Simultaneous connections to one origin exceeded the limit. | Gcore CDN returns `557` when the number of simultaneous connections from one CDN location to a single origin server reaches 10,000. The limit is per origin server per CDN location. | Add origins to the [origin&nbsp;group](/cdn/add-an-origin-group) to distribute connections across multiple origin servers. |
