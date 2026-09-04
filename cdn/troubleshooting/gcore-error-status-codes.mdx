@@ -8,7 +8,7 @@ HTTP status codes in CDN logs show the outcome of a request. This article covers
 
 ## Status codes in Log viewer
 
-In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **Logs** > **Log viewer**. Use **Search by CNAME or ID**, the time range, or **Add filter**. Delivery outcomes appear in the **Status code** column. The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) stores the last three days of requests, with a maximum view interval of six hours.
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **Logs** > **Log viewer**. Use **Search by CNAME or ID**, the time range, or **Add filter**. Delivery outcomes appear in the **Status code** column. The [Log&nbsp;viewer](/cdn/logs/log-viewer-view-and-download-cdn-resource-logs) stores the last 3 days of requests, with a maximum view interval of 6 hours.
 
 <Frame>
   ![Log viewer table with the Status code column](/images/docs/cdn/troubleshooting/gcore-error-status-codes/gcore-error-status-codes-image1.png)
@@ -16,22 +16,23 @@ In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > 
 
 ## Error status codes
 
-Status codes 403 and 404 each cover more than one cause. The tables list the cause, what it means, and how to resolve it.
+Status codes `403` and `404` each cover more than one cause. The tables list the cause, what it means, and how to resolve it.
 
 ### 403 errors
 
-A 403 can originate from the CDN or from the origin. CDN-side causes include a suspended resource, an access policy, and Secure Token validation failures. The table below covers the most common CDN causes.
+A `403` can originate from the CDN or from the origin. CDN-side causes include a suspended resource, an access policy, and Secure Token validation failures. The table below covers the most common CDN causes.
 
 | Cause | Details | Solution |
 |---|---|---|
 | The CDN resource is suspended. | The **Content availability** toggle controls whether the resource serves content. When the toggle is off, the resource does not serve content. | In **CDN** > **CDN resources**, select the resource. Enable **Content availability**. Automatic and manual [resource&nbsp;suspension](/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually) share this toggle. |
-| An access policy blocks the client. | Country, referrer, IP, or user-agent policies can return 403. | In resource settings, open **Access** and review **Country access policy**, **Referrer access policy**, **IP access policy**, and **User agents policy**. Disable or adjust the policy that matches the blocked client. If a country policy blocks Angola, clients in Angola receive 403. |
+| An access policy blocks the client. | Country, referrer, IP, or user-agent policies can return `403`. | In resource settings, open **Access** and review **Country access policy**, **Referrer access policy**, **IP access policy**, and **User agents policy**. Disable or adjust the policy that matches the blocked client. If a country policy blocks Angola, clients in Angola receive `403`. |
+| Secure Token validation fails. | A [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) request is rejected when the token is missing, invalid, or expired; when the request path does not match the signed path; or when the client IP does not match the IP bound to the token. | Review the token generation logic in [Secure&nbsp;Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token). Verify the token is present, has not expired, covers the correct path, and — if IP binding is enabled — matches the client IP. |
 
 Each policy supports an allow list or a block list in [access&nbsp;policies](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies).
 
 ### 404 errors
 
-A 404 can mean the origin has no object at that path. Some CDN options also return 404 when the origin fetch fails.
+A `404` can mean the origin has no object at that path. Some CDN options also return `404` when the origin fetch fails.
 
 A missing object on the origin is the usual case:
 
@@ -39,25 +40,25 @@ A missing object on the origin is the usual case:
 |---|---|---|
 | The origin does not have the requested file. | The HTML file links to an object through the CDN, but that path does not exist on the origin. Example: `https://cdn.example.com/files/image.png` when `image.png` is missing from the `files` directory. | Place the object on the origin at the same name and path as the HTML link, or edit the HTML link. To stop delivering the object through CDN, remove the link from the page. |
 
-These resource options can also produce 404 even when the path exists:
+These resource options can also produce `404` even when the path exists:
 
 | Cause | Details | Solution |
 |---|---|---|
 | WebP compression and WebSockets conflict. | [WebP&nbsp;compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) and [WebSockets](/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin) cannot be enabled at the same time. | Disable one of the two options. |
-| The Host header is incorrect. | The **Host header** option tells CDN nodes which origin hostname to request. A mismatched value can route the request to the wrong virtual host on the origin and produce a 4xx or 5xx response. Some origins accept multiple hostnames or use a default virtual host and may not return an error. Example: origin `mycontent.com` with Host header `website.com`. The header does not change automatically when the origin changes. | Set the correct value in the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option. |
-| Origin access is restricted for the CDN. | The CDN cannot fetch content when the origin ACL blocks Gcore addresses. This case can also return 504. | Allowlist CDN servers in the [origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist). If IP allowlisting is not practical, send an identifying header with [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin). |
+| The Host header is incorrect. | The **Host header** option tells CDN nodes which origin hostname to request. A mismatched value can route the request to the wrong virtual host on the origin and produce a `4xx` or `5xx` response. Some origins accept multiple hostnames or use a default virtual host and may not return an error. Example: origin `mycontent.com` with Host header `website.com`. The header does not change automatically when the origin changes. | Set the correct value in the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) option. |
+| Origin access is restricted for the CDN. | The CDN cannot fetch content when the origin ACL blocks Gcore addresses. This case can also return `504`. | Allowlist CDN servers in the [origin&nbsp;ACL](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist). If IP allowlisting is not practical, send an identifying header with [Request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin). |
 
 ### Other errors (402, 504, 508, 556, 557)
 
-These additional codes each have a primary cause. A 504 means the CDN did not get a timely origin response. A blocked origin ACL is one cause. Timeouts, an unreachable origin, or origin overload can produce the same code.
+These additional codes each have a primary cause. A `504` means the CDN did not get a timely origin response. A blocked origin ACL is one cause. Timeouts, an unreachable origin, or origin overload can produce the same code.
 
 | Status code | Cause | Details | Solution |
 |---|---|---|---|
-| 402 | Video delivery is not enabled for the CDN account. | HLS and DASH types `.m3u8`, `.mpd`, `.ts`, `.m4s`, `.m4v`, and `.m4a` can return `402` until Gcore Support enables video delivery. | Request enablement in [streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation). |
-| 504 | The origin did not respond in time. | The CDN timed out waiting for the origin. A blocked origin ACL is one cause. An unreachable origin, a slow origin, or origin overload can also return 504. | Confirm the origin is reachable from CDN. If an ACL blocks Gcore addresses, apply the origin ACL or Request headers fix from the 404 table. |
-| 508 | The CDN hostname and origin form a loop. | A CNAME that points the origin and the CDN hostname at each other sends requests back and forth. Example: a CNAME that uses the origin domain instead of the CDN hostname from [resource&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource). | Fix the custom domain CNAME in [content&nbsp;unavailability](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#1-check-the-configuration-of-the-personal-domain). Confirm the CDN hostname CNAME matches the value in the Customer Portal. |
-| 556 | The origin did not respond within the configured timeout. | Slow origins or overloaded servers can exceed connection or read limits. The default connection timeout is 5 seconds (time allowed to establish a connection). The default read timeout is 30 seconds between successive read operations from the origin. | Review the [connection and read timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) settings for the CDN resource and confirm the origin responds reliably within those limits. |
-| 557 | Simultaneous connections to one origin exceeded the limit. | Gcore CDN returns `557` when the number of simultaneous connections from one CDN location to a single origin server reaches 10,000. The limit is per origin server per CDN location. | Add origins to the [origin&nbsp;group](/cdn/add-an-origin-group) to distribute connections across multiple origin servers. |
+| `402` | Video delivery is not enabled for the CDN account. | HLS and DASH types `.m3u8`, `.mpd`, `.ts`, `.m4s`, `.m4v`, and `.m4a` can return `402` until Gcore Support enables video delivery. | Request enablement in [streaming&nbsp;activation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-1-request-streaming-activation). |
+| `504` | The origin did not respond in time. | The CDN timed out waiting for the origin. A blocked origin ACL is one cause. An unreachable origin, a slow origin, or origin overload can also return `504`. | Test the origin directly, preserving the `Host` header and TLS SNI that the CDN resource uses — for example, with `curl -sS -I -H "Host: origin-hostname" https://origin-address/path`. If the origin does not respond, check its reachability and firewall rules. If an ACL blocks Gcore addresses, apply the origin ACL or Request headers fix from the `404` table above. |
+| `508` | The configured origin resolves back to the same CDN resource, forming a loop. | A loop occurs when the custom domain or Gcore-provided CDN hostname is set as the resource origin instead of the actual origin server. The custom domain CNAME must point to the Gcore target shown in [resource&nbsp;setup](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), and the resource origin must identify the actual origin server — not the CDN hostname or custom domain. | Set the resource origin to the actual origin server address. Fix the custom domain CNAME in [content&nbsp;unavailability](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#1-check-the-configuration-of-the-personal-domain). Confirm the CDN hostname CNAME matches the value in the Customer Portal. |
+| `556` | The origin did not respond within the configured timeout. | Slow origins or overloaded servers can exceed connection or read limits. The default connection timeout is 5 seconds (time allowed to establish a connection). The default read timeout is 30 seconds between successive read operations from the origin. | Review the [connection and read timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) settings for the CDN resource and confirm the origin responds reliably within those limits. |
+| `557` | Simultaneous connections to one origin exceeded the limit. | Gcore CDN returns `557` when the number of simultaneous connections from one CDN location to a single origin server reaches 10,000. The limit is per origin server per CDN location. | Add origins to the [origin&nbsp;group](/cdn/add-an-origin-group) to distribute connections across multiple origin servers. |
 
 #### HLS and DASH 402 responses
 
