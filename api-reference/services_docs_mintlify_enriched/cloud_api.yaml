@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 1151ce68575a
+  version: 85a38996da0a
 servers:
 - url: https://api.gcore.com
 paths:
@@ -1492,29 +1492,37 @@ paths:
       summary: Check container quota
       description: |-
         Check if regional quota is exceeded, if yes the number of additional
-        quotas needed to create the specified cluster will be calculated
+        quotas needed to create the specified cluster will be calculated.
       parameters:
       - in: path
         name: project_id
         required: true
-        description: Project ID
+        description: Project id
         schema:
+          description: Project id
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
-        description: Region ID
+        description: Region id
         schema:
+          description: Region id
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Dict of exceeding quotas
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegionalDiffQuotasSchema'
-        '400':
-          description: Invalid parameter in request
+                $ref: '#/components/schemas/ContainerQuotaCheckSerializer'
       requestBody:
         content:
           application/json:
@@ -2256,30 +2264,44 @@ paths:
       - in: path
         name: project_id
         required: true
-        description: Project ID
+        description: Project id
         schema:
+          description: Project id
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
-        description: Region ID
+        description: Region id
         schema:
+          description: Region id
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: secret_name
         required: true
         description: Pull secret name
         schema:
+          description: Pull secret name
+          example: secret-name
+          examples:
+          - secret-name
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9.-]+[a-zA-Z0-9]$
+          title: Secret Name
           type: string
       responses:
         '200':
-          description: Pull secret
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PullSecretSerializer'
-        '404':
-          description: Resource not found
       tags:
       - Container as a Service
     patch:
@@ -2290,30 +2312,44 @@ paths:
       - in: path
         name: project_id
         required: true
-        description: Project ID
+        description: Project id
         schema:
+          description: Project id
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
-        description: Region ID
+        description: Region id
         schema:
+          description: Region id
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: secret_name
         required: true
         description: Pull secret name
         schema:
+          description: Pull secret name
+          example: secret-name
+          examples:
+          - secret-name
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9.-]+[a-zA-Z0-9]$
+          title: Secret Name
           type: string
       responses:
         '200':
-          description: Pull secret
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PullSecretSerializer'
-        '404':
-          description: Resource not found
       requestBody:
         content:
           application/json:
@@ -2324,31 +2360,45 @@ paths:
     delete:
       operationId: PullSecretHandler.delete
       summary: Delete pull secret
-      description: ''
+      description: Delete a pull secret.
       parameters:
       - in: path
         name: project_id
         required: true
-        description: Project ID
+        description: Project id
         schema:
+          description: Project id
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
-        description: Region ID
+        description: Region id
         schema:
+          description: Region id
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: secret_name
         required: true
         description: Pull secret name
         schema:
+          description: Pull secret name
+          example: secret-name
+          examples:
+          - secret-name
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9.-]+[a-zA-Z0-9]$
+          title: Secret Name
           type: string
       responses:
         '204':
-          description: Everything is OK
-        '404':
-          description: Resource not found
+          description: No Content
       tags:
       - Container as a Service
   /cloud/v1/pricing/{project_id}/{region_id}/caas:
@@ -5282,6 +5332,26 @@ paths:
           	}
           	fmt.Printf("%+v\n", inferenceFlavor.CPU)
           }
+  /cloud/v2/pricing/inference/deployments:
+    post:
+      operationId: InferenceDeploymentPricingHandlerV2.post
+      summary: Preview inference deployment price
+      description: Preview the billing price for an inference deployment
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemPriceResponseSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InferenceDeploymentPriceRequestV2Serializer'
+      tags:
+      - Everywhere Inference
   /cloud/v3/inference/models:
     get:
       operationId: MLModelCatalogListHandlerV3.get
@@ -5332,6 +5402,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MLCatalogModelCardListSerializerV3'
+      deprecated: true
       tags:
       - Everywhere Inference
   /cloud/v3/inference/models/{model_id}:
@@ -5355,26 +5426,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MLCatalogModelCardSerializerV3'
-      tags:
-      - Everywhere Inference
-  /cloud/v2/pricing/inference/deployments:
-    post:
-      operationId: InferenceDeploymentPricingHandlerV2.post
-      summary: Preview inference deployment price
-      description: Preview the billing price for an inference deployment
-      parameters: []
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ItemPriceResponseSerializer'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InferenceDeploymentPriceRequestV2Serializer'
+      deprecated: true
       tags:
       - Everywhere Inference
   /cloud/v3/inference/applications/{project_id}/deployments:
@@ -9912,9 +9964,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.gpu_baremetal.clusters.interfaces.attach(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="faab46fd-26fd-4321-9876-abcdef012345",
+              project_id=1,
+              region_id=1,
           )
           print(task_id_list.tasks)
       - lang: Go
@@ -9936,12 +9988,12 @@ paths:
           	)
           	taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.Attach(
           		context.TODO(),
-          		"instance_id",
+          		"faab46fd-26fd-4321-9876-abcdef012345",
           		cloud.GPUBaremetalClusterInterfaceAttachParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
-          			OfNewInterfaceExternalExtendSchemaWithDDOS: &cloud.GPUBaremetalClusterInterfaceAttachParamsBodyNewInterfaceExternalExtendSchemaWithDDOS{
-          				Type: gcore.String("external"),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			OfExternal: &cloud.GPUBaremetalClusterInterfaceAttachParamsBodyExternal{
+          				Type: "external",
           			},
           		},
           	)
@@ -10014,11 +10066,11 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.gpu_baremetal.clusters.interfaces.detach(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
-              ip_address="192.168.123.20",
-              port_id="351b0dd7-ca09-431c-be53-935db3785067",
+              instance_id="faab46fd-26fd-4321-9876-abcdef012345",
+              project_id=1,
+              region_id=1,
+              ip_address="ip_address",
+              port_id="port_id",
           )
           print(task_id_list.tasks)
       - lang: Go
@@ -10040,12 +10092,12 @@ paths:
           	)
           	taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.Detach(
           		context.TODO(),
-          		"instance_id",
+          		"faab46fd-26fd-4321-9876-abcdef012345",
           		cloud.GPUBaremetalClusterInterfaceDetachParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
-          			IPAddress: "192.168.123.20",
-          			PortID:    "351b0dd7-ca09-431c-be53-935db3785067",
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			IPAddress: "ip_address",
+          			PortID:    "port_id",
           		},
           	)
           	if err != nil {
@@ -11411,6 +11463,53 @@ paths:
               $ref: '#/components/schemas/BaremetalGPUClusterActionSerializer'
       tags:
       - GPU Bare Metal
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.gpu_baremetal.clusters.action(
+              cluster_id="1aaaab48-10d0-46d9-80cc-85209284ceb4",
+              project_id=1,
+              region_id=7,
+              action="start",
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Action(
+          		context.TODO(),
+          		"1aaaab48-10d0-46d9-80cc-85209284ceb4",
+          		cloud.GPUBaremetalClusterActionParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(7),
+          			OfStart:   &cloud.GPUBaremetalClusterActionParamsBodyStart{},
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v3/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/apply_settings:
     post:
       operationId: BaremetalClusterApplySettingsAction.post
@@ -11471,6 +11570,51 @@ paths:
               $ref: '#/components/schemas/ApplySettingsBody'
       tags:
       - GPU Bare Metal
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.gpu_baremetal.clusters.apply_settings(
+              cluster_id="1aaaab48-10d0-46d9-80cc-85209284ceb4",
+              project_id=1,
+              region_id=7,
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.GPUBaremetal.Clusters.ApplySettings(
+          		context.TODO(),
+          		"1aaaab48-10d0-46d9-80cc-85209284ceb4",
+          		cloud.GPUBaremetalClusterApplySettingsParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(7),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v3/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/servers:
     get:
       operationId: BaremetalClusterInstanceServers.get
@@ -11740,6 +11884,53 @@ paths:
               $ref: '#/components/schemas/ApplySettingsBody'
       tags:
       - GPU Bare Metal
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          task_id_list = client.cloud.gpu_baremetal.clusters.servers.apply_settings(
+              server_id="f1c1eeb6-1834-48c9-a7b0-daafce64872b",
+              project_id=1,
+              region_id=7,
+              cluster_id="1aaaab48-10d0-46d9-80cc-85209284ceb4",
+          )
+          print(task_id_list.tasks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Servers.ApplySettings(
+          		context.TODO(),
+          		"f1c1eeb6-1834-48c9-a7b0-daafce64872b",
+          		cloud.GPUBaremetalClusterServerApplySettingsParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(7),
+          			ClusterID: "1aaaab48-10d0-46d9-80cc-85209284ceb4",
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", taskIDList.Tasks)
+          }
   /cloud/v4/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/servers/{server_id}/rebuild:
     post:
       operationId: BaremetalClusterServerRebuild.post
@@ -18080,9 +18271,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           instance = client.cloud.instances.get(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
           print(instance.id)
       - lang: Go
@@ -18104,10 +18295,10 @@ paths:
           	)
           	instance, err := client.Cloud.Instances.Get(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceGetParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -18178,9 +18369,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           instance = client.cloud.instances.update(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
           print(instance.id)
       - lang: Go
@@ -18202,10 +18393,10 @@ paths:
           	)
           	instance, err := client.Cloud.Instances.Update(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceUpdateParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -18307,9 +18498,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.instances.delete(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
           print(task_id_list.tasks)
       - lang: Go
@@ -18331,10 +18522,10 @@ paths:
           	)
           	taskIDList, err := client.Cloud.Instances.Delete(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceDeleteParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -18408,9 +18599,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.instances.action(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
               action="start",
           )
           print(task_id_list.tasks)
@@ -18433,10 +18624,10 @@ paths:
           	)
           	taskIDList, err := client.Cloud.Instances.Action(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceActionParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -18506,9 +18697,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           client.cloud.instances.assign_security_group(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
       - lang: Go
         source: |
@@ -18528,10 +18719,10 @@ paths:
           	)
           	err := client.Cloud.Instances.AssignSecurityGroup(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceAssignSecurityGroupParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -18764,9 +18955,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.instances.resize(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
               flavor_id="g1s-shared-1-0.5",
           )
           print(task_id_list.tasks)
@@ -18789,10 +18980,10 @@ paths:
           	)
           	taskIDList, err := client.Cloud.Instances.Resize(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceResizeParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           			FlavorID:  "g1s-shared-1-0.5",
           		},
           	)
@@ -18863,9 +19054,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           client.cloud.instances.unassign_security_group(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
       - lang: Go
         source: |
@@ -18885,10 +19076,10 @@ paths:
           	)
           	err := client.Cloud.Instances.UnassignSecurityGroup(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceUnassignSecurityGroupParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -19069,9 +19260,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           console = client.cloud.instances.get_console(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
           print(console.remote_console)
       - lang: Go
@@ -19093,10 +19284,10 @@ paths:
           	)
           	console, err := client.Cloud.Instances.GetConsole(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceGetConsoleParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -19317,9 +19508,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           metrics_list = client.cloud.instances.metrics.list(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
               time_interval=6,
               time_unit="hour",
           )
@@ -19343,10 +19534,10 @@ paths:
           	)
           	metricsList, err := client.Cloud.Instances.Metrics.List(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceMetricListParams{
-          			ProjectID:    gcore.Int(0),
-          			RegionID:     gcore.Int(0),
+          			ProjectID:    gcore.Int(1),
+          			RegionID:     gcore.Int(1),
           			TimeInterval: 6,
           			TimeUnit:     cloud.InstanceMetricsTimeUnitHour,
           		},
@@ -19423,9 +19614,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.instances.add_to_placement_group(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
               servergroup_id="47003067-550a-6f17-93b6-81ee16ba061e",
           )
           print(task_id_list.tasks)
@@ -19448,10 +19639,10 @@ paths:
           	)
           	taskIDList, err := client.Cloud.Instances.AddToPlacementGroup(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceAddToPlacementGroupParams{
-          			ProjectID:     gcore.Int(0),
-          			RegionID:      gcore.Int(0),
+          			ProjectID:     gcore.Int(1),
+          			RegionID:      gcore.Int(1),
           			ServergroupID: "47003067-550a-6f17-93b6-81ee16ba061e",
           		},
           	)
@@ -19522,9 +19713,9 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           task_id_list = client.cloud.instances.remove_from_placement_group(
-              instance_id="instance_id",
-              project_id=0,
-              region_id=0,
+              instance_id="b5b4d65d-945f-4b98-ab6f-332319c724ef",
+              project_id=1,
+              region_id=1,
           )
           print(task_id_list.tasks)
       - lang: Go
@@ -19546,10 +19737,10 @@ paths:
           	)
           	taskIDList, err := client.Cloud.Instances.RemoveFromPlacementGroup(
           		context.TODO(),
-          		"instance_id",
+          		"b5b4d65d-945f-4b98-ab6f-332319c724ef",
           		cloud.InstanceRemoveFromPlacementGroupParams{
-          			ProjectID: gcore.Int(0),
-          			RegionID:  gcore.Int(0),
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
           		},
           	)
           	if err != nil {
@@ -33588,24 +33779,30 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       responses:
         '201':
-          description: Created registry details
+          description: Created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistrySerializer'
-        '400':
-          description: Invalid request parameters
-        '409':
-          description: Registry already exists
       requestBody:
         content:
           application/json:
@@ -33665,34 +33862,57 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: query
         name: limit
         required: false
-        description: Limit the number of returned items
+        description: Optional. Limit the number of returned items
         schema:
+          default: 1000
+          description: Optional. Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
           type: integer
       - in: query
         name: offset
         required: false
-        description: Offset value is used to exclude the first set of records from the result
+        description: Optional. Offset value is used to exclude the first set of records from the result
         schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
           type: integer
       responses:
         '200':
-          description: List of registries
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryCollectionSerializer'
-        '404':
-          description: Project or region not found
       tags:
       - Registry
       x-codeSamples:
@@ -33747,28 +33967,41 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       responses:
         '200':
-          description: Registry details
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistrySerializer'
-        '404':
-          description: Registry not found
       tags:
       - Registry
       x-codeSamples:
@@ -33826,26 +34059,37 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       responses:
         '204':
-          description: Everything is OK, the security group was deleted
-        '403':
-          description: Insufficient permissions
-        '404':
-          description: Registry not found
+          description: No Content
       tags:
       - Registry
       x-codeSamples:
@@ -33901,40 +34145,68 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: query
         name: limit
         required: false
-        description: Limit the number of returned items
+        description: Optional. Limit the number of returned items
         schema:
+          default: 1000
+          description: Optional. Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
           type: integer
       - in: query
         name: offset
         required: false
-        description: Offset value is used to exclude the first set of records from the result
+        description: Optional. Offset value is used to exclude the first set of records from the result
         schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
           type: integer
       responses:
         '200':
-          description: List of repositories
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryRepositoryCollectionSerializer'
-        '404':
-          description: Registry not found
       tags:
       - Registry
       x-codeSamples:
@@ -33994,30 +34266,48 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: repository_name
         required: true
-        description: Repository name If it contains slash, encode it with URL encoding. e.g. a/b -> a%252Fb
+        description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
         schema:
+          description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
+          example: nginx
+          examples:
+          - nginx
+          title: Repository Name
           type: string
       responses:
         '204':
-          description: Repository has been deleted
-        '404':
-          description: Registry or repository not found
+          description: No Content
       tags:
       - Registry
       x-codeSamples:
@@ -34075,46 +34365,79 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: repository_name
         required: true
-        description: Repository name If it contains slash, encode it with URL encoding. e.g. a/b -> a%252Fb
+        description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
         schema:
+          description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
+          example: nginx
+          examples:
+          - nginx
+          title: Repository Name
           type: string
       - in: query
         name: limit
         required: false
-        description: Limit the number of returned items
+        description: Optional. Limit the number of returned items
         schema:
+          default: 1000
+          description: Optional. Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
           type: integer
       - in: query
         name: offset
         required: false
-        description: Offset value is used to exclude the first set of records from the result
+        description: Optional. Offset value is used to exclude the first set of records from the result
         schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
           type: integer
       responses:
         '200':
-          description: List of artifacts
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryArtifactCollectionSerializer'
-        '404':
-          description: Registry or repository not found
       tags:
       - Registry
       x-codeSamples:
@@ -34176,36 +34499,59 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: repository_name
         required: true
-        description: Repository name If it contains slash, encode it with URL encoding. e.g. a/b -> a%252Fb
+        description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
         schema:
+          description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
+          example: nginx
+          examples:
+          - nginx
+          title: Repository Name
           type: string
       - in: path
         name: digest
         required: true
         description: Artifact digest
         schema:
+          description: Artifact digest
+          example: sha256:5414002a0c147f8e41da0d0764b5074480012852d5d9a0ef8bd2fec904e62b7c
+          examples:
+          - sha256:5414002a0c147f8e41da0d0764b5074480012852d5d9a0ef8bd2fec904e62b7c
+          title: Digest
           type: string
       responses:
         '204':
-          description: Artifact has been deleted
-        '404':
-          description: Registry, repository, or artifact not found
+          description: No Content
       tags:
       - Registry
       x-codeSamples:
@@ -34265,42 +34611,70 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: repository_name
         required: true
-        description: Repository name If it contains slash, encode it with URL encoding. e.g. a/b -> a%252Fb
+        description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
         schema:
+          description: Repository name. If it contains a slash, encode it with URL encoding, e.g. a/b -> a%252Fb
+          example: nginx
+          examples:
+          - nginx
+          title: Repository Name
           type: string
       - in: path
         name: digest
         required: true
         description: Artifact digest
         schema:
+          description: Artifact digest
+          example: sha256:5414002a0c147f8e41da0d0764b5074480012852d5d9a0ef8bd2fec904e62b7c
+          examples:
+          - sha256:5414002a0c147f8e41da0d0764b5074480012852d5d9a0ef8bd2fec904e62b7c
+          title: Digest
           type: string
       - in: path
         name: tag_name
         required: true
         description: Tag name
         schema:
+          description: Tag name
+          example: latest
+          examples:
+          - latest
+          title: Tag Name
           type: string
       responses:
         '204':
-          description: Tag has been deleted
-        '404':
-          description: Registry, repository, artifact, or tag not found
+          description: No Content
       tags:
       - Registry
       x-codeSamples:
@@ -34362,28 +34736,41 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       responses:
         '200':
-          description: Updated registry details
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistrySerializer'
-        '404':
-          description: Registry not found
       requestBody:
         content:
           application/json:
@@ -34447,30 +34834,41 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       responses:
         '201':
-          description: Created user details
+          description: Created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryUserCreateResponseSerializer'
-        '404':
-          description: Registry not found
-        '409':
-          description: User already exists
       requestBody:
         content:
           application/json:
@@ -34537,40 +34935,68 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: query
         name: limit
         required: false
-        description: Limit the number of returned items
+        description: Optional. Limit the number of returned items
         schema:
+          default: 1000
+          description: Optional. Limit the number of returned items
+          example: 1000
+          examples:
+          - 1000
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
           type: integer
       - in: query
         name: offset
         required: false
-        description: Offset value is used to exclude the first set of records from the result
+        description: Optional. Offset value is used to exclude the first set of records from the result
         schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
           type: integer
       responses:
         '200':
-          description: List of users
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryUserCollectionSerializer'
-        '404':
-          description: Registry not found
       tags:
       - Registry
       x-codeSamples:
@@ -34630,34 +35056,52 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: user_id
         required: true
         description: User ID
         schema:
+          description: User ID
+          example: 1
+          examples:
+          - 1
+          title: User Id
           type: integer
       responses:
         '200':
-          description: Updated user details
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryUserSerializer'
-        '404':
-          description: Registry or user not found
       requestBody:
         content:
           application/json:
@@ -34724,30 +35168,48 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: user_id
         required: true
         description: User ID
         schema:
+          description: User ID
+          example: 1
+          examples:
+          - 1
+          title: User Id
           type: integer
       responses:
         '204':
-          description: User has been deleted
-        '404':
-          description: Registry or user not found
+          description: No Content
       tags:
       - Registry
       x-codeSamples:
@@ -34805,34 +35267,52 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       - in: path
         name: user_id
         required: true
         description: User ID
         schema:
+          description: User ID
+          example: 1
+          examples:
+          - 1
+          title: User Id
           type: integer
       responses:
         '200':
-          description: Updated user details with new secret
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegistryUserUpdateResponseSerializer'
-        '404':
-          description: Registry or user not found
       tags:
       - Registry
       x-codeSamples:
@@ -34893,28 +35373,41 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: registry_id
         required: true
         description: Registry ID
         schema:
+          description: Registry ID
+          example: 1
+          examples:
+          - 1
+          title: Registry Id
           type: integer
       responses:
         '201':
-          description: List of created users
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegistryUserCreateResponseSerializer'
-        '409':
-          description: One or more users already exist
+                $ref: '#/components/schemas/RegistryUserCreateResponseCollectionSerializer'
       requestBody:
         content:
           application/json:
@@ -34977,7 +35470,7 @@ paths:
           }
   /cloud/v1/registries/{project_id}/{region_id}/check_limits:
     post:
-      operationId: RegistyCheckLimitsHandler.post
+      operationId: RegistryCheckLimitsHandler.post
       summary: Check registry quota
       description: Check if the registry creation request exceeds any quotas.
       parameters:
@@ -34986,22 +35479,30 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       responses:
         '200':
-          description: Dictionary of exceeding quotas
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegionalDiffQuotasSchema'
-        '400':
-          description: Invalid request parameters
+                $ref: '#/components/schemas/RegistryQuotaCheckSerializer'
       requestBody:
         content:
           application/json:
@@ -39669,6 +40170,50 @@ paths:
               $ref: '#/components/schemas/CreateLifecyclePolicySerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.create(
+              project_id=1,
+              region_id=1,
+              action="volume_snapshot",
+              name="schedule_1",
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.New(context.TODO(), cloud.LifecyclePolicyNewParams{
+          		ProjectID: gcore.Int(1),
+          		RegionID:  gcore.Int(1),
+          		Action:    cloud.LifecyclePolicyNewParamsActionVolumeSnapshot,
+          		Name:      "schedule_1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
     get:
       operationId: PoliciesViewSet.get
       summary: List snapshot policies
@@ -39705,6 +40250,46 @@ paths:
                 $ref: '#/components/schemas/LifecyclePolicyCollectionSerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policies = client.cloud.lifecycle_policies.list(
+              project_id=1,
+              region_id=1,
+          )
+          print(lifecycle_policies.count)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicies, err := client.Cloud.LifecyclePolicies.List(context.TODO(), cloud.LifecyclePolicyListParams{
+          		ProjectID: gcore.Int(1),
+          		RegionID:  gcore.Int(1),
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicies.Count)
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}:
     get:
       operationId: PolicyViewSet.get
@@ -39753,6 +40338,51 @@ paths:
                 $ref: '#/components/schemas/LifecyclePolicySerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.get(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.Get(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyGetParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
     patch:
       operationId: PolicyViewSet.patch
       summary: Update snapshot policy
@@ -39805,6 +40435,51 @@ paths:
               $ref: '#/components/schemas/UpdateLifecyclePolicySerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.update(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.Update(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyUpdateParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
     delete:
       operationId: PolicyViewSet.delete
       summary: Delete snapshot policy
@@ -39848,6 +40523,48 @@ paths:
           description: No Content
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          client.cloud.lifecycle_policies.delete(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+          )
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	err := client.Cloud.LifecyclePolicies.Delete(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyDeleteParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}/add_schedules:
     post:
       operationId: AddSchedulesToPolicyViewSet.post
@@ -39901,6 +40618,61 @@ paths:
               $ref: '#/components/schemas/AddSchedulesSerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.add_schedules(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+              schedules=[{
+                  "type": "cron"
+              }, {
+                  "type": "interval"
+              }],
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.AddSchedules(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyAddSchedulesParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			Schedules: []cloud.LifecyclePolicyAddSchedulesParamsScheduleUnion{{
+          				OfCron: &cloud.LifecyclePolicyAddSchedulesParamsScheduleCron{},
+          			}, {
+          				OfInterval: &cloud.LifecyclePolicyAddSchedulesParamsScheduleInterval{},
+          			}},
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}/add_volumes_to_policy:
     put:
       operationId: AddVolumesInPolicyViewSet.put
@@ -39954,6 +40726,53 @@ paths:
               $ref: '#/components/schemas/VolumeIdsSerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.add_volumes(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+              volume_ids=["1488e2ce-f906-47fb-ba32-c25a3f63df4f"],
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.AddVolumes(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyAddVolumesParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			VolumeIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}/remove_schedules:
     post:
       operationId: RemoveSchedulesFromPolicyViewSet.post
@@ -40007,6 +40826,53 @@ paths:
               $ref: '#/components/schemas/RemoveScheduleSerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.remove_schedules(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+              schedule_ids=["1488e2ce-f906-47fb-ba32-c25a3f63df4f"],
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.RemoveSchedules(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyRemoveSchedulesParams{
+          			ProjectID:   gcore.Int(1),
+          			RegionID:    gcore.Int(1),
+          			ScheduleIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}/remove_volumes_from_policy:
     put:
       operationId: RemoveVolumesFromPolicyViewSet.put
@@ -40060,6 +40926,53 @@ paths:
               $ref: '#/components/schemas/VolumeIdsSerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          lifecycle_policy = client.cloud.lifecycle_policies.remove_volumes(
+              policy_id=1,
+              project_id=1,
+              region_id=1,
+              volume_ids=["1488e2ce-f906-47fb-ba32-c25a3f63df4f"],
+          )
+          print(lifecycle_policy.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.RemoveVolumes(
+          		context.TODO(),
+          		1,
+          		cloud.LifecyclePolicyRemoveVolumesParams{
+          			ProjectID: gcore.Int(1),
+          			RegionID:  gcore.Int(1),
+          			VolumeIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", lifecyclePolicy.ID)
+          }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/estimate_max_policy_usage:
     post:
       operationId: PolicyCostViewSet.post
@@ -40102,6 +41015,50 @@ paths:
               $ref: '#/components/schemas/CreateLifecyclePolicySerializer'
       tags:
       - Snapshot Schedules
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          response = client.cloud.lifecycle_policies.estimate_max_usage(
+              project_id=1,
+              region_id=1,
+              action="volume_snapshot",
+              name="schedule_1",
+          )
+          print(response.max_cost)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cloud"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	response, err := client.Cloud.LifecyclePolicies.EstimateMaxUsage(context.TODO(), cloud.LifecyclePolicyEstimateMaxUsageParams{
+          		ProjectID: gcore.Int(1),
+          		RegionID:  gcore.Int(1),
+          		Action:    cloud.LifecyclePolicyEstimateMaxUsageParamsActionVolumeSnapshot,
+          		Name:      "schedule_1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", response.MaxCost)
+          }
   /cloud/v2/pricing/{project_id}/{region_id}/lifecycle_policy:
     post:
       operationId: LifecyclePolicyPricingV2ViewSet.post
@@ -41035,9 +41992,9 @@ paths:
       - in: query
         name: task_type
         required: false
-        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_basic_vm', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
         schema:
-          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_basic_vm', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
           title: Task Type
           type: string
       - in: query
@@ -41145,9 +42102,9 @@ paths:
       - in: query
         name: task_type
         required: false
-        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+        description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_basic_vm', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
         schema:
-          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
+          description: Filter the tasks by their type one of ['activate_ddos_profile', 'attach_bm_to_reserved_fixed_ip', 'attach_vm_interface', 'attach_vm_to_reserved_fixed_ip', 'attach_volume', 'convert_fip_to_reserved_fixed_ip', 'convert_reserved_fixed_ip_to_fip', 'create_ai_cluster_gpu', 'create_basic_vm', 'create_bm', 'create_caas_container', 'create_dbaas_postgres_cluster', 'create_ddos_profile', 'create_faas_function', 'create_faas_namespace', 'create_fip', 'create_gpu_virtual_cluster', 'create_image', 'create_inference_application', 'create_inference_instance', 'create_k8s_cluster_pool_v2', 'create_k8s_cluster_v2', 'create_l7policy', 'create_l7rule', 'create_lblistener', 'create_lbmember', 'create_lbpool', 'create_lbpool_health_monitor', 'create_loadbalancer', 'create_network', 'create_reserved_fixed_ip', 'create_router', 'create_secret', 'create_security_group', 'create_security_group_rule', 'create_servergroup', 'create_sfs', 'create_snapshot', 'create_subnet', 'create_vm', 'create_volume', 'deactivate_ddos_profile', 'delete_ai_cluster_gpu', 'delete_basic_vm', 'delete_caas_container', 'delete_dbaas_postgres_cluster', 'delete_ddos_profile', 'delete_faas_function', 'delete_faas_namespace', 'delete_fip', 'delete_gpu_virtual_cluster', 'delete_gpu_virtual_server', 'delete_image', 'delete_inference_application', 'delete_inference_instance', 'delete_k8s_cluster_pool_v2', 'delete_k8s_cluster_v2', 'delete_l7policy', 'delete_l7rule', 'delete_lblistener', 'delete_lbmember', 'delete_lbmetadata', 'delete_lbpool', 'delete_loadbalancer', 'delete_network', 'delete_project', 'delete_reserved_fixed_ip', 'delete_router', 'delete_secret', 'delete_security_group_rule', 'delete_servergroup', 'delete_sfs', 'delete_snapshot', 'delete_subnet', 'delete_vm', 'delete_volume', 'detach_vm_interface', 'detach_volume', 'download_image', 'downscale_ai_cluster_gpu', 'downscale_gpu_virtual_cluster', 'extend_sfs', 'extend_volume', 'failover_loadbalancer', 'hard_reboot_bm', 'hard_reboot_gpu_baremetal_cluster', 'hard_reboot_gpu_baremetal_server', 'hard_reboot_gpu_virtual_cluster', 'hard_reboot_gpu_virtual_server', 'hard_reboot_vm', 'patch_caas_container', 'patch_dbaas_postgres_cluster', 'patch_faas_function', 'patch_faas_namespace', 'patch_lblistener', 'patch_lbpool', 'put_into_server_group', 'put_l7rule', 'rebuild_bm', 'rebuild_gpu_baremetal_cluster', 'rebuild_gpu_baremetal_node', 'rebuild_gpu_baremetal_server', 'remove_from_server_group', 'replace_gpu_baremetal_server', 'replace_lbmetadata', 'resize_k8s_cluster_v2', 'resize_loadbalancer', 'resize_vm', 'resume_vm', 'revert_volume', 'soft_reboot_bm', 'soft_reboot_gpu_baremetal_cluster', 'soft_reboot_gpu_baremetal_server', 'soft_reboot_gpu_virtual_cluster', 'soft_reboot_gpu_virtual_server', 'soft_reboot_vm', 'start_bm', 'start_gpu_baremetal_cluster', 'start_gpu_baremetal_server', 'start_gpu_virtual_cluster', 'start_gpu_virtual_server', 'start_vm', 'stop_bm', 'stop_gpu_baremetal_cluster', 'stop_gpu_baremetal_server', 'stop_gpu_virtual_cluster', 'stop_gpu_virtual_server', 'stop_vm', 'suspend_vm', 'sync_private_flavors', 'update_basic_vm', 'update_ddos_profile', 'update_floating_ip', 'update_inference_application', 'update_inference_instance', 'update_k8s_cluster_v2', 'update_l7policy', 'update_lbmember', 'update_lbmetadata', 'update_loadbalancer', 'update_network', 'update_port', 'update_port_allowed_address_pairs', 'update_router', 'update_security_group', 'update_sfs', 'update_tags_gpu_virtual_cluster', 'upgrade_k8s_cluster_v2', 'upscale_ai_cluster_gpu', 'upscale_gpu_virtual_cluster']
           items:
             type: string
           title: Task Type
@@ -50843,6 +51800,98 @@ components:
       - port
       title: ContainerProbeTcpSocketConfigSerializerV2
       type: object
+    ContainerQuotaCheckSerializer:
+      description: |-
+        Exceeded quota fields, present only when regional limits would be violated.
+
+        An empty response means no quotas are exceeded.
+      properties:
+        caas_container_count_limit:
+          description: Containers count limit
+          example: 5
+          examples:
+          - 5
+          title: Caas Container Count Limit
+          type: integer
+        caas_container_count_requested:
+          description: Containers count requested
+          example: 1
+          examples:
+          - 1
+          title: Caas Container Count Requested
+          type: integer
+        caas_container_count_usage:
+          description: Containers count usage
+          example: 5
+          examples:
+          - 5
+          title: Caas Container Count Usage
+          type: integer
+        caas_cpu_count_limit:
+          description: Containers CPU count limit, mCPU
+          example: 10
+          examples:
+          - 10
+          title: Caas Cpu Count Limit
+          type: integer
+        caas_cpu_count_requested:
+          description: Containers CPU count requested, mCPU
+          example: 20
+          examples:
+          - 20
+          title: Caas Cpu Count Requested
+          type: integer
+        caas_cpu_count_usage:
+          description: Containers CPU count usage, mCPU
+          example: 5
+          examples:
+          - 5
+          title: Caas Cpu Count Usage
+          type: integer
+        caas_gpu_count_limit:
+          description: Containers GPU count limit
+          example: 4
+          examples:
+          - 4
+          title: Caas Gpu Count Limit
+          type: integer
+        caas_gpu_count_requested:
+          description: Containers GPU count requested
+          example: 8
+          examples:
+          - 8
+          title: Caas Gpu Count Requested
+          type: integer
+        caas_gpu_count_usage:
+          description: Containers GPU count usage
+          example: 2
+          examples:
+          - 2
+          title: Caas Gpu Count Usage
+          type: integer
+        caas_ram_size_limit:
+          description: Containers RAM size limit, MiB
+          example: 2048
+          examples:
+          - 2048
+          title: Caas Ram Size Limit
+          type: integer
+        caas_ram_size_requested:
+          description: Containers RAM size requested, MiB
+          example: 4096
+          examples:
+          - 4096
+          title: Caas Ram Size Requested
+          type: integer
+        caas_ram_size_usage:
+          description: Containers RAM size usage, MiB
+          example: 1024
+          examples:
+          - 1024
+          title: Caas Ram Size Usage
+          type: integer
+      title: ContainerQuotaCheckSerializer
+      type: object
     ContainerScaleOutSerializerV3:
       properties:
         cooldown_period:
@@ -55999,10 +57048,11 @@ components:
     CreateUserActionSubscriptionMqSerializer:
       properties:
         connection_string:
-          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host"
-          example: amqps://guest:guest@192.168.123.20:5671/user_action_events
+          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host". The scheme must be amqp or amqps, the port must be a valid TCP port, and the host must resolve to a public address (private, loopback, link-local and metadata addresses are rejected with a 400).
+          example: amqps://guest:guest@93.184.216.34:5671/user_action_events
           examples:
-          - amqps://guest:guest@192.168.123.20:5671/user_action_events
+          - amqps://guest:guest@93.184.216.34:5671/user_action_events
+          - amqps://guest:guest@broker.example.com:5671/user_action_events
           title: Connection String
           type: string
         exchange:
@@ -64899,7 +65949,8 @@ components:
           $ref: '#/components/schemas/K8sClusterNFSCreateV2Serializer'
           description: NFS CSI driver settings
           examples:
-          - vast_enabled: true
+          - ddn_enabled: false
+            vast_enabled: true
       title: K8sClusterCSICreateV2Serializer
       type: object
     K8sClusterCSIV2Serializer:
@@ -64908,7 +65959,8 @@ components:
           $ref: '#/components/schemas/K8sClusterNFSV2Serializer'
           description: NFS settings
           examples:
-          - vast_enabled: true
+          - ddn_enabled: false
+            vast_enabled: true
       required:
       - nfs
       title: K8sClusterCSIV2Serializer
@@ -65321,6 +66373,7 @@ components:
           description: Container Storage Interface (CSI) driver settings
           examples:
           - nfs:
+              ddn_enabled: false
               vast_enabled: true
         ddos_profile:
           anyOf:
@@ -65695,6 +66748,14 @@ components:
       type: object
     K8sClusterNFSCreateV2Serializer:
       properties:
+        ddn_enabled:
+          default: false
+          description: Enable or disable DDN (Lustre) integration. The default value is `false`. When set to `true`, the DDN EXAScaler CSI driver will be deployed in the cluster with a dedicated StorageClass for each DDN file share defined in the cloud. At least one DDN file share must already exist in the project; otherwise cluster creation fails with a `400` validation error. Existing file shares are available immediately, while those created after the cluster may take a few minutes to appear.
+          example: true
+          examples:
+          - true
+          title: Ddn Enabled
+          type: boolean
         vast_enabled:
           default: false
           description: Enable or disable VAST NFS integration. The default value is `false`. When set to `true`, a dedicated StorageClass will be created in the cluster for each VAST NFS file share defined in the cloud. All file shares created prior to cluster creation will be available immediately, while those created afterward may take a few minutes for to appear.
@@ -65707,6 +66768,13 @@ components:
       type: object
     K8sClusterNFSV2Serializer:
       properties:
+        ddn_enabled:
+          description: Whether DDN (Lustre) integration is enabled. When `true`, the DDN EXAScaler CSI driver is deployed in the cluster and each DDN file share defined in the cloud is exposed as a dedicated StorageClass.
+          example: true
+          examples:
+          - true
+          title: Ddn Enabled
+          type: boolean
         vast_enabled:
           description: Indicates the status of VAST NFS integration
           example: true
@@ -65716,6 +66784,7 @@ components:
           type: boolean
       required:
       - vast_enabled
+      - ddn_enabled
       title: K8sClusterNFSV2Serializer
       type: object
     K8sClusterOIDCV2Serializer:
@@ -76772,610 +77841,6 @@ components:
       - components
       title: RegionStatus
       type: object
-    RegionalDiffQuotasSchema:
-      type: object
-      properties:
-        baremetal_basic_count_limit:
-          type: integer
-          description: Basic bare metal servers count limit
-        baremetal_basic_count_requested:
-          type: integer
-          description: Basic bare metal servers count requested
-        baremetal_basic_count_usage:
-          type: integer
-          description: Basic bare metal servers count usage
-        baremetal_gpu_a100_count_limit:
-          type: integer
-          description: Bare metal A100 GPU server count limit
-        baremetal_gpu_a100_count_requested:
-          type: integer
-          description: Bare metal A100 GPU server count requested
-        baremetal_gpu_a100_count_usage:
-          type: integer
-          description: Bare metal A100 GPU server count usage
-        baremetal_gpu_h100_count_limit:
-          type: integer
-          description: Bare metal H100 GPU server count limit
-        baremetal_gpu_h100_count_requested:
-          type: integer
-          description: Bare metal H100 GPU server count requested
-        baremetal_gpu_h100_count_usage:
-          type: integer
-          description: Bare metal H100 GPU server count usage
-        baremetal_gpu_h200_count_limit:
-          type: integer
-          description: Bare metal H200 GPU server count limit
-        baremetal_gpu_h200_count_requested:
-          type: integer
-          description: Bare metal H200 GPU server count requested
-        baremetal_gpu_h200_count_usage:
-          type: integer
-          description: Bare metal H200 GPU server count usage
-        baremetal_gpu_l40s_count_limit:
-          type: integer
-          description: Bare metal L40S GPU server count limit
-        baremetal_gpu_l40s_count_requested:
-          type: integer
-          description: Bare metal L40S GPU server count requested
-        baremetal_gpu_l40s_count_usage:
-          type: integer
-          description: Bare metal L40S GPU server count usage
-        baremetal_hf_count_limit:
-          type: integer
-          description: High-frequency bare metal servers count limit
-        baremetal_hf_count_requested:
-          type: integer
-          description: High-frequency bare metal servers count requested
-        baremetal_hf_count_usage:
-          type: integer
-          description: High-frequency bare metal servers count usage
-        baremetal_infrastructure_count_limit:
-          type: integer
-          description: Infrastructure bare metal servers count limit
-        baremetal_infrastructure_count_requested:
-          type: integer
-          description: Infrastructure bare metal servers count requested
-        baremetal_infrastructure_count_usage:
-          type: integer
-          description: Infrastructure bare metal servers count usage
-        baremetal_network_count_limit:
-          type: integer
-          description: Bare metal Network Count limit
-        baremetal_network_count_requested:
-          type: integer
-          description: Bare metal Network Count requested
-        baremetal_network_count_usage:
-          type: integer
-          description: Bare metal Network Count usage
-        baremetal_storage_count_limit:
-          type: integer
-          description: Storage bare metal servers count limit
-        baremetal_storage_count_requested:
-          type: integer
-          description: Storage bare metal servers count requested
-        baremetal_storage_count_usage:
-          type: integer
-          description: Storage bare metal servers count usage
-        caas_container_count_limit:
-          type: integer
-          description: Containers count limit
-        caas_container_count_requested:
-          type: integer
-          description: Containers count requested
-        caas_container_count_usage:
-          type: integer
-          description: Containers count usage
-        caas_cpu_count_limit:
-          type: integer
-          description: mCPU count for containers limit
-        caas_cpu_count_requested:
-          type: integer
-          description: mCPU count for containers requested
-        caas_cpu_count_usage:
-          type: integer
-          description: mCPU count for containers usage
-        caas_gpu_count_limit:
-          type: integer
-          description: Containers gpu count limit
-        caas_gpu_count_requested:
-          type: integer
-          description: Containers gpu count requested
-        caas_gpu_count_usage:
-          type: integer
-          description: Containers gpu count usage
-        caas_ram_size_limit:
-          type: integer
-          description: MiB memory count for containers limit
-        caas_ram_size_requested:
-          type: integer
-          description: MiB memory count for containers requested
-        caas_ram_size_usage:
-          type: integer
-          description: MiB memory count for containers usage
-        cluster_count_limit:
-          type: integer
-          description: K8s clusters count limit
-        cluster_count_requested:
-          type: integer
-          description: K8s clusters count requested
-        cluster_count_usage:
-          type: integer
-          description: K8s clusters count usage
-        cpu_count_limit:
-          type: integer
-          description: vCPU Count limit
-        cpu_count_requested:
-          type: integer
-          description: vCPU Count requested
-        cpu_count_usage:
-          type: integer
-          description: vCPU Count usage
-        dbaas_postgres_cluster_count_limit:
-          type: integer
-          description: DBaaS cluster count limit
-        dbaas_postgres_cluster_count_requested:
-          type: integer
-          description: DBaaS cluster count requested
-        dbaas_postgres_cluster_count_usage:
-          type: integer
-          description: DBaaS cluster count usage
-        external_ip_count_limit:
-          type: integer
-          description: External IP Count limit
-        external_ip_count_requested:
-          type: integer
-          description: External IP Count requested
-        external_ip_count_usage:
-          type: integer
-          description: External IP Count usage
-        faas_cpu_count_limit:
-          type: integer
-          description: mCPU count for functions limit
-        faas_cpu_count_requested:
-          type: integer
-          description: mCPU count for functions requested
-        faas_cpu_count_usage:
-          type: integer
-          description: mCPU count for functions usage
-        faas_function_count_limit:
-          type: integer
-          description: Functions count limit
-        faas_function_count_requested:
-          type: integer
-          description: Functions count requested
-        faas_function_count_usage:
-          type: integer
-          description: Functions count usage
-        faas_namespace_count_limit:
-          type: integer
-          description: Functions namespace count limit
-        faas_namespace_count_requested:
-          type: integer
-          description: Functions namespace count requested
-        faas_namespace_count_usage:
-          type: integer
-          description: Functions namespace count usage
-        faas_ram_size_limit:
-          type: integer
-          description: MiB memory count for functions limit
-        faas_ram_size_requested:
-          type: integer
-          description: MiB memory count for functions requested
-        faas_ram_size_usage:
-          type: integer
-          description: MiB memory count for functions usage
-        firewall_count_limit:
-          type: integer
-          description: Firewalls Count limit
-        firewall_count_requested:
-          type: integer
-          description: Firewalls Count requested
-        firewall_count_usage:
-          type: integer
-          description: Firewalls Count usage
-        floating_count_limit:
-          type: integer
-          description: Floating IP Count limit
-        floating_count_requested:
-          type: integer
-          description: Floating IP Count requested
-        floating_count_usage:
-          type: integer
-          description: Floating IP Count usage
-        gpu_count_limit:
-          type: integer
-          description: GPU Count limit
-        gpu_count_requested:
-          type: integer
-          description: GPU Count requested
-        gpu_count_usage:
-          type: integer
-          description: GPU Count usage
-        gpu_virtual_a100_count_limit:
-          type: integer
-          description: Virtual A100 GPU card count limit
-        gpu_virtual_a100_count_requested:
-          type: integer
-          description: Virtual A100 GPU card count requested
-        gpu_virtual_a100_count_usage:
-          type: integer
-          description: Virtual A100 GPU card count usage
-        gpu_virtual_h100_count_limit:
-          type: integer
-          description: Virtual H100 GPU card count limit
-        gpu_virtual_h100_count_requested:
-          type: integer
-          description: Virtual H100 GPU card count requested
-        gpu_virtual_h100_count_usage:
-          type: integer
-          description: Virtual H100 GPU card count usage
-        gpu_virtual_h200_count_limit:
-          type: integer
-          description: Virtual H200 GPU card count limit
-        gpu_virtual_h200_count_requested:
-          type: integer
-          description: Virtual H200 GPU card count requested
-        gpu_virtual_h200_count_usage:
-          type: integer
-          description: Virtual H200 GPU card count usage
-        gpu_virtual_l40s_count_limit:
-          type: integer
-          description: Virtual L40S GPU card count limit
-        gpu_virtual_l40s_count_requested:
-          type: integer
-          description: Virtual L40S GPU card count requested
-        gpu_virtual_l40s_count_usage:
-          type: integer
-          description: Virtual L40S GPU card count usage
-        image_count_limit:
-          type: integer
-          description: Images Count limit
-        image_count_requested:
-          type: integer
-          description: Images Count requested
-        image_count_usage:
-          type: integer
-          description: Images Count usage
-        image_size_limit:
-          type: integer
-          description: Images Size, bytes limit
-        image_size_requested:
-          type: integer
-          description: Images Size, bytes requested
-        image_size_usage:
-          type: integer
-          description: Images Size, bytes usage
-        ipu_count_limit:
-          type: integer
-          description: IPU Count limit
-        ipu_count_requested:
-          type: integer
-          description: IPU Count requested
-        ipu_count_usage:
-          type: integer
-          description: IPU Count usage
-        laas_topic_count_limit:
-          type: integer
-          description: LaaS Topics Count limit
-        laas_topic_count_requested:
-          type: integer
-          description: LaaS Topics Count requested
-        laas_topic_count_usage:
-          type: integer
-          description: LaaS Topics Count usage
-        loadbalancer_count_limit:
-          type: integer
-          description: Load Balancers Count limit
-        loadbalancer_count_requested:
-          type: integer
-          description: Load Balancers Count requested
-        loadbalancer_count_usage:
-          type: integer
-          description: Load Balancers Count usage
-        network_count_limit:
-          type: integer
-          description: Networks Count limit
-        network_count_requested:
-          type: integer
-          description: Networks Count requested
-        network_count_usage:
-          type: integer
-          description: Networks Count usage
-        ram_limit:
-          type: integer
-          description: RAM Size, MiB limit
-        ram_requested:
-          type: integer
-          description: RAM Size, MiB requested
-        ram_usage:
-          type: integer
-          description: RAM Size, MiB usage
-        registry_count_limit:
-          type: integer
-          description: Registries count limit
-        registry_count_requested:
-          type: integer
-          description: Registries count requested
-        registry_count_usage:
-          type: integer
-          description: Registries count usage
-        registry_storage_limit:
-          type: integer
-          description: Registries volume usage, GiB limit
-        registry_storage_requested:
-          type: integer
-          description: Registries volume usage, GiB requested
-        registry_storage_usage:
-          type: integer
-          description: Registries volume usage, GiB usage
-        router_count_limit:
-          type: integer
-          description: Routers Count limit
-        router_count_requested:
-          type: integer
-          description: Routers Count requested
-        router_count_usage:
-          type: integer
-          description: Routers Count usage
-        secret_count_limit:
-          type: integer
-          description: Secret Count limit
-        secret_count_requested:
-          type: integer
-          description: Secret Count requested
-        secret_count_usage:
-          type: integer
-          description: Secret Count usage
-        servergroup_count_limit:
-          type: integer
-          description: Placement Group Count limit
-        servergroup_count_requested:
-          type: integer
-          description: Placement Group Count requested
-        servergroup_count_usage:
-          type: integer
-          description: Placement Group Count usage
-        sfs_count_limit:
-          type: integer
-          description: Shared file system Count limit
-        sfs_count_requested:
-          type: integer
-          description: Shared file system Count requested
-        sfs_count_usage:
-          type: integer
-          description: Shared file system Count usage
-        sfs_size_limit:
-          type: integer
-          description: Shared file system Size, GiB limit
-        sfs_size_requested:
-          type: integer
-          description: Shared file system Size, GiB requested
-        sfs_size_usage:
-          type: integer
-          description: Shared file system Size, GiB usage
-        shared_vm_count_limit:
-          type: integer
-          description: Basic VMs Count limit
-        shared_vm_count_requested:
-          type: integer
-          description: Basic VMs Count requested
-        shared_vm_count_usage:
-          type: integer
-          description: Basic VMs Count usage
-        snapshot_schedule_count_limit:
-          type: integer
-          description: Snapshot Schedules Count limit
-        snapshot_schedule_count_requested:
-          type: integer
-          description: Snapshot Schedules Count requested
-        snapshot_schedule_count_usage:
-          type: integer
-          description: Snapshot Schedules Count usage
-        subnet_count_limit:
-          type: integer
-          description: Subnets Count limit
-        subnet_count_requested:
-          type: integer
-          description: Subnets Count requested
-        subnet_count_usage:
-          type: integer
-          description: Subnets Count usage
-        vm_count_limit:
-          type: integer
-          description: Instances Dedicated Count limit
-        vm_count_requested:
-          type: integer
-          description: Instances Dedicated Count requested
-        vm_count_usage:
-          type: integer
-          description: Instances Dedicated Count usage
-        volume_count_limit:
-          type: integer
-          description: Volumes Count limit
-        volume_count_requested:
-          type: integer
-          description: Volumes Count requested
-        volume_count_usage:
-          type: integer
-          description: Volumes Count usage
-        volume_size_limit:
-          type: integer
-          description: Volumes Size, GiB limit
-        volume_size_requested:
-          type: integer
-          description: Volumes Size, GiB requested
-        volume_size_usage:
-          type: integer
-          description: Volumes Size, GiB usage
-        volume_snapshots_count_limit:
-          type: integer
-          description: Snapshots Count limit
-        volume_snapshots_count_requested:
-          type: integer
-          description: Snapshots Count requested
-        volume_snapshots_count_usage:
-          type: integer
-          description: Snapshots Count usage
-        volume_snapshots_size_limit:
-          type: integer
-          description: Snapshots Size, GiB limit
-        volume_snapshots_size_requested:
-          type: integer
-          description: Snapshots Size, GiB requested
-        volume_snapshots_size_usage:
-          type: integer
-          description: Snapshots Size, GiB usage
-      example:
-        baremetal_basic_count_requested: 1
-        baremetal_gpu_a100_count_requested: 1
-        baremetal_gpu_h100_count_requested: 1
-        baremetal_gpu_h200_count_requested: 1
-        baremetal_gpu_l40s_count_requested: 1
-        baremetal_hf_count_requested: 1
-        baremetal_infrastructure_count_requested: 1
-        baremetal_network_count_requested: 1
-        baremetal_storage_count_requested: 1
-        caas_container_count_requested: 1
-        caas_cpu_count_requested: 1
-        caas_gpu_count_requested: 1
-        caas_ram_size_requested: 1
-        cluster_count_requested: 1
-        cpu_count_requested: 1
-        dbaas_postgres_cluster_count_requested: 1
-        external_ip_count_requested: 1
-        faas_cpu_count_requested: 1
-        faas_function_count_requested: 1
-        faas_namespace_count_requested: 1
-        faas_ram_size_requested: 1
-        firewall_count_requested: 1
-        floating_count_requested: 1
-        gpu_count_requested: 1
-        gpu_virtual_a100_count_requested: 1
-        gpu_virtual_h100_count_requested: 1
-        gpu_virtual_h200_count_requested: 1
-        gpu_virtual_l40s_count_requested: 1
-        image_count_requested: 1
-        image_size_requested: 1
-        ipu_count_requested: 1
-        laas_topic_count_requested: 1
-        loadbalancer_count_requested: 1
-        network_count_requested: 1
-        ram_requested: 1
-        registry_count_requested: 1
-        registry_storage_requested: 1
-        router_count_requested: 1
-        secret_count_requested: 1
-        servergroup_count_requested: 1
-        sfs_count_requested: 1
-        sfs_size_requested: 1
-        shared_vm_count_requested: 1
-        snapshot_schedule_count_requested: 1
-        subnet_count_requested: 1
-        vm_count_requested: 1
-        volume_count_requested: 1
-        volume_size_requested: 1
-        volume_snapshots_count_requested: 1
-        volume_snapshots_size_requested: 1
-        baremetal_basic_count_limit: 0
-        baremetal_basic_count_usage: 0
-        baremetal_gpu_a100_count_limit: 0
-        baremetal_gpu_a100_count_usage: 0
-        baremetal_gpu_h100_count_limit: 0
-        baremetal_gpu_h100_count_usage: 0
-        baremetal_gpu_h200_count_limit: 0
-        baremetal_gpu_h200_count_usage: 0
-        baremetal_gpu_l40s_count_limit: 0
-        baremetal_gpu_l40s_count_usage: 0
-        baremetal_hf_count_limit: 0
-        baremetal_hf_count_usage: 0
-        baremetal_infrastructure_count_limit: 0
-        baremetal_infrastructure_count_usage: 0
-        baremetal_network_count_limit: 0
-        baremetal_network_count_usage: 0
-        baremetal_storage_count_limit: 0
-        baremetal_storage_count_usage: 0
-        caas_container_count_limit: 0
-        caas_container_count_usage: 0
-        caas_cpu_count_limit: 0
-        caas_cpu_count_usage: 0
-        caas_gpu_count_limit: 0
-        caas_gpu_count_usage: 0
-        caas_ram_size_limit: 0
-        caas_ram_size_usage: 0
-        cluster_count_limit: 0
-        cluster_count_usage: 0
-        cpu_count_limit: 0
-        cpu_count_usage: 0
-        dbaas_postgres_cluster_count_limit: 0
-        dbaas_postgres_cluster_count_usage: 0
-        external_ip_count_limit: 0
-        external_ip_count_usage: 0
-        faas_cpu_count_limit: 0
-        faas_cpu_count_usage: 0
-        faas_function_count_limit: 0
-        faas_function_count_usage: 0
-        faas_namespace_count_limit: 0
-        faas_namespace_count_usage: 0
-        faas_ram_size_limit: 0
-        faas_ram_size_usage: 0
-        firewall_count_limit: 0
-        firewall_count_usage: 0
-        floating_count_limit: 0
-        floating_count_usage: 0
-        gpu_count_limit: 0
-        gpu_count_usage: 0
-        gpu_virtual_a100_count_limit: 0
-        gpu_virtual_a100_count_usage: 0
-        gpu_virtual_h100_count_limit: 0
-        gpu_virtual_h100_count_usage: 0
-        gpu_virtual_h200_count_limit: 0
-        gpu_virtual_h200_count_usage: 0
-        gpu_virtual_l40s_count_limit: 0
-        gpu_virtual_l40s_count_usage: 0
-        image_count_limit: 0
-        image_count_usage: 0
-        image_size_limit: 0
-        image_size_usage: 0
-        ipu_count_limit: 0
-        ipu_count_usage: 0
-        laas_topic_count_limit: 0
-        laas_topic_count_usage: 0
-        loadbalancer_count_limit: 0
-        loadbalancer_count_usage: 0
-        network_count_limit: 0
-        network_count_usage: 0
-        ram_limit: 0
-        ram_usage: 0
-        registry_count_limit: 0
-        registry_count_usage: 0
-        registry_storage_limit: 0
-        registry_storage_usage: 0
-        router_count_limit: 0
-        router_count_usage: 0
-        secret_count_limit: 0
-        secret_count_usage: 0
-        servergroup_count_limit: 0
-        servergroup_count_usage: 0
-        sfs_count_limit: 0
-        sfs_count_usage: 0
-        sfs_size_limit: 0
-        sfs_size_usage: 0
-        shared_vm_count_limit: 0
-        shared_vm_count_usage: 0
-        snapshot_schedule_count_limit: 0
-        snapshot_schedule_count_usage: 0
-        subnet_count_limit: 0
-        subnet_count_usage: 0
-        vm_count_limit: 0
-        vm_count_usage: 0
-        volume_count_limit: 0
-        volume_count_usage: 0
-        volume_size_limit: 0
-        volume_size_usage: 0
-        volume_snapshots_count_limit: 0
-        volume_snapshots_count_usage: 0
-        volume_snapshots_size_limit: 0
-        volume_snapshots_size_usage: 0
     RegionalQuotasLimitsSerializer:
       additionalProperties: false
       properties:
@@ -78968,6 +79433,52 @@ components:
       - name
       title: RegistryCreateSerializer
       type: object
+    RegistryQuotaCheckSerializer:
+      properties:
+        registry_count_limit:
+          description: Registries count limit
+          example: 5
+          examples:
+          - 5
+          title: Registry Count Limit
+          type: integer
+        registry_count_requested:
+          description: Registries count requested
+          example: 1
+          examples:
+          - 1
+          title: Registry Count Requested
+          type: integer
+        registry_count_usage:
+          description: Registries count usage
+          example: 5
+          examples:
+          - 5
+          title: Registry Count Usage
+          type: integer
+        registry_storage_limit:
+          description: Registries storage limit, GiB
+          example: 500
+          examples:
+          - 500
+          title: Registry Storage Limit
+          type: integer
+        registry_storage_requested:
+          description: Registries storage requested, GiB
+          example: 100
+          examples:
+          - 100
+          title: Registry Storage Requested
+          type: integer
+        registry_storage_usage:
+          description: Registries storage usage, GiB
+          example: 450
+          examples:
+          - 450
+          title: Registry Storage Usage
+          type: integer
+      title: RegistryQuotaCheckSerializer
+      type: object
     RegistryRepositoryCollectionSerializer:
       properties:
         count:
@@ -79209,6 +79720,27 @@ components:
       - count
       - results
       title: RegistryUserCollectionSerializer
+      type: object
+    RegistryUserCreateResponseCollectionSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/RegistryUserCreateResponseSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: RegistryUserCreateResponseCollectionSerializer
       type: object
     RegistryUserCreateResponseSerializer:
       properties:
@@ -90043,10 +90575,11 @@ components:
     TestMessageMQBodySerializer:
       properties:
         connection_string:
-          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host"
-          example: amqps://guest:guest@192.168.123.20:5671/user_action_events
+          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host". The scheme must be amqp or amqps, the port must be a valid TCP port, and the host must resolve to a public address (private, loopback, link-local and metadata addresses are rejected with a 400).
+          example: amqps://guest:guest@93.184.216.34:5671/user_action_events
           examples:
-          - amqps://guest:guest@192.168.123.20:5671/user_action_events
+          - amqps://guest:guest@93.184.216.34:5671/user_action_events
+          - amqps://guest:guest@broker.example.com:5671/user_action_events
           title: Connection String
           type: string
         exchange:
@@ -95331,9 +95864,10 @@ components:
       properties:
         connection_string:
           description: Connection string of the following structure "scheme://username:password@host:port/virtual_host"
-          example: amqps://guest:guest@192.168.123.20:5671/user_action_events
+          example: amqps://guest:guest@93.184.216.34:5671/user_action_events
           examples:
-          - amqps://guest:guest@192.168.123.20:5671/user_action_events
+          - amqps://guest:guest@93.184.216.34:5671/user_action_events
+          - amqps://guest:guest@broker.example.com:5671/user_action_events
           title: Connection String
           type: string
         exchange:
@@ -95378,9 +95912,10 @@ components:
       properties:
         connection_string:
           description: Connection string of the following structure "scheme://username:password@host:port/virtual_host"
-          example: amqps://guest:guest@192.168.123.20:5671/user_action_events
+          example: amqps://guest:guest@93.184.216.34:5671/user_action_events
           examples:
-          - amqps://guest:guest@192.168.123.20:5671/user_action_events
+          - amqps://guest:guest@93.184.216.34:5671/user_action_events
+          - amqps://guest:guest@broker.example.com:5671/user_action_events
           title: Connection String
           type: string
         exchange:
@@ -95461,10 +95996,11 @@ components:
     UserActionSubscriptionUpdateSerializer:
       properties:
         connection_string:
-          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host"
-          example: amqps://guest:guest@192.168.123.20:5671/user_action_events
+          description: Connection string of the following structure "scheme://username:password@host:port/virtual_host". The scheme must be amqp or amqps, the port must be a valid TCP port, and the host must resolve to a public address (private, loopback, link-local and metadata addresses are rejected with a 400).
+          example: amqps://guest:guest@93.184.216.34:5671/user_action_events
           examples:
-          - amqps://guest:guest@192.168.123.20:5671/user_action_events
+          - amqps://guest:guest@93.184.216.34:5671/user_action_events
+          - amqps://guest:guest@broker.example.com:5671/user_action_events
           title: Connection String
           type: string
         exchange:

@@ -1,56 +1,75 @@
 ---
-title: Integrate CDN resource with Joomla
+title: Integrate a CDN resource with Joomla
 sidebarTitle: Joomla
-ai-navigation: Install the CDN for Joomla plugin from NoNumber.nl via Extensions Manager, configure the CNAME record from Gcore Customer Portal in plugin settings, and verify static file URLs are rewritten to the CDN CNAME domain.
+ai-navigation: Configure Joomla media delivery through Gcore CDN by installing Regular Labs CDN for Joomla Pro and assigning an HTTPS CDN domain.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+[CDN&nbsp;for&nbsp;Joomla!](https://regularlabs.com/cdnforjoomla) rewrites selected media URLs so a pull CDN can cache and deliver Joomla files without moving them from the origin. The current extension supports Joomla v4–v6 and requires PHP 8.2 or later.
 
-## Check the Joomla version
+<Info>
+  Administrator access to Joomla, CDN for Joomla! Pro, an active CDN resource, and an HTTPS-enabled [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) are required. The Pro extension is required to rewrite HTTPS URLs.
+</Info>
 
-Open the administration panel, click on System, then System Information. You will see a window with the system details.
+Back up the Joomla files and database before installing the extension.
 
-Your system should meet the following requirements:
+<Steps>
+  <Step title="Prepare the CDN resource">
+    Configure the Joomla hostname — `www.example.com` — as the CDN origin. Set the origin host header to the same hostname when the web server uses name-based virtual hosting.
 
-  * Joomla 3.4.1 or later
-  * PHP 5.3.13
-  * PHP mbstring (Multibyte String) - should be enabled
-  * MySQL 5 or later
+    Activate `cdn.example.com` as the HTTPS custom domain and confirm that a known media path returns successfully through both the origin and CDN domains.
+  </Step>
 
+  <Step title="Download CDN for Joomla! Pro">
+    From the Regular Labs [download&nbsp;page](https://regularlabs.com/cdnforjoomla/download), download the Pro installation package for the installed Joomla version. Keep the package as a ZIP file.
+  </Step>
 
+  <Step title="Install the extension">
+    In the Joomla administrator, navigate to **System** > **Install** > **Extensions** and open the **Upload Package File** tab.
 
-## Install the plugin
+    Drag the ZIP package into the upload area or select **Browse for File**. Joomla uploads and installs the package automatically.
+  </Step>
 
-Download the extension CDN for Joomla! from NoNumber.nl. (you don't need to unpack the file). The extension is for versions after Joomla 3.4.1. If you use Joomla 2, download the CDN for Joomla 2 extension. Login to Joomla administration area.
+  <Step title="Open the system plugin">
+    Navigate to **System** > **Manage** > **Plugins**, search for `System - Regular Labs CDN for Joomla!`, and open the plugin.
 
-Click the "Extensions" tab on the top navigation bar and go to the Extension Manager section. You will be automatically transferred to the Install section, if not - click **Install** at the top.
+    Set **Status** to **Enabled** if the plugin is not already enabled.
+  </Step>
 
-Find the "Upload Package File" section, click the **Choose File** button and find the CDN extension for Joomla, which you have downloaded.
+  <Step title="Configure the CDN settings">
+    On the **Setup** tab, configure the following fields:
 
-Click the **Upload & Install** button to upload and install the extension on your website.
+    - **CDN Domain**: Enter `cdn.example.com`.
 
-## Set up the extension
+    - **CDN Protocol**: Select **HTTPS**.
 
-Click the "Extensions" tab on the top navigation bar and go to Plugins.
+    - **Site Root**: Keep the default value when the CDN origin exposes the Joomla root. For an origin restricted to the `/images/` subfolder, enter `/images/`.
 
-Find the CDN plugin for Joomla! It will be displayed as System - CDN for Joomla!, click it to edit settings.
+    - **File Types**: Include only the media types that the CDN should deliver.
 
+    - **Ignore Files**: Add any files that must remain on the origin.
 
-<Frame>![Extensions](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-joomla/joomla-1-edit.png)</Frame>
+    Click **Save & Close**.
+  </Step>
 
+  <Step title="Verify CDN delivery">
+    Open a Joomla page that contains a configured media type and use the browser developer tools:
 
+    1. Open the **Network** panel.
 
-In the CDN section of the settings page type the CNAME that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list).
+    2. Reload the page.
 
-Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    3. Select an affected image, stylesheet, script, or other configured file.
 
-Click **Save** to save settings.
+    4. Confirm that the request URL uses `cdn.example.com` and returns a successful response.
+  </Step>
+</Steps>
 
+## Integration troubleshooting
 
-<Frame>![save settings](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-joomla/joomla-1-edit.png)</Frame>
+When rewritten media fails to load from the CDN domain, the cause is usually an ignored file, a CORS restriction, a path mismatch, or an origin error.
 
-
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+- If a script fails after URL rewriting, add its path or filename to **Ignore Files**.
+- If a font request is blocked by the browser, configure the origin to return an `Access-Control-Allow-Origin` header for `https://cdn.example.com`.
+- For a `404` response, compare **Site Root** with the CDN origin path.
+- For a `502` response, verify the origin pull protocol and host header in the CDN resource.
+- If only some media uses the CDN domain, review **File Types** and **Ignore Files**.

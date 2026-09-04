@@ -1,52 +1,43 @@
 ---
-title: "Сache Sharding: share cache between CDN servers"
+title: "Cache Sharding: share cache between CDN servers"
 sidebarTitle: Cache Sharding
-ai-navigation: Enable Cache Sharding on CDN resources to share cache between servers in the same Point of Presence using consistent hashing algorithm, improving cache hit rates for content-heavy applications like e-commerce, video streaming, and VoD platforms.
+ai-navigation: Configure Cache Sharding to share cached content between CDN servers in the same PoP via consistent hashing, reducing origin load and improving cache hit rates.
 ---
 
-## What is the Cache Sharding feature
+Cache Sharding allows CDN servers grouped within the same Point of Presence (PoP) to share each other's cache, improving CDN performance. When a user requests content, a CDN server that does not hold the file locally proxies the request to the group member where the cache is located, using a consistent hashing algorithm.
 
-Cache Sharding is a feature that allows some CDN servers—grouped together and in the same Point of presence (PoP)—to use one another's cache to increase the CDN performance. When users request content, a CDN server proxies a request to another server where the cache is located using a consistent hashing algorithm.
+Cache Sharding is particularly useful for websites and applications with a large amount of content in the CDN cache and for those where multiple files receive similar request volumes — e-commerce sites, video game content delivery, and VoD streaming platforms benefit most.
 
-This feature is particularly important for websites and applications with a large amount of content stored in the CDN cache and for those where multiple files receive relatively similar numbers of requests, such as e-commerce, video game industry, and VoD streaming.
+## Cache distribution mechanism
 
-## How does the Cache Sharding feature work
+Without Cache Sharding, a CDN server only checks _its own_ cache for a file request. This is inefficient when there are many servers in one PoP: if a server _without_ the file gets a request, it retrieves the file from the origin instead of a neighboring server.
 
-In a system without Cache Sharding, a CDN server only checks _its own_ cache for a file request. This is inefficient when there are many servers in one PoP: if a server _without_ the file gets a request, it retrieves a file from the origin instead of a neighboring server.
+When Cache Sharding is enabled for a CDN resource, CDN servers within one PoP (or data center) are clustered to use each other's cache with the [consistent&nbsp;hashing&nbsp;algorithm](https://toptal.com/big-data/consistent-hashing#:~:text=according%20to%20Wikipedia\).-,Consistent%20Hashing%20is%20a%20distributed%20hashing%20scheme%20that%20operates%20independently,without%20affecting%20the%20overall%20system).
 
-When Cache Sharding is enabled for a CDN resource, CDN servers within one PoP (or data center) are clustered to use each others' cache with the [consistent hashing algorithm](https://toptal.com/big-data/consistent-hashing#:~:text=according%20to%20Wikipedia\).-,Consistent%20Hashing%20is%20a%20distributed%20hashing%20scheme%20that%20operates%20independently,without%20affecting%20the%20overall%20system).
+Consistent hashing stores data in a hash table using a hash function. Each item's key is hashed to an address in a "hash ring" — a circular space divided into sectors. The sector an address falls in determines which server holds that data. This lets any server in the group calculate which peer holds a given file without a central registry or broadcasting a lookup request.
 
-Consistent hashing is a method in which data is stored in a hash table using a hash function. The key of each data item is passed through a hash function, which calculates the address in the "hash ring" and determines in which sector of this ring the hash code is. This hash code indicates on which server the data is stored.
+**Example:** Assume three CDN servers, A, B, and C, form one group. The consistent hashing algorithm maps file X to server B — meaning B is always the designated server for X within this group.
 
-**Example** : Assume three CDN servers, A, B, and C, constitute one group. Server A has file X in its cache. When users request X, their request may reach any of the group's servers (A, B, or C), depending on workload, connectivity, and other factors. If the request hits A, X is served from its cache. 
+When a user requests X, the request may reach any of the group's servers. If the request hits B and B has X cached, B serves it immediately. If the request hits A or C, each calculates the hash for X, determines that B is responsible, and proxies the request to B. B then either serves X from its cache or fetches it from the origin, caches it, and serves the user.
 
-If the request hits B or C, they calculate a hash code. Based on this, server B or C knows to which server they should send the request in order to serve X from the cache rather than the origin server. Since server A's cache has the desired file, server B or C will proxy the request, and server A will serve the user file X from its cache.
+If a server fails, it is removed from the group and the hash is recalculated. All subsequent requests are distributed among the remaining servers, with new designated servers assigned for each file.
 
-If the group has no X in its cache, the server that was initially chosen using a consistent hashing algorithm will download file X from the origin and cache it.
+<Frame>
+  <img src="/images/docs/cdn/cdn-resource-options/cache/cache-sharding-share-cache-between-cdn-servers/cache-sharding-share-cache-between-cdn-servers-image1.png" alt="Servers without shared cache each pull from origin; servers with Cache Sharding proxy to the server holding the cached file" width="70%"/>
+</Frame>
 
-If a server fails, it is removed from the group, and the hash will be recalculated to reflect the failed server. Thus, all subsequent requests will be distributed among other servers of the same group. 
+## Performance improvements
 
+Cache Sharding optimizes content storage and distribution:
 
-<Frame>![How does the Cache Sharding feature work](/images/docs/cdn/cdn-resource-options/cache/cache-sharding-share-cache-between-cdn-servers/cache-sharding-scheme.png)</Frame>
+  * **More efficient cache use.** Only one copy of a file is needed for all the data center's servers. Each CDN server is used efficiently rather than storing duplicate content.
+  * **Origin protection from redundant requests.** CDN servers use the hash key to determine whether the file exists in the group's cache. The origin is only requested if no group member has the content cached. This reduces traffic costs and lowers the load on the origin server.
+  * **Improved content delivery speed.** Retrieving a file from a neighboring server in the group is faster than routing a request to the origin, which improves Time to First Byte (TTFB).
 
+## Enable Cache Sharding
 
-
-## What are the benefits of using Cache Sharding
-
-Cache Sharding optimizes content storage and distribution. Here are some of its benefits in more detail:
-
-  * **More efficient cache use.** Only one copy of a file is needed for all the data center's servers. This means that each CDN server is used efficiently, rather than being occupied with repeats. 
-  * **Origin is protected from redundant requests.** CDN servers use the hash key to determine if there is content in the group's cache. The origin is only requested if there is no content cached by the group. This reduces the costs that are incurred when paying for traffic from the CDN servers to the origin. It also lowers the load on the origin server.
-  * **Improved content delivery speed.** Checking the caches of nearby servers in a group for a file is quicker than routing a request to the origin. This process enhances the Time to First Byte (TTFB), indicating a more efficient system.
-
-
-
-## How to enable the Cache Sharding feature
-
-[Newly created CDN resources](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) have Cache Sharding enabled automatically. If you're a long-term user unsure whether the feature is activated, please contact our [Gcore Support](mailto:support@gcore.com) to request activation.
+Cache Sharding is enabled automatically on new [CDN&nbsp;resources](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource). For existing CDN resources created before the feature was deployed, contact [Gcore&nbsp;support](mailto:support@gcore.com) to enable it.
 
 <Note>
-**Note**
-
-The Cache Sharding option is not used for [Streaming CDN resources](/streaming/interaction-with-cdn/get-started-streaming-cdn).
+Cache Sharding is not used for [Streaming&nbsp;CDN resources](/streaming/interaction-with-cdn/get-started-streaming-cdn).
 </Note>

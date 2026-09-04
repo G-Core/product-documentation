@@ -1,12 +1,10 @@
 ---
 title: Configure Gzip and Brotli compression
 sidebarTitle: Gzip, Brotli
-ai-navigation: Enable Gzip and Brotli edge compression in Gcore CDN to compress content at edge nodes before serving to browsers, supporting MIME types including text/html, application/javascript, application/json, image/svg+xml, and application/wasm with configurable compression methods based on Accept-Encoding headers.
+ai-navigation: Configure Gzip and Brotli edge compression in CDN resource settings to compress content at edge nodes before delivery based on Accept-Encoding headers.
 ---
 
-## About the option
-
-Gcore CDN supports Gzip and Brotli edge compression, so even if your origin server does not support it, you can still serve Gzip or Brotli content to your end users through this feature. When enabled, content is requested in an uncompressed format from the origin, compressed and cached on the edge, and then served to browsers that can support compression.
+Gcore CDN supports Gzip and Brotli edge compression. When enabled, content is requested in uncompressed format from the origin, compressed and cached at the edge, and served to browsers that support compression — even when the origin server does not.
 
 ## Compression methods
 
@@ -20,7 +18,6 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
   * application/x-javascript
   * application/xml
   * application/vnd.apple.mpegurl
-  * application/rss+xml
   * application/xml+rss
   * application/wasm
   * text/css
@@ -37,9 +34,9 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
 
 The Brotli method has a higher compression ratio compared to Gzip, and the minimum file size that can be compressed is 128 bytes.
 
-CDN supports Brotli compression only when [Origin Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is activated. If a resource has no shielding set, the content will not be compressed even if the Brotli option is enabled. To activate Origin Shielding, please reach out to our [Gcore Support](mailto:support@gcore.com).
+CDN supports Brotli compression only when [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is activated. To activate Origin Shielding, enable it in the CDN resource settings under **General**.
 
-You can specify the MIME types to be considered for Brotli compression. These types include:
+The following MIME types are configurable for Brotli compression:
 
   * **application/javascript**. Selected by default.
   * **application/json**. Selected by default.
@@ -59,64 +56,53 @@ You can specify the MIME types to be considered for Brotli compression. These ty
 
 
 <Note>
-**Note**
-
-Image formats (e.g., image/jpeg, image/png), video formats (e.g., video/mpeg), PDF, and other binary formats are already compressed. It is not recommended to apply additional compression to these types as it can actually increase the file size.
+Image formats (e.g., image/jpeg, image/png), video formats (e.g., video/mpeg), PDF, and other binary formats are already compressed. These formats provide little or no size reduction from Gzip or Brotli and may increase file size.
 </Note>
 
 ## Features
 
-  * In order to receive a compressed response, a request must include the _Accept-Encoding_ header. This header indicates which compression methods the browser supports. If this header is missing, or if it does not contain a _gzip_ or _br_ value, the response is given to the user uncompressed.
-  * If the browser supports both methods and the MIME type of the requested content is configured for both methods, CDN gives precedence to Brotli. If the browser does not support Brotli, CDN falls back to Gzip when the browser supports it. For example, if both compression options are activated. When a browser requests a document of type _text/html_ and includes an _Accept-Encoding: gzip, br_ header, the response will be compressed with Brotli if Origin Shielding is activated. Otherwise, Gzip will be used.
-  * Contents that are already cached when Gzip and Brotli are enabled will not be compressed. After enabling the feature, the CDN resource cache must first be purged to ensure that the contents are compressed.
+  * A request must include the `Accept-Encoding` header to receive compressed content. This header indicates which compression methods the browser supports. Without this header, or if it does not include a `gzip` or `br` value, the response is delivered uncompressed.
+  * When both Gzip and Brotli are enabled for a MIME type, CDN gives precedence to Brotli. If the browser does not support Brotli, CDN falls back to Gzip. When both options are active and a browser sends `Accept-Encoding: gzip, br` for a `text/html` document, the CDN returns Brotli-compressed content if Origin Shielding is enabled, and Gzip otherwise.
+  * Content already cached before Gzip and Brotli are enabled is not re-compressed automatically. Purge the CDN resource cache after enabling the feature to serve compressed content from the edge.
 
 
 
 ## Configuration guidelines
 
-Check the following requirements and recommendations before configuring the options:
+Review the following requirements and recommendations before configuring the options:
 
   * Both Gzip and Brotli compressions can be configured in the Resource Settings and Rules.
-  * You need to [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the CDN resource cache after updating these options.
-  * Brotli compression is only supported when [Origin Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled. If Brotli is enabled without activating Origin Shielding, the option will not work.
+  * [Purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the CDN resource cache after updating these options.
+  * Brotli compression is only supported when [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled. Without active shielding, the Brotli option has no effect.
   * Gzip and Brotli compressions are not mutually exclusive and can be used together.
-  * Gzip and Brotli compressions are mutually exclusive with [Fetch Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression) and [Large Files Delivery Optimization]() within the Resource Settings and within the same rule. This means that you cannot enable the latter options when Gzip or Brotli is already enabled.
-  * You can allow all incoming requests to be compressed on the edge, and also allow certain requests to be compressed on the origin. This can be accomplished by enabling Gzip and Brotli compressions in the Resource Settings, and enabling Fetch Compressed in the Rules.
+  * Gzip and Brotli compressions are mutually exclusive with [Fetch&nbsp;Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression) and [large&nbsp;files optimization](/cdn/cdn-resource-options/optimize-large-file-delivery) within the same scope — they cannot be enabled together in the Resource Settings or within the same rule.
+  * Gzip and Brotli compressions in Resource Settings can be combined with Fetch Compressed in Rules. In this case, edge nodes compress all requests, and specific requests are additionally compressed at the origin.
 
 <Warning>
-**Warning**
-
-Doing it the other way around is not possible. That is, you cannot enable Gzip and Brotli compressions in the Rules when Fetch Compressed is already enabled in the Resource settings.
+The reverse combination is not supported. When Fetch Compressed is enabled in Resource Settings, Gzip and Brotli compressions cannot be enabled in Rules.
 </Warning>
 
 ## Configuration steps
 
 To configure Gzip and Brotli options via the Gcore Customer Portal:
 
-1\. Go to the [CDN resources](https://portal.gcore.com/cdn/resources/list) list and select the CDN resource you want to configure.
+1\. Navigate to the [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) list and click the CDN resource to configure.
 
 
-<Frame>![CDN resources page](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/cdn-resource-list-10.png)</Frame>
+<Frame>![CDN resources list with a CDN resource row selected](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/configure-gzip-and-brotli-compression-image1.png)</Frame>
 
 
 
 2\. In the sidebar, under the **Content** section, click **GZip compression** or **Brotli compression**.
 
 
-<Frame>![Gzip and Brotli compression](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/compression-settings-20.png)</Frame>
+<Frame>![Resource settings sidebar with Content section expanded showing GZip compression and Brotli compression items](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/configure-gzip-and-brotli-compression-image2.png)</Frame>
 
 
 
 3\. Turn on the toggle for **Enable GZip compression** to enable the option.
 
+4\. Turn on the toggle for **Enable Brotli compression** to enable the option. In the **Content types** area, select the MIME types to compress.
 
-<Frame>![Enable Gzip](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/gzip-30.png)</Frame>
-
-
-
-4\. Turn on the toggle for **Enable Brotli compression** to enable the option. Select the MIME types you want to compress in the **Content types** area.
-
-
-
-<Frame>![Enable Brotli](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/brotli-40.png)</Frame>
+5\. Click **Save changes**.
 

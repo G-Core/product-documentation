@@ -157,13 +157,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 The API may also return policies that belong to the [Protocol validation](/waap/waap-policies/protocol-validation) policy group. Those policies are part of the same API resource group but are configured separately in the Customer Portal under WAAP > Bot Management.
 </Info>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
+<p>Sets the policy to enabled or disabled. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
 
-<Warning>
-This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, check the current policy state first using the View policy states request.
-</Warning>
+| Parameter | Required | Description |
+|---|---|---|
+| `policy_id` | Yes | ID of the policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -181,9 +183,8 @@ This endpoint toggles the current state rather than setting a specific value. If
     )
     policy = next(r for r in adv_set.rules if r.name == "Auth token protection")
 
-    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
-    status = "enabled" if result.mode else "disabled"
-    print(f"Auth token protection is now {status}")
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+    print(f"Auth token protection is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -217,7 +218,7 @@ This endpoint toggles the current state rather than setting a specific value. If
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -231,8 +232,10 @@ This endpoint toggles the current state rather than setting a specific value. If
     # Set POLICY_ID to the policy ID from the Policy reference or View policy states response
     export POLICY_ID="{POLICY_ID}"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
 
     Response:
