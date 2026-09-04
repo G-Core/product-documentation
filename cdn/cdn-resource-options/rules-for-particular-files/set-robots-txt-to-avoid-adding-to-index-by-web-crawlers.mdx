@@ -1,43 +1,41 @@
 ---
 title: Avoid indexing of your CDN resource by web crawlers
 sidebarTitle: Avoid indexing
-ai-navigation: Configure the Status code option on a CDN resource to return a robots.txt disallow directive and prevent search engines from indexing the CDN custom domain.
+ai-navigation: Create a CDN rule for the robots.txt path that returns a disallow directive and prevents search engines from indexing the CDN custom domain.
 ---
 
-When a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is set up for a website, its content becomes accessible from both the origin domain (e.g., website-example.com/image.png) and [CDN&nbsp;custom&nbsp;domains](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) (e.g., cdn.website-example.com/image.png). Search engines treat the same content at two different URLs as duplicate content, which degrades the site's search ranking. The [Status&nbsp;code](/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn) option on a CDN resource makes the custom domain return a robots.txt disallow directive to web crawlers, preventing this duplication.
+When a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is set up for a website, its content becomes accessible from both the origin domain (e.g., `website-example.com/image.png`) and [CDN&nbsp;custom&nbsp;domains](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) (e.g., `cdn.website-example.com/image.png`). Search engines treat the same content at two different URLs as duplicate content, which degrades the site's search ranking.
+
+To prevent this, create a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) that matches the `/robots.txt` path and returns a `Disallow: /` directive. Web crawlers checking `/robots.txt` on the CDN domain receive the disallow response and stop indexing it. All other CDN URLs continue to serve content normally.
 
 ## Block CDN domain indexing
 
-The Status code option applies resource-wide — all URLs on the CDN custom domain return the configured status code and body text, which web crawlers interpret as a robots.txt disallow directive.
-
-1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources** and click the CNAME of the CDN resource to prohibit from indexing.
-
+1\. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources** and click the CNAME of the resource.
 
 <Frame>![CDN resources list with CNAME links](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png)</Frame>
 
+2\. Navigate to the **RULES** tab and click **Create rule**, then select **Create blank rule**.
 
+3\. In the **Rule name** field, enter a descriptive name — `Block robots.txt indexing`.
 
-The resource settings page opens.
+4\. In the **Rule pattern** field, enter `^/robots\.txt$`.
 
+5\. Click **Add option**. In the panel that opens, under **Content**, click **Add** next to **Status code**, then close the panel.
 
-<Frame>![CDN resource settings page with options navigation on the left](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png)</Frame>
+6\. In the **Status code** section, enable the **Set status code** option.
 
+7\. In the **Status code** field, enter `200`.
 
-
-2\. Click **Content**, then **Status code**.
-
-3\. In the **Status code** section, enable the **Set status code** option.
-
-4\. In the **Status code** field, enter `200`.
-
-5\. In the **URL or code text (optional)** field, enter the following directive:
+8\. In the **URL or code text (optional)** field, enter:
 
 ```
 User-agent: *\nDisallow: /\n
 ```
 
-6\. Select **Save changes**.
+9\. Click **Create rule**.
 
-Once configured, web crawlers receive a `Disallow: /` directive for the CDN domain and stop indexing it.
+<Frame>![Create rule form with Status code section configured: status 200 and robots.txt disallow directive](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png)</Frame>
 
-<Note>This configuration applies to all URLs on the CDN custom domain and does not affect the origin website.</Note>
+Web crawlers that request `/robots.txt` from the CDN domain receive a `Disallow: /` directive and stop indexing it. All other URLs on the CDN domain continue to serve content as configured.
+
+<Note>This configuration applies only to the `/robots.txt` path on the CDN custom domain and does not affect the origin website or other CDN URLs.</Note>
