@@ -1,129 +1,119 @@
 ---
 title: Create a CDN resource
 sidebarTitle: Create a resource
-ai-navigation: Create a CDN resource by entering a domain name, choosing a DNS option (CNAME-based or Gcore Managed DNS delegation), optionally enabling WAAP for Layer 7 DDoS and web application protection, and configuring an origin or origin group.
+ai-navigation: Create a CDN resource in the Customer Portal by selecting DNS management, configuring domains and origins, enabling WAAP, and activating delivery.
 ---
 
-A CDN resource is a proxy between Gcore caching edge servers and a website's origin. Creating one accelerates content delivery by routing requests through Gcore's global infrastructure.
+A CDN resource connects an origin to Gcore edge servers, which cache content and are hosted in geographically distributed data centers located closer to end users. An origin is required to create the resource in the [Gcore Customer Portal](https://portal.gcore.com); create it during setup or reuse an existing [origin group](/cdn/add-an-origin-group). To route production traffic through the CDN, access to the domain's DNS provider or registrar is required to point the domain to the resource's CNAME.
 
-During setup, choose how DNS is managed:
+<Steps>
+  <Step title="Open the creation form">
+    In the Customer Portal, navigate to **CDN** > **CDN resources** and click **Create CDN resource**.
 
-- **Do not delegate** — keep DNS at the current provider and add a single CNAME record pointing to Gcore. Best when only specific asset URLs need to be served through CDN.
-- **Delegate to Gcore DNS** — transfer DNS management to Gcore Managed DNS and update nameservers at the domain registrar. Best for routing all site traffic through CDN without changing individual URLs.
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-create.png" alt="CDN resources list with the Create CDN resource button" width="70%"/>
+    </Frame>
+  </Step>
 
-## Step 1. Start creation
+  <Step title="Select DNS management">
+    Select how traffic will be directed to the CDN:
 
-Go to the [CDN](https://portal.gcore.com/cdn/resources/list) page and click **Create CDN resource**.
+    - **Do not delegate** keeps DNS at the current provider. After creating the resource, add a CNAME record that points the CDN subdomain to the `*.gcdn.co` value shown in the CDN resource's **Setup guide**.
+    - **Delegate your DNS zone to us** uses delegated DNS to create or reuse a zone in Gcore Managed DNS. After creating the resource, point the delegated zone to the Gcore nameservers — at the registrar for a root domain, or as NS records in the parent zone for a subdomain.
 
-<Frame>
-  ![Create CDN resource button](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-create.png)
-</Frame>
+    <Warning>
+      Select the DNS option before entering other form data. Switching between the options later clears the domain and origin values after confirmation.
+    </Warning>
+  </Step>
 
-## Step 2. Configure domain and DNS
+  <Step title="Add the domain">
+    In **Add domain**, enter the domain to deliver through the CDN:
 
-The following sections cover entering the domain, selecting the DNS option, and optionally enabling WAAP — all done on the same creation form.
+    - For **Do not delegate**, enter a subdomain — `cdn.example.com`.
+    - For delegated DNS, enter the domain whose DNS zone will be delegated — `example.com` or `store.example.com`.
 
-### 1\. Enter a domain
+    The primary CNAME cannot be edited after creation. To add more domains later, use **Add CNAME** in the resource settings.
 
-In the **Add domain** field, enter the domain to accelerate.
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/create-cdn-resource-form.png" alt="CDN creation form with domain and DNS management options" width="70%"/>
+    </Frame>
+  </Step>
 
-- For CNAME-based setup, use a subdomain such as `cdn.yourwebsite.com`.
-- For DNS delegation, use the root or any level domain such as `yourwebsite.com` or `store.yourwebsite.com`.
+  <Step title="(Optional) Enable WAAP">
+    Select **Enable WAAP** to add Web Application and API Protection, which provides Layer 7 DDoS protection and web application security. After creation, complete the [WAAP&nbsp;setup](/waap/getting-started/configure-waap-for-a-domain).
 
-<Warning>
-After a CDN resource is created, the custom domain cannot be changed.
-</Warning>
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/enable-waap.png" alt="WAAP enabled with the Create and enable protection action" width="70%"/>
+    </Frame>
+  </Step>
 
-<Frame>
-  ![Add domain field](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-create-1.png)
-</Frame>
+  <Step title="Configure the origin">
+    The origin settings depend on the DNS option:
 
-### 2\. Select the DNS option
+    - For **Do not delegate**, select **Specify content origin** to add an origin or **Select origin group** to reuse an existing [origin&nbsp;group](/cdn/add-an-origin-group). A new origin can use a URL, S3 storage, or FastEdge application. Configure the port and host header when the origin requires non-default values, and click **Add origin** to add another source.
+    - For delegated DNS, the portal resolves the domain to determine the origin. If no server address is found, enter it in **Enter your origin IP so we can connect to your site**.
 
-Choose how DNS will be managed for this resource:
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/configure-cdn-origin.png" alt="Origin configuration with URL, S3 storage, and FastEdge options" width="70%"/>
+    </Frame>
+  </Step>
 
-- **Do not delegate** — keeps DNS at the current provider. After resource creation, add a CNAME record at the DNS provider pointing the entered subdomain to the `*.gcdn.co` value shown in the portal.
-- **Delegate to Gcore DNS** — automatically creates a DNS zone in [Gcore Managed DNS](https://gcore.com/dns). After resource creation, update the nameservers at the domain registrar to the Gcore nameservers shown in the portal. If Managed DNS hasn't been used before, the Free plan activates automatically.
+  <Step title="Create the resource">
+    Click **Create**. If WAAP is enabled, click **Create and enable protection**.
 
-### 3\. Enable WAAP (optional)
+    With delegated DNS, a **DNS zone already exists** dialog can appear. Select **Use existing zone** to add the generated records to that zone, or **Create separate zone** to create an independent zone for the entered domain.
+  </Step>
 
-Enable the **Enable WAAP** toggle to activate Web Application and API Protection alongside CDN acceleration. WAAP provides Layer 7 DDoS protection and web application security; configure it after resource creation using the [WAAP setup guide](/waap/getting-started/configure-waap-for-a-domain).
+  <Step title="Complete DNS setup">
+    Follow the instructions shown after creation for the selected DNS option.
 
-<Frame>
-  ![Enable WAAP toggle](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-create-waap.png)
-</Frame>
+    For **Do not delegate**, add a [CNAME&nbsp;record](/dns/dns-records#cname-record) at the DNS provider:
 
-## Step 3. Configure origin
+    | Field | Value |
+    |---|---|
+    | **Name / Host** | The entered subdomain — `cdn.example.com` |
+    | **Value / Points to** | The `*.gcdn.co` value shown in the CDN resource's **Setup guide** |
 
-An origin is the source server (website, application, or storage bucket) from which the CDN fetches content. Each origin is associated with an [origin group](/cdn/add-an-origin-group).
+    Create one record for each custom domain.
 
-Choose one of the following options:
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cname-activation-instructions.png" alt="CNAME activation instructions with the generated Gcore hostname" width="70%"/>
+    </Frame>
 
-- **Specify content origin** — select this when no origin group exists yet. Follow the instructions in step 2 of the [origin group guide](/cdn/add-an-origin-group#step-2-enter-the-origin-group-name).
-- **Select origin group** — select this when an origin group already exists. Choose the required group from the dropdown. This option only appears when existing groups are available.
+    For delegated DNS, point the zone to these Gcore nameservers:
 
-<Frame>
-  ![Configure origin](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-create-origin.png)
-</Frame>
+    ```text
+    ns1.gcorelabs.net
+    ns2.gcdn.services
+    ```
 
-### Add a description (optional)
+    - For a root domain (`example.com`), replace the current nameservers at the registrar with the Gcore nameservers.
+    - For a subdomain (`store.example.com`), add NS records for that subdomain in the parent DNS zone (`example.com`). Do not replace the parent domain's nameservers at the registrar.
 
-Provide any additional notes about this CDN resource. The description is displayed next to the resource CNAME in the CDN resources list and does not affect settings.
+    DNS updates can take up to 24 hours.
 
-## Step 4. Create the resource
+    Before integrating the resource with the website, open **Setup guide** in the CDN resource settings and click **Check DNS setup status**.
+  </Step>
 
-Click **Create CDN resource** to create the resource. When WAAP was enabled in Step 2, the button reads **Create and enable protection**.
+  <Step title="Integrate the resource with the website">
+    For **Do not delegate**, update static file URLs to use the CDN subdomain — change `example.com/images/image.jpg` to `cdn.example.com/images/image.jpg`.
 
-<Frame>
-  ![Create CDN resource](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resource-create-protection.png)
-</Frame>
+    Sites built on WordPress, Joomla, Drupal, or another CMS can use an integration plugin to replace domains in asset paths. The [CMS&nbsp;integration guide](/cdn/getting-started/integrate-cdn-with-cms) lists supported systems.
 
-After creation, the portal displays the next steps based on the DNS option selected in Step 2.
+    Delegated DNS routes the domain through the CDN after the nameserver update, so individual asset URLs do not need to be changed.
+  </Step>
 
-## Step 5. Complete DNS setup
+  <Step title="(Optional) Add details and advanced settings">
+    Click **Open resource settings**. Add notes in **Description**, add more custom domains with **Add CNAME**, or configure other delivery settings.
+  </Step>
+</Steps>
 
-### Do not delegate (CNAME)
+## Resource creation troubleshooting
 
-The portal shows the generated `*.gcdn.co` CNAME value after resource creation. In the DNS provider's control panel, add a [CNAME record](/dns/dns-records#cname-record) for the subdomain entered in Step 2:
+If content is not served through the CDN after setup, verify the following:
 
-| Field | Value |
-|---|---|
-| **Name / Host** | The subdomain entered in Step 2, e.g. `cdn.yourwebsite.com` |
-| **Value / Points to** | The `*.gcdn.co` value shown in the portal, e.g. `cl-1ab23456.gcdn.co` |
+- The CNAME record, registrar nameservers, or parent-zone NS records match the values shown in the CDN resource's **Setup guide**.
+- DNS propagation has completed.
+- For **Do not delegate**, static file URLs use the CDN subdomain.
 
-<Frame>
-  ![CNAME record setup](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/cdn-resources-created-blur.png)
-</Frame>
-
-When multiple custom domains were entered, create a CNAME record for each one pointing to the same `*.gcdn.co` value.
-
-### Delegate to Gcore DNS (nameservers)
-
-The portal shows the Gcore nameservers to configure at the domain registrar. Log in to the registrar and replace the current nameservers with the values shown in the portal. The current values are typically:
-
-```
-ns1.gcorelabs.net
-ns2.gcdn.services
-```
-
-Nameserver changes can take up to 24 hours to propagate.
-
-## Step 6. Integrate the CDN resource with the website
-
-For CNAME-based setups, update the static file URLs in the website admin panel to use the CDN subdomain instead of the origin domain.
-
-For example, change `yourwebsite.com/images/image.jpg` to `cdn.yourwebsite.com/images/image.jpg`. Uncached requests continue to reach the origin server, while cached files are served from CDN edge nodes.
-
-For sites built on a CMS such as WordPress, Joomla, or Drupal, use a plugin to replace domain names in file paths. The [CMS integration guide](/cdn/getting-started/integrate-cdn-with-cms) covers the supported platforms and plugins.
-
-CDN resource creation is complete. Click **Open resource settings** to view and configure advanced settings.
-
-## Troubleshoot resource creation
-
-If content is not being served through the CDN after completing all steps, verify the following in the resource settings:
-
-- The CNAME record or nameservers at the DNS provider are correctly configured with the values shown in the portal.
-- DNS propagation is complete — changes can take up to 24 hours to propagate.
-- For CNAME-based setups: static file URLs in the website source have been updated to use the CDN subdomain.
-
-If issues persist, contact [Gcore support](mailto:support@gcore.com) or follow the [CMS integration guide](/cdn/getting-started/integrate-cdn-with-cms).
+If the issue persists, contact [Gcore&nbsp;Support](mailto:support@gcore.com).

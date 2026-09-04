@@ -120,6 +120,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Step>
   <Step title="Select the protocol">
     Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. Multiple TLS certificates are configurable for Terminated HTTPS and Prometheus.
+
+    <Info>
+      A pool cannot be attached to a Prometheus listener. Attempting to do so returns a validation error.
+    </Info>
   </Step>
   <Step title="Specify the port">
     Specify a port the Load Balancer will listen on for incoming traffic. Keep the default port for protocols that provide one, or enter a custom port from 1 to 65535.
@@ -189,7 +193,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     - **Source IP** — a client's IP address is used to determine which server receives the request.
   </Step>
   <Step title="Select the pool protocol">
-    Select the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
+    Select the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **UDP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
 
     <Frame>
       ![Pool protocol dropdown showing HTTP, HTTPS, TCP, UDP, PROXY, and PROXY V2 options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/pool-protocol-dropdown.png)
@@ -317,15 +321,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Check the settings and click **Create Load Balancer** on the right.</p>
 
-## Step 10. Configure firewall
+## Step 10. Configure security groups
 
-<p>Configure [firewalls](/cloud/networking/add-and-configure-a-firewall) for Virtual Machines in the pool.</p>
+<p>Configure [security groups](/cloud/networking/add-and-configure-a-firewall) for Virtual Machines in the pool.</p>
 
 <p>Verify that their ports are open for the Load Balancer traffic:</p>
 
-- If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the VM.
-- If a Load Balancer and Virtual Machines are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
-- If a Load Balancer is in a **public network** and Virtual Machine are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
+- If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in the VM's security group settings.
+- If a Load Balancer and Virtual Machines are in a **private subnet,** set a rule to receive and transmit traffic to the entire private subnet or to the balancer's IP address (specified in the menu).
+- If a Load Balancer is in a **public network** and Virtual Machines are in a **private subnet**, set a rule to receive and transmit traffic to the entire private subnet or to the balancer's internal IP address (send a request to the technical support).
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -621,7 +625,7 @@ export LB_VIP="{LB_VIP_ADDRESS}"
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `load_balancer_id` | Yes | The LB ID from step 2. |
-| `protocol` | Yes | `HTTP`, `TCP`, `UDP`, or `TERMINATED_HTTPS`. |
+| `protocol` | Yes | `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`, or `PROMETHEUS`. |
 | `protocol_port` | Yes | Port to listen on (1–65535). |
 
 <Tabs>
@@ -686,7 +690,7 @@ export LISTENER_ID="{LISTENER_ID}"
 | `listener_id` | Yes | Attaches this pool to the listener from step 3. |
 | `load_balancer_id` | Yes | The LB ID from step 2. |
 | `lb_algorithm` | Yes | `ROUND_ROBIN`, `LEAST_CONNECTIONS`, or `SOURCE_IP`. |
-| `protocol` | Yes | Must match the listener protocol (`HTTP` in this example). |
+| `protocol` | Yes | Backend protocol. Independent from the listener protocol — set it to match what the backend application expects. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `PROXY`, `PROXY V2`. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -978,18 +982,18 @@ output "vip_address" {
 | `lb1-4-8` | 4 | 8 GiB | 10 Gbps |
 | `lb1-8-16` | 8 | 16 GiB | 10 Gbps |
 
-<p>To attach a public floating IP to the load balancer's VIP:</p>
+<p>To attach a public floating IP to the load balancer's VIP, use the dedicated `gcore_cloud_floating_ip` resource:</p>
 
 ```hcl
-resource "gcore_cloud_load_balancer" "example" {
-  project_id = var.project_id
-  region_id  = var.region_id
-  name       = "my-lb"
-  flavor     = "lb1-1-2"
+resource "gcore_cloud_floating_ip" "lb_fip" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  fixed_ip_address = gcore_cloud_load_balancer.example.vip_address
+  port_id          = gcore_cloud_load_balancer.example.vip_port_id
+}
 
-  floating_ip = {
-    source = "new"  # use "existing" and set existing_floating_id to reuse one
-  }
+output "lb_floating_ip" {
+  value = gcore_cloud_floating_ip.lb_fip.floating_ip_address
 }
 ```
 
@@ -1001,7 +1005,7 @@ resource "gcore_cloud_load_balancer" "example" {
 |-----------|----------|-------------|
 | `load_balancer_id` | Yes | ID of the parent load balancer. |
 | `name` | Yes | Display name of the listener. |
-| `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
+| `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`, `PROMETHEUS`. |
 | `protocol_port` | Yes | Port number the listener binds to. |
 | `secret_id` | Required for `TERMINATED_HTTPS` | ID of the default TLS certificate from Secrets Manager. Used as fallback when no SNI match is found. |
 | `sni_secret_id` | No | List of additional certificate IDs for SNI-based domain matching. |
@@ -1044,7 +1048,7 @@ resource "gcore_cloud_load_balancer_listener" "http" {
 | `listener_id` | No | ID of the listener to attach the pool to. |
 | `name` | Yes | Display name of the pool. |
 | `lb_algorithm` | Yes | Distribution algorithm. Values: `ROUND_ROBIN`, `LEAST_CONNECTIONS`, `SOURCE_IP`. |
-| `protocol` | Yes | Backend protocol. Must match the listener protocol (use `HTTP` for both `HTTP` and `TERMINATED_HTTPS` listeners). |
+| `protocol` | Yes | Backend protocol. Independent from the listener protocol — set it to match what the backend application expects. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `PROXY`, `PROXY V2`. |
 
 <p>Each entry in the `members` list supports the following fields:</p>
 

@@ -351,10 +351,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--changed-files", nargs="*", default=[],
                         help="Files changed in this PR (relative to repo root). "
                              "If omitted, all image folders are processed.")
+    parser.add_argument("--changed-files-from", type=Path, default=None,
+                        help="File containing changed file paths, one per line. "
+                             "Alternative to --changed-files that avoids ARG_MAX limits.")
     parser.add_argument("--pr-images", nargs="*", default=[],
                         help="Image paths (relative) added in this PR — "
                              "these are not deleted even if temporarily unreferenced.")
+    parser.add_argument("--pr-images-from", type=Path, default=None,
+                        help="File containing PR image paths, one per line. "
+                             "Alternative to --pr-images that avoids ARG_MAX limits.")
     return parser.parse_args()
+
+
+def _read_lines(path: Path) -> list[str]:
+    """Read non-empty lines from a file."""
+    try:
+        return [ln for ln in path.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    except OSError as exc:
+        log.warning("Could not read %s: %s", path, exc)
+        return []
 
 
 def main() -> int:
@@ -370,10 +385,20 @@ def main() -> int:
     ref_map = build_ref_map(repo_root)
     log.info("Found references to %d unique image paths.", len(ref_map))
 
-    pr_images: set[str] = {p.replace("\\", "/") for p in args.pr_images}
+    changed_files: list[str] = list(args.changed_files)
+    if args.changed_files_from:
+        changed_files = _read_lines(args.changed_files_from)
+        log.info("Loaded %d changed files from %s.", len(changed_files), args.changed_files_from)
 
-    if args.changed_files:
-        affected_folders = collect_affected_folders(repo_root, args.changed_files, ref_map)
+    pr_images_list: list[str] = list(args.pr_images)
+    if args.pr_images_from:
+        pr_images_list = _read_lines(args.pr_images_from)
+        log.info("Loaded %d PR images from %s.", len(pr_images_list), args.pr_images_from)
+
+    pr_images: set[str] = {p.replace("\\", "/") for p in pr_images_list}
+
+    if changed_files:
+        affected_folders = collect_affected_folders(repo_root, changed_files, ref_map)
         log.info("Processing %d affected folder(s).", len(affected_folders))
     else:
         images_root_abs = repo_root / IMAGES_ROOT

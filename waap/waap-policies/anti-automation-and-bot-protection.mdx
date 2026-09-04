@@ -47,7 +47,7 @@ The **Invalid user agent** and **Unknown user agent** policies are set to **Prot
 
 <p>Challenge or block requests from automated sessions. Automated clients are usually bots looking to hack, spam, spy, or generally compromise your website. Activating this policy will detect these requests and force human interaction. </p>
 
-<p>You can review a list of known bots and configure their mode within the [Known Bots](/waap/waap-policies/known-bots) section. Learn more about enabling and troubleshooting bot protection in [our dedicated guide](/waap/troubleshooting/enable-troubleshoot-bot-protection). </p>
+<p>For a verified known bot set to Policy-based, Bot Attacks checks are automatically excluded to avoid false positives. Configure per-bot actions in [Known Bots](/waap/waap-policies/known-bots).</p>
 
 ### Headless browsers
 
@@ -145,13 +145,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <p>The response includes each policy in the group with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
+<p>Sets the policy to enabled or disabled. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
 
-<Warning>
-This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, check the current policy state first using the View policy states request.
-</Warning>
+| Parameter | Required | Description |
+|---|---|---|
+| `policy_id` | Yes | ID of the policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -169,9 +171,8 @@ This endpoint toggles the current state rather than setting a specific value. If
     )
     policy = next(r for r in aa_set.rules if r.name == "Anti-spam")
 
-    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
-    status = "enabled" if result.mode else "disabled"
-    print(f"Anti-spam is now {status}")
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+    print(f"Anti-spam is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -205,7 +206,7 @@ This endpoint toggles the current state rather than setting a specific value. If
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -219,8 +220,10 @@ This endpoint toggles the current state rather than setting a specific value. If
     # Set POLICY_ID to the policy ID from the Policy reference or View policy states response
     export POLICY_ID="{POLICY_ID}"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
 
     Response:

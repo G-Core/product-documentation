@@ -1,26 +1,53 @@
 ---
-title: Integrate CDN resource with SocialEngine
+title: Integrate a CDN resource with SocialEngine
 sidebarTitle: SocialEngine
-ai-navigation: Integrate CDN resource with SocialEngine by entering CNAME from Gcore Customer Portal in Settings/General Settings, ensuring CNAME record is properly configured, and verifying static file URLs are rewritten to the CDN CNAME domain.
+ai-navigation: Configure SocialEngine static file delivery through Gcore CDN by assigning an HTTPS custom domain as the Static File Base URL.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+SocialEngine can rewrite static file URLs to a CDN base URL. Configure a Gcore CDN resource to cache and deliver JavaScript, CSS, and other supported static files from a location closer to site visitors.
 
-Log into your SocialEngine admin panel.
+<Info>
+These instructions apply to self-hosted SocialEngine 6.7 and later. Back up the site files and database before changing performance settings.
+</Info>
 
-Go to Settings/General Settings.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the Gcore Customer Portal, create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the SocialEngine site as its origin.
 
-Enter your CNAME from the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list).
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve a representative CSS or JavaScript file from the origin.
+  </Step>
 
-Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration. 
+  <Step title="Open Performance & Caching">
+    Sign in to the SocialEngine Control Panel and navigate to **Settings** > **Performance & Caching**.
+  </Step>
 
+  <Step title="Set the static file base URL">
+    In **Static File Base URL**, enter the complete HTTPS URL for the custom CDN domain — `https://cdn.example.com`.
 
-<Frame>![Integrate CDN resource with SocialEngine](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-socialengine/socialenginev1.jpeg)</Frame>
+    Do not add a trailing slash.
 
+    <Frame>
+      ![Static File Base URL set to a documentation-safe CDN domain](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-socialengine/integrate-cdn-resource-with-socialengine-image1.png)
+    </Frame>
+  </Step>
 
+  <Step title="Save and flush the cache">
+    Select **Flush cache?**, and then select **Save Changes**.
+  </Step>
 
-Click **Save Changes** button at the bottom of the page. 
+  <Step title="Verify CDN delivery">
+    Open the site in a private browser window. Open the browser developer tools, select **Network**, and reload the page.
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
+    Filter requests by `cdn.example.com`. Confirm that JavaScript and CSS files use the CDN URL and return successful HTTP responses.
+  </Step>
+</Steps>
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+## Troubleshooting
+
+When static files fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a TLS or CORS block, a cache that still serves the previous URL, or a file type that SocialEngine does not rewrite.
+
+- For a `404` response, confirm that each requested path exists on the origin and can be retrieved through the CDN domain.
+- For a `502` response, check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- If the browser blocks requests, confirm that the CDN domain has a valid TLS certificate and returns the required CORS headers.
+- If old asset URLs remain visible, select **Flush cache?**, save the settings again, and [purge&nbsp;CDN&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all).
+- If only some files use the CDN, the setting applies to static files supported by SocialEngine. Custom absolute URLs and plugin-generated paths might require separate configuration.
