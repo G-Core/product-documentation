@@ -419,20 +419,19 @@ A [subnet](/api-reference/cloud/networks/create-subnet) defines the IP range and
 
 ## Rename a network
 
-<p>Renaming is a synchronous operation — no task polling required.</p>
+<p>A rename runs as a background task. The SDK waits for the task and returns the network. curl polls the task, then GET returns the updated name.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    updated = client.cloud.networks.update(network_id, name="my-network-renamed")
+    updated = client.cloud.networks.update_and_poll(network_id, name="my-network-renamed")
     print(f"New name: {updated.name}")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    // Add "github.com/G-Core/gcore-go/packages/param" to your imports.
-    updated, err := client.Cloud.Networks.Update(ctx, networkID, cloud.NetworkUpdateParams{
-        Name:      param.NewOpt("my-network-renamed"),
+    updated, err := client.Cloud.Networks.UpdateAndPoll(ctx, networkID, cloud.NetworkUpdateParams{
+        Name: gcore.String("my-network-renamed"),
     })
     if err != nil {
         panic(err.Error())
@@ -442,13 +441,26 @@ A [subnet](/api-reference/cloud/networks/create-subnet) defines the IP range and
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v2/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "my-network-renamed"}'
     ```
 
     Response:
+
+    ```json
+    {
+      "tasks": ["02b255b4-5888-460f-8402-acfe629333f9"]
+    }
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. Then GET the network:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
 
     ```json
     {
