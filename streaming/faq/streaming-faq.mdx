@@ -154,6 +154,19 @@ No. Live streams currently support one audio track only (AAC stereo). Multi-trac
 More details: [Input parameters and codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs#recommended-video-parameters)
 
 
+### Does Gcore support SCTE-35 ad markers in HLS?
+
+SCTE-35 → EXT-X-CUE passthrough is not supported on push ingest (RTMP/SRT). The live transcoder doesn't read SCTE-35 signals from the ingest stream and doesn't write `EXT-X-CUE-OUT`, `EXT-X-CUE-OUT-CONT`, or `EXT-X-CUE-IN` tags into HLS manifests.
+
+If the origin already embeds ad markers in HLS manifests, Gcore CDN passes them through untouched when used as a pure delivery layer — no transcoding takes place. To use this setup:
+
+1. Configure an origin that outputs HLS manifests with ad markers already embedded.
+2. Create a CDN resource pointing to that HLS origin.
+3. Enable the HLS Streaming feature on the CDN resource.
+4. Point the downstream ad insertion system — Broadpeak or another SSAI platform — at the CDN URL.
+
+This approach applies to HLS delivery only. SRT ingest through Gcore Live Streaming doesn't preserve SCTE-35 signaling.
+
 ### Can viewers rewind or pause a live stream?
 
 Yes. The DVR (time-shift) feature allows viewers to pause and rewind live streams while the broadcast continues.
