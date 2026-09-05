@@ -497,9 +497,10 @@ Scan every `##` and `###` — verify a prose sentence follows before any code bl
 
 ```
 python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+python .agents/tools/api_check_style.py --all
 ```
 
-Exit code 0 required. Fix every violation, then re-run. The checker lives in `.agents/tools/api_check_style.py`. When a new repeatable API-tab mistake shows up, add a check function there and a unit test in `.agents/tools/test_api_check_style.py` — do not rely on memory.
+Exit code 0 required. Fix every violation, then re-run. `--all` scans the repo and ignores OS tabs and language-variant curl groups. The checker lives in `.agents/tools/api_check_style.py`. When a new repeatable API-tab mistake shows up, add a check function there and a unit test in `.agents/tools/test_api_check_style.py` — do not rely on memory.
 
 **Links:**
 - Link text 1–2 words maximum
