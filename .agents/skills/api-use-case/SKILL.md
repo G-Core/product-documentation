@@ -510,6 +510,7 @@ Exit code 0 required. Fix every violation, then re-run. `--all` scans the repo a
 **Voice:**
 - No "you" or "your" in prose
 - No forbidden words: just, simply, obviously, ensure, platform
+- Never describe what is absent: do not write that SDK support is "pending", "not yet available", or "not supported". Document only what exists. If only curl is available, show only curl — no explanation needed.
 
 **MDX:**
 - Import has `.jsx` extension
