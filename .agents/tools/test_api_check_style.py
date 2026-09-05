@@ -4,7 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from api_check_style import check_response_outside_tabs, lint
+from api_check_style import (
+    check_combined_step_labels,
+    check_forbidden_sdk_patterns,
+    check_method_switch_import,
+    check_response_outside_tabs,
+    lint,
+)
 
 RESPONSE_OUTSIDE_TABS = """## Create
 
@@ -155,6 +161,82 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' --data-binary @./
 ```
 """
 
+FORBIDDEN_SDK_PATTERNS = """<Tabs>
+  <Tab title="Python SDK">
+```python
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+result, err := client.Cloud.Something.Do(context.TODO(), params)
+```
+  </Tab>
+</Tabs>
+"""
+
+CANONICAL_SDK_PATTERNS = """<Tabs>
+  <Tab title="Python SDK">
+```python
+client = Gcore()
+cluster = client.cloud.k8s.clusters.create_and_poll(name="my-cluster")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+client := gcore.NewClient()
+ctx := context.Background()
+cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, params)
+```
+  </Tab>
+</Tabs>
+"""
+
+COMBINED_STEP_LABELS = """## Quickstart
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+# Step 1. List flavors
+# Step 3+4. Create and poll
+instance = client.cloud.instances.create_and_poll()
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+// Step 3+4. Create and poll
+cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, params)
+```
+  </Tab>
+</Tabs>
+"""
+
+SEPARATE_STEP_LABELS = """## Quickstart
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+# Step 1. List flavors
+# Step 2. Create instance
+instance = client.cloud.instances.create_and_poll()
+```
+  </Tab>
+</Tabs>
+"""
+
+METHOD_SWITCH_IMPORT_BARE = """import { MethodSwitch, MethodSection } from "/snippets/method-switch"
+
+<MethodSwitch>
+</MethodSwitch>
+"""
+
+METHOD_SWITCH_IMPORT_JSX = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+</MethodSwitch>
+"""
+
 
 def test_json_after_method_tabs_is_a_violation() -> None:
     found = check_response_outside_tabs(RESPONSE_OUTSIDE_TABS.splitlines())
@@ -200,3 +282,33 @@ def test_lint_clean_file(tmp_path: Path) -> None:
     article = tmp_path / "article.mdx"
     article.write_text(RESPONSE_INSIDE_CURL_TAB, encoding="utf-8")
     assert lint(article) == []
+
+
+def test_gcore_api_key_ctor_and_go_placeholders_are_violations() -> None:
+    found = check_forbidden_sdk_patterns(FORBIDDEN_SDK_PATTERNS.splitlines())
+    rules = {item.rule for item in found}
+    assert rules == {"sdk-gcore-api-key-ctor", "sdk-with-api-key", "sdk-context-todo"}
+
+
+def test_canonical_sdk_patterns_are_clean() -> None:
+    assert check_forbidden_sdk_patterns(CANONICAL_SDK_PATTERNS.splitlines()) == []
+
+
+def test_combined_step_labels_are_violations() -> None:
+    found = check_combined_step_labels(COMBINED_STEP_LABELS.splitlines())
+    assert len(found) == 2
+    assert all(item.rule == "combined-step-label" for item in found)
+
+
+def test_separate_step_labels_are_clean() -> None:
+    assert check_combined_step_labels(SEPARATE_STEP_LABELS.splitlines()) == []
+
+
+def test_method_switch_import_without_jsx_is_a_violation() -> None:
+    found = check_method_switch_import(METHOD_SWITCH_IMPORT_BARE.splitlines())
+    assert found
+    assert found[0].rule == "method-switch-import"
+
+
+def test_method_switch_import_with_jsx_is_clean() -> None:
+    assert check_method_switch_import(METHOD_SWITCH_IMPORT_JSX.splitlines()) == []

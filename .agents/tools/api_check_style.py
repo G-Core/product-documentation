@@ -34,6 +34,13 @@ _SDK_TAB_TITLES = frozenset(
 )
 
 _TAB_TITLE = re.compile(r"<Tab\s+title=[\"']([^\"']+)[\"']", re.IGNORECASE)
+_GCORE_API_KEY_CTOR = re.compile(r"Gcore\s*\(\s*api_key\s*=")
+_WITH_API_KEY = re.compile(r"option\.WithAPIKey")
+_CONTEXT_TODO = re.compile(r"context\.TODO\s*\(")
+_COMBINED_STEP = re.compile(r"(?:#|//)\s*Step\s+\d+\s*\+\s*\d+", re.IGNORECASE)
+_METHOD_SWITCH_IMPORT_BARE = re.compile(
+    r"""from\s+["']/snippets/method-switch["']"""
+)
 
 _SKIP_DIR_NAMES = frozenset(
     {
@@ -148,7 +155,142 @@ def check_response_outside_tabs(lines: Sequence[str]) -> list[Violation]:
     return violations
 
 
-CHECKS: tuple[CheckFn, ...] = (check_response_outside_tabs,)
+def check_forbidden_sdk_patterns(lines: Sequence[str]) -> list[Violation]:
+    """Flag SDK samples that ignore client-level env vars or use TODO context.
+
+    ``Gcore()`` / ``gcore.NewClient()`` read ``GCORE_*`` env vars. Passing
+    ``api_key`` or ``option.WithAPIKey`` is redundant and drifts from the
+    canonical pattern. ``context.TODO()`` is a placeholder, not production
+    sample code.
+    """
+    violations: list[Violation] = []
+    in_fence = False
+    lang = ""
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            if not in_fence:
+                lang = _fence_lang(raw)
+                in_fence = True
+            else:
+                in_fence = False
+                lang = ""
+            continue
+        if not in_fence:
+            continue
+
+        stripped = raw.strip()
+        if lang in {"python", "py"} and _GCORE_API_KEY_CTOR.search(raw):
+            violations.append(
+                Violation(
+                    line=lineno,
+                    rule="sdk-gcore-api-key-ctor",
+                    detail=(
+                        "Gcore() reads GCORE_API_KEY. Do not pass api_key= "
+                        "to the constructor."
+                    ),
+                    text=stripped[:120],
+                )
+            )
+        if lang == "go":
+            if _WITH_API_KEY.search(raw):
+                violations.append(
+                    Violation(
+                        line=lineno,
+                        rule="sdk-with-api-key",
+                        detail=(
+                            "gcore.NewClient() reads GCORE_API_KEY. Do not "
+                            "pass option.WithAPIKey."
+                        ),
+                        text=stripped[:120],
+                    )
+                )
+            if _CONTEXT_TODO.search(raw):
+                violations.append(
+                    Violation(
+                        line=lineno,
+                        rule="sdk-context-todo",
+                        detail=(
+                            "Use ctx := context.Background(), not "
+                            "context.TODO()."
+                        ),
+                        text=stripped[:120],
+                    )
+                )
+
+    return violations
+
+
+def check_combined_step_labels(lines: Sequence[str]) -> list[Violation]:
+    """Flag combined Quickstart step comments such as ``# Step 3+4``."""
+    violations: list[Violation] = []
+    in_fence = False
+    lang = ""
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            if not in_fence:
+                lang = _fence_lang(raw)
+                in_fence = True
+            else:
+                in_fence = False
+                lang = ""
+            continue
+        if not in_fence:
+            continue
+        if lang not in {"python", "py", "go"}:
+            continue
+        if not _COMBINED_STEP.search(raw):
+            continue
+        violations.append(
+            Violation(
+                line=lineno,
+                rule="combined-step-label",
+                detail="One logical step per comment. Never combine (# Step 3+4).",
+                text=raw.strip()[:120],
+            )
+        )
+
+    return violations
+
+
+def check_method_switch_import(lines: Sequence[str]) -> list[Violation]:
+    """Flag MethodSwitch imports that omit the ``.jsx`` extension.
+
+    Without ``.jsx`` the MDX compiler reports OK and the page renders blank.
+    """
+    violations: list[Violation] = []
+    in_fence = False
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        if not _METHOD_SWITCH_IMPORT_BARE.search(raw):
+            continue
+        violations.append(
+            Violation(
+                line=lineno,
+                rule="method-switch-import",
+                detail=(
+                    'Import from "/snippets/method-switch.jsx", not '
+                    '"/snippets/method-switch".'
+                ),
+                text=raw.strip()[:120],
+            )
+        )
+
+    return violations
+
+
+CHECKS: tuple[CheckFn, ...] = (
+    check_response_outside_tabs,
+    check_forbidden_sdk_patterns,
+    check_combined_step_labels,
+    check_method_switch_import,
+)
 
 
 def lint(path: Path) -> list[Violation]:
