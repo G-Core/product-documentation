@@ -320,18 +320,13 @@ and what the response looks like.</p>
       -d '{...}'
     ```
 
-    Response:
+    <p>The API returns:</p>
+
     ```json
     {"tasks": ["abc-123"]}
     ```
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{"tasks": ["abc-123"]}   // save as TASK_ID
-```
 
 </Accordion>
 ```
@@ -340,24 +335,25 @@ The API returns:
 1. One prose sentence: why this step matters — not "In this step, you will..."
 2. Parameters table: non-obvious required fields only
 3. Code tabs: Python SDK → Go SDK → curl (curl always last)
-4. Response JSON: always labeled with `The API returns:` — never a bare JSON block after `</Tabs>`
+4. HTTP response body belongs **inside the tab that produced it**. For curl, that is the curl tab, immediately after the command, labeled `<p>The API returns:</p>` then a `json` fence. Never put response JSON (or "The API returns") after `</Tabs>` — that block is visible in every method tab.
 5. Inline API reference link: embed in a meaningful sentence, not standalone
 
 **Polling pattern** — when an endpoint returns `{"tasks": [...]}`:
 
 **In SDK examples:** Use `*_and_poll()` / `*AndPoll()` methods (see `.agents/references/sdk-best-practices.md`). Never show manual polling loops with `time.sleep()` or `time.Sleep()`.
 
-**In curl examples:** Show the manual polling pattern:
-```mdx
-Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until
-`state` is `FINISHED`, then read the resource ID from `created_resources`.
+**In curl examples:** Show the manual polling pattern **inside the curl tab**, after the request:
 
-While provisioning:
+```mdx
+<p>Run `GET /cloud/v1/tasks/{task_id}` every 5 seconds until
+`state` is `FINISHED`, then read the resource ID from `created_resources`.</p>
+
+<p>While provisioning:</p>
 ```json
 {"state": "RUNNING", "created_resources": {}}
 ```
 
-When complete:
+<p>When complete:</p>
 ```json
 {"state": "FINISHED", "created_resources": {"instances": ["abc-123"]}}
 ```
@@ -392,13 +388,18 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 <Tabs>
   <Tab title="Python SDK">```python ... ```</Tab>
   <Tab title="Go SDK">```go ... ```</Tab>
-  <Tab title="curl">```bash ... ```</Tab>
-</Tabs>
+  <Tab title="curl">
+    ```bash
+    curl ...
+    ```
 
-The API returns:
-```json
-{...}
-```
+    <p>The API returns:</p>
+
+    ```json
+    {...}
+    ```
+  </Tab>
+</Tabs>
 
 ## {Another operation name}
 ```
@@ -488,9 +489,17 @@ Scan every `##` and `###` — verify a prose sentence follows before any code bl
 **Formatting:**
 - Bold only for UI elements — not for emphasis
 - Em-dashes spaced: ` — ` not `—`
-- Response JSON never appears directly after `</Tabs>` without a label
+- Response JSON and "The API returns" live inside the matching method tab — never after `</Tabs>`
 - Quickstart scripts have no combined step labels (`# Step 3+4`)
 - Flavor and image IDs not hardcoded — selected dynamically
+
+**API style checker (mandatory — run after the article is written, before showing the result):**
+
+```
+python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+```
+
+Exit code 0 required. Fix every violation, then re-run. The checker lives in `.agents/tools/api_check_style.py`. When a new repeatable API-tab mistake shows up, add a check function there and a unit test in `.agents/tools/test_api_check_style.py` — do not rely on memory.
 
 **Links:**
 - Link text 1–2 words maximum
