@@ -1,14 +1,19 @@
 ---
 title: Set up automatic snapshot creation
 sidebarTitle: Set up automatic snapshots
-ai-navigation: Create Snapshot Schedules in Gcore Cloud to automate volume snapshot creation on daily, weekly, monthly, yearly, or period intervals with configurable retention and max resource count limits.
+ai-navigation: Create Snapshot Schedules in Gcore Cloud via Customer Portal or REST API with cron or interval timing, retention, and max snapshot count.
 ---
 
-Snapshot Schedules automate snapshot creation for selected volumes on a recurring basis. When the **Max resource count** limit is reached, the system deletes the oldest snapshot in the schedule before creating a new one, while snapshots created outside the schedule are not affected.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Snapshot Schedules automate snapshot creation for selected volumes on a recurring basis. When the **Max resource count** limit is reached, the system deletes the oldest snapshot in the schedule before creating a new one, while snapshots created outside the schedule are not affected.</p>
 
 ## Create a snapshot schedule
 
-At least one [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes) must exist in the target region before creating a schedule.
+<p>At least one [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes) must exist in the target region before creating a schedule.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Storage** > **Snapshot Schedules**.
 
@@ -46,7 +51,7 @@ At least one [volume](/cloud/virtual-instances/volumes/create-and-configure-volu
 
 8. Review the **Estimated cost** panel after volumes are selected, then click **Create Schedule**.
 
-The schedule appears on the **Snapshot Schedules** page and starts running when created.
+<p>The schedule appears on the **Snapshot Schedules** page and starts running when created.</p>
 
 <Info>
 Snapshot storage counts toward project quotas. If creation fails with a quota error, reduce existing snapshots or [Request](/cloud/getting-started/request-a-quota-increase).
@@ -60,7 +65,7 @@ Snapshot storage counts toward project quotas. If creation fails with a quota er
 
 3. Use the enable/disable control at the top of the page to pause or resume the schedule, then save the changes.
 
-When enabled, the schedule status is **Active**.
+<p>When enabled, the schedule status is **Active**.</p>
 
 ## Delete a schedule
 
@@ -70,4 +75,433 @@ When enabled, the schedule status is **Active**.
 
 3. Select **Delete** from the menu and confirm the action.
 
-Deleting a schedule does not delete snapshots that were already created.
+<p>Deleting a schedule does not delete snapshots that were already created.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Snapshot Schedules take volume snapshots on a recurring cadence. The Cloud API names this resource a lifecycle policy.</p>
+
+<p>Create a policy with volumes and a schedule, pause it, or delete it. Deleting a policy leaves existing snapshots in place.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project ID](/api-reference/cloud/projects/list-projects),
+a [region ID](/api-reference/cloud/regions/list-regions),
+and at least one [volume](/cloud/virtual-instances/volumes/create-and-configure-volumes) in that region.
+</Info>
+
+<p>Set the following environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Create a snapshot schedule
+
+<p>A policy is created in one call: name, `volume_snapshot` action, volume IDs, and a schedule. The response is the policy object — there is no task to poll.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `action` | Yes | Must be `volume_snapshot` |
+| `name` | Yes | Snapshot Schedule name |
+| `volume_ids` | Yes | One or more volume UUIDs in the same region |
+| `schedules` | Yes | One cron or interval schedule, up to 10 per policy |
+| `status` | No | `active` (default) or `paused` |
+
+<p>Schedule timing maps to the Portal schedule types as follows.</p>
+
+| Portal type | API `type` | Timing fields |
+|-------------|------------|---------------|
+| Daily | `cron` | `hour` and `minute` |
+| Weekly | `cron` | `day_of_week`, `hour`, and `minute` |
+| Monthly | `cron` | `day`, `hour`, and `minute` |
+| Yearly | `cron` | `month`, `day`, `hour`, and `minute` |
+| Period | `interval` | `weeks`, `days`, `hours`, and `minutes`. Minimum interval is 1 hour |
+
+<p>`max_quantity` is the Portal **Max resource count**. `retention_time.days` is optional retention. Multiple daily run times use a comma-separated `hour` value (`3,15`).</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+volume = next(iter(client.cloud.volumes.list()))
+
+policy = client.cloud.lifecycle_policies.create(
+    action="volume_snapshot",
+    name="daily-boot-snapshots",
+    volume_ids=[volume.id],
+    schedules=[
+        {
+            "type": "cron",
+            "hour": "3",
+            "minute": "30",
+            "max_quantity": 7,
+            "retention_time": {"days": 14},
+        }
+    ],
+)
+print(policy.id, policy.status)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	volumes, err := client.Cloud.Volumes.List(ctx, cloud.VolumeListParams{})
+	if err != nil {
+		panic(err)
+	}
+
+	policy, err := client.Cloud.LifecyclePolicies.New(ctx, cloud.LifecyclePolicyNewParams{
+		Action:    cloud.LifecyclePolicyNewParamsActionVolumeSnapshot,
+		Name:      "daily-boot-snapshots",
+		VolumeIDs: []string{volumes.Results[0].ID},
+		Schedules: []cloud.LifecyclePolicyNewParamsScheduleUnion{
+			{
+				OfCron: &cloud.LifecyclePolicyNewParamsScheduleCron{
+					Hour:        gcore.String("3"),
+					Minute:      gcore.String("30"),
+					MaxQuantity: gcore.Int(7),
+					RetentionTime: cloud.LifecyclePolicyNewParamsScheduleCronRetentionTime{
+						Days: gcore.Int(14),
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(policy.ID, policy.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+VOLUME_ID=$(curl -sS \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  | jq -r '.results[0].id')
+
+curl -X POST \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"action\": \"volume_snapshot\",
+    \"name\": \"daily-boot-snapshots\",
+    \"volume_ids\": [\"$VOLUME_ID\"],
+    \"schedules\": [
+      {
+        \"type\": \"cron\",
+        \"hour\": \"3\",
+        \"minute\": \"30\",
+        \"max_quantity\": 7,
+        \"retention_time\": {\"days\": 14}
+      }
+    ]
+  }"
+```
+  </Tab>
+</Tabs>
+
+<p>The API returns:</p>
+
+```json
+{
+  "action": "volume_snapshot",
+  "id": 15093,
+  "name": "daily-boot-snapshots",
+  "project_id": 1,
+  "region_id": 1,
+  "schedules": [
+    {
+      "id": "6859087c-a28f-4521-9a09-55a0e4dba9c4",
+      "type": "cron",
+      "hour": "3",
+      "minute": "30",
+      "max_quantity": 7,
+      "retention_time": {"days": 14},
+      "resource_name_template": "Snapshot of volume {volume_id} created by policy {lifecycle_policy_id}",
+      "owner": "lifecycle_policy",
+      "owner_id": 15093,
+      "user_id": 1
+    }
+  ],
+  "status": "active",
+  "user_id": 1,
+  "volumes": [
+    {
+      "volume_id": "3ed9e2ce-f906-47fb-ba32-c25a3f63df4f",
+      "volume_name": "boot-volume"
+    }
+  ]
+}
+```
+
+<p>Save `id` as the policy ID for later calls. HTTP 400 with `MultipleQuotaLimitExceeded` means `max_quantity` plus existing snapshots exceeds the project snapshot quota.</p>
+
+<p>Period schedules use `"type": "interval"` with `hours`, `days`, or `weeks` instead of cron fields. Weekly cron adds `day_of_week` (`mon,fri`).</p>
+
+## List snapshot schedules
+
+<p>The collection lists every policy in the project and region, including status, schedules, and attached volumes.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+policies = client.cloud.lifecycle_policies.list()
+print(policies.count)
+for policy in policies.results:
+    print(policy.id, policy.name, policy.status)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	policies, err := client.Cloud.LifecyclePolicies.List(ctx, cloud.LifecyclePolicyListParams{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(policies.Count)
+	for _, policy := range policies.Results {
+		fmt.Println(policy.ID, policy.Name, policy.Status)
+	}
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X GET \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+<p>The API returns:</p>
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 15093,
+      "name": "daily-boot-snapshots",
+      "status": "active",
+      "action": "volume_snapshot"
+    }
+  ]
+}
+```
+
+## Disable and enable a schedule
+
+<p>`paused` stops new snapshots. `active` resumes them. Existing snapshots stay in place.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+policy = next(
+    p
+    for p in client.cloud.lifecycle_policies.list().results
+    if p.name == "daily-boot-snapshots"
+)
+
+paused = client.cloud.lifecycle_policies.update(policy.id, status="paused")
+print(paused.status)
+
+active = client.cloud.lifecycle_policies.update(policy.id, status="active")
+print(active.status)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	listed, err := client.Cloud.LifecyclePolicies.List(ctx, cloud.LifecyclePolicyListParams{})
+	if err != nil {
+		panic(err)
+	}
+
+	var policyID int64
+	for _, policy := range listed.Results {
+		if policy.Name == "daily-boot-snapshots" {
+			policyID = policy.ID
+			break
+		}
+	}
+
+	paused, err := client.Cloud.LifecyclePolicies.Update(ctx, policyID, cloud.LifecyclePolicyUpdateParams{
+		Status: cloud.LifecyclePolicyUpdateParamsStatusPaused,
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(paused.Status)
+
+	active, err := client.Cloud.LifecyclePolicies.Update(ctx, policyID, cloud.LifecyclePolicyUpdateParams{
+		Status: cloud.LifecyclePolicyUpdateParamsStatusActive,
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(active.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+POLICY_ID=$(curl -sS \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  | jq -r '.results[] | select(.name=="daily-boot-snapshots") | .id')
+
+curl -X PATCH \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POLICY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"paused"}'
+
+curl -X PATCH \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POLICY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"active"}'
+```
+  </Tab>
+</Tabs>
+
+<p>The API returns the policy. `status` is `paused` after the first call and `active` after the second.</p>
+
+```json
+{
+  "id": 15093,
+  "name": "daily-boot-snapshots",
+  "status": "paused"
+}
+```
+
+## Delete a schedule
+
+<p>Deleting a policy removes the schedule and its attached volume membership. Snapshots already created stay in the project.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+policy = next(
+    p
+    for p in client.cloud.lifecycle_policies.list().results
+    if p.name == "daily-boot-snapshots"
+)
+client.cloud.lifecycle_policies.delete(policy.id)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	listed, err := client.Cloud.LifecyclePolicies.List(ctx, cloud.LifecyclePolicyListParams{})
+	if err != nil {
+		panic(err)
+	}
+
+	var policyID int64
+	for _, policy := range listed.Results {
+		if policy.Name == "daily-boot-snapshots" {
+			policyID = policy.ID
+			break
+		}
+	}
+
+	err = client.Cloud.LifecyclePolicies.Delete(ctx, policyID, cloud.LifecyclePolicyDeleteParams{})
+	if err != nil {
+		panic(err)
+	}
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+POLICY_ID=$(curl -sS \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  | jq -r '.results[] | select(.name=="daily-boot-snapshots") | .id')
+
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/lifecycle_policy/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POLICY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+<p>The API returns an empty 204 response.</p>
+
+</MethodSection>
+</MethodSwitch>
