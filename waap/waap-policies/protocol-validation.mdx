@@ -55,7 +55,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 ```
 
 <Info>
-Protocol Validation policies are stored under the `advanced-api-protection` resource group in the API. When querying rule sets, filter by `resource_slug == "advanced-api-protection"` and then select policies `S3008978` and `S3008980`.
+Protocol Validation policies are stored under the `advanced-api-protection` resource group. Filter rule sets by `resource_slug` value `advanced-api-protection`, then select Service protocol validation and Prevent malformed request methods by name.
 </Info>
 
 ## View policy states
@@ -76,9 +76,9 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
         rs for rs in rule_sets if rs.resource_slug == "advanced-api-protection"
     )
 
-    protocol_ids = {"S3008978", "S3008980"}
+    protocol_names = {"Service protocol validation", "Prevent malformed request methods"}
     for policy in adv_set.rules:
-        if policy.id in protocol_ids:
+        if policy.name in protocol_names:
             status = "enabled" if policy.mode else "disabled"
             print(f"{policy.name}: {status} ({policy.id})")
     ```
@@ -100,13 +100,13 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        protocolIDs := map[string]bool{"S3008978": true, "S3008980": true}
+        protocolNames := map[string]bool{"Service protocol validation": true, "Prevent malformed request methods": true}
 
         ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
         for _, rs := range *ruleSets {
             if rs.ResourceSlug == "advanced-api-protection" {
                 for _, policy := range rs.Rules {
-                    if protocolIDs[policy.ID] {
+                    if protocolNames[policy.Name] {
                         status := "disabled"
                         if policy.Mode {
                             status = "enabled"
@@ -123,7 +123,7 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
     ```bash
     curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
       -H "Authorization: APIKey ${GCORE_API_KEY}" \
-      | jq '.[] | select(.resource_slug == "advanced-api-protection") | .rules[] | select(.id == "S3008978" or .id == "S3008980") | {name, id, mode}'
+      | jq '.[] | select(.resource_slug == "advanced-api-protection") | .rules[] | select(.name == "Service protocol validation" or .name == "Prevent malformed request methods") | {name, id, mode}'
     ```
   </Tab>
 </Tabs>
@@ -132,7 +132,7 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
 
 ## Enable or disable a policy
 
-<p>Use the policy ID returned by View policy states, or one of the IDs listed in the Policy reference table below.</p>
+<p>Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
 
 | Parameter | Required | Description |
 |---|---|---|
@@ -149,9 +149,14 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
     client = gcore.Gcore()
     domain_id = int(os.environ["WAAP_DOMAIN_ID"])
 
-    # Toggle Service protocol validation (S3008978)
-    # Replace with S3008980 for Prevent malformed request methods; use mode: false to disable
-    result = client.waap.domains.policies.toggle("S3008978", domain_id=domain_id, mode=True)
+    # Find the policy ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    adv_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "advanced-api-protection"
+    )
+    policy = next(r for r in adv_set.rules if r.name == "Service protocol validation")
+
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
     print(f"Service protocol validation is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
@@ -173,9 +178,20 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        // Enable Service protocol validation (S3008978)
-        // Replace with S3008980 for Prevent malformed request methods
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), "S3008978", waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
+        // Find the policy ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var policyID string
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "advanced-api-protection" {
+                for _, p := range rs.Rules {
+                    if p.Name == "Service protocol validation" {
+                        policyID = p.ID
+                    }
+                }
+            }
+        }
+
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -186,9 +202,8 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
   </Tab>
   <Tab title="curl">
     ```bash
-    # S3008978 = Service protocol validation
-    # S3008980 = Prevent malformed request methods
-    export POLICY_ID="S3008978"
+    # Set POLICY_ID to the id from the View policy states response
+    export POLICY_ID="{POLICY_ID}"
 
     curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
       -H "Authorization: APIKey ${GCORE_API_KEY}" \
