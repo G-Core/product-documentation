@@ -552,7 +552,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Update SFTP password
 
-<p>Use <code>PATCH /v4/sftp_storages/{storage_id}</code> to replace an SFTP storage's password. Set <code>password_mode</code> to <code>set</code> and provide the new value in <code>password</code>. The <code>password</code> field is only accepted when <code>password_mode</code> is <code>set</code>.</p>
+<p>Use <code>PATCH /v4/sftp_storages/{storage_id}</code> to replace an SFTP storage's password. Set <code>password_mode</code> to <code>set</code> and send the new value in <code>password</code>. Typed SDK update parameters omit <code>set</code>; pass that body with <code>extra_body</code> (Python) or <code>option.WithJSONSet</code> (Go).</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -564,8 +564,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     sftp_id = 13865
     client.storage.sftp_storages.update(
         sftp_id,
-        password_mode="set",
-        password="MyNewPassword123",
+        extra_body={"password_mode": "set", "password": "MyNewPassword123"},
     )
     print("Password updated")
     ```
@@ -580,6 +579,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
         "log"
 
         gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/storage"
     )
 
@@ -589,10 +589,13 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
         var sftpID int64 = 13865
 
-        _, err := client.Storage.SftpStorages.Update(ctx, sftpID, storage.SftpStorageUpdateParams{
-            PasswordMode: storage.SftpStorageUpdateParamsPasswordModeSet,
-            Password:     gcore.String("MyNewPassword123"),
-        })
+        _, err := client.Storage.SftpStorages.Update(
+            ctx,
+            sftpID,
+            storage.SftpStorageUpdateParams{},
+            option.WithJSONSet("password_mode", "set"),
+            option.WithJSONSet("password", "MyNewPassword123"),
+        )
         if err != nil {
             log.Fatalf("update SFTP password: %v", err)
         }
@@ -801,14 +804,14 @@ terraform apply
 
 ## Update SFTP password
 
-<p>To change the SFTP storage password, set <code>password_mode</code> to <code>set</code> and add a <code>password</code> attribute, then apply.</p>
+<p>To set a custom SFTP password, set <code>password_mode</code> to <code>set</code> and pass the value in <code>sftp_password</code>. <code>password</code> is read-only: Terraform stores the value the API returns after apply.</p>
 
 ```hcl
 resource "gcore_storage_sftp" "example" {
   location_name = "ams"
   name          = "my-sftp-storage"
   password_mode = "set"
-  password      = var.sftp_password
+  sftp_password = var.sftp_password
 }
 ```
 
