@@ -97,6 +97,30 @@ new API parameters) → skip this phase entirely.
 
 ---
 
+## Phase 3b — Verify behavioral claims via live API test
+
+**If the change describes a behavioral restriction or capability** (e.g. "feature X is not
+supported", "operation Y is blocked", "field Z is required") — verify it with a live API
+test before writing it into the article. Do not trust Jira ticket descriptions alone.
+
+**Steps:**
+
+1. Identify the resource type involved (volume, instance, load balancer, etc.)
+2. If no such resource exists in the account — **create one**. Use the smallest/cheapest
+   configuration. Delete it after the test.
+3. Attempt the operation described in the change (resize, attach, delete, etc.)
+4. Record the actual API response — success, error code, error message.
+5. Base the documentation on the observed behavior, not on the ticket description.
+
+**If creation is not possible** (no quota, region unavailable, feature gated):
+- State the blocker explicitly and ask the user how to proceed.
+- Do not write documentation based on an untested claim.
+
+**Never write a restriction or limitation into documentation without a live test.**
+Jira tickets describe intent and bugs — not necessarily the current production behavior.
+
+---
+
 ## Phase 4 — Apply changes
 
 ### What to change
