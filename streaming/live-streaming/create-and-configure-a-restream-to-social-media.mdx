@@ -1,8 +1,10 @@
 ---
 title: Create and configure a restream
 sidebarTitle: Restreaming
-ai-navigation: Broadcast live streams to multiple social media platforms (YouTube, Facebook, Twitch) via RTMP/RTMPS restreaming by configuring credentials and selecting tar...
+ai-navigation: Broadcast live streams to multiple social media platforms via RTMP/RTMPS/SRT restreaming - create, update, enable, and delete restreams via the Customer Portal or REST API using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
 ## About restreams
 
@@ -115,29 +117,23 @@ For example:
 
 ## Configure a restream
 
-1\. Get credentials from the target platform or media server for the restream. Our guides for popular platforms describe how to do it: [Facebook](https://en-gb.facebook.com/help/587160588142067?helpref=faq_content), [YouTube](https://support.google.com/youtube/answer/2907883?hl=en) and [Twitch](https://help.twitch.tv/s/article/twitch-stream-key-faq). For SRT targets, get the SRT host, port, and any required query parameters from the target media server administrator.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>1. Get credentials from the target platform or media server for the restream. Our guides for popular platforms describe how to do it: <a href="https://en-gb.facebook.com/help/587160588142067?helpref=faq_content">Facebook</a>, <a href="https://support.google.com/youtube/answer/2907883?hl=en">YouTube</a> and <a href="https://help.twitch.tv/s/article/twitch-stream-key-faq">Twitch</a>. For SRT targets, get the SRT host, port, and any required query parameters from the target media server administrator.</p>
 
-For example, we want to broadcast our live stream on YouTube. To do so, we should go to [YouTube](https://youtube.com) and click **Go live**. Then select a Streaming software solution. There we will need the credentials of stream URL and stream key. We will use them in step 5 of this guide.
+<p>For example, we want to broadcast our live stream on YouTube. To do so, we should go to <a href="https://youtube.com">YouTube</a> and click <strong>Go live</strong>. Then select a Streaming software solution. There we will need the credentials of stream URL and stream key. We will use them in step 5 of this guide.</p>
 
-In YouTube Studio, open the live stream you created. The stream key appears in the upper-right corner, where you can copy it by clicking **Copy**.
+<p>In YouTube Studio, open the live stream you created. The stream key appears in the upper-right corner, where you can copy it by clicking <strong>Copy</strong>.</p>
 
 <Frame>![Configure a restream](/images/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Stream_key.png)</Frame>
 
-
-
 2\. Go to the [Restreams](https://portal.gcore.com/streaming/restreams/list) section and click **Create a restream**.
-
 
 <Frame>![Restreams section](/images/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Create_a_restream.png)</Frame>
 
-
-
-The configuration page opens. Complete the remaining steps in it.
-
+<p>The configuration page opens. Complete the remaining steps in it.</p>
 
 <Frame>![ remaining steps](/images/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/9665929864593.png)</Frame>
-
-
 
 3\. Turn on the **Active** toggle if you want to broadcast your video content after configuration. If you don't turn the toggle off, an inactive restream won't be broadcasted.
 
@@ -153,17 +149,249 @@ The configuration page opens. Complete the remaining steps in it.
 
 8\. Save changes.
 
-Then you should enable the live stream or playlist (depending on your choice), wait several minutes while the settings are applied, and restart the [Restreams](https://portal.gcore.com/streaming/restreams/list) page. If everything was set up correctly, you would see the **Live** label.
-
+<p>Then you should enable the live stream or playlist (depending on your choice), wait several minutes while the settings are applied, and restart the <a href="https://portal.gcore.com/streaming/restreams/list">Restreams</a> page. If everything was set up correctly, you would see the <strong>Live</strong> label.</p>
 
 <Frame>![Restreams page](/images/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Live.png)</Frame>
 
-
-
-You can do this if the live stream or playlist is over, but you want to restream it again in a while. If the key and URL were not changed, and the restream still exists in the Gcore Customer Portal, there are no additional settings. If the key or URL were changed, you should add current credentials in the configuration of restream.
-
+<p>You can do this if the live stream or playlist is over, but you want to restream it again in a while. If the key and URL were not changed, and the restream still exists in the Gcore Customer Portal, there are no additional settings. If the key or URL were changed, you should add current credentials in the configuration of restream.</p>
 
 <Frame>![Restreams page](/images/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Settings.png)</Frame>
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
+
+## Create a restream
+
+<p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import urllib.request
+import json
+
+stream_id = int(os.environ["STREAM_ID"])
+api_key = os.environ["GCORE_API_KEY"]
+
+payload = json.dumps({
+    "restream": {
+        "name": "YouTube restream",
+        "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
+        "stream_id": stream_id,
+        "active": True,
+    }
+}).encode()
+req = urllib.request.Request(
+    "https://api.gcore.com/streaming/restreams",
+    data=payload,
+    method="POST",
+    headers={"Authorization": f"APIKey {api_key}", "Content-Type": "application/json"},
+)
+with urllib.request.urlopen(req) as resp:
+    restream = json.loads(resp.read())
+
+print(f"Restream ID:   {restream['id']}")
+print(f"Target URI:    {restream['uri']}")
+print(f"Active:        {restream['active']}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "strconv"
+    "strings"
+)
+
+func main() {
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+    apiKey := os.Getenv("GCORE_API_KEY")
+
+    body := fmt.Sprintf(
+        `{"restream":{"name":"YouTube restream","uri":"rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}","stream_id":%d,"active":false}}`,
+        streamID,
+    )
+    req, _ := http.NewRequest(http.MethodPost,
+        "https://api.gcore.com/streaming/restreams",
+        strings.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    raw, _ := io.ReadAll(resp.Body)
+    var restream map[string]any
+    _ = json.Unmarshal(raw, &restream)
+
+    fmt.Printf("Restream ID:  %v\n", restream["id"])
+    fmt.Printf("Target URI:   %v\n", restream["uri"])
+    fmt.Printf("Active:       %v\n", restream["active"])
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/restreams" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "restream": {
+         "name": "YouTube restream",
+         "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
+         "stream_id": '"$STREAM_ID"',
+         "active": false
+       }
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Update restream target or toggle active state
+
+<p>Use `PATCH /streaming/restreams/{"{restream_id}"}` to update the target URI (for example, after a stream key rotation) or to enable/disable the restream without deleting it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+restream_id = int(os.environ["RESTREAM_ID"])
+
+client = Gcore()
+restream = client.streaming.restreams.update(
+    restream_id=restream_id,
+    restream={
+        "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
+        "active": True,
+    },
+)
+print(f"Updated URI:  {restream.uri}")
+print(f"Active:       {restream.active}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    restreamID, _ := strconv.ParseInt(os.Getenv("RESTREAM_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    restream, err := client.Streaming.Restreams.Update(
+        context.TODO(),
+        restreamID,
+        streaming.RestreamUpdateParams{
+            Restream: streaming.RestreamUpdateParamsRestream{
+                Uri:    param.NewOpt("rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}"),
+                Active: param.NewOpt(true),
+            },
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Updated URI:  %s\n", restream.Uri)
+    fmt.Printf("Active:       %v\n", restream.Active)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "restream": {
+         "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
+         "active": true
+       }
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Delete a restream
+
+<p>Send `DELETE /streaming/restreams/{"{restream_id}"}`. Returns HTTP 204 with no body on success.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+restream_id = int(os.environ["RESTREAM_ID"])
+
+client = Gcore()
+client.streaming.restreams.delete(restream_id)
+print("Restream deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    restreamID, _ := strconv.ParseInt(os.Getenv("RESTREAM_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    err := client.Streaming.Restreams.Delete(context.TODO(), restreamID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Restream deleted.")
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X DELETE "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+  </MethodSection>
+</MethodSwitch>
 
 ## Multiple restreaming
 
