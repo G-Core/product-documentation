@@ -1,59 +1,189 @@
 ---
 title: Sport detection
 sidebarTitle: Sport detection
-ai-navigation: Configure sport detection content moderation tasks in Gcore Streaming AI to identify sporting activities, actions, and events in MP4 videos via portal or API, returning detected objects with frame numbers and confidence probability scores above 30%.
+ai-navigation: Detect sport activities in MP4 videos via the Customer Portal or REST API - create a content moderation task, then poll for detection results using Python SDK, Go SDK, or curl.
 ---
 
-The sport detection content moderation task identifies various sporting activities in a video. This can include detecting specific types, actions, events, and moments. 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
-The check returns information about the object identified, video frame number where it was found, and probability of the detected object. Objects with a probability of at least 30% are included in the response. 
+The sport detection content moderation task identifies various sporting activities in a video. This can include detecting specific types, actions, events, and moments.
 
-For a full list of activities that can be detected with the sport detection check, read our [API documentation](/api-reference/streaming/ai/create-ai-task). 
+The check returns information about the object identified, video frame number where it was found, and probability of the detected object. Objects with a probability of at least 30% are included in the response.
+
+For a full list of activities that can be detected with the sport detection check, read our [API documentation](/api-reference/streaming/ai/create-ai-task).
 
 <Tip>
-**Tip**
-
 For proper analysis, make sure your video is at least 10-15 seconds long.
 </Tip>
 
-To run the sport detection check: 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>To run the sport detection check:</p>
 
 1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
 
-
 <Frame>![AI tasks page](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/ai-tasks-page.png)</Frame>
 
+2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:
 
+  * **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
 
-2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options: 
-
-  * **Paste video origin URL** : If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols. 
-
-To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly. 
-
+<p>To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly.</p>
 
 <Frame>![Example of the origin URL](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/example-url-link.png)</Frame>
 
+  * **Select from uploaded videos**: choose a video hosted on the Gcore platform.
 
-  * **Select from uploaded videos** : choose a video hosted on the Gcore platform.
+3\. In the **Task type**, choose **Content moderation**.
 
-
-
-
-3\. In the **Task type**, choose **Content moderation**. 
-
-4\. In the following dropdown, select **Sport detection**. 
+4\. In the following dropdown, select **Sport detection**.
 
 5\. Click **Generate task**.
 
-6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details. 
+6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.
 
-7\. Check out the **Task result** field. You can have one of the following outputs: 
+7\. Check out the **Task result** field. You can have one of the following outputs:
 
-  * **Sport detection: not found**. This means that your video doesn't contain sport activities. 
+  * **Sport detection: not found**. This means that your video doesn't contain sport activities.
 
   * If some sport activities are detected, you'll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content contains sport activities.
 
-
-
 <Frame>![Sport detection task details](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/sport-detection.png)</Frame>
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+## Create a sport detection task
+
+<p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "sport"`. The response returns a `task_id` to poll for results.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+task = client.streaming.ai_tasks.create(
+    task_name="content-moderation",
+    category="sport",
+    url="https://example.com/video.mp4",
+)
+print(f"Task ID: {task.task_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    task, err := client.Streaming.AITasks.New(
+        context.TODO(),
+        streaming.AITaskNewParams{
+            OfAIContentModerationSportTaskData: &streaming.AIContentmoderationSportParam{
+                TaskName: streaming.AIContentmoderationSportTaskNameContentModeration,
+                Category: streaming.AIContentmoderationSportCategorySport,
+                URL:      "https://example.com/video.mp4",
+            },
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Task ID: %s\n", task.TaskID)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "task_name": "content-moderation",
+       "category": "sport",
+       "url": "https://example.com/video.mp4"
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Poll for detection result
+
+<p>Use `GET /streaming/ai/tasks/{task_id}` to check task status. Poll until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import time
+from gcore import Gcore
+
+task_id = os.environ["TASK_ID"]
+
+client = Gcore()
+while True:
+    task = client.streaming.ai_tasks.get(task_id)
+    print(f"Status: {task.status}  Progress: {task.progress}%")
+    if task.status in ("SUCCESS", "FAILURE"):
+        break
+    time.sleep(5)
+
+if task.status == "SUCCESS":
+    print(f"Result: {task.result}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "time"
+
+    "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    taskID := os.Getenv("TASK_ID")
+    client := gcore.NewClient()
+
+    for {
+        task, err := client.Streaming.AITasks.Get(context.TODO(), taskID)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
+        if task.Status == "SUCCESS" || task.Status == "FAILURE" {
+            if task.Status == "SUCCESS" {
+                fmt.Printf("Result: %+v\n", task.Result)
+            }
+            break
+        }
+        time.Sleep(5 * time.Second)
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+  </MethodSection>
+</MethodSwitch>
