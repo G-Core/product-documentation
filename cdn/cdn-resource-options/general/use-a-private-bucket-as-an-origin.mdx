@@ -1,7 +1,7 @@
 ---
 title: Use a private bucket as an origin
 sidebarTitle: Private origin
-ai-navigation: Configure private S3-compatible buckets as CDN origins using per-origin AWS Signature V4 authentication and optional per-origin Host header overrides for Amazon or Gcore Object Storage.
+ai-navigation: Create private S3 CDN origins in the Customer Portal or REST API, including Gcore Object Storage keys and credential rotation.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
@@ -17,14 +17,12 @@ The required authentication data is available in the S3 storage account.
     All essential keys are in the [Managing access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) guide from Amazon.
   </Tab>
   <Tab title="Gcore">
-    The Hostname and Region are in the **Details** section under the [Storages](https://portal.gcore.com/storage/storages/list) tab.
-    
-    <Frame>![Gcore S3 storage](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/object-storages-context-menu.png)</Frame>
+    In the [Gcore Customer Portal](https://portal.gcore.com), go to **Storage** > **Object Storages**. Hostname and location are in **Details**. The access key and secret key are created in [access keys](/storage/manage-object-storage/manage-s3-access-keys).
 
     <Caution>
     **Caution**
 
-    We don't store the Access Key ID and Secret access key for S3 storage. Save them after creating the storage. To regenerate them, click **Generate new keys** in the **Details** section.
+    Gcore does not store the secret key after it is shown, so copy it when the key is created. For a Gcore Object Storage origin, use a read-only key on S3 Standard.
     </Caution>
   </Tab>
 </Tabs>
@@ -42,12 +40,12 @@ The required authentication data is available in the S3 storage account.
 
     a. Select the **S3 storage** tab.
 
-    b. Select the type of S3 storage: **Amazon** or **Other**.
+    b. Under **Choose S3 storage**, select **Amazon** or **Other**. Gcore Object Storage uses **Other**.
 
     c. Specify the authentication data for the selected storage type:
 
-      * For **Amazon**: Access Key ID, Secret access key, and AWS region
-      * For **Other**: Hostname (including the bucket prefix), Access Key ID, Secret access key, and Region
+      * For **Amazon**: **Access Key ID**, **Secret access key**, and **AWS region**
+      * For **Other**: **Hostname**, **Access Key ID**, **Secret access key**, and **Region (optional)**
 
     <Tip>
     **Tip**
@@ -59,23 +57,23 @@ The required authentication data is available in the S3 storage account.
 
     If the origin requires the bucket name in the request URL, check the S3 or storage provider documentation to determine whether the bucket must be included in the origin hostname or the request path.
 
-    * **Origin hostname:** Include the bucket in the hostname, for example, `my-bucket.s3.amazonaws.com` or `my-bucket.s-ed1.cloud.gcore.lu`. No additional CDN configuration is required.
+    * **Origin hostname:** Include the bucket in the hostname, for example, `my-bucket.s3.amazonaws.com` or `my-bucket.luxembourg-2.storage.gcore.dev`. No additional CDN configuration is required.
     * **Path:** To keep the bucket name out of end-user URLs, such as `https://my.domain.com/content.png`, add a [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) rule that prepends it to requests sent to the origin. For example, the rule `/(.*) /my-bucket/$1` transforms the end-user request into an origin request for `/my-bucket/content.png`.
 
     e. Optional: enter the storage hostname in the **Host header override** field for this origin. When left empty, the Host header configured in the resource settings applies to all origins. When set, it overrides the global value for this specific origin — required when multiple origins point to different buckets that each need a unique hostname.
 
     The Host header format depends on the storage provider:
 
-      * For Gcore Object Storage: `{bucket-name}.s-ed1.cloud.gcore.lu`
-      * For most other providers (including Amazon): `{bucket-name}.s3.{region-code}.{storage-hostname}`
+      * For Gcore Object Storage: `my-bucket.luxembourg-2.storage.gcore.dev`
+      * For most other providers (including Amazon): `my-bucket.s3.us-east-1.amazonaws.com`
 
     <Info>
     Specifying the bucket in the Host header restricts CDN access to that bucket only, preventing unintended access to other data in the storage account.
     </Info>
 
-    In the example below, the origin group uses a private bucket `test-private` in Gcore Object Storage with the endpoint `s-ed1.cloud.gcore.lu`:
+    The form looks like this when **S3 storage** and **Other** are selected:
 
-    <Frame>![Origin group form with S3 storage tab selected, showing S3 type, Access Key ID, Secret access key, AWS region, Bucket name, and Host header override fields](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-conf.png)</Frame>
+    <Frame>![S3 origin form with Other selected, showing Hostname, access keys, Region, Bucket name, and Host header override](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/s3-other-origin-form.png)</Frame>
 
     3\. To add more origins to the group, click **+ Add origin** again and repeat step 2 for each one. Each origin can have different credentials and a separate Host header override.
 
@@ -86,47 +84,122 @@ The required authentication data is available in the S3 storage account.
     <Frame>![Save changes](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png)</Frame>
   </Tab>
   <Tab title="API">
-    An [API token](/account-settings/api-tokens) is required. Send a `POST` request to the origin groups endpoint with the authentication credentials for each origin.
+    An [API token](/account-settings/api-tokens) is required. Create an origin group with `POST https://api.gcore.com/cdn/origin_groups`. Each S3 origin uses `origin_type` `s3` and a `config` object. Set `s3_type` to `other` for Gcore Object Storage, or `amazon` for AWS S3. The [origin groups](/api-reference/cdn/origins/create-origin-group) reference lists every field.
 
-    | Method | POST |
-    | ---|--- |
-    | Header | Bearer **`{{access_token}}`** <br/> **application/json**  |
-    | Payload | `{ "name": "YourOriginGroup", "useNext": true, "auth_type": "awsSignatureV4", "auth": { "s3_type": "amazon", "s3_access_key_id": "EXAMPLEFODNN7EXAMPLE", "s3_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", "s3_bucket_name": "bucket_name", "s3_region": "us-east-2" } }`|
-    | Request parameter | See the [API documentation](/api-reference/cdn/origins/create-origin-group) for the full parameter list. |
-    | Response |  **201 Successful** <br/>**400 Request for creation origin group is failed** <br/> **403 Group creation is forbidden**    |
+    A `201` response returns the origin group ID. Later GET responses mask `s3_access_key_id` and `s3_secret_access_key`.
 
-    A REST tool such as cURL or Postman can be used to send requests.
+    The same create request can be sent from Postman.
 
-    1\. In Postman, open a new request tab.
+    1\. Set the method to **POST** and the URL to `https://api.gcore.com/cdn/origin_groups`.
 
-    a. Set the request method to **POST**.
+    2\. Open **Authorization**. Set **Type** to **API Key**, **Key** to `Authorization`, **Value** to `APIKey` followed by the token, and **Add to** to **Header**.
 
-    b. Enter the API URL in the request URL field.
+    <Frame>![Postman Authorization tab with API Key added to the request header](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/use-a-private-bucket-as-an-origin-image1.png)</Frame>
 
-    <Frame>![API URL](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353579849745.png)</Frame>
+    3\. Open **Body**, select **raw** and **JSON**, and paste the Gcore Object Storage payload.
 
-    2\. Go to the **Auth** tab.
+    <Frame>![Postman Body tab with raw JSON for a Gcore Other S3 origin](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/use-a-private-bucket-as-an-origin-image2.png)</Frame>
 
-    a. Select **Bearer Token** from the **Type** dropdown.
+    **Gcore Object Storage**
 
-    b. Paste the generated access token into the **Token** field.
+    ```bash
+    curl -X POST https://api.gcore.com/cdn/origin_groups \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "use_next": true,
+        "sources": [
+          {
+            "origin_type": "s3",
+            "enabled": true,
+            "backup": false,
+            "config": {
+              "s3_type": "other",
+              "s3_storage_hostname": "luxembourg-2.storage.gcore.dev",
+              "s3_region": "s-ed1",
+              "s3_bucket_name": "my-bucket",
+              "s3_access_key_id": "EXAMPLEACCESSKEYID001",
+              "s3_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            }
+          }
+        ]
+      }'
+    ```
 
-    <Frame>![Token](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353599876753.png)</Frame>
+    **Amazon S3**
 
-    3\. Go to the **Body** tab.
-
-    a. Select **raw** as the data type.
-
-    b. Select **JSON** from the format dropdown.
-
-    c. Enter the payload in the text area, replacing the sample values with actual credentials.
-
-    4\. Click **Send**.
-
-    <Frame>![Send](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png)</Frame>
+    ```bash
+    curl -X POST https://api.gcore.com/cdn/origin_groups \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "use_next": true,
+        "sources": [
+          {
+            "origin_type": "s3",
+            "enabled": true,
+            "backup": false,
+            "config": {
+              "s3_type": "amazon",
+              "s3_region": "eu-west-1",
+              "s3_bucket_name": "my-bucket",
+              "s3_access_key_id": "EXAMPLEACCESSKEYID001",
+              "s3_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            }
+          }
+        ]
+      }'
+    ```
   </Tab>
 </Tabs>
 
+## Key replacement in private origins
+
+Origin credentials can be rotated without recreating the origin group. Create a replacement storage key first, then update the origin with the new Access Key ID and Secret Access Key, and delete the old key after the origin uses the new credentials.
+
+<Tabs>
+  <Tab title="Customer Portal">
+    1\. Go to **CDN** > **Origin groups**.
+
+    2\. Click the origin group.
+
+    3\. Click the pencil icon next to **Access Key ID** and **Secret access key**, because saved values are masked.
+
+    4\. Enter the new values.
+
+    5\. Click **Save changes**.
+  </Tab>
+  <Tab title="API">
+    PATCH the origin group and send the `sources` array with the new `s3_access_key_id` and `s3_secret_access_key` in `config`.
+
+    ```bash
+    curl -X PATCH https://api.gcore.com/cdn/origin_groups/ORIGIN_GROUP_ID \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "use_next": true,
+        "sources": [
+          {
+            "origin_type": "s3",
+            "enabled": true,
+            "backup": false,
+            "config": {
+              "s3_type": "other",
+              "s3_storage_hostname": "luxembourg-2.storage.gcore.dev",
+              "s3_region": "s-ed1",
+              "s3_bucket_name": "my-bucket",
+              "s3_access_key_id": "EXAMPLEACCESSKEYID002",
+              "s3_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+            }
+          }
+        ]
+      }'
+    ```
+  </Tab>
+</Tabs>
 
 ## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
 

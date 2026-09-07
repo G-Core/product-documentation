@@ -37,16 +37,28 @@ jobs:
       - name: Detect changed files
         id: changed
         run: |
-          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
-          echo "files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Use merge-base so we only diff what the PR branch actually changed,
+          # not everything that diverged in main since the PR was opened.
+          # Without this, base.sha vs head.sha includes all of main's commits
+          # since the PR was created, which can be thousands of files.
+          #
+          # Write to temp files (not GITHUB_OUTPUT / env vars) to avoid ARG_MAX.
+          # The combined env+argv size has a ~2 MB kernel limit; large file lists
+          # in environment variables cause "Argument list too long" on bash startup.
+          MERGE_BASE=$(git merge-base \
+            ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }})
 
-          # Also collect images that were added in this PR (grace period — not deleted if unreferenced).
-          ADDED_IMAGES=$(echo "$CHANGED" | grep -E '\.(png|jpg|jpeg|gif|webp|svg)$' || true)
-          echo "images<<EOF" >> $GITHUB_OUTPUT
-          echo "$ADDED_IMAGES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          git diff --name-only "$MERGE_BASE" \
+            ${{ github.event.pull_request.head.sha }} \
+            > /tmp/changed_files.txt
+
+          # Collect images added in this PR (grace period — not deleted if unreferenced).
+          grep -E '\.(png|jpg|jpeg|gif|webp|svg)$' /tmp/changed_files.txt \
+            > /tmp/pr_images.txt || true
+
+          echo "changed_count=$(wc -l < /tmp/changed_files.txt)" >> $GITHUB_OUTPUT
+          echo "image_count=$(wc -l < /tmp/pr_images.txt)" >> $GITHUB_OUTPUT
 
       - name: Preview normalize plan (dry-run)
         if: github.event.pull_request.head.repo.full_name == github.repository
@@ -61,16 +73,11 @@ jobs:
 
       - name: Run normalize_images (own branch)
         if: github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          CHANGED_FILES: ${{ steps.changed.outputs.files }}
-          PR_IMAGES: ${{ steps.changed.outputs.images }}
         run: |
-          readarray -t files <<< "$CHANGED_FILES"
-          readarray -t images <<< "$PR_IMAGES"
           python scripts/normalize_images.py \
             --repo . \
-            --changed-files "${files[@]}" \
-            --pr-images "${images[@]}"
+            --changed-files-from /tmp/changed_files.txt \
+            --pr-images-from /tmp/pr_images.txt
 
       - name: Guard against protected-path deletions
         # Fail the job before committing if the normalizer would delete files from
@@ -160,16 +167,11 @@ jobs:
 
       - name: Run normalize_images (fork companion)
         if: github.event.pull_request.head.repo.full_name != github.repository
-        env:
-          CHANGED_FILES: ${{ steps.changed.outputs.files }}
-          PR_IMAGES: ${{ steps.changed.outputs.images }}
         run: |
-          readarray -t files <<< "$CHANGED_FILES"
-          readarray -t images <<< "$PR_IMAGES"
           python scripts/normalize_images.py \
             --repo . \
-            --changed-files "${files[@]}" \
-            --pr-images "${images[@]}"
+            --changed-files-from /tmp/changed_files.txt \
+            --pr-images-from /tmp/pr_images.txt
 
       - name: Regenerate llms.txt (fork companion)
         if: github.event.pull_request.head.repo.full_name != github.repository
