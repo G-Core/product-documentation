@@ -1,8 +1,10 @@
 ---
 title: Built-in web player
 sidebarTitle: Built-in player
-ai-navigation: Embed HTML5 video player via iframe with customization options for branding, colors, logo, autoplay, mute, playback speed controls, and view statistics for VOD and Live streams.
+ai-navigation: Create, configure, and delete a custom built-in player via the Customer Portal or REST API - set colors, logo, autoplay, mute, speed controls, and embed via iframe or direct link.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
 ## Main principles
 
@@ -16,6 +18,8 @@ A built-in HTML web player is a ready-made video player provided by the platform
   allow="autoplay; fullscreen; picture-in-picture"
   allowFullScreen
 />
+
+Direct link to the player: [https://player.gvideo.co/videos/2675_de6eWEOdUoCe77cg](https://player.gvideo.co/videos/2675_de6eWEOdUoCe77cg)
 
 Functionality of built-in player:
   - Instant playback
@@ -43,7 +47,7 @@ For more specific or advanced scenarios — such as fine-grained control over in
 
 ## Customization options
 
-Let's compare the default and custom player. To show you the customization options:
+<p>Let's compare the default and custom player. To show you the customization options:</p>
 
   * We set new interface colors.
   * Add a logo (dog icon in the bottom-right corner).
@@ -53,26 +57,19 @@ Let's compare the default and custom player. To show you the customization optio
 
 <Frame>![customization options](/images/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip0.png)</Frame>
 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 1\. Go to the [Players](https://portal.gcore.com/streaming/players/list) tab and click **Create a player**.
-
 
 <Frame>![Players tab](/images/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/create-player.png)</Frame>
 
-
-
 2\. Enter the name of your player (it will be displayed in the Gcore Customer Portal) and click **Create**.
-
 
 <Frame>![Enter the name of your player](/images/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip2.png)</Frame>
 
-
-
-The configuration page opens. Complete the remaining steps in it.
-
+<p>The configuration page opens. Complete the remaining steps in it.</p>
 
 <Frame>![The configuration page](/images/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip3.png)</Frame>
-
-
 
 3\. Set the custom player as the default one for VOD or/and Live stream if you want to use this player for all videos/streams. You can also choose a custom player for a specific video or stream.
 
@@ -82,20 +79,17 @@ The configuration page opens. Complete the remaining steps in it.
 
   * **Mute**. If the option is active, video plays with the sound off.
 
-
 <Info>
 If both Autoplay and Mute options are active, only one option will work. It depends on an end user's browser policy ([Mozilla](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide), [Chrome](https://developer.chrome.com/blog/autoplay)).
 </Info>
 
 5\. Enable necessary player control options:
 
-  * **Disable skin**. If the option is active, the player control elements are hidden. 
+  * **Disable skin**. If the option is active, the player control elements are hidden.
   * **Save user settings.** If the option is active, users watch the video with the same quality and sound settings they have had previously. It works until the browser cache gets cleared.
   * **Share video.** If the option is active, a sharing button appears in the upper-right corner of the video for the users to post it to social networks.
-  * **Playback speed control.** If the option is active, users can slow down and speed up VOD playback. 
+  * **Playback speed control.** If the option is active, users can slow down and speed up VOD playback.
   * **Pause when clicking on player.** If the option is active, video stops by clicking at any point on the player's screen.
-
-
 
 6\. Select colors for different elements of your player:
 
@@ -104,15 +98,260 @@ If both Autoplay and Mute options are active, only one option will work. It depe
   * Text color for timeline.
   * Hover color for those elements on the bottom panel that the cursor is hovering over.
 
-
-
 7\. To collect data on your viewers' actions in the player, activate the Enables Google Analytics option and specify your Google Analytics ID.
 
 8\. Add a logo that will be displayed on the screen.
 
-9\. Select the logo position. 
+9\. Select the logo position.
 
 10\. Save changes.
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+## Create a player
+
+<p>Send `POST /streaming/players` with a `name` and any customization fields. The API returns the full player object including the generated `id`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import urllib.request
+import json
+
+api_key = os.environ["GCORE_API_KEY"]
+
+payload = json.dumps({
+    "player": {
+        "name": "My custom player",
+        "autoplay": False,
+        "mute": False,
+        "speed_control": True,
+        "show_sharing": False,
+        "bg_color": "#000000",
+        "fg_color": "#FFFFFF",
+        "hover_color": "#ef9047",
+    }
+}).encode()
+req = urllib.request.Request(
+    "https://api.gcore.com/streaming/players",
+    data=payload,
+    method="POST",
+    headers={"Authorization": f"APIKey {api_key}", "Content-Type": "application/json"},
+)
+with urllib.request.urlopen(req) as resp:
+    player = json.loads(resp.read())
+
+print(f"Player ID:   {player['id']}")
+print(f"Name:        {player['name']}")
+print(f"Speed ctrl:  {player['speed_control']}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "strings"
+)
+
+func main() {
+    apiKey := os.Getenv("GCORE_API_KEY")
+
+    body := `{"player":{"name":"My custom player","autoplay":false,"mute":false,"speed_control":true,"show_sharing":false,"bg_color":"#000000","fg_color":"#FFFFFF","hover_color":"#ef9047"}}`
+    req, _ := http.NewRequest(http.MethodPost,
+        "https://api.gcore.com/streaming/players",
+        strings.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    raw, _ := io.ReadAll(resp.Body)
+    var player map[string]any
+    _ = json.Unmarshal(raw, &player)
+
+    fmt.Printf("Player ID:   %v\n", player["id"])
+    fmt.Printf("Name:        %v\n", player["name"])
+    fmt.Printf("Speed ctrl:  %v\n", player["speed_control"])
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/players" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "player": {
+         "name": "My custom player",
+         "autoplay": false,
+         "mute": false,
+         "speed_control": true,
+         "show_sharing": false,
+         "bg_color": "#000000",
+         "fg_color": "#FFFFFF",
+         "hover_color": "#ef9047"
+       }
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Update player settings
+
+<p>Use `PATCH /streaming/players/{player_id}` to update any field. Returns the full updated player object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+player_id = int(os.environ["PLAYER_ID"])
+
+client = Gcore()
+player = client.streaming.players.update(
+    player_id=player_id,
+    player={
+        "name": "My custom player",
+        "speed_control": True,
+        "autoplay": True,
+        "mute": True,
+        "logo": "https://example.com/logo.png",
+        "logo_position": "br",
+    },
+)
+print(f"Name:          {player.name}")
+print(f"Speed control: {player.speed_control}")
+print(f"Logo:          {player.logo}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    playerID, _ := strconv.ParseInt(os.Getenv("PLAYER_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    player, err := client.Streaming.Players.Update(
+        context.TODO(),
+        playerID,
+        streaming.PlayerUpdateParams{
+            Player: streaming.PlayerParam{
+                Name:         "My custom player",
+                SpeedControl: param.NewOpt(true),
+                Autoplay:     param.NewOpt(true),
+                Mute:         param.NewOpt(true),
+                Logo:         param.NewOpt("https://example.com/logo.png"),
+                LogoPosition: param.NewOpt("br"),
+            },
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Name:          %s\n", player.Name)
+    fmt.Printf("Speed control: %v\n", player.SpeedControl)
+    fmt.Printf("Logo:          %v\n", player.Logo)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/players/$PLAYER_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "player": {
+         "name": "My custom player",
+         "speed_control": true,
+         "autoplay": true,
+         "mute": true,
+         "logo": "https://example.com/logo.png",
+         "logo_position": "br"
+       }
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Delete a player
+
+<p>Send `DELETE /streaming/players/{player_id}`. Returns HTTP 204 with no body on success.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+player_id = int(os.environ["PLAYER_ID"])
+
+client = Gcore()
+client.streaming.players.delete(player_id)
+print("Player deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    playerID, _ := strconv.ParseInt(os.Getenv("PLAYER_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    err := client.Streaming.Players.Delete(context.TODO(), playerID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Player deleted.")
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X DELETE "https://api.gcore.com/streaming/players/$PLAYER_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+  </MethodSection>
+</MethodSwitch>
 
 ## Embed into a web page
 
