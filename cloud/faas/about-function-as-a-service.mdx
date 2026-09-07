@@ -1,60 +1,46 @@
 ---
 title: About Function as a Service
 sidebarTitle: Function as a Service
-ai-navigation: Deploy serverless functions via Gcore FaaS using HTTP endpoints, Kubernetes pods, zero-scaler for automatic scaling from 0 pods with configurable timeout periods, and auto-scaler for maintaining minimum pod replicas with CPU and memory allocation.
+ai-navigation: Use Gcore FaaS to run serverless functions on Kubernetes pods with zero-scaler, auto-scaler, and runtimes for Java, Node.js, Python, Go, and .NET.
 ---
 
-## What is FaaS?
+Function-as-a-Service (FaaS) is a cloud service that runs code without managing the underlying infrastructure. FaaS providers store the code and execute it on demand.
 
-Function-as-a-Service (FaaS) is a cloud service that lets users run code without dealing with the underlying infrastructure. A FaaS provider saves the code to their cloud resources and runs it when requested.
+FaaS builds on serverless computing, where computing resources (CPU and memory) are allocated automatically — there is no need to select an operating system, configure networking, patch dependencies, or manage capacity scaling.
 
-FaaS is based on serverless computing, where computing resources such as CPU and memory are provided without renting dedicated servers. There is no need to choose an operating system, configure networking, patch dependencies, or manage capacity scaling. Resources are allocated automatically as needed.
+## Function execution
 
-## How it works
-
-1\. Write the code of the app or app component to run automatically via FaaS.
-
-2\. In the Gcore [Customer Portal](https://portal.gcore.com) or in an API request, create a function and insert the code into it.
-
-3\. The system deploys a Kubernetes pod exclusively for this function. The pod and all other infrastructure resources are created, managed, and monitored automatically.
-
-4\. Once the pod is ready, the function appears in the list with its HTTP endpoint address.
-
-5\. When the endpoint is requested, the system invokes the pod and runs the function, returning the code output.
+Create a function in the [Gcore Customer Portal](https://portal.gcore.com) or via an API request — write the code, submit it, and the system deploys a Kubernetes pod exclusively for that function. All infrastructure resources are created, managed, and monitored automatically. Once the pod is ready, the function appears in the list with its HTTP endpoint address. When the endpoint receives a request, the system invokes the pod and returns the code output.
 
 Under the hood, pods with functions are operated by Kubernetes. When code is submitted, Kubernetes saves it and assigns a pod for it. The minimum and maximum number of pods can be configured.
 
-If the minimum number of pods is 0, the zero-scaler comes into play. It monitors requests for a given function. If the function is not requested, the controller keeps resources at zero; the pod consumes 0 mCPU and 0 GB RAM. When the controller receives a request, it triggers the associated pod and allocates the computing resources required for the function to be executed. It takes around three seconds for a pod to start and the function to become active. It starts consuming resources and processing requests. If more requests come than the pod can handle, the system deploys additional pods until it reaches the maximum limit. After the last request is executed, the function remains active for the timeout period. By default, it is 60 seconds. A custom timeout value can also be configured. If no other requests come during this period, the system brings the resources back to 0, switches the function to standby mode, and billing stops.
+If the minimum number of pods is 0, the zero-scaler comes into play. It monitors requests for a given function. If the function is not requested, the controller keeps resources at zero — the pod consumes 0 mCPU and 0 GB RAM. When the controller receives a request, it triggers the associated pod and allocates the computing resources required for the function to be executed. It takes around three seconds for a pod to start and the function to become active. It starts consuming resources and processing requests. If more requests come than the pod can handle, the system deploys additional pods until it reaches the maximum limit. After the last request is executed, the function remains active for the timeout period. By default, it is 60 seconds. A custom timeout value can also be configured. If no other requests come during this period, the system brings the resources back to 0, switches the function to standby mode, and billing stops.
 
-If the minimum number of pods is more than 0, the auto-scaler takes control. It keeps this minimum number of pods constantly running. They consume resources 24/7, even if the function is not requested, and billing runs 24/7 accordingly. When the first request comes, the pods require no cold start time and the request is processed immediately. When the auto-scaler receives more requests than the minimum number of pods can handle, it scales the pods up to adjust to the increased workload. After the timeout period, the auto-scaler destroys only additional pods, keeping the minimum number.
+If the minimum number of pods is more than 0, the auto-scaler takes control. It keeps this minimum number of pods constantly running. They consume resources continuously, even if the function is not requested, and billing runs continuously accordingly. When the first request comes, the pods require no cold start time and the request is processed immediately. When the auto-scaler receives more requests than the minimum number of pods can handle, it scales the pods up to adjust to the increased workload. After the timeout period, the auto-scaler destroys only additional pods, keeping the minimum number.
 
 ## Use cases
 
 FaaS is the best solution to:
 
-  * **Save costs on deploying a simple application.** For web apps with low traffic and idle server time, FaaS charges only when the application is requested.
-  * **Expand application functionality.** Applications can be organized as a set of independently deployable microservices integrated via HTTP API or Webhooks and run by FaaS.
-  * **Change individual components without downtime.** Functions allow the code of independent app components to be changed on the fly without stopping the app.
-  * **Reduce time-to-market.** FaaS removes the need to manage infrastructure, allowing development teams to focus entirely on application code and ship faster.
-  * **Adjust resources to traffic surges automatically.** For applications with frequent traffic spikes, FaaS automatically allocates the required number of computing resources.
-
-
+- **Save costs on deploying a simple application.** For web apps with low traffic and idle server time, FaaS charges only when the application is requested.
+- **Expand application functionality.** Applications can be organized as a set of independently deployable microservices integrated via HTTP API or Webhooks and run by FaaS.
+- **Change individual components without downtime.** Functions allow the code of independent app components to be changed on the fly without stopping the app.
+- **Reduce time-to-market.** FaaS removes the need to manage infrastructure, allowing development teams to focus entirely on application code and ship faster.
+- **Adjust resources to traffic surges automatically.** For applications with frequent traffic spikes, FaaS automatically allocates the required number of computing resources.
 
 ## Features of Gcore FaaS
 
 Gcore FaaS supports several runtime environments:
 
-  * C# (6.0, 7.0)
-  * Java (11, 17, 21)
-  * Node.js (18, 19, 20)
-  * Python (3.8, 3.9, 3.10)
-  * Go (1.20, 1.21)
+- C# (6.0, 7.0)
+- Java (11, 17, 21)
+- Node.js (18, 19, 20)
+- Python (3.8, 3.9, 3.10)
+- Go (1.20, 1.21)
 
+Available runtimes and locations are listed on [the&nbsp;Gcore&nbsp;website](https://gcore.com/cloud/faas) and in the Customer Portal.
 
-
-Available runtimes and locations are listed on [the Gcore website](https://gcore.com/cloud/faas) and in the [Customer Portal](https://portal.gcore.com).
-
-Functions can be managed via the [Customer Portal](https://portal.gcore.com) and [REST API](/api-reference/cloud).
+Functions can be managed via the Customer Portal and [REST&nbsp;API](/api-reference/cloud).
 
 The pod lifetime, the limit of additional pods, and environment variables are configurable.
 

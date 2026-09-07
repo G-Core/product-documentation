@@ -157,9 +157,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <p>The response includes each policy in the group with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
+<p>Sets the policy to enabled or disabled. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
+
+| Parameter | Required | Description |
+|---|---|---|
+| `policy_id` | Yes | ID of the policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -177,9 +183,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     )
     policy = next(r for r in ip_rep.rules if r.name == "Traffic via TOR network")
 
-    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
-    status = "enabled" if result.mode else "disabled"
-    print(f"Traffic via TOR network is now {status}")
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+    print(f"Traffic via TOR network is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -213,7 +218,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -227,8 +232,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     # Set POLICY_ID to the policy ID from the View policy states response
     export POLICY_ID="{POLICY_ID}"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
 
     Response:

@@ -1,7 +1,7 @@
 ---
 title: "Create a virtual instance"
 sidebarTitle: "Create an instance"
-ai-navigation: Create Linux or Windows Virtual Instances in Gcore Cloud via Customer Portal, REST API, or Terraform.
+ai-navigation: Create Linux or Windows Virtual Instances in Gcore Cloud via Customer Portal, REST API (including Basic VMs), or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -104,18 +104,20 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 4. (Optional) Enable **Use reserved IP** to assign a [reserved&nbsp;IP&nbsp;address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the instance, or enable **Use floating IP** to assign a [floating&nbsp;IP&nbsp;address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address).
 
+<p>To assign multiple public IP addresses, add additional public interfaces after the instance is created: open the **Networking** tab in the VM settings and click **Add Interface**.</p>
+
 <Frame>
   ![Network settings section with Public network interface selected](/images/docs/cloud/virtual-instances/create-an-instance/vm-network-section.png)
 </Frame>
 
 <Info>
-  The default security group allows inbound traffic over ICMP, SSH (TCP/22), and RDP (TCP/3389 and UDP/3389). Outbound traffic is unrestricted except SMTP (TCP/25 and UDP/25), which is blocked by default. [Custom&nbsp;security&nbsp;groups](/cloud/networking/add-and-configure-a-firewall) can override these defaults.
+  The default security group allows inbound traffic over ICMP, SSH (TCP/22), and RDP (TCP/3389 and UDP/3389). All outbound traffic is allowed. [Custom&nbsp;security&nbsp;groups](/cloud/networking/add-and-configure-a-firewall) can override these defaults.
 </Info>
 
-<p>For a **private** interface, configure a network and a subnetwork as described below.</p>
+<p>For a **private** interface, configure a network and a subnet as described below.</p>
 
 <Tip>
-  If both a public and private interface are needed, disable the default gateway on the private network's subnetwork and assign a floating IP to the private interface.
+  If both a public and private interface are needed, disable the default gateway on the private network's subnet and assign a floating IP to the private interface.
 </Tip>
 
 ### Configure the network
@@ -139,32 +141,32 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Frame>
 </Accordion>
 
-### Configure the subnetwork
+### Configure the subnet
 
 <Info>
-  When a Virtual Instance has several subnetworks, keep only one routable — [default&nbsp;gateway&nbsp;conflicts](/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway) otherwise prevent connecting to the instance.
+  When a Virtual Instance has several subnets, keep only one routable — [default&nbsp;gateway&nbsp;conflicts](/cloud/networking/create-and-manage-a-subnet#set-up-the-default-gateway) otherwise prevent connecting to the instance.
 </Info>
 
-<p>Select an existing subnetwork from the dropdown list or create a new one by clicking **Add a new subnetwork**.</p>
+<p>Select an existing subnet from the dropdown list or create a new one by clicking **Add a new subnet**.</p>
 
 <Frame>
-  ![Add a new subnetwork](/images/docs/cloud/virtual-instances/create-an-instance/add-new-subnetwork.png)
+  ![Add a new subnet](/images/docs/cloud/virtual-instances/create-an-instance/add-new-subnetwork.png)
 </Frame>
 
-<Accordion title="Create a new subnetwork">
-  1. Click **Add a new subnetwork**.
-  2. Enter the subnetwork name.
+<Accordion title="Create a new subnet">
+  1. Click **Add a new subnet**.
+  2. Enter the subnet name.
   3. Set CIDR in one of the private ranges: 10.0.0.0–10.255.255.255, 172.16.0.0–172.31.255.255, or 192.168.0.0–192.168.255.255. Set the mask between /16 and /29.
   4. (Optional) Enable **Enable DHCP** to assign IP addresses to machines in the subnet automatically.
   5. (Optional) Enable **Connect to network router** to connect this subnet to the network's router by default.
   6. Select **Gateway IP** assignment: **Automatically** or **Specific**.
   7. (Optional) Enter **Custom DNS** server addresses.
   8. (Optional) Enter static routes using the **Destination** and **Nexthop** fields.
-  9. (Optional) Enable **Add tags** to attach metadata to the subnetwork.
+  9. (Optional) Enable **Add tags** to attach metadata to the subnet.
   10. Click **Create subnet**.
 
   <Frame>
-    ![Add a new subnetwork dialog](/images/docs/cloud/virtual-instances/create-an-instance/create-subnetwork-annotated.png)
+    ![Add a new subnet dialog](/images/docs/cloud/virtual-instances/create-an-instance/create-subnetwork-annotated.png)
   </Frame>
 </Accordion>
 
@@ -896,6 +898,187 @@ The default security group is applied automatically, allowing inbound SSH (port 
 
 <p>If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string.</p>
 
+## Create a Basic VM
+
+<p>Basic VMs boot from a system-managed local SSD — no volume configuration is accepted on create. Networking is references-only: the create call attaches existing ports by ID rather than creating interfaces inline. The region is specified in the request body, so a single endpoint handles all regions without encoding the region in the URL path.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and a pre-created [port](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) in the target region.
+</Info>
+
+<p>Set the required environment variables. `REGION_ID` is the numeric ID of a region that supports Basic VMs — query the [regions API](/api-reference/cloud/regions/list-regions) and filter for regions where `has_basic_vm` is `true`.</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{REGION_ID}"
+export PORT_ID="{YOUR_PORT_ID}"
+```
+
+### Step 1. Select an image
+
+<p>Only Linux images are accepted on Basic VM create. Query the images endpoint for the target region and save the ID of the chosen image.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$REGION_ID?visibility=public" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+```bash
+export IMAGE_ID="{IMAGE_ID}"
+```
+
+### Step 2. List Basic VM flavors
+
+<p>Basic VM flavors use the `g1s-shared-*` or `g2s-shared-*` naming scheme. Query the standard flavors endpoint and filter by name prefix.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/flavors/$GCORE_CLOUD_PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "results": [
+    {"flavor_id": "g2s-shared-1-2-25",  "vcpus": 1, "ram": 2048},
+    {"flavor_id": "g2s-shared-2-4-50",  "vcpus": 2, "ram": 4096},
+    {"flavor_id": "g2s-shared-4-8-80",  "vcpus": 4, "ram": 8192}
+  ]
+}
+```
+
+<p>The number after the RAM value in the flavor name is the local SSD size in GiB. Set `FLAVOR_NAME` to the chosen flavor.</p>
+
+```bash
+export FLAVOR_NAME="g2s-shared-1-2-25"
+```
+
+### Step 3. Create the Basic VM
+
+<p>Pass `region_id` in the request body rather than the URL path. The boot disk is created automatically; no volume fields are accepted.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `region_id` | Yes | Numeric ID of the target region. |
+| `flavor_name` | Yes | Shared-CPU flavor name from Step 1. |
+| `image_id` | Yes | ID of a Linux OS image. Only Linux images are accepted. |
+| `interfaces[].port_id` | Yes | ID of a pre-created port in the same region. Pass multiple entries to attach several NICs; the array order sets the NIC boot order. |
+| `name` | No | Display name. Auto-generated if omitted. |
+| `ssh_key_id` | No | UUID of an SSH key registered in the project. |
+| `user_data` | No | Base64-encoded cloud-init script. |
+| `tags` | No | Key-value map of labels. |
+
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region_id": '"$REGION_ID"',
+    "flavor_name": "'"$FLAVOR_NAME"'",
+    "image_id": "'"$IMAGE_ID"'",
+    "name": "my-basic-vm",
+    "interfaces": [{"port_id": "'"$PORT_ID"'"}]
+  }'
+```
+
+The API returns:
+
+```json
+{"tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]}
+```
+
+<p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources`.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+When complete:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "instances": ["a1b2c3d4-..."]
+  }
+}
+```
+
+```bash
+export BASIC_VM_ID="{BASIC_VM_ID}"
+```
+
+### Step 4. Get Basic VM details
+
+<p>The response includes `boot_volume_id` referencing the system-managed local disk, which is destroyed together with the VM on delete.</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "id": "a1b2c3d4-...",
+  "name": "my-basic-vm",
+  "status": "ACTIVE",
+  "region_id": 26,
+  "flavor_name": "g2s-shared-1-2-25",
+  "image_id": "bf221f42-...",
+  "boot_volume_id": "e5f6a7b8-...",
+  "addresses": {
+    "doc-test-net": [{"addr": "10.10.10.5", "type": "fixed"}]
+  }
+}
+```
+
+### Step 5. Update the Basic VM
+
+<p>Rename the VM or replace its interface list. Updating `interfaces[]` is a full replace — the API diffs the submitted list against the current state and attaches or detaches ports accordingly. Interface order is immutable after creation.</p>
+
+| Field | Description |
+|-------|-------------|
+| `name` | New display name. |
+| `tags` | Merge-patch map — a `null` value removes the key. |
+| `interfaces[]` | Full list of port IDs. Ports in the list but not currently attached are attached; ports currently attached but not in the list are detached. |
+
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-basic-vm-renamed"}'
+```
+
+The API returns:
+
+```json
+{"tasks": ["c7d8e9f0-..."]}
+```
+
+<p>Poll the task until `state` is `FINISHED`.</p>
+
+### Step 6. Delete the Basic VM
+
+<p>Deleting a Basic VM also destroys its system-managed boot disk. Ports attached to the VM are detached but not deleted.</p>
+
+```bash
+curl -X DELETE "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{"tasks": ["f1a2b3c4-..."]}
+```
+
+<p>Poll the task until `state` is `FINISHED`.</p>
+
   </MethodSection>
   <MethodSection id="terraform" label="Terraform">
 
@@ -976,7 +1159,7 @@ resource "gcore_cloud_instance" "example" {
 | Field | Description |
 |-------|-------------|
 | `user_data` | Base64-encoded cloud-init script that runs at first boot. |
-| `security_groups` | List of firewall group IDs. If omitted, the default security group is applied. |
+| `security_groups` | List of security group IDs. If omitted, the default security group is applied. |
 | `username` / `password_wo` | Creates a Linux user or sets the Windows Admin password at boot. |
 | `vm_state` | `"active"` (default) to start immediately; `"stopped"` to keep the VM off. |
 | `tags` | Map of key-value labels attached to the instance. |
