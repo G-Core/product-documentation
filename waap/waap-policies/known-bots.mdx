@@ -168,9 +168,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 `mode: false` (Policy-based) carries the detector-exclusion behavior described in the Customer Portal tab: unknown-automation detection checks are skipped for verified known-bot traffic, while signature-based WAF, OWASP protections, IP-reputation threat signals, and custom rules still apply.
 </Info>
 
-## Toggle a bot mode
+## Set bot mode
 
-<p>Switch a bot between Allow and Policy-based. Each call flips the current mode. Use the View bot modes response to find the bot ID.</p>
+<p>Sets a bot to Allow or Policy-based by specifying the target mode. Pass `mode: true` to set Allow and `mode: false` to set Policy-based. Use the View bot modes response to find the bot ID.</p>
+
+| Parameter | Required | Description |
+|---|---|---|
+| `bot_id` | Yes | ID of the bot policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` for Allow, `false` for Policy-based. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -188,9 +194,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     )
     bot = next(r for r in bot_set.rules if r.name == "Google Bot")
 
-    result = client.waap.domains.policies.toggle(bot.id, domain_id=domain_id)
-    mode = "Allow" if result.mode else "Policy-based"
-    print(f"Google Bot is now {mode}")
+    result = client.waap.domains.policies.toggle(bot.id, domain_id=domain_id, mode=True)
+    print(f"Google Bot is now {'Allow' if result.mode else 'Policy-based'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -224,7 +229,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), botID, waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), botID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         mode := "Policy-based"
         if result.Mode {
             mode = "Allow"
@@ -238,8 +243,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     # Set BOT_POLICY_ID to the bot ID from the View bot modes response
     export BOT_POLICY_ID="{BOT_POLICY_ID}"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${BOT_POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${BOT_POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
 
     Response:

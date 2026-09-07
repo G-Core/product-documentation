@@ -130,13 +130,15 @@ Protocol Validation policies are stored under the `advanced-api-protection` reso
 
 <p>The response includes each policy with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
 
-## Toggle a policy
+## Enable or disable a policy
 
 <p>Use the policy ID returned by View policy states, or one of the IDs listed in the Policy reference table below.</p>
 
-<Warning>
-This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, check the current policy state first using the View policy states request.
-</Warning>
+| Parameter | Required | Description |
+|---|---|---|
+| `policy_id` | Yes | ID of the policy to configure. |
+| `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -148,10 +150,9 @@ This endpoint toggles the current state rather than setting a specific value. If
     domain_id = int(os.environ["WAAP_DOMAIN_ID"])
 
     # Toggle Service protocol validation (S3008978)
-    # Replace with S3008980 for Prevent malformed request methods
-    result = client.waap.domains.policies.toggle("S3008978", domain_id=domain_id)
-    status = "enabled" if result.mode else "disabled"
-    print(f"Service protocol validation is now {status}")
+    # Replace with S3008980 for Prevent malformed request methods; use mode: false to disable
+    result = client.waap.domains.policies.toggle("S3008978", domain_id=domain_id, mode=True)
+    print(f"Service protocol validation is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -172,9 +173,9 @@ This endpoint toggles the current state rather than setting a specific value. If
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        // Toggle Service protocol validation (S3008978)
+        // Enable Service protocol validation (S3008978)
         // Replace with S3008980 for Prevent malformed request methods
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), "S3008978", waap.DomainPolicyToggleParams{DomainID: domainID})
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), "S3008978", waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"
@@ -189,8 +190,10 @@ This endpoint toggles the current state rather than setting a specific value. If
     # S3008980 = Prevent malformed request methods
     export POLICY_ID="S3008978"
 
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"mode": true}'
     ```
   </Tab>
 </Tabs>
