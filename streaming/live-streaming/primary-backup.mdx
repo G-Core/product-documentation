@@ -1,8 +1,10 @@
 ---
 title: "Primary, Backup, and Global Ingest Points for PUSH and PULL"
 sidebarTitle: "Push, pull, backup"
-ai-navigation: "Configure PUSH and PULL ingest points for Gcore Streaming Platform using RTMP, RTMPS, SRT, or WebRTC WHIP protocols with stream keys and push tokens for live video ingestion from encoders or origin servers."
+ai-navigation: Configure PUSH and PULL ingest for Gcore live streams, reset push tokens, create PULL streams with failover URIs, and check active ingest regions via the Customer Portal or REST API using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
 ## Quick start: push a test live stream
 
@@ -124,11 +126,11 @@ Reset the push token if it was exposed, shared with the wrong encoder, or needs 
 - Encoders that still use the old URL will be rejected.
 - The platform tries to terminate active primary and backup ingest connections automatically.
 
-Use the following API method: [/api-reference/streaming/streams/reset-live-stream-push-token](/api-reference/streaming/streams/reset-live-stream-push-token)
-
 <Info>
   Token reset affects active broadcasting. Plan token rotation during a maintenance window or be ready to restart the encoder with the new ingest URL.
 </Info>
+
+To reset the token via the Customer Portal, open the stream settings and click **Reset token**. Via the API, use `POST /streaming/streams/{stream_id}/reset_push_token` — see the REST API tab in the [PULL section](#pull) below for code examples that cover both operations.
 
 ### Failover with Primary and Backup Ingest Points for PUSH
 
@@ -197,13 +199,177 @@ Example #1:
 
 ```text
 rtmp://encoder.example.com/live/stream123
-````
+```
 
 Example #2:
 
 ```text
 rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=1000000&streamid=stream123
 ```
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>In the Customer Portal, open a live stream's settings, enable **PULL**, and paste the origin URL (or multiple URLs separated by a space) into the **PULL URI** field.</p>
+
+<p>To reset the push token, open the stream settings and click **Reset token**.</p>
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
+
+## Failover with Multiple Source URIs for PULL
+
+<p>Set `pull: true` and provide one or more source URLs in the `uri` field, separated by spaces. The platform uses round-robin failover across all listed URIs.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={
+        "name": "My PULL stream",
+        "pull": True,
+        "uri": "rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup",
+    },
+)
+print(f"Stream {stream.id}: pull={stream.pull}, uri={stream.uri}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    stream, err := client.Streaming.Streams.Update(context.TODO(), streamID, streaming.StreamUpdateParams{
+        Stream: streaming.StreamUpdateParamsStream{
+            Name: "My PULL stream",
+            Pull: param.NewOpt(true),
+            Uri:  param.NewOpt("rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup"),
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Stream %d: pull=%v, uri=%s\n", stream.ID, stream.Pull, stream.Uri)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "My PULL stream",
+       "pull": true,
+       "uri": "rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup"
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Reset the PUSH Token
+
+<p>Send <code>POST&nbsp;/streaming/streams/{"{stream_id}"}/reset_push_token</code>. The response contains the full updated stream object with the new token embedded in all push URLs.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import urllib.request
+import json
+
+stream_id = int(os.environ["STREAM_ID"])
+api_key = os.environ["GCORE_API_KEY"]
+
+req = urllib.request.Request(
+    f"https://api.gcore.com/streaming/streams/{stream_id}/reset_push_token",
+    method="POST",
+    headers={"Authorization": f"APIKey {api_key}"},
+)
+with urllib.request.urlopen(req) as resp:
+    stream = json.loads(resp.read())
+
+print(f"New push URL (RTMP): {stream['push_url']}")
+print(f"New push URL (SRT):  {stream['push_url_srt']}")
+print(f"New push URL (WHIP): {stream['push_url_whip']}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "strconv"
+)
+
+func main() {
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+    apiKey := os.Getenv("GCORE_API_KEY")
+
+    req, _ := http.NewRequest(http.MethodPost,
+        fmt.Sprintf("https://api.gcore.com/streaming/streams/%d/reset_push_token", streamID),
+        nil,
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := io.ReadAll(resp.Body)
+    var stream map[string]any
+    _ = json.Unmarshal(body, &stream)
+
+    fmt.Printf("New push URL (RTMP): %s\n", stream["push_url"])
+    fmt.Printf("New push URL (SRT):  %s\n", stream["push_url_srt"])
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/streams/$STREAM_ID/reset_push_token" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The response contains the full updated stream object. Extract the new ingest URLs from `push_url`, `backup_push_url`, `push_url_srt`, `backup_push_url_srt`, and `push_url_whip`.</p>
+  </Tab>
+</Tabs>
+  </MethodSection>
+</MethodSwitch>
 
 **PULL fallback algorithm:**
 
