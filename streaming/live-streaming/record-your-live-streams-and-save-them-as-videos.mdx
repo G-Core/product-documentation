@@ -1,8 +1,13 @@
 ---
 title: Record your live streams and save them as videos
 sidebarTitle: Record
-ai-navigation: Enable manual or automatic recording of live streams via Gcore Streaming portal or API using the record feature to save stream fragments or entire sessions to Streaming Storage, with automatic splitting for interruptions over one minute and recordings exceeding four hours.
+ai-navigation: Configure automatic or manual recording of live streams via Gcore Customer Portal or REST API, set record type to origin or transcoded, start and stop recording programmatically, and retrieve saved recordings using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## What is the record feature
 
@@ -42,23 +47,6 @@ If you want to record the whole live stream, don't press the **Stop** button. Th
 
 After stopping and processing, the recording will be saved in the Streaming Storage.
 
-### How to record your live stream via API
-
-When [creating or editing](/api-reference/streaming) the stream via API, to enable auto recording, change the parameter in the API request in the following way:
-
-```yaml
-auto_record: true
- ```
-
-The recording will be saved in the Streaming Storage.
-
-Details about additional recording options are available in the following guides:
-
-  * [How to record an original or transcoded stream with overlays.](/api-reference/streaming/streams/start-recording)
-  * [How to create an instant clip from a currently running live stream.](/api-reference/streaming/streams/create-clip)
-
-
-
 ## Where the records are kept
 
 After you record a stream, the recording is saved on the **Live Streaming** page. To view the recorded stream:
@@ -67,7 +55,6 @@ After you record a stream, the recording is saved on the **Live Streaming** page
 
 
 <Frame>![Videos tab](/images/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/live-stream-storage.png)</Frame>
-
 
 
 2\. Click the stream name to open its settings.
@@ -158,7 +145,6 @@ Inside `moov`, MP4 stores the track description and sample tables that tell down
 
 If the live source changes parameters in the middle of the recording, the later samples inside `mdat` may no longer match the stream description assumed at the beginning of the file, or may require a mid-file sample-description change that the workflow does not support. Starting from that change point, decoders and transcoders may see corrupted frames, reject the file, or fail during later processing.
 
-
 <Info>
 If this has already happened in a saved recording, in many cases there may be no complete corrective action available afterward. If the recording is business-critical, contact the Support Team as soon as possible while source-side artifacts or temporary raw data may still be available for investigation. In some cases, our engineers may be able to recover part of the file or prepare a trimmed/restored version, but this is always best-effort work and cannot be guaranteed.
 </Info>
@@ -200,3 +186,249 @@ LATER VOD PROCESSING / EXPORT OF RECORDING
   may fail, enter Error status, or require trimming
   of the broken segment before reprocessing
 ```
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Configure automatic or manual recording for an existing live stream, then start and stop recording programmatically. Recordings are saved as video entities in Streaming Storage.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. No project or region ID is needed — the Streaming API uses only the API token.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
+
+## Configure recording settings
+
+<p>Set `auto_record` and `record_type` on an existing stream. When `auto_record` is `true`, recording starts automatically whenever the encoder connects. When `false`, recording must be started manually. `record_type` controls whether the raw ingest (`origin`) or the transcoded output (`transcoded`) is saved.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Current stream name — required by the SDK even when not changing it |
+| `auto_record` | No | `true` to record automatically when the stream goes live |
+| `record_type` | No | `origin` — raw RTMP/SRT source; `transcoded` — processed output with overlays |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+stream_id = int(os.environ["STREAM_ID"])
+
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={
+        "name": "My live stream",   # name is required by the SDK for updates
+        "auto_record": True,
+        "record_type": "transcoded",
+    },
+)
+print(f"Stream {stream.id}: auto_record={stream.auto_record}, record_type={stream.record_type}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
+        Stream: streaming.StreamUpdateParamsStream{
+            Name:       "My live stream",
+            AutoRecord: param.NewOpt(true),
+            RecordType: "transcoded",
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Stream %d: auto_record=%v, record_type=%v\n",
+        stream.ID, stream.AutoRecord, stream.RecordType)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "auto_record": true,
+       "record_type": "transcoded"
+     }'
+```
+
+<p>The API returns the full updated stream object. The relevant fields:</p>
+
+```json
+{
+  "id": 4518917,
+  "auto_record": true,
+  "record_type": "transcoded",
+  "recording": false,
+  "recording_duration": null
+}
+```
+  </Tab>
+</Tabs>
+
+## Start recording manually
+
+<p>Start recording a specific stream on demand. The stream must be live (actively receiving an ingest signal) when this call is made — recording initializes within 3–7 seconds. After recording starts, `recording` switches to `true` on the stream object and `recording_duration` counts up in seconds.</p>
+
+<Info>
+The Go SDK returns an error for this endpoint due to a bug with empty 204 responses. Use the raw HTTP helper shown below until the SDK is fixed.
+</Info>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+stream_id = int(os.environ["STREAM_ID"])
+
+client.streaming.streams.start_recording(stream_id)
+print(f"Recording started for stream {stream_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "strconv"
+)
+
+// startRecording uses raw HTTP because the Go SDK does not handle
+// the 204 No Content response from this endpoint correctly.
+func startRecording(streamID int64) error {
+    apiKey := os.Getenv("GCORE_API_KEY")
+    url := fmt.Sprintf("https://api.gcore.com/streaming/streams/%d/start_recording", streamID)
+    req, _ := http.NewRequest("PUT", url, nil)
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        return err
+    }
+    defer resp.Body.Close()
+    io.ReadAll(resp.Body)
+    if resp.StatusCode != 204 && resp.StatusCode != 200 {
+        return fmt.Errorf("unexpected status: %d", resp.StatusCode)
+    }
+    return nil
+}
+
+func main() {
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    if err := startRecording(streamID); err != nil {
+        panic(err)
+    }
+    fmt.Printf("Recording started for stream %d\n", streamID)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/start_recording" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json"
+```
+
+<p>Returns `204 No Content` when recording starts successfully. If the stream is not live, the recording task is queued and will begin when the stream goes live.</p>
+  </Tab>
+</Tabs>
+
+## Stop recording
+
+<p>Stop an active recording. The stream does not have to be taken offline — only recording stops. The saved video entity is returned and becomes available in Streaming Storage.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+stream_id = int(os.environ["STREAM_ID"])
+
+video = client.streaming.streams.stop_recording(stream_id)
+print(f"Recording saved as video {video.id}: {video.name}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    video, err := client.Streaming.Streams.StopRecording(ctx, streamID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Recording saved as video %d: %s\n", video.ID, video.Name)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/stop_recording" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json"
+```
+
+<p>The API returns the saved video entity:</p>
+
+```json
+{
+  "id": 98765,
+  "name": "Stream Record: My live stream, 2026-09-07T12:00:00Z",
+  "stream_id": 4518917,
+  "origin_url": null
+}
+```
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>
