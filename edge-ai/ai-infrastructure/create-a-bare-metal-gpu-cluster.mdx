@@ -203,7 +203,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     from gcore import Gcore
 
     client = Gcore()
@@ -222,8 +221,8 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     image = images.results[0]
     print(f"Image: {image.name}")
 
-    # Step 3. Create the cluster
-    task_id_list = client.cloud.gpu_baremetal.clusters.create(
+    # Step 3. Create the cluster and wait until provisioned
+    cluster = client.cloud.gpu_baremetal.clusters.create_and_poll(
         name="my-gpu-cluster",
         flavor=flavor.name,
         image_id=image.id,
@@ -233,24 +232,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
             "credentials": {"ssh_key_name": ssh_key_name},
         },
     )
-    task_id = task_id_list.tasks[0]
-    print(f"Provisioning — task: {task_id}")
+    print(f"Cluster provisioned: {cluster.name} (ID: {cluster.id})")
 
-    # Step 4. Poll task until FINISHED
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            cluster_id = task.created_resources.clusters[0]
-            print(f"Cluster ID: {cluster_id}")
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(f"Cluster creation failed: {task.error}")
-        print(f"  state={task.state} — retrying in 15s…")
-        time.sleep(15)
-
-    # Step 5. Get the public IP and print SSH command
+    # Step 4. Get the public IP and print SSH command
     ifaces = client.cloud.gpu_baremetal.clusters.interfaces.list(
-        cluster_id=cluster_id,
+        cluster_id=cluster.id,
     )
     for iface in ifaces.results:
         if iface.network_details.external:
@@ -267,7 +253,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         "fmt"
         "os"
         "sort"
-        "time"
 
         "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -301,8 +286,8 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         image := imageList.Results[0]
         fmt.Printf("Image: %s\n", image.Name)
 
-        // Step 3. Create the cluster
-        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
+        // Step 3. Create the cluster and wait until provisioned
+        cluster, err := client.Cloud.GPUBaremetal.Clusters.NewAndPoll(ctx,
             cloud.GPUBaremetalClusterNewParams{
                 Name:         "my-gpu-cluster",
                 Flavor:       flavor.Name,
@@ -320,31 +305,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         if err != nil {
             panic(err)
         }
-        taskID := taskIDList.Tasks[0]
-        fmt.Printf("Provisioning — task: %s\n", taskID)
+        fmt.Printf("Cluster provisioned: %s (ID: %s)\n", cluster.Name, cluster.ID)
 
-        // Step 4. Poll task until FINISHED
-        var clusterID string
-        for {
-            task, err := client.Cloud.Tasks.Get(ctx, taskID)
-            if err != nil {
-                panic(err)
-            }
-            if task.State == "FINISHED" {
-                clusterID = task.CreatedResources.Clusters[0]
-                fmt.Printf("Cluster ID: %s\n", clusterID)
-                break
-            }
-            if task.State == "ERROR" {
-                panic(fmt.Sprintf("Cluster creation failed: %v", task.Error))
-            }
-            fmt.Printf("  state=%s — retrying in 15s…\n", task.State)
-            time.Sleep(15 * time.Second)
-        }
-
-        // Step 5. Get the public IP and print SSH command
+        // Step 4. Get the public IP and print SSH command
         ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
-            clusterID,
+            cluster.ID,
             cloud.GPUBaremetalClusterInterfaceListParams{})
         if err != nil {
             panic(err)
