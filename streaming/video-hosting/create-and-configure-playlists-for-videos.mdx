@@ -1,25 +1,27 @@
 ---
 title: Create and configure playlists for videos
 sidebarTitle: Playlists
-ai-navigation: Create and configure video playlists in Gcore Streaming Platform by enabling the feature, adding up to 512 videos to a playlist via the portal Editor, reordering videos by drag-and-drop, and exporting embed code for website integration.
+ai-navigation: Create and configure video playlists in Gcore Streaming via Customer Portal by adding videos in the Editor, or via REST API using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## What is the playlists feature?
 
-Playlists are a free feature that allows you to merge several videos into one playlist and play them alternately. A single playlist can contain up to 512 videos.
+<p>Playlists are a free feature that allows you to merge several videos into one playlist and play them alternately. A single playlist can contain up to 512 videos.</p>
 
 ## Enable the playlists feature
 
-To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page in the Gcore Customer Portal.
-
+<p>To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page in the Gcore Customer Portal.</p>
 
 <Frame>![Enable the Playlists feature](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672671990033.png)</Frame>
 
+<p>The message template: _"Greetings! Please enable the Playlists feature for the account with ID … (your ID)"_.</p>
 
-
-The message template: _"Greetings! Please enable the Playlists feature for the account with ID … (your ID)"_.
-
-We will notify you when the feature is enabled. After that, you will be able to use it for your account.
+<p>We will notify you when the feature is enabled. After that, you will be able to use it for your account.</p>
 
 ## Create and configure playlists
 
@@ -27,24 +29,15 @@ We will notify you when the feature is enabled. After that, you will be able to 
 
 2\. Click **Create a playlist**.
 
-
 <Frame>![Playlists tab](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/playlists-annotated.png)</Frame>
-
-
 
 2\. Enter the name of your playlist and click the **Create** button. The playlist's title will be displayed in the Gcore Customer Portal so you can quickly find it.
 
-
 <Frame>![Create  playlist](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672672040977.png)</Frame>
 
-
-
-A new page will open. Complete the remaining steps in it.
-
+<p>A new page will open. Complete the remaining steps in it.</p>
 
 <Frame>![ remaining steps](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672672048657.png)</Frame>
-
-
 
 3\. Scroll down the page to the Editor section. All videos uploaded to your account are displayed here. Click the **Add** button in front of the videos you want to add to the playlist. This will move the video up from the list of all videos to a separate list for the playlist.
 
@@ -56,14 +49,382 @@ A new page will open. Complete the remaining steps in it.
 
 7\. Scroll the page up to the Export tab. Copy the code to embed the playlist on a website.
 
-
 <Frame>![Export tab](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672672084497.png)</Frame>
 
+<p>That's it. Viewers can now watch videos from your playlist.</p>
 
-
-That's it. Viewers can now watch videos from your playlist.
-
-You can [view statistics](/streaming) for your playlist. To do this, open the settings of the playlist needed in the control panel and go to the **Statistics** tab.
-
+<p>You can [view statistics](/streaming) for your playlist. To do this, open the settings of the playlist needed in the control panel and go to the **Statistics** tab.</p>
 
 <Frame>![statistics for your playlist](/images/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672700287121.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create and configure video playlists using the [Playlists API](/api-reference/streaming/playlists/get-all-playlists). A playlist plays a curated sequence of uploaded videos as a live stream — viewers cannot skip ahead.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. The Playlists feature must be enabled for the account — contact [support@gcore.com](mailto:support@gcore.com) to enable it.
+</Info>
+
+<p>Set the environment variable before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Quickstart
+
+<p>Create a playlist from two existing videos and print its embed code and HLS URL.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from datetime import datetime, timezone
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. Find video IDs to include
+    videos = client.streaming.videos.list(per_page=10)
+    video_ids = [
+        int(v["id"] if isinstance(v, dict) else v.id)
+        for v in videos
+    ][:2]
+    print("Video IDs:", video_ids)
+
+    # Step 2. Create the playlist
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    playlist = client.streaming.playlists.create(
+        name="My Playlist",
+        start_time=now,
+        video_ids=video_ids,
+        loop=True,
+    )
+    print(f"Playlist ID: {playlist.id}")
+    print(f"HLS URL: {playlist.hls_url}")
+    print(f"Embed code: {playlist.iframe_embed_code}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+    	now := time.Now().UTC().Format("2006-01-02T15:04:05Z")
+
+    	// Step 1. Find video IDs to include
+    	page, err := client.Streaming.Videos.List(ctx, streaming.VideoListParams{})
+    	if err != nil {
+    		panic(err)
+    	}
+    	var videoIDs []int64
+    	for i, v := range page.Items {
+    		if i >= 2 {
+    			break
+    		}
+    		videoIDs = append(videoIDs, v.ID)
+    	}
+    	fmt.Println("Video IDs:", videoIDs)
+
+    	// Step 2. Create the playlist
+    	playlist, err := client.Streaming.Playlists.New(ctx, streaming.PlaylistNewParams{
+    		Playlist: streaming.PlaylistParam{
+    			Name:      param.NewOpt("My Playlist"),
+    			StartTime: param.NewOpt(now),
+    			VideoIDs:  videoIDs,
+    			Loop:      param.NewOpt(true),
+    		},
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Playlist ID: %d\n", playlist.ID)
+    	fmt.Printf("HLS URL: %s\n", playlist.HlsURL)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List playlists
+
+<p>Retrieve all playlists in the account.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    for playlist in client.streaming.playlists.list():
+        pl_id = playlist.id if hasattr(playlist, "id") else playlist["id"]
+        pl_name = playlist.name if hasattr(playlist, "name") else playlist["name"]
+        print(pl_id, pl_name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	page, err := client.Streaming.Playlists.List(ctx, streaming.PlaylistListParams{})
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, pl := range page.Items {
+    		fmt.Printf("name=%s  hls=%s\n", pl.Name, pl.HlsURL)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/playlists" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The response is an array of playlist objects. Each entry includes the playlist name, `video_ids`, `hls_url`, and `iframe_embed_code`.</p>
+  </Tab>
+</Tabs>
+
+## Create a playlist
+
+<p>Create a playlist with an ordered list of video IDs. The playlist plays as a live stream starting at `start_time`. A playlist can hold up to 128 videos; the order of IDs in `video_ids` determines the playback order.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from datetime import datetime, timezone
+    from gcore import Gcore
+
+    client = Gcore()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    playlist = client.streaming.playlists.create(
+        name="Season 1 — Episodes 1–3",
+        start_time=now,
+        video_ids=[14730239, 13755849],
+        loop=False,
+    )
+    print(f"Created playlist ID: {playlist.id}")
+    print(f"HLS URL: {playlist.hls_url}")
+    print(f"Embed code: {playlist.iframe_embed_code}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+    	now := time.Now().UTC().Format("2006-01-02T15:04:05Z")
+
+    	playlist, err := client.Streaming.Playlists.New(ctx, streaming.PlaylistNewParams{
+    		Playlist: streaming.PlaylistParam{
+    			Name:      param.NewOpt("Season 1 — Episodes 1–3"),
+    			StartTime: param.NewOpt(now),
+    			VideoIDs:  []int64{14730239, 13755849},
+    			Loop:      param.NewOpt(false),
+    		},
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Created playlist ID: %d\n", playlist.ID)
+    	fmt.Printf("HLS URL: %s\n", playlist.HlsURL)
+    	fmt.Printf("Iframe URL: %s\n", playlist.IframeURL)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/streaming/playlists" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "playlist": {
+          "name": "Season 1 — Episodes 1–3",
+          "start_time": "2026-09-07T10:00:00Z",
+          "video_ids": [14730239, 13755849],
+          "loop": false
+        }
+      }'
+    ```
+
+    <p>The API returns the created playlist object:</p>
+
+    ```json
+    {
+      "id": 25568,
+      "name": "Season 1 — Episodes 1–3",
+      "start_time": "2026-09-07T10:00:00.000Z",
+      "loop": false,
+      "video_ids": [14730239, 13755849],
+      "hls_url": "https://1000503.gvideo.io/playlists/1000503_25568/master.m3u8",
+      "iframe_embed_code": "<iframe width=\"560\" height=\"315\" src=\"https://player.gvideo.co/playlists/1000503_25568\" frameborder=\"0\" allowfullscreen></iframe>",
+      "iframe_url": "https://player.gvideo.co/playlists/1000503_25568"
+    }
+    ```
+
+    <p>Use `hls_url` to stream the playlist, or copy `iframe_embed_code` to embed it on a website.</p>
+  </Tab>
+</Tabs>
+
+## Update a playlist
+
+<p>Change the playlist name, video order, loop setting, or start time. Pass only the fields to update — omitted fields stay unchanged.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    playlist_id = int(os.environ["PLAYLIST_ID"])
+
+    updated = client.streaming.playlists.update(
+        playlist_id,
+        name="Season 1 — All Episodes",
+        video_ids=[14730239, 13755849, 12345678],
+        loop=True,
+    )
+    print(f"Updated playlist: {updated.name}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+    	updated, err := client.Streaming.Playlists.Update(ctx, playlistID, streaming.PlaylistUpdateParams{
+    		Playlist: streaming.PlaylistParam{
+    			Name:     param.NewOpt("Season 1 — All Episodes"),
+    			VideoIDs: []int64{14730239, 13755849, 12345678},
+    			Loop:     param.NewOpt(true),
+    		},
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Updated playlist: %s\n", updated.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "playlist": {
+          "name": "Season 1 — All Episodes",
+          "video_ids": [14730239, 13755849, 12345678],
+          "loop": true
+        }
+      }'
+    ```
+
+    <p>The response returns the full updated playlist object.</p>
+  </Tab>
+</Tabs>
+
+## Delete a playlist
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    playlist_id = int(os.environ["PLAYLIST_ID"])
+    client.streaming.playlists.delete(playlist_id)
+    print(f"Playlist {playlist_id} deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+    	if err := client.Streaming.Playlists.Delete(ctx, playlistID); err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Playlist %d deleted.\n", playlistID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful delete returns HTTP 204 No Content with an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
