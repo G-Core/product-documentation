@@ -1,7 +1,7 @@
 ---
 title: Create and manage an object or SFTP storage
 sidebarTitle: Create Object Storage
-ai-navigation: Create and manage S3 Standard, S3 Fast, or SFTP storage via Customer Portal, REST API, or Terraform - covers creation, access keys, SFTP password updates, and deletion.
+ai-navigation: Create and manage S3 or SFTP storage via Customer Portal, REST API, or Terraform - includes listing by type and access key management.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -355,6 +355,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
       "name": "my-storage",
       "full_name": "1000503-my-storage",
       "location_name": "luxembourg-2",
+      "type": "standard",
       "address": "luxembourg-2.storage.gcore.dev",
       "provisioning_status": "active",
       "access_keys": [
@@ -380,6 +381,90 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 <p>The initial key in the response has read-write access. Additional keys — read-write or read-only — can be created using the [access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys) endpoint. S3 Standard supports up to 10 access keys per storage; S3 Fast supports up to 2. Read-only keys are supported on S3 Standard only.</p>
 
 <p>The access key request body uses the field name <code>read_only</code>. The response returns the same concept as <code>is_read_only</code> — note this naming difference when building API clients.</p>
+
+## List S3 storages
+
+<p>Use <code>GET /storage/v4/object_storages</code> to retrieve all S3 storages in the account. Each item includes a <code>type</code> field reporting the performance tier: <code>standard</code> for CEPH-backed storages and <code>fast</code> for VAST-backed storages. Pass <code>?type=standard</code> or <code>?type=fast</code> to filter the list to a specific tier.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    storages = client.storage.object_storages.list()
+    for s in storages.results:
+        print(f"{s.id}  {s.name}  {s.location_name}  type={s.type}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/storage"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        result, err := client.Storage.ObjectStorages.List(ctx, storage.ObjectStorageListParams{})
+        if err != nil {
+            log.Fatalf("list storages: %v", err)
+        }
+        for _, s := range result.Results {
+            fmt.Printf("%d  %s  %s\n", s.ID, s.Name, s.LocationName)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # List all storages
+    curl https://api.gcore.com/storage/v4/object_storages \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # List only S3 Standard (CEPH-backed) storages
+    curl "https://api.gcore.com/storage/v4/object_storages?type=standard" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # List only S3 Fast (VAST-backed) storages
+    curl "https://api.gcore.com/storage/v4/object_storages?type=fast" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": 12345,
+          "name": "my-storage",
+          "full_name": "123456-my-storage",
+          "location_name": "luxembourg-2",
+          "type": "standard",
+          "address": "luxembourg-2.storage.gcore.com",
+          "provisioning_status": "active",
+          "created_at": "2024-01-15T10:30:00Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+  Backblaze- and Wasabi-backed storages report `type=standard` in the response but are not returned by the `?type=standard` filter. The filter selects CEPH-backed storages only. Omitting `type` returns all storages regardless of backend.
+</Note>
 
 ## Create SFTP storage
 
