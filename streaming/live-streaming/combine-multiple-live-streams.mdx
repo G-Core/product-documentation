@@ -1,8 +1,10 @@
 ---
 title: Combine multiple live streams
 sidebarTitle: Multicamera
-ai-navigation: Configure Multicamera to combine multiple live streams into a single player with stream status selection, custom player assignment, stream ordering, and screensaver upload for multi-angle or multi-language broadcasts.
+ai-navigation: Configure Multicamera to combine multiple live streams into a single player, set stream status, reorder streams, and embed the player via the Customer Portal or REST API using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
 ## What is multicamera?
 
@@ -19,6 +21,10 @@ This feature is useful when you need to stream the event simultaneously from sev
 ## Configure multicamera
 
 Create at least two live streams before you configure the Multicamera. To do this, you can use our guide: [Create a live stream](/streaming/live-streaming/create-a-live-stream). 
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Create at least two live streams, then follow these steps.</p>
 
 1\. Click **Create a multicamera**, enter the name (it will be displayed only in the Gcore Customer Portal and will be invisible to viewers), and select the live streams you want to combine. Click **Create**.
 
@@ -57,7 +63,242 @@ You can change the status as you stream. For example, in case of a technical pro
 
 7\. Click **Save changes**.
 
-The player will show the primary stream, and your users will be able to switch to other streams using the button in the corner. 
+<p>The player will show the primary stream, and your users will be able to switch to other streams using the button in the corner.</p>
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID_1="{YOUR_FIRST_STREAM_ID}"
+export STREAM_ID_2="{YOUR_SECOND_STREAM_ID}"
+```
+
+<p>In the API, Multicamera is called a **broadcast**. Create the broadcast with a list of stream IDs. Use `status: "pending"` for "Waiting for Start", `"live"` for Live, `"paused"` for Paused, or `"finished"` for Ended.</p>
+
+<Info>
+The SDK `create` method does not return the broadcast ID — this is a known SDK limitation. Use the raw HTTP example below, or follow up with a `GET /streaming/broadcasts` call to find the broadcast by name.
+</Info>
+
+## Create a multicamera
+
+<p>Send `POST /streaming/broadcasts` with the broadcast name, initial status, and the list of stream IDs to include.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import urllib.request
+import json
+
+stream_id_1 = int(os.environ["STREAM_ID_1"])
+stream_id_2 = int(os.environ["STREAM_ID_2"])
+api_key = os.environ["GCORE_API_KEY"]
+
+payload = json.dumps({
+    "broadcast": {
+        "name": "My multicamera broadcast",
+        "status": "pending",
+        "stream_ids": [stream_id_1, stream_id_2],
+    }
+}).encode()
+req = urllib.request.Request(
+    "https://api.gcore.com/streaming/broadcasts",
+    data=payload,
+    method="POST",
+    headers={"Authorization": f"APIKey {api_key}", "Content-Type": "application/json"},
+)
+with urllib.request.urlopen(req) as resp:
+    broadcast = json.loads(resp.read())
+
+broadcast_id = broadcast["id"]
+print(f"Broadcast ID:   {broadcast_id}")
+print(f"Embed code:     {broadcast['iframe_embed_code']}")
+print(f"Player URL:     {broadcast['iframe_url']}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "encoding/json"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "strconv"
+    "strings"
+)
+
+func main() {
+    stream1, _ := strconv.ParseInt(os.Getenv("STREAM_ID_1"), 10, 64)
+    stream2, _ := strconv.ParseInt(os.Getenv("STREAM_ID_2"), 10, 64)
+    apiKey := os.Getenv("GCORE_API_KEY")
+
+    body := fmt.Sprintf(`{"broadcast":{"name":"My multicamera broadcast","status":"pending","stream_ids":[%d,%d]}}`,
+        stream1, stream2)
+    req, _ := http.NewRequest(http.MethodPost,
+        "https://api.gcore.com/streaming/broadcasts",
+        strings.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+
+    resp, err := http.DefaultClient.Do(req)
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    raw, _ := io.ReadAll(resp.Body)
+    var broadcast map[string]any
+    _ = json.Unmarshal(raw, &broadcast)
+
+    fmt.Printf("Broadcast ID:  %v\n", broadcast["id"])
+    fmt.Printf("Embed code:    %v\n", broadcast["iframe_embed_code"])
+    fmt.Printf("Player URL:    %v\n", broadcast["iframe_url"])
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/broadcasts" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "broadcast": {
+         "name": "My multicamera broadcast",
+         "status": "pending",
+         "stream_ids": ['"$STREAM_ID_1"', '"$STREAM_ID_2"']
+       }
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Change broadcast status
+
+<p>Update the broadcast status to control what viewers see. Set `status` to `"live"` to start the broadcast, `"paused"` to pause it, or `"finished"` to end it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+broadcast_id = int(os.environ["BROADCAST_ID"])
+
+client = Gcore()
+broadcast = client.streaming.broadcasts.update(
+    broadcast_id=broadcast_id,
+    broadcast={
+        "name": "My multicamera broadcast",
+        "status": "live",
+    },
+)
+print(f"Status updated to: {broadcast.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    broadcastID, _ := strconv.ParseInt(os.Getenv("BROADCAST_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    broadcast, err := client.Streaming.Broadcasts.Update(
+        context.TODO(),
+        broadcastID,
+        streaming.BroadcastUpdateParams{
+            Broadcast: streaming.BroadcastUpdateParamsBroadcast{
+                Name:   "My multicamera broadcast",
+                Status: param.NewOpt("live"),
+            },
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Status updated to: %s\n", broadcast.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/broadcasts/$BROADCAST_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"broadcast": {"name": "My multicamera broadcast", "status": "live"}}'
+```
+  </Tab>
+</Tabs>
+
+## Delete a multicamera
+
+<p>Send `DELETE /streaming/broadcasts/{broadcast_id}`. The endpoint returns HTTP 204 with no body on success.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+broadcast_id = int(os.environ["BROADCAST_ID"])
+
+client = Gcore()
+client.streaming.broadcasts.delete(broadcast_id)
+print("Broadcast deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    broadcastID, _ := strconv.ParseInt(os.Getenv("BROADCAST_ID"), 10, 64)
+
+    client := gcore.NewClient()
+    err := client.Streaming.Broadcasts.Delete(context.TODO(), broadcastID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Broadcast deleted.")
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X DELETE "https://api.gcore.com/streaming/broadcasts/$BROADCAST_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+  </MethodSection>
+</MethodSwitch> 
 
 ### Demo multicamera
 
