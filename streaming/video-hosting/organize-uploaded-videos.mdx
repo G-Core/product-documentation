@@ -1,19 +1,22 @@
 ---
 title: Organize uploaded videos
 sidebarTitle: Directories and tags
-ai-navigation: Organize videos in Gcore Streaming with directories and tags for portal workflows and tag filtering.
+ai-navigation: Organize videos in Gcore Streaming with directories and tags via Customer Portal, or manage directories via REST API using Python SDK, Go SDK, and curl.
 ---
 
-There are two ways to organize videos in the Gcore Customer Portal:
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>There are two ways to organize videos in the Gcore Customer Portal:</p>
 
   * Use separate directories for videos
   * Use tags as grouping keywords
 
+<p>Let's examine the difference between the two ways. Imagine you have 100 videos in the Streaming storage. They have been divided into two directories by date: 50 videos in the "10.31.2026" folder and another 50 in the "11.01.2026".</p>
 
-
-Let's examine the difference between the two ways. Imagine you have 100 videos in the Streaming storage. They have been divided into two directories by date: 50 videos in the "10.31.2026" folder and another 50 in the "11.01.2026". 
-
-You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do so, you don't need to create new directories and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the Gcore Customer Portal, and you can filter videos by them. The videos will still be in two directories.
+<p>You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do so, you don't need to create new directories and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the Gcore Customer Portal, and you can filter videos by them. The videos will still be in two directories.</p>
 
 ## How to use directories
 
@@ -23,24 +26,15 @@ You need to group videos by other criteria: "teaser", "clip", and "short film" t
 
 2\. On the **All videos** page, click **Create a directory**.
 
-
 <Frame>![All videos page](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/create-directory-button.png)</Frame>
-
-
 
 2\. Enter a directory name and click **Create**.
 
-
 <Frame>![pop-up](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/create-directory-dialog.png)</Frame>
-
-
 
 3\. The created directory will open. To upload a video, use the **Click to upload** button and select one or more videos from your device.
 
-
 <Frame>![Upload video](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/new-directory.png)</Frame>
-
-
 
 ### Move videos to a directory
 
@@ -48,10 +42,7 @@ You need to group videos by other criteria: "teaser", "clip", and "short film" t
 
 2\. Click **Move**.
 
-
 <Frame>![Videos tab](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/move-videos-panel.png)</Frame>
-
-
 
 3\. Choose the target directory and confirm your action.
 
@@ -65,10 +56,7 @@ Videos from the directory will be permanently deleted, and you won't be able to 
 
 To delete a directory with videos, click the three-dot icon next to the relevant directory, select **Remove directory**, and confirm the action.
 
-
 <Frame>![Delete a directory](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/remove-directory.png)</Frame>
-
-
 
 ## How to use tags
 
@@ -78,18 +66,380 @@ To delete a directory with videos, click the three-dot icon next to the relevant
 
 2\. To add a new tag, specify its name in the **Tags** field and click **Enter**. To add an existing tag, select it from the **Tags** dropdown.
 
-You can add as many tags as you want.
+<p>You can add as many tags as you want.</p>
 
 3\. Save the changes.
 
-
 <Frame>![Add a tag to a video](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/add-tags.png)</Frame>
-
-
 
 ### Filter videos by tags
 
-To view the list of created tags, open the **All videos** page and expand the **Tags** dropdown. To filter videos by tag, click on the tag's name.
-
+<p>To view the list of created tags, open the **All videos** page and expand the **Tags** dropdown. To filter videos by tag, click on the tag's name.</p>
 
 <Frame>![Filter videos by tags](/images/docs/streaming-platform/video-hosting/organize-uploaded-videos/tag-list.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Manage video directories using the [Directories API](/api-reference/streaming/directories/get-list-of-directories). The API supports creating, renaming, and deleting directories, and moving videos between them.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<Info>
+Tags are available in the Customer Portal only. The REST API does not expose a tags endpoint.
+</Info>
+
+<p>Set the environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export DIRECTORY_ID="{YOUR_DIRECTORY_ID}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+```
+
+## List directories
+
+<p>Retrieve the full tree of directories, including nested subdirectories.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    tree = client.streaming.directories.get_tree()
+    for directory in tree.tree:
+        dir_id = directory["id"] if isinstance(directory, dict) else directory.id
+        dir_name = directory["name"] if isinstance(directory, dict) else directory.name
+        print(dir_id, dir_name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	tree, err := client.Streaming.Directories.GetTree(ctx)
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, dir := range tree.Tree {
+    		fmt.Printf("id=%d  name=%s\n", dir.ID, dir.Name)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/directories/tree" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The response contains a nested tree of directory objects:</p>
+
+    ```json
+    {
+      "tree": [
+        {
+          "id": 13766,
+          "name": "Season 1",
+          "parent_id": null,
+          "items_count": 5,
+          "descendants": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Create a directory
+
+<p>Create a new directory. To create a subdirectory inside an existing directory, pass <code>parent_id</code> in the request body.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    result = client.streaming.directories.create(name="Season 1")
+    # The API response is wrapped in {"directory": {...}};
+    # access the data through the .directory attribute.
+    dir_id = result.directory["id"]
+    print(f"Created directory id={dir_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"encoding/json"
+    	"fmt"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    // dirIDFromRaw extracts the directory ID from the SDK response.
+    // The SDK maps {"directory": {...}} incorrectly; use RawJSON to unwrap it.
+    func dirIDFromRaw(d *streaming.DirectoryBase) int64 {
+    	var w struct {
+    		Directory struct {
+    			ID int64 `json:"id"`
+    		} `json:"directory"`
+    	}
+    	json.Unmarshal([]byte(d.RawJSON()), &w)
+    	return w.Directory.ID
+    }
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	result, err := client.Streaming.Directories.New(ctx, streaming.DirectoryNewParams{
+    		Name: "Season 1",
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	dirID := dirIDFromRaw(result)
+    	fmt.Printf("Created directory id=%d\n", dirID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/streaming/directories" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "Season 1"}'
+    ```
+
+    <p>The response returns the created directory object:</p>
+
+    ```json
+    {
+      "directory": {
+        "id": 13766,
+        "name": "Season 1",
+        "parent_id": null,
+        "items_count": 0
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Move a video to a directory
+
+<p>Assign a video to a directory by updating its <code>directory_id</code>. Use the video ID from the [List videos](/streaming/video-hosting/delete-videos) article or from listing your videos.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    video_id = int(os.environ["VIDEO_ID"])
+    dir_id = int(os.environ["DIRECTORY_ID"])
+
+    # Retrieve current video name — required by the SDK update call.
+    video = client.streaming.videos.get(video_id)
+    video_name = video["name"] if isinstance(video, dict) else video.name
+    client.streaming.videos.update(video_id, name=video_name, directory_id=dir_id)
+    print(f"Video {video_id} moved to directory {dir_id}.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	dirID, _ := strconv.ParseInt(os.Getenv("DIRECTORY_ID"), 10, 64)
+
+    	// Retrieve current video name — required by the SDK update call.
+    	video, err := client.Streaming.Videos.Get(ctx, videoID)
+    	if err != nil {
+    		panic(err)
+    	}
+    	_, err = client.Streaming.Videos.Update(ctx, videoID, streaming.VideoUpdateParams{
+    		CreateVideo: streaming.CreateVideoParam{
+    			Name:        video.Name,
+    			DirectoryID: param.NewOpt(dirID),
+    		},
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Video %d moved to directory %d.\n", videoID, dirID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"video\": {\"directory_id\": $DIRECTORY_ID}}"
+    ```
+
+    <p>A successful response returns the updated video object with <code>directory_id</code> set to the new value.</p>
+  </Tab>
+</Tabs>
+
+## Rename a directory
+
+<p>Change the name of an existing directory. You can also move it to a different parent by passing <code>parent_id</code>.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    dir_id = int(os.environ["DIRECTORY_ID"])
+    result = client.streaming.directories.update(dir_id, name="Season 1 — Remastered")
+    print(f"Renamed to: {result.directory['name']}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"encoding/json"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    // dirNameFromRaw extracts the directory name from the SDK response.
+    func dirNameFromRaw(d *streaming.DirectoryBase) string {
+    	var w struct {
+    		Directory struct {
+    			Name string `json:"name"`
+    		} `json:"directory"`
+    	}
+    	json.Unmarshal([]byte(d.RawJSON()), &w)
+    	return w.Directory.Name
+    }
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	dirID, _ := strconv.ParseInt(os.Getenv("DIRECTORY_ID"), 10, 64)
+    	result, err := client.Streaming.Directories.Update(ctx, dirID, streaming.DirectoryUpdateParams{
+    		Name: param.NewOpt("Season 1 — Remastered"),
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Renamed to: %s\n", dirNameFromRaw(result))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/directories/$DIRECTORY_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "Season 1 — Remastered"}'
+    ```
+
+    <p>The response returns the updated directory object with the new name.</p>
+  </Tab>
+</Tabs>
+
+## Delete a directory
+
+<Warning>
+Deleting a directory permanently removes all videos and subdirectories inside it. This action cannot be undone. Move videos to another directory first if you want to preserve them.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    dir_id = int(os.environ["DIRECTORY_ID"])
+    client.streaming.directories.delete(dir_id)
+    print(f"Directory {dir_id} deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	dirID, _ := strconv.ParseInt(os.Getenv("DIRECTORY_ID"), 10, 64)
+    	if err := client.Streaming.Directories.Delete(ctx, dirID); err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Directory %d deleted.\n", dirID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/streaming/directories/$DIRECTORY_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful delete returns HTTP 204 No Content with an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
