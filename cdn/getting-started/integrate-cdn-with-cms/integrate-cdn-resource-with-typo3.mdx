@@ -1,44 +1,89 @@
 ---
-title: Integrate CDN resource with Typo3
-sidebarTitle: Typo3
-ai-navigation: Configure Gcore CDN integration with Typo3 using the smile_cdn extension by installing the plugin, defining the CDN CNAME record, setting asset filters, and flushing frontend caches to rewrite static resource URLs.
+title: Integrate a CDN resource with TYPO3
+sidebarTitle: TYPO3
+ai-navigation: Configure TYPO3 static asset delivery through Gcore CDN with the Replacer extension and scoped TypoScript URL rules.
 ---
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+TYPO3 can rewrite public asset URLs in rendered pages through the [Replacer&nbsp;extension](https://extensions.typo3.org/extension/replacer). Configure scoped replacement rules to deliver generated assets, extension resources, and public files through Gcore CDN.
 
-This tutorial guides you through the CDN integration of [Typo3](https://typo3.org) with the [smile_cdn](https://typo3.org/extensions/repository/view/smile_cdn) extension. We used Typo3 6.2 LTS and smile_cdn version 2.1.0 in the following example.
+<Info>
+These instructions apply to TYPO3 13 with Replacer 4.x and TYPO3 14 with Replacer 5.x. Replacer 5.x supports TYPO3 14 only. Back up the project files and database before installing the extension or changing TypoScript.
+</Info>
 
-Login to the Typo3 backend.
+<Steps>
+  <Step title="Prepare the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), create a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) with the TYPO3 site as its origin.
 
+    Add a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) — `cdn.example.com` — and enable HTTPS. Confirm that the CDN domain can retrieve representative files from `/_assets/`, `/fileadmin/`, and `/typo3temp/assets/` when those directories exist.
+  </Step>
 
-<Frame>![Login to the Typo3 backend](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-login.png)</Frame>
+  <Step title="Install the Replacer extension">
+    For a Composer-based installation, require Replacer 4.x on TYPO3 13 or Replacer 5.x on TYPO3 14.
 
+    TYPO3 13:
 
+    ```bash
+    composer require jweiland/replacer:^4.0
+    vendor/bin/typo3 extension:setup --extension=replacer
+    ```
 
-Navigate to Extension Manager and install the extension smile_cdn.
+    TYPO3 14:
 
+    ```bash
+    composer require jweiland/replacer:^5.0
+    vendor/bin/typo3 extension:setup --extension=replacer
+    ```
 
-<Frame>![ Extension Manage](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-get-extension-smile_cdn-1024x612.png)</Frame>
+    For a non-Composer installation, sign in to the TYPO3 backend as an administrator, open **Extensions**, search for `replacer`, and install Replacer 4.x on TYPO3 13 or Replacer 5.x on TYPO3 14.
+  </Step>
 
- 
-<Frame>![Get extensions](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-install-smile-cdn-1024x186.png)</Frame>
+  <Step title="Add the CDN replacement rules">
+    Add the following TypoScript to `setup.typoscript` in the site configuration directory — the file next to `config.yaml` — or to `setup.typoscript` in the active site-package set. A root TypoScript template record is the legacy alternative and is applied after site TypoScript.
 
+    ```typoscript
+    config.tx_replacer {
+      search {
+        10 = /"\/?(_assets|fileadmin|typo3temp\/assets)/
+        10.enable_regex = 1
+      }
 
+      replace {
+        10 = "https://cdn.example.com/$1
+      }
+    }
+    ```
 
-Configure the smile_cdn extension by defining the CNAME (without `http://`) that you specified in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list) and the desired filters to offload your assets. Ensure that your [CNAME record has been configured](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in a proper way before using it for integration.
+    The expression rewrites only the listed public asset directories in generated HTML.
 
+    <Warning>
+    Do not replace every relative URL. Broad rules can send page links and form actions through the CDN or add the CDN hostname to an already rewritten URL.
+    </Warning>
+  </Step>
 
-<Frame>![ Control panel a](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-configure-smile-cdn-1024x858.png)</Frame>
+  <Step title="Flush the TYPO3 caches">
+    In a Composer-based installation, run:
 
+    ```bash
+    vendor/bin/typo3 cache:flush
+    ```
 
+    Alternatively, use the cache menu in the TYPO3 backend to flush all caches available to the administrator account.
+  </Step>
 
-Click Flush the Frontend Caches in the Typo3 backend.
+  <Step title="Verify CDN delivery">
+    Open the site in a private browser window. Open the browser developer tools, select **Network**, and reload the page.
 
+    Filter requests by `cdn.example.com`. Confirm that the targeted asset paths use the CDN hostname and return successful HTTP responses. Also inspect the generated HTML to confirm that page links and form actions still use the site hostname.
+  </Step>
+</Steps>
 
-<Frame>![Typo3 backend](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-flush-cache-300x127.png)</Frame>
+## Troubleshooting
 
+When rewritten assets fail to load from the CDN hostname, the cause is usually a missing origin path, an origin connectivity error, a CORS restriction on the CDN response, a Content Security Policy that omits the CDN hostname, inactive TypoScript, or a search expression that matches an already rewritten URL.
 
-
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
-
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+- For a `404` response, confirm that the requested public path exists on the origin and that the regular expression preserves the full path.
+- For a `502` response, check the origin hostname, pull protocol, port, and host header in the CDN resource.
+- If fonts or scripts are blocked by CORS, configure the origin or CDN so the asset response includes an `Access-Control-Allow-Origin` header.
+- If the browser reports a Content Security Policy violation, add `cdn.example.com` to the site CSP directives that apply to scripts, styles, fonts, or images.
+- If asset URLs do not change, confirm that the Replacer TypoScript is active on the page, and then flush the TYPO3 and CDN caches.
+- If a URL contains the CDN hostname twice, narrow the search expression so it matches only local paths that begin with a quotation mark and an optional slash.
