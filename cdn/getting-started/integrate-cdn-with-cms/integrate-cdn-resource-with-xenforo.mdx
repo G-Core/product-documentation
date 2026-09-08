@@ -4,7 +4,7 @@ sidebarTitle: XenForo
 ai-navigation: Configure XenForo data and JavaScript URLs in config.php so static files load from a Gcore CDN custom domain.
 ---
 
-[XenForo](https://xenforo.com) serves avatars, attachment thumbnails, and JavaScript from URLs set in `src/config.php`. Point those URLs at a Gcore CDN custom domain so browsers request the files from CDN instead of the origin. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) must exist first, and the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) must have a CNAME record pointing at the assigned `cl-****.gcdn.co` hostname.
+[XenForo](https://xenforo.com) serves avatars, attachment thumbnails, and JavaScript from URLs set in `src/config.php`. Point those URLs at a Gcore CDN custom domain so browsers request the files from CDN instead of the origin. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) must exist first, with its origin pointing to the XenForo installation — otherwise requests for `/data` and `/js` paths return `404` responses. The [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) must have a CNAME record pointing to the `*.gcdn.co` value shown in the CDN resource's Setup guide.
 
 <Warning>
 Back up `src/config.php` and the database before editing. Incorrect URL values can break avatars and JavaScript.
@@ -22,7 +22,7 @@ Collect the custom domain and confirm DNS and HTTPS before editing `src/config.p
     Note the **custom domain** shown for the resource, because that hostname is used in `externalDataUrl` and `javaScriptUrl`.
   </Step>
   <Step title="Confirm the DNS CNAME">
-    Confirm that the custom domain has a CNAME record pointing to the Gcore target hostname shown in the Customer Portal (`cl-****.gcdn.co`). Do not put the `gcdn.co` hostname in the XenForo URLs.
+    Confirm that the custom domain has a CNAME record pointing to the `*.gcdn.co` value shown in the CDN resource's Setup guide. Do not put the `*.gcdn.co` hostname directly in the XenForo URLs.
   </Step>
   <Step title="Confirm SSL">
     Confirm the custom domain has a valid SSL certificate so assets can load over HTTPS. Attach a certificate in [SSL&nbsp;certificates](/cdn/ssl-certificates/configure-your-own-ssl-certificate).
@@ -55,6 +55,19 @@ Collect the custom domain and confirm DNS and HTTPS before editing `src/config.p
 
 ## Optional style image URLs
 
-Logo and related style images use a separate XenForo setting.
+Logo and other style images use a separate XenForo setting. Apply these changes to each style whose assets should load from CDN — [XenForo style properties](https://docs.xenforo.com/manual/appearance/style-properties) can be inherited or customized per style, so a child style that has not customized a property inherits it from the parent.
 
-Log in to the XenForo admin control panel, navigate to **Appearance** > **Style properties** > **Basic options**, and set logo and related image URLs to the custom domain when those assets should also load from CDN.
+<Steps>
+  <Step title="Open Style properties">
+    In the XenForo admin control panel, navigate to **Appearance** > **Styles**, then click **Style properties** for the style you want to update.
+  </Step>
+  <Step title="Open Basic options">
+    Select the **Basic options** group.
+  </Step>
+  <Step title="Update the image URL fields">
+    Set **Path to images** and any other image URL fields that reference origin assets to use the custom CDN domain. For example, change `https://example.com/styles/default/xenforo` to `https://cdn.example.com/styles/default/xenforo`.
+  </Step>
+  <Step title="Save">
+    Click **Save**. Repeat for each additional style that serves assets from CDN.
+  </Step>
+</Steps>
