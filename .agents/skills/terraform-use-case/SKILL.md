@@ -19,6 +19,7 @@ If in doubt about a resource name — check the [Terraform Registry](https://reg
 2. The existing article specified by the user
 3. `cloud/manage-cloud-via-terraform-v2.mdx` — HCL syntax reference for all Cloud resources
 4. `.agents/references/mdx-rules.md` — MethodSwitch structure rules
+5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (if comparing Terraform to SDK)
 5. `.agents/references/style-guide.md` — writing rules for prose
 
 Also always check the live registry for the resource being documented:
