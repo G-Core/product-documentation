@@ -1,10 +1,10 @@
 ---
-title: Load content to the CDN before users request it
+title: CDN content prefetching
 sidebarTitle: Prefetch
 ai-navigation: Upload files to CDN cache from the Customer Portal by entering paths without a domain.
 ---
 
-Prefetch pulls files from the origin onto Gcore CDN servers before visitors request them, so the first request can be served from cache. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is required.
+Prefetch requests files from the origin and stores them in CDN cache before visitors request them, so edge locations can serve the content without fetching it from the origin on the first request. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is required.
 
 <Warning>
 Prefetch causes CDN servers to request the listed files from the origin, which increases origin load and traffic.
@@ -30,7 +30,12 @@ Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each
     Click **Prefetch**.
   </Step>
   <Step title="Confirm the files are cached">
-    Request a listed path from the CDN hostname. A later request for the same object on that edge should return `Cache: HIT` if prefetch populated cache.
+    Prefetch processing time depends on the number and size of the files — allow time for the operation to complete before testing.
+
+    To verify, request a listed path from the CDN hostname and inspect the `Cache` response header on the first request from your test location:
+
+    - `Cache: HIT` on the first request means prefetch already populated that edge location.
+    - `Cache: MISS` on the first request followed by `Cache: HIT` on the next means the first request filled the cache. That edge was not populated by prefetch — either prefetch has not yet completed, or that location was not reached.
   </Step>
 </Steps>
 
