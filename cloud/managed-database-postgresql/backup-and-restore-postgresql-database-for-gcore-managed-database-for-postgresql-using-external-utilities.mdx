@@ -1,19 +1,19 @@
 ---
 title: Backup and restore PostgreSQL database for Managed PostgreSQL using external utilities
 sidebarTitle: Backup and restore
-ai-navigation: Backup and restore Managed PostgreSQL databases using pg_dump and pg_restore utilities with SQL, TAR, custom, and directory formats; retrieve connection credentials (hostname, username, password, port) from Customer Portal.
+ai-navigation: Create and restore Gcore Managed PostgreSQL database backups using pg_dump and pg_restore with SQL, TAR, custom, and directory formats.
 ---
 
-This guide explains how to back up and restore PostgreSQL databases using the `pg_dump` (`pg_dumpall`) and `pg_restore` tools.
+The `pg_dump` and `pg_restore` utilities back up and restore PostgreSQL databases from a remote server without requiring direct filesystem access.
 
-To protect against data loss, back up [Gcore Managed PostgreSQL](/cloud/managed-database-postgresql) databases regularly.
+Back up [Gcore&nbsp;Managed&nbsp;PostgreSQL](/cloud/managed-database-postgresql) databases regularly to protect against data loss.
 
-## 1\. Install external utilities
+## Install external utilities
 
 Install the backup and restore utilities on the virtual or local server. Installation instructions are provided below for Ubuntu, CentOS, and Windows.
 
 <Warning>
-Root rights are required to run the commands successfully.
+Administrator privileges may be required to install the PostgreSQL utilities.
 </Warning>
 
 
@@ -27,7 +27,7 @@ Root rights are required to run the commands successfully.
   ```
 
 
-3. To install ` pg_dump` and `pg_restore` tools, install the Postgres package, which includes them:
+3. To install `pg_dump` and `pg_restore` tools, install the Postgres package, which includes them:
   
   ```sh
   $ sudo apt install postgresql postgresql-contrib
@@ -49,17 +49,19 @@ The package contains all required tools.
 </Accordion>
  
 <Accordion title="Windows">
-1. Download the [installer of the relevant PostgreSQL version](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads).
+1. Download the [PostgreSQL&nbsp;installer](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads) for the relevant version.
 
 2. Run the installation process.
 </Accordion>
 
 
-## 2\. Get your credentials
+## Get credentials
 
-The backup and restore tools require credentials (`username`, `password`, `port`, and `dbname`) to connect to the Gcore Managed PostgreSQL server. Credentials are available in the Customer Portal — see [Get your credentials](/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials) for instructions.
+The backup and restore tools require credentials (`username`, `password`, and `dbname`) to connect to the Gcore Managed PostgreSQL server. Gcore Managed PostgreSQL uses port `5432`. Retrieve credentials from the Customer Portal: [Get&nbsp;credentials](/cloud/managed-database-postgresql/manage-postgresql-servers#get-credentials).
 
-## 3\. Back up databases
+## Back up databases
+
+`pg_dump` backs up a single database. Gcore Managed PostgreSQL does not provide the superuser access required by `pg_dumpall`, so to back up multiple databases, run `pg_dump` separately for each one.
 
 ### Back up a specific database
 
@@ -70,7 +72,7 @@ Use one of the following commands depending on the required backup format:
   * **Custom format**: `$ pg_dump -F c -U username -W -h hostname -d database_name > backup_file.dump`
   * **Directory format**: `$ pg_dump -F d -U username -W -h hostname -d database_name -f backup_dir`
 
-Replace `username`, `hostname`, and `database_name` with the actual values from the [Customer Portal](/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials). For `backup_file` or `backup_dir`, specify the name for the backup file or directory.
+Replace `username`, `hostname`, and `database_name` with the actual values from the [Customer&nbsp;Portal](/cloud/managed-database-postgresql/manage-postgresql-servers#get-credentials). For `backup_file` or `backup_dir`, specify the name for the backup file or directory.
 
 Additional flag details:
 
@@ -82,33 +84,37 @@ Additional flag details:
 
 
 
-### Back up all databases
+## Restore databases
 
-Run the command:
+The restore command depends on the backup format used in the previous section.
 
-```sh
-$ pg_dumpall -U username -W -h hostname > all_pg.sql
- ```
-
-Where: 
-
-  * `all_pg.sql`: the output backup file name
-  * `username`: the username from the Customer Portal
-  * `hostname`: the hostname from the Customer Portal
-
-
-
-## 4\. Restore databases
-
-Run the command: 
+**SQL format** (default) — restore with `psql`:
 
 ```sh
-$ pg_restore -U username -W -h hostname -d database_name < backup_file.tar
- ```
+$ psql -U username -W -h hostname -d database_name < database_name.sql
+```
 
-Where: 
+**TAR, custom, or directory format** — restore with `pg_restore`:
+
+```sh
+$ pg_restore -U username -W -h hostname -d database_name backup_path
+```
+
+Where `backup_path` is the path to the backup file (`.tar`, `.dump`) or directory created in the previous section.
+
+<Info>
+When restoring to a Gcore Managed PostgreSQL server, `pg_restore` may encounter permission errors on internal system schemas. If the database uses only the `public` schema, restrict the restore to that schema to skip those errors:
+
+```sh
+$ pg_restore -U username -W -h hostname -d database_name --no-acl --no-owner --schema=public backup_path
+```
+
+If the database uses application schemas beyond `public`, omit `--schema=public`. `pg_restore` may report permission errors for system objects; review these errors separately from errors affecting application schemas.
+</Info>
+
+Where:
 
   * `username`: the username from the Customer Portal
   * `hostname`: the hostname from the Customer Portal
-  * `database_name`: the database name from the Customer Portal
-  * `backup_file.tar`: the backup file or directory to restore from
+  * `database_name`: the name of the database to restore into
+  * `backup_path`: the backup file (`.tar`, `.dump`) or directory to restore from
