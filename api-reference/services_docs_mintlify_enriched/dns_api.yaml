@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – DNS API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 0929afaaccd0
+  version: 27c8c1fb4f77
 servers:
 - url: https://api.gcore.com
 paths:
@@ -3324,13 +3324,22 @@ components:
       properties:
         address:
           type: string
+          description: |-
+            Hostname or IP literal, optionally with a `:port` suffix. Public/routable IP literals
+            are accepted; private, link-local, unspecified, and multicast IP literals are rejected
+            with a 400 error. Hostnames and loopback addresses are accepted as-is and resolved only
+            at transfer time.
         meta:
           type: object
           additionalProperties:
             type: object
         priority:
           type: integer
+          description: |-
+            Priority of this primary relative to the zone's other primaries. Defaults to 10 when
+            omitted; an explicit 0 is retained rather than replaced by the default.
           format: int64
+          default: 10
     CreateSecondaryZonePayload:
       type: object
       properties:
@@ -3345,13 +3354,17 @@ components:
           $ref: '#/components/schemas/CreatePrimaryServerPayload'
         transfer_mode:
           type: string
-          description: Transfer mode.
+          description: Transfer mode. Defaults to push when omitted.
           enum:
           - push
           - pull
           - both
         tsig_algorithm:
           type: string
+          description: |-
+            One of hmac-sha1, hmac-sha224, hmac-sha256, hmac-sha384, hmac-sha512, with or without a
+            trailing dot. Normalized and returned in canonical dotted form. Required together with
+            `tsig_key_name` and `tsig_secret`; must not be set alone.
         tsig_key_name:
           type: string
         tsig_secret:
@@ -4326,6 +4339,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SecondaryZonePrimaryStatus'
+        state:
+          type: string
+          description: Server-computed zone state, reducing enabled plus the latest transfer log.
+          enum:
+          - turned_off
+          - fetching
+          - last_attempt_failed
+          - live
+          - not_received_yet
         zone_name:
           type: string
     SimpleWarnings:
@@ -4421,6 +4443,12 @@ components:
         duration_ms:
           type: integer
           format: int64
+        error_code:
+          type: string
+          description: |-
+            Stable machine-readable failure reason, present alongside `error_message` on some failed
+            transfers. Pre-migration/older log rows have no value; treat as free-form, not a closed
+            enum.
         error_message:
           type: string
         id:
@@ -4494,6 +4522,10 @@ components:
           - both
         tsig_algorithm:
           type: string
+          description: |-
+            One of hmac-sha1, hmac-sha224, hmac-sha256, hmac-sha384, hmac-sha512, with or without a
+            trailing dot. Normalized and returned in canonical dotted form. Required together with
+            `tsig_key_name` and `tsig_secret`; must not be set alone.
         tsig_key_name:
           type: string
         tsig_secret:

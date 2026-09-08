@@ -13,10 +13,11 @@ the article type and the project style guide.
 3. `.agents/references/style-guide.md` — writing rules
 4. `.agents/references/procedures.md` — step format, Optional prefix, location/purpose before action
 5. `.agents/references/mdx-rules.md` — MDX and frontmatter rules
-5. One or two existing articles of the same type (found during Phase 3)
-6. Source material: Jira brief, Confluence page, or user input
-7. `.agents/references/mcp-tools/confluence.md` — only if fetching from Confluence
-8. `.agents/references/mcp-tools/jira.md` — only if fetching from Jira directly
+6. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+7. One or two existing articles of the same type (found during Phase 3)
+8. Source material: Jira brief, Confluence page, or user input
+9. `.agents/references/mcp-tools/confluence.md` — only if fetching from Confluence
+10. `.agents/references/mcp-tools/jira.md` — only if fetching from Jira directly
 
 Do not read more than two reference articles. Do not read articles from other
 product areas unless directly relevant.
@@ -181,6 +182,12 @@ An [API token](/account-settings/api-tokens) is required, along with a
 
 **Tab order:** always Python SDK → Go SDK → curl (curl always last).
 **In Quickstart:** Python SDK and Go SDK only — no curl tab.
+
+**SDK code examples — CRITICAL:**
+Before writing ANY SDK code, read `.agents/references/sdk-best-practices.md`.
+- Use `*_and_poll()` / `*AndPoll()` methods instead of manual polling
+- Never use `os.environ["GCORE_API_KEY"]` - SDK reads it automatically
+- Never `import time` when using `*_and_poll()` methods
 
 **Step anatomy** (for Structure A sequential steps):
 1. One sentence: why this step matters in the flow

@@ -18,7 +18,8 @@ for a technical writer to review.
 7. `.agents/references/style-guide.md` — writing rules for the draft
 8. `.agents/references/procedures.md` — step format and ordering rules
 9. `.agents/references/mdx-rules.md` — MDX and frontmatter rules
-9. One existing article of the same type as a style reference
+10. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+11. One existing article of the same type as a style reference
 
 ---
 
