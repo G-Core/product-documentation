@@ -203,7 +203,6 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     from gcore import Gcore
 
     client = Gcore()
@@ -222,8 +221,8 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     image = images.results[0]
     print(f"Image: {image.name}")
 
-    # Step 3. Create the cluster
-    task_id_list = client.cloud.gpu_baremetal.clusters.create(
+    # Step 3. Create the cluster and wait until provisioned
+    cluster = client.cloud.gpu_baremetal.clusters.create_and_poll(
         name="my-gpu-cluster",
         flavor=flavor.name,
         image_id=image.id,
@@ -233,24 +232,11 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
             "credentials": {"ssh_key_name": ssh_key_name},
         },
     )
-    task_id = task_id_list.tasks[0]
-    print(f"Provisioning — task: {task_id}")
+    print(f"Cluster provisioned: {cluster.name} (ID: {cluster.id})")
 
-    # Step 4. Poll task until FINISHED
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            cluster_id = task.created_resources.clusters[0]
-            print(f"Cluster ID: {cluster_id}")
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(f"Cluster creation failed: {task.error}")
-        print(f"  state={task.state} — retrying in 15s…")
-        time.sleep(15)
-
-    # Step 5. Get the public IP and print SSH command
+    # Step 4. Get the public IP and print SSH command
     ifaces = client.cloud.gpu_baremetal.clusters.interfaces.list(
-        cluster_id=cluster_id,
+        cluster_id=cluster.id,
     )
     for iface in ifaces.results:
         if iface.network_details.external:
@@ -267,16 +253,12 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         "fmt"
         "os"
         "sort"
-        "strconv"
-        "time"
 
         "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
     )
 
     func main() {
-        projectIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-        regionIDInt, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         sshKeyName := os.Getenv("GCORE_SSH_KEY_NAME")
 
         client := gcore.NewClient()
@@ -284,10 +266,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 1. List flavors — select the one with fewest GPUs
         flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-            cloud.GPUBaremetalClusterFlavorListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUBaremetalClusterFlavorListParams{})
         if err != nil {
             panic(err)
         }
@@ -300,21 +279,16 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
 
         // Step 2. List images — select the first (latest) image
         imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
-            cloud.GPUBaremetalClusterImageListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cloud.GPUBaremetalClusterImageListParams{})
         if err != nil {
             panic(err)
         }
         image := imageList.Results[0]
         fmt.Printf("Image: %s\n", image.Name)
 
-        // Step 3. Create the cluster
-        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
+        // Step 3. Create the cluster and wait until provisioned
+        cluster, err := client.Cloud.GPUBaremetal.Clusters.NewAndPoll(ctx,
             cloud.GPUBaremetalClusterNewParams{
-                ProjectID:    gcore.Int(projectIDInt),
-                RegionID:     gcore.Int(regionIDInt),
                 Name:         "my-gpu-cluster",
                 Flavor:       flavor.Name,
                 ImageID:      image.ID,
@@ -331,35 +305,12 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
         if err != nil {
             panic(err)
         }
-        taskID := taskIDList.Tasks[0]
-        fmt.Printf("Provisioning — task: %s\n", taskID)
+        fmt.Printf("Cluster provisioned: %s (ID: %s)\n", cluster.Name, cluster.ID)
 
-        // Step 4. Poll task until FINISHED
-        var clusterID string
-        for {
-            task, err := client.Cloud.Tasks.Get(ctx, taskID)
-            if err != nil {
-                panic(err)
-            }
-            if task.State == "FINISHED" {
-                clusterID = task.CreatedResources.Clusters[0]
-                fmt.Printf("Cluster ID: %s\n", clusterID)
-                break
-            }
-            if task.State == "ERROR" {
-                panic(fmt.Sprintf("Cluster creation failed: %v", task.Error))
-            }
-            fmt.Printf("  state=%s — retrying in 15s…\n", task.State)
-            time.Sleep(15 * time.Second)
-        }
-
-        // Step 5. Get the public IP and print SSH command
+        // Step 4. Get the public IP and print SSH command
         ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
-            clusterID,
-            cloud.GPUBaremetalClusterInterfaceListParams{
-                ProjectID: gcore.Int(projectIDInt),
-                RegionID:  gcore.Int(regionIDInt),
-            })
+            cluster.ID,
+            cloud.GPUBaremetalClusterInterfaceListParams{})
         if err != nil {
             panic(err)
         }
@@ -407,10 +358,7 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
   <Tab title="Go SDK">
     ```go
     flavorList, err := client.Cloud.GPUBaremetal.Clusters.Flavors.List(ctx,
-        cloud.GPUBaremetalClusterFlavorListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterFlavorListParams{})
     if err != nil {
         panic(err)
     }
@@ -425,10 +373,8 @@ export GCORE_SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
     curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/flavors" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
-  </Tab>
-</Tabs>
 
-The API returns:
+<p>The API returns:</p>
 
 ```json
 {
@@ -457,6 +403,8 @@ The API returns:
   ]
 }
 ```
+  </Tab>
+</Tabs>
 
 ### Step 2. List available images
 
@@ -482,10 +430,7 @@ The API returns:
   <Tab title="Go SDK">
     ```go
     imageList, err := client.Cloud.GPUBaremetal.Clusters.Images.List(ctx,
-        cloud.GPUBaremetalClusterImageListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterImageListParams{})
     if err != nil {
         panic(err)
     }
@@ -499,10 +444,8 @@ The API returns:
     curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/images" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
-  </Tab>
-</Tabs>
 
-The API returns:
+<p>The API returns:</p>
 
 ```json
 {
@@ -519,6 +462,8 @@ The API returns:
   ]
 }
 ```
+  </Tab>
+</Tabs>
 
 ### Step 3. Create the cluster
 
@@ -560,8 +505,6 @@ The API returns:
     ```go
     taskIDList, err := client.Cloud.GPUBaremetal.Clusters.New(ctx,
         cloud.GPUBaremetalClusterNewParams{
-            ProjectID:    gcore.Int(projectID),
-            RegionID:     gcore.Int(regionID),
             Name:         "my-gpu-cluster",
             Flavor:       "{FLAVOR_NAME}",
             ImageID:      "{IMAGE_ID}",
@@ -599,14 +542,14 @@ The API returns:
         "tags": {"env": "production"}
       }'
     ```
-  </Tab>
-</Tabs>
 
-The API returns:
+<p>The API returns:</p>
 
 ```json
 { "tasks": ["e4cecbfc-5258-40bb-b78f-3cd92621c3b2"] }
 ```
+  </Tab>
+</Tabs>
 
 ### Step 4. Wait for provisioning
 
@@ -658,10 +601,7 @@ curl "https://api.gcore.com/cloud/v1/tasks/e4cecbfc-5258-40bb-b78f-3cd92621c3b2"
     ```go
     ifaces, err := client.Cloud.GPUBaremetal.Clusters.Interfaces.List(ctx,
         "{CLUSTER_ID}",
-        cloud.GPUBaremetalClusterInterfaceListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        cloud.GPUBaremetalClusterInterfaceListParams{})
     if err != nil {
         panic(err)
     }
@@ -677,10 +617,8 @@ curl "https://api.gcore.com/cloud/v1/tasks/e4cecbfc-5258-40bb-b78f-3cd92621c3b2"
     curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/interfaces" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
-  </Tab>
-</Tabs>
 
-The API returns:
+<p>The API returns:</p>
 
 ```json
 {
@@ -694,6 +632,8 @@ The API returns:
   ]
 }
 ```
+  </Tab>
+</Tabs>
 
 <p>The interface with `network_details.external: true` is the public network. Use its `ip_assignments[0].ip_address` for SSH.</p>
 

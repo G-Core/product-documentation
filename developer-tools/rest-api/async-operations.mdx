@@ -1,7 +1,7 @@
 ---
 title: "Asynchronous operations and task polling"
 sidebarTitle: "Async operations"
-ai-navigation: Gcore Cloud API write operations return a task ID while the operation runs in the background; explains how to poll the task endpoint for completion, read the created resource ID from the response, and handle errors and timeouts.
+ai-navigation: Monitor Gcore Cloud API task status by polling the task endpoint and retrieving the created resource ID.
 ---
 
 Write operations in the Gcore Cloud API are asynchronous — the API returns a task ID immediately, while the actual operation runs in the background. The created resource ID is only available after polling the task to completion.
@@ -94,10 +94,9 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os, time
     from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    client = Gcore()  # SDK reads GCORE_API_KEY automatically
 
     # Built-in blocking poll — no manual loop needed
     task = client.cloud.tasks.poll(
@@ -114,7 +113,7 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
 
     taskID := "{TASK_ID}"
     for {
-        task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+        task, err := client.Cloud.Tasks.Get(ctx, taskID)
         if err != nil { panic(err) }
         if task.State == "FINISHED" {
             instanceID := task.CreatedResources.Instances[0]

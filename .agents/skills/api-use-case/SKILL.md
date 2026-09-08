@@ -14,6 +14,7 @@ OpenAPI spec, and write a complete `<MethodSection id="api">` section.
 4. `.agents/references/mdx-rules.md` — MethodSwitch structure rules
 5. `.agents/references/style-guide.md` — writing rules for the API section prose
 6. `.agents/references/procedures.md` — step format and ordering rules
+7. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
 
 Do not read other articles unless the existing article cross-links to them and
 the link is directly relevant to mapping a Portal step to an API call.
@@ -123,10 +124,17 @@ Because `cloud_project_id` and `cloud_region_id` are set at client level, **they
 ```python
 from gcore import Gcore
 
-client = Gcore()  # reads GCORE_API_KEY, GCORE_CLOUD_PROJECT_ID, GCORE_CLOUD_REGION_ID
+client = Gcore()  # Reads GCORE_* env vars automatically
 
-clusters = client.cloud.gpu_virtual.clusters.list()          # no project_id/region_id
-cluster  = client.cloud.gpu_virtual.clusters.get("{ID}")     # no project_id/region_id
+# Use *_and_poll() methods for async operations
+cluster = client.cloud.k8s.clusters.create_and_poll(
+    name="my-cluster",
+    version="v1.35.3",
+    ...
+)
+
+# List operations - no project_id/region_id needed
+clusters = client.cloud.gpu_virtual.clusters.list()
 ```
 
 **When `import os` is needed:** only when the code reads additional env vars that the SDK does not handle automatically — for example `GCORE_SSH_KEY_NAME`, `GCORE_CLUSTER_NAME`, `CLUSTER_NAME`. Do not import `os` just for `GCORE_CLOUD_PROJECT_ID` or `GCORE_CLOUD_REGION_ID`.
@@ -141,34 +149,45 @@ client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
 project_id = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
 region_id  = int(os.environ["GCORE_CLOUD_REGION_ID"])
 client.cloud.something.list(project_id=project_id, region_id=region_id)
+
+# wrong — manual polling instead of *_and_poll()
+import time
+result = client.cloud.k8s.clusters.update(...)
+task_id = result.tasks[0]
+while True:
+    task = client.cloud.tasks.get(task_id)
+    if task.state in ("FINISHED", "ERROR"):
+        break
+    time.sleep(5)
 ```
 
 ### Go SDK
 
-The Go SDK does not read `project_id`/`region_id` at client level — they must be passed explicitly in every params struct. Only `GCORE_API_KEY` is read automatically by `gcore.NewClient()`.
+`gcore.NewClient()` reads `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` automatically, the same way it reads `GCORE_API_KEY` — matching the Python SDK. **Do not pass `ProjectID`/`RegionID` in the params struct** when the three env vars are set; the client-level defaults are used.
 
 **Correct pattern:**
 ```go
 import (
     "context"
-    "os"
-    "strconv"
 
     gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/cloud"
 )
 
 func main() {
-    projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
-    regionID,  _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"),  10, 64)
+    client := gcore.NewClient()  // Reads GCORE_* env vars automatically
+    ctx := context.Background()
 
-    client := gcore.NewClient()       // reads GCORE_API_KEY automatically — no option.WithAPIKey
-    ctx := context.Background()       // created once, passed to every call
+    // Use *AndPoll() methods for async operations
+    cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx,
+        cloud.K8SClusterNewParams{
+            Name:    "my-cluster",
+            Version: "v1.35.3",
+            ...
+        })
 
-    result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    // List operations - no ProjectID/RegionID needed
+    result, err := client.Cloud.Something.List(ctx, cloud.SomeParams{})
 }
 ```
 
@@ -178,6 +197,20 @@ import "github.com/G-Core/gcore-go/option"
 client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))  // wrong — no option import needed
 
 result, err := client.Cloud.Something.Do(context.TODO(), ...)  // wrong — context.TODO() is a placeholder
+
+// wrong — redundant now that the client reads these from env
+projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+result, err := client.Cloud.Something.Do(ctx, cloud.SomeParams{ProjectID: gcore.Int(projectID)})
+
+// wrong — manual polling instead of *AndPoll()
+taskList, err := client.Cloud.K8S.Clusters.Update(ctx, clusterName, params)
+for {
+    task, err := client.Cloud.Tasks.Get(ctx, taskList.Tasks[0])
+    if task.State == "FINISHED" {
+        break
+    }
+    time.Sleep(5 * time.Second)
+}
 ```
 
 Key rules:
@@ -185,6 +218,7 @@ Key rules:
 - No `option` import
 - `ctx := context.Background()` — one variable, reused in all calls
 - `context.TODO()` is forbidden
+- Omit `ProjectID`/`RegionID` from params structs — only add them back for an example that deliberately targets a project or region different from the one set in the env vars
 
 ---
 
@@ -286,18 +320,13 @@ and what the response looks like.</p>
       -d '{...}'
     ```
 
-    Response:
+    <p>The API returns:</p>
+
     ```json
     {"tasks": ["abc-123"]}
     ```
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{"tasks": ["abc-123"]}   // save as TASK_ID
-```
 
 </Accordion>
 ```
@@ -306,20 +335,25 @@ The API returns:
 1. One prose sentence: why this step matters — not "In this step, you will..."
 2. Parameters table: non-obvious required fields only
 3. Code tabs: Python SDK → Go SDK → curl (curl always last)
-4. Response JSON: always labeled with `The API returns:` — never a bare JSON block after `</Tabs>`
+4. HTTP response body belongs **inside the tab that produced it**. For curl, that is the curl tab, immediately after the command, labeled `<p>The API returns:</p>` then a `json` fence. Never put response JSON (or "The API returns") after `</Tabs>` — that block is visible in every method tab.
 5. Inline API reference link: embed in a meaningful sentence, not standalone
 
 **Polling pattern** — when an endpoint returns `{"tasks": [...]}`:
-```mdx
-Run <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until
-`state` is `FINISHED`, then read the resource ID from `created_resources`.
 
-While provisioning:
+**In SDK examples:** Use `*_and_poll()` / `*AndPoll()` methods (see `.agents/references/sdk-best-practices.md`). Never show manual polling loops with `time.sleep()` or `time.Sleep()`.
+
+**In curl examples:** Show the manual polling pattern **inside the curl tab**, after the request:
+
+```mdx
+<p>Run `GET /cloud/v1/tasks/{task_id}` every 5 seconds until
+`state` is `FINISHED`, then read the resource ID from `created_resources`.</p>
+
+<p>While provisioning:</p>
 ```json
 {"state": "RUNNING", "created_resources": {}}
 ```
 
-When complete:
+<p>When complete:</p>
 ```json
 {"state": "FINISHED", "created_resources": {"instances": ["abc-123"]}}
 ```
@@ -354,13 +388,18 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 <Tabs>
   <Tab title="Python SDK">```python ... ```</Tab>
   <Tab title="Go SDK">```go ... ```</Tab>
-  <Tab title="curl">```bash ... ```</Tab>
-</Tabs>
+  <Tab title="curl">
+    ```bash
+    curl ...
+    ```
 
-The API returns:
-```json
-{...}
-```
+    <p>The API returns:</p>
+
+    ```json
+    {...}
+    ```
+  </Tab>
+</Tabs>
 
 ## {Another operation name}
 ```
@@ -450,9 +489,18 @@ Scan every `##` and `###` — verify a prose sentence follows before any code bl
 **Formatting:**
 - Bold only for UI elements — not for emphasis
 - Em-dashes spaced: ` — ` not `—`
-- Response JSON never appears directly after `</Tabs>` without a label
+- Response JSON and "The API returns" live inside the matching method tab — never after `</Tabs>`
 - Quickstart scripts have no combined step labels (`# Step 3+4`)
 - Flavor and image IDs not hardcoded — selected dynamically
+
+**API style checker (mandatory — run after the article is written, before showing the result):**
+
+```
+python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+python .agents/tools/api_check_style.py --all
+```
+
+Exit code 0 required. Fix every violation, then re-run. `--all` scans the repo and ignores OS tabs and language-variant curl groups. The checker lives in `.agents/tools/api_check_style.py`. When a new repeatable API-tab mistake shows up, add a check function there and a unit test in `.agents/tools/test_api_check_style.py` — do not rely on memory.
 
 **Links:**
 - Link text 1–2 words maximum
@@ -462,6 +510,7 @@ Scan every `##` and `###` — verify a prose sentence follows before any code bl
 **Voice:**
 - No "you" or "your" in prose
 - No forbidden words: just, simply, obviously, ensure, platform
+- Never describe what is absent: do not write that SDK support is "pending", "not yet available", or "not supported". Document only what exists. If only curl is available, show only curl — no explanation needed.
 
 **MDX:**
 - Import has `.jsx` extension

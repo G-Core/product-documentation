@@ -1,7 +1,7 @@
 ---
 title: FastEdge overview
 sidebarTitle: Overview
-ai-navigation: Overview of FastEdge serverless WebAssembly execution on Gcore edge network - HTTP Applications, CDN Applications, use cases including A/B testing, personalization, authentication, and image manipulation.
+ai-navigation: Describes FastEdge WebAssembly execution on Gcore's edge network, HTTP and CDN applications, plan call allowances, and common use cases.
 ---
 
 FastEdge runs WebAssembly applications on Gcore's global edge network. Apps execute at the edge node closest to the request — no infrastructure to configure or maintain. Common use cases include A/B testing, personalization, authentication, and image processing.
@@ -10,7 +10,7 @@ FastEdge runs WebAssembly applications on Gcore's global edge network. Apps exec
 
 FastEdge supports two application types: HTTP and CDN. The application type determines how the application integrates with FastEdge and which setup guide to follow.
 
-**Modern HTTP applications** receive and respond to HTTP requests directly. They implement the [WASI P2](https://wasi.dev/releases/wasi-p2) `wasi:http/proxy` interface — the current recommended standard for WebAssembly HTTP applications. Supported in Rust (via the `wstd` crate) and JavaScript. Use this type for new edge services: APIs, redirects, authentication proxies, and similar workloads.
+**Modern HTTP applications** receive and respond to HTTP requests directly. They implement the [WASI P2](https://wasi.dev/releases/wasi-p2) `wasi:http/proxy` interface — the current recommended standard for WebAssembly HTTP applications. Supported in Rust (via the `wstd` crate) and JavaScript. Use this type for new edge services: APIs, redirects, and authentication proxies.
 
 **Legacy HTTP applications** also handle HTTP requests directly, but use Gcore's own `fastedge` crate rather than the WASI standard. They target [WASI P1](https://wasi.dev/releases/wasi-p1), the original WebAssembly system interface. Use it when maintaining existing applications built on the `fastedge` crate.
 
@@ -33,12 +33,30 @@ Both application types share the same deployment workflow:
 
 ## Key benefits
 
+FastEdge addresses three operational constraints common to edge workloads: latency, server management, and isolation.
+
 - **Run code close to users.** FastEdge executes on the edge node closest to each request, reducing round-trip latency without relocating the origin.
 - **Deploy without managing servers.** Gcore handles deployment, scaling, and routing across the global network. The application binary is the only artifact to maintain.
 - **Isolated execution per application.** Each application runs in a WebAssembly sandbox, isolated from other applications on the same node.
 - **Write in Rust or JavaScript.** Both languages have first-class SDK support. Rust covers both HTTP and CDN application types; JavaScript supports HTTP applications.
 
+## Request call limits
+
+Each plan includes a monthly call allowance tracked at the account level across all applications; per-plan values are on the [FastEdge pricing page](https://gcore.com/pricing/edge-network#fastedge). When the allowance is exceeded, Gcore charges for overage or suspends the account depending on the plan, rather than disabling individual applications.
+
+### Current usage
+
+Current consumption across all applications is available via `GET /fastedge/v1/me`, documented in the [API reference](https://api.gcore.com/docs/fastedge#tag/FastEdge-Clients/operation/getClientMe), which returns three fields alongside the active plan name and total app count.
+
+| Field | Description |
+|---|---|
+| `hourly_consumption` | Calls across all apps during the current hour |
+| `daily_consumption` | Calls across all apps during the current day (UTC) |
+| `monthly_consumption` | Calls across all apps during the current calendar month (UTC), for comparison against the plan's monthly allowance |
+
 ## Use cases
+
+FastEdge is suited to scenarios where latency, origin load, or traffic routing are the primary constraints.
 
 ### A/B testing
 

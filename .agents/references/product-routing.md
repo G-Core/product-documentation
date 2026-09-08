@@ -45,7 +45,7 @@ Use these values when filling `create_edge_cloud_regression_ticket.py` in Phase 
 |---------------------|----------|----------------|------|-----------|---------|
 | `hosting/` | 16036 | Cloud | DOC-1701 | 12504 | sergey.kostichev@gcore.lu |
 | `cloud/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
-| `cdn/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
+| `cdn/` | 16037 | Edge Network | DOC-1936 | 12504 | maria.jose.mendez@gcore.lu |
 | `dns/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `storage/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `waap/` | 16035 | Security | TBD | 12504 | sergey.kostichev@gcore.lu |
@@ -54,6 +54,11 @@ Use these values when filling `create_edge_cloud_regression_ticket.py` in Phase 
 
 **TBD epics:** fill in the EPIC value before running the script for non-hosting products.
 Check Jira for the current active epic for that product area.
+
+**CDN regression-test batch note:** every ticket created for the `cdn/` batch also
+gets a secondary "relates to" issue link to `DOC-1349` (the umbrella documentation
+epic), in addition to the `DOC-1936` Epic Link above. Jira allows only one Epic Link
+per issue, so `DOC-1349` is attached as a regular issue link, not a second Epic Link.
 
 ---
 

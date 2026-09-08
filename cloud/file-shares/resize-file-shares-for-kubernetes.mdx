@@ -1,0 +1,75 @@
+---
+title: Resize file shares for Managed Kubernetes
+sidebarTitle: Resize for Kubernetes
+ai-navigation: Resize Standard NFS File Shares used by Managed Kubernetes by unmounting workloads, expanding capacity in the Customer Portal, then remounting PersistentVolumeClaims.
+---
+
+Standard NFS [File Shares](/cloud/file-shares/about-file-shares) that Managed Kubernetes mounts through the [NFS CSI driver](/cloud/kubernetes/storage/configure-nfs-csi-driver-for-kubernetes) must be unmounted before a resize. Resizing a mounted share breaks active NFS mounts with a stale file handle, even when pods remain in the Running state.
+
+This procedure covers Standard File Shares already attached to a cluster as a `gcore-nfs-*` StorageClass. The new size must be larger than the current size, because downsizing is not supported. General resize steps for Virtual Machines and Bare Metal are in [configure file shares](/cloud/file-shares/configure-file-shares).
+
+## Resize limitation
+
+A live resize while pods still mount the share interrupts I/O. The pod may stay Running with zero restarts, while writes fail with `Stale file handle`.
+
+After the share is resized and remounted, new or restarted pods see the expanded capacity. Plan a short maintenance window so workloads that use the PersistentVolumeClaim (PVC) can stop, then start again.
+
+## Resize procedure
+
+Unmount every workload that uses the PVC, expand the share in the [Gcore Customer Portal](https://portal.gcore.com), then bring the workloads back so Kubernetes remounts the share.
+
+<Steps>
+  <Step title="Identify workloads">
+    Find every Deployment, StatefulSet, or pod that mounts the PVC backed by the File Share StorageClass.
+
+    ```bash
+    kubectl get pvc
+    kubectl get pods -A -o wide
+    ```
+
+    Note the Deployment or StatefulSet name and the replica count. Those values are needed to restore capacity after the resize.
+  </Step>
+  <Step title="Unmount the share">
+    Scale the workloads to zero replicas, or delete the pods that mount the PVC, so the cluster releases the NFS mount.
+
+    ```bash
+    kubectl scale deployment/<deployment-name> --replicas=0
+    ```
+
+    Confirm that no pods still mount the PVC before continuing:
+
+    ```bash
+    kubectl get pods -A
+    ```
+  </Step>
+  <Step title="Resize the File Share">
+    In the Customer Portal, open **Cloud** → **Storage** → **File Shares**, then select the share.
+
+    In the **Overview** tab, click **Resize**, enter a larger size in GiB, and confirm.
+
+    Wait until the share status returns to Available and the **Size** field shows the new capacity.
+  </Step>
+  <Step title="Remount workloads">
+    Scale the Deployment or StatefulSet back to the previous replica count, or recreate the pods that use the PVC.
+
+    ```bash
+    kubectl scale deployment/<deployment-name> --replicas=<previous-count>
+    ```
+
+    Confirm the pods reach Running:
+
+    ```bash
+    kubectl get pods -l app=<label>
+    ```
+  </Step>
+  <Step title="Verify capacity">
+    From a running pod that mounts the PVC, check that the filesystem reports the new size and that read and write operations succeed.
+
+    ```bash
+    kubectl exec -it <pod-name> -- df -h /mnt/data
+    kubectl exec -it <pod-name> -- sh -c "echo ok >> /mnt/data/resize-check.txt && cat /mnt/data/resize-check.txt"
+    ```
+
+    Replace `/mnt/data` with the mount path used by the application. A successful remount shows the expanded size and accepts new writes without stale file handle errors.
+  </Step>
+</Steps>
