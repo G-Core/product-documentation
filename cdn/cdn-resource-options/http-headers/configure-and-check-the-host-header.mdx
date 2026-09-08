@@ -1,79 +1,62 @@
 ---
 title: Configure and check the host header
 sidebarTitle: Manage the host header
-ai-navigation: Configure the Host header in Gcore CDN resources using Custom Host header or Forward Host header options in HTTP headers settings to specify origin domain/IP address, and verify header values with curl or diagnostic tools to prevent 4xx/5xx errors.
+ai-navigation: Configure the CDN Host header in resource settings using Custom Host header or Forward Host header, and verify the configured value with cURL.
 ---
 
-## What is the host header?
+The Host header is a mandatory HTTP request header. CDN servers include it in every request sent to the origin. The origin uses the Host header to identify which website or application to serve — this matters when multiple sites share the same server.
 
-The Host header is the mandatory header of HTTP requests. CDN servers send it to the origin when they request content. The Host header helps determine which website or web application, out of all those stored on the server, contains the requested content.
+The **Change Host header** option in CDN resource settings controls the value CDN servers send. When enabled, it offers two modes:
 
-The Change Host header option controls the Host header. It is automatically enabled and populated when you [create a CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) and specify the origin's domain name/IP address or select a group of origins. In the latter case, the domain name or IP address of the first resource in the group will be used as the Host header.
+- **Custom Host header** — CDN servers send a fixed domain or IP address as the Host header on every origin request.
+- **Forward Host header** — CDN servers forward the Host header received in the end-user request to the origin unchanged.
 
-For example, let's create a CDN resource and specify _yourdomain.com_ in the Origin section as follows:
+## Configure the host header
 
+When the origin source changes after resource creation, the **Change Host header** value does not update automatically. CDN servers continue using the old value, sending requests to the new origin with an incorrect Host header and returning errors to end users.
 
-<Frame>![What is the Host header](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11698761812241.png)</Frame>
+To configure the option:
 
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources**.
 
+2. Click the resource to open its settings.
 
-This value will appear at the "Change Host header" option as follows:
+3. In the left panel, click **HTTP headers** to expand the section, then click **Host header**.
 
+<Frame>![CDN resource settings, Host header section with Change Host header toggle enabled and Forward Host header selected](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/configure-and-check-the-host-header-image1.png)</Frame>
 
-<Frame>![Change Host heade](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11698730009873.png)</Frame>
+4. Enable the **Change Host header** toggle.
 
+5. Select one of the two modes:
 
+   - **Custom Host header** — enter the domain or IP address CDN servers will send as the Host header. Use this when the origin serves a single site with a fixed host name.
+   - **Forward Host header** — CDN servers forward the Host header from the end-user request. Use this when the origin validates the incoming Host header against the request domain.
 
-## How to manage the host header
+<Frame>![Host header section with Custom Host header selected, showing an input field for the host header value](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/configure-and-check-the-host-header-image2.png)</Frame>
 
-If you change the origin source after resource creation, the Host header value will not be changed automatically. You will need to manually change it. If the value is not corrected, the CDN resource will refer to the new source using the old Host header, resulting in an error for end users instead of content.
+6. Click **Save changes**.
 
-1\. Open the Resource settings in the Gcore Customer Portal.
+After saving, [clear&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) to apply the change to cached content.
 
+## Disable the host header
 
-<Frame>![Resource settings in the control panel](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11774871054737.png)</Frame>
+Disabling **Change Host header** causes CDN servers to send the CDN resource's CNAME as the Host header. Most origin servers cannot process this value and return 4xx or 5xx errors to end users. The option must remain enabled in all standard configurations.
 
+When using a `*.gvideo.io` CDN resource for [streaming](/streaming/interaction-with-cdn/get-started-streaming-cdn), disabling the option sets the Host header to the CDN resource's CNAME — this is the expected behavior for that use case.
 
+## Check whether the origin accepts the Host header
 
-2\. Go to the HTTP headers section and select the Host header option.
-
-3\. Configure the option. There are two ways to set it up:
-
-  * Custom Host header option: Select this if you use only one origin source, and specify the domain or IP address.
-  * Forward Host header: select this if it is important to send the same Host header in the request to the origin as was sent in the request to the CDN server.
-
-
-
-4\. Save your changes.
-
-Don't forget to [clear the CDN cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) afterwards.
-
-## How to disable the change host header option
-
-In most cases, end users will get 4xx or 5xx errors if the Change Host header option is disabled. To avoid this, you should enable the option and set the appropriate value.
-
-If you are [using a default CDN resource (*.gvideo.io) for streaming](/streaming/interaction-with-cdn/get-started-streaming-cdn), the Host header will take the value of the CNAME of the CDN resource. This is the value that the option will take as soon as it is disabled.
-
-
-<Frame>![How to disable the Change Host header option](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11774870575761.png)</Frame>
-
-
-
-## How to check the host header
-
-To check if the Host header used is correct, run the following command in the terminal (Windows) or console (macOS):
+To check whether the origin accepts the Host header configured for the CDN resource, send a request directly to the origin with that value:
 
 ```sh
-curl -H "Host: example.com" -I http(s)://10.0.0.1/file.txt
+curl -H "Host: example.com" -I https://10.0.0.1/file.txt
 ```
 
 Where:
 
-  * **`example.com`**: is the value of the Host header;
-  * **`http(s)`**: is the protocol value, which depends on the protocol used by the source;
-  * **`10.0.0.1`**: is the IP address of your website source; and
-  * **`file.txt`**: is any static file that is delivered via CDN.
+- **`example.com`** — the expected Host header value
+- **`https`** — the protocol used by the origin; replace with `http` if the origin does not use TLS
+- **`10.0.0.1`** — the IP address of the origin server
+- **`file.txt`** — any static file delivered via CDN
 
-
-
-If you receive a 400 Bad Request or 403 Forbidden Response error in the response, your server is unable to process the specified Host header. In this case, follow the instructions above to manage the option.
+A `200 OK` response with the expected `Host` value in the request output confirms the configuration is correct. If the request returns `400 Bad Request` or `403 Forbidden`, verify that the origin accepts the specified Host header. Correct the value following the steps in the [Configure](#configure-the-host-header) section above.
