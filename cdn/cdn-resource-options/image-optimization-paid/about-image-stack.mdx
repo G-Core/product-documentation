@@ -1,122 +1,116 @@
 ---
-title: About image stack
-sidebarTitle: Image stack overview
-ai-navigation: Configure Image Stack to optimize JPG and PNG images on the fly using quality adjustment, WebP/AVIF compression, resize, and crop operations; optimized versions cache on CDN while original images remain unchanged and X-Img-Operations headers track transformations.
+title: About Image Stack
+sidebarTitle: Image Stack overview
+ai-navigation: Configure Image Stack to optimize JPG and PNG images on the fly via quality adjustment, WebP and AVIF conversion, resize, and crop operations.
 ---
 
-## What is image stack?
+Image Stack is a paid CDN option that optimizes JPG and PNG images on the fly. Original images remain unchanged on the origin; CDN serves transformed versions from cache. Image Stack includes four operations:
 
-Image Stack is a paid option for optimizing images in JPG and PNG formats (mime-type: image/jpeg, image/png) on the fly. The original images remain unchanged but their versions in the CDN cache change according to your requirements.
+- [Quality](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality) — sets the quality level for images. Lowering the quality value also reduces file size, so images reach users faster.
+- [Compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) — converts images to WebP and AVIF formats, providing up to 55% file size savings at a given quality level.
+- [Resize](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size) — reduces the height, width, and scale of the original image.
+- [Crop](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images) — removes unwanted image area beyond the specified dimensions.
 
-The Image Stack option includes the following features:
+<Frame>
+  <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/about-image-stack-image1.png" alt="Image Stack toggle under Optimization in CDN resource settings" width="70%"/>
+</Frame>
 
-  * [Quality](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality) allows you to set the quality level for your images by lowering it to the specified value. The file size of images also decreases, so users will get them faster.
-  * [Compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) converts images to WebP and AVIF formats providing up to 55% file size savings at a given quality level.
-  * [Resize](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size) allows you to reduce the height, width, and scale of your original image.
-  * [Crop](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images) allows you to cut off the excessive image area beyond the established parameters.
-
-
-<Frame>![Image Stack](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759102353.png)</Frame>
-
-
-
-How Image Stack can change your image:
+How Image Stack transforms an image:
 
 <Tabs>
   <Tab title="Original image">
-    <Frame>![original.jpg](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218361745.png)</Frame>
-    
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218361745.png" alt="Original image sample — 553x743 px, 3.55 MB JPEG" width="70%"/>
+    </Frame>
+
     - Format: jpg
     - Quality: 100%
     - Size: 3.55 MB
     - W×H: 553×743 px
   </Tab>
   <Tab title="Compression">
-    <Frame>![compression.jpg](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218290321.png)</Frame>
-    
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218290321.png" alt="Same image after AVIF compression — 476 KB" width="70%"/>
+    </Frame>
+
     - Format: avif
     - Quality: 95%
     - Size: 476 KB
   </Tab>
   <Tab title="Quality">
-    <Frame>![quality.jpg](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218279441.png)</Frame>
-    
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218279441.png" alt="Same image at 10% quality — 8 KB AVIF" width="70%"/>
+    </Frame>
+
     - Quality: 10%
     - Format: avif
     - Size: 8 KB
   </Tab>
   <Tab title="Resize">
-    <Frame>![resize.jpg](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218201233.png)</Frame>
-
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218201233.png" alt="Same image resized to 333x500 px" width="70%"/>
+    </Frame>
 
     - W×H: 333×500 px
   </Tab>
   <Tab title="Crop">
-    <Frame>![crop.jpg](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218206481.png)</Frame>
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218206481.png" alt="Same image cropped to 400x500 px from center" width="70%"/>
+    </Frame>
 
-    - W×H: 400×500 px Segment from the center
+    - W×H: 400×500 px — segment from the center
   </Tab>
 </Tabs>
 
-## How image stack works
+## Processing pipeline
 
-If you use Image Stack requests for images that will be proxied through our Processing Server, it takes an original image from your Origin Server and converts the image to WebP or applies others features. After that, a new version of the image will be saved in the Caching Server and sent to end users.
+When Image Stack is enabled on a CDN resource, requests for images are routed through the Image Processor. The Image Processor fetches the original image from the origin, applies the configured transformations, and stores the processed version in the CDN cache.
 
+<Frame>
+  <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11756318311697.png" alt="Image Stack flow: origin to Image Processor to CDN cache to user browser" width="70%"/>
+</Frame>
 
-<Frame>![How Image Stack works](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11756318311697.png)</Frame>
+After processing, image URLs and file extensions remain unchanged. The following HTTP headers are added to the response to track transformation details:
 
+- **X-Img-Operations** — operations performed
+- **X-Img-Origin-Download-Time** — time to download the image from the origin, in milliseconds
+- **X-Img-Origin-Size** — original image size in bytes
+- **X-Img-Processing-Time** — time taken to transform the image, in milliseconds
+- **X-Img-Saved-Bytes** — how many bytes the image size decreased after processing
+- **X-Img-Server** — the server that processed the image
+- **Img-Skip-Reason** — the reason an operation was not performed
 
+Image transformation operations are applied in this order, because resizing and cropping reduce the image to its final dimensions before format conversion — this avoids compressing pixels that are later discarded:
 
-After converting, an image does not change its URL or extension. Only the following processing details will be added to image HTTP headers:
+1. Resizing
+2. Cropping
+3. Compression to WebP or AVIF, with quality adjustment
 
-  * **X-Img-Operations** : operations performed
-  * **X-Img-Origin-Download-Time** : time to download an image from an origin in milliseconds
-  * **X-Img-Origin-Size** : original image size in bytes
-  * **X-Img-Processing-Time** : time taken to convert in milliseconds
-  * **X-Img-Saved-Bytes** : how many bytes the image size is reduced by after processing
-  * **X-Img-Server** : the server that has converted the image
-  * **Img-Skip-Reason** : the reason why an operation wasn't performed
+<Note>
+The Quality operation cannot run independently. Enable at least one other operation — Compression, Resize, or Crop — alongside Quality.
+</Note>
 
+## Processing limitations
 
+If an image cannot be processed, CDN serves the original image from the origin. The following conditions prevent Image Stack from processing an image:
 
-The image transformation operations are performed in this order:
+- **Original quality is lower than the target quality.** If the original image quality is 45 and the target is 80, processing would increase the file size rather than decrease it.
+- **Gzip compression is applied to the original image.** If the image contains the `Content-Encoding: gzip` header, Image Stack cannot unzip the original.
+- **The browser does not support the target format.** If the request does not advertise support for `image/webp` or `image/avif`, Image Stack does not convert the image to the corresponding format.
+- **Unsupported image format.** Image Stack processes only JPG and PNG files. GIF and other formats are served as-is.
 
-  1. Resizing
-  2. Cropping
-  3. Compression to WebP and AVIF with changing quality
+Use the `Img-Skip-Reason` response header to identify why an image was not transformed.
 
+<Frame>
+  <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759743505.png" alt="Browser DevTools response headers showing img-skip-reason with unsupported content type reason" width="70%"/>
+</Frame>
 
+## Conflict with the Rewrite option
 
-**Note** : The quality feature cannot be performed separately from the others. If you want to change the image quality, activate one more feature.
+Google Chrome and other browsers add the `Accept: image/webp, image/avif` header to all requests — including requests for static files like PHP and JS scripts, not only images. When Image Stack is enabled for the entire resource, those requests are routed to the Image Processor.
 
-## When images cannot be processed
+The conflict occurs when the [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) option is also active. The Rewrite option redirects requests to the origin, which responds with a `3xx` code. The Image Processor cannot return `3xx` responses to clients — it follows the redirect in a loop until receiving a non-3xx response, making PHP and JS files inaccessible.
 
-If an image cannot be processed, an end user will receive the original image downloaded into the CDN cache from the Origin Server. We will serve original images in the following cases:
+To avoid this, configure Image Stack as a rule scoped to `image/jpeg` and `image/png` MIME types rather than enabling it for the entire resource. The [Enable&nbsp;Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) article covers the rules configuration.
 
-  * **The original image quality is lower than the target quality**. For instance, if the original quality is 45 and the target is 80, the image size after processing will increase rather than decrease.
-  * **Gzip compression is applied to the original images**. If the image is already compressed by Gzip (contains the HTTP header _Content-Encoding: gzip_), Image Stack cannot unzip the original image.
-  * **The end-user browser doesn't support the target format (WebP, AVIF)**. If HTTP headers don't contain the values _image/webp_ or _image/avif_, it means that the browser does not support WebP or AVIF formats.
-  * **The image has a format that Image Stack doesn't support**. If you want to convert files with extensions other than JPG and PNG (e. g., GIF), Image Stack will not be able to process them.
-
-
-
-Use the "Img-Skip-Reason" HTTP header to find out why the image was not converted:
-
-
-<Frame>![Img-Skip-Reason HTTP header](/images/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759743505.png)</Frame>
-
-
-
-## The rewrite option does not work when image stack is enabled
-
-Some browsers (e.g., Google Chrome) add the Accept header with the value _image/webp_ or _image/avif_ not only to images, but also to static content like PHP and JS scripts.
-
-All requests with the Accept header are redirected to the Image Processing Server. Usually, when the server cannot convert the file (e.g., when it's a PHP file), it returns the content from the origin.
-
-Difficulties appear if the [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) option is enabled for your resource. It redirects the requests to the origin. The origin responds with the 3xx code, but the Image Processing Server cannot return the 3xx response code.
-
-If the PHP or JS files are requested, the Image Processing Server will turn to the origin. But it responds only with the 3xx code. The Processing Server will try to follow the redirect until it receives a different response code. This will cause the file to be inaccessible.
-
-To avoid this issue, we recommend enabling the Image Stack option in the Rules section by following the steps in our "[Enable Image stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack)" guide. This way, you clearly indicate that the option will only work for files with mime type image/jpeg or image/png.
-
-You can enable Image Stack for the entire resource in the resource settings only if the origin consists of static image assets.
+Enable Image Stack for the entire resource in Resource Settings only when the origin consists entirely of static image assets.

@@ -61,23 +61,13 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
   <Tab title="Python SDK">
     ```python
     import os
-    import time
     from gcore import Gcore
 
     client = Gcore()
     CLUSTER = os.environ["GCORE_CLUSTER_NAME"]
 
-    task_list = client.cloud.k8s.clusters.delete(cluster_name=CLUSTER)
-    task_id = task_list.tasks[0]
-
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            print("Cluster deleted.")
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(f"Deletion failed: {task}")
-        time.sleep(15)
+    cluster = client.cloud.k8s.clusters.delete_and_poll(cluster_name=CLUSTER)
+    print("Cluster deleted.")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -88,7 +78,6 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	"context"
     	"fmt"
     	"os"
-    	"time"
 
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
@@ -100,7 +89,7 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	client := gcore.NewClient()
     	ctx := context.Background()
 
-    	taskList, err := client.Cloud.K8S.Clusters.Delete(
+    	_, err := client.Cloud.K8S.Clusters.DeleteAndPoll(
     		ctx,
     		clusterName,
     		cloud.K8SClusterDeleteParams{},
@@ -108,22 +97,8 @@ Cluster deletion is irreversible. Download the kubeconfig and back up any requir
     	if err != nil {
     		panic(err)
     	}
-    	taskID := taskList.Tasks[0]
 
-    	for {
-    		task, err := client.Cloud.Tasks.Get(ctx, taskID)
-    		if err != nil {
-    			panic(err)
-    		}
-    		if task.State == "FINISHED" {
-    			fmt.Println("Cluster deleted.")
-    			break
-    		}
-    		if task.State == "ERROR" {
-    			panic(fmt.Sprintf("Deletion failed: %+v", task))
-    		}
-    		time.Sleep(15 * time.Second)
-    	}
+    	fmt.Println("Cluster deleted.")
     }
     ```
   </Tab>
