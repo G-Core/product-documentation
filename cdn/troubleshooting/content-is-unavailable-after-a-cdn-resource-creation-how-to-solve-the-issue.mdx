@@ -159,16 +159,16 @@ A third-party certificate must cover the custom domain and present a complete ch
 
     A 2xx response means the TLS handshake succeeded. Continue with the browser check.
 
-    This Windows schannel message is not proof that the certificate is self-signed:
+    A rejected server certificate typically looks like this:
 
     ```text
-    curl: (77) schannel: next InitializeSecurityContext failed: SEC_E_UNTRUSTED_ROOT (0x80090325)
+    curl: (60) SSL certificate problem: unable to get local issuer certificate
     ```
 
-    curl error 77 usually indicates a problem with the CA certificate store or file. An untrusted root can also result from a private CA or an incomplete chain.
+    curl error 60 means the peer certificate was not verified. That can result from a private CA or an incomplete chain. curl error 77 is a different failure: the local CA certificate file or store could not be read.
   </Step>
   <Step title="Inspect the certificate in the browser">
-    In the browser, open an object on the CDN hostname. Open the certificate viewer from the address bar or developer tools. Confirm it covers the custom domain, including a wildcard `*.example.com`, and is not expired.
+    In the browser, open an object on the CDN hostname. Open the certificate viewer from the address bar or developer tools. Confirm the certificate covers the custom domain and is not expired. A wildcard is optional. A certificate for `*.example.com` covers `cdn.example.com`. It does not cover the apex domain `example.com` or a nested hostname `assets.cdn.example.com`.
 
     <Frame>![Certificate details in the browser](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image14.png)</Frame>
 
@@ -218,16 +218,32 @@ A stale or wrong object can remain in cache after origin or settings changes. Co
 
 <Steps>
   <Step title="Check Purge history">
-    After a purge, allow about 15 minutes so edges can finish the request. Open [Purge history](https://portal.gcore.com/cdn/purge/purge-history) and confirm the request status is **Successful**. History keeps requests for the past month. Details are in the [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) article.
+    Open [Purge history](https://portal.gcore.com/cdn/purge/purge-history) and wait until the request status is **Successful**. Then test the object. History keeps requests for the past month. Details are in the [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) article.
   </Step>
   <Step title="Verify miss or bypass then hit">
-    Request the same object from the CDN hostname twice with GET, discarding the body:
+    Request the object from the CDN hostname with GET, discarding the body, and copy the `X-ID` header. That value identifies the edge that handled the request.
 
     ```sh
     curl -sS -D - -o /dev/null https://cdn.example.com/image.png
     ```
 
-    An initial `Cache: MISS` or `Cache: BYPASS`, followed by `Cache: HIT` on a later request for the same object on that edge, means the edge fetched a fresh copy and then served it from cache.
+    Resolve the edge IP from that `X-ID` value:
+
+    ```sh
+    nslookup m9-up-e245.fe.gc.onl
+    ```
+
+    Replace `m9-up-e245` with the `X-ID` from the response. Use `dig` in place of `nslookup` if that is the local DNS tool.
+
+    Pin the next request to the same edge so both responses come from one server:
+
+    ```sh
+    curl -sS -D - -o /dev/null \
+      --resolve cdn.example.com:443:203.0.113.10 \
+      https://cdn.example.com/image.png
+    ```
+
+    Replace `cdn.example.com` with the CDN hostname and `203.0.113.10` with the edge IP. An initial `Cache: MISS` or `Cache: BYPASS`, followed by `Cache: HIT` on the pinned request, means that edge fetched a fresh copy and then served it from cache.
   </Step>
   <Step title="Purge again with a supported pattern">
     If the object is still stale, purge again. Purge patterns are not regular expressions. Each path must start with `/` and can use `*` to replace any number of characters. Examples:
