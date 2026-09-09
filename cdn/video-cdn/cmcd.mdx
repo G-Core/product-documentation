@@ -1,35 +1,34 @@
 ---
 title: Common Media Client Data (CMCD)
 sidebarTitle: CMCD
-description: Use Common Media Client Data to improve video delivery observability and investigate playback issues through Gcore CDN.
-ai-navigation: Use Common Media Client Data (CMCD) with Gcore Video CDN to collect player-side playback and delivery metrics in query strings or request headers, improve CDN observability, and help Gcore Support investigate video playback issues.
+ai-navigation: Enable CMCD v1 in the player so Gcore Video CDN can collect playback metrics from query strings or request headers.
 ---
 
-## Overview
-
-Common Media Client Data (CMCD) is a standard way for video players to send playback context with each media request. The player attaches values such as buffer length, measured throughput, requested maximum throughput, selected bitrate, object type, session ID, and content ID to segment and manifest requests.
+Common Media Client Data (CMCD) is a standard way for video players to send playback context with each media request. The player attaches buffer length, measured throughput, requested maximum throughput, selected bitrate, object type, session ID, and content ID to segment and manifest requests, so CDN delivery logs can be read next to the viewer's playback state.
 
 <Note>
-CMCD must be enabled in the video player used by your application. Gcore can process CMCD data only when the player sends it with media requests.
+Enable CMCD in the video player used by the application. Gcore currently processes [CTA-5004 (CMCD v1)](https://shop.cta.tech/collections/standards/products/web-application-video-ecosystem-common-media-client-data-cta-5004). Gcore can process CMCD data only when the player sends it with media requests.
 </Note>
-
-CMCD helps connect CDN delivery logs with the real playback state of a viewer. This makes it much easier to investigate delivery and playback issues such as buffering, slow startup, bitrate drops, excessive rebuffering, or a specific player choosing a rendition that is too high for the current network.
-
-CMCD adds client-side playback events to the server-side delivery data already available in CDN logs. This helps CDN operators see what was happening in the player when each request was made and understand whether an issue is related to delivery, network conditions, player behavior, device limitations, or the viewer's local environment.
 
 ## CMCD support in Gcore CDN
 
-Gcore supports processing CMCD values sent in the query string. CMCD processing from request headers is available by special request.
+Gcore currently processes CMCD v1. Later CTA revisions added keys and reporting modes, and they removed the v1 `nrr` key. Configure players that support later CMCD versions to send CMCD v1 for Gcore.
 
-Gcore collects CMCD data at the CDN layer and can process it with internal tools to improve delivery and investigate playback behavior. If you want to analyze a playback issue with CMCD data, contact [Gcore Support](mailto:support@gcore.com) and share the affected stream URL, approximate playback time, viewer geography, player name and version, and any session or content ID values configured in your player.
+Gcore processes CMCD values sent in the query string. Processing CMCD from request headers is available by special request.
+
+Gcore collects CMCD data at the CDN layer and can process it with internal tools to improve delivery and investigate playback behavior. To analyze a playback issue with CMCD data, contact [Support](mailto:support@gcore.com) and share the affected stream URL, approximate playback time, viewer geography, player name and version, and the session ID from the player.
 
 <Info>
-CMCD self-service monitoring in the Customer Portal is planned for a future release. Until then, Gcore Support can help investigate CMCD data with internal tools.
+CMCD data is not currently available through self-service Customer Portal reports. Gcore Support can help investigate CMCD data with internal tools.
 </Info>
 
-## How CMCD looks
+<Warning>
+Send CMCD over HTTPS. Do not put personally identifiable information in `sid`, `cid`, or custom CMCD values. Query parameters can appear in CDN logs and diagnostic records.
+</Warning>
 
-When CMCD is sent in the query string, the player adds a `CMCD` parameter to media requests. For example:
+## Query string CMCD
+
+When CMCD is sent in the query string, the player adds one case-sensitive `CMCD` parameter to media requests. All key/value pairs are URL-encoded into that parameter.
 
 ```txt
 https://demo-public.gvideo.io/mpegts/2675_19146/ed-sl-gc4/seg6000-qsid813-media0-200315959-101681.ts?CMCD=bl%3D26000%2Cbr%3D4596%2Ccid%3D%22mpegts%2F2675_19146%2Fmaster_mpegts.m3u8%22%2Cd%3D6000%2Cmtp%3D163400%2Cot%3Dav%2Cpr%3D1.1%2Csf%3Dh%2Csid%3D%229d40d87a-7539-46e0-ac2c-d1040ff04bef%22%2Ctb%3D4596
@@ -40,6 +39,8 @@ Decoded CMCD data from this request:
 ```txt
 CMCD=bl=26000,br=4596,cid="mpegts/2675_19146/master_mpegts.m3u8",d=6000,mtp=163400,ot=av,pr=1.1,sf=h,sid="9d40d87a-7539-46e0-ac2c-d1040ff04bef",tb=4596
 ```
+
+The keys in the table are CMCD v1 keys. `nrr` is a v1 key. Later CTA revisions moved range information into `nor` and removed `nrr`.
 
 | Code | Parameter | Value |
 |------|-----------|-------|
@@ -61,48 +62,18 @@ CMCD=bl=26000,br=4596,cid="mpegts/2675_19146/master_mpegts.m3u8",d=6000,mtp=1634
 | `su` | Startup | - |
 | `tb` | Top Bitrate | 4596 kbps |
 
-## Player support
+Hyphens in the Value column mean that key was not present in this example request.
 
-Most modern video players include a CMCD implementation.
+CMCD values change between requests (buffer length, throughput, bitrate). If the CDN includes the `CMCD` query parameter in the cache key, each request can create a separate cached copy of the same segment and the cache hit ratio drops.
 
-The CMCD specification allows players to send information in two ways:
+After enabling query-string CMCD, open [Ignore query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) and confirm one of these modes:
 
-* **Query string parameters**: CMCD data is added to media request URLs as a `CMCD` query parameter.
-* **HTTP request headers**: CMCD data is sent in dedicated HTTP request headers.
+* **Ignore all** — every query parameter, including `CMCD`, is omitted from the cache key.
+* **Ignore only** — the parameter list includes `CMCD`, so CMCD is omitted from the cache key while other query parameters stay in the cache key.
 
-In the table, **Query** and **Header** show which transport methods each player supports. **Supported** means this is the player's default transport mode for CMCD.
+## HTTP request headers
 
-| Player | Query | Header | CMCD version | Description |
-|--------|-------|--------|--------------|-------------|
-| AVPlayer | No | Supported | v1 limited | iOS 18+. See [Apple documentation](https://developer.apple.com/documentation/AVFoundation/AVAssetResourceLoader/sendsCommonMediaClientDataAsHTTPHeaders). |
-| dash.js | Supported | Supported | v1 | See [dash.js CMCD documentation](https://dashif.org/dash.js/pages/usage/cmcd.html). |
-| ExoPlayer | Supported | Supported | v1 | See [ExoPlayer CMCD documentation](https://developer.android.com/media/media3/exoplayer/cmcd). |
-| hls.js | Supported | Supported | v1 | See [hls.js CMCD documentation](https://github.com/video-dev/hls.js/blob/master/docs/API.md#cmcd). |
-| JW Player | Supported | Supported | v1 | See [JW Player CMCD documentation](https://docs.jwplayer.com/players/reference/common-media-client-data). |
-| Roku | No | Supported | v1 | See [Roku CMCD data points](https://help.datazoom.io/hc/en-us/articles/360021354711-Supported-Data-Points-Roku#version_%28cmcd%29). |
-| Shaka Player | Supported | Supported | v1 | See [Google Media CDN: Enhancing streaming observability with CMCD metrics](https://medium.com/@thetechbytes/google-media-cdn-enhancing-streaming-observability-with-cmcd-metrics-ebd648c74cbe). |
-
-### Query string parameters
-
-<Info>
-This method is usually preferred because it is easier to enable, inspect in browser developer tools, and process in CDN logs.
-</Info>
-
-In query string mode, all CMCD key/value pairs are encoded into one `CMCD` query parameter:
-
-```txt
-https://cdn.example.com/video/segment.ts?CMCD=bl%3D26000%2Cbr%3D4596%2Cd%3D6000%2Cmtp%3D163400%2Cot%3Dav%2Csf%3Dh
-```
-
-Decoded, the value looks like this:
-
-```txt
-CMCD=bl=26000,br=4596,d=6000,mtp=163400,ot=av,sf=h
-```
-
-### HTTP request headers
-
-In header mode, CMCD data is sent in HTTP request headers. The specification defines four case-insensitive header fields with the `CMCD-` prefix.
+Header mode is available in several players, but Gcore processes `CMCD-` headers only after the special request described in [CMCD support](#cmcd-support-in-gcore-cdn). In header mode, CMCD data is sent in HTTP request headers. The specification defines four case-insensitive header fields with the `CMCD-` prefix.
 
 ```http
 CMCD-Request: bl=26000,mtp=163400
@@ -111,35 +82,57 @@ CMCD-Status: bs
 CMCD-Session: cid="content-id",pr=1.1,sf=h,sid="session-id"
 ```
 
-## How to enable CMCD in players
+Browsers treat those names as custom headers. The CDN CORS configuration must allow `CMCD-Request`, `CMCD-Object`, `CMCD-Status`, and `CMCD-Session`. Custom headers can trigger a CORS preflight (`OPTIONS`) for media URLs, which increases the request rate against the CDN. Query-string mode avoids that preflight.
 
-The following examples show how to enable CMCD in different video players. The examples use the following default CMCD values:
+## Supported video players for CMCD
 
-* **Session ID**: A unique identifier for the viewer's playback session.
-* **Content ID**: A unique identifier for the content being played.
+The CMCD specification allows players to send information in two ways:
+
+* Query string parameters: CMCD data is added to media request URLs as a `CMCD` query parameter.
+* HTTP request headers: CMCD data is sent in dedicated HTTP request headers.
+
+Gcore processes query-string CMCD v1. Header processing still requires the special request above. Player CMCD version is what the player can send. Gcore-compatible version is the version Gcore processes.
+
+| Player | Query | Header | Player CMCD version | Gcore-compatible version | Documentation |
+|--------|-------|--------|---------------------|--------------------------|---------------|
+| AVPlayer | No | Supported | v1 | v1 | iOS 18+. Does not send `cid`, `rtp`, or `tb`. [AVPlayer CMCD documentation](https://developer.apple.com/documentation/AVFoundation/AVAssetResourceLoader/sendsCommonMediaClientDataAsHTTPHeaders). [CMCD keys on AVPlayer](https://aws.amazon.com/blogs/media/leverage-common-media-client-data-cmcd-data-on-aws/). |
+| dash.js | Supported | Supported | v1 and v2 | v1 | [dash.js CMCD documentation](https://dashif.org/dash.js/pages/usage/cmcd.html). |
+| ExoPlayer | Supported | Supported | v1 | v1 | [ExoPlayer CMCD documentation](https://developer.android.com/media/media3/exoplayer/cmcd). |
+| hls.js | Supported | Supported | v1 | v1 | [hls.js CMCD documentation](https://github.com/video-dev/hls.js/blob/master/docs/API.md#cmcd). |
+| JW Player | Supported | Supported | v1 | v1 | [JW Player CMCD documentation](https://docs.jwplayer.com/players/reference/common-media-client-data). |
+| Roku | No | Supported | v1 | v1 | [Roku CMCD data points](https://help.datazoom.io/hc/en-us/articles/360021354711-Supported-Data-Points-Roku#version_%28cmcd%29). |
+| Shaka Player | Supported | Supported | v1 | v1 | [Shaka Player CMCD configuration](https://shaka-player-demo.appspot.com/docs/api/tutorial-config.html). |
+| Gcore Video Player | Supported | No | v1 | v1 | [Gcore Video Player CmcdConfig documentation](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.cmcdconfig.md). |
+
+## CMCD configuration in video players
+
+The examples below cover selected players from the table. JW Player and Roku are listed as supported; use each vendor's CMCD documentation for those products.
+
+Set identifiers as defined in [CTA-5004 (CMCD v1)](https://shop.cta.tech/collections/standards/products/web-application-video-ecosystem-common-media-client-data-cta-5004):
+
+* Session ID (`sid`): a UUID generated for each playback session on a single device.
+* Content ID (`cid`): a stable identifier for the same content across sessions and devices, derived from an asset ID or manifest URI. Do not generate a new random value per session.
 
 <AccordionGroup>
   <Accordion title="HLS.js">
 
-Enable CMCD in the HLS.js configuration:
+Enable CMCD in the HLS.js configuration. The HLS.js API documents the `cmcd` option.
 
 ```js
 const hls = new Hls({
   cmcd: {
-    sessionId: 'session-' + Date.now(),
-    contentId: 'content-id',
+    sessionId: crypto.randomUUID(),
+    contentId: 'asset-123',
     useHeaders: false
   }
 });
 ```
 
-[Documentation](https://github.com/video-dev/hls.js/blob/master/docs/API.md#cmcd)
-
   </Accordion>
 
   <Accordion title="Shaka Player">
 
-Enable CMCD in the Shaka Player configuration:
+Enable CMCD in the Shaka Player configuration. The Shaka [API](https://shaka-player-demo.appspot.com/docs/api/shaka.extern.html) documents the `cmcd` object.
 
 ```js
 const player = new shaka.Player(videoElement);
@@ -147,21 +140,19 @@ const player = new shaka.Player(videoElement);
 player.configure({
   cmcd: {
     enabled: true,
-    sessionId: 'session-' + Date.now(),
-    contentId: 'content-id',
+    sessionId: crypto.randomUUID(),
+    contentId: 'asset-123',
     version: 1,
     useHeaders: false
   }
 });
 ```
 
-[Documentation](https://shaka-player-demo.appspot.com/docs/api/shaka.extern.html)
-
   </Accordion>
 
   <Accordion title="dash.js">
 
-Enable CMCD in the dash.js configuration:
+Enable CMCD in the dash.js configuration. dash.js can send later CMCD versions; set `version` to `1` to send CMCD v1 for Gcore. The [dash.js CMCD documentation](https://dashif.org/dash.js/pages/usage/cmcd.html) documents the `streaming.cmcd` settings.
 
 ```js
 const player = dashjs.MediaPlayer().create();
@@ -170,8 +161,8 @@ player.updateSettings({
   streaming: {
     cmcd: {
       enabled: true,
-      sid: 'session-' + Date.now(),
-      cid: 'content-id',
+      sid: crypto.randomUUID(),
+      cid: 'asset-123',
       mode: 'query',
       version: 1
     }
@@ -180,19 +171,17 @@ player.updateSettings({
 player.initialize(videoElement, manifestUrl, true);
 ```
 
-[Documentation](https://dashif.org/dash.js/pages/usage/cmcd.html)
-
   </Accordion>
 
   <Accordion title="ExoPlayer (Android)">
 
-Enable CMCD in the ExoPlayer configuration:
+Enable CMCD in the ExoPlayer configuration. The ExoPlayer CMCD guide documents `CmcdConfiguration`. Generate a UUID for the session. Derive `contentId` from a stable asset identifier (`mediaId` or the media URI), not from a second random UUID.
 
 ```kotlin
 val cmcdConfigurationFactory = CmcdConfiguration.Factory { mediaItem ->
     val cmcdRequestConfig = object : CmcdConfiguration.RequestConfig {}
     val sessionId = UUID.randomUUID().toString()
-    val contentId = UUID.randomUUID().toString()
+    val contentId = mediaItem.mediaId
 
     CmcdConfiguration(
         sessionId,
@@ -209,18 +198,19 @@ val player = ExoPlayer.Builder(context)
     .setMediaSourceFactory(mediaSourceFactory)
     .build()
 
-val mediaItem = MediaItem.fromUri(manifestUrl)
+val mediaItem = MediaItem.Builder()
+    .setUri(manifestUrl)
+    .setMediaId("asset-123")
+    .build()
 player.setMediaItem(mediaItem)
 player.prepare()
 ```
-
-[Documentation](https://developer.android.com/media/media3/exoplayer/cmcd)
 
   </Accordion>
 
   <Accordion title="AVPlayer (iOS)">
 
-Enable CMCD headers in the AVPlayer configuration:
+Enable CMCD headers in the AVPlayer configuration. Apple documents `sendsCommonMediaClientDataAsHTTPHeaders`.
 
 ```swift
 let asset = AVURLAsset(url: videoURL)
@@ -233,15 +223,47 @@ let playerItem = AVPlayerItem(asset: asset)
 let player = AVPlayer(playerItem: playerItem)
 ```
 
-[Documentation](https://developer.apple.com/documentation/AVFoundation/AVAssetResourceLoader/sendsCommonMediaClientDataAsHTTPHeaders)
-
   </Accordion>
 
   <Accordion title="Gcore Video Player">
 
-CMCD is Supported in Gcore Video Player.
+Enable CMCD with the `CmcdConfig` plugin. Register the plugin before creating the player, then pass a per-session UUID and a stable content ID in the `cmcd` object.
 
-[Documentation](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/README.md)
+```js
+import { Player, CmcdConfig } from '@gcorevideo/player';
+
+Player.registerPlugin(CmcdConfig);
+
+const player = new Player({
+  source: manifestUrl,
+  cmcd: {
+    sessionId: crypto.randomUUID(),
+    contentId: 'asset-123'
+  }
+});
+```
 
   </Accordion>
 </AccordionGroup>
+
+## Playback verification
+
+After the player is configured, confirm that media requests carry CMCD before contacting Support.
+
+<Steps>
+<Step title="Stream playback">
+Play the stream in the player used by the application.
+</Step>
+
+<Step title="Request inspection">
+Open browser developer tools or the device network inspector. Select a manifest or segment request to the CDN.
+</Step>
+
+<Step title="CMCD confirmation">
+For query-string mode, confirm the case-sensitive `CMCD` query parameter is present. For header mode, confirm `CMCD-Request`, `CMCD-Object`, `CMCD-Status`, and `CMCD-Session` as sent by the player.
+</Step>
+
+<Step title="Session ID">
+Copy the session ID (`sid`) from the request. Keep that value when contacting [Support](mailto:support@gcore.com).
+</Step>
+</Steps>

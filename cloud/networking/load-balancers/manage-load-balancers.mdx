@@ -1,6 +1,6 @@
 ---
 title: Manage load balancers
-ai-navigation: List, inspect, rename, update tags, initiate failover, and delete Load Balancers via the Customer Portal, Gcore REST API with Python SDK, Go SDK, and curl examples, or Terraform.
+ai-navigation: List, inspect, rename, update tags, initiate failover, delete Load Balancers, and manage pool members via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -334,6 +334,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export LB_ID="{YOUR_LOAD_BALANCER_ID}"
+export POOL_ID="{YOUR_POOL_ID}"
+export MEMBER_ID="{YOUR_MEMBER_ID}"
 ```
 
 ## List load balancers
@@ -631,6 +633,113 @@ Failover terminates all existing connections. Schedule it during a maintenance w
 
     ```json
     { "tasks": ["89316ade-d4af-4b07-97b5-acf2e3df6148"] }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+## List pool members
+
+<p>Listing returns all members in a pool with their addresses, ports, weights, and health statuses. Use `limit` and `offset` query parameters to paginate large member lists.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "id": "946e83cc-...",
+          "address": "192.168.0.10",
+          "protocol_port": 80,
+          "weight": 1,
+          "backup": false,
+          "admin_state_up": true,
+          "operating_status": "NO_MONITOR",
+          "provisioning_status": "ACTIVE"
+        },
+        {
+          "id": "0e238cfb-...",
+          "address": "192.168.0.11",
+          "protocol_port": 8080,
+          "weight": 2,
+          "backup": false,
+          "admin_state_up": true,
+          "operating_status": "NO_MONITOR",
+          "provisioning_status": "ACTIVE"
+        }
+      ]
+    }
+    ```
+
+    <p>To retrieve a specific page, append `?limit=50&offset=0` to the URL.</p>
+  </Tab>
+</Tabs>
+
+## Get a pool member
+
+<p>Fetching a single member returns its full configuration, including weight, backup status, and optional health check overrides.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members/$MEMBER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": "946e83cc-...",
+      "address": "192.168.0.10",
+      "protocol_port": 80,
+      "weight": 1,
+      "backup": false,
+      "admin_state_up": true,
+      "monitor_address": null,
+      "monitor_port": null,
+      "subnet_id": null,
+      "operating_status": "NO_MONITOR",
+      "provisioning_status": "ACTIVE"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a pool member
+
+<p>A PATCH request updates a member's traffic distribution settings in place, without removing and re-adding it. Any combination of the fields below is accepted; omitted fields remain unchanged.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `weight` | No | Relative weight for traffic distribution, range 1–256 |
+| `backup` | No | `true` marks the member as a backup — traffic reaches it only when all primary members are unreachable |
+| `admin_state_up` | No | `false` drains the member without removing it from the pool |
+| `monitor_address` | No | Override IP for health checks when it differs from the backend address |
+| `monitor_port` | No | Override port for health checks when it differs from `protocol_port` |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members/$MEMBER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"weight": 3, "backup": false}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {"tasks": ["7136e5e9-..."]}
     ```
 
     Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
