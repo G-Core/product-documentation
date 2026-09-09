@@ -11,7 +11,8 @@ Update existing articles based on provided context about product or UI changes.
 2. The article file(s) identified during Phase 1
 3. `.agents/references/style-guide.md` — when rewriting prose or restructuring
 4. `.agents/references/mdx-rules.md` — when editing MethodSwitch structure or frontmatter
-5. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
+5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+6. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
 
 Do not read other articles for context unless they are directly linked from the
 article being updated.
@@ -96,12 +97,42 @@ new API parameters) → skip this phase entirely.
 
 ---
 
+## Phase 3b — Verify behavioral claims via live API test
+
+**If the change describes a behavioral restriction or capability** (e.g. "feature X is not
+supported", "operation Y is blocked", "field Z is required") — verify it with a live API
+test before writing it into the article. Do not trust Jira ticket descriptions alone.
+
+**Steps:**
+
+1. Identify the resource type involved (volume, instance, load balancer, etc.)
+2. If no such resource exists in the account — **create one**. Use the smallest/cheapest
+   configuration. Delete it after the test.
+3. Attempt the operation described in the change (resize, attach, delete, etc.)
+4. Record the actual API response — success, error code, error message.
+5. Base the documentation on the observed behavior, not on the ticket description.
+
+**If creation is not possible** (no quota, region unavailable, feature gated):
+- State the blocker explicitly and ask the user how to proceed.
+- Do not write documentation based on an untested claim.
+
+**Never write a restriction or limitation into documentation without a live test.**
+Jira tickets describe intent and bugs — not necessarily the current production behavior.
+
+---
+
 ## Phase 4 — Apply changes
 
 ### What to change
 
 Apply only what was described in the input. Do not fix unrelated issues you notice
 along the way — note them separately at the end.
+
+**If updating SDK code examples:**
+Read `.agents/references/sdk-best-practices.md` BEFORE making changes.
+- Replace manual polling with `*_and_poll()` / `*AndPoll()` methods
+- Remove `import time` when using `*_and_poll()`
+- Remove `os.environ["GCORE_API_KEY"]` - SDK reads it automatically
 
 For each change:
 

@@ -1,337 +1,259 @@
 ---
-title: "Content is unavailable after a CDN resource creation: how to solve the issue"
+title: Unavailable content after CDN resource creation
 sidebarTitle: Content unavailability
-ai-navigation: Troubleshoot CDN resource content unavailability by verifying origin HTTP 200 response codes, checking CNAME record configuration in DNS settings, and validating Host Header options in CDN resource settings.
+ai-navigation: Troubleshoot unavailable CDN content after resource creation via origin checks, custom domain DNS, Host header, origin pull protocol, SSL, cache, and purge.
 ---
 
-If content from your site doesn't load or loads in an inappropriate way after integration with CDN, use this guide to quickly fix common CDN issues.
+After a CDN resource is created, content can fail to load from the CDN hostname even when the origin still returns HTTP 200. Work through the origin check first, then the resource settings below. If a check restores delivery, stop. Otherwise continue to the next check.
 
-## Define where the issue is: the website or the CDN resource
+## Origin HTTP response
 
-Request any file that should be delivered via CDN from the source (your website) and ensure that you get an HTTP 200 response code.
+Request a file that should be delivered through CDN from the origin, using GET and discarding the body. `curl -I` sends HEAD, which an origin application can handle differently from GET. An HTTP 200 response means the origin can serve the object for that request. An HTTP 4xx or 5xx on that same request usually means the origin cannot serve the object. CDN nodes can still fail later if the Host header, SNI hostname, origin ACL, or authentication differs from this request.
 
-For example:
-
-  * example.com is your website's domain
-  * http is the protocol
-  * image.png is the path of the file you want to request to
-
-The request will look as follows:
-    
-```
-http://example.com/image.png
-```
-
-If the file opens correctly (HTTP 200 response code), the issue is not related to the website. In this case, check the CDN options according to the instructions below. If the file load fails (HTTP 4xx or 5xx response codes), the issue is related to the website origin, not to the CDN.
-
-## Check the CDN's settings
-
-### 1. Check the configuration of the personal domain
-
-If the CNAME record of the personal domain isn't configured or configured with mistakes, the content will be delivered from the source and not via CDN. To check the CNAME record and set it up correctly:
-
-1\. Go to the Resource settings and look at the Setup guide. If there is the _x steps left_ label, click on it. If there is no label, go to the [next section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#2-check-the-host-header-option).
-
-
-<Frame>![How to open setup CDN guide](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image1.png)</Frame>
-
-
-2\. Click the **Check DNS setup status** button.
-
-
-<Frame>![Check DNS setup status](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image2.png)</Frame>
-
-
-If the CNAME record doesn't set up, this notification will appear:
-
-
-<Frame>![DNS record hasn't been set up error](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image3.png)</Frame>
-
-
-If there is a notification, go to step 3. If there isn't, go to the [next troubleshooting section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#2-check-the-host-header-option).
-
-3\. Open [Gcore DNS Lookup](https://gcore.com/dev-tools/dns-lookup) enter the CNAME of your CDN resource from the notification (in the screenshot above, it is _cdn.example.com_), choose from which servers the domain should be checked and press **Search**.
-
-Choose the CNAME tab at the bottom of the page. If the value from the Setup guide appears, it means that you have already configured the CNAME record with the correct value, but the DNS records didn't update. Repeat step 2 again in 15 minutes. It must show that the record is configured.
-
-If you see the **No records were found** label, add the CNAME record according to the [CNAME record configuration in DNS settings](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) guide.
-
-4\. Save the changes and wait for the records to update. Usually, it takes 15 minutes. But if you have recently changed the domain's NS servers, it may take up to 24 hours for the DNS records to be updated.
-
-Try to request the content from the CDN once again. If it was a matter of personal domain settings, the issue won't happen again.
-
-### 2. Check the host header option
-
-If the [Host header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) does not match the website source, your website won't be able to process requests from the CDN, and the content won't load. To check the Host header and set it up correctly:
-
-1\. Go to the Resource settings and find the Host header option.
-
-
-<Frame>![Host header option in the Gcore Customer Portal](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image7.png)</Frame>
-
-2\. Copy the value of the Host header.
-
-3\. Run the following command in the terminal or console:
+Reproduce the CDN pull: use the origin protocol, send the configured **Custom Host header**, use the configured [SNI hostname](/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server) in `--resolve` and in the URL for HTTPS, and pin `--resolve` to the origin IP. Add the same authentication headers or credentials the CDN sends when the origin requires them.
 
 ```sh
-curl -H "Host: example.com" -I http(s)://10.0.0.1/image.png
+curl -sS -D - -o /dev/null \
+  --resolve sni.example.com:443:203.0.113.10 \
+  -H "Host: host.example.com" \
+  https://sni.example.com/image.png
 ```
 
-where:
+Replace `sni.example.com` with the SNI hostname: the **Change Host header** value when **Dynamic SNI hostname** is selected, or **Specify SNI hostname** when **Custom SNI hostname** is selected. Replace `host.example.com` with **Custom Host header**. Replace `203.0.113.10` with the origin IP and `image.png` with the object path. For HTTP origin, use `http://`, port `80` in `--resolve`, and skip SNI.
 
-  * example.com is the value of the Host header
-  * http(s)://10.0.0.1/image.png the http(s) depends on the protocol used by the source, then the IP address of your website source and the path of the file that is delivered via the CDN without the domain.
+## CDN resource settings
 
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource. Each check below maps to one setting that commonly blocks delivery after creation.
 
+### Custom domain and DNS
 
-4\. If you see the response code 2xx, the issue isn't related to the Host header. Go to the [next troubleshooting section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#3-check-the-origin-pull-protocol-option).
+A missing or incorrect CNAME prevents the [custom domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) from resolving to Gcore. Traffic does not automatically go to the origin; the custom hostname fails to resolve, or it resolves to the wrong target. The Setup guide reports whether DNS is in place.
 
-If the response code is 4xx or 5xx, it means that the Host header wasn't set properly. To fix it:
+<Steps>
+  <Step title="Open Setup guide">
+    In resource settings, click **Setup guide**. If Setup guide is not available, continue with [Host header](#host-header).
 
-  * If you integrated only one website with the CDN, specify its actual domain name in the Host header option and then [clear the CDN cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all).
-  * If you integrated several websites or applications (origin group with several sources) with the CDN, each of them must accept the specified Host header. Manage the sources and [clear the CDN cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all).
+    <Frame>![Setup guide in CDN resource settings](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image1.png)</Frame>
+  </Step>
+  <Step title="Check DNS setup status">
+    Click **Check DNS setup status**.
 
+    <Frame>![Check DNS setup status in the Setup guide](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image2.png)</Frame>
 
+    If DNS is missing, this notification appears:
 
-### 3. Check the origin pull protocol option
+    <Frame>![DNS record has not been set up](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image3.png)</Frame>
+  </Step>
+  <Step title="Confirm the CNAME">
+    When Setup guide reports that DNS is missing, open [DNS lookup](https://gcore.com/dev-tools/dns-lookup), enter the custom domain from the notification (`cdn.example.com` in the screenshot), select the resolvers, and click **Search**.
 
-If you have chosen the inappropriate [origin pull protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) (HTTP, HTTPS, or both), the CDN resource will request the content from your website with an error or a redirect. To check if the protocol was chosen properly and correct an error:
+    On the **CNAME** tab, compare the result with the Setup guide target. A matching CNAME means the record exists in those resolvers. If Setup guide still reports that DNS is missing, wait and repeat **Check DNS setup status**. Resolver caches often update within about 15 minutes, though a recent nameserver change can take longer.
 
-1\. Find out which protocol your website uses. You can see the type of protocol at the left of the domain name in the browser address bar. If there is a padlock icon:
+    If the lookup target does not match the Setup guide value, or the result is **No records were found**, add or correct the CNAME in [custom domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) settings.
+  </Step>
+  <Step title="Wait for DNS propagation">
+    Save DNS changes and wait for propagation. Updates often finish within 15 minutes. A recent nameserver change can take up to 24 hours.
 
+    Request the object from the custom domain. If the CNAME was the cause, delivery resumes. If it does not, continue with [Host header](#host-header). If Setup guide does not report a DNS problem and the custom domain still fails, continue with [Host header](#host-header) as well.
+  </Step>
+</Steps>
 
-<Frame>![The browser icon which shows that domain of the site is secured with the SSL](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image8.png)</Frame>
+### Host header
 
+The [Host header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header) tells CDN nodes which origin hostname to request. When it does not match the origin, the origin cannot serve the object.
 
+<Steps>
+  <Step title="Open Host header">
+    In resource settings, open **HTTP headers** and find **Host header**.
 
-it means that your website works via HTTPS protocol. If you copy the domain name, it will be copied as follows: `https://example.com`.
+    <Frame>![Host header option in resource settings](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image7.png)</Frame>
+  </Step>
+  <Step title="Copy the Host header value">
+    Copy the value configured in **Custom Host header**.
+  </Step>
+  <Step title="Request the origin with Host and SNI">
+    In a terminal, send GET and discard the body. Match the origin protocol, **Custom Host header**, [SNI hostname](/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server), and origin IP. Add authentication headers or credentials when the origin requires them.
 
-If you see the Not secure label:
+    ```sh
+    curl -sS -D - -o /dev/null \
+      --resolve sni.example.com:443:203.0.113.10 \
+      -H "Host: host.example.com" \
+      https://sni.example.com/image.png
+    ```
 
+    Replace `sni.example.com` with the configured SNI hostname, `host.example.com` with **Custom Host header**, `203.0.113.10` with the origin IP, and `image.png` with the object path. For HTTP origin, use `http://` and port `80` in `--resolve`.
+  </Step>
+  <Step title="Update Custom Host header if needed">
+    A 2xx response means the Host header is not the cause. Continue with [Origin pull protocol](#origin-pull-protocol).
 
-<Frame>![Not secure label](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image9.png)</Frame>
+    A 4xx or 5xx response means the origin rejected that Host header. For a single origin, set the origin hostname in **Custom Host header**. For several origins, each origin must accept that Host header. The header does not change automatically when the origin changes.
 
+    Click **Save changes**, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL, then request the object from the CDN hostname again. If delivery works, stop. If it does not, continue with [Origin pull protocol](#origin-pull-protocol).
+  </Step>
+</Steps>
 
+### Origin pull protocol
 
-it means that your website works via HTTP. If you copy the domain, it will be copied as follows: `http://example.com`.
+The [origin pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) protocol (HTTP, HTTPS, or both) is how CDN nodes fetch from the origin. The wrong protocol causes fetch errors or redirects.
 
-It is also possible that the content on the origin is available both via HTTP and HTTPS. To check it, open your website using the protocols `http://example.com` and `https://example.com`.
+<Steps>
+  <Step title="Confirm the origin protocol">
+    Open the origin in the browser and read the URL scheme. `https://example.com` is HTTPS. `http://example.com` is HTTP. Confirm both schemes if the origin is expected to serve both.
 
-2\. Go to the Resource settings and find the Origin pull protocol option. You will see what protocol is selected.
+    <Frame>![Browser padlock on an HTTPS origin](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image8.png)</Frame>
 
+    <Frame>![Not secure label on an HTTP origin](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image9.png)</Frame>
+  </Step>
+  <Step title="Compare Origin pull protocol">
+    In resource settings, open **General** and find **Origin pull protocol**.
 
-<Frame>![Check origin pull protocol](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image10.png)</Frame>
+    <Frame>![Origin pull protocol in the General section](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image10.png)</Frame>
+  </Step>
+  <Step title="Save and retest">
+    If the origin protocol and **Origin pull protocol** match, continue with [SSL certificate](#ssl-certificate). If they differ, set **Origin pull protocol** to the origin protocol, click **Save changes**, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL, then request the object from the CDN hostname again.
 
+    If delivery works, stop. If it does not, continue with [SSL certificate](#ssl-certificate).
+  </Step>
+</Steps>
 
+### SSL certificate
 
-3\. Compare the protocol from step 1 with the value in step 2. If they are the same (e.g., the website works via HTTP and in the Origin pull protocol option HTTP is set), the issue isn't related to the protocol. Go to the [next troubleshooting section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#4-check-the-ssl-option).
+HTTPS delivery needs a certificate on the custom domain. A missing or invalid certificate blocks HTTPS or shows a browser trust warning.
 
-If they are different, go to the next step.
+<Steps>
+  <Step title="Open SSL settings">
+    In **General**, open **SSL**.
 
-4\. Change the value in the Origin pull protocol option according to the [Origin. Specify origin and origin pull protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) guide. Select the type of protocol that your website uses. Save changes and then [clear the CDN cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all).
+    <Frame>![SSL settings in CDN resource settings](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image11.png)</Frame>
+  </Step>
+  <Step title="Confirm Enable HTTPS">
+    Confirm **Enable HTTPS** is on. Certificate types are **Free Let's Encrypt certificate** and **Custom SSL certificate**. After issuing or adding a certificate, click **Save changes** and allow 15–30 minutes for CDN edges to present it.
 
-### 4. Check the SSL option
+    <Frame>![Enable HTTPS and certificate type in SSL settings](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image12.png)</Frame>
+  </Step>
+</Steps>
 
-If you enabled the SSL option, but the SSL certificate for your personal domain (e.g.,  _cdn.example.com_) isn't added or is added with an error, the content won't be available via the CDN, or you will see a notification that the connection isn't secure in the browser.
+**Let's Encrypt certificate**
 
+Let's Encrypt cannot issue a certificate until the custom domain CNAME exists. Complete the [custom domain and DNS](#custom-domain-and-dns) check first.
 
-<Frame>![Check the SSL option](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image11.png)</Frame>
+In resource settings, open **Rules**. If there are no rules, continue with **Custom SSL certificate**.
 
+<Frame>![Rules section in CDN resource settings](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image13.png)</Frame>
 
+A rule is a problem only when its behavior interferes with `/.well-known/acme-challenge/`. Broad patterns such as `/*` are not inherently blocking. Narrow the rule or exclude that path so automatic renewal continues working. Full issuance steps are in [Let's Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate).
 
-To check the SSL configuration and set it up correctly, go to the **Resource settings** and find the SSL option. Make sure that the **Enable HTTPS** option is enabled.
+**Custom SSL certificate**
 
+A third-party certificate must cover the custom domain and present a complete chain. Browsers will not trust the certificate unless its chain leads to a public trusted CA. In [custom SSL](/cdn/ssl-certificates/configure-your-own-ssl-certificate) settings, **Signed by a trusted CA.** can be cleared when the certificate is not from a trusted CA. Clearing that checkbox allows the upload; it does not make browsers trust a private CA or an incomplete chain.
 
-<Frame>![SSL configuration](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image12.png)</Frame>
+<Steps>
+  <Step title="Test TLS on the custom domain">
+    In a terminal, send GET and discard the body:
 
+    ```sh
+    curl -sS -D - -o /dev/null https://cdn.example.com/image.png
+    ```
 
+    Replace `cdn.example.com` with the custom domain and `image.png` with the object path.
 
-There are two types of SSL configuration: **Get free Let's Encrypt certificate** and **Add or select your own SSL certificate**. In both cases, wait about 15–30 minutes after you issue/add the certificate for the updates to register.
+    A 2xx response means the TLS handshake succeeded. Continue with the browser check.
 
-The troubleshooting scenario depends on the chosen SSL certificate type.
+    A rejected server certificate typically looks like this:
 
-#### Free Let's Encrypt certificate
+    ```text
+    curl: (60) SSL certificate problem: unable to get local issuer certificate
+    ```
 
-1\. Go back to the [personal domain troubleshooting section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#1-check-the-configuration-of-the-personal-domain) and make sure that the CNAME record for the personal domain of your CDN resource exists. If not, add it. Otherwise, Let's Encrypt won't be able to issue a certificate. If so, go to the next step.
+    curl error 60 means the peer certificate was not verified. That can result from a private CA or an incomplete chain. curl error 77 is a different failure: the local CA certificate file or store could not be read.
+  </Step>
+  <Step title="Inspect the certificate in the browser">
+    In the browser, open an object on the CDN hostname. Open the certificate viewer from the address bar or developer tools. Confirm the certificate covers the custom domain and is not expired. A wildcard is optional. A certificate for `*.example.com` covers `cdn.example.com`. It does not cover the apex domain `example.com` or a nested hostname `assets.cdn.example.com`.
 
-2\. Go to the **Resource settings** and find the Rules section. If there are no rules, go to the next step.
+    <Frame>![Certificate details in the browser](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image14.png)</Frame>
 
+    Renew or reissue the certificate if the name or dates are wrong. Click **Save changes** after attaching a replacement, then [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL.
+  </Step>
+  <Step title="Inspect the chain on SSL Labs">
+    On [SSL Labs](https://ssllabs.com/ssltest), enter the custom domain in **Hostname** and click **Submit**. Use the report to inspect the certificate chain and trust path.
 
-<Frame>![Rules section](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image13.png)</Frame>
+    <Frame>![SSL Labs test form](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image15.png)</Frame>
 
+    If the report lists chain issues, the uploaded chain is incomplete. Certificate and private-key values cannot be changed after upload. Upload a new certificate that contains the complete chain (leaf, intermediate CA, root CA), attach it to the CDN resource, and click **Save changes**. Verify HTTPS on the custom domain, then [delete](/cdn/ssl-certificates/configure-your-own-ssl-certificate#delete-an-ssl-certificate) the old certificate. Full steps are in [custom SSL](/cdn/ssl-certificates/configure-your-own-ssl-certificate).
 
+    <Frame>![SSL Labs A+ rating](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image16.png)</Frame>
 
-3\. Make sure that there are no rules denying requests to the personal domain (CNAME) of your CDN resource. Let's Encrypt sends requests to your personal domain to issue a certificate. If requests are denied, the issue will fail. To determine whether the rule prevents requests, open every rule and look at the **Rule pattern** field. If you see the value
+    <Frame>![SSL Labs B rating with chain issues](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image17.png)</Frame>
+  </Step>
+</Steps>
 
+If HTTPS delivery works after these SSL checks, stop. If the object still fails to load, continue with [Cache behavior](#cache-behavior) and [Cache purge](#cache-purge).
 
-```
-/*
-```
+### Cache behavior
 
-or
+Wrong cache settings rarely make content unavailable. They more often serve a stale object or keep the origin busy. If the CDN hostname returns an error or an empty response, continue with [Cache purge](#cache-purge). If the object loads but looks outdated or the cache hit ratio is unexpectedly low, use the [low cache hit ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) checks.
 
-```
-((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*$
-```
+<Steps>
+  <Step title="Inspect cache response headers">
+    Request a CDN object with GET and discard the body, then inspect `Cache` and `Cache-Control`.
 
-this rule denies requests to the personal domain. To fix the certificate issuing, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the issue will be successful.
+    ```sh
+    curl -sS -D - -o /dev/null https://cdn.example.com/image.png
+    ```
 
-#### Personal SSL certificate
+    <Frame>![CDN caching option](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image20.png)</Frame>
+  </Step>
+  <Step title="Review query string and Set-Cookie">
+    **Ignore query string** and **Ignore Set-Cookie** change how variants share a cache key. Enable them only when those values do not select different content or personalize the response. Otherwise, clients can receive the wrong cached object. Configuration is in the [query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) article.
 
-1\. Run the following command in the terminal or console:
+    <Frame>![Query string and Set-Cookie cache options](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image21.png)</Frame>
 
-```sh
-curl -I https://cdn.example.com/image.png
-```
+    After changing cache settings, click **Save changes**, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the affected URL, then retest.
+  </Step>
+</Steps>
 
-where:
+### Cache purge
 
-  * cdn.example.com is the personal domain (CNAME)
-  * image.png is the path of the file that is delivered via the CDN without the domain
+A stale or wrong object can remain in cache after origin or settings changes. Confirm the purge in history, then confirm cache status on the object. `Content-Length` and `ETag` can differ because of compression or transformation, so matching those values does not prove that a purge succeeded.
 
+<Steps>
+  <Step title="Check Purge history">
+    Open [Purge history](https://portal.gcore.com/cdn/purge/purge-history) and wait until the request status is **Successful**. Then test the object. History keeps requests for the past month. Details are in the [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) article.
+  </Step>
+  <Step title="Verify miss or bypass then hit">
+    Request the object from the CDN hostname with GET, discarding the body, and copy the `X-ID` header. That value identifies the edge that handled the request.
 
+    ```sh
+    curl -sS -D - -o /dev/null https://cdn.example.com/image.png
+    ```
 
-If you see the 2xx response code, go to the next step.
+    Resolve the edge IP from that `X-ID` value:
 
-If you see the following error in the command output
-    
-```sh
-curl: (77) schannel: next InitializeSecurityContext failed: SEC\_E\_UNTRUSTED\_ROOT (0x80090325)
-```
+    ```sh
+    nslookup m9-up-e245.fe.gc.onl
+    ```
 
-it means that the certificate is self-signed. Self-signed certificates are not suitable for content delivery. In this case, issue a new certificate with the Certificate authority (CA) and add it according to the [How to add a personal SSL certificate in the SSL certificates section](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https#add-an-ssl-certificate-to-deliver-content-over-https) guide. Then clear the CDN cache and try to request the content again.
+    Replace `m9-up-e245` with the `X-ID` from the response. Use `dig` in place of `nslookup` if that is the local DNS tool.
 
-2\. Open your website and request any file that is delivered via the CDN. Click the **padlock icon** or the **Not secure** label and choose the certificate. View the following values:
+    Pin the next request to the same edge so both responses come from one server:
 
-  * What domain the certificate is valid for
-  * Expiration date
+    ```sh
+    curl -sS -D - -o /dev/null \
+      --resolve cdn.example.com:443:203.0.113.10 \
+      https://cdn.example.com/image.png
+    ```
 
+    Replace `cdn.example.com` with the CDN hostname and `203.0.113.10` with the edge IP. An initial `Cache: MISS` or `Cache: BYPASS`, followed by `Cache: HIT` on the pinned request, means that edge fetched a fresh copy and then served it from cache.
+  </Step>
+  <Step title="Purge again with a supported pattern">
+    If the object is still stale, purge again. Purge patterns are not regular expressions. Each path must start with `/` and can use `*` to replace any number of characters. Examples:
 
-<Frame>![Certificate information in the browser](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image14.png)</Frame>
+    | Purge target | Pattern |
+    |---|---|
+    | One file, including query-string variants | `/static/image.jpg` |
+    | All files in a folder | `/static/*` |
+    | All `.jpg` files in a folder | `/static/*.jpg` |
 
-
-
-If you see that the certificate is issued for the personal domain of your resource (if you see _*.example.com_, it means that you are using a wildcard certificate that provides all your subdomains, including _cdn.example.com_), and the certificate is not expired. Go to the next step.
-
-If not, you need to renew the certificate (if the problem is caused by expiration) or issue a new one for the personal domain of your CDN resource.
-
-3\. Go to the [SSLlabs](https://ssllabs.com/ssltest) website, enter the personal domain name in the Hostname field and press the **Submit** button as follows:
-
-
-<Frame>![SSL server test via SSL labs](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image15.png)</Frame>
-
-
-
-The check will take a few minutes. If you see no chain issues or the rating A+, the error isn't related to SSL. Go to the [next section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#5-check-the-cache-options).
-
-
-<Frame>![Rating A+ for SSL labs testing](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image16.png)</Frame>
-
-
-
-If you see class B or chain issues as follows
-
-
-<Frame>![SSL report for the domain with B grade](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image17.png)</Frame>
-
-
-
-the chain of the SSL certificate is incomplete or added in the wrong way. Go to the [SSL certificates](https://portal.gcore.com/cdn/ssl/list) section in the Gcore Customer Portal. Delete the wrong certificate and add it again according to the [How to add a personal SSL certificate in the SSL certificates section](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https#add-an-ssl-certificate-to-deliver-content-over-https) guide. 
-
-### 5. Check the cache options
-
-If the [cache options](/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers) were configured with mistakes, you will see a low percentage of cache traffic or content will be loaded slowly.
-
-To check cache options and set them up correctly:
-
-1\. Go to the [Dashboard](https://portal.gcore.com/cdn/resources/list) section and click **Total traffic**.
-
-
-<Frame>![Total traffic in the Gcore Dashboard](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image18.png)</Frame>
-
-
-
-2\. Set the **Cache hit ratio** filter, the CDN resource, and the appropriate date. If you see less than 60% of Cache Hit Ratio traffic, it means that a small amount of content is delivered from the cache.
-
-
-<Frame>![Cache hit ratio report in the Statistics section](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image19.png)</Frame>
-
-
-
-In this case, ensure that you ran the CDN resource more than two days ago. This time is needed to 'warm up' the cache. If not, wait two days. Also, you need to have many requests from end-users to cache the requested content. If you have a small number of requests, the cache will be purged in 36 hours, regardless of the settings. Try to increase the amount of traffic. If the problem isn't solved, go to the next step.
-
-If the percentage of cache traffic is higher than 60% and you don't experience a slow load time, go to the [next section](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#6-check-the-purge-option).
-
-3\. Request any file that is delivered via CDN in the browser or console (terminal) and check the values of the _Cache_ and _Cache Control_ headers. If you see at least one of the following values, it means that there is a problem in the cache settings:
-
-  * Cache-Control: max-age=0
-  * Cache-Control: private
-  * Cache-Control: no-cache
-  * Cache: MISS
-
-
-
-If you see the values, go to the next step. If not, go to step 5.
-
-4\. Go to the Resource settings and find the CDN caching option. Change the settings according to the [Configure and check CDN caching settings](/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers) guide.
-
-
-<Frame>![CDN caching option](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image20.png)</Frame>
-
-
-
-5\. Check the Set-Cookie and Query string options. If they are turned off, enable them. When you enable these options, CDN will cache a file with different cookies or query strings as a unique one.
-
-
-<Frame>![Set-Cookie and Query string options](/images/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image21.png)</Frame>
-
-
-
-### 6. Check the purge option
-
-There are two signs showing that there is an issue after cache clearing by the [Purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) option:
-
-  * The CDN returns a wrong or outdated file to users' requests.
-  * The file from the CDN cache and from the origin are mismatched.
-
-
-
-To check the Purge option and fix an error:
-
-1\. Wait 15 minutes after purging until the cache is cleared on all servers.
-
-2\. Run the following two commands in the terminal or console to request the same file from both the source and the CDN:
-    
-    
-```sh
-curl -I cdn.example.com/image.png
-curl -H "Host: example.com" -I http(s)://10.0.0.1/image.png
-```
-
-where:
-
-  * _cdn.example.com_ is the personal domain of your CDN resource
-  * _image.png_ is the path of the file that is delivered via the CDN
-  * _http(s)_ depends on the protocol used by the source
-  * _example.com_ is the value of the Host header
-  * _10.0.0.1_ is the IP address of your website source
-
-
-
-3\. Compare outputs, paying attention to the values of the following headers:
-
-  * Content-Length, which is the object size in bytes
-  * ETag, which is the character set that the CDN compares to know if the file was changed
-  * X-Cached-Since, which is the time in UTC format
-
-
-If you see that the **Etag** and **Content-Length** values of the two files don't match or that the date in the **X-Cached-Since** header is outdated, it means that there is a mistake. In this case, you should go to the next step.
-
-If the values are the same and the date is relevant, purging has been performed correctly.
-
-4\. Try to repeat purging according to the [Clear CDN resource cache by URL, pattern or all](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) guide. Pay attention to the path pattern if you select Selective purge. We recommend checking whether the pattern was right by using the [regular expressions](https://regex101.com) service. To do this, enter the path pattern for purging on the top line, and in the bottom area, enter the URL of the file. If you see the result "no matches", there was an error in the path pattern. Correct the path pattern and repeat purging.
-
-
-If the problem persists after performing troubleshooting according to this guide, contact support via chat or email at [Gcore Support](mailto:support@gcore.com). You may have an atypical problem that requires assistance from technical specialists. We'll be happy to help!
-
-
+    If delivery still fails after these checks, contact [Gcore Support](mailto:support@gcore.com).
+  </Step>
+</Steps>

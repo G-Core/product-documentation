@@ -259,7 +259,7 @@ Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. 
 <p>List all clusters in a project and region. Query string filters — by name, flavor, node count, tags, and timestamps — are documented in the [API&nbsp;reference](/api-reference/cloud/gpu-baremetal).</p>
 
 <Info>
-The Python and Go SDKs support `limit` and `offset` for pagination only. Name, flavor, node count, tag, image, and date filters are available via curl only.
+The list call returns a page of clusters. Pass `limit` and `offset` to control page size and position.
 </Info>
 
 <Tabs>
@@ -490,11 +490,50 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
 | `soft_reboot` | Send ACPI shutdown signal and reboot |
 | `hard_reboot` | Force-reset all nodes immediately |
 
-<Info>
-The Python and Go SDKs (v0.48.0) do not expose the cluster action endpoint directly. Use the curl tab below.
-</Info>
-
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Replace "soft_reboot" with "start", "stop", or "hard_reboot"
+    task_id_list = client.cloud.gpu_baremetal.clusters.action(
+        cluster_id="{CLUSTER_ID}",
+        action="soft_reboot",
+    )
+    print(task_id_list.tasks)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Swap OfSoftReboot for OfStart, OfStop, or OfHardReboot as needed
+        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Action(ctx,
+            "{CLUSTER_ID}",
+            cloud.GPUBaremetalClusterActionParams{
+                OfSoftReboot: &cloud.GPUBaremetalClusterActionParamsBodySoftReboot{},
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     # Replace "soft_reboot" with "start", "stop", or "hard_reboot"
@@ -693,20 +732,87 @@ The Python and Go SDKs (v0.48.0) do not expose the cluster action endpoint direc
 
 ## Apply settings to a node
 
-<p>Syncs a specific node that has outdated cluster configuration. The node must have `has_pending_changes=true`. To apply settings to all nodes at once, use `POST /cloud/v3/gpu/baremetal/{project_id}/{region_id}/clusters/{cluster_id}/apply_settings` without specifying a server ID.</p>
+<p>Pushes updated cluster server settings (image, SSH key, and user data) onto one node or every node. The call re-images the target servers. Set `max_disruption` to `rebuild`. The cluster settings must already be patched before this call.</p>
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # One node
+    task_id_list = client.cloud.gpu_baremetal.clusters.servers.apply_settings(
+        server_id="{SERVER_ID}",
+        cluster_id="{CLUSTER_ID}",
+        max_disruption="rebuild",
+    )
+    print(task_id_list.tasks)
+
+    # Every node in the cluster
+    task_id_list = client.cloud.gpu_baremetal.clusters.apply_settings(
+        cluster_id="{CLUSTER_ID}",
+        max_disruption="rebuild",
+    )
+    print(task_id_list.tasks)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // One node
+        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Servers.ApplySettings(ctx,
+            "{SERVER_ID}",
+            cloud.GPUBaremetalClusterServerApplySettingsParams{
+                ClusterID:     "{CLUSTER_ID}",
+                MaxDisruption: cloud.GPUBaremetalClusterServerApplySettingsParamsMaxDisruptionRebuild,
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+
+        // Every node in the cluster
+        taskIDList, err = client.Cloud.GPUBaremetal.Clusters.ApplySettings(ctx,
+            "{CLUSTER_ID}",
+            cloud.GPUBaremetalClusterApplySettingsParams{
+                MaxDisruption: cloud.GPUBaremetalClusterApplySettingsParamsMaxDisruptionRebuild,
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
-    # Apply to a specific node
+    # One node
     curl -X POST \
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}/apply_settings" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"max_disruption": "rebuild"}'
 
-    # Apply to all nodes in the cluster
+    # Every node in the cluster
     curl -X POST \
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/apply_settings" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"max_disruption": "rebuild"}'
     ```
 
     Response:
