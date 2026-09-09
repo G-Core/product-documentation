@@ -1,9 +1,13 @@
 ---
 title: HEVC, AV1, and VP9 multi-codec VOD
 sidebarTitle: HEVC, AV1, VP9
-description: Reduce VOD delivery costs by transcoding large video libraries into efficient codecs such as HEVC, AV1, and VP9
-ai-navigation: Create HEVC, AV1, and VP9 video renditions from H.264 source videos using premium transcoding to reduce CDN bandwidth costs, with adaptive bitrate selection across multiple resolutions and codec priorities via HLS manifests.
+ai-navigation: Check multi-codec quality presets and access codec-filtered HLS and MPEG-DASH manifests via the Streaming API for HEVC, AV1, and VP9 VOD delivery.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## Multi-codec for lower CDN costs
 
@@ -329,3 +333,148 @@ After activation, Gcore will configure the required transcoding presets for your
     Learn how modern codecs are delivered to players
   </Card>
 </CardGroup>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>After multi-codec quality presets are configured for the account, the Streaming API exposes the preset IDs and codec-specific manifest URL modifiers. Use <code>quality_set_id</code> when uploading videos to request multi-codec transcoding, then serve codec-filtered manifests to players based on device capability.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## List multi-codec quality presets
+
+<p>Returns all custom quality presets configured for the account, including multi-codec VOD presets. Use the <code>id</code> field when uploading a video to request multi-codec transcoding.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    quality_sets = client.streaming.quality_sets.list()
+
+    for preset in quality_sets.vod:
+        print(f"ID: {preset.id}  Name: {preset.name}  Default: {preset.default}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        qualitySets, err := client.Streaming.QualitySets.List(ctx)
+        if err != nil {
+            panic(err)
+        }
+
+        for _, preset := range qualitySets.Vod {
+            fmt.Printf("ID: %d  Name: %s  Default: %v\n", preset.ID, preset.Name, preset.Default)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/quality_sets" \
+         -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "vod": [
+        {
+          "id": 42,
+          "name": "Multi-codec AV1+HEVC+H.264",
+          "default": true,
+          "qualities": [
+            {"id": 11, "name": "vod2160n"},
+            {"id": 12, "name": "vod1080n"},
+            {"id": 13, "name": "vod720n"}
+          ]
+        }
+      ],
+      "live": []
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+To upload a video with a multi-codec preset, pass the `quality_set_id` value to `POST /streaming/videos`. See [Upload a video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app) for the full request format.
+</Note>
+
+## Access codec-specific HLS manifests
+
+<p>Every video object returned by <code>GET /streaming/videos/{id}</code> includes an <code>hls_url</code> field. Append a codec suffix to serve a manifest containing only one codec family — useful when targeting specific device types or running A/B tests.</p>
+
+| Suffix | Returns |
+|--------|---------|
+| `master.m3u8` | All transcoded codecs (default) |
+| `master-av1.m3u8` | AV1 renditions only |
+| `master-hevc.m3u8` | HEVC renditions only |
+| `master-h264.m3u8` | H.264 renditions only |
+| `master-cmaf.m3u8` | CMAF HLS with fMP4 chunks |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    # Replace VOD_CDN_HOST, CLIENT_ID, and SLUG with values from video.hls_url
+
+    # Full manifest — all codecs
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master.m3u8"
+
+    # AV1-only manifest
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master-av1.m3u8"
+
+    # HEVC-only manifest
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master-hevc.m3u8"
+
+    # H.264-only manifest (legacy device fallback)
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master-h264.m3u8"
+    ```
+  </Tab>
+</Tabs>
+
+## Access codec-specific MPEG-DASH manifests
+
+<p>The <code>dash_url</code> field from the video object also supports codec suffixes. AV1 renditions are delivered in WebM containers, while HEVC and H.264 use fragmented MP4.</p>
+
+| Suffix | Returns |
+|--------|---------|
+| `master.mpd` | All codecs (default) |
+| `master-av1.mpd` | AV1 in WebM |
+| `master-hevc.mpd` | HEVC in fMP4 |
+| `master-h264.mpd` | H.264 in fMP4 |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    # AV1-only MPEG-DASH manifest
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master-av1.mpd"
+
+    # HEVC-only MPEG-DASH manifest
+    curl "https://VOD_CDN_HOST/videos/CLIENT_ID_SLUG/master-hevc.mpd"
+    ```
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>

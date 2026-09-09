@@ -1,8 +1,10 @@
 ---
 title: HLS, MPEG-DASH, and MP4
 sidebarTitle: HLS, MPEG-DASH, MP4
-ai-navigation: Configure HLS MPEG-TS, HLS CMAF, MPEG-DASH, and MP4 video formats in Gcore Video Streaming for VOD delivery with adaptive bitrate, codec support (H264, H265, AV1), manifest generation (.m3u8, master-cmaf.m3u8), and DRM encryption.
+ai-navigation: Retrieve HLS, MPEG-DASH, and MP4 playback URLs for a video via Customer Portal or REST API using Python SDK, Go SDK, and curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 Gcore Video Streaming allows you to deliver video-on-demand (VOD) content optimized for different devices and platforms. We offer multiple video formats as part of the service, so you're not limited by the technical constraints of a single playback option and can choose a format that best fits your use case and functional requirements. 
 
@@ -282,75 +284,118 @@ You can protect MP4 files with the [Video protection via the Security Tokens fea
 
 ## Get HLS, DASH, and MP4 links
 
-You can get links to videos in two ways: in the Gcore Customer Portal or via the [API](/api-reference/streaming/videos/get-video).
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-### Customer portal
+1\. In the [Gcore Customer Portal](https://portal.gcore.com/streaming/video/list), navigate to **Streaming** > **Video Hosting**.
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/streaming/video/list), navigate to **Streaming** > **Video Hosting**. 
-
-2\. Open the video for which you want to export the link. 
-
+2\. Open the video for which you want to export the link.
 
 <Frame>![Gcore Customer Portal](/images/docs/streaming-platform/video-hosting/hls-and-mp4/export-video-links.png)</Frame>
 
+3\. In the **Links for the export** section, copy the relevant link:
 
+  * **Video page URL**: A Web player URL to access and play the video directly from a website.
+  * **HLS**: A URL to a master playlist HLS (master.m3u8) with MPEGTS container.
+  * **iFrame embed code**: A URL to the HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
 
-3\. In the **Links for the export** section, copy the relevant link: 
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-  * **Video page URL** : A Web player URL to access and play the video directly from a website. 
-  * **HLS** : A URL to a master playlist HLS (master.m3u8) with MPEGTS container. 
-  * **iFrame embed code** : A URL to our HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
+<p>Retrieve all playback URLs for a video with a single API call. The response includes <code>hls_url</code>, <code>hls_cmaf_url</code>, <code>dash_url</code>, and per-quality <code>mp4_url</code> values in the <code>converted_videos</code> array.</p>
 
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
 
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
 
-### API
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
 
-To get information about the video, [API Documentation](/api-reference/streaming/videos/get-video)
+    client = Gcore()
 
-Example request:
+    video = client.streaming.videos.get(2474723)
 
-```sh
-GET https://api.gcore.com/streaming/videos/2474723 
- ```
+    print(video.hls_url)       # HLS MPEG-TS master playlist
+    print(video.hls_cmaf_url)  # HLS CMAF master playlist
+    print(video.dash_url)      # MPEG-DASH manifest
 
-Example response:
+    for quality in video.converted_videos:
+        print(quality.name, quality.mp4_url)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
 
-```json
-{
-    "id": 2474723,
-    "name": "Coffee Run - Blender Open Movie",
-    ...
-    "hls_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8",
-    "hls_cmaf_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8", 
-    "dash_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd", 
-    "iframe_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr",
-    "iframe_embed_code": "<iframe width="560" height="315" src=\"https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr\" frameborder=\"0\" allowfullscreen></iframe>",
-    "converted_videos": [
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        video, err := client.Streaming.Videos.Get(ctx, 2474723)
+        if err != nil {
+            panic(err)
+        }
+
+        fmt.Println(video.HlsURL)      // HLS MPEG-TS master playlist
+        fmt.Println(video.HlsCmafURL)  // HLS CMAF master playlist
+        fmt.Println(video.DashURL)     // MPEG-DASH manifest
+
+        for _, quality := range video.ConvertedVideos {
+            fmt.Println(quality.Name, quality.MP4URL)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos/2474723" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 2474723,
+      "name": "Coffee Run - Blender Open Movie",
+      "hls_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8",
+      "hls_cmaf_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8",
+      "dash_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd",
+      "iframe_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr",
+      "converted_videos": [
         {
-            "name": "vod720n",
-            "width": 1720,
-            "height": 720,
-            "mp4_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4"
+          "name": "vod720n",
+          "width": 1720,
+          "height": 720,
+          "mp4_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4"
         },
         {
-            "name": "vod480n",
-            "width": 1146,
-            "height": 480,
-            "mp4_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3573v3_h264_800_468.mp4"
-        },
-       ...
-    ]
-} 
- ```
+          "name": "vod480n",
+          "width": 1146,
+          "height": 480,
+          "mp4_url": "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3573v3_h264_800_468.mp4"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
 
-Where:
-
-  * `iframe_url` contains a web player link
-  * `iframe_embed_code` contains web player embed code
-  * `hls_url` contains the HLS link
-  * `hls_cmaf_url` contains the HLS link with CMAF chunks 
-  * `dash_url` contains the MPEG-DASH link 
-  * `mp4_url` contains the MP4 link
+</MethodSection>
+</MethodSwitch>
 
 
 

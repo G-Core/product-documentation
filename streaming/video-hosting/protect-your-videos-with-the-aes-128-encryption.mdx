@@ -1,8 +1,13 @@
 ---
 title: Protect your videos with the AES-128 encryption
 sidebarTitle: AES-128
-ai-navigation: Enable AES-128 encryption for HLS video delivery by configuring a keyserver to retrieve decryption keys via Gcore API, with EXT-X-KEY tags added to m3u8 playlists and optional country or domain access policies for additional security.
+ai-navigation: Enable and manage AES-128 encryption per video via the Streaming API and integrate a keyserver to retrieve decryption keys using the Gcore CDN encryption endpoint.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## What is AES-128?
 
@@ -65,3 +70,139 @@ To pass the key in this format, you can use the following HTTP headers:
 
   * Content-transfer-encoding: binary
   * Content-type: application/octet-stream
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>When AES-128 encryption is enabled for the account by Gcore support, the Streaming API exposes a per-video <code>encryption</code> field. Set it to <code>aes128</code> to encrypt a specific video regardless of the account-level default, or set it to <code>inherit</code> to follow the account setting. Configure the keyserver to call the CDN encryption endpoint to retrieve decryption keys.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Check video encryption status
+
+<p>The <code>encryption</code> field in the video object shows the current encryption setting for that video.</p>
+
+| Value | Behavior |
+|-------|----------|
+| `inherit` | Uses the account-level encryption setting configured by Gcore support |
+| `aes128` | Delivers this video with AES-128 encryption regardless of the account setting |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    video = client.streaming.videos.get(VIDEO_ID)
+    print(f"Encryption: {video.encryption}")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos/{video_id}" \
+         -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 14749718,
+      "name": "my-video",
+      "encryption": "inherit",
+      "hls_url": "https://...",
+      "status": "ready"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Enable AES-128 on a video
+
+<p>Set <code>encryption</code> to <code>aes128</code> to force encrypted delivery for a specific video.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    video = client.streaming.videos.get(VIDEO_ID)
+    updated = client.streaming.videos.update(
+        VIDEO_ID,
+        name=video.name,
+        extra_body={"encryption": "aes128"},
+    )
+    print(f"Encryption: {updated.encryption}")  # aes128
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/videos/{video_id}" \
+         -H "Authorization: APIKey $GCORE_API_KEY" \
+         -H "Content-Type: application/json" \
+         -d '{"encryption": "aes128"}'
+    ```
+
+    <p>The API returns the updated video object with <code>"encryption": "aes128"</code>.</p>
+  </Tab>
+</Tabs>
+
+## Disable AES-128 on a video
+
+<p>Set <code>encryption</code> to <code>inherit</code> to revert to the account-level default.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    video = client.streaming.videos.get(VIDEO_ID)
+    updated = client.streaming.videos.update(
+        VIDEO_ID,
+        name=video.name,
+        extra_body={"encryption": "inherit"},
+    )
+    print(f"Encryption: {updated.encryption}")  # inherit
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/videos/{video_id}" \
+         -H "Authorization: APIKey $GCORE_API_KEY" \
+         -H "Content-Type: application/json" \
+         -d '{"encryption": "inherit"}'
+    ```
+
+    <p>The API returns the updated video object with <code>"encryption": "inherit"</code>.</p>
+  </Tab>
+</Tabs>
+
+## Retrieve the decryption key (keyserver integration)
+
+<p>When AES-128 is enabled, Gcore adds an <code>EXT-X-KEY</code> tag to the HLS playlist pointing to the keyserver URL. The keyserver receives the viewer's request, verifies access, then calls the Gcore CDN encryption endpoint to retrieve the decryption key and forward it to the viewer.</p>
+
+<p>The endpoint the keyserver calls to retrieve the key:</p>
+
+```bash
+GET https://{CDN_HOST}/videos/{clientId_slug}/encryption
+```
+
+<p>Where <code>clientId_slug</code> is the combined string of the Gcore account ID and the video slug — for example, <code>1000503_cC4PEC0AWy1qu03R</code>. The account ID and slug are available in the video object returned by <code>GET /streaming/videos/{video_id}</code>.</p>
+
+<p>Gcore returns the decryption key as a 16-byte binary value. Pass it to the viewer using these HTTP headers:</p>
+
+```
+Content-Transfer-Encoding: binary
+Content-Type: application/octet-stream
+```
+
+  </MethodSection>
+</MethodSwitch>
