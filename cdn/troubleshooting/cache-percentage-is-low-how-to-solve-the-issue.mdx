@@ -25,7 +25,7 @@ Statistics marks cache hit rates below 60% in red on Overview as a visual highli
 1. Inspect caching headers with `curl -I`. Pin the request to one edge server, because consecutive requests in the same region can land on different servers and mix HIT and MISS.
 
 ```sh
-curl -I cdn.example.com/assets/sample-image.png
+curl -I https://cdn.example.com/assets/sample-image.png
 ```
 
 <Accordion title="Request from one edge server">
@@ -37,10 +37,11 @@ Resolve the server IP:
 nslookup {x-id}.fe.gc.onl
 ```
 
-Use `dig` in place of `nslookup` if that is the local DNS tool. Then request the object from that IP:
+Use `dig` in place of `nslookup` if that is the local DNS tool. Then pin the request to that IP while keeping the hostname, SNI, and certificate validation:
 
 ```sh
-curl -Ik -H "Host: cdn.example.com" "https://{ip-address}/assets/sample-image.png"
+curl -I --resolve cdn.example.com:443:{ip-address} \
+  https://cdn.example.com/assets/sample-image.png
 ```
 
 Compare `Cache-Control` and `Cache` with the table below.
@@ -54,7 +55,7 @@ Focus on `Cache-Control` and `Cache` values that stop shared caching or force or
 | Cache-Control: no-cache | Stored copies must be revalidated with the origin before reuse. On a shared CDN cache this often produces a MISS or revalidation on each request, which lowers the hit ratio. In some workloads this value is intentional |
 | Cache-Control: no-store | The origin forbids storing the object, so the CDN cannot keep a reusable copy |
 | Cache-Control: private | Shared caches must not store the object, so CDN edges fetch from the origin |
-| Cache: MISS | The response came from the origin. Gcore CDN caches the object on the first request, so the first request is MISS and later requests for the same object on that edge are HIT |
+| Cache: MISS | The response came from the origin. If the response is cacheable, the first request is a MISS, and later requests for the same object on that edge should be HITs |
 
 Those headers show whether the origin or the CDN is preventing a HIT. Arbitrary custom request headers do not create unique cache objects by themselves. They affect caching only when they are part of the [cache key](/cdn/cdn-resource-options/cache/modify-cache-key), listed in `Vary`, or used by a bypass rule.
 
@@ -76,6 +77,6 @@ After the header and option checks above, these traffic patterns can still keep 
 |---|---|
 | Traffic started recently, so the cache is still filling | Wait for enough requests to populate edges. Warm-up duration depends on request volume, how often each object is requested, and cache lifetime. There is no fixed two-day warm-up |
 | Statistics for a finished period still look incomplete | Complete Statistics data is available at least two days after the selected period ends. Live charts update during the period and can differ from later totals |
-| Content is requested too rarely, so per-edge cache stays cold | Increase request volume, or use paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to concentrate origin pulls. Low-traffic video is covered in [video delivery](/cdn/video-cdn/improve-video-delivery-speed) |
+| Content is requested too rarely, so per-edge cache stays cold | A low ratio is expected for unpopular objects, because they expire from cache before the next request. Use paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) only when concentrating repeated origin pulls is operationally worthwhile. Low-traffic video is covered in [video delivery](/cdn/video-cdn/improve-video-delivery-speed) |
 | Cache key modification adds extra request attributes | [Cache key modification](/cdn/cdn-resource-options/cache/modify-cache-key) supports `$request_uri`, `$scheme`, `$uri`, and `$http_x_cdn_real_host`. `$request_uri` keeps the query string in the key, and `$http_x_cdn_real_host` splits cache among aliases. Keep only the variables that must distinguish objects |
 | Origin sends `Vary` for headers that do not change the response | A meaningful `Vary` value keeps different representations in separate cache objects, which is correct when content actually varies. Remove or narrow `Vary` on the origin only when the response does not vary by those request headers. [Response headers (hide)](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers) removes headers from responses to users and does not change how CDN cache processes `Vary` |
