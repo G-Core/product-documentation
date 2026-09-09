@@ -1,7 +1,7 @@
 ---
-title: Diagnose a low cache hit ratio
+title: Low cache hit ratio troubleshooting
 sidebarTitle: Low cache hit ratio
-ai-navigation: Diagnose a low CDN cache hit ratio in Statistics, then check Cache-Control headers, CDN caching, query string, and Set-Cookie options.
+ai-navigation: Troubleshoot a low CDN cache hit ratio by checking Cache-Control, cache key, query string, Set-Cookie, Vary, cache warm-up, and Statistics completeness.
 ---
 
 Cache hit ratio is the share of traffic served from CDN edge cache without an origin fetch. In the [Gcore Customer Portal](https://portal.gcore.com), open **CDN** > **Reports** > [Statistics](/cdn/view-statistics-of-a-cdn-resource), select the resource, then select **Cache hit ratio**.
@@ -17,6 +17,8 @@ A low ratio means many requests are proxied to the origin instead of being serve
 ## Checks for a low ratio
 
 Work through the checks in order. Compare **Cache hit ratio** with **Traffic** and **Requests** in Statistics so a quiet period is not mistaken for a cache problem.
+
+Complete Statistics data for a finished period is available at least two days after that period ends. Charts that are still in progress can show incomplete values. That reporting delay is separate from cache warm-up, which has no fixed duration.
 
 Statistics marks cache hit rates below 60% in red on Overview as a visual highlight, not as a diagnostic cutoff. For this troubleshooting flow, start investigating when the ratio stays below about 80% after the cache has had time to fill, because that is where origin-bypass causes usually show up. The right target still depends on the workload.
 
@@ -52,14 +54,17 @@ Focus on `Cache-Control` and `Cache` values that stop shared caching or force or
 | Cache-Control: no-cache | Stored copies must be revalidated with the origin before reuse. On a shared CDN cache this often produces a MISS or revalidation on each request, which lowers the hit ratio. In some workloads this value is intentional |
 | Cache-Control: no-store | The origin forbids storing the object, so the CDN cannot keep a reusable copy |
 | Cache-Control: private | Shared caches must not store the object, so CDN edges fetch from the origin |
-| Custom `X-*` request headers | A request that also sends custom `X-*` headers is treated as unique and is forwarded to the origin, similar to a cookie |
 | Cache: MISS | The response came from the origin. Gcore CDN caches the object on the first request, so the first request is MISS and later requests for the same object on that edge are HIT |
 
-Those headers show whether the origin or the CDN is preventing a HIT.
+Those headers show whether the origin or the CDN is preventing a HIT. Arbitrary custom request headers do not create unique cache objects by themselves. They affect caching only when they are part of the [cache key](/cdn/cdn-resource-options/cache/modify-cache-key), listed in `Vary`, or used by a bypass rule.
 
 2. Open the resource **OPTIONS** tab and check [CDN caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) under **Cache**. The option must be enabled. For **CDN controlled**, do not set cache expiry to `0`. For **Origin controlled**, `max-age=0`, `no-cache`, `no-store`, or `private` on the origin reduce shared-cache HITs unless that behavior is required.
 
-3. If URLs differ only by query string or `Set-Cookie`, enable **Ignore query string** and **Ignore Set-Cookie** in **Cache**. When those options are off, each query string or cookie variant is stored as a separate object. Configuration is in the [query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) article.
+3. In **Cache**, review **Query string** and **Set-Cookie**. Query parameters are part of the request URL; `Set-Cookie` is a response header. When **Ignore query string** is off, each distinct query string is a separate cache object. When **Ignore Set-Cookie** is off, each `Set-Cookie` value is a separate cache object.
+
+Enable **Ignore query string** or **Ignore Set-Cookie** only when those values do not change the response or personalize content. Ignoring a value that selects different content can serve the wrong cached object.
+
+**Ignore query string** has three modes: **Ignore all**, **Ignore all except**, and **Ignore only**. Use **Ignore all except** or **Ignore only** when some parameters must remain in the cache key. Configuration is in the [query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) article.
 
 If delivery is slow but the cache hit ratio is healthy, use the [delivery speed](/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue) checks instead.
 
@@ -69,8 +74,8 @@ After the header and option checks above, these traffic patterns can still keep 
 
 | Cause | Solution |
 |---|---|
-| Traffic started recently, so the cache is still filling | Wait for traffic to populate edges. The Statistics report often needs about two days of traffic before the ratio is a reliable signal. Sending more traffic through CDN also fills the cache faster |
+| Traffic started recently, so the cache is still filling | Wait for enough requests to populate edges. Warm-up duration depends on request volume, how often each object is requested, and cache lifetime. There is no fixed two-day warm-up |
+| Statistics for a finished period still look incomplete | Complete Statistics data is available at least two days after the selected period ends. Live charts update during the period and can differ from later totals |
 | Content is requested too rarely, so per-edge cache stays cold | Increase request volume, or use paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to concentrate origin pulls. Low-traffic video is covered in [video delivery](/cdn/video-cdn/improve-video-delivery-speed) |
-| The origin sends Vary, so the same URL is cached in multiple variants | Change Vary on the origin, or use [Hide headers](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers). Enable **Response headers (hide)**, select **Hide only**, add **Vary**, then click **Save changes** |
-
-<Frame>![Hide only mode for response headers](/images/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png)</Frame>
+| Cache key modification adds extra request attributes | [Cache key modification](/cdn/cdn-resource-options/cache/modify-cache-key) supports `$request_uri`, `$scheme`, `$uri`, and `$http_x_cdn_real_host`. `$request_uri` keeps the query string in the key, and `$http_x_cdn_real_host` splits cache among aliases. Keep only the variables that must distinguish objects |
+| Origin sends `Vary` for headers that do not change the response | A meaningful `Vary` value keeps different representations in separate cache objects, which is correct when content actually varies. Remove or narrow `Vary` on the origin only when the response does not vary by those request headers. [Response headers (hide)](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers) removes headers from responses to users and does not change how CDN cache processes `Vary` |
