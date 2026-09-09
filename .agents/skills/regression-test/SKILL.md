@@ -66,7 +66,8 @@ deep work within each phase. This is forbidden.
 5. `.agents/references/procedures.md` — Phase 6 only (numbered steps check)
 6. `.agents/references/content-types.md` — Phase 5 only (before rewriting any section)
 7. `.agents/references/mdx-rules.md` — Phase 5 (if MDX structure is changed) and Phase 7
-8. `.agents/references/mcp-tools/playwright.md` — Phase 1 (Gcore portal only), Phase 2, and Phase 3
+8. `.agents/references/sdk-best-practices.md` — Phase 5 (if fixing SDK code examples)
+9. `.agents/references/mcp-tools/playwright.md` — Phase 1 (Gcore portal only), Phase 2, and Phase 3
 
 Do not read other articles for context unless they are directly linked from the
 article being tested.
