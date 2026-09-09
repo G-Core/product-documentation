@@ -10,6 +10,10 @@ Cache hit ratio is the share of traffic served from CDN edge cache without an or
 
 A higher ratio means more requests are served from cache, which lowers origin load and origin egress cost.
 
+<Note>
+Expected cache hit ratio depends on the workload. Dynamic content that cannot be reused from cache is expected to show a low ratio. Static assets that are requested often usually show a higher ratio.
+</Note>
+
 ## Effect of a low ratio
 
 A low ratio means many requests are proxied to the origin instead of being served from cache. A cached request is served from the edge back to the client. An uncached request adds an origin fetch, so latency rises with that extra hop.
@@ -22,30 +26,11 @@ Complete Statistics data for a finished period is available at least two days af
 
 Statistics marks cache hit rates below 60% in red on Overview as a visual highlight, not as a diagnostic cutoff. For this troubleshooting flow, start investigating when the ratio stays below about 80% after the cache has had time to fill, because that is where origin-bypass causes usually show up. The right target still depends on the workload.
 
-1. Inspect caching headers with `curl -I`. Pin the request to one edge server, because consecutive requests in the same region can land on different servers and mix HIT and MISS.
+1. Inspect caching headers with `curl -I`. Consecutive requests in the same region can land on different servers and mix HIT and MISS, so compare `Cache-Control` and `Cache` on the same object.
 
 ```sh
 curl -I https://cdn.example.com/assets/sample-image.png
 ```
-
-<Accordion title="Request from one edge server">
-Request the object that is not coming from cache and copy the `X-ID` header. That value identifies the edge server that handled the request.
-
-Resolve the server IP:
-
-```sh
-nslookup {x-id}.fe.gc.onl
-```
-
-Use `dig` in place of `nslookup` if that is the local DNS tool. Then pin the request to that IP while keeping the hostname, SNI, and certificate validation:
-
-```sh
-curl -I --resolve cdn.example.com:443:{ip-address} \
-  https://cdn.example.com/assets/sample-image.png
-```
-
-Compare `Cache-Control` and `Cache` with the table below.
-</Accordion>
 
 Focus on `Cache-Control` and `Cache` values that stop shared caching or force origin revalidation:
 
