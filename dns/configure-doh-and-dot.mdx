@@ -1,0 +1,310 @@
+---
+title: Configure DNS over HTTPS and DNS over TLS
+sidebarTitle: DNS over HTTPS and DNS over TLS
+ai-navigation: Configure Gcore Public DNS encrypted resolvers using DNS over HTTPS or DNS over TLS on Windows, macOS, Linux, Android, iOS, and in browsers.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+Without encrypted DNS, anyone between your device and the resolver — a public Wi-Fi operator, ISP, or network attacker — can see which domains you look up and forge responses. [Gcore Public DNS](/dns/public-dns) supports two encrypted protocols that prevent this. DNS queries are anonymized and processed under EU jurisdiction, and are not shared with third parties except as required by law.
+
+[Gcore Public DNS](https://gcore.com/public-dns) supports two encrypted DNS protocols that close this gap.
+
+- **DoH** uses HTTPS on port `443`. Because it shares the port with regular web traffic, it works on networks that block non-standard ports.
+- **DoT** uses a dedicated TLS connection on port `853`. It is easier to monitor or filter at the network boundary and to configure at the OS and router level.
+
+## Resolver endpoints
+
+Use the following addresses to configure DoH or DoT. For plain DNS (IPv4 and IPv6) addresses, see [Public DNS](/dns/public-dns).
+
+| Protocol | Value |
+|----------|-------|
+| DoH URL | `https://gcoredns.com/dns-query` |
+| DoT hostname | `gcoredns.com` |
+| DoT port | `853` (TCP) |
+
+
+## Configure DoH or DoT
+
+<MethodSwitch>
+
+<MethodSection id="windows" label="Windows">
+
+<p>Windows 11 supports DoH natively. Windows 10 does not support encrypted DNS at the OS level — use [plain DNS](/dns/configure-plain-dns) on Windows 10, or install [Stubby](https://dnsprivacy.org/dns_privacy_daemon_-_stubby/) for DoT.</p>
+
+**Step 1 — register the DoH server**
+
+Windows 11 knows a few DoH providers by default (Google, Cloudflare, Quad9), but Gcore is not among them. The DNS over HTTPS option in Settings only appears for addresses Windows recognizes, so you need to register Gcore first. Open PowerShell as Administrator (right-click Start → **Windows PowerShell (Admin)**) and run both commands:
+
+```powershell
+Add-DnsClientDohServerAddress `
+  -ServerAddress "95.85.95.85" `
+  -DohTemplate "https://gcoredns.com/dns-query" `
+  -AllowFallbackToUdp $False `
+  -AutoUpgrade $True
+
+Add-DnsClientDohServerAddress `
+  -ServerAddress "2.56.220.2" `
+  -DohTemplate "https://gcoredns.com/dns-query" `
+  -AllowFallbackToUdp $False `
+  -AutoUpgrade $True
+```
+
+Each command registers one Gcore IP address. `-AllowFallbackToUdp $False` prevents Windows from silently switching back to unencrypted DNS if the DoH endpoint is temporarily unreachable.
+
+<Note>
+If the commands fail with an access error, your device is managed by an organization. Contact your IT administrator to enable DoH or configure it centrally.
+</Note>
+
+**Step 2 — configure the network adapter**
+
+1. Open **Settings** > **Network & internet**.
+2. Select **Wi-Fi** or **Ethernet**, then click the name of your active connection.
+3. Scroll to **DNS server assignment** and select **Edit**.
+4. Change the dropdown to **Manual**.
+5. Enable the **IPv4** toggle.
+6. Set **Preferred DNS** to `95.85.95.85` and **Alternate DNS** to `2.56.220.2`.
+7. In the **DNS over HTTPS** dropdown next to each address, select **On (automatic template)**.
+8. Select **Save**.
+
+The **On (automatic template)** option appears only after Step 1. If the dropdown is greyed out, repeat Step 1.
+
+**Verify**
+
+```powershell
+Get-DnsClientDohServerAddress
+```
+
+The output lists all registered DoH providers. Look for the two Gcore entries — both should show `AutoUpgrade: True`:
+
+```
+ServerAddress  AllowFallbackToUdp AutoUpgrade DohTemplate
+-------------  ------------------ ----------- -----------
+95.85.95.85    False              True        https://gcoredns.com/dns-query
+2.56.220.2     False              True        https://gcoredns.com/dns-query
+```
+
+Other providers such as Google and Cloudflare may also appear in the list — that is expected.
+
+**What changed:** DNS queries from this device are now encrypted and routed through Gcore. Your ISP and anyone else on the network path can no longer read which domains you look up or tamper with the responses. Browsing speed and behavior are unaffected.
+
+</MethodSection>
+
+<MethodSection id="macos" label="macOS">
+
+<p>System-wide encrypted DNS on macOS requires a signed configuration profile (macOS Ventura 13 and later) or a third-party DNS client. Until Gcore publishes an official profile, the instructions below use [Stubby](https://dnsprivacy.org/dns_privacy_daemon_-_stubby/), which works on macOS Catalina (10.15) and later.</p>
+
+Until an official profile is available, configure DoH in the browser (see the Browsers tab) or install [Stubby](https://dnsprivacy.org/dns_privacy_daemon_-_stubby/) for system-wide DoT:
+
+1. Install Stubby: `brew install stubby`
+2. Edit `/usr/local/etc/stubby/stubby.yml` (path may vary):
+
+   ```yaml
+   resolution_type: GETDNS_RESOLUTION_STUB
+   dns_transport_list:
+     - GETDNS_TRANSPORT_TLS
+   tls_authentication: GETDNS_AUTHENTICATION_REQUIRED
+   upstream_recursive_servers:
+     - address_data: 95.85.95.85
+       tls_auth_name: "gcoredns.com"
+     - address_data: 2.56.220.2
+       tls_auth_name: "gcoredns.com"
+   listen_addresses:
+     - 127.0.0.1
+   ```
+
+3. Start Stubby: `brew services start stubby`
+4. Set the system DNS to `127.0.0.1` in **System Settings** > **Network** > **Details** > **DNS**.
+
+Verify that Stubby has an active DoT connection to Gcore:
+
+```sh
+sudo lsof -i TCP:853 | grep stubby
+```
+
+An `ESTABLISHED` connection in the output confirms Stubby has a live TLS session open to port 853. If no output appears, Stubby has not yet connected — check `brew services list` to confirm the service is running.
+
+</MethodSection>
+
+<MethodSection id="linux" label="Linux">
+
+<p>Choose based on your init system: if `systemd-resolved` is running (Ubuntu 20.04+, Fedora, Arch), follow the **systemd-resolved** steps below. On all other distributions, skip to **Stubby**.</p>
+
+**systemd-resolved (Ubuntu 20.04+, Fedora, Arch)**
+
+1. Edit `/etc/systemd/resolved.conf`:
+
+   ```ini
+   [Resolve]
+   DNS=95.85.95.85#gcoredns.com 2.56.220.2#gcoredns.com
+   DNSOverTLS=yes
+   ```
+
+   The `#gcoredns.com` suffix sets the TLS SNI hostname. `systemd-resolved` uses it to verify the server certificate regardless of which IP address responds.
+
+2. Restart the service:
+
+   ```sh
+   sudo systemctl restart systemd-resolved
+   ```
+
+3. Verify:
+
+   ```sh
+   resolvectl status
+   resolvectl query example.com
+   ```
+
+**Stubby (DoT, all distributions)**
+
+1. Install Stubby:
+
+   ```sh
+   # Debian/Ubuntu
+   sudo apt-get install stubby
+
+   # Fedora/RHEL
+   sudo dnf install getdns-utils
+   ```
+
+2. Edit `/etc/stubby/stubby.yml`:
+
+   ```yaml
+   resolution_type: GETDNS_RESOLUTION_STUB
+   dns_transport_list:
+     - GETDNS_TRANSPORT_TLS
+   tls_authentication: GETDNS_AUTHENTICATION_REQUIRED
+   upstream_recursive_servers:
+     - address_data: 95.85.95.85
+       tls_auth_name: "gcoredns.com"
+     - address_data: 2.56.220.2
+       tls_auth_name: "gcoredns.com"
+   listen_addresses:
+     - 127.0.0.1
+   ```
+
+3. Start and enable Stubby:
+
+   ```sh
+   sudo systemctl enable --now stubby
+   ```
+
+4. Configure NetworkManager to use the local Stubby instance:
+
+   ```sh
+   nmcli connection modify <connection-name> ipv4.dns "127.0.0.1"
+   nmcli connection modify <connection-name> ipv4.ignore-auto-dns yes
+   nmcli connection up <connection-name>
+   ```
+
+   On systems without NetworkManager, set `nameserver 127.0.0.1` in `/etc/resolv.conf`, though DHCP clients may overwrite it on reconnect.
+
+Verify that Stubby has an active DoT connection to Gcore:
+
+```sh
+sudo ss -tn state established '( dport = :853 )'
+```
+
+An output line showing a connection to port 853 confirms Stubby has a live TLS session. If no output appears, the service may not be running — check `systemctl status stubby`.
+
+</MethodSection>
+
+<MethodSection id="android" label="Android">
+
+<p>Android 9 (Pie) and later support DoT through the Private DNS feature. When Private DNS is configured, the system uses it on all networks including cellular.</p>
+
+1. Open **Settings** and search for **Private DNS** — the exact path varies by manufacturer.
+2. Select **Private DNS provider hostname**.
+3. Enter `gcoredns.com`.
+4. Tap **Save**.
+
+After saving, the DoT session is established. On stock Android the status updates to **Connected** — on some manufacturer interfaces (Xiaomi MIUI, Samsung One UI) only a confirmation checkmark appears, which is normal.
+
+For Android 8 and earlier, which do not support encrypted DNS, see [Configure a DNS resolver](/dns/configure-plain-dns).
+
+</MethodSection>
+
+<MethodSection id="ios" label="iOS and iPadOS">
+
+<p>iOS 14 and later support system-wide DoH and DoT through configuration profiles. There is no built-in UI for encrypted DNS — a profile must be installed.</p>
+
+Until an official profile is available, system-wide encrypted DNS is not available on iOS. For per-browser DoH, use Firefox or Chrome on iOS and configure a custom DoH provider in the browser settings — note that browser DoH settings on iOS may behave differently than on desktop.
+
+</MethodSection>
+
+<MethodSection id="browsers" label="Browsers">
+
+<p>These instructions apply to desktop browser versions. Browser DoH covers only DNS queries made within that browser — other apps on the device use the system resolver.</p>
+
+**Firefox**
+
+Firefox routes all its DNS queries through the configured DoH provider, bypassing the system resolver.
+
+1. Open **Settings** > **Privacy & Security** and scroll to the **DNS over HTTPS** section.
+2. Select the strictest protection mode available (typically **Max Protection** or **Strict**).
+3. In the provider dropdown, choose the custom provider option and enter:
+   ```
+   https://gcoredns.com/dns-query
+   ```
+
+To verify, open `about:networking#dns` and check that the resolver column shows `gcoredns.com`.
+
+**Chrome, Edge, Brave, Opera**
+
+Chrome-based browsers use the same DoH URL format. The setting applies to all DNS lookups within the browser.
+
+1. Open `chrome://settings/security` in the address bar.
+2. Enable the **Use secure DNS** toggle.
+3. In the provider dropdown, choose the option to add a custom provider.
+4. Enter `https://gcoredns.com/dns-query` and confirm.
+
+To verify, open `chrome://net-internals/#dns`, enter any domain in the lookup field, and run the query — a list of resolved IP addresses confirms DNS is working through the configured provider.
+
+</MethodSection>
+
+<MethodSection id="routers" label="Routers">
+
+<p>Configuring a router to use DoT protects all devices on the network without per-device setup. Support varies by firmware.</p>
+
+**pfSense / OPNsense**
+
+1. Go to **Services** > **DNS Resolver** (Unbound) > **General Settings**.
+2. Under **DNS Query Forwarding**, enable **Use SSL/TLS for outgoing DNS queries**.
+3. Add the upstream servers:
+   - IP: `95.85.95.85`, port `853`, TLS hostname: `gcoredns.com`
+   - IP: `2.56.220.2`, port `853`, TLS hostname: `gcoredns.com`
+4. Apply and save.
+
+Verify that the router is forwarding DNS through Gcore DoT: from a device on the network, run a lookup without specifying a resolver:
+
+```sh
+dig example.com
+```
+
+The `SERVER:` line should show the pfSense LAN address, confirming the device uses the router as its resolver. To confirm that Unbound forwards queries over TLS, check **Services** > **DNS Resolver** > **Query Log** — outbound queries to port 853 should appear there.
+
+**ASUS routers (Merlin firmware)**
+
+1. Open **WAN** > **Internet Connection**.
+2. Set **DNS Privacy Protocol** to **DNS-over-TLS (DoT)**.
+3. Enter `95.85.95.85` in the **DNS-over-TLS Server IP** field and `gcoredns.com` in **TLS hostname**.
+4. Add `2.56.220.2` as the secondary server.
+5. Select **Apply**.
+
+Verify from a device connected to the router:
+
+```sh
+nslookup example.com
+```
+
+The `Server:` line should show the router's LAN IP (for example, `192.168.1.1`), confirming the device sends DNS queries to the router. The router then forwards them to Gcore over port 853 — check **WAN** > **Internet Connection** to confirm the DoT connection status is active.
+
+**Other routers**
+
+Most consumer routers do not support DoH or DoT natively. Configure the plain resolver IPs and use a device-level or browser-level client for encrypted DNS.
+
+</MethodSection>
+
+</MethodSwitch>
+
+

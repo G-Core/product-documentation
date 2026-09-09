@@ -1,0 +1,199 @@
+---
+title: Configure a DNS resolver
+sidebarTitle: Configure a DNS resolver
+ai-navigation: Configure Gcore Public DNS plain resolver addresses on Windows, macOS, Linux, Android, iOS, and routers.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+Plain DNS sends queries unencrypted over UDP or TCP on port 53. No additional software is required — configure the resolver address directly in network settings. [DoH&nbsp;and&nbsp;DoT](/dns/configure-doh-and-dot) encrypt queries in transit and are supported on the same operating systems.
+
+Use the following Gcore Public DNS resolver addresses in the configuration steps below:
+
+- IPv4: `95.85.95.85` and `2.56.220.2`
+- IPv6: `2a03:90c0:999d::1` and `2a03:90c0:9992::1`
+
+The instructions below show IPv4 configuration. Where the operating system supports dual-stack DNS, add the IPv6 addresses through the IPv6 DNS settings on the same screen.
+
+## Configure the resolver
+
+<MethodSwitch>
+
+<MethodSection id="windows" label="Windows">
+
+<p>Set the DNS server for a specific network adapter. The change applies to all connections through that adapter.</p>
+
+**Settings (Windows 10 and 11)**
+
+1. Open **Settings** > **Network & internet**.
+2. Select **Wi-Fi** or **Ethernet**, then click the active connection name.
+3. Scroll to **DNS server assignment** and select **Edit**.
+4. Change the dropdown to **Manual**.
+5. Enable the **IPv4** toggle.
+6. Set **Preferred DNS** to `95.85.95.85` and **Alternate DNS** to `2.56.220.2`.
+7. Select **Save**.
+
+**PowerShell (Windows 10 and 11)**
+
+Run `Get-NetAdapter` to list adapter names, then apply the resolver addresses:
+
+```powershell
+Get-NetAdapter
+```
+
+```powershell
+Set-DnsClientServerAddress -InterfaceAlias "Wi-Fi" -ServerAddresses "95.85.95.85","2.56.220.2"
+```
+
+<p>Replace `Wi-Fi` with the actual adapter name if different.</p>
+
+**Verify**
+
+```powershell
+nslookup example.com
+```
+
+<p>The `Server:` line should show `95.85.95.85`. If it shows a different IP, the adapter setting was not saved or another adapter is being used.</p>
+
+</MethodSection>
+
+<MethodSection id="macos" label="macOS">
+
+<p>DNS settings on macOS apply per network interface. Repeat these steps for each interface in use (Wi-Fi, Ethernet).</p>
+
+1. Open **System Settings** > **Network**.
+2. Select the active interface and click **Details**.
+3. Open the **DNS** tab.
+4. Click **+** and add `95.85.95.85`, then add `2.56.220.2`.
+5. Click **OK** and then **Apply**.
+
+**Verify**
+
+```sh
+nslookup example.com
+```
+
+<p>The `Server:` line should show `95.85.95.85`.</p>
+
+</MethodSection>
+
+<MethodSection id="linux" label="Linux">
+
+<p>Select the method based on how the system manages network connections.</p>
+
+**systemd-resolved (Ubuntu 20.04+, Fedora, Arch)**
+
+1. Edit `/etc/systemd/resolved.conf`:
+
+   ```ini
+   [Resolve]
+   DNS=95.85.95.85 2.56.220.2
+   ```
+
+2. Restart the service:
+
+   ```sh
+   sudo systemctl restart systemd-resolved
+   ```
+
+3. Verify:
+
+   ```sh
+   resolvectl status
+   ```
+
+   The current DNS server for the interface should show `95.85.95.85`.
+
+**NetworkManager**
+
+```sh
+nmcli connection modify <connection-name> ipv4.dns "95.85.95.85 2.56.220.2"
+nmcli connection modify <connection-name> ipv4.ignore-auto-dns yes
+nmcli connection up <connection-name>
+```
+
+<p>Replace `<connection-name>` with the output of `nmcli connection show`.</p>
+
+**Verify**
+
+```sh
+nmcli dev show | grep DNS
+```
+
+<p>The output should list `95.85.95.85` as the active DNS server.</p>
+
+**resolv.conf (manual fallback)**
+
+<p>Use this method only if neither systemd-resolved nor NetworkManager is available. Add to `/etc/resolv.conf`:</p>
+
+```
+nameserver 95.85.95.85
+nameserver 2.56.220.2
+```
+
+<p>DHCP clients overwrite this file on reconnect. This is not a persistent configuration — use systemd-resolved or NetworkManager instead where possible.</p>
+
+</MethodSection>
+
+<MethodSection id="android" label="Android">
+
+<p>Android applies DNS settings per Wi-Fi network, not system-wide. Mobile data DNS cannot be changed without encrypted DNS or a VPN. [Private&nbsp;DNS](/dns/configure-doh-and-dot) provides system-wide DoT configuration that covers both Wi-Fi and mobile data.</p>
+
+1. Open **Settings** and navigate to the Wi-Fi settings.
+2. Tap and hold the connected network, then select **Modify network** or tap the gear icon.
+3. Expand **Advanced options**.
+4. Change **IP settings** to **Static**.
+5. Set the primary DNS to `95.85.95.85` and secondary DNS to `2.56.220.2`.
+6. Save.
+
+<p>Reopen the connection settings and confirm the DNS addresses are saved. Android does not provide a built-in DNS lookup tool, so confirming the saved settings is the available configuration check.</p>
+
+</MethodSection>
+
+<MethodSection id="ios" label="iOS and iPadOS">
+
+<p>iOS applies DNS settings per Wi-Fi network. Mobile data DNS cannot be changed without encrypted DNS. [DoH&nbsp;and&nbsp;DoT](/dns/configure-doh-and-dot) apply to all network interfaces, including mobile data.</p>
+
+1. Open **Settings** > **Wi-Fi**.
+2. Tap the **(i)** next to the connected network.
+3. Scroll to **Configure DNS** and select **Manual**.
+4. Remove existing DNS entries and add `95.85.95.85` and `2.56.220.2`.
+5. Tap **Save**.
+
+<p>Reopen the network settings and confirm the DNS entries are saved. iOS does not provide a built-in DNS lookup tool, so confirming the saved settings is the available configuration check.</p>
+
+</MethodSection>
+
+<MethodSection id="routers" label="Routers">
+
+<p>Setting DNS on the router applies Gcore Public DNS to all devices on the network without per-device configuration.</p>
+
+**pfSense / OPNsense**
+
+1. Navigate to **System** > **General Setup**.
+2. Under **DNS Servers**, enter `95.85.95.85` and `2.56.220.2`.
+3. Click **Save**.
+
+**ASUS routers**
+
+1. Open **WAN** > **Internet Connection**.
+2. Set the primary DNS to `95.85.95.85` and secondary DNS to `2.56.220.2`.
+3. Click **Apply**.
+
+**Other routers**
+
+<p>Look for DNS settings in the WAN or Internet connection section of the router admin panel. Enter `95.85.95.85` as the primary DNS and `2.56.220.2` as the secondary DNS.</p>
+
+---
+
+<p>After saving, verify from a device connected to the router:</p>
+
+```sh
+nslookup example.com
+```
+
+<p>The `Server:` line shows the router's LAN IP — this is expected, as devices send queries to the router, which forwards them to Gcore. Confirm the router's DNS settings show `95.85.95.85` in the admin panel to verify the upstream is configured correctly.</p>
+
+</MethodSection>
+
+</MethodSwitch>
