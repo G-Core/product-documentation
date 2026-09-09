@@ -249,12 +249,14 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
         r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+|"
-        r"\blayer\s*\d\b|\bL\d\b",
+        r"\blayer\s*\d\b|\bL\d\b|[A-Za-z]+/\d",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
+    inline_code = re.compile(r"`[^`\n]+`")
     for lineno, text in lines:
         clean = strip_urls_and_links(text)
+        clean = inline_code.sub("", clean)
         for m in digit_word.finditer(clean):
             start = m.start()
             surrounding = clean[max(0, start - 15):start + 25]
