@@ -257,12 +257,13 @@ To find the values for each variable:
 
 ### Step 1. Create a placement group
 
-A [placement group](/api-reference/cloud/placement-groups/create-placement-group) defines the policy that controls how VMs assigned to it are distributed across physical hosts.
+A [placement group](/api-reference/cloud/placement-groups/create-placement-group) defines the policy that controls how VMs assigned to it are distributed across physical hosts. The group name and policy are set at creation and cannot be changed.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `name` | Yes | A label for the group. |
 | `policy` | Yes | `affinity` places VMs on the same host; `anti-affinity` places them on different hosts; `soft-anti-affinity` attempts separation but allows sharing when resources are constrained. |
+| `region_id` | Yes | Numeric ID of the region where the group is created. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -307,27 +308,24 @@ A [placement group](/api-reference/cloud/placement-groups/create-placement-group
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/servergroups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/placement_groups" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"name": "my-group", "policy": "anti-affinity"}'
+      -d '{"name": "my-group", "policy": "anti-affinity", "region_id": '$GCORE_CLOUD_REGION_ID'}'
     ```
 
     Response:
 
     ```json
     {
-      "servergroup_id": "390bf8f5-c2e6-490a-b8a6-b80341a61d18",
-      "policy": "anti-affinity",
-      "name": "my-group",
-      "instances": []
+      "tasks": ["3445e188-452f-4968-bc8d-9da28f41ce7c"]
     }
     ```
 
-    Export the group ID:
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The group ID is in `created_resources.servergroups[0]`.
 
     ```bash
-    export GROUP_ID="{servergroup_id from response}"
+    export GROUP_ID="{created_resources.servergroups[0]}"
     ```
   </Tab>
 </Tabs>
@@ -605,7 +603,7 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/servergroups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GROUP_ID" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/placement_groups/$GROUP_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -613,15 +611,16 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
 
     ```json
     {
-      "servergroup_id": "390bf8f5-c2e6-490a-b8a6-b80341a61d18",
-      "policy": "anti-affinity",
+      "id": "390bf8f5-c2e6-490a-b8a6-b80341a61d18",
       "name": "my-group",
-      "instances": [
-        {
-          "instance_id": "7710bd12-3c1c-4566-b2d0-76e3ff51a1a3",
-          "instance_name": "my-vm"
-        }
-      ]
+      "policy": "anti-affinity",
+      "region_id": 76,
+      "managed_by": "user",
+      "member_ids": [
+        "7710bd12-3c1c-4566-b2d0-76e3ff51a1a3"
+      ],
+      "created_at": "2026-09-10T11:06:23.456117",
+      "updated_at": "2026-09-10T11:06:23.477125"
     }
     ```
   </Tab>
@@ -654,7 +653,7 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/servergroups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$GROUP_ID" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/placement_groups/$GROUP_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
