@@ -4,56 +4,52 @@ sidebarTitle: "Clips"
 ai-navigation: Create instant clips from ongoing live streams via REST API with configurable duration, start time, and expiration, and retrieve clip HLS and MP4 URLs, using Python SDK, Go SDK, and curl.
 ---
 
-import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
-
 ## Main principles
 
-Clips let you cut a segment from an ongoing live stream without waiting for the broadcast to end or the full recording to complete. 
+Clips let you cut a segment from an ongoing live stream without waiting for the broadcast to end or the full recording to complete.
 This is useful for quickly publishing highlights from sports, news, concerts, or other live events.
 
-Why use clips?
-  - Deliver important moments to viewers instantly, while the event is still live.
-  - Share highlights across platforms without waiting for full VOD processing.
-  - Convert a short live excerpt into a standalone asset in HLS (.m3u8), MP4, or as a permanent VOD.
+**Why use clips?**
+
+- Deliver important moments to viewers instantly, while the event is still live.
+- Share highlights across platforms without waiting for full VOD processing.
+- Convert a short live excerpt into a standalone asset in HLS (.m3u8), MP4, or as a permanent VOD.
 
 <Frame>![clip_recording_mp4_hls](https://demo-files.gvideo.io/apidocs/clip_recording_mp4_hls.gif)</Frame>
 
-Common use cases:
-  - Sports highlights – publish goals, replays, or decisive moments immediatelly after they happen.
-  - News coverage – cut and share breaking news segments without waiting for the full recording.
-  - Live performances – highlight songs, interviews, or standout moments from concerts or shows.
+**Common use cases:**
 
+- Sports highlights — publish goals, replays, or decisive moments immediately after they happen.
+- News coverage — cut and share breaking news segments without waiting for the full recording.
+- Live performances — highlight songs, interviews, or standout moments from concerts or shows.
 
 ## Clips vs. traditional VOD
 
 | Feature                | Traditional VOD                                       | Clips                                                       |
-|-------------------------|-------------------------------------------------------|-------------------------------------------------------------|
+|------------------------|-------------------------------------------------------|-------------------------------------------------------------|
 | **Source**             | Recording of the full live stream                      | Raw data from the ongoing live stream                       |
 | **Availability**       | Only after the live stream has ended and transcoding completes | Immediately after the selected segment is copied from DVR    |
 | **Use case**           | Full replays, long-term storage, on-demand catalogs    | Highlights, instant sharing, short previews                 |
-| **Formats**            | HLS, DASH, MP4 (transcoded renditions)                 | HLS, MP4                 |
-| **Latency to publish** | Minutes (depends on stream length & transcoding time) | Seconds (available right after clip duration ends)           |
-| **Lifetime**           | Permanent until manually deleted                       | Temporary (controlled by `expiration`)           |
-| **Storage impact**     | Requires full file storage                             | Lightweight, **stored in server memory** until expiration               |
-| **Conversion to VOD**  | N/A (already VOD)                                      | Can be converted to permanent VOD with `vod_required: true`  |
-| **Best for**           | Full-event replays, archives, monetization catalogs    | Instant highlights, social media snippets, news flashes      |
-
+| **Formats**            | HLS, DASH, MP4 (transcoded renditions)                 | HLS, MP4                                                    |
+| **Latency to publish** | Minutes (depends on stream length & transcoding time) | Seconds (available right after clip duration ends)          |
+| **Lifetime**           | Permanent until manually deleted                       | Temporary (controlled by `expiration`)                      |
+| **Storage impact**     | Requires full file storage                             | Lightweight, stored in server memory until expiration       |
+| **Conversion to VOD**  | N/A (already VOD)                                      | Can be converted to permanent VOD with `vod_required: true` |
+| **Best for**           | Full-event replays, archives, monetization catalogs    | Instant highlights, social media snippets, news flashes     |
 
 ## Clips lifetime
 
 Instant clips are a copy of the stream from DVR buffer.
-They are stored in memory for a limited time, after which the clip ceases to exist and you will receive a 404 on the link.
+They are stored in memory for a limited time, after which the clip ceases to exist and returns a 404 on the link.
 
-Limits that you should keep in mind:
-  - The clip's lifespan is controlled by `expiration` parameter.
-  - The default expiration value is 1 hour. The value can be set from 1 minute to 4 hours (but not more than the DVR duration of the stream, see the section below).
-  - If you want a video for longer or permanent viewing, then create a traditional VOD based on the clip. This way you can use the clip's link for the first time, and immediately after the transcoded version is ready, you can change by yourself it to a permanent link of VOD.
-  - The clip becomes available only after it is completely copied from the live stream. So the clip will be available after `start + duration` exact time. If you try to request it before this time, the response will be error code 425 "Too Early".
+**Limits to keep in mind:**
 
-<MethodSwitch>
-  <MethodSection id="api" label="REST API">
+- The clip's lifespan is controlled by the `expiration` parameter.
+- The default expiration value is 1 hour. The value can be set from 1 minute to 4 hours (but not more than the DVR duration of the stream).
+- If you want a video for longer or permanent viewing, create a traditional VOD based on the clip using `vod_required: true`.
+- The clip becomes available only after it is completely copied from the live stream, at `start + duration`. Requesting it before that returns `425 Too Early`.
 
-<p>Create instant clips from an ongoing live stream and retrieve their playback URLs. DVR must be enabled on the stream before creating clips.</p>
+## Create and list clips
 
 <Info>
 An [API token](/account-settings/api-tokens) is required. DVR must be enabled on the stream (`dvr_enabled: true`). Clips are cut from the DVR buffer — the stream must be live and actively receiving an ingest signal.
@@ -64,9 +60,9 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export STREAM_ID="{YOUR_STREAM_ID}"
 ```
 
-## Enable DVR on a stream
+### Enable DVR on a stream
 
-<p>DVR is a prerequisite for clip creation. Enable it when creating or updating a stream. `dvr_duration` sets the buffer size in seconds (30–14400). The clip duration cannot exceed the DVR window.</p>
+DVR is a prerequisite for clip creation. Enable it when creating or updating a stream. `dvr_duration` sets the buffer size in seconds (30–14400). The clip duration cannot exceed the DVR window.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -131,13 +127,13 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
      -d '{"dvr_enabled": true, "dvr_duration": 3600}'
 ```
 
-<p>The API returns the updated stream object with `dvr_enabled: true` and `dvr_duration: 3600`.</p>
+The API returns the updated stream object with `dvr_enabled: true` and `dvr_duration: 3600`.
   </Tab>
 </Tabs>
 
-## Create a clip
+### Create a clip
 
-<p>Cut a segment from an ongoing live stream. The clip is copied from the DVR buffer. Specify `duration` in seconds and optionally `start` as a Unix timestamp (defaults to the current time). The clip becomes accessible only after `start + duration` seconds — requesting it before that returns `425 Too Early`.</p>
+Cut a segment from an ongoing live stream. The clip is copied from the DVR buffer. Specify `duration` in seconds and optionally `start` as a Unix timestamp (defaults to the current time). The clip becomes accessible only after `start + duration` seconds — requesting it before that returns `425 Too Early`.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -207,7 +203,7 @@ curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/clip_recording" 
      -d '{"duration": 60}'
 ```
 
-<p>The API returns the clip object:</p>
+The API returns the clip object:
 
 ```json
 {
@@ -223,11 +219,11 @@ curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/clip_recording" 
 }
 ```
 
-<p>The clip becomes accessible only after `start + duration` seconds have elapsed. Requesting it before that returns `425 Too Early`.</p>
+The clip becomes accessible only after `start + duration` seconds have elapsed. Requesting it before that returns `425 Too Early`.
   </Tab>
 </Tabs>
 
-**To create a clip from a specific moment in the past**, pass `start` as a Unix timestamp:
+To create a clip from a specific moment in the past, pass `start` as a Unix timestamp:
 
 <Tabs>
   <Tab title="Python SDK">
@@ -298,13 +294,13 @@ curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/clip_recording" 
      -d "{\"duration\": 30, \"start\": $START, \"vod_required\": true}"
 ```
 
-<p>When `vod_required` is `true`, the response includes `video_id`. Use `GET /streaming/videos/{video_id}` to check processing status and retrieve the permanent HLS/MP4 URLs.</p>
+When `vod_required` is `true`, the response includes `video_id`. Use `GET /streaming/videos/{video_id}` to check processing status and retrieve the permanent HLS/MP4 URLs.
   </Tab>
 </Tabs>
 
-## List clips
+### List clips
 
-<p>Retrieve all non-expired clips for a stream.</p>
+Retrieve all non-expired clips for a stream.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -356,9 +352,6 @@ curl "https://api.gcore.com/streaming/streams/$STREAM_ID/clip_recording" \
      -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-<p>The API returns an array of non-expired clip objects. Expired clips are automatically removed and no longer appear in the list.</p>
+The API returns an array of non-expired clip objects. Expired clips are automatically removed and no longer appear in the list.
   </Tab>
 </Tabs>
-
-  </MethodSection>
-</MethodSwitch>
