@@ -4,52 +4,61 @@ sidebarTitle: Hard nudity detection
 ai-navigation: Detect hard nudity in MP4 videos via the Customer Portal or REST API - create a content moderation task, then poll for detection results using Python SDK, Go SDK, or curl.
 ---
 
-import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
-
-The hard nudity content moderation task detects explicit nudity of the human body (involving genitals) in a video. This method is often used to detect whether videos can be published to all users, or the publication should be prohibited due to offensive and inappropriate content.
-
-This task detects fewer objects than soft-nudity detection. Hard nudity detection works faster and better when you only need to detect exposed body parts. For a full list of objects that can be detected with the soft nudity check, read our [API documentation](/api-reference/streaming/ai/create-ai-task).
-
-If hard nudity content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is hard nudity.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
+
+<p>The hard nudity content moderation task detects explicit nudity of the human body (involving genitals) in a video. This method is often used to detect whether videos can be published to all users, or the publication should be prohibited due to offensive and inappropriate content.</p>
+
+<p>This task detects fewer objects than soft-nudity detection. Hard nudity detection works faster and better when you only need to detect exposed body parts. For a full list of objects that can be detected with the soft nudity check, read our [API documentation](/api-reference/streaming/ai/create-ai-task).</p>
+
+<p>If hard nudity content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is hard nudity.</p>
+
 <p>To run the Hard nudity detection check:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
+1. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
 
 <Frame>![AI tasks page](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/ai-tasks-page.png)</Frame>
 
-2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:
+2. In the **Origin URL** field, enter the link to your MP4 video. You have two options:
 
-  * **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
+   - **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
 
 <p>To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly.</p>
 
 <Frame>![Example of the origin URL](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/example-url-link.png)</Frame>
 
-  * **Select from uploaded videos**: choose a video hosted on the Gcore platform.
+   - **Select from uploaded videos**: choose a video hosted on the Gcore platform.
 
-3\. In the **Task type**, choose **Content moderation**.
+3. In the **Task type**, choose **Content moderation**.
 
-4\. In the following dropdown, select **Hard nudity detection**.
+4. In the following dropdown, select **Hard nudity detection**.
 
-5\. Click **Generate task**.
+5. Click **Generate task**.
 
-6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.
+6. Wait until the task is processed and has the **Success** status, click the task ID to view task details.
 
-7\. Check out the **Task result** field. You can have one of the following outputs:
+7. Check out the **Task result** field. You can have one of the following outputs:
 
-  * **Hard nudity detection: not found**. This means that your video has no hard nudity content.
+   - **Hard nudity detection: not found**. This means that your video has no hard nudity content.
 
-  * If some explicit content is found, you'll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is hard nudity.
+   - If some explicit content is found, you'll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is hard nudity.
 
 <Frame>![Hard nudity detection task details](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/nsfw-detection.png)</Frame>
+
   </MethodSection>
   <MethodSection id="api" label="REST API">
+
+<p>The hard nudity detection task analyzes an MP4 video for explicit nudity. Submit a task with <code>POST /streaming/ai/tasks</code>, then poll <code>GET /streaming/ai/tasks/{task_id}</code> until the status is <code>SUCCESS</code> or <code>FAILURE</code>.</p>
+
 <Info>
 An [API token](/account-settings/api-tokens) is required.
 </Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
 
 ## Create a hard nudity detection task
 
@@ -57,61 +66,61 @@ An [API token](/account-settings/api-tokens) is required.
 
 <Tabs>
   <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
+    ```python
+    from gcore import Gcore
 
-client = Gcore()
-task = client.streaming.ai_tasks.create(
-    task_name="content-moderation",
-    category="hard_nudity",
-    url="https://example.com/video.mp4",
-)
-print(f"Task ID: {task.task_id}")
-```
+    client = Gcore()
+    task = client.streaming.ai_tasks.create(
+        task_name="content-moderation",
+        category="hard_nudity",
+        url="https://example.com/video.mp4",
+    )
+    print(f"Task ID: {task.task_id}")
+    ```
   </Tab>
   <Tab title="Go SDK">
-```go
-package main
+    ```go
+    package main
 
-import (
-    "context"
-    "fmt"
+    import (
+        "context"
+        "fmt"
 
-    "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    task, err := client.Streaming.AITasks.New(
-        context.TODO(),
-        streaming.AITaskNewParams{
-            OfAIContentModerationHardNudityTaskData: &streaming.AIContentmoderationHardnudityParam{
-                TaskName: streaming.AIContentmoderationHardnudityTaskNameContentModeration,
-                Category: streaming.AIContentmoderationHardnudityCategoryHardNudity,
-                URL:      "https://example.com/video.mp4",
-            },
-        },
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/streaming"
     )
-    if err != nil {
-        panic(err)
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        task, err := client.Streaming.AITasks.New(ctx,
+            streaming.AITaskNewParams{
+                OfAIContentModerationHardNudityTaskData: &streaming.AIContentmoderationHardnudityParam{
+                    TaskName: streaming.AIContentmoderationHardnudityTaskNameContentModeration,
+                    Category: streaming.AIContentmoderationHardnudityCategoryHardNudity,
+                    URL:      "https://example.com/video.mp4",
+                },
+            },
+        )
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Task ID: %s\n", task.TaskID)
     }
-    fmt.Printf("Task ID: %s\n", task.TaskID)
-}
-```
+    ```
   </Tab>
   <Tab title="curl">
-```bash
-curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
-     -H "Authorization: APIKey $GCORE_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "task_name": "content-moderation",
-       "category": "hard_nudity",
-       "url": "https://example.com/video.mp4"
-     }'
-```
+    ```bash
+    curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
+         -H "Authorization: APIKey $GCORE_API_KEY" \
+         -H "Content-Type: application/json" \
+         -d '{
+               "task_name": "content-moderation",
+               "category": "hard_nudity",
+               "url": "https://example.com/video.mp4"
+             }'
+    ```
   </Tab>
 </Tabs>
 
@@ -121,65 +130,67 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
 
 <Tabs>
   <Tab title="Python SDK">
-```python
-import os
-import time
-from gcore import Gcore
+    ```python
+    import os
+    import time
+    from gcore import Gcore
 
-task_id = os.environ["TASK_ID"]
+    task_id = os.environ["TASK_ID"]
 
-client = Gcore()
-while True:
-    task = client.streaming.ai_tasks.get(task_id)
-    print(f"Status: {task.status}  Progress: {task.progress}%")
-    if task.status in ("SUCCESS", "FAILURE"):
-        break
-    time.sleep(5)
+    client = Gcore()
+    while True:
+        task = client.streaming.ai_tasks.get(task_id)
+        print(f"Status: {task.status}  Progress: {task.progress}%")
+        if task.status in ("SUCCESS", "FAILURE"):
+            break
+        time.sleep(5)
 
-if task.status == "SUCCESS":
-    print(f"Result: {task.result}")
-```
+    if task.status == "SUCCESS":
+        print(f"Result: {task.result}")
+    ```
   </Tab>
   <Tab title="Go SDK">
-```go
-package main
+    ```go
+    package main
 
-import (
-    "context"
-    "fmt"
-    "os"
-    "time"
+    import (
+        "context"
+        "fmt"
+        "os"
+        "time"
 
-    "github.com/G-Core/gcore-go"
-)
+        gcore "github.com/G-Core/gcore-go"
+    )
 
-func main() {
-    taskID := os.Getenv("TASK_ID")
-    client := gcore.NewClient()
+    func main() {
+        taskID := os.Getenv("TASK_ID")
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-    for {
-        task, err := client.Streaming.AITasks.Get(context.TODO(), taskID)
-        if err != nil {
-            panic(err)
-        }
-        fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
-        if task.Status == "SUCCESS" || task.Status == "FAILURE" {
-            if task.Status == "SUCCESS" {
-                fmt.Printf("Result: %+v\n", task.Result)
+        for {
+            task, err := client.Streaming.AITasks.Get(ctx, taskID)
+            if err != nil {
+                panic(err)
             }
-            break
+            fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
+            if task.Status == "SUCCESS" || task.Status == "FAILURE" {
+                if task.Status == "SUCCESS" {
+                    fmt.Printf("Result: %+v\n", task.Result)
+                }
+                break
+            }
+            time.Sleep(5 * time.Second)
         }
-        time.Sleep(5 * time.Second)
     }
-}
-```
+    ```
   </Tab>
   <Tab title="curl">
-```bash
-curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
-     -H "Authorization: APIKey $GCORE_API_KEY"
-```
+    ```bash
+    curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
+         -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
   </Tab>
 </Tabs>
+
   </MethodSection>
 </MethodSwitch>

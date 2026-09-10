@@ -63,8 +63,9 @@ Wait for the answer before proceeding.
 
 **If yes → real testing:**
 - API credentials are in `C:\Projects\docops-agent2\access.md`
-- Use Luxembourg-3 (`region_id: 148`) for general VM and networking
-- Use Frankfurt-2 (`region_id: 180`) for DBaaS and Kubernetes
+- Use Luxembourg-3 (`region_id: 148`) — `GCORE_CLOUD_REGION_ID`. Kubernetes uses this region. Do not override it.
+- Container Registry and CaaS only: Luxembourg-2 (`region_id: 76`). Those products are not in Luxembourg-3; the articles state this.
+- Managed PostgreSQL only: Frankfurt-2 (`region_id: 180`). The service is not in Luxembourg-3; the article sample host is frankfurt-2. No other region overrides.
 - Run each API call end-to-end in the terminal using `curl` against `https://api.gcore.com`
 - Record real responses — exact fields, structure, error messages
 - **Also run every Python SDK and Go SDK code sample** — install the SDK in `venv`, execute each snippet against the live API, confirm it runs without errors and returns real data
@@ -411,6 +412,57 @@ script would be artificial.
 
 ## Phase 5 — Wrap in MethodSwitch
 
+### CRITICAL LAYOUT RULES — violations break every article
+
+**Rule 1: `<MethodSwitch>` MUST be the first element after the import line.**
+Nothing — no paragraphs, no headings, no intro text — goes between the import and `<MethodSwitch>`.
+All content, including the article intro, belongs INSIDE a `<MethodSection>`.
+
+```mdx
+--- WRONG — content before MethodSwitch ---
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+The intro paragraph explaining what this feature does.   ← WRONG
+
+<MethodSwitch>
+  ...
+</MethodSwitch>
+
+--- CORRECT — MethodSwitch immediately after import ---
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The intro paragraph explaining what this feature does.</p>
+
+  ...
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+  ...
+  </MethodSection>
+</MethodSwitch>
+```
+
+**Rule 2: Every prose paragraph inside `<MethodSection>` MUST be wrapped in `<p>` tags.**
+This applies without exception to every standalone sentence or paragraph inside any `<MethodSection>`.
+Numbered list items (`1.`) and bullet items (`-`) do NOT get `<p>` — only prose paragraphs.
+
+```mdx
+--- WRONG ---
+<MethodSection id="portal" label="Customer Portal">
+This feature lets you configure X.
+
+1. Open the portal.
+
+--- CORRECT ---
+<MethodSection id="portal" label="Customer Portal">
+
+<p>This feature lets you configure X.</p>
+
+1. Open the portal.
+```
+
 If the article currently has no MethodSwitch, wrap the existing portal content:
 
 ```mdx
@@ -419,7 +471,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-  {existing portal content — do not change it}
+  {existing portal content — do not change it, but wrap any prose in <p>}
 
   </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -432,7 +484,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 If MethodSwitch already exists, add the `<MethodSection id="api">` after the portal section.
 
-**Do not modify the portal section** — it is out of scope for this skill.
+**Do not modify the portal section content** — it is out of scope for this skill.
+Exception: add `<p>` tags to any prose paragraphs that are missing them in the portal section.
 
 ---
 
