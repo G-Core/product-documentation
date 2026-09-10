@@ -82,6 +82,12 @@ Wait for the answer before proceeding.
 
 ## Phase 3 — Find the API endpoints
 
+**Run the checker before you write anything:**
+```powershell
+python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+```
+Fix any existing violations before adding new content.
+
 Open the OpenAPI YAML for the product:
 ```
 /api-reference/services_documented/{product}_api.yaml
@@ -107,7 +113,67 @@ Select-String -Path "api-reference\services_documented\cloud_api.yaml" `
 
 ---
 
-## SDK code patterns (mandatory — do not deviate)
+## SDK Reference — читать ПЕРЕД написанием любого SDK кода
+
+Оба SDK генерируются автоматически из OpenAPI spec. Единственный источник правды — `api.md` в каждом SDK.
+
+### Python SDK
+
+- **Документация:** https://docs.gcore.com/developer-tools/sdks/python
+- **Полный API reference:** https://github.com/G-Core/gcore-python/blob/main/api.md
+- **GitHub:** https://github.com/G-Core/gcore-python
+
+Перед написанием Python метода — найти его сигнатуру:
+```powershell
+# Проверить сигнатуру метода в живом venv
+cd C:\Projects\docs-live-use-cases
+venv\Scripts\python.exe -c "import inspect; from gcore import Gcore; c = Gcore(); print(inspect.signature(c.streaming.ai_tasks.create))"
+
+# Проверить доступные методы сервиса
+venv\Scripts\python.exe -c "from gcore import Gcore; c = Gcore(); print([m for m in dir(c.streaming.ai_tasks) if not m.startswith('_')])"
+```
+
+### Go SDK
+
+- **Документация:** https://docs.gcore.com/developer-tools/sdks/go
+- **Полный API reference:** https://github.com/G-Core/gcore-go/blob/main/api.md
+- **pkg.go.dev:** https://pkg.go.dev/github.com/G-Core/gcore-go
+- **GitHub:** https://github.com/G-Core/gcore-go
+
+Перед написанием Go метода — найти его сигнатуру в локальном кэше модулей:
+```powershell
+# Найти файл с методами для нужного сервиса (пример: streaming AI tasks)
+$modver = (Get-ChildItem "$env:GOPATH\pkg\mod\github.com\!g-!core\gcore-go@*" | Sort-Object Name -Descending | Select-Object -First 1).Name
+$gomodpath = "$env:GOPATH\pkg\mod\github.com\!g-!core\$modver"
+
+# Найти все методы сервиса
+Select-String -Path "$gomodpath\streaming\*.go" -Pattern "func \(r \*" | ForEach-Object { $_.Line.Trim() }
+
+# Найти конкретный файл и посмотреть структуры/параметры
+Get-ChildItem "$gomodpath\streaming" | Where-Object { $_.Name -like "*aitask*" -or $_.Name -like "*ai_task*" }
+```
+
+### OpenAPI спеки (источник истины для endpoints и полей)
+
+Спеки лежат в репозитории:
+```
+/api-reference/services_documented/streaming_api.yaml
+/api-reference/services_documented/cloud_api.yaml
+/api-reference/services_documented/cdn_api.yaml
+/api-reference/services_documented/dns_api.yaml
+/api-reference/services_documented/waap_api.yaml
+```
+
+Поиск endpoint в спеке:
+```powershell
+Select-String -Path "api-reference\services_documented\streaming_api.yaml" -Pattern '"/streaming/ai'
+```
+
+**Правило:** имена полей в коде должны совпадать с именами из SDK. Никогда не угадывать и не брать из памяти — только из `api.md`, `inspect.signature()`, или исходников в GOMODCACHE.
+
+---
+
+
 
 These patterns are canonical. Every Python and Go example must follow them exactly.
 Deviating from these patterns requires fixing all examples retroactively.
@@ -224,6 +290,12 @@ Key rules:
 ---
 
 ## Phase 4 — Write the API section
+
+**Run the checker after writing each code block (curl, Python SDK, Go SDK) before moving to the next:**
+```powershell
+python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+```
+Exit code must be 0. Fix every violation immediately — do not accumulate and fix later.
 
 ### Structure A — Sequential creation flow
 
@@ -411,6 +483,12 @@ script would be artificial.
 ---
 
 ## Phase 5 — Wrap in MethodSwitch
+
+**Run the checker immediately after wrapping:**
+```powershell
+python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
+```
+Exit code must be 0 before proceeding to Phase 6.
 
 ### CRITICAL LAYOUT RULES — violations break every article
 

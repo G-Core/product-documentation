@@ -6,19 +6,20 @@ ai-navigation: Detect NSFW content in MP4 videos via the Customer Portal or REST
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
-Not safe for work (NSFW) content moderation task identifies and filters materials that are inappropriate for workplace environment.
-
-Our algorithm flags content as NSFW if it's potentially unsuitable for viewing in public places. If such content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is NSFW.
-
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
+
+<p>Not safe for work (NSFW) content moderation task identifies and filters materials that are inappropriate for workplace environment.</p>
+
+<p>Our algorithm flags content as NSFW if it's potentially unsuitable for viewing in public places. If such content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is NSFW.</p>
+
 <p>To run the NSFW detection check:</p>
 
-1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
+<p>1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.</p>
 
 <Frame>![AI tasks page](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/ai-tasks-page.png)</Frame>
 
-2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:
+<p>2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:</p>
 
   * **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
 
@@ -28,35 +29,41 @@ Our algorithm flags content as NSFW if it's potentially unsuitable for viewing i
 
   * **Select from uploaded videos**: choose a video hosted on the Gcore platform.
 
-3\. In the **Task type**, choose **Content moderation**.
+<p>3\. In the **Task type**, choose **Content moderation**.</p>
 
-4\. In the following dropdown, select **NSFW detection**.
+<p>4\. In the following dropdown, select **NSFW detection**.</p>
 
-5\. Click **Generate task**.
+<p>5\. Click **Generate task**.</p>
 
-6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.
+<p>6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.</p>
 
-7\. Check out the **Task result** field. You can have one of the following outputs:
+<p>7\. Check out the **Task result** field. You can have one of the following outputs:</p>
 
   * **NSFW detection: not found**. This means that your video has no NSFW content.
 
   * If some sensitive content is found, you'll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is NSFW. For example, you can get the following output: _"nsfw: detected at frame №2 with score 41%"._
 
 <Frame>![NSFW detection task details](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/nsfw-detection.png)</Frame>
-  </MethodSection>
+</MethodSection>
   <MethodSection id="api" label="REST API">
+
+<p>NSFW content moderation identifies materials inappropriate for the workplace. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until status is `SUCCESS` or `FAILURE`.</p>
+
 <Info>
 An [API token](/account-settings/api-tokens) is required.
 </Info>
 
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
 ## Create an NSFW detection task
 
-<p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "nsfw"`. The response returns a `task_id` to poll for results.</p>
+<p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "nsfw"`. The response returns a `task_id`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
-import os
 from gcore import Gcore
 
 client = Gcore()
@@ -76,22 +83,21 @@ import (
     "context"
     "fmt"
 
-    "github.com/G-Core/gcore-go"
+    gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/streaming"
 )
 
 func main() {
     client := gcore.NewClient()
-    task, err := client.Streaming.AITasks.New(
-        context.TODO(),
-        streaming.AITaskNewParams{
-            OfAIContentModerationNsfwTaskData: &streaming.AIContentmoderationNsfwParam{
-                TaskName: streaming.AIContentmoderationNsfwTaskNameContentModeration,
-                Category: streaming.AIContentmoderationNsfwCategoryNsfw,
-                URL:      "https://example.com/video.mp4",
-            },
+    ctx := context.Background()
+
+    task, err := client.Streaming.AITasks.New(ctx, streaming.AITaskNewParams{
+        OfAIContentModerationNsfwTaskData: &streaming.AIContentmoderationNsfwParam{
+            TaskName: streaming.AIContentmoderationNsfwTaskNameContentModeration,
+            Category: streaming.AIContentmoderationNsfwCategoryNsfw,
+            URL:      "https://example.com/video.mp4",
         },
-    )
+    })
     if err != nil {
         panic(err)
     }
@@ -105,17 +111,23 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
      -H "Authorization: APIKey $GCORE_API_KEY" \
      -H "Content-Type: application/json" \
      -d '{
-       "task_name": "content-moderation",
-       "category": "nsfw",
-       "url": "https://example.com/video.mp4"
-     }'
+           "task_name": "content-moderation",
+           "category": "nsfw",
+           "url": "https://example.com/video.mp4"
+         }'
+```
+
+<p>The API returns:</p>
+
+```json
+{"task_id": "6aa450af-8243-40b0-b0c5-244f2ff9ca5b"}
 ```
   </Tab>
 </Tabs>
 
 ## Poll for detection result
 
-<p>Use `GET /streaming/ai/tasks/{task_id}` to check task status. Poll until `status` is `"SUCCESS"` or `"FAILURE"`. On success, check the `result` field for NSFW detection details.</p>
+<p>Use `GET /streaming/ai/tasks/{task_id}` to check task status. Poll until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -136,7 +148,8 @@ while True:
 
 if task.status == "SUCCESS":
     print(f"NSFW detected: {task.result.nsfw_detected}")
-    print(f"Detections:    {task.result.detection_results}")
+    for frame in task.result.frames:
+        print(f"  Frame {frame.frame_number}: {frame.label} (confidence {frame.confidence:.0%})")
 ```
   </Tab>
   <Tab title="Go SDK">
@@ -149,22 +162,28 @@ import (
     "os"
     "time"
 
-    "github.com/G-Core/gcore-go"
+    gcore "github.com/G-Core/gcore-go"
 )
 
 func main() {
     taskID := os.Getenv("TASK_ID")
     client := gcore.NewClient()
+    ctx := context.Background()
 
     for {
-        task, err := client.Streaming.AITasks.Get(context.TODO(), taskID)
+        task, err := client.Streaming.AITasks.Get(ctx, taskID)
         if err != nil {
             panic(err)
         }
         fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
         if task.Status == "SUCCESS" || task.Status == "FAILURE" {
             if task.Status == "SUCCESS" {
-                fmt.Printf("Result: %+v\n", task.Result)
+                result := task.Result.AsAITaskGetResponseResultAIResultsContentmoderationNsfw()
+                fmt.Printf("NSFW detected: %v\n", result.NsfwDetected)
+                for _, frame := range result.Frames {
+                    fmt.Printf("  Frame %d: %s (confidence %.0f%%)\n",
+                        frame.FrameNumber, frame.Label, frame.Confidence*100)
+                }
             }
             break
         }
@@ -178,7 +197,128 @@ func main() {
 curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
      -H "Authorization: APIKey $GCORE_API_KEY"
 ```
+
+<p>The API returns:</p>
+
+```json
+{
+  "task_id": "6aa450af-8243-40b0-b0c5-244f2ff9ca5b",
+  "status": "SUCCESS",
+  "progress": 100,
+  "result": {
+    "nsfw_detected": false,
+    "detection_results": [],
+    "frames": []
+  }
+}
+```
   </Tab>
 </Tabs>
-  </MethodSection>
+
+<p>**Interpreting the result**</p>
+
+<p>On success, the `result` object contains:</p>
+
+- `nsfw_detected: false` — no NSFW content found in the video.
+- `nsfw_detected: true` — NSFW content detected. The `frames` array lists each flagged frame with `frame_number`, `label` (`"nsfw"`), and `confidence` (decimal 0.0–1.0, e.g. `0.41` means 41% confidence).
+
+## List AI tasks
+
+<p>To retrieve all AI tasks, send `GET /streaming/ai/tasks`. Use the optional `search` query parameter to filter by ID, URL, task type, or status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+for task in client.streaming.ai_tasks.list():
+    print(f"{task.task_id}  {task.status}  {task.progress}%")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    page, err := client.Streaming.AITasks.List(ctx, streaming.AITaskListParams{})
+    if err != nil {
+        panic(err)
+    }
+    for _, task := range page.Results {
+        fmt.Printf("%s  %s  %d%%\n", task.TaskID, task.Status, task.Progress)
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/ai/tasks" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+## Cancel an AI task
+
+<p>To cancel a running task, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+task_id = os.environ["TASK_ID"]
+
+client = Gcore()
+client.streaming.ai_tasks.cancel(task_id)
+print(f"Task {task_id} canceled")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    taskID := os.Getenv("TASK_ID")
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    _, err := client.Streaming.AITasks.Cancel(ctx, taskID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Task %s canceled\n", taskID)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/ai/tasks/$TASK_ID/cancel" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
 </MethodSwitch>

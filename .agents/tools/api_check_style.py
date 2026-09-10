@@ -42,6 +42,28 @@ _METHOD_SWITCH_IMPORT_BARE = re.compile(
     r"""from\s+["']/snippets/method-switch["']"""
 )
 
+_IMPORT_OS = re.compile(r"^\s*import\s+os\b")
+_OS_USAGE = re.compile(r"\bos\.(?:environ|getenv)\b")
+_METHOD_SWITCH_OPEN = re.compile(r"<MethodSwitch\b")
+_METHOD_SWITCH_IMPORT_LINE = re.compile(
+    r"""from\s+["']/snippets/method-switch(?:\.jsx)?["']"""
+)
+_INDENTED_METHOD_SECTION_CLOSE = re.compile(r"^\s+</MethodSection>")
+_GO_IMPORT_BARE = re.compile(r'"github\.com/G-Core/gcore-go"')
+_GO_IMPORT_WITH_ALIAS = re.compile(r'\bgcore\s+"github\.com/G-Core/gcore-go"')
+_METHOD_SECTION_OPEN = re.compile(r"<MethodSection\b")
+_METHOD_SECTION_CLOSE = re.compile(r"</MethodSection>")
+_JSX_BLOCK_OPEN = re.compile(
+    r"<(Info|Warning|Tip|Note|Tabs|Tab|Accordion|Frame|Steps|Step)\b"
+)
+_JSX_BLOCK_CLOSE = re.compile(
+    r"</(Info|Warning|Tip|Note|Tabs|Tab|Accordion|Frame|Steps|Step)>"
+)
+_P_OPEN = re.compile(r"<p\b")
+_P_CLOSE = re.compile(r"</p>")
+_NUMBERED_ITEM = re.compile(r"^\d+[.\\]")
+_BULLET_ITEM = re.compile(r"^[-*+]\s")
+
 _SKIP_DIR_NAMES = frozenset(
     {
         "_drafts",
@@ -285,11 +307,263 @@ def check_method_switch_import(lines: Sequence[str]) -> list[Violation]:
     return violations
 
 
+def check_content_before_method_switch(lines: Sequence[str]) -> list[Violation]:
+    """Flag non-empty content between the MethodSwitch import and <MethodSwitch>.
+
+    Everything before <MethodSwitch> is visible outside any tab and breaks the
+    tab-independent page contract. All intro prose must live inside a
+    <MethodSection>.
+    """
+    violations: list[Violation] = []
+    import_seen = False
+    in_fence = False
+
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+
+        if _is_fence(raw):
+            in_fence = not in_fence
+
+        if not import_seen:
+            if _METHOD_SWITCH_IMPORT_LINE.search(raw):
+                import_seen = True
+            continue
+
+        if _METHOD_SWITCH_OPEN.search(stripped):
+            break
+
+        if in_fence or not stripped:
+            continue
+
+        violations.append(
+            Violation(
+                line=lineno,
+                rule="content-before-method-switch",
+                detail=(
+                    "Content found before <MethodSwitch>. Move all intro prose "
+                    "inside a <MethodSection>."
+                ),
+                text=stripped[:120],
+            )
+        )
+
+    return violations
+
+
+def check_indented_method_section_close(lines: Sequence[str]) -> list[Violation]:
+    """Flag </MethodSection> tags that are not at column 0.
+
+    An indented </MethodSection> directly after a list item is treated by the
+    MDX parser as list continuation, making the tag invisible and causing a
+    blank or 404 page.
+    """
+    violations: list[Violation] = []
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _INDENTED_METHOD_SECTION_CLOSE.match(raw):
+            violations.append(
+                Violation(
+                    line=lineno,
+                    rule="indented-method-section-close",
+                    detail=(
+                        "</MethodSection> must be at column 0. Indented tags "
+                        "after lists cause the MDX parser to ignore them."
+                    ),
+                    text=raw.rstrip()[:120],
+                )
+            )
+
+    return violations
+
+
+def check_import_os_without_usage(lines: Sequence[str]) -> list[Violation]:
+    """Flag Python code blocks that import os but never use os.environ/os.getenv.
+
+    ``import os`` is only needed when the block reads additional env vars the
+    SDK does not handle automatically. Importing it without usage is a sign the
+    block was copied from a template without review.
+    """
+    violations: list[Violation] = []
+    in_fence = False
+    lang = ""
+    block_start = 0
+    block_lines: list[str] = []
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            if not in_fence:
+                lang = _fence_lang(raw)
+                in_fence = True
+                block_start = lineno
+                block_lines = []
+            else:
+                if lang in {"python", "py"} and block_lines:
+                    import_lineno: int | None = None
+                    has_usage = False
+                    for rel, bline in enumerate(block_lines):
+                        if _IMPORT_OS.match(bline):
+                            import_lineno = block_start + rel + 1
+                        if _OS_USAGE.search(bline):
+                            has_usage = True
+                    if import_lineno is not None and not has_usage:
+                        violations.append(
+                            Violation(
+                                line=import_lineno,
+                                rule="import-os-without-usage",
+                                detail=(
+                                    "`import os` is present but os.environ / "
+                                    "os.getenv is never used in this block. "
+                                    "Remove the import."
+                                ),
+                                text="import os",
+                            )
+                        )
+                in_fence = False
+                lang = ""
+                block_lines = []
+            continue
+
+        if in_fence:
+            block_lines.append(raw)
+
+    return violations
+
+
+def check_go_import_alias(lines: Sequence[str]) -> list[Violation]:
+    """Flag Go imports of gcore-go that are missing the ``gcore`` alias.
+
+    The canonical import is ``gcore "github.com/G-Core/gcore-go"``.
+    Without the alias the package name is the last path segment (``gcore-go``)
+    which is not a valid Go identifier — the code would not compile.
+    """
+    violations: list[Violation] = []
+    in_fence = False
+    lang = ""
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            if not in_fence:
+                lang = _fence_lang(raw)
+                in_fence = True
+            else:
+                in_fence = False
+                lang = ""
+            continue
+        if not in_fence or lang != "go":
+            continue
+        stripped = raw.strip()
+        if _GO_IMPORT_BARE.search(stripped) and not _GO_IMPORT_WITH_ALIAS.search(stripped):
+            violations.append(
+                Violation(
+                    line=lineno,
+                    rule="go-import-missing-alias",
+                    detail=(
+                        'Use gcore "github.com/G-Core/gcore-go" — '
+                        "the alias is required because the package name "
+                        "contains a hyphen."
+                    ),
+                    text=stripped[:120],
+                )
+            )
+
+    return violations
+
+
+def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
+    """Flag prose paragraphs inside <MethodSection> not wrapped in <p> tags.
+
+    Every standalone prose paragraph inside <MethodSection> must be wrapped in <p>.
+    Skips: code fences, JSX block containers (Info/Tabs/Frame/etc.), numbered and
+    bullet list items, headings, empty lines, and lines starting with a JSX tag.
+    """
+    violations: list[Violation] = []
+    in_method_section = False
+    in_fence = False
+    in_p = False
+    jsx_depth = 0
+
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+
+        # Track code fences
+        if _is_fence(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        # Track MethodSection boundaries
+        if _METHOD_SECTION_OPEN.search(stripped):
+            in_method_section = True
+            jsx_depth = 0
+            in_p = False
+            continue
+        if _METHOD_SECTION_CLOSE.search(stripped):
+            in_method_section = False
+            continue
+
+        if not in_method_section:
+            continue
+
+        # Track <p> wrapping
+        if _P_OPEN.search(stripped):
+            in_p = True
+        if _P_CLOSE.search(stripped):
+            in_p = False
+            continue
+        if in_p:
+            continue
+
+        # Track JSX block depth
+        opens = len(_JSX_BLOCK_OPEN.findall(stripped))
+        closes = len(_JSX_BLOCK_CLOSE.findall(stripped))
+        jsx_depth = max(0, jsx_depth + opens - closes)
+        if opens > 0 or closes > 0:
+            continue
+        if jsx_depth > 0:
+            continue
+
+        # Skip empty lines
+        if not stripped:
+            continue
+
+        # Skip lines starting with JSX tags, headings, import
+        if stripped.startswith("<"):
+            continue
+        if stripped.startswith("#"):
+            continue
+        if _BULLET_ITEM.match(stripped):
+            continue
+        if stripped.startswith("import "):
+            continue
+        # Skip indented lines (continuation of list/step sub-items)
+        if raw[0] == " " or raw[0] == "\t":
+            continue
+
+        violations.append(
+            Violation(
+                line=lineno,
+                rule="prose-without-p-tag",
+                detail=(
+                    "Prose paragraph inside <MethodSection> must be wrapped in <p> tags."
+                ),
+                text=stripped[:120],
+            )
+        )
+
+    return violations
+
+
 CHECKS: tuple[CheckFn, ...] = (
     check_response_outside_tabs,
     check_forbidden_sdk_patterns,
     check_combined_step_labels,
     check_method_switch_import,
+    check_content_before_method_switch,
+    check_indented_method_section_close,
+    check_import_os_without_usage,
+    check_go_import_alias,
+    check_prose_without_p_tags,
 )
 
 
