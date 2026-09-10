@@ -71,7 +71,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     client = gcore.Gcore()
     domain_id = int(os.environ["WAAP_DOMAIN_ID"])
 
-    TARGET_IDS = {"S3008869", "S3008870"}
+    TARGET_NAMES = {"Invalid user agent", "Unknown user agent"}
 
     rule_sets = client.waap.domains.list_rule_sets(domain_id)
     aa_set = next(
@@ -79,7 +79,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     )
 
     for policy in aa_set.rules:
-        if policy.id in TARGET_IDS:
+        if policy.name in TARGET_NAMES:
             status = "enabled" if policy.mode else "disabled"
             print(f"{policy.name}: {status} ({policy.id})")
     ```
@@ -101,13 +101,13 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        targetIDs := map[string]bool{"S3008869": true, "S3008870": true}
+        targetNames := map[string]bool{"Invalid user agent": true, "Unknown user agent": true}
 
         ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
         for _, rs := range *ruleSets {
             if rs.ResourceSlug == "anti-automation-bot-protection" {
                 for _, policy := range rs.Rules {
-                    if targetIDs[policy.ID] {
+                    if targetNames[policy.Name] {
                         status := "disabled"
                         if policy.Mode {
                             status = "enabled"
@@ -124,10 +124,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     ```bash
     curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
       -H "Authorization: APIKey ${GCORE_API_KEY}" \
-      | jq '[.[] | select(.resource_slug == "anti-automation-bot-protection") | .rules[] | select(.id == "S3008869" or .id == "S3008870") | {name, id, mode}]'
+      | jq '[.[] | select(.resource_slug == "anti-automation-bot-protection") | .rules[] | select(.name == "Invalid user agent" or .name == "Unknown user agent") | {name, id, mode}]'
     ```
 
-    The response lists both policies with their current state. `mode: true` means enabled; `mode: false` means disabled:
+    The response lists both policies with their current state. `mode: true` means enabled; `mode: false` means disabled. The `id` value is unique to the domain:
 
     ```json
     [
@@ -145,7 +145,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Enable or disable a policy
 
-<p>Sets the policy to enabled or disabled by specifying the target state. Use the policy ID from the View policy states response or from the table below.</p>
+<p>Sets the policy to enabled or disabled by specifying the target state. Use the policy ID returned by the [View policy states](#view-policy-states) request.</p>
 
 | Parameter | Required | Description |
 |---|---|---|
@@ -162,10 +162,14 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     client = gcore.Gcore()
     domain_id = int(os.environ["WAAP_DOMAIN_ID"])
 
-    # S3008869 = Invalid user agent, S3008870 = Unknown user agent
-    policy_id = "S3008869"
+    # Find the policy ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    aa_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "anti-automation-bot-protection"
+    )
+    policy = next(r for r in aa_set.rules if r.name == "Invalid user agent")
 
-    result = client.waap.domains.policies.toggle(policy_id, domain_id=domain_id, mode=True)
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
     print(f"Invalid user agent is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
@@ -187,8 +191,18 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        // S3008869 = Invalid user agent, S3008870 = Unknown user agent
-        policyID := "S3008869"
+        // Find the policy ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var policyID string
+        for _, rs := range *ruleSets {
+            if rs.ResourceSlug == "anti-automation-bot-protection" {
+                for _, p := range rs.Rules {
+                    if p.Name == "Invalid user agent" {
+                        policyID = p.ID
+                    }
+                }
+            }
+        }
 
         result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
@@ -201,7 +215,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
   </Tab>
   <Tab title="curl">
     ```bash
-    # Set POLICY_ID to S3008869 (Invalid user agent) or S3008870 (Unknown user agent)
+    # Set POLICY_ID to the id from the View policy states response
     export POLICY_ID="{POLICY_ID}"
 
     curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}" \

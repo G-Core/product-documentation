@@ -84,6 +84,22 @@ Same result: empty page on deploy.
 - `portal` always comes first — it is the default tab
 - Do not add `terraform` or `cli` tabs until the content exists
 
+**Never use `tab` prop instead of `id` + `label` — tabs silently disappear:**
+
+```mdx
+Wrong:   <MethodSection tab="Windows">
+Correct: <MethodSection id="windows" label="Windows">
+```
+
+`method-switch.jsx` filters tabs by `c.props.id`. With only a `tab` prop, every
+`<MethodSection>` maps to null, `tabs` becomes an empty array, and `<MethodSwitch>`
+renders nothing. Symptom: the heading before `<MethodSwitch>` displays; everything
+inside the component does not. No error is thrown — the compiler reports OK.
+
+For non-standard tabs (platforms, environments, etc.) use a descriptive lowercase slug as `id`
+and the display name as `label`. Examples: `id="windows" label="Windows"`,
+`id="linux" label="Linux"`, `id="ios" label="iOS and iPadOS"`.
+
 ### How Mintlify compiles MethodSwitch internally
 
 Mintlify wraps each custom component in an internal `_MdxComponentBoundary` element

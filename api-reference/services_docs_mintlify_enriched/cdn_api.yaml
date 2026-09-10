@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: ac280258de69
+  version: 99e4c4deb97b
 servers:
 - url: https://api.gcore.com
 tags:
@@ -2225,6 +2225,39 @@ paths:
                   $ref: '#/components/schemas/LogsUploaderPolicyField'
         '403':
           description: Feature is disabled for your account.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          logs_uploader_policy_fields = client.cdn.logs_uploader.policies.list_fields_allowed_conversions()
+          print(logs_uploader_policy_fields)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	logsUploaderPolicyFields, err := client.CDN.LogsUploader.Policies.ListFieldsAllowedConversions(context.TODO())
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", logsUploaderPolicyFields)
+          }
   /cdn/logs_uploader/targets:
     get:
       operationId: get-targets-list
@@ -8527,8 +8560,6 @@ components:
           $ref: '#/components/schemas/proxy_ssl_ca'
         proxy_ssl_data:
           $ref: '#/components/schemas/proxy_ssl_data'
-        waap_api_domain_enabled:
-          $ref: '#/components/schemas/waap_api_domain_enabled'
         options:
           type: object
           $ref: '#/components/schemas/resource_options'
@@ -8664,6 +8695,10 @@ components:
           type: string
           description: Rate limit for prefetch requests.
           example: 2/m
+        aliases_limit:
+          type: integer
+          description: Maximum number of aliases that can be created on your tariff plan.
+          example: 100
     CnameAlreadyExistsError:
       title: CNAME already exists
       type: object
@@ -9050,8 +9085,6 @@ components:
           $ref: '#/components/schemas/proxy_ssl_data'
         primary_resource:
           $ref: '#/components/schemas/primary_resource'
-        waap_api_domain_enabled:
-          $ref: '#/components/schemas/waap_api_domain_enabled'
         options:
           type: object
           $ref: '#/components/schemas/resource_options'
@@ -15773,15 +15806,6 @@ components:
       example:
         enabled: true
         value: true
-    waap_api_domain_enabled:
-      type: boolean
-      writeOnly: true
-      description: |-
-        Defines whether the associated WAAP Domain is identified as an API Domain.
-
-        Possible values:
-        - **true** - The associated WAAP Domain is designated as an API Domain.
-        - **false** - The associated WAAP Domain is not designated as an API Domain.
     waap_domain_id:
       type: string
       readOnly: true

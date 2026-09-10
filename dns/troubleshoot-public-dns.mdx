@@ -1,0 +1,140 @@
+---
+title: Troubleshoot Gcore Public DNS
+sidebarTitle: Troubleshooting
+ai-navigation: Troubleshoot common issues with Gcore Public DNS - DNS changes not applying, DoH and DoT connection failures, resolver conflicts, and DNSSEC behavior.
+---
+
+DNS resolver configuration can fail to take effect for three common reasons: the setting is overwritten by DHCP or a VPN, an encrypted DNS port is blocked by the network, or a browser uses its own DoH instead of the system resolver.
+
+<AccordionGroup>
+
+<Accordion title="resolv.conf reverts after reconnect (Linux)">
+
+On Linux systems using DHCP, the network manager rewrites `/etc/resolv.conf` every time the connection drops and reconnects. Any addresses added directly to that file are overwritten.
+
+Configuring the resolver through `systemd-resolved` or `NetworkManager` — both covered in the [plain&nbsp;DNS guide](/dns/configure-plain-dns) — prevents `/etc/resolv.conf` from being overwritten on reconnect.
+
+</Accordion>
+
+<Accordion title="Browser still uses a different DNS provider">
+
+Chrome, Firefox, and Edge each have built-in DoH settings that operate independently of the system resolver. Configuring DNS at the OS level does not change what the browser uses if its own DoH is active.
+
+To route browser queries through Gcore, either configure the browser's DoH setting to use `https://gcoredns.com/dns-query`, or disable the browser's DoH so it falls back to the system resolver. Disabling browser DoH while the OS uses plain DNS means browser queries travel unencrypted.
+
+</Accordion>
+
+<Accordion title="DNS over HTTPS dropdown is disabled in Windows Settings">
+
+The **DNS over HTTPS** dropdown in Windows Settings is only active for IP addresses that Windows recognizes as DoH providers. Gcore is not in the default list, so the dropdown appears greyed out until the address is registered.
+
+Register both Gcore IPs in PowerShell (run as Administrator) before opening Settings:
+
+```powershell
+Add-DnsClientDohServerAddress `
+  -ServerAddress "95.85.95.85" `
+  -DohTemplate "https://gcoredns.com/dns-query" `
+  -AllowFallbackToUdp $False `
+  -AutoUpgrade $True
+
+Add-DnsClientDohServerAddress `
+  -ServerAddress "2.56.220.2" `
+  -DohTemplate "https://gcoredns.com/dns-query" `
+  -AllowFallbackToUdp $False `
+  -AutoUpgrade $True
+```
+
+After both commands complete, reopen the adapter's DNS settings — the dropdown becomes active. If the command returns an access denied error, the device is managed by an organization and the setting must be applied through Group Policy or MDM.
+
+</Accordion>
+
+<Accordion title="DoH error: 505 HTTP Version Not Supported">
+
+The Gcore DoH endpoint at `https://gcoredns.com/dns-query` requires HTTP/2. Clients connecting over HTTP/1.1 receive a `505 HTTP Version Not Supported` response.
+
+This error only appears in custom integrations — standard DoH clients negotiate HTTP/2 automatically. Check whether the HTTP library in use supports HTTP/2 and verify that no intermediate proxy is downgrading the connection to HTTP/1.1.
+
+</Accordion>
+
+<Accordion title="DoT connection timeout or refused">
+
+DNS over TLS uses TCP port 853. Some ISPs, corporate networks, and public Wi-Fi networks block outbound connections on this port. When blocked, the DoT client times out with no clear error.
+
+Check whether port 853 is reachable before investigating the configuration:
+
+```powershell
+Test-NetConnection -ComputerName gcoredns.com -Port 853
+```
+
+On Linux or macOS:
+
+```sh
+nc -zv gcoredns.com 853
+```
+
+A failed connection means TCP traffic on port 853 is not reaching `gcoredns.com` from this network. The most common cause is a network-level block on port 853 by the ISP or corporate firewall, but DNS resolution of `gcoredns.com` itself or local firewall rules on the device can produce the same result.
+
+If the network is blocking port 853, configure DoH on port 443 as an alternative — it uses the same port as regular HTTPS and is not blocked by most networks.
+
+</Accordion>
+
+<Accordion title="DoT certificate validation error">
+
+DoT clients validate the server certificate against the configured hostname. The supported hostname for Gcore DoT is `gcoredns.com`. Entering a bare IP address or any other value causes certificate validation to fail because the certificate is issued for `gcoredns.com`, not for the IP.
+
+Check the DoT hostname field in the client configuration and correct it to `gcoredns.com`.
+
+</Accordion>
+
+<Accordion title="Android Private DNS shows no confirmation after saving">
+
+After entering `gcoredns.com` in the Private DNS field, Android tests the DoT connection on port 853 before showing a success indicator. If no confirmation appears:
+
+- The current network may block port 853. Switch to mobile data or a different Wi-Fi network and try again.
+- On devices with custom Android skins — MIUI, One UI, and similar — the success indicator is a checkmark or a network icon change rather than the word "Connected". If the hostname was accepted without an error, the format is valid. Whether the DoT connection actually succeeded depends on whether port 853 is reachable — a blocked port produces no visible error on some device skins.
+
+</Accordion>
+
+<Accordion title="VPN overrides DNS settings">
+
+VPN clients push a resolver to all network adapters and take precedence over system-level DNS configuration. After connecting to a VPN, DNS queries are routed to the VPN's resolver regardless of what is configured in OS settings.
+
+Configure DNS inside the VPN client if it supports custom DNS servers, or use the client's split-DNS feature to keep DNS queries outside the tunnel. If neither option is available, the VPN controls DNS while it is connected.
+
+</Accordion>
+
+<Accordion title="Queries still use the ISP resolver after configuring a router">
+
+When the router's upstream DNS is set to Gcore but devices on the network still query the ISP resolver, two causes are likely. The router may not be advertising itself as the DNS server via DHCP, or a device has a static DNS address that bypasses the router's DHCP setting.
+
+Verify the router is the DNS server for local clients:
+
+```sh
+nslookup example.com
+```
+
+The `Server:` field should show the router's LAN IP address. If it shows the ISP's resolver directly, the device may have a static DNS entry, or the router is not advertising itself as the DNS server via DHCP. Clear any static DNS on the device and check that the router's DHCP settings include its own IP as the DNS server.
+
+To confirm the router's upstream configuration, check the WAN DNS settings in the router's admin panel — both entries should show `95.85.95.85` and `2.56.220.2`. This confirms the router is configured to forward to Gcore; end-to-end verification requires a successful query to reach Gcore's servers, which depends on the router's own network connectivity.
+
+</Accordion>
+
+<Accordion title="Domains with broken DNSSEC chains resolve instead of failing">
+
+Gcore Public DNS passes DNSSEC records through to clients but does not validate them. A domain whose DNSSEC chain is broken returns an answer instead of `SERVFAIL`. Queries succeed even when they would fail on a validating resolver.
+
+If DNSSEC validation is required, use a resolver that performs validation: Cloudflare (`1.1.1.1`) or Quad9 (`9.9.9.9`).
+
+</Accordion>
+
+<Accordion title="Request timeouts without an explicit error">
+
+Gcore Public DNS accepts up to 100 requests per second per client IP. When this limit is exceeded, excess requests are dropped silently — the client sees a timeout rather than an explicit error code.
+
+A timeout alone does not distinguish rate limiting from a network failure. Rate limiting is more likely when timeouts occur consistently across many rapid queries from the same client — automated scripts or applications that do not cache DNS responses — rather than as isolated incidents. A packet capture on the client will show whether DNS requests are being sent but not answered.
+
+If query volume is the cause, deploy a local caching resolver to reduce the number of upstream requests. Most repeated lookups are served from the local cache without reaching the Gcore resolver.
+
+</Accordion>
+
+</AccordionGroup>

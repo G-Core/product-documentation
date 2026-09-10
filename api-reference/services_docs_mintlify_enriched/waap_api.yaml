@@ -4,7 +4,7 @@ info:
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
   contact:
     email: support@gcore.com
-  version: 9b38a6c5cf6a
+  version: 24def0a6626b
 servers:
 - url: https://api.gcore.com
 paths:
@@ -302,6 +302,280 @@ paths:
           	}
           	fmt.Printf("%+v\n", waapStatisticsSeries.TotalBytes)
           }
+  /waap/v1/prebilling/total/{metric}:
+    get:
+      tags:
+      - Pre-billing
+      summary: Get aggregated billable consumption by metric
+      description: Retrieve an aggregated report on the calling client's own billable consumption by given metric
+      operationId: get_consumption_total_v1_prebilling_total__metric__get
+      parameters:
+      - name: metric
+        in: path
+        required: true
+        schema:
+          enum:
+          - domains
+          - volume
+          - requests
+          - requests_clean
+          type: string
+          description: The metric to get billable consumption for
+          title: Metric
+        description: The metric to get billable consumption for
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: The report start date (inclusive) in ISO 8601 format
+          title: From
+        description: The report start date (inclusive) in ISO 8601 format
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: The report end date (exclusive) in ISO 8601 format
+          title: To
+        description: The report end date (exclusive) in ISO 8601 format
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_BillingReportItem_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+  /waap/v1/prebilling/breakdown/{metric}:
+    get:
+      tags:
+      - Pre-billing
+      summary: Get billable consumption by metric per account
+      description: Retrieve a report on the calling client's own billable consumption by given metric with per-account breakdown
+      operationId: get_consumption_breakdown_v1_prebilling_breakdown__metric__get
+      parameters:
+      - name: metric
+        in: path
+        required: true
+        schema:
+          enum:
+          - domains
+          - volume
+          - requests
+          - requests_clean
+          type: string
+          description: The metric to get billable consumption for
+          title: Metric
+        description: The metric to get billable consumption for
+      - name: from
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: The report start date (inclusive) in ISO 8601 format
+          title: From
+        description: The report start date (inclusive) in ISO 8601 format
+      - name: to
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: The report end date (exclusive) in ISO 8601 format
+          title: To
+        description: The report end date (exclusive) in ISO 8601 format
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StructuredPaginatedResponse_BreakdownBillingReport_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
   /waap/v1/domains/{domain_id}/rule-sets:
     get:
       tags:
@@ -1557,11 +1831,11 @@ paths:
           - type: string
             format: date-time
           - type: 'null'
-          description: Filter attacks starting from a specified date in ISO 8601 format
+          description: Start time of the search interval. Excludes attacks that ended before it
           examples:
           - '2024-04-26T13:32:49Z'
           title: Start Time
-        description: Filter attacks starting from a specified date in ISO 8601 format
+        description: Start time of the search interval. Excludes attacks that ended before it
       - name: end_time
         in: query
         required: false
@@ -1570,11 +1844,11 @@ paths:
           - type: string
             format: date-time
           - type: 'null'
-          description: Filter attacks up to a specified end date in ISO 8601 format
+          description: End time of the search interval. Excludes attacks that started after it
           examples:
           - '2024-04-27T13:00:00Z'
           title: End Time
-        description: Filter attacks up to a specified end date in ISO 8601 format
+        description: End time of the search interval. Excludes attacks that started after it
       responses:
         '200':
           description: Successful Response
@@ -5066,6 +5340,686 @@ paths:
           	}
           	fmt.Printf("%+v\n", waapAdvancedRuleDescriptorList.Version)
           }
+  /waap/v1/domains/{domain_id}/default-rule-overrides:
+    get:
+      tags:
+      - Policy Overrides
+      summary: Retrieve policy overrides
+      operationId: get_policy_overrides_v1_domains__domain_id__default_rule_overrides_get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: ordering
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - enum:
+            - id
+            - name
+            - target_type
+            - enabled
+            - stale
+            - created_at
+            - updated_at
+            - -id
+            - -name
+            - -target_type
+            - -enabled
+            - -stale
+            - -created_at
+            - -updated_at
+            type: string
+          - type: 'null'
+          description: Determine the field used to order results.
+          title: Ordering
+        description: Determine the field used to order results.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      - name: target_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/PolicyOverrideTargetType'
+          - type: 'null'
+          description: Filter by linked target type.
+          title: Target Type
+        description: Filter by linked target type.
+      - name: enabled
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Filter by enabled state.
+          title: Enabled
+        description: Filter by enabled state.
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            minLength: 1
+          - type: 'null'
+          description: Search policy override names and descriptions.
+          title: Search
+        description: Search policy override names and descriptions.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_PolicyOverrideResponse_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+    post:
+      tags:
+      - Policy Overrides
+      summary: Create a policy override
+      operationId: create_policy_override_v1_domains__domain_id__default_rule_overrides_post
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyOverrideCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOverrideResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Quota limit exceeded
+          content:
+            application/problem+json:
+              example:
+                title: Quota limit exceeded
+                type: quota-check-limit-exceeded
+                status: 403
+                detail: You have reached the maximum limit allowed for your current plan. Please upgrade your plan to add more.
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              example:
+                title: Resource not found
+                type: quota-check-no-resource
+                status: 404
+                detail: The quota resource requested does not exist. Cannot enable WAAP for this domain. Please reach out to our support team.
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+  /waap/v1/domains/{domain_id}/default-rule-overrides/{policy_override_id}:
+    get:
+      tags:
+      - Policy Overrides
+      summary: Retrieve a policy override
+      operationId: get_policy_override_v1_domains__domain_id__default_rule_overrides__policy_override_id__get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: policy_override_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: Policy override ID
+          title: Policy Override Id
+        description: Policy override ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOverrideResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+    patch:
+      tags:
+      - Policy Overrides
+      summary: Update a policy override
+      operationId: update_policy_override_v1_domains__domain_id__default_rule_overrides__policy_override_id__patch
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: policy_override_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: Policy override ID
+          title: Policy Override Id
+        description: Policy override ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyOverrideUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOverrideResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Quota limit exceeded
+          content:
+            application/problem+json:
+              example:
+                title: Quota limit exceeded
+                type: quota-check-limit-exceeded
+                status: 403
+                detail: You have reached the maximum limit allowed for your current plan. Please upgrade your plan to add more.
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              example:
+                title: Resource not found
+                type: quota-check-no-resource
+                status: 404
+                detail: The quota resource requested does not exist. Cannot enable WAAP for this domain. Please reach out to our support team.
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          description: Internal server error.
+          content:
+            application/problem+json:
+              example:
+                title: Internal server error.
+                type: internal-server-error
+                status: 500
+                detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
+    delete:
+      tags:
+      - Policy Overrides
+      summary: Delete a policy override
+      operationId: delete_policy_override_v1_domains__domain_id__default_rule_overrides__policy_override_id__delete
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: policy_override_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: Policy override ID
+          title: Policy Override Id
+        description: Policy override ID
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              example:
+                title: Resource not found
+                type: quota-check-no-resource
+                status: 404
+                detail: The quota resource requested does not exist. Cannot enable WAAP for this domain. Please reach out to our support team.
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          description: Internal server error.
+          content:
+            application/problem+json:
+              example:
+                title: Internal server error.
+                type: internal-server-error
+                status: 500
+                detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
+  /waap/v1/domains/{domain_id}/policy-override-targets/owasp-top-threats:
+    get:
+      tags:
+      - Policy Overrides
+      summary: List OWASP Top Threats targets selectable as a policy override target
+      operationId: get_owasp_top_threats_targets_v1_domains__domain_id__policy_override_targets_owasp_top_threats_get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_OwaspTopThreatsTarget_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
   /waap/v1/tags:
     get:
       tags:
@@ -8639,8 +9593,9 @@ paths:
       tags:
       - Security Insights
       summary: Create an insight silence
-      description: Create a new insight silence for a specified domain. Insight silences help in temporarily disabling certain insights based on specific criteria.
+      description: Create a new insight silence for a specified domain. Insight silences help in temporarily disabling certain insights based on specific criteria. Deprecated. Will become unavailable after Sun, 13 Dec 2026. Use [POST /v2/domains/{`domain_id`}/insight-silences](/api-reference/waap/security-insights/create-insight-silence) instead.
       operationId: create_insight_silence_v1_domains__domain_id__insight_silences_post
+      deprecated: true
       parameters:
       - name: domain_id
         in: path
@@ -8658,7 +9613,7 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateInsightSilencePayload'
       responses:
-        '201':
+        '200':
           description: Successful Response
           content:
             application/json:
@@ -8790,8 +9745,9 @@ paths:
       tags:
       - Security Insights
       summary: Retrieve a list of insight silences
-      description: Retrieve a list of insight silences for a specific domain
+      description: Retrieve a list of insight silences for a specific domain. Deprecated. Will become unavailable after Sun, 13 Dec 2026. Use [GET /v2/domains/{`domain_id`}/insight-silences](/api-reference/waap/security-insights/list-insight-silences) instead.
       operationId: get_insight_silences_v1_domains__domain_id__insight_silences_get
+      deprecated: true
       parameters:
       - name: domain_id
         in: path
@@ -8998,8 +9954,9 @@ paths:
       tags:
       - Security Insights
       summary: Retrieve a specific insight silence
-      description: Retrieve a specific insight silence for a specific domain
+      description: Retrieve a specific insight silence for a specific domain. Deprecated. Will become unavailable after Sun, 13 Dec 2026. Use [GET /v2/domains/{`domain_id`}/insight-silences/{`silence_id`}](/api-reference/waap/security-insights/get-insight-silence) instead.
       operationId: get_insight_silence_v1_domains__domain_id__insight_silences__silence_id__get
+      deprecated: true
       parameters:
       - name: domain_id
         in: path
@@ -9142,8 +10099,9 @@ paths:
       tags:
       - Security Insights
       summary: Update an insight silence
-      description: Update an insight silence for a specific domain.
+      description: Update an insight silence for a specific domain. Deprecated. Will become unavailable after Sun, 13 Dec 2026. Use [PATCH /v2/domains/{`domain_id`}/insight-silences/{`silence_id`}](/api-reference/waap/security-insights/update-insight-silence) instead.
       operationId: update_insight_silence_v1_domains__domain_id__insight_silences__silence_id__patch
+      deprecated: true
       parameters:
       - name: domain_id
         in: path
@@ -9300,8 +10258,9 @@ paths:
       tags:
       - Security Insights
       summary: Delete an insight silence
-      description: Delete an insight silence for a specific domain.
+      description: Delete an insight silence for a specific domain. Deprecated. Will become unavailable after Sun, 13 Dec 2026. Use [DELETE /v2/domains/{`domain_id`}/insight-silences/{`silence_id`}](/api-reference/waap/security-insights/delete-insight-silence) instead.
       operationId: delete_insight_silence_v1_domains__domain_id__insight_silences__silence_id__delete
+      deprecated: true
       parameters:
       - name: domain_id
         in: path
@@ -12393,855 +13352,6 @@ paths:
           	}
           	fmt.Printf("%+v\n", response.DeletedIDs)
           }
-  /waap/v2/domains:
-    get:
-      tags:
-      - Domains
-      summary: Get Domains
-      description: Retrieve a list of domains associated with the client, including traffic statistics
-      operationId: get_domains_v2_domains_get
-      parameters:
-      - name: ordering
-        in: query
-        required: false
-        schema:
-          enum:
-          - id
-          - name
-          - status
-          - created_at
-          - -id
-          - -name
-          - -status
-          - -created_at
-          - total_requests
-          - -total_requests
-          - attacks_detected
-          - -attacks_detected
-          type: string
-          description: Sort the response by given field.
-          title: Ordering
-        description: Sort the response by given field.
-      - name: limit
-        in: query
-        required: false
-        schema:
-          type: integer
-          maximum: 100
-          minimum: 0
-          description: Number of items to return
-          default: 100
-          title: Limit
-        description: Number of items to return
-      - name: offset
-        in: query
-        required: false
-        schema:
-          type: integer
-          maximum: 100000
-          minimum: 0
-          description: Number of items to skip
-          default: 0
-          title: Offset
-        description: Number of items to skip
-      - name: status
-        in: query
-        required: false
-        schema:
-          $ref: '#/components/schemas/DomainStatus'
-          description: Filter domains based on the domain status
-          examples:
-          - active
-        description: Filter domains based on the domain status
-      - name: name
-        in: query
-        required: false
-        schema:
-          type: string
-          description: Filter domains based on the domain name. Supports '*' as a wildcard character
-          example: '*example.com'
-          examples:
-          - '*example.com'
-          title: Name
-        description: Filter domains based on the domain name. Supports '*' as a wildcard character
-      - name: ids
-        in: query
-        required: false
-        schema:
-          type: array
-          items:
-            type: integer
-            exclusiveMinimum: 0
-            description: The domain ID
-          description: Filter domains based on their IDs
-          example: 1
-          examples:
-          - 1
-          - 2
-          - 3
-          title: Ids
-        description: Filter domains based on their IDs
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedResponse_SummaryDomainWithStatsResponse_'
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-not-found
-                title: Not Found
-                status: 404
-                detail: The resource is not found
-          description: Not Found
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: internal-server-error
-                title: Internal server error.
-                status: 500
-                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
-          description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          page = client.waap.domains.list()
-          page = page.results[0]
-          print(page.id)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          	"github.com/G-Core/gcore-go/waap"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	page, err := client.Waap.Domains.List(context.TODO(), waap.DomainListParams{})
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", page)
-          }
-  /waap/v2/domains/{domain_id}:
-    get:
-      tags:
-      - Domains
-      summary: Get Domain
-      description: Retrieve detailed information about a specific domain
-      operationId: get_domain_v2_domains__domain_id__get
-      parameters:
-      - name: domain_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          exclusiveMinimum: 0
-          description: The domain ID
-          title: Domain Id
-        description: The domain ID
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetailedDomainResponse'
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-not-found
-                title: Not Found
-                status: 404
-                detail: The resource is not found
-          description: Not Found
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: internal-server-error
-                title: Internal server error.
-                status: 500
-                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
-          description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          waap_detailed_domain = client.waap.domains.get(
-              1,
-          )
-          print(waap_detailed_domain.id)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	waapDetailedDomain, err := client.Waap.Domains.Get(context.TODO(), 1)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", waapDetailedDomain.ID)
-          }
-    patch:
-      tags:
-      - Domains
-      summary: Update Domain
-      operationId: update_domain_v2_domains__domain_id__patch
-      parameters:
-      - name: domain_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          exclusiveMinimum: 0
-          description: The domain ID
-          title: Domain Id
-        description: The domain ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateDomain'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DetailedDomainResponse'
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-not-found
-                title: Not Found
-                status: 404
-                detail: The resource is not found
-          description: Not Found
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: internal-server-error
-                title: Internal server error.
-                status: 500
-                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
-          description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          waap_detailed_domain = client.waap.domains.update(
-              domain_id=1,
-              status="active",
-          )
-          print(waap_detailed_domain.id)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          	"github.com/G-Core/gcore-go/waap"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	waapDetailedDomain, err := client.Waap.Domains.Update(
-          		context.TODO(),
-          		1,
-          		waap.DomainUpdateParams{
-          			Status: waap.DomainUpdateParamsStatusActive,
-          		},
-          	)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", waapDetailedDomain.ID)
-          }
-    delete:
-      tags:
-      - Domains
-      summary: Delete a domain
-      description: Delete an inactive domain by ID. Only domains with status 'bypass' can be deleted.
-      operationId: delete_domain_v2_domains__domain_id__delete
-      parameters:
-      - name: domain_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          exclusiveMinimum: 0
-          description: The domain ID
-          title: Domain Id
-        description: The domain ID
-      responses:
-        '204':
-          description: Successful Response
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          description: Resource not found
-          content:
-            application/problem+json:
-              example:
-                title: Resource not found
-                type: quota-check-no-resource
-                status: 404
-                detail: The quota resource requested does not exist. Cannot enable WAAP for this domain. Please reach out to our support team.
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          description: Internal server error.
-          content:
-            application/problem+json:
-              example:
-                title: Internal server error.
-                type: internal-server-error
-                status: 500
-                detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          client.waap.domains.delete(
-              1,
-          )
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	err := client.Waap.Domains.Delete(context.TODO(), 1)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          }
-  /waap/v2/domains/{domain_id}/settings:
-    get:
-      tags:
-      - Domains
-      summary: Get Domain Settings
-      description: Retrieve settings for a specific domain
-      operationId: get_domain_settings_v2_domains__domain_id__settings_get
-      parameters:
-      - name: domain_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          exclusiveMinimum: 0
-          description: The domain ID
-          title: Domain Id
-        description: The domain ID
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DomainSettings'
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-not-found
-                title: Not Found
-                status: 404
-                detail: The resource is not found
-          description: Not Found
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: internal-server-error
-                title: Internal server error.
-                status: 500
-                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
-          description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          waap_domain_settings_model = client.waap.domains.settings.get(
-              1,
-          )
-          print(waap_domain_settings_model.api)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	waapDomainSettingsModel, err := client.Waap.Domains.Settings.Get(context.TODO(), 1)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", waapDomainSettingsModel.API)
-          }
-    patch:
-      tags:
-      - Domains
-      summary: Update Domain Settings
-      description: Update settings for a specific domain
-      operationId: update_domain_settings_v2_domains__domain_id__settings_patch
-      parameters:
-      - name: domain_id
-        in: path
-        required: true
-        schema:
-          type: integer
-          exclusiveMinimum: 0
-          description: The domain ID
-          title: Domain Id
-        description: The domain ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateDomainSettings'
-      responses:
-        '200':
-          description: Successful Response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DomainSettings'
-        '400':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-bad-request
-                title: Bad Request
-                status: 400
-                detail: 'Invalid domain name: '''''''''
-          description: Bad Request
-        '401':
-          description: Unauthorized
-          content:
-            application/problem+json:
-              example:
-                detail: Auth token is missing or invalid
-        '403':
-          description: Unauthenticated
-          content:
-            application/problem+json:
-              example:
-                detail: Permission denied
-        '404':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: http-not-found
-                title: Not Found
-                status: 404
-                detail: The resource is not found
-          description: Not Found
-        '422':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APICompositeError'
-              example:
-                type: request-validation-failed
-                title: Request validation error.
-                status: 422
-                detail: One or more fields have validation errors.
-                errors:
-                - loc:
-                  - body
-                  - name
-                  detail: Input should be a valid string
-                - loc:
-                  - body
-                  - date
-                  detail: Field required
-                - loc:
-                  - query
-                  - limit
-                  detail: Field required
-          description: Unprocessable Entity
-        '500':
-          content:
-            application/problem+json:
-              schema:
-                $ref: '#/components/schemas/APIError'
-              example:
-                type: internal-server-error
-                title: Internal server error.
-                status: 500
-                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
-          description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          waap_domain_settings_model = client.waap.domains.settings.update(
-              domain_id=1,
-          )
-          print(waap_domain_settings_model.api)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          	"github.com/G-Core/gcore-go/waap"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	waapDomainSettingsModel, err := client.Waap.Domains.Settings.Update(
-          		context.TODO(),
-          		1,
-          		waap.DomainSettingUpdateParams{},
-          	)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", waapDomainSettingsModel.API)
-          }
   /waap/v2/domains/{domain_id}/custom-rules/{rule_id}:
     patch:
       tags:
@@ -16075,6 +16185,1426 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+  /waap/v2/domains/{domain_id}/insight-silences:
+    post:
+      tags:
+      - Security Insights
+      summary: Create insight silence
+      description: Create a new insight silence for a specified domain. Insight silences help in temporarily disabling certain insights based on specific criteria.
+      operationId: create_insight_silence_v2_domains__domain_id__insight_silences_post
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInsightSilencePayload'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsightSilence'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+    get:
+      tags:
+      - Security Insights
+      summary: List insight silences
+      description: Retrieve a list of insight silences for a specific domain
+      operationId: get_insight_silences_v2_domains__domain_id__insight_silences_get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: ordering
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/InsightSilenceSortBy'
+          description: Sort the response by given field.
+          default: -id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      - name: id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+              format: uuid
+          - type: 'null'
+          description: The ID of the insight silence
+          title: Id
+        description: The ID of the insight silence
+      - name: insight_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          description: The type of the insight silence
+          title: Insight Type
+        description: The type of the insight silence
+      - name: comment
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The comment of the insight silence
+          title: Comment
+        description: The comment of the insight silence
+      - name: author
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: The author of the insight silence
+          title: Author
+        description: The author of the insight silence
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_InsightSilence_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+  /waap/v2/domains/{domain_id}/insight-silences/{silence_id}:
+    get:
+      tags:
+      - Security Insights
+      summary: Get insight silence
+      description: Retrieve a specific insight silence for a specific domain
+      operationId: get_insight_silence_v2_domains__domain_id__insight_silences__silence_id__get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: silence_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: A generated unique identifier for the silence
+          title: Silence Id
+        description: A generated unique identifier for the silence
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsightSilence'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+    patch:
+      tags:
+      - Security Insights
+      summary: Update insight silence
+      description: Update an insight silence for a specific domain.
+      operationId: update_insight_silence_v2_domains__domain_id__insight_silences__silence_id__patch
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: silence_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: A generated unique identifier for the silence
+          title: Silence Id
+        description: A generated unique identifier for the silence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateInsightSilencePayload'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsightSilence'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+    delete:
+      tags:
+      - Security Insights
+      summary: Delete insight silence
+      description: Delete an insight silence for a specific domain.
+      operationId: delete_insight_silence_v2_domains__domain_id__insight_silences__silence_id__delete
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      - name: silence_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+          description: A generated unique identifier for the silence
+          title: Silence Id
+        description: A generated unique identifier for the silence
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+  /waap/v2/domains:
+    get:
+      tags:
+      - Domains
+      summary: Get Domains
+      description: Retrieve a list of domains associated with the client, including traffic statistics
+      operationId: get_domains_v2_domains_get
+      parameters:
+      - name: ordering
+        in: query
+        required: false
+        schema:
+          enum:
+          - id
+          - name
+          - status
+          - created_at
+          - -id
+          - -name
+          - -status
+          - -created_at
+          - total_requests
+          - -total_requests
+          - attacks_detected
+          - -attacks_detected
+          type: string
+          description: Sort the response by given field.
+          title: Ordering
+        description: Sort the response by given field.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 0
+          description: Number of items to return
+          default: 100
+          title: Limit
+        description: Number of items to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          description: Number of items to skip
+          default: 0
+          title: Offset
+        description: Number of items to skip
+      - name: status
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/DomainStatus'
+          description: Filter domains based on the domain status
+          examples:
+          - active
+        description: Filter domains based on the domain status
+      - name: name
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter domains based on the domain name. Supports '*' as a wildcard character
+          example: '*example.com'
+          examples:
+          - '*example.com'
+          title: Name
+        description: Filter domains based on the domain name. Supports '*' as a wildcard character
+      - name: ids
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            description: The domain ID
+          description: Filter domains based on their IDs
+          example: 1
+          examples:
+          - 1
+          - 2
+          - 3
+          title: Ids
+        description: Filter domains based on their IDs
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_SummaryDomainWithStatsResponse_'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.domains.list()
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Domains.List(context.TODO(), waap.DomainListParams{})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
+  /waap/v2/domains/{domain_id}:
+    get:
+      tags:
+      - Domains
+      summary: Get Domain
+      description: Retrieve detailed information about a specific domain
+      operationId: get_domain_v2_domains__domain_id__get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedDomainResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_detailed_domain = client.waap.domains.get(
+              1,
+          )
+          print(waap_detailed_domain.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapDetailedDomain, err := client.Waap.Domains.Get(context.TODO(), 1)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapDetailedDomain.ID)
+          }
+    patch:
+      tags:
+      - Domains
+      summary: Update Domain
+      operationId: update_domain_v2_domains__domain_id__patch
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDomain'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailedDomainResponse'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_detailed_domain = client.waap.domains.update(
+              domain_id=1,
+              status="active",
+          )
+          print(waap_detailed_domain.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapDetailedDomain, err := client.Waap.Domains.Update(
+          		context.TODO(),
+          		1,
+          		waap.DomainUpdateParams{
+          			Status: waap.DomainUpdateParamsStatusActive,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapDetailedDomain.ID)
+          }
+    delete:
+      tags:
+      - Domains
+      summary: Delete a domain
+      description: Delete an inactive domain by ID. Only domains with status 'bypass' can be deleted.
+      operationId: delete_domain_v2_domains__domain_id__delete
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          description: Resource not found
+          content:
+            application/problem+json:
+              example:
+                title: Resource not found
+                type: quota-check-no-resource
+                status: 404
+                detail: The quota resource requested does not exist. Cannot enable WAAP for this domain. Please reach out to our support team.
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          description: Internal server error.
+          content:
+            application/problem+json:
+              example:
+                title: Internal server error.
+                type: internal-server-error
+                status: 500
+                detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          client.waap.domains.delete(
+              1,
+          )
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	err := client.Waap.Domains.Delete(context.TODO(), 1)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          }
+  /waap/v2/domains/{domain_id}/settings:
+    get:
+      tags:
+      - Domains
+      summary: Get Domain Settings
+      description: Retrieve settings for a specific domain
+      operationId: get_domain_settings_v2_domains__domain_id__settings_get
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainSettings'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_domain_settings_model = client.waap.domains.settings.get(
+              1,
+          )
+          print(waap_domain_settings_model.api)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapDomainSettingsModel, err := client.Waap.Domains.Settings.Get(context.TODO(), 1)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapDomainSettingsModel.API)
+          }
+    patch:
+      tags:
+      - Domains
+      summary: Update Domain Settings
+      description: Update settings for a specific domain
+      operationId: update_domain_settings_v2_domains__domain_id__settings_patch
+      parameters:
+      - name: domain_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          exclusiveMinimum: 0
+          description: The domain ID
+          title: Domain Id
+        description: The domain ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDomainSettings'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DomainSettings'
+        '400':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-bad-request
+                title: Bad Request
+                status: 400
+                detail: 'Invalid domain name: '''''''''
+          description: Bad Request
+        '401':
+          description: Unauthorized
+          content:
+            application/problem+json:
+              example:
+                detail: Auth token is missing or invalid
+        '403':
+          description: Unauthenticated
+          content:
+            application/problem+json:
+              example:
+                detail: Permission denied
+        '404':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: http-not-found
+                title: Not Found
+                status: 404
+                detail: The resource is not found
+          description: Not Found
+        '422':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APICompositeError'
+              example:
+                type: request-validation-failed
+                title: Request validation error.
+                status: 422
+                detail: One or more fields have validation errors.
+                errors:
+                - loc:
+                  - body
+                  - name
+                  detail: Input should be a valid string
+                - loc:
+                  - body
+                  - date
+                  detail: Field required
+                - loc:
+                  - query
+                  - limit
+                  detail: Field required
+          description: Unprocessable Entity
+        '500':
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/APIError'
+              example:
+                type: internal-server-error
+                title: Internal server error.
+                status: 500
+                detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+          description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_domain_settings_model = client.waap.domains.settings.update(
+              domain_id=1,
+          )
+          print(waap_domain_settings_model.api)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapDomainSettingsModel, err := client.Waap.Domains.Settings.Update(
+          		context.TODO(),
+          		1,
+          		waap.DomainSettingUpdateParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapDomainSettingsModel.API)
+          }
 components:
   schemas:
     APICompositeError:
@@ -16708,6 +18238,21 @@ components:
       - file_data
       title: ApiSpecFile
       description: Request model for uploading an API spec file
+    BillingReportItem:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: The date of the accrued billable consumption item
+        amount:
+          type: integer
+          title: Amount
+          description: The amount of the billable resource accrued on the date
+      type: object
+      required:
+      - date
+      - amount
+      title: BillingReportItem
     BlockCsrfPageData:
       properties:
         logo:
@@ -16822,6 +18367,19 @@ components:
       - rule_name
       title: Blocked
       description: A collection of total numbers of events with blocked results per criteria
+    BreakdownBillingReport:
+      properties:
+        clients:
+          additionalProperties:
+            items:
+              $ref: '#/components/schemas/BillingReportItem'
+            type: array
+          type: object
+          title: Clients
+      type: object
+      required:
+      - clients
+      title: BreakdownBillingReport
     CaptchaPageData:
       properties:
         logo:
@@ -17576,6 +19134,12 @@ components:
           - type: 'null'
           title: End Time
           description: End time of DDoS attack
+        requests:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Requests
+          description: Total DDoS-blocked requests attributed to the attack over its full duration. Computed over the attack's own time window, so it stays consistent regardless of the selected reporting range. Null when the count could not be computed.
       type: object
       title: DdosAttack
     DdosInfo:
@@ -17969,6 +19533,11 @@ components:
           example: https
           examples:
           - https
+        policy_override_allowed:
+          type: boolean
+          title: Policy Override Allowed
+          description: Whether a Policy Override can be created for this request.
+          readOnly: true
       type: object
       required:
       - id
@@ -17986,6 +19555,7 @@ components:
       - result
       - decision
       - optional_action
+      - policy_override_allowed
       title: EventSummary
       description: Event record summary used when displaying a list of events
     FileExtensionCondition:
@@ -18979,6 +20549,50 @@ components:
       - organization
       title: OrganizationCondition
       description: Match the organization the request originated from, as determined by a WHOIS lookup of the requesting IP
+    OwaspTopThreatsPolicy:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: The parent policy's ID
+        name:
+          type: string
+          title: Name
+          description: The parent policy's name
+      type: object
+      required:
+      - id
+      - name
+      title: OwaspTopThreatsPolicy
+    OwaspTopThreatsTarget:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: The rule's ID; use this as a `target_id` when creating a policy override
+        name:
+          type: string
+          title: Name
+          description: The rule's display name
+        action:
+          type: string
+          title: Action
+          description: The action this rule takes when it triggers
+        policy:
+          anyOf:
+          - $ref: '#/components/schemas/OwaspTopThreatsPolicy'
+          - type: 'null'
+          description: The parent policy this rule is grouped under, if any
+      type: object
+      required:
+      - id
+      - name
+      - action
+      title: OwaspTopThreatsTarget
+      description: |-
+        A default OWASP Top Threats target that can be selected as the target of a
+        policy override, so this specific managed detection stops blocking matching
+        traffic while the rest of OWASP Top Threats protection stays unchanged.
     OwnerTypesCondition:
       properties:
         negation:
@@ -19126,6 +20740,33 @@ components:
       - count
       - results
       title: PaginatedResponse[ApiScanResult]
+    PaginatedResponse_BillingReportItem_:
+      properties:
+        limit:
+          type: integer
+          title: Limit
+          description: Number of items requested in the response
+        offset:
+          type: integer
+          title: Offset
+          description: Items response offset used
+        count:
+          type: integer
+          title: Count
+          description: Number of items contain in the response
+        results:
+          items:
+            $ref: '#/components/schemas/BillingReportItem'
+          type: array
+          title: Results
+          description: List of items returned in the response following given criteria
+      type: object
+      required:
+      - limit
+      - offset
+      - count
+      - results
+      title: PaginatedResponse[BillingReportItem]
     PaginatedResponse_CustomPageSetResponse_:
       properties:
         limit:
@@ -19450,6 +21091,60 @@ components:
       - count
       - results
       title: PaginatedResponse[Organization]
+    PaginatedResponse_OwaspTopThreatsTarget_:
+      properties:
+        limit:
+          type: integer
+          title: Limit
+          description: Number of items requested in the response
+        offset:
+          type: integer
+          title: Offset
+          description: Items response offset used
+        count:
+          type: integer
+          title: Count
+          description: Number of items contain in the response
+        results:
+          items:
+            $ref: '#/components/schemas/OwaspTopThreatsTarget'
+          type: array
+          title: Results
+          description: List of items returned in the response following given criteria
+      type: object
+      required:
+      - limit
+      - offset
+      - count
+      - results
+      title: PaginatedResponse[OwaspTopThreatsTarget]
+    PaginatedResponse_PolicyOverrideResponse_:
+      properties:
+        limit:
+          type: integer
+          title: Limit
+          description: Number of items requested in the response
+        offset:
+          type: integer
+          title: Offset
+          description: Items response offset used
+        count:
+          type: integer
+          title: Count
+          description: Number of items contain in the response
+        results:
+          items:
+            $ref: '#/components/schemas/PolicyOverrideResponse'
+          type: array
+          title: Results
+          description: List of items returned in the response following given criteria
+      type: object
+      required:
+      - limit
+      - offset
+      - count
+      - results
+      title: PaginatedResponse[PolicyOverrideResponse]
     PaginatedResponse_RequestSummary_:
       properties:
         limit:
@@ -19613,6 +21308,295 @@ components:
       - Composite
       title: PolicyAction
       description: The action taken by the WAAP upon rule activation.
+    PolicyOverrideCondition-Input:
+      properties:
+        ip:
+          $ref: '#/components/schemas/IpCondition'
+        ip_range:
+          $ref: '#/components/schemas/IpRangeCondition'
+        country:
+          $ref: '#/components/schemas/CountryCondition'
+        organization:
+          $ref: '#/components/schemas/OrganizationCondition'
+        header:
+          $ref: '#/components/schemas/HeaderCondition'
+        header_exists:
+          $ref: '#/components/schemas/HeaderExistsCondition'
+        user_agent:
+          $ref: '#/components/schemas/UserAgentCondition'
+        url:
+          $ref: '#/components/schemas/UrlCondition'
+        http_method:
+          $ref: '#/components/schemas/HttpMethodCondition'
+        ja3:
+          $ref: '#/components/schemas/Ja3Condition-Input'
+        ja4:
+          $ref: '#/components/schemas/Ja4Condition-Input'
+      additionalProperties: false
+      type: object
+      title: PolicyOverrideCondition
+      description: |-
+        A single policy override condition. Only one of the fields below may be set.
+
+        Limited to the subset of `CustomRuleConditionScope` scopes that policy overrides
+        support (Lime wire-format translation is reused from Custom Rules' own
+        `app.models.customer_rules.lime_translation.ConditionMapper`).
+    PolicyOverrideCondition-Output:
+      properties:
+        ip:
+          $ref: '#/components/schemas/IpCondition'
+        ip_range:
+          $ref: '#/components/schemas/IpRangeCondition'
+        country:
+          $ref: '#/components/schemas/CountryCondition'
+        organization:
+          $ref: '#/components/schemas/OrganizationCondition'
+        header:
+          $ref: '#/components/schemas/HeaderCondition'
+        header_exists:
+          $ref: '#/components/schemas/HeaderExistsCondition'
+        user_agent:
+          $ref: '#/components/schemas/UserAgentCondition'
+        url:
+          $ref: '#/components/schemas/UrlCondition'
+        http_method:
+          $ref: '#/components/schemas/HttpMethodCondition'
+        ja3:
+          $ref: '#/components/schemas/Ja3Condition-Output'
+        ja4:
+          $ref: '#/components/schemas/Ja4Condition-Output'
+      additionalProperties: false
+      type: object
+      title: PolicyOverrideCondition
+      description: |-
+        A single policy override condition. Only one of the fields below may be set.
+
+        Limited to the subset of `CustomRuleConditionScope` scopes that policy overrides
+        support (Lime wire-format translation is reused from Custom Rules' own
+        `app.models.customer_rules.lime_translation.ConditionMapper`).
+    PolicyOverrideCreate:
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          minLength: 1
+          title: Name
+          description: The policy override's display name
+        description:
+          anyOf:
+          - type: string
+            maxLength: 1000
+          - type: 'null'
+          title: Description
+          description: An optional note explaining the override
+        target_type:
+          $ref: '#/components/schemas/PolicyOverrideTargetType'
+          description: Whether `target_ids` are detector IDs or rule IDs
+        target_ids:
+          items:
+            type: integer
+            exclusiveMinimum: 0
+            description: A detector or rule ID, matching `target_type`
+          type: array
+          minItems: 1
+          title: Target Ids
+          description: The detectors or rules this override suppresses
+        conditions:
+          items:
+            $ref: '#/components/schemas/PolicyOverrideCondition-Input'
+          type: array
+          maxItems: 5
+          title: Conditions
+          description: The conditions required for the override to apply. An override may have up to 5 conditions; all must pass for the override to apply. Without conditions the override applies to every request on the owning domain that hits a linked target.
+        enabled:
+          type: boolean
+          title: Enabled
+          description: Whether the override is active
+        request_id:
+          anyOf:
+          - type: string
+            pattern: ^[a-f0-9]{32}-[0-9]{6}$
+          - type: 'null'
+          title: Request Id
+          description: The ID of the request that prompted this override, if created from Event Details. Preserves a snapshot of that request for audit purposes; has no effect on override behavior and is not returned by this API.
+      additionalProperties: false
+      type: object
+      required:
+      - name
+      - target_type
+      - target_ids
+      - enabled
+      title: PolicyOverrideCreate
+    PolicyOverrideResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: The policy override's ID
+        domain_id:
+          type: integer
+          title: Domain Id
+          description: The domain this override belongs to
+        name:
+          type: string
+          title: Name
+          description: The policy override's display name
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+          description: An optional note explaining the override
+        target_type:
+          $ref: '#/components/schemas/PolicyOverrideTargetType'
+          description: Whether targets are detectors or rules
+        targets:
+          items:
+            $ref: '#/components/schemas/PolicyOverrideTarget'
+          type: array
+          title: Targets
+          description: The detectors or rules this override suppresses
+        conditions:
+          items:
+            $ref: '#/components/schemas/PolicyOverrideCondition-Output'
+          type: array
+          title: Conditions
+          description: The conditions required for the override to apply. Empty means the override applies to every request on the owning domain that hits a linked target.
+        enabled:
+          type: boolean
+          title: Enabled
+          description: Whether the override is active
+        stale:
+          type: boolean
+          title: Stale
+          description: Whether a linked target has been deleted, disabled, or otherwise become invalid. A stale override is not published and does not suppress anything until it's edited.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: When the override was created
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: When the override was last updated
+      type: object
+      required:
+      - id
+      - domain_id
+      - name
+      - target_type
+      - targets
+      - conditions
+      - enabled
+      - stale
+      - created_at
+      - updated_at
+      title: PolicyOverrideResponse
+    PolicyOverrideTarget:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: The policy override target's ID
+        detector_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Detector Id
+          description: The linked detector's ID, if `target_type` is detector
+        rule_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rule Id
+          description: The linked rule's ID, if `target_type` is rule
+        ref:
+          type: string
+          title: Ref
+          description: The stable reference edge uses to match this target
+        snapshot:
+          $ref: '#/components/schemas/PolicyOverrideTargetSnapshot'
+          description: A point-in-time record of the target's details, retained for display after the linked object is deleted
+      type: object
+      required:
+      - id
+      - ref
+      - snapshot
+      title: PolicyOverrideTarget
+    PolicyOverrideTargetSnapshot:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: The target's display name when it was linked
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: The target's detection category, if `target_type` is detector
+        action:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Action
+          description: The action the target took when it triggered, if `target_type` is rule
+        attack_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Attack Type
+          description: The attack category the target detected, if `target_type` is rule
+      type: object
+      required:
+      - name
+      title: PolicyOverrideTargetSnapshot
+      description: |-
+        Point-in-time record of the linked target's identifying details, kept so a
+        stale override -- whose live target may since have been deleted -- still shows
+        what it used to point at.
+    PolicyOverrideTargetType:
+      type: string
+      enum:
+      - detector
+      - rule
+      title: PolicyOverrideTargetType
+    PolicyOverrideUpdate:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 100
+            minLength: 1
+            description: The policy override's display name
+          - type: 'null'
+          title: Name
+        description:
+          anyOf:
+          - type: string
+            maxLength: 1000
+          - type: 'null'
+          title: Description
+          description: An optional note explaining the override
+        conditions:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/PolicyOverrideCondition-Input'
+            type: array
+            maxItems: 5
+            description: The conditions required for the override to apply. An override may have up to 5 conditions; all must pass for the override to apply. Without conditions the override applies to every request on the owning domain that hits a linked target.
+          - type: 'null'
+          title: Conditions
+        enabled:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Enabled
+          description: Whether the override is active
+      additionalProperties: false
+      type: object
+      title: PolicyOverrideUpdate
     PreviewCustomPage:
       properties:
         logo:
@@ -20550,6 +22534,30 @@ components:
       type: object
       title: StatisticsSeries
       description: Response model for the statistics series
+    StructuredPaginatedResponse_BreakdownBillingReport_:
+      properties:
+        limit:
+          type: integer
+          title: Limit
+          description: Number of items requested in the response
+        offset:
+          type: integer
+          title: Offset
+          description: Items response offset used
+        count:
+          type: integer
+          title: Count
+          description: Number of items contain in the response
+        results:
+          $ref: '#/components/schemas/BreakdownBillingReport'
+          description: Items on the current page from the result set
+      type: object
+      required:
+      - limit
+      - offset
+      - count
+      - results
+      title: StructuredPaginatedResponse[BreakdownBillingReport]
     SummaryDomainWithStatsResponse:
       properties:
         id:
@@ -21780,6 +23788,8 @@ tags:
 - name: IP Spotlight
 - name: Network Organizations
 - name: Policies
+- name: Policy Overrides
+- name: Pre-billing
 - name: Security Insights
 - name: Tags
 - name: WAAP Service
@@ -21798,6 +23808,8 @@ x-tagGroups:
   - IP Spotlight
   - Network Organizations
   - Policies
+  - Policy Overrides
+  - Pre-billing
   - Security Insights
   - Tags
   - WAAP Service
