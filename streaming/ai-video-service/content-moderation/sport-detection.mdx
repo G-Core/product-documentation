@@ -21,11 +21,11 @@ For proper analysis, make sure your video is at least 10-15 seconds long.
 
 <p>To run the sport detection check:</p>
 
-1. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
+<p>1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.</p>
 
 <Frame>![AI tasks page](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/ai-tasks-page.png)</Frame>
 
-2. In the **Origin URL** field, enter the link to your MP4 video. You have two options:
+<p>2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:</p>
 
    - **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
 
@@ -35,15 +35,15 @@ For proper analysis, make sure your video is at least 10-15 seconds long.
 
    - **Select from uploaded videos**: choose a video hosted on the Gcore platform.
 
-3. In the **Task type**, choose **Content moderation**.
+<p>3\. In the **Task type**, choose **Content moderation**.</p>
 
-4. In the following dropdown, select **Sport detection**.
+<p>4\. In the following dropdown, select **Sport detection**.</p>
 
-5. Click **Generate task**.
+<p>5\. Click **Generate task**.</p>
 
-6. Wait until the task is processed and has the **Success** status, click the task ID to view task details.
+<p>6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.</p>
 
-7. Check out the **Task result** field. You can have one of the following outputs:
+<p>7\. Check out the **Task result** field. You can have one of the following outputs:</p>
 
    - **Sport detection: not found**. This means that your video doesn't contain sport activities.
 
@@ -51,10 +51,10 @@ For proper analysis, make sure your video is at least 10-15 seconds long.
 
 <Frame>![Sport detection task details](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/sport-detection.png)</Frame>
 
-  </MethodSection>
+</MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>The sport detection task analyzes an MP4 video for sporting activities. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until the status is `SUCCESS` or `FAILURE`.</p>
+<p>The sport detection task analyzes an MP4 video for sporting activities — specific types, actions, events, and moments. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until the status is `SUCCESS` or `FAILURE`. Only objects detected with at least 30% confidence are included in the response.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required.
@@ -70,61 +70,65 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    from gcore import Gcore
+```python
+from gcore import Gcore
 
-    client = Gcore()
-    task = client.streaming.ai_tasks.create(
-        task_name="content-moderation",
-        category="sport",
-        url="https://example.com/video.mp4",
-    )
-    print(f"Task ID: {task.task_id}")
-    ```
+client = Gcore()
+task = client.streaming.ai_tasks.create(
+    task_name="content-moderation",
+    category="sport",
+    url="https://example.com/video.mp4",
+)
+print(f"Task ID: {task.task_id}")
+```
   </Tab>
   <Tab title="Go SDK">
-    ```go
-    package main
+```go
+package main
 
-    import (
-        "context"
-        "fmt"
+import (
+    "context"
+    "fmt"
 
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/streaming"
-    )
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
 
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
 
-        task, err := client.Streaming.AITasks.New(ctx,
-            streaming.AITaskNewParams{
-                OfAIContentModerationSportTaskData: &streaming.AIContentmoderationSportParam{
-                    TaskName: streaming.AIContentmoderationSportTaskNameContentModeration,
-                    Category: streaming.AIContentmoderationSportCategorySport,
-                    URL:      "https://example.com/video.mp4",
-                },
-            },
-        )
-        if err != nil {
-            panic(err)
-        }
-        fmt.Printf("Task ID: %s\n", task.TaskID)
+    task, err := client.Streaming.AITasks.New(ctx, streaming.AITaskNewParams{
+        OfAIContentModerationSportTaskData: &streaming.AIContentmoderationSportParam{
+            TaskName: streaming.AIContentmoderationSportTaskNameContentModeration,
+            Category: streaming.AIContentmoderationSportCategorySport,
+            URL:      "https://example.com/video.mp4",
+        },
+    })
+    if err != nil {
+        panic(err)
     }
-    ```
+    fmt.Printf("Task ID: %s\n", task.TaskID)
+}
+```
   </Tab>
   <Tab title="curl">
-    ```bash
-    curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
-         -H "Authorization: APIKey $GCORE_API_KEY" \
-         -H "Content-Type: application/json" \
-         -d '{
-               "task_name": "content-moderation",
-               "category": "sport",
-               "url": "https://example.com/video.mp4"
-             }'
-    ```
+```bash
+curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "task_name": "content-moderation",
+           "category": "sport",
+           "url": "https://example.com/video.mp4"
+         }'
+```
+
+<p>The API returns:</p>
+
+```json
+{"task_id": "bce9c58a-5367-4880-8526-9fb7641d1275"}
+```
   </Tab>
 </Tabs>
 
@@ -134,67 +138,197 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    import os
-    import time
-    from gcore import Gcore
+```python
+import os
+import time
+from gcore import Gcore
 
-    task_id = os.environ["TASK_ID"]
+task_id = os.environ["TASK_ID"]
 
-    client = Gcore()
-    while True:
-        task = client.streaming.ai_tasks.get(task_id)
-        print(f"Status: {task.status}  Progress: {task.progress}%")
-        if task.status in ("SUCCESS", "FAILURE"):
-            break
-        time.sleep(5)
+client = Gcore()
+while True:
+    task = client.streaming.ai_tasks.get(task_id)
+    print(f"Status: {task.status}  Progress: {task.progress}%")
+    if task.status in ("SUCCESS", "FAILURE"):
+        break
+    time.sleep(5)
 
-    if task.status == "SUCCESS":
-        print(f"Result: {task.result}")
-    ```
+if task.status == "SUCCESS":
+    print(f"Sport detected: {task.result.sport_detected}")
+    for frame in task.result.frames:
+        print(f"  Frame {frame.frame_number}: {frame.label} (confidence {frame.confidence:.0%})")
+```
   </Tab>
   <Tab title="Go SDK">
-    ```go
-    package main
+```go
+package main
 
-    import (
-        "context"
-        "fmt"
-        "os"
-        "time"
+import (
+    "context"
+    "fmt"
+    "os"
+    "time"
 
-        gcore "github.com/G-Core/gcore-go"
-    )
+    gcore "github.com/G-Core/gcore-go"
+)
 
-    func main() {
-        taskID := os.Getenv("TASK_ID")
-        client := gcore.NewClient()
-        ctx := context.Background()
+func main() {
+    taskID := os.Getenv("TASK_ID")
+    client := gcore.NewClient()
+    ctx := context.Background()
 
-        for {
-            task, err := client.Streaming.AITasks.Get(ctx, taskID)
-            if err != nil {
-                panic(err)
-            }
-            fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
-            if task.Status == "SUCCESS" || task.Status == "FAILURE" {
-                if task.Status == "SUCCESS" {
-                    fmt.Printf("Result: %+v\n", task.Result)
-                }
-                break
-            }
-            time.Sleep(5 * time.Second)
+    for {
+        task, err := client.Streaming.AITasks.Get(ctx, taskID)
+        if err != nil {
+            panic(err)
         }
+        fmt.Printf("Status: %s  Progress: %d%%\n", task.Status, task.Progress)
+        if task.Status == "SUCCESS" || task.Status == "FAILURE" {
+            if task.Status == "SUCCESS" {
+                result := task.Result.AsAITaskGetResponseResultAIResultsContentmoderationSport()
+                fmt.Printf("Sport detected: %v\n", result.SportDetected)
+                for _, frame := range result.Frames {
+                    fmt.Printf("  Frame %d: %s (confidence %.0f%%)\n",
+                        frame.FrameNumber, frame.Label, frame.Confidence*100)
+                }
+            }
+            break
+        }
+        time.Sleep(5 * time.Second)
     }
-    ```
+}
+```
   </Tab>
   <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
-         -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
+```bash
+curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "task_id": "bce9c58a-5367-4880-8526-9fb7641d1275",
+  "status": "SUCCESS",
+  "progress": 100,
+  "result": {
+    "sport_detected": true,
+    "detection_results": ["playing tennis"],
+    "frames": [
+      {"frame_number": 5, "label": "playing tennis", "confidence": 0.72},
+      {"frame_number": 9, "label": "playing tennis", "confidence": 0.81}
+    ]
+  }
+}
+```
   </Tab>
 </Tabs>
 
-  </MethodSection>
+<p>**Interpreting the result**</p>
+
+<p>On success, the `result` object contains:</p>
+
+- `sport_detected: false` — no sport activities found in the video.
+- `sport_detected: true` — sport activity detected. The `detection_results` array lists the detected activity categories. The `frames` array lists each flagged frame with `frame_number`, `label` (the detected activity, e.g. `"playing tennis"`), and `confidence` (decimal 0.0–1.0, e.g. `0.72` means 72% confidence).
+
+## List AI tasks
+
+<p>To retrieve all AI tasks, send `GET /streaming/ai/tasks`. Use the optional `search` query parameter to filter by ID, URL, task type, or status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+for task in client.streaming.ai_tasks.list():
+    print(f"{task.task_id}  {task.status}  {task.progress}%")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    page, err := client.Streaming.AITasks.List(ctx, streaming.AITaskListParams{})
+    if err != nil {
+        panic(err)
+    }
+    for _, task := range page.Results {
+        fmt.Printf("%s  %s  %d%%\n", task.TaskID, task.Status, task.Progress)
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/ai/tasks" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+## Cancel an AI task
+
+<p>To cancel a running task, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+task_id = os.environ["TASK_ID"]
+
+client = Gcore()
+client.streaming.ai_tasks.cancel(task_id)
+print(f"Task {task_id} canceled")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    taskID := os.Getenv("TASK_ID")
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    _, err := client.Streaming.AITasks.Cancel(ctx, taskID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Task %s canceled\n", taskID)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/ai/tasks/$TASK_ID/cancel" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
 </MethodSwitch>
