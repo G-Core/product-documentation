@@ -1,10 +1,60 @@
 ---
 name: api-use-case
-description: Add REST API coverage to an existing Customer Portal article with MethodSwitch and repository OpenAPI specs. Use when asked to add API coverage or create a REST API tab for a portal-only article.
+description: Add REST API coverage to an existing Customer Portal article, or audit/verify/live-test/improve an existing API tab. Use when asked to add an API tab, or when asked to review, test, or expand a tab that already exists.
 ---
 
 Read an existing Customer Portal article, find the matching API endpoints in the
-OpenAPI spec, and write a complete `<MethodSection id="api">` section.
+OpenAPI spec, and write or improve the `<MethodSection id="api">` section.
+
+## ABSOLUTE RULE — PORTAL TAB: MDX STRUCTURE YES, STYLE NO
+
+Two categories of changes in `<MethodSection id="portal">`:
+
+**ALLOWED — MDX structural rules (apply to Portal just like API):**
+- Adding missing `<p>` tags around bare prose paragraphs and numbered steps
+- Fixing `1\.` → `1.` in numbered step format (MDX rendering rule, not style)
+- Fixing `</MethodSection>` indentation (must be at column 0)
+- Moving misplaced closing tags
+- When content exists BEFORE `<MethodSwitch>`, move it inside the Portal section with ALL its headings, paragraphs, and structure intact — do not drop anything
+
+**FORBIDDEN — style, prose content, and structure (never touch in Portal):**
+- Rewriting "you/your" to neutral voice
+- Fixing number style (1 → one)
+- Fixing link text length
+- Fixing `&nbsp;` in multi-word links
+- Changing any prose wording
+- Removing or renaming headings (`##`, `###`) that already exist
+- Reordering sections or merging/splitting paragraphs
+- Removing any sentence, phrase, or image that was already there
+
+**Rule in one sentence:** Fix only the MDX syntax of Portal; never touch its content, headings, or prose — not even a single word.
+
+**Critical failure to avoid:** When moving pre-MethodSwitch content into Portal, it is easy to move the first heading but forget subsequent headings. After the move, verify that ALL headings from the original shared content appear inside the Portal section.
+
+---
+
+## Phase 0 — Determine mode
+
+Check whether `<MethodSection id="api">` already exists in the article:
+
+```powershell
+Select-String -Path "path/to/article.mdx" -Pattern 'MethodSection id="api"'
+```
+
+**If it does NOT exist → Add mode:** follow Phases 1–7 in order to write the tab from scratch.
+
+**If it DOES exist → Audit mode:** follow this condensed flow instead:
+
+1. Read the existing API tab fully.
+2. Read the Portal tab fully — understand what it covers.
+3. Run the API checker: `python .agents/tools/api_check_style.py {path}`
+4. Live-test every curl, Python SDK, and Go SDK code block (see Phase 2 for setup).
+5. Run the standalone tab test from Phase 7: mentally delete the Portal tab.
+   List every topic the Portal tab covers that the API tab does not.
+6. Add missing operations. Fix broken code. Fix checker violations (API tab only).
+7. Run the checker again — exit code must be 0.
+8. Update `ai-navigation` if the tab content changed significantly.
+9. Show the diff to the user. **Do not commit.**
 
 ## Scope — read exactly these files
 
@@ -562,8 +612,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 If MethodSwitch already exists, add the `<MethodSection id="api">` after the portal section.
 
-**Do not modify the portal section content** — it is out of scope for this skill.
-Exception: add `<p>` tags to any prose paragraphs that are missing them in the portal section.
+**Portal section:** fix `<p>` tags and `</MethodSection>` indentation (MDX structure). Do not change prose wording or style — see the ABSOLUTE RULE at the top of this skill.
 
 ---
 

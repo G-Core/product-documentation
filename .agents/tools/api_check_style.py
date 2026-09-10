@@ -52,6 +52,7 @@ _INDENTED_METHOD_SECTION_CLOSE = re.compile(r"^\s+</MethodSection>")
 _GO_IMPORT_BARE = re.compile(r'"github\.com/G-Core/gcore-go"')
 _GO_IMPORT_WITH_ALIAS = re.compile(r'\bgcore\s+"github\.com/G-Core/gcore-go"')
 _METHOD_SECTION_OPEN = re.compile(r"<MethodSection\b")
+_METHOD_SECTION_API = re.compile(r'<MethodSection\s[^>]*id=["\']api["\']')
 _METHOD_SECTION_CLOSE = re.compile(r"</MethodSection>")
 _JSX_BLOCK_OPEN = re.compile(
     r"<(Info|Warning|Tip|Note|Tabs|Tab|Accordion|Frame|Steps|Step)\b"
@@ -502,7 +503,7 @@ def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
         if in_fence:
             continue
 
-        # Track MethodSection boundaries
+        # Track MethodSection boundaries (Portal and API both require <p> wrapping)
         if _METHOD_SECTION_OPEN.search(stripped):
             in_method_section = True
             jsx_depth = 0
