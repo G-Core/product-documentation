@@ -87,6 +87,16 @@ class Violation:
     text: str
 
 
+@dataclass(frozen=True)
+class Warning:
+    """A review signal that does not fail the build but requires human judgment."""
+
+    line: int
+    rule: str
+    detail: str
+    text: str
+
+
 def _is_fence(line: str) -> bool:
     return line.lstrip().startswith("```")
 
@@ -539,6 +549,9 @@ def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
         # Skip indented lines (continuation of list/step sub-items)
         if raw[0] == " " or raw[0] == "\t":
             continue
+        # Skip markdown table rows and separators
+        if stripped.startswith("|"):
+            continue
 
         violations.append(
             Violation(
@@ -552,6 +565,58 @@ def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
         )
 
     return violations
+
+
+_METHOD_SWITCH_CLOSE = re.compile(r"</MethodSwitch>")
+
+
+def warn_content_after_method_switch(lines: Sequence[str]) -> list[Warning]:
+    """Warn when non-empty content follows </MethodSwitch>.
+
+    Content after </MethodSwitch> renders on every tab in Mintlify, making it
+    visible in both Portal and API tabs regardless of which is active.
+    This is sometimes intentional (e.g. shared reference tables that apply to
+    all methods) but sometimes wrong (e.g. portal-only embed instructions).
+
+    Returns a Warning for human review — does not affect exit code.
+    """
+    warnings: list[Warning] = []
+    after_close = False
+    in_fence = False
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            in_fence = not in_fence
+        if in_fence:
+            continue
+
+        stripped = raw.strip()
+        if _METHOD_SWITCH_CLOSE.search(stripped):
+            after_close = True
+            continue
+
+        if after_close and stripped:
+            warnings.append(
+                Warning(
+                    line=lineno,
+                    rule="content-after-method-switch",
+                    detail=(
+                        "Content after </MethodSwitch> renders on ALL tabs. "
+                        "Verify it is intentional (shared reference) or move "
+                        "it inside the appropriate <MethodSection>."
+                    ),
+                    text=stripped[:120],
+                )
+            )
+            # Report only the first non-empty line to avoid noise
+            break
+
+    return warnings
+
+
+WARN_CHECKS: tuple[Callable[[list[str]], list[Warning]], ...] = (
+    warn_content_after_method_switch,
+)
 
 
 CHECKS: tuple[CheckFn, ...] = (
@@ -575,6 +640,16 @@ def lint(path: Path) -> list[Violation]:
         violations.extend(check(lines))
     violations.sort(key=lambda item: item.line)
     return violations
+
+
+def warn(path: Path) -> list[Warning]:
+    """Run every registered warning check against one MDX file."""
+    lines = path.read_text(encoding="utf-8").splitlines()
+    warnings: list[Warning] = []
+    for check in WARN_CHECKS:
+        warnings.extend(check(lines))
+    warnings.sort(key=lambda item: item.line)
+    return warnings
 
 
 def iter_mdx_files(root: Path) -> list[Path]:
@@ -623,23 +698,38 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     dirty = 0
     total_hits = 0
+    total_warns = 0
     for path in paths:
         found = lint(path)
-        if not found:
+        found_warns = warn(path)
+        if not found and not found_warns:
             continue
-        dirty += 1
-        total_hits += len(found)
-        log.info("=== %s (%s) ===", path, len(found))
-        for item in found:
-            log.info("  L%s [%s] %s", item.line, item.rule, item.text)
-        log.info("")
+        if found:
+            dirty += 1
+            total_hits += len(found)
+            log.info("=== %s (%s) ===", path, len(found))
+            for item in found:
+                log.info("  L%s [%s] %s", item.line, item.rule, item.text)
+            log.info("")
+        if found_warns:
+            total_warns += len(found_warns)
+            if not found:
+                log.info("=== %s ===", path)
+            for item in found_warns:
+                log.info("  L%s [WARN:%s] %s", item.line, item.rule, item.text)
+            if not found:
+                log.info("")
 
     if args.all:
-        log.info("Scanned %s mdx files, %s with violations (%s hits)", len(paths), dirty, total_hits)
+        log.info("Scanned %s mdx files, %s with violations (%s hits), %s warnings",
+                 len(paths), dirty, total_hits, total_warns)
         return 1 if dirty else 0
 
-    if total_hits == 0:
+    if total_hits == 0 and total_warns == 0:
         log.info("OK - no API style violations in %s", paths[0])
+        return 0
+    if total_hits == 0 and total_warns > 0:
+        log.info("OK - no violations, %s warning(s) in %s (review required)", total_warns, paths[0])
         return 0
 
     log.info("%s violation(s) in %s", total_hits, paths[0])

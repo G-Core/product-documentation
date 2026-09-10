@@ -551,3 +551,50 @@ def test_numbered_item_without_p_is_a_violation() -> None:
 def test_wrapped_prose_list_heading_are_clean() -> None:
     from api_check_style import check_prose_without_p_tags
     assert check_prose_without_p_tags(PROSE_ALL_WRAPPED.splitlines()) == []
+
+
+# ---------------------------------------------------------------------------
+# warn_content_after_method_switch
+# ---------------------------------------------------------------------------
+
+_ARTICLE_WITH_POST_CONTENT = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Do something in the portal.</p>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Do it via API.</p>
+</MethodSection>
+</MethodSwitch>
+
+## Extra section
+
+<p>This appears on all tabs.</p>
+"""
+
+_ARTICLE_WITHOUT_POST_CONTENT = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Do something in the portal.</p>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Do it via API.</p>
+</MethodSection>
+</MethodSwitch>
+"""
+
+
+def test_content_after_method_switch_fires_warning() -> None:
+    from api_check_style import warn_content_after_method_switch
+    found = warn_content_after_method_switch(_ARTICLE_WITH_POST_CONTENT.splitlines())
+    assert len(found) == 1
+    assert found[0].rule == "content-after-method-switch"
+
+
+def test_no_post_content_no_warning() -> None:
+    from api_check_style import warn_content_after_method_switch
+    assert warn_content_after_method_switch(_ARTICLE_WITHOUT_POST_CONTENT.splitlines()) == []
