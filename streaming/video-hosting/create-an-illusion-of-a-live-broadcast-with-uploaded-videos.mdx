@@ -60,188 +60,412 @@ For videos to play automatically, you must use the [Gcore custom player](/stream
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Live imitation uses the [Playlists API](/api-reference/streaming/playlists/get-all-playlists). A playlist with `start_time` set to a future date and `active: true` behaves as a scheduled live broadcast. Until the start time, the manifest returns an empty stream. At the scheduled moment, the platform begins playing the video list in sequence.</p>
+<p>Live imitation uses the [Playlists API](/api-reference/streaming/playlists/get-all-playlists). A playlist with <code>start_time</code> set to a future date and <code>active: true</code> behaves as a scheduled live broadcast. Until the start time, the manifest returns an empty stream. At the scheduled moment, the platform begins playing the video list in sequence.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required.
 </Info>
 
-<p>Set the environment variable before running the examples:</p>
+<p>Open a terminal and export the required variables:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+export PLAYLIST_ID="{YOUR_PLAYLIST_ID}"
 ```
 
 ## Create a scheduled broadcast
 
-<p>Create a playlist and pass video IDs you want to broadcast along with the scheduled start time in ISO 8601 format (UTC). Set `active: true` to enable playback. Use `loop: true` to repeat the sequence continuously after it ends.</p>
+<p>Create a playlist with a list of video IDs and a scheduled start time in ISO 8601 format (UTC). Set <code>active: true</code> to enable playback. Use <code>loop: true</code> to repeat the sequence continuously after it ends.</p>
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    import os
-    from datetime import datetime, timezone, timedelta
-    from gcore import Gcore
+```python
+import os
+from datetime import datetime, timezone, timedelta
+from gcore import Gcore
 
-    client = Gcore()
+client = Gcore()
 
-    # Start time must be a future UTC datetime in ISO 8601 format.
-    start_time = (datetime.now(timezone.utc) + timedelta(hours=24)).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+# Start time must be a future UTC datetime in ISO 8601 format.
+start_time = (datetime.now(timezone.utc) + timedelta(hours=24)).strftime(
+    "%Y-%m-%dT%H:%M:%SZ"
+)
 
-    broadcast = client.streaming.playlists.create(
-        name="Product launch — September premiere",
-        active=True,
-        start_time=start_time,
-        loop=False,
-        video_ids=[int(os.environ["VIDEO_ID"])],
-    )
-    playlist_id = broadcast.id
-    print(f"Playlist ID: {playlist_id}")
-    print(f"Embed code: {broadcast.iframe_embed_code}")
-    ```
+broadcast = client.streaming.playlists.create(
+    name="Product launch — September premiere",
+    active=True,
+    start_time=start_time,
+    loop=False,
+    video_ids=[int(os.environ["VIDEO_ID"])],
+)
+print(f"Playlist ID: {broadcast.id}")
+print(f"Embed URL: {broadcast.iframe_url}")
+```
   </Tab>
   <Tab title="Go SDK">
-    ```go
-    package main
+```go
+package main
 
-    import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"strconv"
-    	"time"
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+	"time"
 
-    	gcore "github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/packages/param"
-    	"github.com/G-Core/gcore-go/streaming"
-    )
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
 
-    func main() {
-    	client := gcore.NewClient()
-    	ctx := context.Background()
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
 
-    	// Start time must be a future UTC datetime in ISO 8601 format.
-    	startTime := time.Now().UTC().Add(24 * time.Hour).Format(time.RFC3339)
+	// Start time must be a future UTC datetime in ISO 8601 format.
+	startTime := time.Now().UTC().Add(24 * time.Hour).Format(time.RFC3339)
 
-    videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
-    	broadcast, err := client.Streaming.Playlists.New(ctx, streaming.PlaylistNewParams{
-    		Playlist: streaming.PlaylistParam{
-    			Name:      param.NewOpt("Product launch — September premiere"),
-    			Active:    param.NewOpt(true),
-    			StartTime: param.NewOpt(startTime),
-    			Loop:      param.NewOpt(false),
-    			VideoIDs:  []int64{videoID},
-    		},
-    	})
-    	if err != nil {
-    		panic(err)
-    	}
-    	fmt.Printf("Playlist ID: %d\n", broadcast.ID)
-    	fmt.Printf("Embed URL: %s\n", broadcast.IframeURL)
-    }
-    ```
+	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+	broadcast, err := client.Streaming.Playlists.New(ctx, streaming.PlaylistNewParams{
+		Playlist: streaming.PlaylistParam{
+			Name:      param.NewOpt("Product launch — September premiere"),
+			Active:    param.NewOpt(true),
+			StartTime: param.NewOpt(startTime),
+			Loop:      param.NewOpt(false),
+			VideoIDs:  []int64{videoID},
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Playlist ID: %d\n", broadcast.ID)
+	fmt.Printf("Embed URL: %s\n", broadcast.IframeURL)
+}
+```
   </Tab>
   <Tab title="curl">
-    ```bash
-    START_TIME=$(date -u -d "+24 hours" +"%Y-%m-%dT%H:%M:%SZ")
+```bash
+START_TIME=$(date -u -d "+24 hours" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+             date -u -v+24H '+%Y-%m-%dT%H:%M:%SZ')
 
-    curl -X POST "https://api.gcore.com/streaming/playlists" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d "{
-        \"name\": \"Product launch — September premiere\",
-        \"active\": true,
-        \"start_time\": \"$START_TIME\",
-        \"loop\": false,
-        \"video_ids\": [$VIDEO_ID]
-      }"
-    ```
+curl -X POST "https://api.gcore.com/streaming/playlists" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"name\": \"Product launch — September premiere\",
+    \"active\": true,
+    \"start_time\": \"$START_TIME\",
+    \"loop\": false,
+    \"video_ids\": [$VIDEO_ID]
+  }"
+```
 
-    <p>The API returns the created playlist with an `id` and `iframe_url` for embedding.</p>
+<p>The API returns the created playlist. Save the <code>id</code> for subsequent operations and the <code>iframe_url</code> for embedding the player on your site.</p>
+
+```json
+{
+  "id": 25691,
+  "name": "Product launch — September premiere",
+  "active": true,
+  "start_time": "2026-09-12T08:16:00.000Z",
+  "loop": false,
+  "iframe_url": "https://player.gvideo.co/playlists/1000503_25691",
+  "video_ids": [14753315]
+}
+```
+  </Tab>
+</Tabs>
+
+## List broadcasts
+
+<p>Retrieve all playlists in the account to check their names, active state, and embed URLs.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+playlists = list(client.streaming.playlists.list())
+print(f"Total broadcasts: {len(playlists)}")
+for pl in playlists:
+    print(f"  id={pl.id}, name={pl.name}, active={pl.active}, start={pl.start_time}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	page, err := client.Streaming.Playlists.List(ctx, streaming.PlaylistListParams{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Total broadcasts: %d\n", len(page.Items))
+	for _, pl := range page.Items {
+		fmt.Printf("  name=%s, active=%v, embed=%s\n", pl.Name, pl.Active, pl.IframeURL)
+	}
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/playlists" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns an array of playlist objects:</p>
+
+```json
+[
+  {
+    "id": 25691,
+    "name": "Product launch — September premiere",
+    "active": true,
+    "start_time": "2026-09-12T08:16:00.000Z",
+    "iframe_url": "https://player.gvideo.co/playlists/1000503_25691"
+  }
+]
+```
+  </Tab>
+</Tabs>
+
+## Get a broadcast
+
+<p>Retrieve the full details of a single broadcast by its ID, including the embed URL and current schedule.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+playlist_id = int(os.environ["PLAYLIST_ID"])
+
+pl = client.streaming.playlists.get(playlist_id)
+print(f"Name: {pl.name}")
+print(f"Active: {pl.active}")
+print(f"Start time: {pl.start_time}")
+print(f"Embed URL: {pl.iframe_url}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+	pl, err := client.Streaming.Playlists.Get(ctx, playlistID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Name: %s\n", pl.Name)
+	fmt.Printf("Active: %v\n", pl.Active)
+	fmt.Printf("Start time: %s\n", pl.StartTime)
+	fmt.Printf("Embed URL: %s\n", pl.IframeURL)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns the playlist object:</p>
+
+```json
+{
+  "id": 25691,
+  "name": "Product launch — September premiere",
+  "active": true,
+  "start_time": "2026-09-12T08:16:00.000Z",
+  "loop": false,
+  "iframe_url": "https://player.gvideo.co/playlists/1000503_25691",
+  "video_ids": [14753315]
+}
+```
   </Tab>
 </Tabs>
 
 ## Update video list or reschedule
 
-<p>Change the video sequence, reschedule the start time, or toggle loop mode.</p>
+<p>Change the video sequence, reschedule the start time, or toggle loop mode. Only the fields included in the request are updated.</p>
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    import os
-    from datetime import datetime, timezone, timedelta
-    from gcore import Gcore
+```python
+import os
+from datetime import datetime, timezone, timedelta
+from gcore import Gcore
 
-    client = Gcore()
-    playlist_id = int(os.environ["PLAYLIST_ID"])
+client = Gcore()
+playlist_id = int(os.environ["PLAYLIST_ID"])
 
-    # Reschedule to 48 hours from now and add another video
-    new_start = (datetime.now(timezone.utc) + timedelta(hours=48)).strftime(
-        "%Y-%m-%dT%H:%M:%SZ"
-    )
+# Reschedule to 48 hours from now and add another video
+new_start = (datetime.now(timezone.utc) + timedelta(hours=48)).strftime(
+    "%Y-%m-%dT%H:%M:%SZ"
+)
 
-    updated = client.streaming.playlists.update(
-        playlist_id,
-        start_time=new_start,
-        video_ids=[int(os.environ["VIDEO_ID"])],
-        loop=True,
-    )
-    print(f"Updated start time: {updated.start_time}")
-    ```
+updated = client.streaming.playlists.update(
+    playlist_id,
+    start_time=new_start,
+    video_ids=[int(os.environ["VIDEO_ID"])],
+    loop=True,
+)
+print(f"Updated start time: {updated.start_time}")
+```
   </Tab>
   <Tab title="Go SDK">
-    ```go
-    package main
+```go
+package main
 
-    import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"strconv"
-    	"time"
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+	"time"
 
-    	gcore "github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/packages/param"
-    	"github.com/G-Core/gcore-go/streaming"
-    )
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
 
-    func main() {
-    	client := gcore.NewClient()
-    	ctx := context.Background()
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
 
-    	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
-    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
 
-    newStart := time.Now().UTC().Add(48 * time.Hour).Format(time.RFC3339)
-    	updated, err := client.Streaming.Playlists.Update(ctx, playlistID, streaming.PlaylistUpdateParams{
-    		Playlist: streaming.PlaylistParam{
-    			StartTime: param.NewOpt(newStart),
-    			VideoIDs:  []int64{videoID},
-    			Loop:      param.NewOpt(true),
-    		},
-    	})
-    	if err != nil {
-    		panic(err)
-    	}
-    	fmt.Printf("Updated start time: %s\n", updated.StartTime)
-    }
-    ```
+	newStart := time.Now().UTC().Add(48 * time.Hour).Format(time.RFC3339)
+	updated, err := client.Streaming.Playlists.Update(ctx, playlistID, streaming.PlaylistUpdateParams{
+		Playlist: streaming.PlaylistParam{
+			StartTime: param.NewOpt(newStart),
+			VideoIDs:  []int64{videoID},
+			Loop:      param.NewOpt(true),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Updated start time: %s\n", updated.StartTime)
+}
+```
   </Tab>
   <Tab title="curl">
-    ```bash
-    NEW_START=$(date -u -d "+48 hours" +"%Y-%m-%dT%H:%M:%SZ")
+```bash
+NEW_START=$(date -u -d "+48 hours" '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v+48H '+%Y-%m-%dT%H:%M:%SZ')
 
-    curl -X PATCH "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d "{
-        \"start_time\": \"$NEW_START\",
-        \"video_ids\": [$VIDEO_ID],
-        \"loop\": true
-      }"
-    ```
+curl -X PATCH "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"start_time\": \"$NEW_START\",
+    \"video_ids\": [$VIDEO_ID],
+    \"loop\": true
+  }"
+```
+  </Tab>
+</Tabs>
+
+## Enable or disable a broadcast
+
+<p>Set <code>active: false</code> to pause a broadcast without deleting it. Set <code>active: true</code> to resume it. A disabled broadcast serves an empty manifest even if the start time has passed.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+playlist_id = int(os.environ["PLAYLIST_ID"])
+
+# Disable
+updated = client.streaming.playlists.update(playlist_id, active=False)
+print(f"Active: {updated.active}")
+
+# Re-enable
+updated = client.streaming.playlists.update(playlist_id, active=True)
+print(f"Active: {updated.active}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+
+	// Disable
+	updated, err := client.Streaming.Playlists.Update(ctx, playlistID, streaming.PlaylistUpdateParams{
+		Playlist: streaming.PlaylistParam{
+			Active: param.NewOpt(false),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Active: %v\n", updated.Active)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+# Disable
+curl -X PATCH "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": false}'
+
+# Re-enable
+curl -X PATCH "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": true}'
+```
   </Tab>
 </Tabs>
 
@@ -249,47 +473,47 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+```python
+import os
+from gcore import Gcore
 
-    client = Gcore()
-    playlist_id = int(os.environ["PLAYLIST_ID"])
+client = Gcore()
+playlist_id = int(os.environ["PLAYLIST_ID"])
 
-    client.streaming.playlists.delete(playlist_id)
-    print(f"Deleted playlist {playlist_id}")
-    ```
+client.streaming.playlists.delete(playlist_id)
+print(f"Deleted playlist {playlist_id}")
+```
   </Tab>
   <Tab title="Go SDK">
-    ```go
-    package main
+```go
+package main
 
-    import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"strconv"
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
 
-    	gcore "github.com/G-Core/gcore-go"
-    )
+	gcore "github.com/G-Core/gcore-go"
+)
 
-    func main() {
-    	client := gcore.NewClient()
-    	ctx := context.Background()
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
 
-    	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
-    	if err := client.Streaming.Playlists.Delete(ctx, playlistID); err != nil {
-    		panic(err)
-    	}
-    	fmt.Printf("Deleted playlist %d\n", playlistID)
-    }
-    ```
+	playlistID, _ := strconv.ParseInt(os.Getenv("PLAYLIST_ID"), 10, 64)
+	if err := client.Streaming.Playlists.Delete(ctx, playlistID); err != nil {
+		panic(err)
+	}
+	fmt.Printf("Deleted playlist %d\n", playlistID)
+}
+```
   </Tab>
   <Tab title="curl">
-    ```bash
-    curl -X DELETE "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
+```bash
+curl -X DELETE "https://api.gcore.com/streaming/playlists/$PLAYLIST_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
   </Tab>
 </Tabs>
 
