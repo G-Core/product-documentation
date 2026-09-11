@@ -677,9 +677,56 @@ def warn_forbidden_prose_words(lines: Sequence[str]) -> list[Warning]:
     return warnings
 
 
+def warn_real_id_in_response(lines: Sequence[str]) -> list[Warning]:
+    """Warn when a JSON response block contains a large numeric ID value.
+
+    IDs with 6 or more digits in JSON response examples are likely real database
+    records rather than placeholder values. Use small, clearly fictional IDs like
+    42, 123, or 1001 in documentation response examples.
+
+    Only inspects ``json`` fenced code blocks.
+    """
+    warnings: list[Warning] = []
+    in_fence = False
+    lang = ""
+
+    # Match any field whose name ends in "id" (e.g. "id", "video_id", "stream_id")
+    _large_id = re.compile(r'"(?:\w+_)?id":\s*(\d{7,})', re.IGNORECASE)
+
+    for lineno, raw in enumerate(lines, start=1):
+        if _is_fence(raw):
+            if not in_fence:
+                lang = _fence_lang(raw)
+                in_fence = True
+            else:
+                in_fence = False
+                lang = ""
+            continue
+
+        if not in_fence or lang != "json":
+            continue
+
+        match = _large_id.search(raw)
+        if match:
+            warnings.append(
+                Warning(
+                    line=lineno,
+                    rule="real-id-in-response",
+                    detail=(
+                        f"Large numeric ID ({match.group(1)}) in JSON response "
+                        "looks like real data. Use a small placeholder: 42, 123, 1001."
+                    ),
+                    text=raw.strip()[:120],
+                )
+            )
+
+    return warnings
+
+
 WARN_CHECKS: tuple[Callable[[list[str]], list[Warning]], ...] = (
     warn_content_after_method_switch,
     warn_forbidden_prose_words,
+    warn_real_id_in_response,
 )
 
 
