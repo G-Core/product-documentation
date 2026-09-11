@@ -1,6 +1,6 @@
 ---
 title: "Configure a custom protection profile"
-ai-navigation: Configure custom DDoS protection profiles with rules and policies, including protocol-aware options for gaming traffic such as Minecraft and Counter-Strike.
+ai-navigation: Configure custom DDoS protection profiles with rules and policies, including protocol-aware options for gaming traffic.
 ---
 
 Custom protection profiles define rules and policies based on network traffic and security requirements.
@@ -34,10 +34,7 @@ Example: `High-security web server profile`
 
 ## Step 3. Configure rules and policies
 
-A protection profile includes two configuration areas:
-
-- Rules
-- Policy
+A protection profile has two connected configuration areas: rules on the **Rules** tab match traffic and choose which policy to apply, while the **Policy** tab sets shared thresholds, including rate limits and the GEOIP list, that some of those policies reference.
 
 <Frame>
   ![Protection profiles rules and policies](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-3.png)
@@ -53,16 +50,14 @@ Add a rule to match specific traffic and apply a policy to it.
 
 1. Click **Add rule**.
 2. Complete the required fields:
-   - **Protocol**: Select the protocol (for example, TCP, UDP, ICMP).
+   - **Protocol**: Select the protocol (TCP, UDP, ICMP, or other).
    - **Source IP**: Enter a source IP address or range.
    - **Destination IP**: Enter a destination IP address or range.
    - **Source port**: Enter a port number or range.
    - **Destination port**: Enter a port number or range.
-   - **Policy**: Select the policy to apply (for example, `tcp-server`).
+   - **Policy**: Select the policy to apply.
 
-Rules are processed from top to bottom. The first matching rule is applied.
-
-The Basic template already includes catch-all rules for TCP, UDP, ICMP, and other traffic, so everyday traffic matches those defaults. Traffic that matches none of the rules in the profile is dropped.
+Rules are processed from top to bottom, and the first matching rule is applied. Because the Basic template's catch-all TCP, UDP, ICMP, and other rules match broad traffic patterns, a new rule for specific traffic must sit above the corresponding catch-all rule, or the catch-all matches first and the specific rule never runs. Traffic that matches none of the rules in the profile is dropped.
 
 To change the rule priority, drag the rule up or down.
 
@@ -82,7 +77,7 @@ Example: match TCP traffic on destination port `80` (HTTP) and apply the `tcp-se
 
 ### Configure policies
 
-The **Policy** tab sets traffic-wide thresholds for the profile. Available fields depend on the selected template.
+The **Policy** tab sets profile-level rate limits and the GEOIP list. Available fields depend on the selected template.
 
 <Frame>
   ![Protection profiles Policy](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-policy-1.png)
@@ -90,17 +85,19 @@ The **Policy** tab sets traffic-wide thresholds for the profile. Available field
 
 For the Basic template, the **Policy** tab includes the following fields. Limits are in kilo packets per second (kpps).
 
-- **GEOIP list**: countries included in Geo Restriction rate limiting.
-- **Rate limiter low**: destination PPS limit for all traffic, from 1 to 50 kpps. Default: 50.
-- **Rate limiter medium**: destination PPS limit for all traffic, from 50 to 150 kpps. Default: 150.
-- **Rate limiter high**: destination PPS limit for all traffic, from 150 to 300 kpps. Default: 300.
-- **Rate limiter geo**: destination PPS limit for Geo Restriction matched traffic, from 1 to 300 kpps. Default: 300.
+- **GEOIP list**: countries the `geo` policy allows or denies.
+- **Rate limiter low**: destination PPS cap for all traffic, up to 50 kpps. Default: 50.
+- **Rate limiter medium**: destination PPS cap for all traffic, up to 150 kpps. Default: 150.
+- **Rate limiter high**: destination PPS cap for all traffic, up to 300 kpps. Default: 300.
+- **Rate limiter geo**: destination PPS cap for Geo Restriction matched traffic, up to 300 kpps. Default: 300.
 
 <Frame>
   ![Protection profiles Policy settings](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-policy-2.png)
 </Frame>
 
-To let trusted traffic bypass inspection, add a rule on the **Rules** tab with the `allowlist` policy applied to the trusted source IP range.
+Set the GEOIP list and rate-limiter thresholds on the **Policy** tab before selecting the `geo` or rate-limiter policies in a rule.
+
+To let trusted traffic bypass inspection, add a rule on the **Rules** tab with the `allowlist` policy applied to the trusted source IP range. On Enterprise plans, matching traffic bypasses inspection entirely; on public plans, it remains subject to filtering.
 
 ## Save the profile
 
@@ -113,19 +110,19 @@ Complete the following steps to save the configured profile.
   ![Save the protection profile](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-save.png)
 </Frame>
 
+The new profile appears in the profile list from [Step 1](#step-1-open-protection-profiles), with its assigned template and name, confirming the save succeeded.
+
 ## Policy reference
 
 Select a policy ID that matches the traffic when adding a rule. Game policies inspect that game's protocol. Default and rate-limiter policies cap generic floods. TCP policies run handshake or session countermeasures.
 
-Configure `geo` and the rate-limiter policies on the **Policy** tab before using them in a rule.
-
 | Policy ID | Policy name | Description |
 | --- | --- | --- |
 | minecraft | Minecraft Protection | Minecraft Java and Bedrock (TCP/UDP): handshake, login, ping, and volumetric floods |
-| counter-strike-16 | Counter-Strike 1.6 | GoldSrc: UDP floods, query abuse, and malformed packets |
-| counter-strike-go | Counter-Strike GO | Source: A2S query floods, connection floods, and high-PPS UDP |
+| counter-strike-16 | Counter-Strike 1.6 | GoldSrc engine (Half-Life 1): UDP floods, query abuse, and malformed packets |
+| counter-strike-go | Counter-Strike GO | Source engine: Steam A2S query floods, connection floods, and high-PPS UDP |
 | counter-strike-2 | Counter-Strike 2 | UDP floods, query abuse, and abnormal packets |
-| left-4-dead-2 | Left 4 Dead 2 | Source: A2S query floods and volumetric UDP |
+| left-4-dead-2 | Left 4 Dead 2 | Source engine: Steam A2S query floods and volumetric UDP |
 | fivem-tcp | FiveM TCP | TCP connection and handshake floods |
 | fivem-udp | FiveM UDP | High-PPS UDP floods and abnormal packets |
 | samp | San Andreas Multiplayer | SA-MP connection floods, query abuse, and malformed UDP |
@@ -143,8 +140,8 @@ Configure `geo` and the rate-limiter policies on the **Policy** tab before using
 | default-icmp | Default ICMP | Generic ICMP. Per-IP 100 pps; overall 1k pps |
 | default-other | Default Other | Other protocols. Per-IP 200 pps; overall 1k pps |
 | ratelimiter-low | Rate Limiter Low | Caps destination rate up to 50 kpps (default 50). Configure on the **Policy** tab first |
-| ratelimiter-medium | Rate Limiter Medium | Caps destination rate from 50 to 150 kpps (default 150). Configure on the **Policy** tab first |
-| ratelimiter-high | Rate Limiter High | Caps destination rate from 150 to 300 kpps (default 300). Configure on the **Policy** tab first |
+| ratelimiter-medium | Rate Limiter Medium | Caps destination rate up to 150 kpps (default 150). Configure on the **Policy** tab first |
+| ratelimiter-high | Rate Limiter High | Caps destination rate up to 300 kpps (default 300). Configure on the **Policy** tab first |
 | allowlist | Allow List | Matching traffic is forwarded without inspection |
 | tcp-autodetect | TCP auto-detect | Passive TCP countermeasure, triggered only during an attack |
 | tcp-server | TCP Countermeasure | Always-on SYN-cookie challenge for incoming TCP |
