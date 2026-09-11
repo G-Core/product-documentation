@@ -74,6 +74,12 @@ _SKIP_DIR_NAMES = frozenset(
         ".git",
         "venv",
         "__pycache__",
+        # Non-article directories — tools, tests, specs, components
+        ".agents",
+        ".cursor",
+        ".playwright-mcp",
+        "snippets",
+        "api-reference",
     }
 )
 
@@ -945,10 +951,16 @@ def warn(path: Path) -> list[Warning]:
 
 
 def iter_mdx_files(root: Path) -> list[Path]:
-    """Return article MDX files under root, skipping draft and vendor dirs."""
+    """Return article MDX files under root, skipping draft, vendor, and tool dirs.
+
+    Skips:
+    - Directories named in _SKIP_DIR_NAMES (node_modules, _drafts, snippets, etc.)
+    - Any directory whose name starts with '.' (dotdirs: .git, .agents, .cursor, etc.)
+    """
     found: list[Path] = []
     for path in root.rglob("*.mdx"):
-        if any(part in _SKIP_DIR_NAMES for part in path.parts):
+        parts = path.parts
+        if any(part in _SKIP_DIR_NAMES or part.startswith(".") for part in parts):
             continue
         found.append(path)
     found.sort()
