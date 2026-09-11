@@ -1,7 +1,7 @@
 ---
 title: Create and manage a live stream
 sidebarTitle: Create live stream
-ai-navigation: Create and manage live streams via Customer Portal and REST API - configure push or pull ingest, enable DVR and recording, and embed playback.
+ai-navigation: Create and manage live streams via Customer Portal or REST API using streams endpoints, configure push or pull ingest, retrieve RTMP push_url and backup_push_url for encoder setup, and embed playback using HLS or iframe with Python SDK, Go SDK, and curl.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -19,65 +19,65 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 2. Initiate the process
 
-<p>1. In the **Gcore Customer Portal**, navigate to **Streaming** > [Live&nbsp;Streaming](https://portal.gcore.com/streaming/streaming).</p>
+<p>1. In the **Gcore Customer Portal**, navigate to **Streaming** > [Live Streaming](https://portal.gcore.com/streaming/streaming).</p>
 
 <p>2. Click the **Create Live stream** button on the top right.</p>
 
 <Frame>![Live stream button on the life streaming page](/images/docs/streaming-platform/live-streaming/create-a-live-stream/live-streaming-annotated.png)</Frame>
 
 <Accordion title="The 'Create Live stream' button is unavailable?">
-If the button is non-responsive, the live stream limit has been exceeded. To create a new stream, remove an existing stream from the list or request [technical&nbsp;support](mailto:support@gcore.com) to increase the limits.
+If the button is non-responsive, you have exceeded your live stream limit. To create a new stream, remove an existing stream from the list or request [technical support](mailto:support@gcore.com) to increase your limits.
 </Accordion>
 
-<p>2A. Enter the stream name in the window that appears and click the **Create** button.</p>
+<p>2A. Enter the name of your live stream in the window that appears and click the **Create** button.</p>
 
 <Frame>![Enter the name of your live stream](/images/docs/streaming-platform/live-streaming/create-a-live-stream/9651635790481.png)</Frame>
 
 <p>A new page will appear. Perform the remaining steps there.</p>
 
-## Step 3. Set the ingest type and features
+## Step 3. Set the ingest type and additional features
 
 <Frame>![Live stream page](/images/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings-push.png)</Frame>
 
-<p>1. Verify that the **Enable live stream** toggle is on.</p>
+<p>1. Make sure that the **Enable live stream** toggle is on.</p>
 
 <Accordion title="Low latency explanation">
-By default, live streams use low latency (a 4–5 second delay). Low latency is available in two protocols: LL-DASH ([iOS&nbsp;not&nbsp;supported](/streaming/live-streaming/how-low-latency-streaming-works)) and LL-HLS (compatible with all devices including iOS). This feature is active from the start for all users, including those on the trial period or free tier, with no plan upgrades required. Legacy HLS with MPEG-TS format segments is also available — details in [LL&nbsp;streaming](/streaming/live-streaming/how-low-latency-streaming-works).
+By default, we offer live streams with low latency (a 4–5 second delay.) Low latency is available in two protocols: LL-DASH ([compatible with all devices except iOS](/streaming/live-streaming/how-low-latency-streaming-works)) and LL-HLS (compatible with iOS). This feature is active from the start for all users, including those on the trial period or free tier, with no plan upgrades required. You can also obtain legacy HLS with MPEGTS format segments, in which case, please read [our article](/streaming/live-streaming/how-low-latency-streaming-works).
 </Accordion>
 
 <p>2. Review the live stream name and update it if needed.</p>
 
 <p>3. Enable additional features:</p>
 
-- [Record](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) for live stream recording, which activates when the stream starts. Enable the toggle to record the stream.
-- [DVR](/streaming/live-streaming/pause-and-rewind-the-live-streams) for an improved viewer experience. With DVR enabled, viewers can pause and rewind the broadcast.
+- [Record](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) for live stream recording. It will be active when you start streaming. Remember to enable the toggle if you require a record of your stream.
+- [DVR](/streaming/live-streaming/pause-and-rewind-the-live-streams) for an improved user experience. When the DVR feature is enabled, your viewers can pause and rewind the broadcast.
 
 <p>4. Select the relevant **Ingest type**: **Push** or **Pull**.</p>
 
-### Push vs Pull ingest
+### When to choose Push vs Pull
 
 <Tabs>
   <Tab title="Push (most common)">
-    **Push ingest works best when:**
-    - Streaming from a webcam, mobile device, or computer
-    - Using a streaming encoder (OBS, Streamlabs, vMix, or any hardware encoder)
-    - No external streaming server is available
+    **Choose Push if:**
+    - You generate a live stream from your web-cam, mobile device or computer
+    - You're using a streaming encoder OBS, Streamlabs, vMix, or any other software and hardware encoder
+    - You don't have your own streaming server
 
     **How it works:**
-    1. Configure the encoder with Gcore's server URL and stream key
-    2. The encoder sends (pushes) the stream to the server via RTMP, SRT, or WebRTC WHIP
+    1. Configure your encoder with Gcore's server URL and stream key
+    2. Your encoder sends (pushes) the stream to our server via RTMP, SRT, WebRTC WHIP
     3. Gcore transcodes the stream into multiple quality levels
     4. Gcore delivers via CDN in HLS and MPEG-DASH formats
   </Tab>
-  <Tab title="Pull (external streaming server)">
-    **Pull ingest works best when:**
-    - A stream is already running on an external server
-    - The stream URL is known
-    - Gcore should fetch and redistribute the stream
+  <Tab title="Pull (if you have your own streaming server)">
+    **Choose Pull if:**
+    - Stream is already running on some server
+    - You know the URL of the stream
+    - You want Gcore to fetch your stream and redistribute it
 
     **How it works:**
-    1. Provide the source stream URL (e.g., `rtmp://1.1.1.1/live/stream`)
-    2. Gcore pulls the stream from the source server
+    1. You provide your existing stream URL (e.g., `rtmp://1.1.1.1/live/stream`)
+    2. Gcore pulls (fetches) the stream from your server
     3. Gcore transcodes the stream into ABR (adaptive bitrate) up to 1080p
     4. Gcore delivers via CDN in HLS and MPEG-DASH formats
 
@@ -88,43 +88,43 @@ By default, live streams use low latency (a 4–5 second delay). Low latency is 
   </Tab>
 </Tabs>
 
-## Step 4. Configure the stream
+## Step 4. Configure your stream
 
-<p>The configuration settings depend on the selected ingest type and protocol.</p>
+<p>Depending on the selected ingest type and protocol, your settings will differ.</p>
 
 ### For PUSH streams
 
 <p>Refer to specific protocol pages for detailed configuration:</p>
 
-- [RTMP/RTMPS](/streaming/live-streaming/protocols/rtmp)
-- [SRT](/streaming/live-streaming/protocols/srt)
-- [WebRTC&nbsp;to&nbsp;HLS](/streaming/live-streaming/webrtc-to-hls-dash)
+- [RTMP/RTMPS](protocols/rtmp)
+- [SRT](protocols/srt)
+- [WebRTC to HLS](protocols/webrtc)
 
 ### For PULL streams (step-by-step)
 
-<p>For **Pull** ingest:</p>
+<p>If you selected **Pull** as your ingest type:</p>
 
-<p>1. **Prepare the source stream URL** — verify the stream is already running and copy its complete URL (e.g., `https://1.1.1.1/live/stream.m3u8`).</p>
+<p>1. **Prepare your source stream URL** — ensure your stream is already running and copy the complete URL (e.g., `https://1.1.1.1/live/stream.m3u8`).</p>
 
-<p>2. **Enter the URL in the PULL URL field** — paste the stream URL. Multiple URLs separated by spaces enable failover (optional). Example with backup: `rtmp://1.1.1.1/live/stream rtmp://1.1.1.2/live/stream`</p>
+<p>2. **Enter the URL in the PULL URL field** — paste your stream URL. You can enter multiple URLs separated by spaces for failover (optional). Example with backup: `rtmp://1.1.1.1/live/stream rtmp://1.1.1.2/live/stream`</p>
 
 <p>3. **Select geo-distributed pull point (optional)** — contact [support](mailto:support@gcore.com) to configure the optimal pull location to minimize latency.</p>
 
-<p>4. **Enable the stream** — verify the **Enable live stream** toggle is **ON** (should be green) and click **Save**.</p>
+<p>4. **Enable the stream** — make sure the **Enable live stream** toggle is **ON** (should be green) and click **Save**.</p>
 
 <p>5. **Wait for activation** — the stream becomes active within approximately 15 seconds. A preview appears on the Live Stream Settings page when ready.</p>
 
 <Info>
-**Troubleshooting:** If the stream doesn't appear after two minutes, verify the source stream is actively running and accessible, the URL is correct and publicly reachable, and the firewall allows Gcore's servers to access the stream.
+**Troubleshooting:** If the stream doesn't appear after 2 minutes, verify that your source stream is actively running and accessible, the URL is correct and publicly reachable, and your firewall allows Gcore's servers to access your stream.
 </Info>
 
 ## Step 5. Start the stream
 
-<p>Start a live stream on the media server or encoder. A streaming preview appears on the **Live Stream Settings** page when configured correctly.</p>
+<p>Start a live stream on your media server or encoder. You will see a streaming preview on the **Live Stream Settings** page if everything is configured correctly.</p>
 
-## Step 6. Embed the stream
+## Step 6. Embed the stream to your app
 
-<p>After configuring the stream, embed it into an app or website. The **Live stream settings** page provides export links and player embed options.</p>
+<p>After configuring your stream, embed it into your app or website. The **Live stream settings** page provides the export links and player embed options you need.</p>
 
 <Frame>![Export links and player options](/images/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-export-links.png)</Frame>
 
@@ -141,7 +141,7 @@ By default, live streams use low latency (a 4–5 second delay). Low latency is 
 | Option | Description |
 |--------|-------------|
 | **Player URL** | Direct link to the hosted player page. Share with viewers or use for testing. |
-| **Iframe embed code** | Copy and paste into a website or CMS to embed the player. |
+| **Iframe embed code** | Copy and paste into your website or CMS to embed the player. |
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
