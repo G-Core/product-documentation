@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 99e4c4deb97b
+  version: e232bb9ff2d2
 servers:
 - url: https://api.gcore.com
 tags:
@@ -28,6 +28,10 @@ tags:
 - name: SSL certificates
 - name: Let's Encrypt certificates
 - name: CA certificates
+- name: Aliases
+  description: |-
+    An alias is a hostname you own that is served with the settings of one of your CDN resources and with
+    its own SSL certificate. Aliases must be enabled for your account.
 - name: CDN activity logs
   description: |-
     Get the history of users requests to CDN.
@@ -4755,6 +4759,276 @@ paths:
           	}
           	fmt.Printf("%+v\n", page)
           }
+  /cdn/aliases:
+    get:
+      operationId: get-aliases-list
+      tags:
+      - Aliases
+      summary: Get aliases list
+      description: |-
+        Get information about aliases.
+
+        The response is always paginated.
+      parameters:
+      - in: query
+        name: resource_id
+        schema:
+          type: integer
+        description: CDN resource ID. Only aliases of this CDN resource are returned.
+      - in: query
+        name: resource_id__in
+        schema:
+          type: string
+        description: Comma-separated list of CDN resource IDs.
+        example: 4567,4568
+      - in: query
+        name: status
+        schema:
+          $ref: '#/components/schemas/AliasStatus'
+        description: Alias status.
+      - in: query
+        name: status__in
+        schema:
+          type: string
+        description: Comma-separated list of alias statuses.
+        example: pending,active
+      - in: query
+        name: automated
+        schema:
+          type: boolean
+        description: |-
+          How the alias certificate is managed.
+
+          Possible values:
+          - **true** – Certificate is issued and renewed automatically.
+          - **false** – Certificate was added by a user.
+      - in: query
+        name: ssl_id
+        schema:
+          type: integer
+        description: SSL certificate ID. Only aliases linked to this certificate are returned.
+      - in: query
+        name: cname
+        schema:
+          type: string
+        description: Hostname substring, case-insensitive.
+      - in: query
+        name: cname_startswith
+        schema:
+          type: string
+        description: Hostname prefix, case-insensitive.
+      - in: query
+        name: cname_endswith
+        schema:
+          type: string
+        description: Hostname suffix, case-insensitive.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search by alias ID or hostname.
+      - in: query
+        name: ordering
+        schema:
+          type: string
+        description: |-
+          Field to sort by. Prefix with `-` for descending order.
+
+          Possible values: `id`, `cname`, `status`, `created`, `updated`, `resource_id`.
+        example: -created
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasListResponse'
+        '403':
+          description: Aliases are not enabled for your account.
+    post:
+      operationId: create-alias
+      tags:
+      - Aliases
+      summary: Create alias
+      description: |-
+        Create an alias: a hostname you own that is served with the settings of one of your CDN resources and
+        with its own SSL certificate.
+
+        By default, a Let's Encrypt certificate is issued for the alias automatically. Until the certificate
+        is issued the alias stays in the `pending` status.
+
+        To use your own certificate instead, pass its ID in `ssl_id`. The certificate must cover the alias
+        hostname; a Let's Encrypt certificate issued for one of your CDN resources cannot be used. Such an alias
+        becomes `active` immediately.
+
+        The hostname must be unique across all CDN resources, additional CNAMEs and aliases.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlias'
+      responses:
+        '201':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alias'
+        '400':
+          description: Validation failed, or the aliases limit of your account is reached.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/CommonValidationError'
+                - $ref: '#/components/schemas/AliasesLimitError'
+        '403':
+          description: Aliases are not enabled for your account.
+  /cdn/aliases/add:
+    post:
+      operationId: add-aliases
+      tags:
+      - Aliases
+      summary: Add aliases in bulk
+      description: |-
+        Create up to 1000 aliases for one CDN resource in a single request.
+
+        The request is atomic: if any item is invalid, nothing is created and the errors are returned per item,
+        in the same order as the request items. An item whose hostname is already an alias of the same CDN
+        resource is reported in `exists` and left unchanged.
+
+        The aliases limit of your account is checked against the items that would be created.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasesAddPayload'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasesAddResponse'
+        '400':
+          description: Validation failed, or the aliases limit of your account is reached.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/AliasesAddError'
+                - $ref: '#/components/schemas/AliasesLimitError'
+        '403':
+          description: Aliases are not enabled for your account.
+  /cdn/aliases/remove:
+    post:
+      operationId: remove-aliases
+      tags:
+      - Aliases
+      summary: Remove aliases in bulk
+      description: |-
+        Delete up to 1000 aliases in a single request, selected either by ID or by hostname.
+
+        Aliases that are not found are reported in `not_found` and do not fail the request.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasesRemovePayload'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasesRemoveResponse'
+        '400':
+          description: Validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonValidationError'
+        '403':
+          description: Aliases are not enabled for your account.
+  /cdn/aliases/{alias_id}:
+    get:
+      operationId: get-alias-details
+      tags:
+      - Aliases
+      summary: Get alias details
+      parameters:
+      - $ref: '#/components/parameters/alias_id_parameter'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alias'
+        '403':
+          description: Aliases are not enabled for your account.
+        '404':
+          description: The alias does not exist.
+    patch:
+      operationId: change-alias
+      tags:
+      - Aliases
+      summary: Change alias
+      description: |-
+        Change an alias. The hostname and the CDN resource of an alias cannot be changed; delete the alias
+        and create a new one instead.
+
+        Set `active` to **false** to stop serving the alias; set it back to **true** to resume.
+
+        For an alias with your own certificate, pass a new certificate ID in `ssl_id` to replace it. The new
+        certificate must cover the alias hostname.
+      parameters:
+      - $ref: '#/components/parameters/alias_id_parameter'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeAlias'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alias'
+        '400':
+          description: Validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonValidationError'
+        '403':
+          description: Aliases are not enabled for your account.
+        '404':
+          description: The alias does not exist.
+    delete:
+      operationId: delete-alias
+      tags:
+      - Aliases
+      summary: Delete alias
+      description: |-
+        Delete an alias. The hostname stops being served and can be used again. A certificate you added
+        yourself is not affected.
+      parameters:
+      - $ref: '#/components/parameters/alias_id_parameter'
+      responses:
+        '204':
+          description: Successful.
+        '403':
+          description: Aliases are not enabled for your account.
+        '404':
+          description: The alias does not exist.
   /cdn/sslData:
     get:
       operationId: get-ssl-certificates-list
@@ -6524,6 +6798,13 @@ components:
         Possible values:
         - **true** - CDN resource is activated.
         - **false** - CDN resource is deactivated.
+    alias_id_parameter:
+      in: path
+      name: alias_id
+      description: Alias ID.
+      required: true
+      schema:
+        type: integer
     cache_status__eq:
       in: query
       name: cache_status__eq
@@ -7777,6 +8058,271 @@ components:
         timestamp: 1623159320
       - edge_status_2xx: 62616980
         timestamp: 1623159380
+    Alias:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Alias ID.
+          example: 123
+        cname:
+          type: string
+          description: Alias hostname. Cannot be changed after creation.
+          example: shop.customer.com
+        resource_id:
+          type: integer
+          description: ID of the CDN resource whose settings the alias is served with. Cannot be changed after creation.
+          example: 4567
+        automated:
+          type: boolean
+          description: |-
+            How the alias certificate is managed.
+
+            Possible values:
+            - **true** – A Let's Encrypt certificate is issued and renewed automatically.
+            - **false** – The certificate referenced by `ssl_id` was added by you.
+          example: true
+        ssl_id:
+          type: integer
+          description: ID of the SSL certificate served for the alias.
+          example: 890
+        active:
+          type: boolean
+          description: |-
+            Whether you have enabled the alias. Enabling it does not by itself make it live: the alias is served only
+            while `status` is **active**, **`ssl_issuing`** or **`ssl_error`**.
+
+            Possible values:
+            - **true** – The alias is enabled and is served once its certificate is ready.
+            - **false** – The alias is paused and is not served.
+          example: true
+        enabled:
+          type: boolean
+          description: |-
+            Whether the alias is enabled by the system. Follows the state of the CDN resource.
+
+            Possible values:
+            - **true** – The alias can be served.
+            - **false** – The alias is not served because its CDN resource is not active.
+          example: true
+        status:
+          $ref: '#/components/schemas/AliasStatus'
+        created:
+          type: string
+          description: Date and time when the alias was created (ISO 8601/RFC 3339 format, UTC.)
+          example: '2026-09-01T10:00:00Z'
+        updated:
+          type: string
+          description: Date and time when the alias was last changed (ISO 8601/RFC 3339 format, UTC.)
+          example: '2026-09-01T10:05:00Z'
+    AliasBulkItem:
+      type: object
+      required:
+      - cname
+      properties:
+        cname:
+          type: string
+          description: Alias hostname.
+          example: shop.customer.com
+        ssl_id:
+          type: integer
+          nullable: true
+          description: |-
+            ID of your own SSL certificate to serve for the alias. A Let's Encrypt certificate issued for one of your
+            CDN resources cannot be used. Omit it to have a Let's Encrypt certificate issued automatically.
+          example: 890
+        automated:
+          type: boolean
+          description: |-
+            How the alias certificate is managed. Defaults to **true** when `ssl_id` is omitted and to **false**
+            when `ssl_id` is passed.
+          example: false
+    AliasBulkItemResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Alias ID.
+          example: 123
+        cname:
+          type: string
+          description: Alias hostname.
+          example: shop.customer.com
+        status:
+          $ref: '#/components/schemas/AliasStatus'
+    AliasListResponse:
+      allOf:
+      - $ref: '#/components/schemas/PaginatedResponse'
+      - type: object
+        properties:
+          results:
+            type: array
+            items:
+              $ref: '#/components/schemas/Alias'
+      example:
+        count: 1
+        next: null
+        previous: null
+        results:
+        - id: 123
+          cname: shop.customer.com
+          resource_id: 4567
+          automated: true
+          ssl_id: 890
+          active: true
+          enabled: true
+          status: pending
+          created: '2026-09-01T10:00:00Z'
+          updated: '2026-09-01T10:00:00Z'
+    AliasStatus:
+      type: string
+      description: |-
+        Alias status.
+
+        Possible values:
+        - **pending** – The certificate has not been issued yet; the alias is not served.
+        - **active** – The alias is served with its certificate.
+        - **`ssl_issuing`** – A new certificate is being issued; the current one keeps being served.
+        - **`ssl_error`** – Certificate issuance failed; a previously issued certificate keeps being served.
+        - **inactive** – The alias or its CDN resource is disabled; the alias is not served.
+      enum:
+      - pending
+      - active
+      - ssl_issuing
+      - ssl_error
+      - inactive
+      example: active
+    AliasesAddError:
+      title: Bulk validation error
+      type: object
+      properties:
+        errors:
+          type: object
+          description: |-
+            Error descriptions per field of the request. `items` holds one object per request item, in request
+            order; an empty object means the item is valid.
+          properties:
+            resource_id:
+              type: array
+              items:
+                type: string
+            items:
+              type: array
+              items:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+      example:
+        errors:
+          items:
+          - {}
+          - cname:
+            - Hostname b.customer.com already exists.
+    AliasesAddPayload:
+      type: object
+      required:
+      - resource_id
+      - items
+      properties:
+        resource_id:
+          type: integer
+          description: ID of the CDN resource whose settings the aliases are served with.
+          example: 4567
+        items:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          description: Aliases to create.
+          items:
+            $ref: '#/components/schemas/AliasBulkItem'
+    AliasesAddResponse:
+      type: object
+      properties:
+        created:
+          type: array
+          description: Aliases created by this request.
+          items:
+            $ref: '#/components/schemas/AliasBulkItemResult'
+        exists:
+          type: array
+          description: Items whose hostname was already an alias of the CDN resource. Nothing was changed for them.
+          items:
+            $ref: '#/components/schemas/AliasBulkItemResult'
+      example:
+        created:
+        - id: 1
+          cname: a.customer.com
+          status: pending
+        exists:
+        - id: 7
+          cname: b.customer.com
+          status: active
+    AliasesLimitError:
+      title: Aliases limit exceeded
+      type: object
+      properties:
+        errors:
+          type: array
+          description: The aliases limit of your account does not allow the requested number of new aliases.
+          items:
+            type: string
+          example:
+          - 'Aliases limit exceeded: limit=100, current=98, requested_new=3.'
+    AliasesRemovePayload:
+      type: object
+      description: Pass exactly one of `ids` or `cnames`.
+      properties:
+        ids:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          description: IDs of the aliases to delete.
+          items:
+            type: integer
+          example:
+          - 1
+          - 2
+          - 3
+        cnames:
+          type: array
+          minItems: 1
+          maxItems: 1000
+          description: Hostnames of the aliases to delete.
+          items:
+            type: string
+          example:
+          - a.customer.com
+          - b.customer.com
+    AliasesRemoveResponse:
+      type: object
+      properties:
+        removed:
+          type: array
+          description: Aliases deleted by this request.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              cname:
+                type: string
+                example: a.customer.com
+        not_found:
+          type: array
+          description: Requested IDs or hostnames that did not match an alias.
+          items:
+            oneOf:
+            - type: integer
+            - type: string
+      example:
+        removed:
+        - id: 1
+          cname: a.customer.com
+        not_found:
+        - b.customer.com
     AlibabaRegionItem:
       type: object
       properties:
@@ -8404,6 +8950,25 @@ components:
                 Please wait until the attempt is completed and try again.
               example:
               - You cannot add a certificate because the current issuing attempt is in progress. Please wait until the attempt is completed and try again.
+    ChangeAlias:
+      type: object
+      properties:
+        active:
+          type: boolean
+          description: |-
+            Whether the alias is enabled.
+
+            Possible values:
+            - **true** – The alias is enabled and is served once its certificate is ready.
+            - **false** – The alias is paused and is not served.
+          example: false
+        ssl_id:
+          type: integer
+          description: |-
+            ID of your own SSL certificate to serve for the alias instead of the current one. The certificate must
+            cover the alias hostname; a Let's Encrypt certificate issued for one of your CDN resources cannot be used.
+            Available only for aliases with `automated` set to **false**.
+          example: 891
     ChangeCDNService:
       type: object
       properties:
@@ -8732,6 +9297,43 @@ components:
     Count:
       type: integer
       description: Total number of activity logs records.
+    CreateAlias:
+      type: object
+      required:
+      - cname
+      - resource_id
+      properties:
+        cname:
+          type: string
+          description: Alias hostname. Wildcard hostnames are not supported.
+          example: shop.customer.com
+        resource_id:
+          type: integer
+          description: ID of the CDN resource whose settings the alias is served with.
+          example: 4567
+        ssl_id:
+          type: integer
+          nullable: true
+          description: |-
+            ID of your own SSL certificate to serve for the alias. The certificate must cover the alias hostname.
+            A Let's Encrypt certificate issued for one of your CDN resources cannot be used.
+
+            Omit it to have a Let's Encrypt certificate issued automatically.
+          example: 890
+        automated:
+          type: boolean
+          description: |-
+            How the alias certificate is managed. Defaults to **true** when `ssl_id` is omitted and to **false**
+            when `ssl_id` is passed.
+
+            Possible values:
+            - **true** – A Let's Encrypt certificate is issued and renewed automatically. `ssl_id` must be omitted.
+            - **false** – Your own certificate is served. `ssl_id` is required.
+          example: true
+        active:
+          type: boolean
+          description: Whether the alias is enabled. Defaults to **true**. The alias is served once its certificate is ready.
+          example: true
     CreateLogsUploaderConfig:
       properties:
         enabled:
@@ -15917,6 +16519,7 @@ x-tagGroups:
   - SSL certificates
   - Let's Encrypt certificates
   - CA certificates
+  - Aliases
   - CDN activity logs
   - Log viewer
   - Logs uploader
