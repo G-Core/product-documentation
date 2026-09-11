@@ -1,7 +1,7 @@
 ---
 title: "Configure WAAP for a new domain"
 sidebarTitle: "Configure WAAP for a new domain"
-ai-navigation: Create a Gcore CDN resource with WAAP enabled by specifying domain name, origin server IP or hostname, origin authentication type, and custom port settings, then update DNS records with the generated CNAME to route traffic through WAAP for Layer 7 DDoS protection and web application security, or use the REST API to list WAAP domains and manage their protection mode.
+ai-navigation: Add a domain to Gcore WAAP protection from the WAAP Domains page or by enabling WAAP on a CDN resource, then configure DNS, verify traffic in Monitoring mode, allow admin IPs and known bots, and switch to Protection mode via Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -11,13 +11,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Web Application and API Protection (WAAP) is a single SaaS tool that combines all aspects of website security and traffic management, including Layer 7 DDoS protection, and web application security.</p>
 
-<p>Securing an application with WAAP involves three main steps:</p>
+<p>You can add a domain to WAAP protection in two ways:</p>
 
-1. Create a Gcore CDN resource for the domain.
-2. Enable WAAP protection in the resource settings.
-3. Verify traffic behavior to help ensure legitimate requests are not blocked.
+- **From the WAAP Domains page**: Navigate to **WAAP** > **Domains** and click **Create Domain**. WAAP is pre-enabled on the CDN resource creation form. This is the quickest path to get a domain protected.
+- **From CDN settings**: Create a CDN resource first and enable WAAP in the resource settings. Use this approach if you already have an existing CDN resource or need more control over CDN configuration before enabling WAAP.
 
-<p>The following guide walks through this process and explains how to configure WAAP according to specific requirements.</p>
+<p>After the domain is added, the remaining steps — verifying traffic in Monitoring mode, allowing admin IPs, and enabling Protection mode — apply to both paths.</p>
 
 <Tip>
   **Tip**
@@ -25,9 +24,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   After you enable WAAP, all traffic will be diverted to our network, and it may cause a temporary disruption for your users. We recommend setting up Gcore WAAP during a low-traffic period to minimize the impact.
 </Tip>
 
-## Step 1. Create a CDN resource
+## Step 1. Add a domain for WAAP protection
 
-<p>To secure your web application and APIs with Gcore WAAP, it's necessary to create a CDN resource associated with your website's origin. If you also need to add an SSL certificate, check out the [Add an SSL certificate to deliver content over HTTPS](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) guide.</p>
+<p>To protect your web application and APIs with Gcore WAAP, add a domain by selecting one of the following options.</p>
 
 <Info>
   **Info**
@@ -36,56 +35,88 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </Info>
 
 <Tabs>
-  <Tab title="Create a resource with Gcore Managed DNS">
-    If Gcore CDN isn't configured yet, create a CDN resource first and select the **Delegate to Gcore DNS** option. Follow the [CDN resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
-  </Tab>
-  <Tab title="Create a resource with your DNS provider">
-    If you want to use a custom DNS provider, configure the resource according to the following steps.
+  <Tab title="From the WAAP Domains page">
+    1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
+    2. Click **Create Domain**.
 
-    1. Go to the [CDN page](https://portal.gcore.com/cdn/resources/list) and click **Create CDN resource**.
-    2. In the **Add domain** field, enter your domain name. For example, `waap.mydomain.com`.
-    3. Select the **Do not delegate** option to use CDN without changing your DNS provider.
-    4. Enable the **Enable WAAP** toggle to activate Web Application and API Protection for your domain.
+    <Frame>
+      ![WAAP Domains page with the Create Domain button](/images/docs/waap/getting-started/configure-waap-for-a-domain/waap-domains-list.png)
+    </Frame>
+
+    3. In the **Add domain** field, enter your domain name. For example, `waap.example.com`.
+    4. Select a DNS delegation option:
+       - **Delegate your DNS zone to us**: Routes DNS through Gcore for lower latency and stronger security. No additional DNS changes needed after the CNAME step.
+       - **Do not delegate**: Use CDN without changing your DNS provider. You can delegate later in resource settings.
     5. In the **Origin** section, configure your content origin:
        - Select **Specify content origin** to enter your origin server details.
-       - Keep the **Use default Origin group name** toggle enabled, or disable it to specify a custom name.
-       - From the **Type of origin authentication** dropdown, select the authentication method if required, or keep it set to **None**.
        - In the **Origin source** field, enter your origin server IP address or domain name.
-       - Keep the **Use default port** checkbox selected to use port 80, or deselect it to specify a custom port.
+       - Keep **Use default port** selected to use port 80, or deselect it to specify a custom port.
 
     <Frame>
-      ![Create CDN resource form](/images/docs/waap/getting-started/configure-waap-for-a-domain/create-resource.png)
+      ![Create resource form reached from WAAP Domains, with WAAP pre-enabled and locked](/images/docs/waap/getting-started/configure-waap-for-a-domain/waap-create-resource-form.png)
     </Frame>
-    6. Click **Create and enable protection** to create the CDN resource.
+
+    6. Click **Create and enable protection** to create the CDN resource with WAAP already enabled.
     7. After the resource is created, copy the generated CNAME and add it to your DNS configuration at your DNS provider.
 
-    #### Finalize the settings
+    <p>WAAP is enabled automatically — skip to [Step 3](#step-3-use-waap-in-monitoring-mode) to verify traffic behavior.</p>
+  </Tab>
+  <Tab title="From CDN settings">
+    If Gcore CDN isn't configured yet, create a CDN resource first. If you also need to add an SSL certificate, check out the [Add an SSL certificate to deliver content over HTTPS](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) guide.
 
-    Once your CDN resource is created, configure the Host header setting:
+    <Tabs>
+      <Tab title="Create a resource with Gcore Managed DNS">
+        Select the **Delegate to Gcore DNS** option when creating the resource. Follow the [CDN resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
+      </Tab>
+      <Tab title="Create a resource with your DNS provider">
+        1. Go to the [CDN page](https://portal.gcore.com/cdn/resources/list) and click **Create CDN resource**.
+        2. In the **Add domain** field, enter your domain name. For example, `waap.mydomain.com`.
+        3. Select the **Do not delegate** option to use CDN without changing your DNS provider.
+        4. Enable the **Enable WAAP** toggle to activate Web Application and API Protection for your domain.
+        5. In the **Origin** section, configure your content origin:
+           - Select **Specify content origin** to enter your origin server details.
+           - Keep the **Use default Origin group name** toggle enabled, or disable it to specify a custom name.
+           - From the **Type of origin authentication** dropdown, select the authentication method if required, or keep it set to **None**.
+           - In the **Origin source** field, enter your origin server IP address or domain name.
+           - Keep the **Use default port** checkbox selected to use port 80, or deselect it to specify a custom port.
 
-    1. Open your CDN resource settings and navigate to the **HTTP headers** section.
-    2. Click **Host header** and enable the **Change Host header** toggle.
-    3. Select the **Forward Host header** option to forward the original Host header from client requests to your origin server.
+        <Frame>
+          ![Create CDN resource form](/images/docs/waap/getting-started/configure-waap-for-a-domain/create-resource.png)
+        </Frame>
+        6. Click **Create and enable protection** to create the CDN resource.
+        7. After the resource is created, copy the generated CNAME and add it to your DNS configuration at your DNS provider.
 
-    <Frame>
-      ![Host header configuration](/images/docs/waap/getting-started/configure-waap-for-a-domain/host-header-forward.png)
-    </Frame>
-    <Info>
-      **Info**
+        **Finalize the settings**
 
-      The **Always online** option is automatically disabled when WAAP is enabled and cannot be changed.
+        Once your CDN resource is created, configure the Host header setting:
 
-      <Frame>
-       ![Always online disabled](/images/docs/waap/getting-started/configure-waap-for-a-domain/always-online-disabled.png)
-      </Frame>
+        1. Open your CDN resource settings and navigate to the **HTTP headers** section.
+        2. Click **Host header** and enable the **Change Host header** toggle.
+        3. Select the **Forward Host header** option to forward the original Host header from client requests to your origin server.
 
-    </Info>
+        <Frame>
+          ![Host header configuration](/images/docs/waap/getting-started/configure-waap-for-a-domain/host-header-forward.png)
+        </Frame>
+        <Info>
+          **Info**
+
+          The **Always online** option is automatically disabled when WAAP is enabled and cannot be changed.
+
+          <Frame>
+           ![Always online disabled](/images/docs/waap/getting-started/configure-waap-for-a-domain/always-online-disabled.png)
+          </Frame>
+
+        </Info>
+      </Tab>
+    </Tabs>
+
+    <p>After creating the CDN resource, continue to Step 2 to enable WAAP.</p>
   </Tab>
 </Tabs>
 
 ## Step 2. Enable WAAP in CDN resource settings
 
-<p>Once your CDN resource is set up, you can activate WAAP protection for it. Refer to the [Protect CDN resources with Gcore WAAP](/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-waap) guide for detailed instructions.</p>
+<p>If you added the domain using the **WAAP Domains page** or enabled the **WAAP** toggle during CDN resource creation, skip to Step 3. If you created a CDN resource without enabling WAAP, enable WAAP protection now. Refer to the [Protect CDN resources with Gcore WAAP](/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-waap) guide for detailed instructions.</p>
 
 ## Step 3. Use WAAP in Monitoring mode
 
