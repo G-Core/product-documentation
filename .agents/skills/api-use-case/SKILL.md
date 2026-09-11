@@ -374,7 +374,7 @@ If the flow requires an existing resource (e.g. a network), add it:
 
 **Environment variables block:**
 ```mdx
-Open a terminal and set these environment variables before running the examples:
+Open a terminal and export the required variables:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"

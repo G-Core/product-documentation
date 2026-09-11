@@ -615,9 +615,198 @@ def warn_content_after_method_switch(lines: Sequence[str]) -> list[Warning]:
     return warnings
 
 
+def warn_forbidden_prose_words(lines: Sequence[str]) -> list[Warning]:
+    """Warn when prose contains vague or informal words banned from technical docs.
+
+    Flagged patterns (not a hard fail — verify context before fixing):
+    - "example" / "examples" — use specific terms like "code" or "command"
+    - "following" / "the following" — rephrase to direct phrasing
+      e.g. "Set these variables:" not "Set the following variables:"
+
+    Words inside fenced code blocks and frontmatter are ignored.
+    """
+    warnings: list[Warning] = []
+    in_fence = False
+    in_frontmatter = False
+    frontmatter_done = False
+
+    _forbidden = re.compile(
+        r"\b(example[s]?|the following|following)\b",
+        re.IGNORECASE,
+    )
+
+    for lineno, raw in enumerate(lines, start=1):
+        # Skip frontmatter
+        if lineno == 1 and raw.strip() == "---":
+            in_frontmatter = True
+            continue
+        if in_frontmatter:
+            if raw.strip() == "---":
+                in_frontmatter = False
+                frontmatter_done = True
+            continue
+
+        if _is_fence(raw):
+            in_fence = not in_fence
+
+        if in_fence:
+            continue
+
+        # Skip pure MDX/JSX tags, imports, and code-block annotations
+        stripped = raw.strip()
+        if stripped.startswith("<") or stripped.startswith("import "):
+            continue
+
+        for match in _forbidden.finditer(raw):
+            warnings.append(
+                Warning(
+                    line=lineno,
+                    rule="forbidden-prose-word",
+                    detail=(
+                        f"Banned word \"{match.group(0)}\" in prose. "
+                        "Use direct phrasing: \"Open a terminal and export the required variables:\" "
+                        "not \"Set the following variables before running the examples:\". "
+                        "Verify context — false positives are possible."
+                    ),
+                    text=stripped[:120],
+                )
+            )
+            # One warning per line is enough
+            break
+
+    return warnings
+
+
 WARN_CHECKS: tuple[Callable[[list[str]], list[Warning]], ...] = (
     warn_content_after_method_switch,
+    warn_forbidden_prose_words,
 )
+
+
+def check_api_section_no_info_block(lines: Sequence[str]) -> list[Violation]:
+    """Flag an API MethodSection that is missing an <Info> authentication block.
+
+    Every REST API MethodSection must open with an <Info> block that states
+    the API token requirement. Prose authentication sentences are not allowed —
+    the <Info> component provides consistent visual treatment across all articles.
+    """
+    violations: list[Violation] = []
+    in_api_section = False
+    in_fence = False
+    depth = 0
+    section_start_line = 0
+    has_info = False
+
+    _api_open = re.compile(r'<MethodSection\b[^>]*\bid=["\']api["\']')
+    _any_section_open = re.compile(r'<MethodSection\b')
+    _section_close = re.compile(r'</MethodSection\s*>')
+    _info_open = re.compile(r'<Info\b')
+
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+
+        if _is_fence(raw):
+            in_fence = not in_fence
+
+        if in_fence:
+            continue
+
+        if _api_open.search(stripped):
+            in_api_section = True
+            depth = 1
+            section_start_line = lineno
+            has_info = False
+            continue
+
+        if in_api_section:
+            if _any_section_open.search(stripped):
+                depth += 1
+            if _section_close.search(stripped):
+                depth -= 1
+                if depth <= 0:
+                    if not has_info:
+                        violations.append(
+                            Violation(
+                                line=section_start_line,
+                                rule="api-section-no-info-block",
+                                detail=(
+                                    "API MethodSection is missing an <Info> authentication block. "
+                                    "Add <Info>An [API&nbsp;token](/account-settings/api-tokens) "
+                                    "is required...</Info> at the top of the section."
+                                ),
+                                text='<MethodSection id="api">',
+                            )
+                        )
+                    in_api_section = False
+                continue
+
+            if _info_open.search(stripped):
+                has_info = True
+
+    return violations
+
+
+def check_portal_section_no_headings(lines: Sequence[str]) -> list[Violation]:
+    """Flag a Portal MethodSection that contains no ## or ### headings.
+
+    A Portal section without headings produces an empty 'On this page' TOC
+    when the user is on the Customer Portal tab. Every Portal MethodSection
+    must have at least one ## or ### heading so navigation is usable.
+    """
+    violations: list[Violation] = []
+    in_portal_section = False
+    in_fence = False
+    depth = 0
+    section_start_line = 0
+    has_heading = False
+
+    _portal_open = re.compile(r'<MethodSection\b[^>]*\bid=["\']portal["\']')
+    _any_section_open = re.compile(r'<MethodSection\b')
+    _section_close = re.compile(r'</MethodSection\s*>')
+    _heading = re.compile(r'^#{2,3}\s')
+
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+
+        if _is_fence(raw):
+            in_fence = not in_fence
+
+        if in_fence:
+            continue
+
+        if _portal_open.search(stripped):
+            in_portal_section = True
+            depth = 1
+            section_start_line = lineno
+            has_heading = False
+            continue
+
+        if in_portal_section:
+            if _any_section_open.search(stripped):
+                depth += 1
+            if _section_close.search(stripped):
+                depth -= 1
+                if depth <= 0:
+                    if not has_heading:
+                        violations.append(
+                            Violation(
+                                line=section_start_line,
+                                rule="portal-section-no-headings",
+                                detail=(
+                                    "Portal MethodSection has no ## or ### headings. "
+                                    "Add at least one heading so the 'On this page' TOC "
+                                    "is populated when the user is on the Customer Portal tab."
+                                ),
+                                text="<MethodSection id=\"portal\">",
+                            )
+                        )
+                    in_portal_section = False
+                continue
+
+            if _heading.match(stripped):
+                has_heading = True
+
+    return violations
 
 
 CHECKS: tuple[CheckFn, ...] = (
@@ -630,6 +819,8 @@ CHECKS: tuple[CheckFn, ...] = (
     check_import_os_without_usage,
     check_go_import_alias,
     check_prose_without_p_tags,
+    check_api_section_no_info_block,
+    check_portal_section_no_headings,
 )
 
 
