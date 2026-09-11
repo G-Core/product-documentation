@@ -652,9 +652,9 @@ def warn_forbidden_prose_words(lines: Sequence[str]) -> list[Warning]:
         if in_fence:
             continue
 
-        # Skip pure MDX/JSX tags, imports, and code-block annotations
+        # Skip pure MDX/JSX tags (but NOT <p> prose lines), imports, and code-block annotations
         stripped = raw.strip()
-        if stripped.startswith("<") or stripped.startswith("import "):
+        if (stripped.startswith("<") and not stripped.startswith("<p>")) or stripped.startswith("import "):
             continue
 
         for match in _forbidden.finditer(raw):
