@@ -899,8 +899,6 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 | programmatic access | Vague | what specifically: creates VMs, configures networks |
 | for example (inline) | Breaks sentence flow | restructure the sentence or use a dash |
 | such as | Implies incomplete list | complete the list or restructure |
-| example / examples (in instructions) | Implies optional — "run the examples" sounds like the user has a choice | use specific nouns: "the commands", "the script", "the call" |
-| the following / following | Vague filler — the reader already knows what follows | rephrase directly: "Export these variables:" not "Set the following variables:" |
 
 ### Common terms
 

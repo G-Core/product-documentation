@@ -1,42 +1,40 @@
 ---
 title: Insert an overlay (HTML widgets) in your live stream
 sidebarTitle: Overlay
-ai-navigation: Configure HTML overlays in live streams via REST API - enable html_overlay on a stream, then create, list, update, and delete overlay widgets.
+ai-navigation: Configure HTML overlays embedded into live streams via API with support for multiple overlays per stream, transparent areas, 1 FPS update frequency, automatic scaling across adaptive bitrate qualities, and positioning in any screen area.
 ---
 
-HTML overlays are graphic elements composited directly into a live stream at the encoding stage and managed through the Gcore Streaming API.
-
-## Embedding approaches
+## What is an overlay?
 
 An overlay (or an HTML widget) is a graphic placed over the stream footage. Overlays include webcam pop-up, chat, alert, advertisement banner, and time or weather widgets. Streamers from different industries (games, education, news, sports events) use overlays to enhance their streams' visual appeal and functionality.
 
 There are two approaches to implementing overlays:
 
-  1. **Overlays are embedded OVER the live stream in the player**. In this case, the result is two "layers": the lower one is the video stream, and the upper one is the overlay shown by the particular player.
+  1. **Overlays are embedded OVER the live stream in the player**. In this case, you get two "layers": the lower one is the video stream, and the upper one is the overlay shown by the particular player.
 
   2. **Overlays are embedded INTO the live stream**. In this case, the overlay is part of the live stream.
 
 
-The drawback of the first approach is that if the player changes, the overlay will be lost. In the second case, the overlay is shown no matter the player used.
+The drawback of the first approach is that if you change the player, the overlay will be lost. In the second case, the overlay will be shown no matter the player used.
 
 ## Overlay example
 
-In the example below, the game score widget appears in the upper left corner, the weather widget in the upper right corner, the poll widget in the lower right corner, and the time and date widget in the lower left corner.
+In the example below, you can see the game score widget in the upper left corner, the weather widget in the upper right corner, the poll widget in the lower right corner, and the time and date widget in the lower left corner.
 
 <Frame>![Example of Gcore overlay](/images/docs/streaming-platform/live-streaming/insert-html-overlays-in-live-streams/coffee_run_overlays-optimized.gif)</Frame>
 
 
 ## Gcore supports HTML overlays
 
-Gcore Video Streaming supports overlays embedded into the live stream, which are managed using the API. Contact [support](mailto:support@gcore.com) or a personal manager to enable the overlay feature on the account.
+Gcore Video Streaming now supports overlays embedded into the live stream, which can be managed using the API. Contact support (via [email](maito:support@gcore.com) or chat—click the chat icon on the bottom right of our webpages) or your personal manager to enable the ability to send API requests to the overlay feature endpoints.
 
 The main features of overlays via API are:
 
   * Use more than one overlay per live stream
   * Size options: small overlays or overlays stretched over a full frame
   * Transparent areas in overlays
-  * one FPS frequency update
-  * Automatic size scaling for [adaptive&nbsp;bitrate](/streaming) qualities
+  * 1 FPS frequency update
+  * Automatic size scaling for [adaptive bitrate](/streaming) qualities
   * Place overlays in any area of the screen
 
 
@@ -46,400 +44,149 @@ OBS has functionality for using overlays. Let's compare it to Gcore's overlay fe
 
 | Feature              | OBS             | Gcore Overlays      |
 |----------------------|-----------------|---------------------|
-| **Scalability**      | one live stream | 1000+ live streams  |
-| **Animated overlays**| Yes             | one update per second |
+| **Scalability**      | 1 live stream   | 1000+ live streams  |
+| **Animated overlays**| Yes             | 1 update per second |
   
-While using OBS overlays, the OBS app must remain open. Computational resources are enough for only one live stream with overlay, which cannot be scaled to multiple live streams.
+While using OBS overlays, you need to keep the OBS app open. Computational resources are enough for only one live stream with overlay, which cannot be scaled to multiple live streams. 
 
-While using Gcore overlays, the overlay is embedded into a live stream. The widget is automatically available everywhere (for Gcore's player, _.m3u8_ link, and _.mpd_ link) and scales to any number of live streams.
+While using Gcore overlays, you embed the overlay into a live stream. The widget is automatically available everywhere (for Gcore's player, _.m3u8_ link, and _.mpd_ link) and scales to any number of live streams. We scale the service automatically—you don't need to do anything, just start as many streams as you need. We allow the overlay in many streams, but the frame rate (FPS) of a widget update will be 1 second. Therefore, animations will freeze.
 
-## Manage overlays via API
 
-Manage HTML overlays on a live stream. Start by enabling overlays on the stream, then add overlay widgets. Overlays can be added, updated, and deleted while the stream is live without interrupting playback.
+## Configure Gcore overlays via API
 
-<Info>
-An [API&nbsp;token](/account-settings/api-tokens) is required. Contact [Gcore&nbsp;support](mailto:support@gcore.com) to enable the overlay feature on the account before using these endpoints.
+We support the following types of overlays: times and clocks, weather, statistics, exchange rates, and banner ads. For the graphic component of your overlay, you can use the following methods:
+
+  * Create your own (e.g., with the [Free Twitch overlay maker from Canva](https://www.canva.com/create/twitch-overlays/))
+  * Use a template (e.g., [Bernardo's Streamer Toolkit](https://www.barnardos.org.uk/ready-player-b/streamer-toolkit))
+  * Use ready overlay systems (e.g., [DonationAlerts](https://www.donationalerts.com/), [Stream Overlays from Tracker Network](https://tracker.gg/overlays))
+
+
+<Info> 
+Before using overlays, [ask tech support](mailto:support@gcore.com) or your personal manager to enable the feature for your account. Then, set the `html_overlay` attribute to `true` for your live stream and specify the array of live streams.
 </Info>
 
-```bash
-export GCORE_API_KEY="{YOUR_API_KEY}"
-export STREAM_ID="{YOUR_STREAM_ID}"
-```
+For detailed information, refer to our [API documentation](/api-reference/streaming/overlays/get-all-overlays).
 
-### Enable HTML overlays on a stream
 
-Set `html_overlay` to `true` on a stream to activate overlay support. The first overlay must be created before the encoder starts pushing — overlays added after the stream starts become active only after the encoder reconnects.
+### Get all overlays
 
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
+The [API method](/api-reference/streaming/overlays/get-all-overlays) returns a list of HTML overlay widgets attached to a live stream.
 
-client = Gcore()
-stream_id = int(os.environ["STREAM_ID"])
+Example of the request:
 
-stream = client.streaming.streams.update(
-    stream_id,
-    stream={"name": "My live stream", "html_overlay": True},
-)
-print(f"html_overlay enabled: {stream.html_overlay}")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
+```sh
+curl -L -X GET 'https://api.gcore.com/streaming/streams/12345/overlays' \
+-H 'Authorization: APIKey 1234$0d1659...' \
+-H 'Content-Type: application/json' \
+ ```
 
-import (
-    "context"
-    "fmt"
-    "os"
-    "strconv"
-
-    gcore "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/packages/param"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
-
-    stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
-        Stream: streaming.StreamUpdateParamsStream{
-            Name:        "My live stream",
-            HTMLOverlay: param.NewOpt(true),
-        },
-    })
-    if err != nil {
-        panic(err)
-    }
-    fmt.Printf("html_overlay enabled: %v\n", stream.HTMLOverlay)
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
-     -H "Authorization: APIKey $GCORE_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{"html_overlay": true}'
-```
-
-<p>The API returns the full updated stream object with `html_overlay: true`.</p>
-  </Tab>
-</Tabs>
-
-### Create overlays
-
-Add one or more overlay widgets to a stream. Each overlay is an HTML page rendered at one FPS and composited into the video at the specified position. Up to multiple overlays can be active simultaneously.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `url` | Yes | Public HTTP/HTTPS URL of the HTML overlay page |
-| `width` | No | Widget width in pixels (1–1920) |
-| `height` | No | Widget height in pixels (1–1080) |
-| `x` | No | Left edge position in pixels (0–1919) |
-| `y` | No | Top edge position in pixels (0–1079) |
-| `stretch` | No | `true` to stretch over the full frame — cannot be combined with `x`/`y`/`width`/`height` |
-
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
-
-client = Gcore()
-stream_id = int(os.environ["STREAM_ID"])
-
-overlays = client.streaming.streams.overlays.create(
-    stream_id,
-    body=[
-        {
-            "url": "https://example.com/score-widget.html",
-            "width": 200,
-            "height": 60,
-            "x": 10,
-            "y": 10,
-            "stretch": False,
-        }
-    ],
-)
-overlay_id = overlays[0].id
-print(f"Created overlay {overlay_id} at ({overlays[0].x}, {overlays[0].y})")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    "strconv"
-
-    gcore "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/packages/param"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
-
-    overlays, err := client.Streaming.Streams.Overlays.New(ctx, streamID, streaming.StreamOverlayNewParams{
-        Body: []streaming.StreamOverlayNewParamsBody{
-            {
-                URL:     "https://example.com/score-widget.html",
-                Width:   param.NewOpt[int64](200),
-                Height:  param.NewOpt[int64](60),
-                X:       param.NewOpt[int64](10),
-                Y:       param.NewOpt[int64](10),
-                Stretch: param.NewOpt(false),
-            },
-        },
-    })
-    if err != nil {
-        panic(err)
-    }
-    overlayID := (*overlays)[0].ID
-    fmt.Printf("Created overlay %d at (%d, %d)\n",
-        overlayID, (*overlays)[0].X, (*overlays)[0].Y)
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl -X POST "https://api.gcore.com/streaming/streams/$STREAM_ID/overlays" \
-     -H "Authorization: APIKey $GCORE_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '[
-       {
-         "url": "https://example.com/score-widget.html",
-         "width": 200,
-         "height": 60,
-         "x": 10,
-         "y": 10,
-         "stretch": false
-       }
-     ]'
-```
-
-<p>The API returns an array of created overlays:</p>
+In response, you will receive an array of overlays. Example of the response:
 
 ```json
 [
   {
-    "id": 359561,
-    "stream_id": 4518977,
-    "url": "https://example.com/score-widget.html",
-    "width": 200,
-    "height": 60,
-    "x": 10,
-    "y": 10,
-    "stretch": false,
-    "created_at": "2026-09-07T12:15:47.000Z",
-    "updated_at": "2026-09-07T12:15:47.000Z"
+  "id": 1,
+  "stream_id": 12345,
+  "url": "http://domain.tld/myoverlay1.html",
+  "width": 120,
+  "height": 40,
+  "x": 10,
+  "y": 10,
+  "stretch": false,
+  "created_at": "2023-09-20T00:01:01.000Z",
+  "updated_at": "2023-10-01T12:01:01.000Z"
+  },
+  {
+    ...
   }
 ]
-```
-  </Tab>
-</Tabs>
+ ```
 
-### List overlays
+### Create overlays
 
-Retrieve all overlay widgets currently attached to a stream.
+The [API method](/api-reference/streaming/overlays/create-overlays) lets you insert overlays into your live stream. Please review the requirements for overlays to work correctly in the [API documentation](/api-reference/streaming/overlays/create-overlays).
 
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
+Example of the request:
 
-client = Gcore()
-stream_id = int(os.environ["STREAM_ID"])
+```sh
+curl -L -X POST https://api.gcore.com/streaming/streams/12345/overlays \
+-H 'Authorization: APIKey 1234$0d1659...' \
+-H 'Content-Type: application/json' \
+-d '{
+ "url": "http://domain.tld/myoverlay1.html",
+ "width": "120",
+ "height": "40",
+ "x": "30",
+ "y": "30",
+ "stretch": "false", 
+}'
+ ```
 
-overlays = client.streaming.streams.overlays.list(stream_id)
-for o in overlays:
-    print(f"Overlay {o.id}: {o.url} at ({o.x}, {o.y}) size {o.width}x{o.height}")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
+Example of the response:
 
-import (
-    "context"
-    "fmt"
-    "os"
-    "strconv"
-
-    gcore "github.com/G-Core/gcore-go"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
-
-    overlays, err := client.Streaming.Streams.Overlays.List(ctx, streamID)
-    if err != nil {
-        panic(err)
-    }
-    for _, o := range *overlays {
-        fmt.Printf("Overlay %d: %s at (%d, %d) size %dx%d\n",
-            o.ID, o.URL, o.X, o.Y, o.Width, o.Height)
-    }
+```json
+{
+  "url": "http://domain.tld/myoverlay1.html",
+  "width": 120,
+  "height": 40,
+  "x": 30,
+  "y": 30,
+  "stretch": false,
+  "id": 1,
+  "stream_id": 12345,
+  "created_at": "2023-09-20T00:01:01.000Z",
+  "updated_at": "2023-10-01T12:01:01.000Z"
 }
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl "https://api.gcore.com/streaming/streams/$STREAM_ID/overlays" \
-     -H "Authorization: APIKey $GCORE_API_KEY"
-```
+ ```
 
-<p>The API returns an array of overlay objects, or an empty array if no overlays are configured.</p>
-  </Tab>
-</Tabs>
+After creating the overlay, you can request it with the [API method](/api-reference/streaming/overlays/get-overlay) by specifying its ID.
 
-### Update an overlay
+### Change overlays
 
-Change the URL, position, or dimensions of an existing overlay widget. Only the fields passed in the request body are updated — other fields are unchanged.
+The [API method](/api-reference/streaming/overlays/change-overlays) updates settings for a set of overlays. This method allows changing the settings of several overlays. If you have only one, try [this one](/api-reference/streaming/overlays/change-overlays). 
 
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
+Example of the request:
 
-client = Gcore()
-stream_id = int(os.environ["STREAM_ID"])
-overlay_id = int(os.environ["OVERLAY_ID"])
+```sh
+curl -L -X PATCH https://api.gcore.com/streaming/streams/12345/overlays \
+-H 'Authorization: APIKey 1234$0d1659...' \
+-H 'Content-Type: application/json' \
+-d '{
+ "url": "http://domain.tld/myoverlay_new_3.html",
+ "width": "120",
+ "height": "40",
+ "x": "0",
+ "yt": "0",
+ "stretch": "false",
+ "id": "1",
+}'
+ ```
 
-updated = client.streaming.streams.overlays.update(
-    overlay_id,
-    stream_id=stream_id,
-    url="https://example.com/score-widget-v2.html",
-    x=50,
-    y=50,
-)
-print(f"Updated overlay {updated.id}: {updated.url} at ({updated.x}, {updated.y})")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
+Example of the response:
 
-import (
-    "context"
-    "fmt"
-    "os"
-    "strconv"
-
-    gcore "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/packages/param"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
-    overlayID, _ := strconv.ParseInt(os.Getenv("OVERLAY_ID"), 10, 64)
-
-    updated, err := client.Streaming.Streams.Overlays.Update(ctx, overlayID, streaming.StreamOverlayUpdateParams{
-        StreamID: streamID,
-        URL:      param.NewOpt("https://example.com/score-widget-v2.html"),
-        X:        param.NewOpt[int64](50),
-        Y:        param.NewOpt[int64](50),
-    })
-    if err != nil {
-        panic(err)
-    }
-    fmt.Printf("Updated overlay %d: %s at (%d, %d)\n",
-        updated.ID, updated.URL, updated.X, updated.Y)
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID/overlays/$OVERLAY_ID" \
-     -H "Authorization: APIKey $GCORE_API_KEY" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "url": "https://example.com/score-widget-v2.html",
-       "x": 50,
-       "y": 50
-     }'
-```
-
-<p>The API returns the full updated overlay object.</p>
-  </Tab>
-</Tabs>
+```json
+[
+  {
+    "url": "http://domain.tld/myoverlay_new_3.html",
+    "width": 120,
+    "height": 40,
+    "x": 0,
+    "y": 0,
+    "stretch": false,
+    "id": 1
+  }
+]
+ ```
 
 ### Delete an overlay
 
-Remove a specific overlay widget from a stream. Other overlays on the same stream are not affected.
+The [API method](/api-reference/streaming/overlays/delete-an-overlay) lets you delete the overlay.
 
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from gcore import Gcore
+Here's an example of the request:
 
-client = Gcore()
-stream_id = int(os.environ["STREAM_ID"])
-overlay_id = int(os.environ["OVERLAY_ID"])
+```sh
+curl -L -X DELETE https://api.gcore.com/streaming/streams/12345/overlays/1 \
+-H 'Authorization: APIKey 1234$0d1659...' \
+ ```
 
-client.streaming.streams.overlays.delete(overlay_id, stream_id=stream_id)
-print(f"Overlay {overlay_id} deleted")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    "strconv"
-
-    gcore "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
-    overlayID, _ := strconv.ParseInt(os.Getenv("OVERLAY_ID"), 10, 64)
-
-    err := client.Streaming.Streams.Overlays.Delete(ctx, overlayID, streaming.StreamOverlayDeleteParams{
-        StreamID: streamID,
-    })
-    if err != nil {
-        panic(err)
-    }
-    fmt.Printf("Overlay %d deleted\n", overlayID)
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl -X DELETE "https://api.gcore.com/streaming/streams/$STREAM_ID/overlays/$OVERLAY_ID" \
-     -H "Authorization: APIKey $GCORE_API_KEY"
-```
-
-<p>The API returns `200 OK` with an empty response body.</p>
-  </Tab>
-</Tabs>
+If all IDs are correct, you will get a response 200: `Overlay has been deleted successfully`.

@@ -81,9 +81,8 @@ Switch to production only if the feature is not yet deployed on preprod.
 
 | Resource type | Region | region_id |
 |---|---|---|
-| Networking, VMs, reserved IPs, Kubernetes, bare metal | Luxembourg-3 | 148 |
-| Container Registry and CaaS only | Luxembourg-2 | 76 |
-| Managed PostgreSQL only | Frankfurt-2 | 180 |
+| Networking, VMs, reserved IPs, bare metal | Luxembourg-3 | 148 |
+| DBaaS, Kubernetes | Frankfurt-2 | 180 |
 
 **Preprod:**
 

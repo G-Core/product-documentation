@@ -1,60 +1,10 @@
 ---
 name: api-use-case
-description: Add REST API coverage to an existing Customer Portal article, or audit/verify/live-test/improve an existing API tab. Use when asked to add an API tab, or when asked to review, test, or expand a tab that already exists.
+description: Add REST API coverage to an existing Customer Portal article with MethodSwitch and repository OpenAPI specs. Use when asked to add API coverage or create a REST API tab for a portal-only article.
 ---
 
 Read an existing Customer Portal article, find the matching API endpoints in the
-OpenAPI spec, and write or improve the `<MethodSection id="api">` section.
-
-## ABSOLUTE RULE — PORTAL TAB: MDX STRUCTURE YES, STYLE NO
-
-Two categories of changes in `<MethodSection id="portal">`:
-
-**ALLOWED — MDX structural rules (apply to Portal just like API):**
-- Adding missing `<p>` tags around bare prose paragraphs and numbered steps
-- Fixing `1\.` → `1.` in numbered step format (MDX rendering rule, not style)
-- Fixing `</MethodSection>` indentation (must be at column 0)
-- Moving misplaced closing tags
-- When content exists BEFORE `<MethodSwitch>`, move it inside the Portal section with ALL its headings, paragraphs, and structure intact — do not drop anything
-
-**FORBIDDEN — style, prose content, and structure (never touch in Portal):**
-- Rewriting "you/your" to neutral voice
-- Fixing number style (1 → one)
-- Fixing link text length
-- Fixing `&nbsp;` in multi-word links
-- Changing any prose wording
-- Removing or renaming headings (`##`, `###`) that already exist
-- Reordering sections or merging/splitting paragraphs
-- Removing any sentence, phrase, or image that was already there
-
-**Rule in one sentence:** Fix only the MDX syntax of Portal; never touch its content, headings, or prose — not even a single word.
-
-**Critical failure to avoid:** When moving pre-MethodSwitch content into Portal, it is easy to move the first heading but forget subsequent headings. After the move, verify that ALL headings from the original shared content appear inside the Portal section.
-
----
-
-## Phase 0 — Determine mode
-
-Check whether `<MethodSection id="api">` already exists in the article:
-
-```powershell
-Select-String -Path "path/to/article.mdx" -Pattern 'MethodSection id="api"'
-```
-
-**If it does NOT exist → Add mode:** follow Phases 1–7 in order to write the tab from scratch.
-
-**If it DOES exist → Audit mode:** follow this condensed flow instead:
-
-1. Read the existing API tab fully.
-2. Read the Portal tab fully — understand what it covers.
-3. Run the API checker: `python .agents/tools/api_check_style.py {path}`
-4. Live-test every curl, Python SDK, and Go SDK code block (see Phase 2 for setup).
-5. Run the standalone tab test from Phase 7: mentally delete the Portal tab.
-   List every topic the Portal tab covers that the API tab does not.
-6. Add missing operations. Fix broken code. Fix checker violations (API tab only).
-7. Run the checker again — exit code must be 0.
-8. Update `ai-navigation` if the tab content changed significantly.
-9. Show the diff to the user. **Do not commit.**
+OpenAPI spec, and write a complete `<MethodSection id="api">` section.
 
 ## Scope — read exactly these files
 
@@ -113,9 +63,8 @@ Wait for the answer before proceeding.
 
 **If yes → real testing:**
 - API credentials are in `C:\Projects\docops-agent2\access.md`
-- Use Luxembourg-3 (`region_id: 148`) — `GCORE_CLOUD_REGION_ID`. Kubernetes uses this region. Do not override it.
-- Container Registry and CaaS only: Luxembourg-2 (`region_id: 76`). Those products are not in Luxembourg-3; the articles state this.
-- Managed PostgreSQL only: Frankfurt-2 (`region_id: 180`). The service is not in Luxembourg-3; the article sample host is frankfurt-2. No other region overrides.
+- Use Luxembourg-3 (`region_id: 148`) for general VM and networking
+- Use Frankfurt-2 (`region_id: 180`) for DBaaS and Kubernetes
 - Run each API call end-to-end in the terminal using `curl` against `https://api.gcore.com`
 - Record real responses — exact fields, structure, error messages
 - **Also run every Python SDK and Go SDK code sample** — install the SDK in `venv`, execute each snippet against the live API, confirm it runs without errors and returns real data
@@ -131,12 +80,6 @@ Wait for the answer before proceeding.
 ---
 
 ## Phase 3 — Find the API endpoints
-
-**Run the checker before you write anything:**
-```powershell
-python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
-```
-Fix any existing violations before adding new content.
 
 Open the OpenAPI YAML for the product:
 ```
@@ -163,67 +106,7 @@ Select-String -Path "api-reference\services_documented\cloud_api.yaml" `
 
 ---
 
-## SDK Reference — читать ПЕРЕД написанием любого SDK кода
-
-Оба SDK генерируются автоматически из OpenAPI spec. Единственный источник правды — `api.md` в каждом SDK.
-
-### Python SDK
-
-- **Документация:** https://docs.gcore.com/developer-tools/sdks/python
-- **Полный API reference:** https://github.com/G-Core/gcore-python/blob/main/api.md
-- **GitHub:** https://github.com/G-Core/gcore-python
-
-Перед написанием Python метода — найти его сигнатуру:
-```powershell
-# Проверить сигнатуру метода в живом venv
-cd C:\Projects\docs-live-use-cases
-venv\Scripts\python.exe -c "import inspect; from gcore import Gcore; c = Gcore(); print(inspect.signature(c.streaming.ai_tasks.create))"
-
-# Проверить доступные методы сервиса
-venv\Scripts\python.exe -c "from gcore import Gcore; c = Gcore(); print([m for m in dir(c.streaming.ai_tasks) if not m.startswith('_')])"
-```
-
-### Go SDK
-
-- **Документация:** https://docs.gcore.com/developer-tools/sdks/go
-- **Полный API reference:** https://github.com/G-Core/gcore-go/blob/main/api.md
-- **pkg.go.dev:** https://pkg.go.dev/github.com/G-Core/gcore-go
-- **GitHub:** https://github.com/G-Core/gcore-go
-
-Перед написанием Go метода — найти его сигнатуру в локальном кэше модулей:
-```powershell
-# Найти файл с методами для нужного сервиса (пример: streaming AI tasks)
-$modver = (Get-ChildItem "$env:GOPATH\pkg\mod\github.com\!g-!core\gcore-go@*" | Sort-Object Name -Descending | Select-Object -First 1).Name
-$gomodpath = "$env:GOPATH\pkg\mod\github.com\!g-!core\$modver"
-
-# Найти все методы сервиса
-Select-String -Path "$gomodpath\streaming\*.go" -Pattern "func \(r \*" | ForEach-Object { $_.Line.Trim() }
-
-# Найти конкретный файл и посмотреть структуры/параметры
-Get-ChildItem "$gomodpath\streaming" | Where-Object { $_.Name -like "*aitask*" -or $_.Name -like "*ai_task*" }
-```
-
-### OpenAPI спеки (источник истины для endpoints и полей)
-
-Спеки лежат в репозитории:
-```
-/api-reference/services_documented/streaming_api.yaml
-/api-reference/services_documented/cloud_api.yaml
-/api-reference/services_documented/cdn_api.yaml
-/api-reference/services_documented/dns_api.yaml
-/api-reference/services_documented/waap_api.yaml
-```
-
-Поиск endpoint в спеке:
-```powershell
-Select-String -Path "api-reference\services_documented\streaming_api.yaml" -Pattern '"/streaming/ai'
-```
-
-**Правило:** имена полей в коде должны совпадать с именами из SDK. Никогда не угадывать и не брать из памяти — только из `api.md`, `inspect.signature()`, или исходников в GOMODCACHE.
-
----
-
-
+## SDK code patterns (mandatory — do not deviate)
 
 These patterns are canonical. Every Python and Go example must follow them exactly.
 Deviating from these patterns requires fixing all examples retroactively.
@@ -341,12 +224,6 @@ Key rules:
 
 ## Phase 4 — Write the API section
 
-**Run the checker after writing each code block (curl, Python SDK, Go SDK) before moving to the next:**
-```powershell
-python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
-```
-Exit code must be 0. Fix every violation immediately — do not accumulate and fix later.
-
 ### Structure A — Sequential creation flow
 
 Use when Portal steps must execute in order and outputs feed into later steps.
@@ -374,7 +251,7 @@ If the flow requires an existing resource (e.g. a network), add it:
 
 **Environment variables block:**
 ```mdx
-Open a terminal and export the required variables:
+Open a terminal and set these environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -534,63 +411,6 @@ script would be artificial.
 
 ## Phase 5 — Wrap in MethodSwitch
 
-**Run the checker immediately after wrapping:**
-```powershell
-python .agents/tools/api_check_style.py {relative/path/to/article.mdx}
-```
-Exit code must be 0 before proceeding to Phase 6.
-
-### CRITICAL LAYOUT RULES — violations break every article
-
-**Rule 1: `<MethodSwitch>` MUST be the first element after the import line.**
-Nothing — no paragraphs, no headings, no intro text — goes between the import and `<MethodSwitch>`.
-All content, including the article intro, belongs INSIDE a `<MethodSection>`.
-
-```mdx
---- WRONG — content before MethodSwitch ---
-import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
-
-The intro paragraph explaining what this feature does.   ← WRONG
-
-<MethodSwitch>
-  ...
-</MethodSwitch>
-
---- CORRECT — MethodSwitch immediately after import ---
-import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
-
-<MethodSwitch>
-  <MethodSection id="portal" label="Customer Portal">
-
-<p>The intro paragraph explaining what this feature does.</p>
-
-  ...
-  </MethodSection>
-  <MethodSection id="api" label="REST API">
-  ...
-  </MethodSection>
-</MethodSwitch>
-```
-
-**Rule 2: Every prose paragraph inside `<MethodSection>` MUST be wrapped in `<p>` tags.**
-This applies without exception to every standalone sentence or paragraph inside any `<MethodSection>`.
-Numbered list items (`1.`) and bullet items (`-`) do NOT get `<p>` — only prose paragraphs.
-
-```mdx
---- WRONG ---
-<MethodSection id="portal" label="Customer Portal">
-This feature lets you configure X.
-
-1. Open the portal.
-
---- CORRECT ---
-<MethodSection id="portal" label="Customer Portal">
-
-<p>This feature lets you configure X.</p>
-
-1. Open the portal.
-```
-
 If the article currently has no MethodSwitch, wrap the existing portal content:
 
 ```mdx
@@ -599,7 +419,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-  {existing portal content — do not change it, but wrap any prose in <p>}
+  {existing portal content — do not change it}
 
   </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -612,7 +432,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 If MethodSwitch already exists, add the `<MethodSection id="api">` after the portal section.
 
-**Portal section:** fix `<p>` tags and `</MethodSection>` indentation (MDX structure). Do not change prose wording or style — see the ABSOLUTE RULE at the top of this skill.
+**Do not modify the portal section** — it is out of scope for this skill.
 
 ---
 
