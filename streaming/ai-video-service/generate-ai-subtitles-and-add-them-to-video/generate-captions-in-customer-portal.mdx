@@ -1,7 +1,7 @@
 ---
-title: Generate and translate AI captions in the customer portal
+title: Generate and translate AI captions
 sidebarTitle: Create AI tasks
-ai-navigation: Generate and translate AI captions in videos - create transcription and translation tasks via the Customer Portal or REST API using Python SDK, Go SDK, and curl, then poll for WebVTT subtitle results.
+ai-navigation: Generate and translate AI captions for videos via Customer Portal or REST API - transcribe audio from new or existing videos using auto_transcribe params or direct AI tasks with Python SDK, Go SDK, and curl.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -125,15 +125,116 @@ We delete task result data after one month.
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>To generate subtitles from the original audio and optionally translate them, create a transcription task via the API. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until the status is `SUCCESS` or `FAILURE`. On success, the `result.vtt_content` field contains the WebVTT subtitle text.</p>
+<p>To generate subtitles from the original audio and optionally translate them, use one of two approaches. For videos hosted on Gcore Video Streaming, pass `auto_transcribe_audio_language` directly in the video create or subtitle request. For any MP4 file accessible via a public HTTPS URL — including videos outside Gcore — submit a task to <code>POST /streaming/ai/tasks</code> and poll for results.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required.
 </Info>
 
+<p>Open a terminal and export the required variables:</p>
+
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+export TASK_ID="{YOUR_TASK_ID}"
 ```
+
+## Transcribe a new video
+
+<p>Add `auto_transcribe_audio_language` to the video create request. After the video finishes transcoding, Gcore automatically creates an AI transcription task and attaches the resulting WebVTT subtitles to the video. To translate into additional languages, also set `auto_translate_subtitles_language`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+result = client.streaming.videos.create(
+    video={
+        "name": "My Video",
+        "origin_url": "https://example.com/video.mp4",
+        "auto_transcribe_audio_language": "auto",
+        # "auto_translate_subtitles_language": "fre,ger,ita",  # optional
+    }
+)
+print(f"Video ID: {result[0].id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	result, err := client.Streaming.Videos.New(ctx, streaming.VideoNewParams{
+		Video: streaming.CreateVideoParam{
+			Name:                       "My Video",
+			OriginURL:                  gcore.String("https://example.com/video.mp4"),
+			AutoTranscribeAudioLanguage: streaming.CreateVideoAutoTranscribeAudioLanguageAuto,
+			// AutoTranslateSubtitlesLanguage: streaming.CreateVideoAutoTranslateSubtitlesLanguage("fre,ger,ita"),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Video ID: %d\n", result[0].ID)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/videos" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "video": {
+      "name": "My Video",
+      "origin_url": "https://example.com/video.mp4",
+      "auto_transcribe_audio_language": "auto"
+    }
+  }'
+```
+
+<p>The API returns an array with the created video object. The AI transcription task is created automatically after transcoding completes.</p>
+  </Tab>
+</Tabs>
+
+## Transcribe an existing video
+
+<p>Trigger AI transcription on a video already in Gcore Video Streaming by posting to its subtitles endpoint with `auto_transcribe_audio_language`. The AI task runs automatically and attaches the resulting subtitles to the video.</p>
+
+<Tabs>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/streaming/videos/$VIDEO_ID/subtitles" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"auto_transcribe_audio_language": "auto"}'
+```
+
+<p>To also translate subtitles, add `auto_translate_subtitles_language`:</p>
+
+```bash
+curl -X POST "https://api.gcore.com/streaming/videos/$VIDEO_ID/subtitles" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "auto_transcribe_audio_language": "auto",
+    "auto_translate_subtitles_language": "fre,ger,ita,spa"
+  }'
+```
+  </Tab>
+</Tabs>
 
 ## Create a transcription task
 
