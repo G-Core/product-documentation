@@ -63,7 +63,7 @@ _JSX_BLOCK_CLOSE = re.compile(
 _P_OPEN = re.compile(r"<p\b")
 _P_CLOSE = re.compile(r"</p>")
 _NUMBERED_ITEM = re.compile(r"^\d+[.\\]")
-_BULLET_ITEM = re.compile(r"^[-*+]\s")
+_BULLET_ITEM = re.compile(r"^[-*+]\s|^\d+\\?\.\s")
 
 _SKIP_DIR_NAMES = frozenset(
     {
