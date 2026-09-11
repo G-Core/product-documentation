@@ -11,7 +11,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 1. Upload a video to the customer portal
 
-<p>Navigate to the [Video Hosting](https://portal.gcore.com/streaming/video/list) tab and upload a video using one of the following actions:</p>
+<p>Navigate to the [Video Hosting](https://portal.gcore.com/streaming/video/list) tab and upload a video using one of these methods:</p>
 
 - **Upload the video**: Drag-and-drop or click **Click to upload** to add locally stored videos.
 
@@ -47,11 +47,11 @@ If a video enters `Error` status after upload, first inspect the original file i
 
 <p>If you need to adjust video configuration, get export links, or set up subtitles and tags, open the **Main settings** tab:</p>
 
-1\. Open video settings by clicking the video name or the three-dot icon next to it.
+<p>1\. Open video settings by clicking the video name or the three-dot icon next to it.</p>
 
 <Frame>![settings of the uploaded video](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-settings.png)</Frame>
 
-2\. Update the following video settings if necessary:
+<p>2\. Adjust these video settings as needed:</p>
 
 - **Name**: Change the video name displayed in the Gcore Customer Portal.
 - **Description**: Add a description.
@@ -62,9 +62,9 @@ If a video enters `Error` status after upload, first inspect the original file i
 
 <Frame>![Video settings](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/vod-subtitles.png)</Frame>
 
-3\. (Optional) Click **Video transcoding data** under the video to check the transcoding details.
+<p>3\. (Optional) Click **Video transcoding data** under the video to check the transcoding details.</p>
 
-4\. Select one of the automatically created video posters or upload a new one from local storage.
+<p>4\. Select one of the automatically created video posters or upload a new one from local storage.</p>
 
 <Frame>![Video poster settings](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/vod-poster.png)</Frame>
 
@@ -95,15 +95,12 @@ If a video enters `Error` status after upload, first inspect the original file i
 An [API token](/account-settings/api-tokens) is required.
 </Info>
 
-<p>Set the environment variable before running the examples:</p>
+<p>Open a terminal and export the required variables:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
 ```
-
-<Info>
-**SDK note — video creation:** The Python SDK `create()` returns a raw `dict` instead of a typed model. Access the video ID with `result["id"]`. The Go SDK `New()` method cannot unmarshal the API response — use raw HTTP for creation instead (shown in the examples below).
-</Info>
 
 ## Create a video from an external URL
 
@@ -116,7 +113,6 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
     client = Gcore()
 
-    # create() returns a dict, not a typed model
     result = client.streaming.videos.create(
         video={
             "name": "My Video",
@@ -141,8 +137,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     	"os"
     )
 
-    // createVideo uses raw HTTP because the Go SDK's New() method cannot
-    // unmarshal the API response (expects array, API returns single object).
+    // createVideo creates a video from an external URL and returns its ID.
     func createVideo(name, originURL string) (int64, error) {
     	body := map[string]interface{}{
     		"video": map[string]interface{}{
@@ -202,7 +197,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
     ```json
     {
-      "id": 14730860,
+      "id": 1001,
       "name": "My Video",
       "status": "empty",
       "iframe_url": "https://player.gvideo.co/videos/1000503_abc123",
@@ -287,9 +282,79 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
 </Tabs>
 
+## Get embed links
+
+<p>Retrieve the playback and embed URLs for a processed video. Use these links to embed the video in your app or feed it to a player.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    video = client.streaming.videos.get(int(os.environ["VIDEO_ID"]))
+
+    print(f"HLS URL: {video.hls_url}")
+    print(f"HLS CMAF URL: {video.hls_cmaf_url}")
+    print(f"MPEG-DASH URL: {video.dash_url}")
+    print(f"Iframe URL: {video.iframe_url}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	video, err := client.Streaming.Videos.Get(ctx, videoID)
+    	if err != nil {
+    		panic(err)
+    	}
+
+    	fmt.Printf("HLS URL: %s\n", video.HlsURL)
+    	fmt.Printf("HLS CMAF URL: %s\n", video.HlsCmafURL)
+    	fmt.Printf("MPEG-DASH URL: %s\n", video.DashURL)
+    	fmt.Printf("Iframe URL: %s\n", video.IframeURL)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The response includes the embed URLs for the processed video:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "status": "ready",
+      "hls_url": "https://...",
+      "hls_cmaf_url": "https://...",
+      "dash_url": "https://...",
+      "iframe_url": "https://player.gvideo.co/videos/..."
+    }
+    ```
+  </Tab>
+</Tabs>
+
 ## Update video settings
 
-<p>Change the video name, description, or other metadata.</p>
+<p>Change the video name, description, projection, or assign a [custom player](/streaming/extra-features/customize-appearance-of-the-built-in-player).</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -304,8 +369,9 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
         video_id,
         name="My Renamed Video",
         description="Updated via API",
+        projection="regular",
     )
-    print(f"Updated: {updated.name}")
+    print(f"Updated: {updated.name}, projection: {updated.projection}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -332,12 +398,13 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     		CreateVideo: streaming.CreateVideoParam{
     			Name:        "My Renamed Video",
     			Description: param.NewOpt("Updated via API"),
+    			Projection:  param.NewOpt("regular"),
     		},
     	})
     	if err != nil {
     		panic(err)
     	}
-    	fmt.Printf("Updated: %s\n", updated.Name)
+    	fmt.Printf("Updated: %s, projection: %s\n", updated.Name, updated.Projection)
     }
     ```
   </Tab>
@@ -347,10 +414,9 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "video": {
-          "name": "My Renamed Video",
-          "description": "Updated via API"
-        }
+        "name": "My Renamed Video",
+        "description": "Updated via API",
+        "projection": "regular"
       }'
     ```
 
