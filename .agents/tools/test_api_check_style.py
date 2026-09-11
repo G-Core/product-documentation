@@ -312,3 +312,336 @@ def test_method_switch_import_without_jsx_is_a_violation() -> None:
 
 def test_method_switch_import_with_jsx_is_clean() -> None:
     assert check_method_switch_import(METHOD_SWITCH_IMPORT_JSX.splitlines()) == []
+
+
+# --- check_content_before_method_switch ---
+
+CONTENT_BEFORE_METHOD_SWITCH = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+This feature does X and Y.
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+  </MethodSection>
+</MethodSwitch>
+"""
+
+NO_CONTENT_BEFORE_METHOD_SWITCH = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>This feature does X and Y.</p>
+
+  </MethodSection>
+</MethodSwitch>
+"""
+
+
+def test_prose_before_method_switch_is_a_violation() -> None:
+    from api_check_style import check_content_before_method_switch
+    found = check_content_before_method_switch(CONTENT_BEFORE_METHOD_SWITCH.splitlines())
+    assert found
+    assert found[0].rule == "content-before-method-switch"
+
+
+def test_prose_inside_method_section_is_clean() -> None:
+    from api_check_style import check_content_before_method_switch
+    assert check_content_before_method_switch(NO_CONTENT_BEFORE_METHOD_SWITCH.splitlines()) == []
+
+
+# --- check_indented_method_section_close ---
+
+INDENTED_METHOD_SECTION_CLOSE = """<MethodSection id="portal" label="Customer Portal">
+
+- Last item.
+
+  </MethodSection>
+"""
+
+COLUMN_ZERO_METHOD_SECTION_CLOSE = """<MethodSection id="portal" label="Customer Portal">
+
+- Last item.
+
+</MethodSection>
+"""
+
+
+def test_indented_method_section_close_is_a_violation() -> None:
+    from api_check_style import check_indented_method_section_close
+    found = check_indented_method_section_close(INDENTED_METHOD_SECTION_CLOSE.splitlines())
+    assert found
+    assert found[0].rule == "indented-method-section-close"
+
+
+def test_column_zero_method_section_close_is_clean() -> None:
+    from api_check_style import check_indented_method_section_close
+    assert check_indented_method_section_close(COLUMN_ZERO_METHOD_SECTION_CLOSE.splitlines()) == []
+
+
+# --- check_import_os_without_usage ---
+
+IMPORT_OS_WITHOUT_USAGE = """<Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+task = client.streaming.ai_tasks.create(task_name="transcription", url="https://example.com/v.mp4")
+print(task.task_id)
+```
+</Tab>
+"""
+
+IMPORT_OS_WITH_USAGE = """<Tab title="Python SDK">
+```python
+import os
+import time
+from gcore import Gcore
+
+task_id = os.environ["TASK_ID"]
+
+client = Gcore()
+while True:
+    task = client.streaming.ai_tasks.get(task_id)
+    if task.status in ("SUCCESS", "FAILURE"):
+        break
+    time.sleep(5)
+```
+</Tab>
+"""
+
+
+def test_import_os_without_usage_is_a_violation() -> None:
+    from api_check_style import check_import_os_without_usage
+    found = check_import_os_without_usage(IMPORT_OS_WITHOUT_USAGE.splitlines())
+    assert found
+    assert found[0].rule == "import-os-without-usage"
+
+
+def test_import_os_with_usage_is_clean() -> None:
+    from api_check_style import check_import_os_without_usage
+    assert check_import_os_without_usage(IMPORT_OS_WITH_USAGE.splitlines()) == []
+
+
+# --- check_go_import_alias ---
+
+GO_IMPORT_BARE_NO_ALIAS = """<Tab title="Go SDK">
+```go
+import (
+    "context"
+    "github.com/G-Core/gcore-go"
+)
+```
+</Tab>
+"""
+
+GO_IMPORT_WITH_ALIAS = """<Tab title="Go SDK">
+```go
+import (
+    "context"
+    gcore "github.com/G-Core/gcore-go"
+)
+```
+</Tab>
+"""
+
+
+def test_go_import_without_alias_is_a_violation() -> None:
+    from api_check_style import check_go_import_alias
+    found = check_go_import_alias(GO_IMPORT_BARE_NO_ALIAS.splitlines())
+    assert found
+    assert found[0].rule == "go-import-missing-alias"
+
+
+def test_go_import_with_alias_is_clean() -> None:
+    from api_check_style import check_go_import_alias
+    assert check_go_import_alias(GO_IMPORT_WITH_ALIAS.splitlines()) == []
+
+
+# --- check_prose_without_p_tags ---
+
+PROSE_WITHOUT_P_IN_PORTAL = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+This is bare prose that needs p tags.
+
+<p>This one is already wrapped.</p>
+
+1\. A numbered step.
+
+- A bullet item.
+
+## A heading
+
+<Info>Info block content is fine without p.</Info>
+
+  </MethodSection>
+</MethodSwitch>
+"""
+
+PROSE_WITHOUT_P_IN_API = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="api" label="REST API">
+
+**Interpreting the result**
+
+<p>On success the result contains:</p>
+
+  </MethodSection>
+</MethodSwitch>
+"""
+
+PROSE_ALL_WRAPPED = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>This is correctly wrapped prose.</p>
+
+<p>1\. A numbered step.</p>
+
+<p>2\. Another step.</p>
+
+- A bullet item.
+
+  </MethodSection>
+</MethodSwitch>
+"""
+
+NUMBERED_WITHOUT_P = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+1\. This numbered item is not wrapped.
+
+2\. Neither is this one.
+
+  </MethodSection>
+</MethodSwitch>
+"""
+
+
+def test_bare_prose_in_portal_section_is_a_violation() -> None:
+    # Both Portal and API sections require <p> wrapping for prose.
+    from api_check_style import check_prose_without_p_tags
+    found = check_prose_without_p_tags(PROSE_WITHOUT_P_IN_PORTAL.splitlines())
+    assert found, "Bare prose in Portal section must be flagged"
+    assert found[0].rule == "prose-without-p-tag"
+
+
+def test_bold_heading_without_p_is_a_violation() -> None:
+    from api_check_style import check_prose_without_p_tags
+    found = check_prose_without_p_tags(PROSE_WITHOUT_P_IN_API.splitlines())
+    assert found
+    assert found[0].rule == "prose-without-p-tag"
+
+
+def test_numbered_item_without_p_is_a_violation() -> None:
+    # Per MDX rules, numbered items inside <MethodSection> must be wrapped in <p>.
+    # Without <p>, they merge into a single line in the Mintlify runtime.
+    from api_check_style import check_prose_without_p_tags
+    found = check_prose_without_p_tags(NUMBERED_WITHOUT_P.splitlines())
+    assert len(found) == 2
+    assert all(v.rule == "prose-without-p-tag" for v in found)
+
+
+def test_wrapped_prose_list_heading_are_clean() -> None:
+    from api_check_style import check_prose_without_p_tags
+    assert check_prose_without_p_tags(PROSE_ALL_WRAPPED.splitlines()) == []
+
+
+# ---------------------------------------------------------------------------
+# warn_content_after_method_switch
+# ---------------------------------------------------------------------------
+
+_ARTICLE_WITH_POST_CONTENT = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Do something in the portal.</p>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Do it via API.</p>
+</MethodSection>
+</MethodSwitch>
+
+## Extra section
+
+<p>This appears on all tabs.</p>
+"""
+
+_ARTICLE_WITHOUT_POST_CONTENT = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+<p>Do something in the portal.</p>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Do it via API.</p>
+</MethodSection>
+</MethodSwitch>
+"""
+
+
+def test_content_after_method_switch_fires_warning() -> None:
+    from api_check_style import warn_content_after_method_switch
+    found = warn_content_after_method_switch(_ARTICLE_WITH_POST_CONTENT.splitlines())
+    assert len(found) == 1
+    assert found[0].rule == "content-after-method-switch"
+
+
+def test_no_post_content_no_warning() -> None:
+    from api_check_style import warn_content_after_method_switch
+    assert warn_content_after_method_switch(_ARTICLE_WITHOUT_POST_CONTENT.splitlines()) == []
+
+
+# ---------------------------------------------------------------------------
+# check_prose_without_p_tags — portal section must be ignored
+# ---------------------------------------------------------------------------
+
+_PORTAL_PROSE_NO_P = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+1\\. Open the portal.
+Complete the remaining steps.
+For Android smartphones, double-tap the player.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+<p>Enable DVR on a stream.</p>
+</MethodSection>
+</MethodSwitch>
+"""
+
+_API_PROSE_NO_P = """\
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="api" label="REST API">
+This line has no p tag and should be flagged.
+</MethodSection>
+</MethodSwitch>
+"""
+
+
+def test_prose_without_p_flags_portal_section() -> None:
+    # Portal section is checked the same as API — all prose (including numbered items) needs <p>.
+    from api_check_style import check_prose_without_p_tags
+    violations = check_prose_without_p_tags(_PORTAL_PROSE_NO_P.splitlines())
+    assert len(violations) == 3, f"Expected 3 violations (numbered item + 2 prose lines), got: {violations}"
+    assert all(v.rule == "prose-without-p-tag" for v in violations)
+
+
+def test_prose_without_p_flags_api_section() -> None:
+    from api_check_style import check_prose_without_p_tags
+    violations = check_prose_without_p_tags(_API_PROSE_NO_P.splitlines())
+    assert len(violations) == 1
+    assert violations[0].rule == "prose-without-p-tag"

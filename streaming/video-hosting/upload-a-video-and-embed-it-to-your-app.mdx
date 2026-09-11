@@ -1,48 +1,41 @@
 ---
 title: Upload a video and embed it into your app
 sidebarTitle: Upload videos
-ai-navigation: Configure Gcore Video Hosting to upload videos via direct upload, Google Drive import, TUS protocol resumable uploads, or remote URL fetch, then deliver adaptive bitrate HLS MPEG-TS, HLS CMAF, MPEG-DASH CMAF, MP4, HEVC, AV1, VP9, and 8K resolution renditions with multi-audio tracks, subtitles, custom thumbnails, and analytics.
+ai-navigation: Upload videos to Gcore Video Hosting via Customer Portal or REST API by creating a video entity from an external URL, polling the processing status, and retrieving HLS, MPEG-DASH, and iframe embed links using Python SDK, Go SDK, and curl.
 ---
 
-Upload a video to Gcore Video Hosting, update its playback settings, and embed it into your app or website with the Gcore player, iframe code, or direct playback links.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## Step 1. Upload a video to the customer portal
 
-Navigate to the [Video Hosting](https://portal.gcore.com/streaming/video/list) tab and upload a video using one of the following actions: 
+<p>Navigate to the [Video Hosting](https://portal.gcore.com/streaming/video/list) tab and upload a video using one of these methods:</p>
 
-  * **Upload the video**. On this tab, you can add locally stored videos. Either click the **Click to upload** button or drag and drop your files to the designated upload area.
-
+- **Upload the video**: Drag-and-drop or click **Click to upload** to add locally stored videos.
 
 <Frame>![Video Hosting tab](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-tab.png)</Frame>
 
-
-  * **Download from the source**. Here you can upload a video from the origin by specifying the video title and video origin URL.
-
+- **Download from the source**: Specify the video title and origin URL to fetch a video from a remote server.
 
 <Frame>![Video Hosting tab](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/download-from-source.png)</Frame>
 
-
-  * **Import from Google Drive**. To add a video, click the **Click here** area, sign in to your Google account, and then choose the required video from your Google Drive. 
-
+- **Import from Google Drive**: Click **Click here**, sign in to your Google account, and choose a video from Google Drive.
 
 <Frame>![Video Hosting tab](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/import-from-google-drive.png)</Frame>
 
-
-
-
-
-Wait until your video is uploaded and processed. Waiting time varies depending on video size and internet speed. 
+<p>Wait until your video is uploaded and processed.</p>
 
 | Status | What it means |
 |--------|---------------|
-| `empty` | The video entity was created, but the source file is still being received by upload, import, or download from your source. |
+| `empty` | The video entity was created, but the source file is still being received. |
 | `pending` | The source file was received and is being prepared for processing. |
 | `viewable` | The video can already be watched in one of the available qualities. |
 | `ready` | The video is fully prepared and available in all processed qualities. |
 | `error` | The video could not be uploaded or prepared. Check the file and try again. |
 
-For more details, see [Video Lifecycle and Statuses](/streaming/video-hosting/vod-status).
-
+<p>For more details, see [Video Lifecycle and Statuses](/streaming/video-hosting/vod-status).</p>
 
 <Frame>![Wait until your video is uploaded](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-uploading-process.png)</Frame>
 
@@ -50,63 +43,386 @@ For more details, see [Video Lifecycle and Statuses](/streaming/video-hosting/vo
 If a video enters `Error` status after upload, first inspect the original file itself. Some failures are caused by technical parameter changes inside the source file, such as pixel format or color range changing near the end. In such cases, retrying the same file usually does not help. Re-export or trim the source and upload the corrected file again.
 </Info>
 
-
-
 ## Step 2. Update video settings
 
-If you need to adjust some video configuration, get links to export the video or set up subtitles and tags. You can do so on the **Main settings** tab: 
+<p>If you need to adjust video configuration, get export links, or set up subtitles and tags, open the **Main settings** tab:</p>
 
-1\. Open video settings by clicking the video name or the three-dot icon next to it.
-
+<p>1\. Open video settings by clicking the video name or the three-dot icon next to it.</p>
 
 <Frame>![settings of the uploaded video](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-settings.png)</Frame>
 
+<p>2\. Adjust these video settings as needed:</p>
 
-
-2\. Update the following video settings if necessary:
-
-  * **Name** : Change its name (it will be displayed in the Gcore Customer Portal)
-  * **Description** : Enter a description (it will be displayed in the Gcore Customer Portal)
-  * **Player** : Select custom player, if you enabled the [Players](/streaming/extra-features/customize-appearance-of-the-built-in-player) feature
-  * **Tags** : Select [tags](/streaming/video-hosting/organize-uploaded-videos#how-to-use-tags) for a video
-  * **Subtitles** : Add [subtitles and choose a subtitle language](/streaming/video-hosting/subtitles-and-closed-captions-for-vod#control-panel)
-  * **Screensaver** : Select a screensaver from screenshots or upload a screensaver from your computer
-
+- **Name**: Change the video name displayed in the Gcore Customer Portal.
+- **Description**: Add a description.
+- **Player**: Select a custom player if you have enabled the [Players](/streaming/extra-features/customize-appearance-of-the-built-in-player) feature.
+- **Tags**: Select [tags](/streaming/video-hosting/organize-uploaded-videos#how-to-use-tags) for the video.
+- **Subtitles**: Add [subtitles and choose a subtitle language](/streaming/video-hosting/subtitles-and-closed-captions-for-vod).
+- **Screensaver**: Select a screensaver from screenshots or upload one from your computer.
 
 <Frame>![Video settings](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/vod-subtitles.png)</Frame>
 
+<p>3\. (Optional) Click **Video transcoding data** under the video to check the transcoding details.</p>
 
-
-3\. (Optional) After you upload the video, it'll be transсoded with different qualities and bitrates. Click the **Video transcoding data** link under the video to check the transcoding details.
-
-4\. Select one of the automatically created video posters or upload a new one from your local storage.
-
+<p>4\. Select one of the automatically created video posters or upload a new one from local storage.</p>
 
 <Frame>![Video poster settings](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/vod-poster.png)</Frame>
 
-
-
 ## Step 3. Choose a player UI customization and video projection
 
-Customize the functionality and appearance of a [built-in HTML web player](/streaming/extra-features/customize-appearance-of-the-built-in-player) for the uploaded video. Note that these settings apply only to the built-in player and won't affect viewers using external or OS-native players. 
+<p>Customize the functionality and appearance of a [built-in HTML web player](/streaming/extra-features/customize-appearance-of-the-built-in-player) for the uploaded video. Note that these settings apply only to the built-in player and won't affect viewers using external or OS-native players.</p>
 
-In the **Player** dropdown, you can choose the existing configuration. To add a new built-in player and customize its settings, refer to our [dedicated guide](/streaming/extra-features/customize-appearance-of-the-built-in-player). 
-
+<p>In the **Player** dropdown, you can choose the existing configuration. To add a new built-in player and customize its settings, refer to our [dedicated guide](/streaming/extra-features/customize-appearance-of-the-built-in-player).</p>
 
 ## Step 4. Export video
 
-In the **Links for export** section, choose the relevant export method: 
+<p>In the **Links for export** section, choose the relevant export method:</p>
 
-  * **Video page URL** : A Web player URL to access and play the video directly from a website. 
+- **Video page URL**: A web player URL to access and play the video directly from a website.
+- **HLS manifest URL**: A URL to a master playlist HLS (master.m3u8) with MPEGTS container.
+- **iFrame embed code**: A URL to the Gcore HTML video player. Insert it into an iframe on your website to auto-play the video in all browsers.
 
-  * **HLS manifest URL** : A URL to a master playlist HLS (master.m3u8) with MPEGTS container. 
-
-  * **iFrame embed code** : A URL to our HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play on all browsers.
-
-
-
-
-In the Links for export section, you can also choose the video size and download the uploaded video in the required quality by selecting its bitrate and clicking **Download video**. 
-
+<p>In the **Links for export** section, you can also choose the video size and download the uploaded video in the required quality by selecting its bitrate and clicking **Download video**.</p>
 
 <Frame>![Export tab](/images/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/vod-player.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Upload a video from an external URL, monitor processing, and retrieve embed links using the [Videos API](/api-reference/streaming/videos/get-all-videos). For direct file uploads from local storage, use the [TUS upload flow](/streaming/video-hosting/upload-video-via-api).</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+```
+
+## Create a video from an external URL
+
+<p>Create a video entity and start downloading the source file from a public URL. After creation, the video enters `empty` or `pending` status while processing. Poll `GET /streaming/videos/{video_id}` until the status reaches `viewable` or `ready` before embedding.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    result = client.streaming.videos.create(
+        video={
+            "name": "My Video",
+            "origin_url": "https://example.com/source.mp4",
+        }
+    )
+    video_id = result["id"]
+    print(f"Created video ID: {video_id}")
+    print(f"Status: {result['status']}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"bytes"
+    	"encoding/json"
+    	"fmt"
+    	"io"
+    	"net/http"
+    	"os"
+    )
+
+    // createVideo creates a video from an external URL and returns its ID.
+    func createVideo(name, originURL string) (int64, error) {
+    	body := map[string]interface{}{
+    		"video": map[string]interface{}{
+    			"name":       name,
+    			"origin_url": originURL,
+    		},
+    	}
+    	b, _ := json.Marshal(body)
+    	req, _ := http.NewRequest(
+    		"POST",
+    		"https://api.gcore.com/streaming/videos",
+    		bytes.NewReader(b),
+    	)
+    	req.Header.Set("Authorization", "APIKey "+os.Getenv("GCORE_API_KEY"))
+    	req.Header.Set("Content-Type", "application/json")
+
+    	resp, err := http.DefaultClient.Do(req)
+    	if err != nil {
+    		return 0, err
+    	}
+    	defer resp.Body.Close()
+    	raw, _ := io.ReadAll(resp.Body)
+    	var v map[string]interface{}
+    	if err := json.Unmarshal(raw, &v); err != nil {
+    		return 0, fmt.Errorf("parse response: %w", err)
+    	}
+    	id, ok := v["id"].(float64)
+    	if !ok {
+    		return 0, fmt.Errorf("no id in response")
+    	}
+    	return int64(id), nil
+    }
+
+    func main() {
+    	videoID, err := createVideo("My Video", "https://example.com/source.mp4")
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Created video ID: %d\n", videoID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/streaming/videos" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "video": {
+          "name": "My Video",
+          "origin_url": "https://example.com/source.mp4"
+        }
+      }'
+    ```
+
+    <p>The API returns the created video object:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "name": "My Video",
+      "status": "empty",
+      "iframe_url": "https://player.gvideo.co/videos/1000503_abc123",
+      "hls_url": "https://1000503.gvideo.io/videos/1000503_abc123/master.m3u8",
+      "hls_cmaf_url": "https://1000503.gvideo.io/videos/1000503_abc123/master-cmaf.m3u8"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Check processing status
+
+<p>Poll the video status after creation. Playback becomes available once the status reaches `viewable`. Wait for `ready` if all quality renditions are required.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import time
+    from gcore import Gcore
+
+    client = Gcore()
+    video_id = int(os.environ["VIDEO_ID"])
+
+    while True:
+        video = client.streaming.videos.get(video_id)
+        print(f"Status: {video.status}")
+        if video.status in ("viewable", "ready"):
+            print(f"HLS URL: {video.hls_url}")
+            print(f"Iframe URL: {video.iframe_url}")
+            break
+        if video.status == "error":
+            raise RuntimeError(f"Video processing failed: {video.error}")
+        time.sleep(10)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+    	"time"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	for {
+    		video, err := client.Streaming.Videos.Get(ctx, videoID)
+    		if err != nil {
+    			panic(err)
+    		}
+    		fmt.Printf("Status: %s\n", video.Status)
+    		if video.Status == "viewable" || video.Status == "ready" {
+    			fmt.Printf("HLS URL: %s\n", video.HlsURL)
+    			fmt.Printf("Iframe URL: %s\n", video.IframeURL)
+    			break
+    		}
+    		if video.Status == "error" {
+    			panic(fmt.Sprintf("Video processing failed: %s", video.Error))
+    		}
+    		time.Sleep(10 * time.Second)
+    	}
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The response includes `status`, `iframe_url`, `hls_url`, and `hls_cmaf_url`. Poll every 10 seconds until `status` is `viewable` or `ready`.</p>
+  </Tab>
+</Tabs>
+
+## Get embed links
+
+<p>Retrieve the playback and embed URLs for a processed video. Use these links to embed the video in your app or feed it to a player.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    video = client.streaming.videos.get(int(os.environ["VIDEO_ID"]))
+
+    print(f"HLS URL: {video.hls_url}")
+    print(f"HLS CMAF URL: {video.hls_cmaf_url}")
+    print(f"MPEG-DASH URL: {video.dash_url}")
+    print(f"Iframe URL: {video.iframe_url}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	video, err := client.Streaming.Videos.Get(ctx, videoID)
+    	if err != nil {
+    		panic(err)
+    	}
+
+    	fmt.Printf("HLS URL: %s\n", video.HlsURL)
+    	fmt.Printf("HLS CMAF URL: %s\n", video.HlsCmafURL)
+    	fmt.Printf("MPEG-DASH URL: %s\n", video.DashURL)
+    	fmt.Printf("Iframe URL: %s\n", video.IframeURL)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The response includes the embed URLs for the processed video:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "status": "ready",
+      "hls_url": "https://...",
+      "hls_cmaf_url": "https://...",
+      "dash_url": "https://...",
+      "iframe_url": "https://player.gvideo.co/videos/..."
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update video settings
+
+<p>Change the video name, description, projection, or assign a [custom player](/streaming/extra-features/customize-appearance-of-the-built-in-player).</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    video_id = int(os.environ["VIDEO_ID"])
+
+    updated = client.streaming.videos.update(
+        video_id,
+        name="My Renamed Video",
+        description="Updated via API",
+        projection="regular",
+    )
+    print(f"Updated: {updated.name}, projection: {updated.projection}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/packages/param"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	updated, err := client.Streaming.Videos.Update(ctx, videoID, streaming.VideoUpdateParams{
+    		CreateVideo: streaming.CreateVideoParam{
+    			Name:        "My Renamed Video",
+    			Description: param.NewOpt("Updated via API"),
+    			Projection:  param.NewOpt("regular"),
+    		},
+    	})
+    	if err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Updated: %s, projection: %s\n", updated.Name, updated.Projection)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "My Renamed Video",
+        "description": "Updated via API",
+        "projection": "regular"
+      }'
+    ```
+
+    <p>The response returns the updated video object.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

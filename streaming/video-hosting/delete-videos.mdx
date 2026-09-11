@@ -1,35 +1,176 @@
 ---
 title: Delete uploaded videos
 sidebarTitle: Delete videos
-ai-navigation: Delete uploaded videos from Gcore Video Hosting via Customer Portal or DELETE /videos API endpoint; permanently removes all transcoded versions, subtitles, screenshots, and associated data from cloud storage.
+ai-navigation: Delete uploaded videos in Gcore Video Hosting via Customer Portal or REST API, permanently removing all transcoded versions, subtitles, and screenshots.
 ---
 
-You can delete uploaded videos in the Gcore Customer Portal and via [API](/api-reference/streaming/videos/delete-video). 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-After you delete a video, all its data, including all transcoded versions, subtitles, and screenshots, will be permanently removed from our cloud storage. Deleted videos can't be restored. 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>After deleting a video, all its data — transcoded versions, subtitles, screenshots, and associated files — is permanently removed from cloud storage. Deleted videos can't be restored.</p>
 
 <Info>
-**Info**
-
 Storage consumption is defined by the biggest amount of data stored at any point during the billing month. This means that if you had 1K minutes of video in video hosting on the 1st day and you deleted these videos on the 2nd, the maximum consumption for the month will still be 1K as the maximum for the period.
 </Info>
 
-## Delete videos in the customer portal
+## Delete a video
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Streaming** > **Video Hosting**. You'll be directed to the **All videos** page.
-
+<p>1. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Streaming** > **Video Hosting**. The **All videos** page opens.</p>
 
 <Frame>![Video Hosting page in the Gcore Customer Portal](/images/docs/streaming-platform/video-hosting/delete-videos/video-hosting-page.png)</Frame>
 
+<p>2. Find the video to remove and click the three-dot icon next to it.</p>
 
-
-2\. Find the video that you want to remove and click the three-dot icon next to it. 
-
-3\. Click **Delete**.
-
+<p>3. Click **Delete**.</p>
 
 <Frame>![Delete video menu](/images/docs/streaming-platform/video-hosting/delete-videos/delete-uploaded-video.png)</Frame>
 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
+<p>Delete a video by ID using the [Videos API](/api-reference/streaming/videos/delete-video). Deletion permanently removes all transcoded versions, subtitles, screenshots, and associated data. Deleted videos can't be restored.</p>
 
-The video has been successfully removed.
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+```
+
+<Info>
+Storage consumption is defined by the biggest amount of data stored at any point during the billing month. If you stored 1K minutes of video on the 1st day and deleted them on the 2nd, the maximum consumption for the month is still 1K.
+</Info>
+
+## List videos
+
+<p>List all videos to find the ID of the video to delete.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    videos = client.streaming.videos.list(per_page=25)
+    for video in videos:
+        print(video.id, video.name, video.status)
+    ```
+
+    <p>Each page returns up to `per_page` videos. To retrieve more, increment the `page` parameter.</p>
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/streaming"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	page, err := client.Streaming.Videos.List(ctx, streaming.VideoListParams{})
+    	if err != nil {
+    		panic(err)
+    	}
+    	for _, video := range page.Items {
+    		fmt.Printf("id=%d  name=%s  status=%s\n", video.ID, video.Name, video.Status)
+    	}
+    }
+    ```
+
+    <p>Each page returns up to 25 videos by default. Use `PerPage` and `Page` parameters to paginate.</p>
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/streaming/videos?per_page=25" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns an array of video objects:</p>
+
+    ```json
+    [
+      {
+        "id": 13755849,
+        "name": "My video",
+        "status": "ready",
+        "hls_url": "https://1000503.gvideo.io/videos/1000503_abc123/master.m3u8"
+      }
+    ]
+    ```
+
+    <p>Use the `id` field value as `VIDEO_ID` in the delete call below.</p>
+  </Tab>
+</Tabs>
+
+## Delete a video
+
+<p>Delete a video by its ID. All associated data is removed permanently.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    video_id = int(os.environ["VIDEO_ID"])
+    client.streaming.videos.delete(video_id)
+    print(f"Video {video_id} deleted.")
+    ```
+
+    <p>A successful call returns `None`. Any error raises an exception.</p>
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"os"
+    	"strconv"
+
+    	gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+    	if err := client.Streaming.Videos.Delete(ctx, videoID); err != nil {
+    		panic(err)
+    	}
+    	fmt.Printf("Video %d deleted.\n", videoID)
+    }
+    ```
+
+    <p>A successful call returns `nil`. Any error is returned as an `error` value.</p>
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/streaming/videos/$VIDEO_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful delete returns HTTP 204 No Content with an empty body. If the video is not found, the API returns 404.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
