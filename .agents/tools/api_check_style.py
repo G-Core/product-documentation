@@ -856,6 +856,58 @@ def check_portal_section_no_headings(lines: Sequence[str]) -> list[Violation]:
     return violations
 
 
+_ESCAPED_NUMBERED_ITEM = re.compile(r"^\d+\\\.\s")
+
+
+def check_escaped_numbered_items(lines: Sequence[str]) -> list[Violation]:
+    r"""Flag backslash-escaped numbered list items inside <MethodSection>.
+
+    Inside <MethodSection>, `1\. text` is treated as plain text by the MDX
+    compiler -- blank lines between items are stripped, so all items merge into
+    one block. Use `1. text` (no backslash) instead, which compiles to a proper
+    <ol><li> element.
+
+    Skips code fences.
+    """
+    violations: list[Violation] = []
+    in_method_section = False
+    in_fence = False
+
+    for lineno, raw in enumerate(lines, start=1):
+        stripped = raw.strip()
+
+        if _is_fence(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+
+        if _METHOD_SECTION_OPEN.search(stripped):
+            in_method_section = True
+            continue
+        if _METHOD_SECTION_CLOSE.search(stripped):
+            in_method_section = False
+            continue
+
+        if not in_method_section:
+            continue
+
+        if _ESCAPED_NUMBERED_ITEM.match(stripped):
+            violations.append(
+                Violation(
+                    line=lineno,
+                    rule="escaped-numbered-item",
+                    detail=(
+                        r"Backslash-escaped `N\. text` inside <MethodSection> renders as plain text "
+                        "and merges with adjacent content. Use `N. text` (no backslash) instead."
+                    ),
+                    text=stripped[:80],
+                )
+            )
+
+    return violations
+
+
 CHECKS: tuple[CheckFn, ...] = (
     check_response_outside_tabs,
     check_forbidden_sdk_patterns,
@@ -866,6 +918,7 @@ CHECKS: tuple[CheckFn, ...] = (
     check_import_os_without_usage,
     check_go_import_alias,
     check_prose_without_p_tags,
+    check_escaped_numbered_items,
     check_api_section_no_info_block,
     check_portal_section_no_headings,
 )
