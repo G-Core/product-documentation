@@ -400,7 +400,7 @@ def check_root_size(content: str, path: Path) -> None:
 
 _UNICODE_REPLACEMENTS = {
     "\u2013": "-",    # en dash -> hyphen
-    "\u2014": " - ",  # em dash -> spaced hyphen
+    "\u2014": ",",    # em dash -> comma
     "\u2018": "'",    # left single quotation mark
     "\u2019": "'",    # right single quotation mark
     "\u201C": '"',    # left double quotation mark
@@ -416,7 +416,15 @@ def _normalize_to_ascii_safe(text: str) -> str:
     The llms.txt files are served as text/plain without charset. To avoid
     mojibake in browsers that default to Windows-1252, substitute common
     Unicode punctuation with plain ASCII before writing.
+
+    Em dash and en dash are handled with regex to absorb surrounding spaces,
+    e.g. "location — HTTP" becomes "location, HTTP" not "location , HTTP".
     """
+    # Em dash: collapse surrounding whitespace into a single ", "
+    text = re.sub(r"\s*\u2014\s*", ", ", text)
+    # En dash: collapse surrounding whitespace into a single "-"
+    text = re.sub(r"\s*\u2013\s*", "-", text)
+    # Remaining characters: straight substitution
     for char, replacement in _UNICODE_REPLACEMENTS.items():
         text = text.replace(char, replacement)
     return text
