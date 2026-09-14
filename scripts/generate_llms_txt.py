@@ -40,6 +40,15 @@ MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"
 ROOT_SIZE_WARN = 50_000
 ROOT_SIZE_ERROR = 100_000
 
+# Explicit prefix overrides for groups that share a top-level directory with
+# another group. Key: exact group name from docs.json. Value: relative path
+# (no leading/trailing slash) used for the output llms.txt file and the URL.
+# Example: "Public DNS" shares dns/ with "Managed DNS", so we give it its own
+# sub-path dns/public-dns so the two files don't collide.
+GROUP_PREFIX_OVERRIDES: dict[str, str] = {
+    "Public DNS": "dns/public-dns",
+}
+
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
@@ -251,7 +260,7 @@ def build_product_llms(
         Tuple of (file_content, product_prefix, product_summary).
     """
     group_name: str = group.get("group", "Unknown")
-    product_prefix = get_product_prefix(group)
+    product_prefix = GROUP_PREFIX_OVERRIDES.get(group_name) or get_product_prefix(group)
     page_count = len(collect_pages(group))
 
     summary = derive_product_summary(group, repo_root)
@@ -389,8 +398,33 @@ def check_root_size(content: str, path: Path) -> None:
         log.info("Root size: %d characters (within safe threshold).", size)
 
 
+_UNICODE_REPLACEMENTS = {
+    "\u2013": "-",    # en dash -> hyphen
+    "\u2014": " - ",  # em dash -> spaced hyphen
+    "\u2018": "'",    # left single quotation mark
+    "\u2019": "'",    # right single quotation mark
+    "\u201C": '"',    # left double quotation mark
+    "\u201D": '"',    # right double quotation mark
+    "\u20AC": "EUR",  # euro sign
+    "\u00A0": " ",    # non-breaking space
+}
+
+
+def _normalize_to_ascii_safe(text: str) -> str:
+    """Replace non-ASCII typographic characters with ASCII equivalents.
+
+    The llms.txt files are served as text/plain without charset. To avoid
+    mojibake in browsers that default to Windows-1252, substitute common
+    Unicode punctuation with plain ASCII before writing.
+    """
+    for char, replacement in _UNICODE_REPLACEMENTS.items():
+        text = text.replace(char, replacement)
+    return text
+
+
 def write_or_print(path: Path, content: str, dry_run: bool) -> None:
     """Write content to file, or print preview to stdout if dry_run."""
+    content = _normalize_to_ascii_safe(content)
     if dry_run:
         print(f"\n{'='*60}")
         print(f"FILE: {path}")
@@ -430,6 +464,7 @@ def main() -> int:
     product_contents: list[tuple[str, str]] = []
     missing_nav: list[str] = []
     total_pages = 0
+    used_prefixes: dict[str, str] = {}  # prefix -> group_name, collision guard
 
     for group in doc_tab.get("groups", []):
         group_name: str = group.get("group", "Unknown")
@@ -447,6 +482,15 @@ def main() -> int:
         if not product_prefix:
             log.warning("Cannot determine prefix for group '%s', skipping", group_name)
             continue
+
+        if product_prefix in used_prefixes:
+            log.error(
+                "Prefix collision: '%s' and '%s' both map to '%s'. "
+                "Add an entry to GROUP_PREFIX_OVERRIDES to resolve.",
+                used_prefixes[product_prefix], group_name, product_prefix,
+            )
+            return 1
+        used_prefixes[product_prefix] = group_name
 
         output_path = repo_root / product_prefix / "llms.txt"
         write_or_print(output_path, content, dry_run)
