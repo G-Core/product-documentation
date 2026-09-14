@@ -400,7 +400,7 @@ def check_root_size(content: str, path: Path) -> None:
 
 _UNICODE_REPLACEMENTS = {
     "\u2013": "-",    # en dash -> hyphen
-    "\u2014": " - ",  # em dash -> spaced hyphen
+    "\u2014": ",",    # em dash -> comma
     "\u2018": "'",    # left single quotation mark
     "\u2019": "'",    # right single quotation mark
     "\u201C": '"',    # left double quotation mark
