@@ -1,12 +1,17 @@
 ---
 title: "Primary, Backup, and Global Ingest Points for PUSH and PULL"
 sidebarTitle: "Push, pull, backup"
-ai-navigation: "Configure PUSH and PULL ingest points for Gcore Streaming Platform using RTMP, RTMPS, SRT, or WebRTC WHIP protocols with stream keys and push tokens for live video ingestion from encoders or origin servers."
+ai-navigation: Configure live stream PUSH and PULL ingest, reset push tokens, and set failover source URIs via the Customer Portal or REST API.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## Quick start: push a test live stream
 
-Use **PUSH** when your encoder, broadcast software, app, or automation agent sends the live stream to Gcore. Use **PULL** when Gcore must connect to your public origin URL and fetch the stream from your server.
+<p>Use **PUSH** when your encoder, broadcast software, app, or automation agent sends the live stream to Gcore. Use **PULL** when Gcore must connect to your public origin URL and fetch the stream from your server.</p>
 
 ```text
 PUSH:
@@ -16,7 +21,7 @@ PULL:
 Your public origin URL  <---  Gcore ingest  --->  Transcoding + CDN  --->  HTML player
 ```
 
-For a first quick test, use PUSH with RTMP: it is the most common encoder workflow and requires only an ingest URL. Replace the URL with your stream's `push_url` in the command below. It generates a test video pattern and a test audio tone, encodes them as H.264/AAC, and pushes the stream to Gcore:
+<p>For a first quick test, use PUSH with RTMP: it is the most common encoder workflow and requires only an ingest URL. Replace the URL with your stream's `push_url` in the command below. It generates a test video pattern and a test audio tone, encodes them as H.264/AAC, and pushes the stream to Gcore:</p>
 
 ```sh
 ffmpeg -re \
@@ -29,33 +34,33 @@ ffmpeg -re \
   -f flv "rtmp://vp-push-ed1.gvideo.co/in/12345?aaabbbcccddd"
 ```
 
-Expected result in the Control Panel:
+<p>Expected result in the Control Panel:</p>
 
 <Frame>
   ![FFmpeg test stream execution result](/images/docs/streaming-platform/live-streaming/create-a-live-stream/streaming-ffmpeg-test.png)
 </Frame>
 
-For AI agents and automated backends, use this default flow:
+<p>For AI agents and automated backends, use this default flow:</p>
 
-1. Create a live stream with `pull: false`, RTMP ingest, and a 720p H.264-compatible transcoding setup.
-2. Read `push_url` and `iframe_url` from the stream API response.
-3. Start ffmpeg with the command above and replace the example RTMP URL with `push_url`.
-4. Wait for the stream to become active (up to 15 seconds) and for playback initialization to finish.
-5. Return `iframe_url` to the user as the HTML player link.
+<p>1. Create a live stream with `pull: false`, RTMP ingest, and a 720p H.264-compatible transcoding setup.</p>
+<p>2. Read `push_url` and `iframe_url` from the stream API response.</p>
+<p>3. Start ffmpeg with the command above and replace the example RTMP URL with `push_url`.</p>
+<p>4. Wait for the stream to become active (up to 15 seconds) and for playback initialization to finish.</p>
+<p>5. Return `iframe_url` to the user as the HTML player link.</p>
 
 ## PUSH Ingest
 
 ### Live Ingesting
 
-Live ingesting is the process of sending a live video and audio stream from your source (encoder, camera, or app) into the Streaming Platform. The ingest point is the server endpoint that first receives the stream before it is processed (transcoded, packaged, or distributed via CDN).
+<p>Live ingesting is the process of sending a live video and audio stream from your source (encoder, camera, or app) into the Streaming Platform. The ingest point is the server endpoint that first receives the stream before it is processed (transcoded, packaged, or distributed via CDN).</p>
 
-In PUSH mode, your encoder initiates the connection to the platform ingest server. You configure the encoder with a target URL and stream key, and the server listens for that incoming connection. The push token is the secret part of the ingest URL. It authenticates the stream source for RTMP/RTMPS, SRT, and WebRTC WHIP ingest. Only one push token exists for a stream at a time, and the token must be protected like any other credential. Anyone with a valid push URL can try to publish to that stream. To rotate the token, use the [Reset push token](/api-reference/streaming/streams/reset-live-stream-push-token) API method.
+<p>In PUSH mode, your encoder initiates the connection to the platform ingest server. You configure the encoder with a target URL and stream key, and the server listens for that incoming connection. The push token is the secret part of the ingest URL. It authenticates the stream source for RTMP/RTMPS, SRT, and WebRTC WHIP ingest. Only one push token exists for a stream at a time, and the token must be protected like any other credential. Anyone with a valid push URL can try to publish to that stream. To rotate the token, use the [Reset push token](/api-reference/streaming/streams/reset-live-stream-push-token) API method.</p>
 
-Protocols supported for PUSH ingest typically include:
+<p>Protocols supported for PUSH ingest typically include:</p>
 
-- RTMP/RTMPS — Widely supported in encoders and streaming software.
-- SRT — Secure and reliable, recommended for contribution over the Internet.
-- WebRTC WHIP — Low-latency contribution from browsers or apps.
+- RTMP/RTMPS â€” Widely supported in encoders and streaming software.
+- SRT â€” Secure and reliable, recommended for contribution over the Internet.
+- WebRTC WHIP â€” Low-latency contribution from browsers or apps.
 
 <Info>
   Only one ingest protocol type can be used for a live stream at a time. For example, if you start pushing RTMP and then try to push WebRTC WHIP simultaneously, the transcoding process will fail.
@@ -71,11 +76,11 @@ Protocols supported for PUSH ingest typically include:
   ```
 </Info>
 
-To use PUSH ingest, you must:
+<p>To use PUSH ingest, you must:</p>
 
-1. Select one protocol (RTMP, SRT, or WebRTC WHIP).
-2. Configure your encoder with the server ingest URL and your unique stream key or token.
-3. Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
+<p>1. Select one protocol (RTMP, SRT, or WebRTC WHIP).</p>
+<p>2. Configure your encoder with the server ingest URL and your unique stream key or token.</p>
+<p>3. Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).</p>
 
 <Info>
   The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.
@@ -85,7 +90,7 @@ To use PUSH ingest, you must:
 
 ### PUSH Link Formats
 
-PUSH ingest URLs are returned in the stream object and are also available in the control panel. Use the exact URL for the protocol selected in the stream settings:
+<p>PUSH ingest URLs are returned in the stream object and are also available in the control panel. Use the exact URL for the protocol selected in the stream settings:</p>
 
 | Protocol | Field | Format |
 | --- | --- | --- |
@@ -94,7 +99,7 @@ PUSH ingest URLs are returned in the stream object and are also available in the
 | SRT | `push_url_srt`, `backup_push_url_srt` | `srt://srt.domain.com:5001?streamid={stream_id}#{push_token}` |
 | WebRTC WHIP | `push_url_whip` | `https://whip.domain.com/{stream_id}_{push_token}/whip` |
 
-Examples:
+<p>Examples:</p>
 
 ```text
 rtmp://rtmp.domain.com/in/1234567?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -102,91 +107,89 @@ srt://srt.domain.com:5001?streamid=1234567#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 https://whip.domain.com/1234567_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/whip
 ```
 
-Legacy RTMP cameras that don't support query strings in the URI accept an alternative path-based format, where the push token is a path segment instead of a query parameter:
+<p>Legacy RTMP cameras that don't support query strings in the URI accept an alternative path-based format, where the push token is a path segment instead of a query parameter:</p>
 
 ```text
 rtmp://rtmp.domain.com/in/1234567/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 ```
 
-For enterprise projects, the ingest URL format can be adapted to existing business or encoder requirements. For example, if your current workflow already uses this style:
+<p>For enterprise projects, the ingest URL format can be adapted to existing business or encoder requirements. For example, if your current workflow already uses this style:</p>
 
 ```text
 rtmp(s)://<ip:port>/app/<uuid>
 ```
 
-Gcore can provide a compatible format such as:
+<p>Gcore can provide a compatible format such as:</p>
 
 ```text
 rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
 ```
 
-Contact your account manager or support team if you need a custom ingest URL format.
+<p>Contact your account manager or support team if you need a custom ingest URL format.</p>
 
 ### Reset the PUSH Token
 
-Reset the push token if it was exposed, shared with the wrong encoder, or needs to be rotated by your security process. After a reset:
+<p>Reset the push token if it was exposed, shared with the wrong encoder, or needs to be rotated by your security process. After a reset:</p>
 
 - The old token is immediately invalidated.
 - The new token is returned by the API and becomes available in the control panel.
 - Encoders that still use the old URL will be rejected.
 - The platform tries to terminate active primary and backup ingest connections automatically.
 
-Use the following API method: [/api-reference/streaming/streams/reset-live-stream-push-token](/api-reference/streaming/streams/reset-live-stream-push-token)
-
 <Info>
   Token reset affects active broadcasting. Plan token rotation during a maintenance window or be ready to restart the encoder with the new ingest URL.
 </Info>
 
+<p>To reset the push token, open the stream settings and click **Reset token**. See the REST API tab for API examples.</p>
+
 ### Failover with Primary and Backup Ingest Points for PUSH
 
-In most cases 1 primary point is used for broadcasting. Multiple points are needed for large broadcasts with multiple backups.
- Streaming Platform offers a special failover mechanism for RTMP and SRT origin streams. You can push primary and backup origin streams simultaneously to organize a backup plan.
+<p>In most cases 1 primary point is used for broadcasting. Multiple points are needed for large broadcasts with multiple backups.
+ Streaming Platform offers a special failover mechanism for RTMP and SRT origin streams. You can push primary and backup origin streams simultaneously to organize a backup plan.</p>
 
-Use for RTMP/S:
+<p>Use for RTMP/S:</p>
 
-- `push_url` – as primary
+- `push_url` â€“ as primary
 - `backup_push_url` - as backup
 
-Use for SRT:
+<p>Use for SRT:</p>
 
-- `push_url_srt` – as primary
-- `backup_push_url_srt` – as backup
+- `push_url_srt` â€“ as primary
+- `backup_push_url_srt` â€“ as backup
 
-**PUSH fallback algorithm:**
+<p>**PUSH fallback algorithm:**</p>
 
-1. Primary stream active. Primary always takes priority over the backup stream.
-2. When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
+<p>1. Primary stream active. Primary always takes priority over the backup stream.</p>
+<p>2. When the primary stream fails and is unavailable for more than 3 seconds, then fallback process begins (the backup stream must be available and online):</p>
    1. New transcoding started for the backup stream
-   2. End-viewers will be without stream data for ±15 seconds
-3. When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:
+   2. End-viewers will be without stream data for Â±15 seconds
+<p>3. When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:</p>
    1. New transcoding started for the primary stream
-   2. End-viewers will be without stream data for ±15 seconds
+   2. End-viewers will be without stream data for Â±15 seconds
 
 ### Geo Distributed Ingest Points for PUSH
 
-By default, all ingests are connected to one of the data centers in Europe, regardless of the location of your encoder.
+<p>By default, all ingests are connected to one of the data centers in Europe, regardless of the location of your encoder.</p>
 
-Enterprise customers only have the option to select an alternative ingest point in other regions.
- Here are the additional locations you can connect:
+<p>Enterprise customers only have the option to select an alternative ingest point in other regions.
+ Here are the additional locations you can connect:</p>
 
 - Europe Luxembourg, The Netherlands
 - US Ashburn, Miami
 - Singapore (location under development)
 
-Reach out to your account manager for setup assistance.
+<p>Reach out to your account manager for setup assistance.</p>
 
 <Frame>
   ![Geo distributed ingest points for PUSH](/images/docs/streaming-platform/faq/live-streaming-issues/ingest-points.png)
 </Frame>
 
-To identify the ingest region of an active live stream, use the stream API. Call <code>GET&nbsp;/streaming/streams/{stream_id}</code> and read `active_ingest_region_primary` for the primary ingest and `active_ingest_region_backup` for the backup ingest; each field returns a region code, or `null` when that ingest is inactive.
-
 ### PUSH Ingest Limits
 
-Pay attention to rules of ingest server behavior for security reasons:
+<p>Pay attention to rules of ingest server behavior for security reasons:</p>
 
-1. After a connection is established with a valid stream key, the server registers it as active. While this session remains active, any subsequent connection attempts using the same stream key will be rejected. Ingest protocol does not provide error codes for this case, so rejections occur silently. To verify whether a stream is currently active, use UI or API.
-2. The server also enforces a connection rate limit. If too many connection attempts are made in a short period, new attempts will be denied. To avoid triggering the limiter, allow at least 10 seconds between connection attempts.
+<p>1. After a connection is established with a valid stream key, the server registers it as active. While this session remains active, any subsequent connection attempts using the same stream key will be rejected. Ingest protocol does not provide error codes for this case, so rejections occur silently. To verify whether a stream is currently active, use UI or API.</p>
+<p>2. The server also enforces a connection rate limit. If too many connection attempts are made in a short period, new attempts will be denied. To avoid triggering the limiter, allow at least 10 seconds between connection attempts.</p>
 
 <Info>
   1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2\+ connection requests at once, or 2\+ protocols at once will not lead to a result.
@@ -198,69 +201,73 @@ Pay attention to rules of ingest server behavior for security reasons:
 
 ### Failover with Multiple Source URIs for PULL
 
-"PULL URL" field can contain 1 link, or many at once. In most cases 1 point is used. Multiple points are needed for large broadcasts with multiple backups. You can specify multiple addresses separated by a space (" "), so you can organize an extra-backup plan.
+<p>"PULL URL" field can contain 1 link, or many at once. In most cases 1 point is used. Multiple points are needed for large broadcasts with multiple backups. You can specify multiple addresses separated by a space (" "), so you can organize an extra-backup plan.</p>
 
-Example #1:
+<p>Example #1:</p>
 
 ```text
 rtmp://encoder.example.com/live/stream123
 ```
 
-Example #2:
+<p>Example #2:</p>
 
 ```text
 rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=1000000&streamid=stream123
 ```
 
-**PULL fallback algorithm:**
+<p>In the Customer Portal, open a live stream's settings, enable **PULL**, and paste the origin URL (or multiple URLs separated by a space) into the **PULL URI** field.</p>
 
-1. Stream #1 is active
-2. If stream #1 is unavailable and is missing for more than ±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:
+<p>To reset the push token, open the stream settings and click **Reset token**.</p>
+
+<p>**PULL fallback algorithm:**</p>
+
+<p>1. Stream #1 is active</p>
+<p>2. If stream #1 is unavailable and is missing for more than Â±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:</p>
    1. A new transcoding for the backup stream is started.
-   2. End viewers will be without stream data for ±15 seconds.
+   2. End viewers will be without stream data for Â±15 seconds.
    3. If this stream #2 is also interrupted, the above algorithm will be repeated for the next backup stream. In this case, the specified addresses will be selected one by one using round robin algorithm. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle. No worries, if only 1 link is specified in "PULL URI", then the system will request that link.
-3. The system will try to pull the origin stream for 2 hours approximately, making requests approximately every 3 seconds.
+<p>3. The system will try to pull the origin stream for 2 hours approximately, making requests approximately every 3 seconds.</p>
    1. If one of the links works, the timer is reset to zero, transcoding begins.
    2. Otherwise the stream stops permanently. To resume it, you will have to activate it manually or via API.
 
 ### Geo Distributed Points for PULL
 
-By setting location correctly, you can minimize latency and improve performance.
+<p>By setting location correctly, you can minimize latency and improve performance.</p>
 
-[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+<p>[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.</p>
 
 ## Stream availability
 
-A live stream typically requires a short initialization period before playback becomes available. Our system initializes all required services within ~2–5 seconds, from receiving a live stream at the ingester to publishing segments on the CDN.
+<p>A live stream typically requires a short initialization period before playback becomes available. Our system initializes all required services within ~2â€“5 seconds, from receiving a live stream at the ingester to publishing segments on the CDN.</p>
 
 <Info>
-  Stream segments become available in the CDN (and player) within ~2–5 seconds after the `type: stream (live=true)` webhook is issued.
+  Stream segments become available in the CDN (and player) within ~2â€“5 seconds after the `type: stream (live=true)` webhook is issued.
 </Info>
 
-Workflow when starting a stream on server:
+<p>Workflow when starting a stream on server:</p>
 
 - Accept and check the stream on the ingester
 - Initialize the stream
 - **Send a webhook**
 - Start the transcoding process
 - Publish the first segment to the CDN
-- **Playback available** – here your player can start downloading video segments
+- **Playback available** â€“ here your player can start downloading video segments
 
-The table below compares how different platforms approach latency reduction. We evaluated multiple implementations and identified best practices for minimizing delay.
+<p>The table below compares how different platforms approach latency reduction. We evaluated multiple implementations and identified best practices for minimizing delay.</p>
 
 <Frame>
   ![Timing of live streaming](https://assets.gcore.pro/site-media/uploads-staging/how_we_solve_issues_of_rtmp_to_hls_streaming_on_ios_and_android_2_c737a90322.svg)
 </Frame>
 
-By collaborating with streaming platforms that deliver RTMP-to-HLS on iOS and Android, we defined best practices: optimize GOP size, enable background streaming, trigger player startup at the optimal moment, and adjust bitrate and delivery region dynamically. These improvements enhance playback stability, minimize startup delay, and reduce rebuffering. Read more in the blog article [How we solve issues of RTMP-to-HLS streaming on iOS and Android](https://gcore.com/blog/how-we-solve-issues-of-rtmp-to-hls-streaming-on-ios-and-android).
+<p>By collaborating with streaming platforms that deliver RTMP-to-HLS on iOS and Android, we defined best practices: optimize GOP size, enable background streaming, trigger player startup at the optimal moment, and adjust bitrate and delivery region dynamically. These improvements enhance playback stability, minimize startup delay, and reduce rebuffering. Read more in the blog article [How we solve issues of RTMP-to-HLS streaming on iOS and Android](https://gcore.com/blog/how-we-solve-issues-of-rtmp-to-hls-streaming-on-ios-and-android).</p>
 
 ## Players behavior
 
-Please note that the manifest and fragments will be available again at the time indicated above. Consider your player configuration for automatic playback of restored live stream. Some players resume playback with a large delay automatically. But if you update them manually, the video will appear instantly.
+<p>Please note that the manifest and fragments will be available again at the time indicated above. Consider your player configuration for automatic playback of restored live stream. Some players resume playback with a large delay automatically. But if you update them manually, the video will appear instantly.</p>
 
-Use built-in retry knobs and an error handler that re-loads the manifest when it comes back.
+<p>Use built-in retry knobs and an error handler that re-loads the manifest when it comes back.</p>
 
-For example:
+<p>For example:</p>
 
 ```text
   hls.js:
@@ -275,11 +282,11 @@ For example:
 
 ## Backup playback demo
 
-Watch the demo video below of how switching from primary to backup works using PUSH connection example in a real situation.
+<p>Watch the demo video below of how switching from primary to backup works using PUSH connection example in a real situation.</p>
 
-On the encoder side, 2 streams are organized: "Stream 1 Primary" and "Stream 2 Backup". They are both launched by ffmpeg command. And another terminal with a constant curl of the .mpd manifest status in the CDN: 200 is present or 404 is absent.
+<p>On the encoder side, 2 streams are organized: "Stream 1 Primary" and "Stream 2 Backup". They are both launched by ffmpeg command. And another terminal with a constant curl of the .mpd manifest status in the CDN: 200 is present or 404 is absent.</p>
 
-The screen displays:
+<p>The screen displays:</p>
 
 - Player in UI of personal account, with the ability to manually refresh the player.
 - Second player with the same stream, but with fully automatic recovery. Our player has automatic reconnection logic, but this logic specifically uses a delayed connection check algorithm to reduce the load on the server. You will see that the automatic connection is triggered a little later than the manual one.
@@ -288,17 +295,17 @@ The screen displays:
   <iframe src="https://player.gvideo.co/videos/2675_6FMc2FoOatkgl31" width="100%" height="360" loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />
 </Frame>
 
-Timing (time burned in the stream inside the player):
+<p>Timing (time burned in the stream inside the player):</p>
 
-1. 13:52:16 UTC – Stream 1 Primary started
-2. 13:52:19 UTC – Stream 1 Primary displayed
-3. 13:52:27 UTC – Stream 2 Backup started
-4. 13:52:50 UTC – Stream 1 Primary stopped
-5. 13:52:53 UTC – Stream 2 Primary enabling
-6. 13:53:02 UTC – Stream 2 Backup displayed **(12 seconds without playback)**
-7. 13:53:10 UTC – Stream 1 Primary started
-8. 13:54:20 UTC – Stream 1 Primary enabling
-9. 13:54:31 UTC – Stream 1 Primary displayed **(11 seconds without playback)**
+<p>1. 13:52:16 UTC â€“ Stream 1 Primary started</p>
+<p>2. 13:52:19 UTC â€“ Stream 1 Primary displayed</p>
+<p>3. 13:52:27 UTC â€“ Stream 2 Backup started</p>
+<p>4. 13:52:50 UTC â€“ Stream 1 Primary stopped</p>
+<p>5. 13:52:53 UTC â€“ Stream 2 Primary enabling</p>
+<p>6. 13:53:02 UTC â€“ Stream 2 Backup displayed **(12 seconds without playback)**</p>
+<p>7. 13:53:10 UTC â€“ Stream 1 Primary started</p>
+<p>8. 13:54:20 UTC â€“ Stream 1 Primary enabling</p>
+<p>9. 13:54:31 UTC â€“ Stream 1 Primary displayed **(11 seconds without playback)**</p>
 
 <Info>
   Players in automatic mode may take longer time to restore playback. See the section above on how to work with players.
@@ -306,9 +313,9 @@ Timing (time burned in the stream inside the player):
   After switching from backup to primary the Gcore Video Player decided to use 4 sec latency. Don't worry, it will catch up with the live feed pretty quickly later.
 </Info>
 
-**Scripts used in the demo:**
+<p>**Scripts used in the demo:**</p>
 
-Encoding of the "Stream 1 Primary", and similar for backup:
+<p>Encoding of the "Stream 1 Primary", and similar for backup:</p>
 
 ```text
 ffmpeg -re -stream_loop -1 \
@@ -324,8 +331,405 @@ drawtext=text='%{eif\:t/2\:d\:2}  %{eif\:trunc(mod(t\,2)*4/2)\:d\:2}':fontsize=(
   "rtmp://vp-push-ed2.gvideo.co/in/2409264?aaabbbcccddd"
 ```
 
-Checking HTTP status of the manifest:
+<p>Checking HTTP status of the manifest:</p>
 
 ```text
 while true; do curl -s -D - -o /dev/null -w 'HTTP/%{http_version} %{http_code}\n' "https://demo-public.gvideo.io/cmaf/11111_2409264/index.mpd" | tr -d '\r' | awk '/^HTTP\//{proto=$1;status=$2} tolower($1)=="content-length:"{cl=$2} tolower($1)=="content-type:"{$1=""; sub(/^ /,""); ctype=$0} tolower($1)=="date:"{$1=""; sub(/^ /,""); dt=$0} END{print proto, status, (cl?cl:"-"), (ctype?ctype:"-"), (dt?dt:"-")}'; sleep 1; done
 ```
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Read PUSH ingest URLs and check the active ingest region of a live stream, configure PULL failover sources, and rotate the push token via the Streaming API.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
+
+## Configure a stream for PUSH ingest
+
+<p>Set `pull: false` (or omit it â€” `false` is the default) to configure a stream for PUSH mode. The response immediately contains all ingest URLs. Pass the appropriate URL to your encoder.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={"pull": False},
+)
+print(f"Primary RTMP:  {stream.push_url}")
+print(f"Backup RTMP:   {stream.backup_push_url}")
+print(f"Primary SRT:   {stream.push_url_srt}")
+print(f"Backup SRT:    {stream.backup_push_url_srt}")
+print(f"WebRTC WHIP:   {stream.push_url_whip}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+	ctx := context.Background()
+	client := gcore.NewClient()
+
+	// The Go SDK requires Name in every Update call.
+	// Read the current name first to avoid overwriting it.
+	existing, err := client.Streaming.Streams.Get(ctx, streamID)
+	if err != nil {
+		panic(err)
+	}
+
+	stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name: existing.Name,
+			Pull: param.NewOpt(false),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Primary RTMP: %s\n", stream.PushURL)
+	fmt.Printf("Backup RTMP:  %s\n", stream.BackupPushURL)
+	fmt.Printf("Primary SRT:  %s\n", stream.PushURLSrt)
+	fmt.Printf("Backup SRT:   %s\n", stream.BackupPushURLSrt)
+	fmt.Printf("WebRTC WHIP:  %s\n", stream.PushURLWhip)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"pull": false}'
+```
+  </Tab>
+</Tabs>
+
+## Check PUSH stream status
+
+<p>After starting the encoder, verify the stream is receiving. `live` indicates the primary ingest is active. `backup_live` indicates the backup ingest is active. `stream_source_type` returns the protocol in use (`rtmp`, `srt`, `webrtc`, or `https`), or `null` when transcoding is not running.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.get(stream_id)
+
+print(f"Primary ingest live:   {stream.live}")
+print(f"Backup ingest live:    {stream.backup_live}")
+print(f"Ingest protocol:       {stream.stream_source_type}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+	streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+	ctx := context.Background()
+	client := gcore.NewClient()
+	stream, err := client.Streaming.Streams.Get(ctx, streamID)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Primary ingest live: %v\n", stream.Live)
+	fmt.Printf("Backup ingest live:  %v\n", stream.BackupLive)
+	fmt.Printf("Ingest protocol:     %s\n", stream.StreamSourceType)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns the stream object. Read the status fields:</p>
+
+```json
+{
+  "live": true,
+  "backup_live": false,
+  "stream_source_type": "rtmp"
+}
+```
+  </Tab>
+</Tabs>
+
+## Read ingest URLs and active region
+
+<p>Call `GET /streaming/streams/{stream_id}` to read the stream object. `push_url` and `backup_push_url` are the RTMP/RTMPS primary and backup endpoints; `push_url_srt` / `backup_push_url_srt` are the SRT equivalents; `push_url_whip` is the WebRTC WHIP endpoint (no backup). `active_ingest_region_primary` and `active_ingest_region_backup` return the region code of the server currently receiving that ingest, or `null` when inactive.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.get(stream_id)
+
+print(f"PUSH URL (RTMP):        {stream.push_url}")
+print(f"Backup PUSH URL (RTMP): {stream.backup_push_url}")
+print(f"PUSH URL (SRT):         {stream.push_url_srt}")
+print(f"Backup PUSH URL (SRT):  {stream.backup_push_url_srt}")
+print(f"PUSH URL (WHIP):        {stream.push_url_whip}")
+print(f"Active primary region:  {stream.active_ingest_region_primary}")
+print(f"Active backup region:   {stream.active_ingest_region_backup}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+	streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+	ctx := context.Background()
+	client := gcore.NewClient()
+	stream, err := client.Streaming.Streams.Get(ctx, streamID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("PUSH URL (RTMP):        %s\n", stream.PushURL)
+	fmt.Printf("Backup PUSH URL (RTMP): %s\n", stream.BackupPushURL)
+	fmt.Printf("PUSH URL (SRT):         %s\n", stream.PushURLSrt)
+	fmt.Printf("Backup PUSH URL (SRT):  %s\n", stream.BackupPushURLSrt)
+	fmt.Printf("PUSH URL (WHIP):        %s\n", stream.PushURLWhip)
+	fmt.Printf("Active primary region:  %s\n", stream.ActiveIngestRegionPrimary)
+	fmt.Printf("Active backup region:   %s\n", stream.ActiveIngestRegionBackup)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The response is the full stream object. Read the ingest fields:</p>
+
+```json
+{
+  "push_url": "rtmp://vp-push-anx2.domain.com/in/123?token",
+  "backup_push_url": "rtmp://vp-push-ed1.domain.com/in/123b?token",
+  "push_url_srt": "srt://vp-push-anx2-srt.domain.com:5001?streamid=123#token",
+  "backup_push_url_srt": "srt://vp-push-anx1-srt.domain.com:5001?streamid=123b#token",
+  "push_url_whip": "https://whip.gvideo.co/123_token/whip",
+  "active_ingest_region_primary": "ed",
+  "active_ingest_region_backup": null
+}
+```
+  </Tab>
+</Tabs>
+
+## Failover with Multiple Source URIs for PULL
+
+<p>Set `pull: true` and provide one or more source URLs in the `uri` field, separated by spaces. The platform cycles through URIs in round-robin order on failure. After 2 hours with no successful connection, the stream deactivates (`active` â†’ `false`); use the Reactivate section below to resume it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={
+        "name": "My PULL stream",
+        "pull": True,
+        "uri": "rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup",
+    },
+)
+print(f"Stream {stream.id}: pull={stream.pull}, uri={stream.uri}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+	ctx := context.Background()
+	client := gcore.NewClient()
+	stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name: "My PULL stream",
+			Pull: param.NewOpt(true),
+			Uri:  param.NewOpt("rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup"),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Stream %d: pull=%v, uri=%s\n", stream.ID, stream.Pull, stream.Uri)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "name": "My PULL stream",
+       "pull": true,
+       "uri": "rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup"
+     }'
+```
+  </Tab>
+</Tabs>
+
+## Reactivate a stopped PULL stream
+
+<p>After the 2-hour retry period expires without a successful connection, the platform sets `active` to `false`. Send a PATCH request with `active: true` to resume pulling.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={"active": True},
+)
+print(f"Stream {stream.id}: active={stream.active}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"strconv"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+	ctx := context.Background()
+	client := gcore.NewClient()
+
+	// The Go SDK requires Name in every Update call.
+	// Read the current name first to avoid overwriting it.
+	existing, err := client.Streaming.Streams.Get(ctx, streamID)
+	if err != nil {
+		panic(err)
+	}
+
+	stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name:   existing.Name,
+			Active: param.NewOpt(true),
+		},
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("Stream %d: active=%v\n", stream.ID, stream.Active)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"active": true}'
+```
+  </Tab>
+</Tabs>
+
+## Reset the PUSH Token
+
+<p>Send <code>POST&nbsp;/streaming/streams/{"{stream_id}"}/reset_push_token</code>. The response contains the full updated stream object with the new token embedded in all push URLs.</p>
+
+<p>The reset takes effect immediately. The old token is invalidated â€” any encoder still using the old ingest URL will be rejected. Active primary and backup ingest connections may be terminated by the platform. Plan token rotation during a maintenance window, or be prepared to restart the encoder with the new ingest URL immediately after the reset.</p>
+
+```bash
+curl -X POST "https://api.gcore.com/streaming/streams/$STREAM_ID/reset_push_token" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The response contains the full updated stream object. Extract the new ingest URLs from `push_url`, `backup_push_url`, `push_url_srt`, `backup_push_url_srt`, and `push_url_whip`.</p>
+
+</MethodSection>
+</MethodSwitch>
