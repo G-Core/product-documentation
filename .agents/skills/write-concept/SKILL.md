@@ -223,6 +223,32 @@ content even without explicit nudity."
 
 ---
 
+## Do not achieve cohesion by packing facts into compound sentences
+
+Cohesion means one sentence creates the context for the next — not that several
+facts share one sentence through colons, semicolons, dashes, or conjunctions.
+
+**Wrong:** Compressing three facts into one sentence to avoid repetition:
+```
+Each task returns the detected object class, the frame number, and a confidence
+percentage; the service excludes results below 30% — and above that threshold,
+the cutoff depends on the use case, which varies across services.
+```
+
+**Correct:** A sequence of short connected thoughts where each follows from the previous:
+```
+Each task returns the detected object class, the video frame number, and a
+confidence percentage. The service excludes results below 30%. Above that
+threshold, the appropriate cutoff depends on the use case.
+```
+
+**Test:** Read the article as continuous prose, ignoring the headings. After
+every sentence, ask: "Why is the next sentence here?" If the answer is only
+"because this is another fact about the same subject" — the passage is not
+cohesive yet. Each sentence should set up the next, not just add to it.
+
+---
+
 ## Do not restart the subject at every heading
 
 A heading changes the focus; it does not reset the article. Before writing a
