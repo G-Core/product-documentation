@@ -4,25 +4,21 @@ sidebarTitle: AI video services
 ai-navigation: Use AI video services for subtitle generation, translation, and content moderation in Gcore Video Streaming via API or Customer Portal.
 ---
 
-Gcore Video Streaming provides two AI capabilities for VOD assets: subtitle generation and content moderation. Both are available via the [REST&nbsp;API](/api-reference/streaming/ai/create-ai-task); content moderation also has a [Customer&nbsp;Portal](https://portal.gcore.com/streaming/ai/list) interface. General usage is free; translation may incur additional charges — details are on the [pricing&nbsp;page](https://gcore.com/pricing/streaming-platform). If access to AI is unavailable, contact [Gcore&nbsp;support](mailto:support@gcore.com).
+Gcore Video Streaming provides two AI capabilities for VOD assets: subtitle generation and content moderation. Both are available via the [REST&nbsp;API](/api-reference/streaming/ai/create-ai-task); content moderation also has a [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com/streaming/ai/list) interface. General usage is free; translation may incur [additional&nbsp;charges](https://gcore.com/pricing/streaming-platform).
 
 | Capability | What it does | Access |
 |------------|--------------|--------|
 | [AI&nbsp;subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video) | Transcribes audio and translates subtitles into 100+ languages using Automated Speech Recognition (ASR) | API |
-| Content&nbsp;moderation | Analyzes video and image files for nudity and sports-related objects; returns detected objects with confidence scores | API, Customer Portal |
+| Content&nbsp;moderation | Analyzes video and image content for nudity and sports activities | API, Customer Portal |
 
-## Detection tasks
+## Content moderation
 
-Content moderation provides four task types. The three nudity checks differ in scope: [NSFW&nbsp;materials](/streaming/ai-video-service/content-moderation/nsfw-detection) applies the broadest classification and can flag content even without explicit nudity; [Soft&nbsp;nudity](/streaming/ai-video-service/content-moderation/soft-nudity-detection) focuses on full or partial nudity across a wider range of body-part categories; and [Hard&nbsp;nudity](/streaming/ai-video-service/ai-nudity-detection) is limited to exposed primary and secondary sex organs.
+Content moderation provides four tasks. Three target nudity and form a scale from broadest to narrowest: [NSFW&nbsp;materials](/streaming/ai-video-service/content-moderation/nsfw-detection) flags content as potentially inappropriate even without explicit nudity; [Soft&nbsp;nudity](/streaming/ai-video-service/content-moderation/soft-nudity-detection) covers full or partial nudity across a wider range of body-part categories; [Hard&nbsp;nudity](/streaming/ai-video-service/ai-nudity-detection) is limited to exposed primary and secondary sex organs. The fourth task, [Sport&nbsp;activities](/streaming/ai-video-service/content-moderation/sport-detection), is separate — it identifies sporting activities, events, and key moments in video content.
 
-[Sport&nbsp;activities](/streaming/ai-video-service/content-moderation/sport-detection) serves a different purpose, identifying sporting activities, events, and key moments in video content.
+### Analysis process
 
-## Analysis process
+Regardless of the selected task, video analysis runs on keyframes (iFrames) at the interval defined during encoding. The service therefore does not detect objects that appear only between keyframes. Gcore processes static images as one-second assets and deletes the original file from storage after processing.
 
-Content moderation processes video by analyzing keyframes (iFrames). The analysis frequency matches the keyframe interval set in the video encoding — objects between keyframes are not detected. Static images are also supported; image duration is treated as 1 second. After processing, the original file is deleted from Gcore storage.
+### Results and confidence
 
-Each task returns the detected object class, the video frame number, and a confidence percentage. Results with confidence below 30% are excluded by the service.
-
-## Confidence scores
-
-The confidence score is a probability value. There is no universal cutoff that applies across all services — a threshold appropriate for one context may be too strict or too permissive for another. Process a representative sample of videos and analyze the resulting score distribution to determine an appropriate cutoff before applying content filtering in production.
+Each task returns the detected object class, the video frame number, and a confidence percentage; the service excludes results below 30%. The confidence score represents the probability that a detected object belongs to a specific category — there is no universal cutoff that applies across all services, and a threshold appropriate for one context may be too strict or too permissive for another.

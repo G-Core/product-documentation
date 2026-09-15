@@ -203,15 +203,56 @@ link to that option's how-to article in the same paragraph.
 Standalone link sentences — sentences that exist only to host a link — are
 forbidden. Embed the link in a sentence that provides real information.
 
+The ban applies to routing clauses too, not only standalone sentences. A clause
+that exists only to send the reader elsewhere is the same violation:
+
 ```
 WRONG:
 "For more information, see the content moderation guide."
+"General usage is free; translation may incur additional charges — details are on the [pricing page]."
+→ "details are on the [pricing page]" carries no content; it only routes.
 
 CORRECT:
+"General usage is free; translation may incur [additional charges](url)."
+→ The link is an attribute of the thing it describes, not a routing clause.
+
 "[NSFW materials](/path) applies the broadest classification and can flag
 content even without explicit nudity."
 → The link is inside a sentence that describes what makes this option distinct.
 ```
+
+---
+
+## Do not restart the subject at every heading
+
+A heading changes the focus; it does not reset the article. Before writing a
+section opening, read the final paragraph of the preceding section and continue
+from the state of knowledge already established.
+
+**Symptom:** Three consecutive section openings all start with the same noun:
+
+```
+Content moderation provides four tasks...
+Content moderation processes video by analyzing keyframes...
+Content moderation excludes results below 30%...
+```
+
+**Fix:** Use a bridge that expresses the relationship between sections:
+
+```
+Regardless of the selected task, video analysis runs on keyframes...
+```
+
+The bridge is not decorative — it states why the reader is moving to this
+section after reading the previous one.
+
+Preferred bridge patterns for concept articles:
+- `Regardless of the selected task...` — when the mechanism applies to all options
+- `In the returned results...` — when moving from mechanism to output
+- `The service therefore does not...` — consequence of the mechanism just described
+- No transition at all — when the connection is self-evident from the heading
+
+Do not use: `Additionally,`, `Also,`, `Furthermore,` — these add no relationship.
 
 ---
 
