@@ -125,6 +125,63 @@ Choose a different article." Do not proceed until the user confirms a different 
 
 After updating the plan, proceed to read the article.
 
+### MANDATORY: Verify screenshot folder path before reading
+
+Before reading the article content, derive the correct images folder path and check
+whether the existing screenshots are already there.
+
+**The rule — memorize this:**
+
+Take the article file path. Strip the `.mdx` extension. Prepend `images/docs/`.
+That is the ONLY correct folder for this article's screenshots.
+
+```
+Article:  streaming/ai-video-service/content-moderation/soft-nudity-detection.mdx
+                                                         ^^^^^^^^^^^^^^^^^^^^
+                                    this is the article filename (no extension)
+                                    this must be the LAST folder in the images path
+
+Images:   images/docs/streaming/ai-video-service/content-moderation/soft-nudity-detection/
+                                                                     ^^^^^^^^^^^^^^^^^^^^
+```
+
+**Wrong — missing the article-name folder:**
+```
+images/docs/streaming/ai-video-service/content-moderation/   <- WRONG, one level too high
+images/docs/streaming/ai-video-service/                       <- WRONG, two levels too high
+images/docs/streaming-platform/...                            <- WRONG, wrong prefix
+```
+
+**Wrong — using a sibling article's folder:**
+```
+images/docs/streaming/ai-video-service/content-moderation/nsfw-detection/    <- WRONG for soft-nudity-detection
+images/docs/streaming/ai-video-service/ai-nudity-detection/                  <- WRONG for soft-nudity-detection
+```
+
+Check whether the correct folder exists and note any existing user-provided screenshots:
+
+```powershell
+$articleSlug = "streaming/ai-video-service/content-moderation/soft-nudity-detection"
+$correctFolder = "C:\Projects\product-documentation\images\docs\$articleSlug"
+Test-Path $correctFolder
+Get-ChildItem $correctFolder -ErrorAction SilentlyContinue
+```
+
+If files already exist at the correct path — they were placed by the user. Use them as-is.
+Do not retake or overwrite them in Phase 3 unless a comparison reveals a real discrepancy.
+
+Then open the article and find all `<Frame>` / `<img src="...">` references.
+For each image path in the article:
+
+1. Check that the path starts with `/images/docs/<article-slug>/` — no other prefix or folder.
+2. Check that the file exists at that path.
+3. If any image references the wrong folder — record it immediately as a FINDING
+   with category `Outdated screenshot path` before proceeding.
+
+**Why this matters:** screenshots are routinely committed to the wrong folder or
+borrowed from sibling articles. Catching this in Phase 0 prevents re-discovering
+the same issue during Phase 3 and avoids a second pass.
+
 Read the entire article before touching the portal.
 Build a mental map:
 - What is the user expected to achieve by the end?

@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The soft nudity detection task scans an MP4 video for explicit and partial nudity — including faces and exposed body parts — and reports a confidence score for each detection. It covers more object classes than hard nudity detection.</p>
+<p>The soft nudity detection task analyzes an MP4 video for a broader set of body-related categories than hard nudity detection — including faces and exposed body parts — and reports a confidence score for each detection.</p>
 
 <Steps>
   <Step title="Open AI tasks">
@@ -37,10 +37,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>The soft nudity detection task analyzes an MP4 video for explicit and partial nudity — faces, exposed and covered body parts. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until the status is `SUCCESS` or `FAILURE`.</p>
+<p>Soft nudity detection runs asynchronously: create a task first, then use its ID to retrieve the result.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
 ```bash
@@ -49,7 +49,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Create a soft nudity detection task
 
-<p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "soft_nudity"`. The response returns a `task_id` to poll for results.</p>
+<p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "soft_nudity"`. The response returns a `task_id` to use when polling for results.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -114,6 +114,12 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
 ```
   </Tab>
 </Tabs>
+
+<p>The poll and cancel examples below read `task_id` from the `TASK_ID` environment variable. Set it from the ID returned above:</p>
+
+```bash
+export TASK_ID="<task_id>"
+```
 
 ## Poll for detection result
 
@@ -208,66 +214,14 @@ curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
   </Tab>
 </Tabs>
 
-<p>**Interpreting the result**</p>
+<p>When `status` is `SUCCESS`, check `result.nudity_detected`:</p>
 
-<p>On success, the `result` object contains:</p>
+- `false` — no soft nudity content found in the video.
+- `true` — soft nudity detected. The `detection_results` array lists the detected object categories. The `frames` array lists each flagged frame with `frame_number`, `label` (e.g. `"FACE_FEMALE"`), and `confidence` (decimal 0.0–1.0, where `0.53` means 53% confidence). Only objects detected with at least 30% confidence are included.
 
-- `nudity_detected: false` — no soft nudity content found in the video.
-- `nudity_detected: true` — soft nudity detected. The `detection_results` array lists the detected object categories. The `frames` array lists each flagged frame with `frame_number`, `label` (the detected category, e.g. `"FACE_FEMALE"`), and `confidence` (decimal 0.0–1.0, e.g. `0.53` means 53% confidence).
+## Cancel a running task
 
-<p>Only objects detected with at least 30% confidence are included in the response. The soft nudity model detects more object categories than hard nudity detection, which means it takes longer to process.</p>
-
-## List AI tasks
-
-<p>To retrieve all AI tasks, send `GET /streaming/ai/tasks`. Use the optional `search` query parameter to filter by ID, URL, task type, or status.</p>
-
-<Tabs>
-  <Tab title="Python SDK">
-```python
-from gcore import Gcore
-
-client = Gcore()
-for task in client.streaming.ai_tasks.list():
-    print(f"{task.task_id}  {task.status}  {task.progress}%")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-
-    gcore "github.com/G-Core/gcore-go"
-    "github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-    client := gcore.NewClient()
-    ctx := context.Background()
-
-    page, err := client.Streaming.AITasks.List(ctx, streaming.AITaskListParams{})
-    if err != nil {
-        panic(err)
-    }
-    for _, task := range page.Results {
-        fmt.Printf("%s  %s  %d%%\n", task.TaskID, task.Status, task.Progress)
-    }
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl "https://api.gcore.com/streaming/ai/tasks" \
-     -H "Authorization: APIKey $GCORE_API_KEY"
-```
-  </Tab>
-</Tabs>
-
-## Cancel an AI task
-
-<p>To cancel a running task, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
+<p>To cancel a task before it completes, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
