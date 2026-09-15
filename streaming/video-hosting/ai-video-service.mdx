@@ -4,55 +4,38 @@ sidebarTitle: AI video services
 ai-navigation: Use AI video services for subtitle generation, translation, and content moderation in Gcore Video Streaming via API or Customer Portal.
 ---
 
-Gcore Video Streaming offers advanced video processing features for both video on demand (VOD) and live streaming:
+Gcore Video Streaming provides two AI-powered capabilities for VOD processing: subtitle generation and content moderation. Both integrate via the REST API; content moderation also has a Customer Portal interface for one-off checks.
 
-- [AI&nbsp;subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video). AI Automated Speech Recognition (AI ASR) generates and translates subtitles in a wide range of languages, making video content accessible to global audiences.
-- [Content&nbsp;moderation](/streaming/ai-video-service/content-moderation). Videos are analyzed for nudity, offensive language, or violence to confirm that content is safe and appropriate for audiences.
+| Capability | What it does | Access |
+|------------|--------------|--------|
+| [AI&nbsp;subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video) | Generates and translates subtitles using Automated Speech Recognition (ASR) | API |
+| [Content&nbsp;moderation](/streaming/ai-video-service/content-moderation) | Analyzes video content for nudity and sports-related objects | API, Customer Portal |
 
-## AI video services infrastructure
+## Access and pricing
 
-Gcore uses its own infrastructure to execute AI models, keeping all data on EU and US servers and minimizing the risk of data leaks.
-
-The unified infrastructure connects to other Gcore AI-powered solutions, including [AI&nbsp;GPU&nbsp;Cloud](https://gcore.com/cloud/ai-gpu) for machine learning acceleration and [FastEdge](https://gcore.com/fastedge) for low-latency serverless edge computing.
-
-## Activate AI video services
-
-AI services are available to all Streaming customers via the [Gcore Customer Portal](https://portal.gcore.com) and API. If access to AI is unavailable, contact [Gcore&nbsp;support](mailto:support@gcore.com). General usage of the AI video service is free; translation may incur charges — details are on the [pricing&nbsp;page](https://gcore.com/pricing/streaming-platform).
-
-## Available features
-
-Subtitle generation and translation are available for VOD videos via the API.
+AI services are available to all Streaming customers. General usage is free; translation may incur charges — details are on the [pricing&nbsp;page](https://gcore.com/pricing/streaming-platform). If access to AI is unavailable, contact [Gcore&nbsp;support](mailto:support@gcore.com).
 
 <Warning>
-Live streaming subtitle generation is not supported.
+Live streaming subtitle generation is not supported. Both capabilities are available for VOD only.
 </Warning>
+
+## AI subtitles
+
+[AI&nbsp;subtitle&nbsp;generation](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video) uses ASR to transcribe speech and translate it into supported languages. It produces subtitle tracks that can be embedded in the video player or exported as separate files.
 
 ## Content moderation
 
-The [API&nbsp;documentation](/api-reference/streaming/ai/create-ai-task) covers integration for each task type.
+[Content&nbsp;moderation](/streaming/ai-video-service/content-moderation) analyzes VOD content and returns detection results with confidence scores. The [API&nbsp;documentation](/api-reference/streaming/ai/create-ai-task) covers task submission. For one-off checks on individual videos, the [content&nbsp;moderation guide](/streaming/ai-video-service/content-moderation) describes the Customer Portal workflow.
 
-For one-off checks on individual videos, the [content&nbsp;moderation guide](/streaming/ai-video-service/content-moderation) describes the Customer Portal workflow.
+Gcore Streaming provides four content moderation task types. Select based on the content categories to detect and the required strictness:
 
-Gcore Streaming offers five AI content moderation tasks — four related to nudity and one for sports.
+| Task | Detects | Strictness | When to use |
+|------|---------|------------|-------------|
+| **nsfw** | Inappropriately clothed people — flagged regardless of degree of clothing | Highest | General workplace-appropriate content screening |
+| **soft_nudity** | Full or partial nudity; returns body-part object classes and frame positions | Medium | Publishing decisions for mixed-audience platforms |
+| **hard_nudity** | Exposed primary and secondary sex organs only | Lower | Fast checks when only explicit content matters |
+| **sport** | Sporting activities, events, and key moments | N/A | Sports content indexing and highlights detection |
 
-### Content unsafe for work
+All tasks return the detected object class, the video frame number, and the confidence level as a percentage. Results with a confidence level below 30% are excluded from the response.
 
-The **nsfw** task is the strictest nudity detection task, as it identifies and filters videos containing inappropriately clothed people (i.e., they don’t have to be fully or partially nude to get flagged). The algorithm flags content as NSFW if it is potentially unsuitable for viewing at work or in public places. If NSFW content is detected, the AI model provides its confidence level as a percentage.
-
-### Soft nudity
-
-The **soft_nudity** task is less strict than the **nsfw** task, as it only flags videos with full or partial nudity. It detects explicit and partial nudity, including videos of male and female faces and other uncovered body parts. Use it to determine whether content is appropriate for all audiences or should be blocked. The check returns information about the object identified, the video frame number where it was found, and the probability of the detected object. The response only includes objects with at least a 30% confidence level.
-
-This task identifies faces and other body parts and detects more objects than hard nudity detection, so analyzing a video for soft nudity takes more time.
-
-### Hard nudity
-
-The **hard_nudity** task is less strict than the **soft_nudity** task, as it only detects exposed primary and secondary sex organs in a video. Use it to determine whether publishing a video to all audiences is appropriate or whether it should be blocked. If hard nudity content is detected, the AI model returns its confidence level as a percentage.
-
-This task detects fewer objects than **soft_nudity**, so it works faster when detecting exposed body parts only.
-
-### Sport activities
-
-The **sport** task identifies various sporting activities in a video, including specific types, actions, events, and moments. Use it to determine whether particular sports were filmed or to locate crucial scenes — goal shots in football or dunks in a basketball game.
-
-The check returns information about the object identified, the video frame number where it was found, and the probability of the detected object. Objects with a probability of at least 30% are included in the response.
+`soft_nudity` detects a wider range of object classes than `hard_nudity` and takes longer to process. `nsfw` is the strictest option and covers cases where subjects are clothed but the content is inappropriate for professional or public environments.
