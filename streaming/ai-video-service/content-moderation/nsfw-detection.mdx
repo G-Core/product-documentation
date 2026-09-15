@@ -1,7 +1,7 @@
 ---
 title: Not safe for work (NSFW) detection
 sidebarTitle: NSFW detection
-ai-navigation: Detect NSFW content in MP4 videos via the Customer Portal or REST API - create a content moderation task, then poll for detection results using Python SDK, Go SDK, or curl.
+ai-navigation: Run NSFW content moderation on MP4 videos via the Customer Portal or REST API, create a task, then poll for results using Python SDK, Go SDK, or curl.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
@@ -9,48 +9,37 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Not safe for work (NSFW) content moderation task identifies and filters materials that are inappropriate for workplace environment.</p>
+<p>The NSFW detection task scans an MP4 video for content inappropriate for a workplace environment and reports a confidence score for each flagged frame.</p>
 
-<p>Our algorithm flags content as NSFW if it's potentially unsuitable for viewing in public places. If such content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is NSFW.</p>
-
-<p>To run the NSFW detection check:</p>
-
-<p>1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.</p>
-
-<Frame>![AI tasks page](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/ai-tasks-page.png)</Frame>
-
-<p>2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options:</p>
-
-  * **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
-
-<p>To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly.</p>
-
-<Frame>![Example of the origin URL](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/example-url-link.png)</Frame>
-
-  * **Select from uploaded videos**: choose a video hosted on the Gcore platform.
-
-<p>3\. In the **Task type**, choose **Content moderation**.</p>
-
-<p>4\. In the following dropdown, select **NSFW detection**.</p>
-
-<p>5\. Click **Generate task**.</p>
-
-<p>6\. Wait until the task is processed and has the **Success** status, click the task ID to view task details.</p>
-
-<p>7\. Check out the **Task result** field. You can have one of the following outputs:</p>
-
-  * **NSFW detection: not found**. This means that your video has no NSFW content.
-
-  * If some sensitive content is found, you'll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is NSFW. For example, you can get the following output: _"nsfw: detected at frame №2 with score 41%"._
-
-<Frame>![NSFW detection task details](/images/docs/streaming-platform/ai-video-service/ai-nudity-detection/nsfw-detection.png)</Frame>
+<Steps>
+  <Step title="Open AI tasks">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Streaming** > **AI tasks**.
+    <Frame><img src="/images/docs/streaming-platform/ai-video-service/content-moderation/nsfw-detection/ai-tasks-page.png" width="70%" alt="AI tasks page" /></Frame>
+  </Step>
+  <Step title="Select the video">
+    In the **Origin URL** field, enter the URL of the MP4 video. Two options are available:
+    * **Paste video origin URL**: if the video is stored externally, provide a URL to its location. Verify the video is accessible via HTTP or HTTPS.
+    * **Select from uploaded videos**: select a video hosted on Gcore.
+  </Step>
+  <Step title="Configure and generate the task">
+    1. In the **Task type**, select **Content Moderation**.
+    2. In the dropdown that appears, select **NSFW detection**.
+    3. Click **Generate task**.
+  </Step>
+  <Step title="Review the result">
+    Wait until the task has the **Success** status, then click the task ID to open task details. Check the **Parsed result** field:
+    * **NSFW detection: not found** — the video has no NSFW content.
+    * If sensitive content is found, the result identifies the flagged frame and the confidence score — _"nsfw: detected at frame №2 with score 41%"._
+    <Frame><img src="/images/docs/streaming-platform/ai-video-service/content-moderation/nsfw-detection/nsfw-detection.png" width="70%" alt="NSFW detection task details" /></Frame>
+  </Step>
+</Steps>
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
 <p>NSFW content moderation identifies materials inappropriate for the workplace. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until status is `SUCCESS` or `FAILURE`.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
 ```bash
@@ -124,6 +113,12 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
 ```
   </Tab>
 </Tabs>
+
+<p>The poll and cancel examples below read `task_id` from the `TASK_ID` environment variable. Set it from the ID returned above:</p>
+
+```bash
+export TASK_ID="<task_id>"
+```
 
 ## Poll for detection result
 
@@ -215,12 +210,10 @@ curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
   </Tab>
 </Tabs>
 
-<p>**Interpreting the result**</p>
+<p>When `status` is `"SUCCESS"`, check `result.nsfw_detected`:</p>
 
-<p>On success, the `result` object contains:</p>
-
-- `nsfw_detected: false` — no NSFW content found in the video.
-- `nsfw_detected: true` — NSFW content detected. The `frames` array lists each flagged frame with `frame_number`, `label` (`"nsfw"`), and `confidence` (decimal 0.0–1.0, e.g. `0.41` means 41% confidence).
+- `false` — no NSFW content found in the video.
+- `true` — NSFW content detected. The `frames` array lists each flagged frame with `frame_number`, `label` (`"nsfw"`), and `confidence` (decimal 0.0–1.0, e.g. `0.41` means 41% confidence).
 
 ## List AI tasks
 
