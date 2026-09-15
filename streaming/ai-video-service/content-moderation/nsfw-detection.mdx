@@ -36,7 +36,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>NSFW detection runs asynchronously: create a task first, then use its ID to retrieve the result.</p>
+<p>NSFW content moderation identifies materials inappropriate for the workplace. Submit a task with `POST /streaming/ai/tasks`, then poll `GET /streaming/ai/tasks/{task_id}` until status is `SUCCESS` or `FAILURE`.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -46,7 +46,7 @@ An [API&nbsp;token](/account-settings/api-tokens) is required.
 export GCORE_API_KEY="{YOUR_API_KEY}"
 ```
 
-## Create the detection task
+## Create an NSFW detection task
 
 <p>Send `POST /streaming/ai/tasks` with `task_name: "content-moderation"` and `category: "nsfw"`. The response returns a `task_id`.</p>
 
@@ -120,9 +120,9 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
 export TASK_ID="<task_id>"
 ```
 
-## Get the result
+## Poll for detection result
 
-<p>Poll `GET /streaming/ai/tasks/{task_id}` until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
+<p>Use `GET /streaming/ai/tasks/{task_id}` to check task status. Poll until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -215,9 +215,57 @@ curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
 - `false` — no NSFW content found in the video.
 - `true` — NSFW content detected. The `frames` array lists each flagged frame with `frame_number`, `label` (`"nsfw"`), and `confidence` (decimal 0.0–1.0, e.g. `0.41` means 41% confidence).
 
-## Cancel the task
+## List AI tasks
 
-<p>If the result is no longer needed, cancel a running detection with `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
+<p>To retrieve all AI tasks, send `GET /streaming/ai/tasks`. Use the optional `search` query parameter to filter by ID, URL, task type, or status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from gcore import Gcore
+
+client = Gcore()
+for task in client.streaming.ai_tasks.list():
+    print(f"{task.task_id}  {task.status}  {task.progress}%")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    page, err := client.Streaming.AITasks.List(ctx, streaming.AITaskListParams{})
+    if err != nil {
+        panic(err)
+    }
+    for _, task := range page.Results {
+        fmt.Printf("%s  %s  %d%%\n", task.TaskID, task.Status, task.Progress)
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/streaming/ai/tasks" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+## Cancel an AI task
+
+<p>To cancel a running task, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
