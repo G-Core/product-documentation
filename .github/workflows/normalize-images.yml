@@ -104,6 +104,42 @@ jobs:
             --repo . \
             --base-url https://docs.gcore.com
 
+      - name: Validate llms.txt files are ASCII-safe
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          python3 - <<'EOF'
+          import pathlib, sys
+
+          root = pathlib.Path(".")
+          failures = []
+
+          for f in sorted(root.rglob("llms*.txt")):
+              try:
+                  text = f.read_text(encoding="utf-8")
+              except Exception as e:
+                  failures.append(f"  {f}: cannot read — {e}")
+                  continue
+              for lineno, line in enumerate(text.splitlines(), 1):
+                  bad = [(i, ch) for i, ch in enumerate(line) if ord(ch) > 127]
+                  if bad:
+                      samples = ", ".join(f"U+{ord(ch):04X}({repr(ch)}) at col {i}" for i, ch in bad[:3])
+                      failures.append(f"  {f}:{lineno}: {samples}")
+
+          if failures:
+              print("ERROR: non-ASCII characters found in llms.txt files.")
+              print("These render as garbled text (e.g. â€\") in browsers")
+              print("that receive text/plain without charset=utf-8.")
+              print("Fix: replace em dash, smart quotes, etc. with ASCII in the")
+              print("MDX ai-navigation field, or update _UNICODE_REPLACEMENTS in")
+              print("scripts/generate_llms_txt.py.")
+              print("")
+              for line in failures:
+                  print(line)
+              sys.exit(1)
+          else:
+              print(f"OK: all llms.txt files are ASCII-safe.")
+          EOF
+
       - name: Commit all changes back to branch
         if: github.event.pull_request.head.repo.full_name == github.repository
         id: normalize_commit
@@ -180,6 +216,33 @@ jobs:
           python scripts/generate_llms_txt.py \
             --repo . \
             --base-url https://docs.gcore.com
+
+      - name: Validate llms.txt files are ASCII-safe (fork companion)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          python3 - <<'EOF'
+          import pathlib, sys
+          root = pathlib.Path(".")
+          failures = []
+          for f in sorted(root.rglob("llms*.txt")):
+              try:
+                  text = f.read_text(encoding="utf-8")
+              except Exception as e:
+                  failures.append(f"  {f}: cannot read — {e}")
+                  continue
+              for lineno, line in enumerate(text.splitlines(), 1):
+                  bad = [(i, ch) for i, ch in enumerate(line) if ord(ch) > 127]
+                  if bad:
+                      samples = ", ".join(f"U+{ord(ch):04X}({repr(ch)}) at col {i}" for i, ch in bad[:3])
+                      failures.append(f"  {f}:{lineno}: {samples}")
+          if failures:
+              print("ERROR: non-ASCII characters in llms.txt files.")
+              for line in failures:
+                  print(line)
+              sys.exit(1)
+          else:
+              print("OK: all llms.txt files are ASCII-safe.")
+          EOF
 
       - name: Check for changes in companion branch
         if: github.event.pull_request.head.repo.full_name != github.repository

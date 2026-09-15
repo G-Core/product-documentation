@@ -269,9 +269,16 @@ cargo build --target wasm32-wasi --release
 ```
 
 **Never wrap in `<p>`:**
-- Numbered list items (`1.`, `2.`, `3.`) — they are list elements, not prose paragraphs
 - Bullet list items (`-`, `*`) — block-level, renders correctly without wrapping
 - JSX components (`<Info>`, `<Warning>`, `<Frame>`, `<Tabs>`) — already block-level
+
+**Numbered list items — wrap each item individually:**
+```mdx
+<p>1. Go to **Streaming** > **AI**.</p>
+<p>2. In the **Origin URL** field, enter the link to your MP4 video.</p>
+<p>3. Click **Generate task**.</p>
+```
+Without `<p>`, numbered items inside `<MethodSection>` merge into a single line.
 
 This applies inside any `<MethodSection>`. Does not apply to content outside `<MethodSection>`.
 

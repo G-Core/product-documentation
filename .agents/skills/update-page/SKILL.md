@@ -30,6 +30,55 @@ article being updated.
 
 ---
 
+## Phase 0 — Relevance gate
+
+**Run this before touching any file.** Decide whether an MDX update is actually warranted.
+
+### The two conditions that justify an update
+
+Update documentation only when **at least one** of these is true:
+
+1. **Existing MDX content is factually wrong** — a UI label was renamed, a command no longer works, a field was removed, a limit changed, a step was reordered, a response example shows a value that is no longer returned.
+2. **A customer following the article would fail or be blocked** — a new mandatory field was added, authentication changed, a required step is missing, a new required configuration must be set before the feature works.
+
+### Signals that do NOT justify an update
+
+Stop and cancel if the change is only one of the following:
+
+- **New optional/diagnostic field or header** that we do not currently document — goes in the API Reference, not our narrative MDX. We do not mirror every response header or parameter from OpenAPI specs.
+- **Backend or API-spec fix** where the dev ticket is Done and the fix was applied by backend developers to YAML/code, not to our MDX — the work is already complete without us.
+- **Informational addition** (new metric, new response header, new log field) that customers can discover in the API Reference or portal UI — we do not duplicate the API Reference.
+- **Internal-only change** — admin API, internal billing, backend refactoring, library update.
+- **We never documented this thing** and it is not blocking any task described in our articles — silence is fine; adding it would be noise.
+
+### Decision checklist
+
+Go through these in order. Stop at the first YES or NO that resolves the question.
+
+| Question | YES → | NO → |
+|----------|-------|------|
+| Does the change make existing MDX text **factually wrong**? | Proceed | Next |
+| Is this a **UI change** (renamed button, new portal field, changed navigation path)? | Proceed | Next |
+| Would a customer following our article **fail to complete the task** without this info? | Proceed | Next |
+| Do we **already document** this specific element (field, header, option) and it changed? | Proceed | Next |
+| Was the fix applied by a **backend developer** to YAML/code, and is the dev ticket Done? | Cancel | Next |
+| Would this update **duplicate content already in API Reference or portal UI**? | Cancel | Next |
+| Is the new information **optional, diagnostic, or monitoring-only**? | Cancel | Proceed |
+
+### If the answer is Cancel
+
+Report exactly this and stop:
+
+```
+Change: [description]
+Decision: CANCEL — no MDX update needed
+Reason: [one sentence from the checklist above]
+```
+
+Do not search for articles. Do not open any files. Do not propose alternative updates.
+
+---
+
 ## Phase 1 — Find affected articles
 
 If the article path is given — skip to Phase 2.
@@ -179,12 +228,11 @@ is outdated — can blank the entire page with no build error.
 This rule applies even when the element contains information you want to fully remove
 (e.g. a deprecated restriction, an old warning). Keep the tag; change what it says.
 
-### Do not touch
+### Do not touch without explicit instruction
 
-- `<MethodSection id="api">` — API sections are maintained separately
-- Article filename and slug — broken URLs are worse than outdated content
-- `docs.json` navigation — only if a new top-level section is added, and only
-  after confirming with the user
+- `<MethodSection id="api">` — API tab content is updated only when the user explicitly asks to update the API section or when a curl example, endpoint, or parameter in that section is factually wrong. Do not add new API parameters or response fields just because they appeared in an OpenAPI spec update.
+- Article filename and slug — broken URLs are worse than outdated content.
+- `docs.json` navigation — only if a new top-level section is added, and only after confirming with the user.
 
 ---
 

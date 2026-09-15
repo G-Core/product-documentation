@@ -21,6 +21,7 @@ Match on the article path prefix (longest match wins).
 | `waap/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `edge-ai/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `fastedge/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
+| `streaming/` | Gcore Customer Portal | https://portal.gcore.com | SSO flow |
 | `reseller-support/` | Admin Portal (Reseller) — BLOCKED, see note below | https://admin.gcore.top/ | SSO flow — Work domain `gcore.com` reaches a **Gcore internal staff superadmin console** (all resellers, all accounts, employee RBAC, feature toggles), not a single reseller's own scoped view. Do not use this login for regression-testing reseller-facing articles until a real reseller-scoped account or an impersonation path is confirmed. |
 | `reseller/` (future) | Reseller Portal | TBD | TBD |
 | `box/` (future) | Box Portal | TBD | TBD |
@@ -51,6 +52,7 @@ Use these values when filling `create_edge_cloud_regression_ticket.py` in Phase 
 | `waap/` | 16035 | Security | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `edge-ai/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
 | `fastedge/` | 16036 | Cloud | TBD | 12504 | sergey.kostichev@gcore.lu |
+| `streaming/` | 16037 | Edge Network | DOC-2201 | 12504 | sergey.kostichev@gcore.lu |
 
 **TBD epics:** fill in the EPIC value before running the script for non-hosting products.
 Check Jira for the current active epic for that product area.

@@ -472,6 +472,14 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
                         text=raw.strip(),
                     ))
 
+            if "\u2014" in val:
+                violations.append(Violation(
+                    line=i,
+                    rule="ai-navigation em-dash",
+                    detail="ai-navigation must not contain em-dash '\u2014' — llms.txt generator encodes it as garbage; use a comma or semicolon instead",
+                    text=raw.strip(),
+                ))
+
             if len(val) > 160:
                 violations.append(Violation(
                     line=i,

@@ -40,6 +40,10 @@ log = logging.getLogger(__name__)
 IMAGES_ROOT = "images/docs"
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
+# Maximum length of a repo-relative image path (forward-slash, no leading slash).
+# Windows caps total absolute paths at 260 chars; 200 leaves room for the repo root.
+MAX_IMAGE_REL_PATH_LEN = 200
+
 # Folders under images/docs/ that are shared-asset libraries, not article
 # screenshot folders.  The normalizer never moves or deletes files here.
 PROTECTED_IMAGE_FOLDERS: set[str] = {
@@ -93,6 +97,52 @@ def _extract_refs_in_order(text: str) -> list[str]:
 
 def _is_image(path: Path) -> bool:
     return path.suffix.lower() in IMAGE_EXTENSIONS
+
+
+def _safe_filename(
+    canonical_folder_abs: Path,
+    img: Path,
+    repo_root: Path,
+    used_destinations: set[Path],
+) -> Path:
+    """
+    Return the destination path for *img* inside *canonical_folder_abs*.
+
+    If the repo-relative path would exceed MAX_IMAGE_REL_PATH_LEN, the stem is
+    truncated so the result fits.  A numeric suffix (-1, -2, …) is appended when
+    the truncated name collides with a path already in *used_destinations*.
+    The extension is always preserved intact.
+    """
+    candidate = canonical_folder_abs / img.name
+    candidate_rel = str(candidate.relative_to(repo_root)).replace("\\", "/")
+    if len(candidate_rel) <= MAX_IMAGE_REL_PATH_LEN and candidate not in used_destinations:
+        return candidate
+
+    suffix = img.suffix  # e.g. ".png"
+    folder_rel = str(canonical_folder_abs.relative_to(repo_root)).replace("\\", "/")
+
+    if len(candidate_rel) > MAX_IMAGE_REL_PATH_LEN:
+        # Reserve 3 chars for a "-N" counter suffix (handles up to "-99").
+        max_stem_len = MAX_IMAGE_REL_PATH_LEN - len(folder_rel) - 1 - len(suffix) - 3
+        max_stem_len = max(max_stem_len, 5)  # never truncate below 5 chars
+        base_stem = img.stem[:max_stem_len]
+        log.warning(
+            "PATH TOO LONG (%d chars): %s — truncating stem to %d chars",
+            len(candidate_rel),
+            candidate_rel,
+            max_stem_len,
+        )
+    else:
+        base_stem = img.stem
+
+    # Resolve collisions by appending a counter.
+    counter = 1
+    while True:
+        new_name = f"{base_stem}-{counter}{suffix}"
+        result = canonical_folder_abs / new_name
+        if result not in used_destinations:
+            return result
+        counter += 1
 
 
 # ── Build global maps ────────────────────────────────────────────────────────
@@ -194,6 +244,7 @@ def compute_plan(
     """
     ops: list[ImageOp] = []
     rename_map: dict[str, str] = {}
+    used_destinations: set[Path] = set()
 
     for folder in sorted(affected_folders):
         if not folder.is_dir():
@@ -251,8 +302,11 @@ def compute_plan(
                     ops.append(ImageOp("delete", img, None))
                 continue
 
-            # Image is referenced — move to canonical folder if needed, keeping filename.
-            new_abs = canonical_folder_abs / img.name
+            # Image is referenced — move to canonical folder if needed.
+            # Truncates the filename if the resulting path would exceed the Windows limit.
+            # Appends a counter to avoid collisions when multiple stems truncate identically.
+            new_abs = _safe_filename(canonical_folder_abs, img, repo_root, used_destinations)
+            used_destinations.add(new_abs)
             new_rel = str(new_abs.relative_to(repo_root)).replace("\\", "/")
 
             if img == new_abs:
