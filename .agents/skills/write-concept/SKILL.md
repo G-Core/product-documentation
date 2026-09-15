@@ -203,15 +203,82 @@ link to that option's how-to article in the same paragraph.
 Standalone link sentences — sentences that exist only to host a link — are
 forbidden. Embed the link in a sentence that provides real information.
 
+The ban applies to routing clauses too, not only standalone sentences. A clause
+that exists only to send the reader elsewhere is the same violation:
+
 ```
 WRONG:
 "For more information, see the content moderation guide."
+"General usage is free; translation may incur additional charges — details are on the [pricing page]."
+→ "details are on the [pricing page]" carries no content; it only routes.
 
 CORRECT:
+"General usage is free; translation may incur [additional charges](url)."
+→ The link is an attribute of the thing it describes, not a routing clause.
+
 "[NSFW materials](/path) applies the broadest classification and can flag
 content even without explicit nudity."
 → The link is inside a sentence that describes what makes this option distinct.
 ```
+
+---
+
+## Do not achieve cohesion by packing facts into compound sentences
+
+Cohesion means one sentence creates the context for the next — not that several
+facts share one sentence through colons, semicolons, dashes, or conjunctions.
+
+**Wrong:** Compressing three facts into one sentence to avoid repetition:
+```
+Each task returns the detected object class, the frame number, and a confidence
+percentage; the service excludes results below 30% — and above that threshold,
+the cutoff depends on the use case, which varies across services.
+```
+
+**Correct:** A sequence of short connected thoughts where each follows from the previous:
+```
+Each task returns the detected object class, the video frame number, and a
+confidence percentage. The service excludes results below 30%. Above that
+threshold, the appropriate cutoff depends on the use case.
+```
+
+**Test:** Read the article as continuous prose, ignoring the headings. After
+every sentence, ask: "Why is the next sentence here?" If the answer is only
+"because this is another fact about the same subject" — the passage is not
+cohesive yet. Each sentence should set up the next, not just add to it.
+
+---
+
+## Do not restart the subject at every heading
+
+A heading changes the focus; it does not reset the article. Before writing a
+section opening, read the final paragraph of the preceding section and continue
+from the state of knowledge already established.
+
+**Symptom:** Three consecutive section openings all start with the same noun:
+
+```
+Content moderation provides four tasks...
+Content moderation processes video by analyzing keyframes...
+Content moderation excludes results below 30%...
+```
+
+**Fix:** Use a bridge that expresses the relationship between sections:
+
+```
+Regardless of the selected task, video analysis runs on keyframes...
+```
+
+The bridge is not decorative — it states why the reader is moving to this
+section after reading the previous one.
+
+Preferred bridge patterns for concept articles:
+- `Regardless of the selected task...` — when the mechanism applies to all options
+- `In the returned results...` — when moving from mechanism to output
+- `The service therefore does not...` — consequence of the mechanism just described
+- No transition at all — when the connection is self-evident from the heading
+
+Do not use: `Additionally,`, `Also,`, `Furthermore,` — these add no relationship.
 
 ---
 
