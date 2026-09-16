@@ -595,10 +595,10 @@ For each screenshot in the article:
 5. Update the `<Frame>` in the article using the correct format:
    ```mdx
    <Frame>
-     <img src="/images/docs/{product}/{slug}/filename.png" alt="Alt text" width="70%" />
+     ![Alt text](/images/docs/{product}/{slug}/filename.png)
    </Frame>
    ```
-   Never use the markdown `![alt](src)` shorthand inside `<Frame>` — always use `<img>` with explicit `width="70%"`.
+   Always use the markdown `![alt](src)` shorthand inside `<Frame>`. Do not add `width` attributes or `<img>` tags.
 6. Update the alt text if the UI shown has changed.
 7. Delete the old file:
    ```powershell
@@ -790,10 +790,10 @@ Apply all confirmed findings to the article. For each fix:
 - Replace the `<Frame>` content with the new filename using the correct format:
   ```mdx
   <Frame>
-    <img src="/images/docs/{product}/{slug}/filename.png" alt="Alt text" width="70%" />
+    ![Alt text](/images/docs/{product}/{slug}/filename.png)
   </Frame>
   ```
-  Never use the markdown `![alt](src)` shorthand inside `<Frame>` — always use `<img>` with explicit `width="70%"`.
+  Always use the markdown `![alt](src)` shorthand inside `<Frame>`. Do not add `width` attributes or `<img>` tags.
 - Update the alt text to describe what the new screenshot shows.
 - Delete the old file with `git rm`.
 
@@ -974,9 +974,7 @@ relevant checks for the component, its sections, and the import line.
 - [ ] Outside `<MethodSection>`: no stray `<p>` wrappers around plain prose paragraphs
 - [ ] Inside EVERY `<MethodSection>` (Portal, API, Terraform, CLI — all tabs): EVERY standalone prose paragraph IS wrapped in `<p>` — no exceptions, no analysis of what is adjacent; numbered list items and bullet list items are NOT wrapped in `<p>`
 - [ ] `<Frame>` wraps each screenshot; no bare `![]()` outside `<Frame>`
-- [ ] Every `<img>` inside `<Frame>` uses an explicit `width` attribute (`width="70%"`),
-  not the markdown `![alt](src)` shorthand and not `style={{ width:"..." }}`.
-  Run `scripts/fix_image_widths.py` if bulk conversion is needed (see `mdx-rules.md`).
+- [ ] Every image inside `<Frame>` uses markdown shorthand `![alt](src)` — no `<img>` tags, no `width` attributes.
 - [ ] `<Tabs>` / `<Tab>` structure is valid: every `<Tab>` has a `title` attribute
 
 **Callout blocks (`<Info>`, `<Warning>`, `<Note>`, `<Tip>`):**
