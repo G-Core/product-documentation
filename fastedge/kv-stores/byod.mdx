@@ -1,0 +1,122 @@
+---
+title: BYOD — Bring Your Own Database
+sidebarTitle: BYOD
+ai-navigation: Connect FastEdge Edge Storage to an external Redis-compatible database using BYOD via the Gcore Customer Portal or the FastEdge REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>BYOD connects a FastEdge Edge Storage store to an external Redis-compatible database, giving applications access to existing data without migrating it to Gcore's hosted storage. Applications access a BYOD store through the same [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/kv/open/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/key_value/struct.Store.html) as a regular store — no code changes required.</p>
+
+<p>Any store implementing the Redis protocol is supported: Redis, [Apache Kvrocks](https://kvrocks.apache.org/), and other Redis-compatible key-value stores. The external store must be publicly accessible, since Gcore's edge nodes connect to it over the network on each request.</p>
+
+## Hosted Edge Storage vs BYOD
+
+<p>With hosted Edge Storage, data is replicated across Gcore's edge network and reads are served from the nearest edge location — latency is typically in the single-digit milliseconds. With BYOD, each read is a live query to the external database, so response time depends on the network distance between the edge location and the database host.</p>
+
+<p>BYOD is a practical choice for development, testing, or workloads where read latency is not critical. For latency-sensitive production workloads, hosted Edge Storage is recommended.</p>
+
+<p>Supported connection URL schemes:</p>
+
+- `redis://` — standard Redis protocol
+- `rediss://` — Redis protocol over TLS
+
+<p>URL format: `redis://:password@host:port/db-index` or `redis://username:password@host:port/db-index`</p>
+
+## Create a BYOD store
+
+<p>To create a BYOD store, open the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge**, and select **Edge Storage** in the sidebar.</p>
+
+<Steps>
+  <Step title="Start the wizard">
+    Click **Add Edge Storage** in the top-right corner.
+
+    <Frame>
+      ![Edge Storage list with Add Edge Storage button highlighted](/images/docs/fastedge/kv-stores/manage-kv-store/add-store.png)
+    </Frame>
+  </Step>
+  <Step title="Enter a name">
+    Enter a name and optionally a description.
+  </Step>
+  <Step title="Enable BYOD">
+    Select the **BYOD: Bring Your Own Database** checkbox. Two additional fields appear:
+
+    1. **URL** — the connection URL for the Redis-compatible store. For example: `redis://:mypassword@redis.example.com:6379/0`
+    2. **Prefix** — a string prepended to every key when FastEdge reads or writes the store. For example, with prefix `app:prod:`, a read for key `greeting` retrieves `app:prod:greeting` from the external database. Leave blank if no namespacing is needed.
+
+    <Frame>
+      ![Add Edge Storage form with BYOD checkbox selected, URL and Prefix fields filled in](/images/docs/fastedge/kv-stores/manage-kv-store/byod-create-storage-form.png)
+    </Frame>
+  </Step>
+  <Step title="Create the store">
+    Click **Create Edge Storage** to validate the connection and save the store.
+
+    <Info>
+    Gcore validates the connection at creation time. If the host is unreachable, the port is blocked, or the credentials are wrong, the store is not created and an error message is displayed. Verify that the store is publicly accessible and the URL is correct, then try again.
+    </Info>
+
+    <Warning>
+    A store's type cannot be changed after creation. A BYOD store cannot be converted to hosted storage.
+    </Warning>
+  </Step>
+</Steps>
+
+## Link to an application
+
+<p>After creation, link the BYOD store to a FastEdge application using the same process as a regular store — instructions are in [Managing applications](/fastedge/manage-apps#edge-storage). The prefix is applied transparently and application code does not need to know whether the store is BYOD or hosted.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Create a BYOD store by passing a `byod` object to the standard store creation endpoint. Once created, a BYOD store uses the same data endpoints as a regular [Edge&nbsp;Storage store](/fastedge/kv-stores/manage-kv-store).</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. Use the store ID from the creation response or from the list endpoint.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STORE_ID="{YOUR_STORE_ID}"
+```
+
+## Create a BYOD store
+
+<p>The `byod.url` field accepts `redis://` and `rediss://` (TLS) schemes. The optional `byod.prefix` string is prepended to every key on reads and writes — use it to namespace application data within a shared Redis instance.</p>
+
+```bash
+curl -X POST "https://api.gcore.com/fastedge/v1/kv" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-byod-store",
+    "byod": {
+      "url": "redis://:mypassword@redis.example.com:6379/0",
+      "prefix": "app:prod:"
+    }
+  }'
+```
+
+<p>The API returns the store ID used in all subsequent data requests:</p>
+
+```json
+{
+  "id": 131,
+  "name": "my-byod-store",
+  "app_count": 0,
+  "size": 0
+}
+```
+
+<Warning>
+A store's type cannot be changed after creation. A BYOD store cannot be converted to hosted storage.
+</Warning>
+
+## Data operations
+
+<p>Inserting, listing, and deleting key-value pairs in a BYOD store uses the same [Edge&nbsp;Storage endpoints](/fastedge/kv-stores/manage-kv-store) as a hosted store — the `byod.prefix` is applied transparently on every request.</p>
+
+</MethodSection>
+</MethodSwitch>
