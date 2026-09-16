@@ -52,12 +52,18 @@ PROTECTED_IMAGE_FOLDERS: set[str] = {
 }
 
 # Image product folder names that differ from MDX product folder names.
+# Forward map only: used by mdx_for_image_folder to find the MDX article
+# for images stored in a legacy folder (e.g. streaming-platform/).
+# This lets the normalizer move those images to the canonical path.
 PRODUCT_FOLDER_MAP: dict[str, str] = {
     "streaming-platform": "streaming",
 }
 
-# Reverse map: MDX product folder → image product folder.
-MDX_TO_IMAGE_PRODUCT: dict[str, str] = {v: k for k, v in PRODUCT_FOLDER_MAP.items()}
+# MDX product folder → image product folder.
+# Intentionally empty: all MDX products use the same name for their image
+# folder.  Do NOT compute this as the reverse of PRODUCT_FOLDER_MAP — that
+# would send streaming/ article images back into streaming-platform/.
+MDX_TO_IMAGE_PRODUCT: dict[str, str] = {}
 
 # Regex patterns to extract image paths from MDX content.
 _IMAGE_REF_PATTERNS = [
