@@ -61,15 +61,31 @@ Identify:
 
 ## Phase 2 — Live Terraform testing (always required, always before writing)
 
+**HARD RULE: TEST LIVE FIRST. NO EXCEPTIONS. NO SOURCE CODE ANALYSIS AS A SUBSTITUTE.**
+
+Do not explain why testing is inconvenient. Do not analyze provider source code instead of testing.
+Do not say "source code confirms" as a reason to skip the test. Do not say "bare metal is expensive."
+A test account exists. Use it. If you skip live testing for any reason — you are wrong, start over.
+
 **Test first. Write documentation second. Never the other way around.**
 
 All HCL examples must be validated with a real `terraform apply` + `terraform destroy` cycle
 before being included in the article.
 
+**BEFORE STARTING — load the API key from .env:**
+```powershell
+# Load API key from .env (dotenv — do not hardcode, do not read .env directly)
+$env:GCORE_API_KEY = (Get-Content .env | Where-Object { $_ -match "^GCORE_API_KEY=" }) -replace "^GCORE_API_KEY=",""
+```
+The API key is available in the `.env` file at the workspace root. Load it with dotenv before any test.
+
 **Environment:**
-- API key: in environment as `GCORE_API_KEY`
+- API key: loaded from `.env` as `GCORE_API_KEY`
 - Region: Luxembourg-3 (`region_id = 148`)
-- Project: default project (`project_id` from live API or portal)
+- Project: get `project_id` from live API:
+  ```powershell
+  Invoke-RestMethod "https://api.gcore.com/cloud/v1/projects" -Headers @{Authorization="APIKey $env:GCORE_API_KEY"} | Select-Object -ExpandProperty results | Select-Object id, name
+  ```
 
 **Check the latest v2 provider version before testing:**
 ```powershell
@@ -78,7 +94,7 @@ before being included in the article.
   Select-Object -Last 1 -ExpandProperty version
 ```
 
-Use the latest stable version. If only alpha is available, use the latest alpha and note it.
+Use the latest stable version. If only alpha/rc is available, use the latest available and note it.
 
 **Standard provider block for all tests:**
 
@@ -101,16 +117,31 @@ variable "project_id" { type = number }
 variable "region_id"  { type = number }
 ```
 
+**Test workspace — always use a temp directory:**
+```powershell
+$testDir = "C:\Temp\tf-test-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+New-Item -ItemType Directory -Path $testDir | Out-Null
+Set-Location $testDir
+```
+
 **Test workflow — every step is mandatory:**
 
 1. Write `main.tf` with the resource configuration
-2. Write `terraform.tfvars` with real values (never commit this file)
+2. Write `terraform.tfvars` with real values — **never commit this file, add to .gitignore**
 3. `terraform init` — confirm provider downloads from G-Core/gcore
-4. `terraform plan` — verify planned actions, no errors
-5. `terraform apply -auto-approve` — confirm resource is created; record the output
-6. Verify the resource exists via portal or `terraform show`
+4. `terraform plan` — read the plan output carefully; record the exact wording
+5. `terraform apply -auto-approve` — confirm resource is created; record full output
+6. **For update behavior tests:** modify the field in `main.tf`, run `terraform plan` and record the exact plan diff shown, then `terraform apply -auto-approve` and record what happened
 7. `terraform destroy -auto-approve` — confirm clean teardown
-8. Record: exact field names accepted, any errors, provider version used
+8. Record: exact field names accepted, plan output wording, any warnings shown, provider version used
+
+**Bare metal servers:**
+- Use the cheapest available BM flavor — check with:
+  ```powershell
+  Invoke-RestMethod "https://api.gcore.com/cloud/v1/bmflavors/$PROJECT_ID/148" -Headers @{Authorization="APIKey $env:GCORE_API_KEY"} | Select-Object -ExpandProperty results | Select-Object flavor_name, ram, vcpus | Select-Object -First 10
+  ```
+- BM provisioning takes 4-5 minutes — run `terraform apply` and wait; do not cancel
+- Always `terraform destroy` when done — never leave BM servers running after the test
 
 ---
 
