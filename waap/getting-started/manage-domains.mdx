@@ -25,36 +25,50 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 ## WAAP protection disabling
 
 <Info>
-**Info**
-
 A Disabled domain is counted for the current billing month. Starting from the next billing month, it no longer appears in usage metrics. To avoid being billed for a domain in a given month, disable it before that billing month begins.
 </Info>
 
 <p>To disable WAAP protection for a domain:</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
-2. Find the domain in the list.
-3. In the **WAAP domain mode** column, click the mode dropdown and select **Disabled**.
+<Steps>
+  <Step>
+    In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
+  </Step>
+  <Step>
+    Find the domain in the list.
+  </Step>
+  <Step>
+    In the **WAAP domain mode** column, click the mode dropdown and select **Disabled**.
 
-<Frame>![WAAP modes dropdown on Domains page](/images/docs/waap/getting-started/configure-waap-for-a-domain/domains-waap-protection.png)</Frame>
+    <Frame>![WAAP modes dropdown on Domains page](/images/docs/waap/getting-started/configure-waap-for-a-domain/domains-waap-protection.png)</Frame>
+  </Step>
+</Steps>
 
 Deactivating a domain can take up to 20 minutes as this ensures that all changes are consistently applied across our system.
 
 <p>After you disable WAAP protection for a domain, requests continue through the CDN and its cache but bypass WAAP inspection. The domain status on the Domains page in WAAP changes to **Disabled**. All WAAP settings and configured rules remain intact and can be modified. The settings do not take effect while WAAP is disabled.</p>
 
-<p>To activate WAAP protection again, navigate to **WAAP** > **Domains**, click the mode dropdown next to the domain, and select **Monitoring** or **Protection**.</p>
+<p>To activate WAAP protection again:</p>
+
+<Steps>
+  <Step>
+    Navigate to **WAAP** > **Domains**.
+  </Step>
+  <Step>
+    Click the mode dropdown next to the domain.
+  </Step>
+  <Step>
+    Select **Monitoring** or **Protection**.
+  </Step>
+</Steps>
 
 <Warning>
-**Warning**
-
-If you disable WAAP protection for a CDN resource and later re-enable it, WAAP mode will be set to **Monitoring**. If you had **Protection** mode before deactivating a domain, you need to enable it again.
+If you disable WAAP protection for a domain and later re-enable it, WAAP mode will be set to **Monitoring**. If you had **Protection** mode before deactivating a domain, you need to enable it again.
 </Warning>
 
 ## Domain removal from WAAP
 
 <Warning>
-**Warning**
-
 Deleting a domain permanently removes it from WAAP, including all configured rules, firewall settings, and other WAAP settings. This action cannot be undone.
 </Warning>
 
@@ -62,10 +76,20 @@ Deleting a domain permanently removes it from WAAP, including all configured rul
 
 <p>To delete a Disabled domain:</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
-2. Click the three-dot icon next to the domain that you want to remove.
-3. Select **Delete**.
-4. Confirm your action by clicking **Delete**.
+<Steps>
+  <Step>
+    In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
+  </Step>
+  <Step>
+    Click the three-dot icon next to the domain that you want to remove.
+  </Step>
+  <Step>
+    Select **Delete**.
+  </Step>
+  <Step>
+    Confirm your action by clicking **Delete**.
+  </Step>
+</Steps>
 
 <p>The domain has been successfully removed from WAAP.</p>
 
@@ -74,12 +98,10 @@ Deleting a domain permanently removes it from WAAP, including all configured rul
 <p>If you suspend a CDN resource with enabled WAAP, the domain status changes to **Disabled**. The CDN resource is no longer serving traffic, so content is unavailable to customers.</p>
 
 <Info>
-**Info**
-
 A Disabled domain is counted for the current billing month. Starting from the next billing month, it no longer appears in usage metrics. To avoid being billed for a domain in a given month, disable it before that billing month begins.
 </Info>
 
-<p>A [suspended resource](/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually) is automatically deleted after 90 days. During this period, WAAP settings remain intact, and you can reactivate both CDN and WAAP.</p>
+<p>While the CDN resource is [suspended](/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually), WAAP settings remain intact. You can reactivate both CDN and WAAP at any time.</p>
 
 ## CDN resource deletion
 
@@ -90,7 +112,7 @@ A Disabled domain is counted for the current billing month. Starting from the ne
   </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>The [Domains](/api-reference/waap#domains) endpoints cover checking a domain's protection status and deleting a Disabled domain. Switching between Monitoring and Protection modes is covered in the [domain setup guide](/waap/getting-started/configure-waap-for-a-domain). Response examples include only the fields used in each step.</p>
+<p>The [Domains](/api-reference/waap#domains) endpoints cover checking a domain's protection status and deleting a Disabled domain. Switching between Monitoring and Protection modes is covered in the [domain setup guide](/waap/getting-started/configure-waap-for-a-domain). The response example includes only the fields used in this procedure.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required. Use <code>GET /waap/v1/domains</code> to retrieve the domain ID.
@@ -139,7 +161,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
     func main() {
         client := gcore.NewClient()
-        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic(fmt.Errorf("invalid WAAP_DOMAIN_ID: %w", err))
+        }
 
         domain, err := client.Waap.Domains.Get(context.Background(), domainID)
         if err != nil {
@@ -169,11 +194,9 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <p>The `status` field returns the API value from the table above. The `bypass` state is set by selecting **Disabled** from the mode dropdown on the **WAAP** > **Domains** page. The WAAP API only supports switching between `active` and `monitor`.</p>
 
-## Delete a domain
+## Domain deletion
 
 <Warning>
-**Warning**
-
 Deleting a domain permanently removes it from WAAP, including all configured rules, firewall settings, and other WAAP settings. This action cannot be undone.
 </Warning>
 
@@ -209,9 +232,12 @@ The domain must have Disabled status before deletion. To disable a domain, selec
 
     func main() {
         client := gcore.NewClient()
-        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic(fmt.Errorf("invalid WAAP_DOMAIN_ID: %w", err))
+        }
 
-        err := client.Waap.Domains.Delete(context.Background(), domainID)
+        err = client.Waap.Domains.Delete(context.Background(), domainID)
         if err != nil {
             panic(err)
         }
@@ -227,7 +253,7 @@ The domain must have Disabled status before deletion. To disable a domain, selec
   </Tab>
 </Tabs>
 
-<p>The API returns 204 with an empty body on success. Attempting to delete a domain that is not in Disabled status returns 422.</p>
+<p>The API returns `204` with an empty body on success. Attempting to delete a domain that is not in Disabled status returns `422`.</p>
 
 </MethodSection>
 </MethodSwitch>
