@@ -1,7 +1,7 @@
 ---
 title: "Manage domains protected with WAAP"
 sidebarTitle: Manage domains protected with WAAP
-ai-navigation: Manage WAAP-protected domains by checking status, disabling and re-enabling protection from the WAAP Domains page, and deleting inactive domains via Customer Portal or REST API.
+ai-navigation: Manage WAAP-protected domains by checking status, disabling and re-enabling protection from the WAAP Domains page, and deleting Disabled domains via Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,25 +9,25 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>After [adding a domain to WAAP protection](/waap/getting-started/configure-waap-for-a-domain), it appears on the **Domains** page in the [Gcore Customer Portal](https://portal.gcore.com/). This page displays all domains and their statuses, provides access to CDN settings, and allows deletion of inactive domains.</p>
+<p>After [adding a domain to WAAP protection](/waap/getting-started/configure-waap-for-a-domain), it appears on the **Domains** page in the [Gcore Customer Portal](https://portal.gcore.com/). This page displays all domains and their statuses, provides access to CDN settings, and allows deletion of Disabled domains.</p>
 
 <Frame>![Domains page in the Customer Portal](/images/docs/waap/getting-started/configure-waap-for-a-domain/waap-domains.png)</Frame>
 
 <p>A domain in WAAP can have the following statuses: </p>
 
-  * **Monitoring**: WAAP monitors all traffic to the domain but doesn't enforce any actions on requests. 
+  * **Monitoring**: WAAP monitors all traffic to the domain but does not enforce any actions on requests.
 
-  * **Protection**: WAAP enforces all configured security settings for the domain. 
+  * **Protection**: WAAP enforces all configured security settings for the domain.
 
-  * **Disabled**: The domain isn't protected because WAAP is disabled. You can always [enable WAAP](/waap/getting-started/configure-waap-for-a-domain) for inactive domains from the WAAP Domains page. Note that inactive domains are still billable.
+  * **Disabled**: The domain is not protected because WAAP is disabled. You can always [enable WAAP](/waap/getting-started/configure-waap-for-a-domain) for Disabled domains from the WAAP Domains page. Note that Disabled domains are billed for the current billing month.
 
 
-## Disable WAAP protection for a domain
+## WAAP protection disabling
 
 <Info>
 **Info**
 
-Inactive domains still incur charges as we retain all configured settings and data. If you want to discontinue billing for WAAP protection, delete a domain.
+A Disabled domain is counted for the current billing month. Starting from the next billing month, it no longer appears in usage metrics. To avoid being billed for a domain in a given month, disable it before that billing month begins.
 </Info>
 
 <p>To disable WAAP protection for a domain:</p>
@@ -40,7 +40,7 @@ Inactive domains still incur charges as we retain all configured settings and da
 
 Deactivating a domain can take up to 20 minutes as this ensures that all changes are consistently applied across our system.
 
-<p>After you deactivate WAAP protection for your domain, all traffic from the CDN will go directly to the origin with no security checks. The domain status on the Domains page in WAAP will change to **inactive**. All WAAP settings and configured rules will remain intact and can be modified. However, it'll take no effect while WAAP is disabled.</p>
+<p>After you disable WAAP protection for a domain, requests continue through the CDN and its cache but bypass WAAP inspection. The domain status on the Domains page in WAAP changes to **Disabled**. All WAAP settings and configured rules remain intact and can be modified. The settings do not take effect while WAAP is disabled.</p>
 
 <p>To activate WAAP protection again, navigate to **WAAP** > **Domains**, click the mode dropdown next to the domain, and select **Monitoring** or **Protection**.</p>
 
@@ -50,32 +50,38 @@ Deactivating a domain can take up to 20 minutes as this ensures that all changes
 If you disable WAAP protection for a CDN resource and later re-enable it, WAAP mode will be set to **Monitoring**. If you had **Protection** mode before deactivating a domain, you need to enable it again.
 </Warning>
 
-## Delete a domain from WAAP
+## Domain removal from WAAP
 
-<p>You can't delete a domain that has enabled WAAP protection. To delete the domain, disable WAAP from the **WAAP domain mode** dropdown first. The **WAAP domain mode** should change to **Disabled**.</p>
+<Warning>
+**Warning**
 
-<p>To delete an inactive domain:</p>
+Deleting a domain permanently removes it from WAAP, including all configured rules, firewall settings, and other WAAP settings. This action cannot be undone.
+</Warning>
+
+<p>A domain cannot be deleted while WAAP protection is enabled. To delete the domain, disable WAAP from the **WAAP domain mode** dropdown first. The domain status must change to **Disabled**.</p>
+
+<p>To delete a Disabled domain:</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Domains**.
-2. Click the three-dot icon next to the domain that you want to remove. 
-3. Select **Delete**. 
-4. Confirm your action by clicking **Delete**. 
+2. Click the three-dot icon next to the domain that you want to remove.
+3. Select **Delete**.
+4. Confirm your action by clicking **Delete**.
 
-<p>You've successfully removed your domain from WAAP.</p>
+<p>The domain has been successfully removed from WAAP.</p>
 
-## Suspend a CDN resource with WAAP protection
+## CDN resource suspension
 
-<p>If you suspend a CDN resource with enabled WAAP, the status of your WAAP-protected domain will change to **Disabled**. All web requests will go directly to the origin, bypassing both CDN and WAAP.</p>
+<p>If you suspend a CDN resource with enabled WAAP, the domain status changes to **Disabled**. The CDN resource is no longer serving traffic, so content is unavailable to customers.</p>
 
 <Info>
 **Info**
 
-Inactive domains still incur charges as we retain all configured settings and data. If you want to discontinue billing for WAAP protection, delete a domain.
+A Disabled domain is counted for the current billing month. Starting from the next billing month, it no longer appears in usage metrics. To avoid being billed for a domain in a given month, disable it before that billing month begins.
 </Info>
 
 <p>A [suspended resource](/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually) is automatically deleted after 90 days. During this period, WAAP settings remain intact, and you can reactivate both CDN and WAAP.</p>
 
-## Delete a CDN resource with WAAP protection
+## CDN resource deletion
 
 <p>If you delete a CDN resource that has enabled WAAP protection, your domain and all relevant settings will be automatically removed from WAAP.</p>
 
@@ -84,7 +90,7 @@ Inactive domains still incur charges as we retain all configured settings and da
   </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>The [Domains](/api-reference/waap#domains) endpoints cover checking a domain's protection status and deleting an inactive domain. Switching between Monitoring and Protection modes is covered in the [domain setup guide](/waap/getting-started/configure-waap-for-a-domain). Response examples include only the fields used in each step.</p>
+<p>The [Domains](/api-reference/waap#domains) endpoints cover checking a domain's protection status and deleting a Disabled domain. Switching between Monitoring and Protection modes is covered in the [domain setup guide](/waap/getting-started/configure-waap-for-a-domain). Response examples include only the fields used in each step.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required. Use <code>GET /waap/v1/domains</code> to retrieve the domain ID.
@@ -156,7 +162,6 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
       "id": 12345,
       "name": "example.com",
       "status": "monitor"
-      // ...
     }
     ```
   </Tab>
@@ -166,7 +171,11 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Delete a domain
 
-<p>Remove a domain from WAAP permanently, including all configured rules, firewall rules, and custom settings. This action cannot be undone.</p>
+<Warning>
+**Warning**
+
+Deleting a domain permanently removes it from WAAP, including all configured rules, firewall settings, and other WAAP settings. This action cannot be undone.
+</Warning>
 
 <Warning>
 The domain must have Disabled status before deletion. To disable a domain, select **Disabled** from the mode dropdown on the **WAAP** > **Domains** page. The WAAP API only supports switching between `active` and `monitor` and cannot set the Disabled state.
