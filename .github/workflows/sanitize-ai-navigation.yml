@@ -45,7 +45,15 @@ jobs:
                   continue
 
               def fix(m):
-                  return "ai-navigation: " + re.sub(r"[:#]", " -", m.group(1))
+                  val = m.group(1)
+                  # Em dash and en dash with surrounding spaces -> comma or hyphen
+                  val = re.sub(r"\s*\u2014\s*", ", ", val)   # em dash -> ", "
+                  val = re.sub(r"\s*\u2013\s*", " - ", val)  # en dash -> " - "
+                  # Remove remaining forbidden characters
+                  val = re.sub(r"[:#/{}]", " ", val)
+                  # Collapse multiple spaces
+                  val = re.sub(r" {2,}", " ", val).strip()
+                  return "ai-navigation: " + val
 
               new = re.sub(r"^ai-navigation: (.+)$", fix, text, flags=re.MULTILINE)
               if new != text:
