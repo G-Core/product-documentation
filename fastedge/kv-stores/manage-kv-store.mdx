@@ -99,53 +99,7 @@ Additional pairs can be inserted from the edit view. Submitting a key that alrea
   ![Pairs selected with checkboxes and Group actions menu open](/images/docs/fastedge/kv-stores/manage-kv-store/bulk-delete.png)
 </Frame>
 
-## BYOD: Bring Your Own Database
-
-<p>BYOD connects a FastEdge store to an external key-value database instead of Gcore's hosted storage. Applications access a BYOD store through the same [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/kv/open/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/key_value/struct.Store.html) as a regular store — no code changes required.</p>
-
-<p>Any store implementing the Redis protocol is supported: Redis, [Apache Kvrocks](https://kvrocks.apache.org/), and other Redis-compatible key-value stores.</p>
-
-<p>The external store must be publicly accessible. Gcore's edge nodes connect to it over the network on each request.</p>
-
-## Hosted Edge Storage vs BYOD
-
-<p>With hosted Edge Storage, data lives at every edge location globally and reads are served locally — latency is typically in the single-digit milliseconds. With BYOD, each read is a live query to the external database, so response time depends on the network distance between the edge location and the database host.</p>
-
-<p>BYOD is a practical choice for development, testing, or workloads where read speed is not critical. For latency-sensitive production workloads, hosted Edge Storage is recommended.</p>
-
-<p>Supported URL schemes:</p>
-
-- `redis://` — standard Redis protocol
-- `rediss://` — Redis protocol over TLS
-
-<p>URL format: `redis://:password@host:port/db-index` or `redis://username:password@host:port/db-index`</p>
-
-## Create a BYOD store
-
-<p>Follow steps 1–3 from [Create a store](#create-a-store), then:</p>
-
-4. Select the **BYOD: Bring Your Own Database** checkbox. Two additional fields appear:
-
-   - **URL** — the connection URL for the Redis-compatible store. For example: `redis://:mypassword@redis.example.com:6379/0`
-   - **Prefix** — a string prepended to every key when FastEdge reads or writes the store. For example, with prefix `app:prod:`, a read for key `greeting` retrieves `app:prod:greeting` from the external database. Use a prefix to namespace application data within a shared instance. Leave blank if no namespacing is needed.
-
-<Frame>
-  ![Add Edge Storage form with BYOD checkbox selected, URL and Prefix fields filled in](/images/docs/fastedge/kv-stores/manage-kv-store/byod-create-storage-form.png)
-</Frame>
-
-5. Click **Create Edge Storage** to validate the connection and create the store.
-
-<Info>
-Gcore validates the connection to the external store when clicking **Create Edge Storage**. If the connection cannot be established — for example, because the host is unreachable, the port is blocked, or the credentials are wrong — the store is not created and an error message is displayed. Verify that the store is publicly accessible and the URL is correct, then try again.
-</Info>
-
-<Warning>
-A store cannot be converted between BYOD and hosted storage after creation. The store type is permanent.
-</Warning>
-
-## Link a BYOD store to an application
-
-<p>After creation, link the BYOD store to a FastEdge application using the same process as a regular store — instructions are in [Managing applications](/fastedge/manage-apps#edge-storage). Once linked, the application accesses the BYOD store through the standard SDK API. The prefix is applied transparently and the application code does not need to know whether the store is BYOD or hosted.</p>
+<p>To connect a store to an external Redis-compatible database instead of Gcore's hosted storage, use [BYOD — Bring Your Own Database](/fastedge/kv-stores/byod).</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -231,22 +185,7 @@ export STORE_ID="{YOUR_STORE_ID}"
   </Tab>
 </Tabs>
 
-<p>To create a BYOD store backed by an external Redis-compatible database, add the `byod` object with the connection URL and an optional key prefix:</p>
-
-```bash
-curl -X POST "https://api.gcore.com/fastedge/v1/kv" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "my-byod-store",
-    "byod": {
-      "url": "redis://:mypassword@redis.example.com:6379/0",
-      "prefix": "app:prod:"
-    }
-  }'
-```
-
-<p>Gcore validates the connection at creation time and returns an error if the external store is unreachable. The store type cannot be changed after creation.</p>
+<p>To create a store backed by an external Redis-compatible database, use [BYOD — Bring Your Own Database](/fastedge/kv-stores/byod).</p>
 
 ## Insert or update key-value pairs
 
