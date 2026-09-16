@@ -1,7 +1,7 @@
 ---
 title: Manage a Bare Metal server
 sidebarTitle: Manage a server
-ai-navigation: Manage Gcore Bare Metal servers via Customer Portal or REST API - power control, console access, network interfaces, tags, rebuild, rename, and delete.
+ai-navigation: Manage Gcore Bare Metal servers via Customer Portal, REST API, or Terraform - power control, console access, network interfaces, tags, rebuild, rename, and delete.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -729,11 +729,15 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 </MethodSection>
   <MethodSection id="terraform" label="Terraform">
 
-<p>Manage existing [`gcore_cloud_baremetal_server`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_baremetal_server) resources declared in Terraform state — update name and tags, delete, or import servers provisioned outside Terraform.</p>
+<p>Manage existing [`gcore_cloud_baremetal_server`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_baremetal_server) resources declared in Terraform state — update name and tags, rebuild with a new OS image, delete, or import servers provisioned outside Terraform.</p>
 
 ## Update name and tags
 
 <p>Modify the `name` or `tags` attribute in the resource block and run `terraform apply`. No server restart is required — Terraform sends a `PATCH` request and updates the state.</p>
+
+<Warning>
+`image_id` and `user_data` appear in the resource block but are not safe in-place updates. Changing either attribute triggers a full OS reinstall and wipes all data on local NVMe drives. See [Rebuild the server](#rebuild-the-server) below.
+</Warning>
 
 ```hcl
 resource "gcore_cloud_baremetal_server" "example" {
@@ -747,6 +751,35 @@ resource "gcore_cloud_baremetal_server" "example" {
     env  = "production"
     team = "platform"
   }
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+```
+
+```bash
+terraform apply
+```
+
+## Rebuild the server
+
+<p>Change `image_id` to reinstall the OS, or change `user_data` to apply a new cloud-init script on the next boot cycle. Both trigger a full server rebuild.</p>
+
+<Warning>
+Rebuilding wipes all data on local NVMe drives. Back up any data before applying.
+
+Terraform shows this as `1 to change, 0 to destroy` — the plan does not indicate data loss. Verify the diff carefully before running `terraform apply`.
+</Warning>
+
+```hcl
+resource "gcore_cloud_baremetal_server" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  flavor     = var.flavor_id
+  name       = "my-bare-metal"
+  image_id   = var.new_image_id  # changed — triggers OS reinstall and disk wipe
 
   interfaces = [{
     type      = "external"
