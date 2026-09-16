@@ -592,7 +592,13 @@ For each screenshot in the article:
      cmd /c "dir /b C:\Projects\product-documentation_2\images\docs\{product}\{slug}"
      ```
 
-5. Update the `<Frame>` in the article to reference the new filename.
+5. Update the `<Frame>` in the article using the correct format:
+   ```mdx
+   <Frame>
+     <img src="/images/docs/{product}/{slug}/filename.png" alt="Alt text" width="70%" />
+   </Frame>
+   ```
+   Never use the markdown `![alt](src)` shorthand inside `<Frame>` — always use `<img>` with explicit `width="70%"`.
 6. Update the alt text if the UI shown has changed.
 7. Delete the old file:
    ```powershell
@@ -781,7 +787,13 @@ Apply all confirmed findings to the article. For each fix:
 - Check whether the step introducing navigation needs rewording.
 
 **Screenshot replaced:**
-- Replace the `<Frame>` path with the new filename.
+- Replace the `<Frame>` content with the new filename using the correct format:
+  ```mdx
+  <Frame>
+    <img src="/images/docs/{product}/{slug}/filename.png" alt="Alt text" width="70%" />
+  </Frame>
+  ```
+  Never use the markdown `![alt](src)` shorthand inside `<Frame>` — always use `<img>` with explicit `width="70%"`.
 - Update the alt text to describe what the new screenshot shows.
 - Delete the old file with `git rm`.
 
