@@ -468,6 +468,17 @@ Gotchas:
 
 When the user confirms — load `.agents/skills/pr/SKILL.md` to commit and open a draft PR.
 
+**Branch naming — mandatory:**
+
+The branch name must be the Jira ticket number, exactly: `DOC-XXXX`
+
+```bash
+git checkout -b DOC-2148   # correct
+git checkout -b fix/bm-rebuild-warning   # WRONG — never use descriptive names
+```
+
+No prefixes, no slugs, no descriptions. Just the ticket number.
+
 
 ---
 
