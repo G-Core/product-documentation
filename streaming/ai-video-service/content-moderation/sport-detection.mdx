@@ -9,10 +9,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The sport detection task identifies various sporting activities in a video — specific types, actions, events, and moments — and reports a confidence score for each detection. Only objects detected with at least 30% confidence are included in the result.</p>
+<p>The sport detection task identifies various sporting activities in a video. This includes detecting specific types, actions, events, and moments.</p>
+
+<p>The result includes the identified activity, the frame number where it appears, and the confidence level of each detection. The [API&nbsp;documentation](/api-reference/streaming/ai/create-ai-task) lists all supported activity categories.</p>
 
 <Tip>
-For accurate analysis, use a video that is at least 10–15 seconds long.
+Use a video that is at least 10–15 seconds long for best results.
 </Tip>
 
 <Steps>
@@ -33,7 +35,7 @@ For accurate analysis, use a video that is at least 10–15 seconds long.
   <Step title="Review the result">
     Wait until the task has the **Success** status, then click the task ID to open task details. Check the **Parsed result** field:
     * **Sport detection: not found** — the video contains no sport activities.
-    * If sport activities are detected, the result lists each detected activity, the frame where it appears, and the confidence level as a percentage.
+    * If sport activities are detected, the result lists each detected activity, the frame where it appears, and the confidence level as a percentage. Only detections with at least 30% confidence are included.
     <Frame><img src="/images/docs/streaming/ai-video-service/content-moderation/sport-detection/sport-detection.png" width="70%" alt="Sport detection task details with parsed result" /></Frame>
   </Step>
 </Steps>
@@ -119,7 +121,7 @@ curl -X POST "https://api.gcore.com/streaming/ai/tasks" \
   </Tab>
 </Tabs>
 
-<p>The poll and cancel examples below read `task_id` from the `TASK_ID` environment variable. Set it from the ID returned above:</p>
+<p>Set the returned ID as `TASK_ID` for the following examples:</p>
 
 ```bash
 export TASK_ID="<task_id>"
@@ -127,7 +129,7 @@ export TASK_ID="<task_id>"
 
 ## Poll for detection result
 
-<p>Use `GET /streaming/ai/tasks/{task_id}` to check task status. Poll until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
+<p>Send `GET /streaming/ai/tasks/{task_id}` repeatedly until `status` is `"SUCCESS"` or `"FAILURE"`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -221,11 +223,13 @@ curl "https://api.gcore.com/streaming/ai/tasks/$TASK_ID" \
 <p>When `status` is `SUCCESS`, check `result.sport_detected`:</p>
 
 - `false` — no sport activities found in the video.
-- `true` — sport activity detected. The `detection_results` array lists the detected activity categories. The `frames` array lists each flagged frame with `frame_number`, `label` (e.g. `"playing tennis"`), and `confidence` (decimal 0.0–1.0, where `0.72` means 72% confidence). Only objects detected with at least 30% confidence are included.
+- `true` — sport activity detected.
+
+`detection_results` lists the detected activity categories. `frames` lists each flagged frame with `frame_number`, `label` (e.g. `"playing tennis"`), and `confidence` (decimal 0.0–1.0, where `0.72` means 72%). Only detections with at least 30% confidence are included.
 
 ## Cancel a running task
 
-<p>To cancel a task before it completes, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
+<p>To cancel a task that is still running, send `POST /streaming/ai/tasks/{task_id}/cancel`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
