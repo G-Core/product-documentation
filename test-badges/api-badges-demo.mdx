@@ -1,113 +1,117 @@
 ---
-title: "API badges: Mintlify alternatives to x-badges"
-sidebarTitle: "API badges demo"
-description: "Visual reference for available badge and label options in Mintlify — as an alternative to Redocly x-badges extension."
+title: "Create a network-optimised load balancer"
+description: "Creates an lb2 network-optimised load balancer with guaranteed bandwidth via QoS policies."
 ---
 
-Redocly's `x-badges` extension is not supported by Mintlify. The options below cover what Mintlify provides for the same use cases.
+<Info>
+This is a demo page showing how **x-mint parameter pills** would look on a real API reference page. The endpoint is not live.
+</Info>
 
-## Option 1 — Badge component (MDX pages)
-
-Use the `<Badge>` component inline in MDX content. Works on any documentation page, not inside generated API reference.
-
-**Status labels:**
-
-<Badge color="blue">Beta</Badge> <Badge color="green">Stable</Badge> <Badge color="orange">Preview</Badge> <Badge color="red">Deprecated</Badge> <Badge color="purple">Enterprise</Badge> <Badge color="gray">Internal</Badge>
-
-**Shaped variants:**
-
-<Badge color="blue" shape="pill">Beta</Badge> <Badge color="green" shape="rounded">Stable</Badge> <Badge color="orange" shape="rounded">Preview</Badge>
-
-**With outline:**
-
-<Badge color="blue" stroke>Beta</Badge> <Badge color="red" stroke>Deprecated</Badge> <Badge color="purple" stroke>Enterprise</Badge>
-
-**Inline in text:**
-
-The <Badge color="orange">Preview</Badge> endpoint accepts optional fields. The <Badge color="red">Deprecated</Badge> response format will be removed in the next major version.
+`POST /cloud/v1/lbaas/{project_id}/{region_id}/loadbalancers`
 
 ---
 
-## Option 2 — x-mint parameter pills (OpenAPI spec)
+## Path parameters
 
-Parameter-level annotations added directly to the OpenAPI YAML. Renders as pills next to parameter names in the API reference and playground — similar to built-in `required` and `read-only` pills.
+<ParamField path="project_id" type="integer" required>
+  Numeric project identifier.
+</ParamField>
 
-**YAML configuration:**
+<ParamField path="region_id" type="integer" required>
+  Numeric region identifier.
+</ParamField>
 
-```yaml
-paths:
-  /load-balancers:
-    post:
-      parameters:
-        - name: flavor
-          in: body
-          schema:
-            type: string
-            x-mint:
-              pre: ["BETA"]
-              post: ["lb2 only"]
-        - name: region_id
-          in: body
-          schema:
-            type: string
-            x-mint:
-              pre: ["REQUIRED"]
+---
+
+## Body parameters
+
+<ParamField body="name" type="string" required>
+  Display name for the load balancer.
+</ParamField>
+
+<ParamField body="flavor" type="string" required>
+  Load balancer flavor. <Badge color="blue">BETA</Badge>
+
+  lb2 flavors: `lb2-2-2` (1.5 Gbps), `lb2-4-4` (5 Gbps), `lb2-8-8` (10 Gbps), `lb2-16-16` (10 Gbps).
+
+  Standard lb1 flavors: `lb1-1-2`, `lb1-2-4`, `lb1-4-8`, `lb1-8-16`.
+</ParamField>
+
+<ParamField body="bandwidth_gbps" type="integer">
+  Guaranteed network bandwidth in Gbps. <Badge color="blue">BETA</Badge> <Badge color="gray">lb2 only</Badge>
+
+  Applies only to lb2 flavors. Configured via QoS policy. Allowed values: `1`, `5`, `10`.
+</ParamField>
+
+<ParamField body="vip_network_id" type="string">
+  UUID of the network to attach the virtual IP address to.
+</ParamField>
+
+<ParamField body="vip_subnet_id" type="string">
+  UUID of the subnet to attach the virtual IP address to.
+</ParamField>
+
+<ParamField body="listeners" type="array">
+  List of listener configurations to create together with the load balancer.
+
+  <Expandable title="listener object">
+    <ParamField body="name" type="string" required>
+      Display name for the listener.
+    </ParamField>
+    <ParamField body="protocol" type="string" required>
+      Protocol the listener accepts. One of: `HTTP`, `HTTPS`, `TERMINATED_HTTPS`, `TCP`, `UDP`, `Prometheus`.
+    </ParamField>
+    <ParamField body="protocol_port" type="integer" required>
+      TCP or UDP port the listener binds to.
+    </ParamField>
+    <ParamField body="connection_limit" type="integer">
+      Maximum simultaneous connections. `-1` means unlimited.
+    </ParamField>
+    <ParamField body="timeout_client_data" type="integer">
+      Idle timeout (ms) for client connections. <Badge color="orange">recommended for SSE / WebSockets</Badge>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+---
+
+## Request example
+
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/lbaas/1186668/76/loadbalancers" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-lb2",
+    "flavor": "lb2-4-4",
+    "bandwidth_gbps": 5,
+    "vip_subnet_id": "b0e329a5-3c52-4e58-a000-abcdef123456"
+  }'
 ```
 
-Pills defined with `x-mint.pre` appear **before** the parameter name; `x-mint.post` appear **after** it.
-
 ---
 
-## Option 3 — Global pills via docs.json
+## Response
 
-Apply a custom field as a pill across every parameter in the API reference without editing each schema. Configure once in `docs.json`:
+<ResponseField name="load_balancer_id" type="string (uuid)">
+  UUID of the created load balancer.
+</ResponseField>
+
+<ResponseField name="tasks" type="array">
+  List of async task IDs. Use `GET /tasks/{task_id}` to poll for completion.
+</ResponseField>
 
 ```json
 {
-  "api": {
-    "params": {
-      "post": ["x-beta", "x-internal"]
-    }
-  }
+  "load_balancer_id": "a3c4d5e6-1234-5678-abcd-ef0123456789",
+  "tasks": ["b1c2d3e4-5678-9012-abcd-ef0123456789"]
 }
 ```
 
-Then in the OpenAPI YAML, mark individual parameters:
-
-```yaml
-properties:
-  region_id:
-    type: string
-    x-beta: true
-  flavor:
-    type: string
-    x-internal: admin
-```
-
-Mintlify reads the value and renders it as a pill: `true` or `admin` appear next to the parameter name automatically.
-
 ---
 
-## Option 4 — deprecated: true (OpenAPI spec)
+## Deprecated endpoint
 
-Native OpenAPI field. Mintlify renders a visual "Deprecated" indicator on the operation automatically — no extension needed.
-
-```yaml
-paths:
-  /v1/load-balancers:
-    get:
-      deprecated: true
-      summary: List load balancers (deprecated)
-```
-
----
-
-## Summary
-
-| Need | Mintlify option |
-|---|---|
-| Badge on a docs page (Beta, Enterprise, etc.) | `<Badge>` MDX component |
-| Label on a specific parameter in API reference | `x-mint.pre` / `x-mint.post` in OpenAPI YAML |
-| Label on all parameters with a given field | `api.params.post` in `docs.json` |
-| Mark an entire endpoint as deprecated | `deprecated: true` in OpenAPI YAML |
-| Badge on an entire operation (like Redocly x-badges) | **Not supported natively** — use MDX page with `<Badge>` |
+<Warning>
+`GET /cloud/v1/lbaas/{project_id}/{region_id}/loadbalancers/list` is deprecated. Use `GET /cloud/v1/lbaas/{project_id}/{region_id}/loadbalancers` instead.
+</Warning>
