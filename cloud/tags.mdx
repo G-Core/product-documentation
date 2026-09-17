@@ -1,7 +1,7 @@
 ---
 title: Tags
 sidebarTitle: Tags
-ai-navigation: Create and manage key-value pair tags on Cloud resources via Customer Portal, REST API with Python and Go SDKs, or Terraform; filter resources by tag key and value using tags[key]=value (supports OR logic for repeated keys) or tag_key_value JSON object; tag values match case-insensitively; enforce tag format rules.
+ai-navigation: Create and manage key-value pair tags on Cloud resources via Customer Portal, REST API with Python and Go SDKs, or Terraform; filter resources by tag key and value; enforce tag format rules.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -285,42 +285,16 @@ System tags (e.g. `image_id`, `os_type`, `os_version`) have `"read_only": true` 
 
 ## Filter resources by tag
 
-<p>Use query parameters to list only resources that match specific tag keys or values. Two filter styles are available.</p>
+<p>Use query parameters to list only resources that match specific tag keys or values.</p>
 
-### tags[key]=value
+| Parameter | Format | Example |
+|-----------|--------|---------|
+| `tags[key]` | repeated per value; tag values match case-insensitively; repeat the same key for OR logic | `?tags[env]=production&tags[env]=staging` |
+| `tag_key_value` | JSON object | `{"env":"production"}` |
+| `tag_key` | plain string | `env` |
+| `tag_value` | plain string | `production` |
 
-<p>Pass tag key-value pairs directly as query parameters. Tag values match case-insensitively.</p>
-
-| Behavior | How to express it | Example |
-|----------|-------------------|---------|
-| Match one value | `tags[key]=value` | `?tags[env]=production` |
-| Match any of several values (OR) | Repeat the same key | `?tags[env]=production&tags[env]=staging` |
-| Match all of several keys (AND) | Use different keys | `?tags[env]=production&tags[team]=backend` |
-
-<Note>
-Up to 20 values per key are accepted. Requests with more than 20 values for the same key return HTTP 400.
-</Note>
-
-```bash
-# Single value: instances where env=production
-# URL-decoded: ?tags[env]=production
-curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tags%5Benv%5D=production" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}"
-
-# OR: instances where env=production OR env=staging
-# URL-decoded: ?tags[env]=production&tags[env]=staging
-curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tags%5Benv%5D=production&tags%5Benv%5D=staging" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}"
-
-# AND: instances with env=production AND team=backend
-# URL-decoded: ?tags[env]=production&tags[team]=backend
-curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tags%5Benv%5D=production&tags%5Bteam%5D=backend" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}"
-```
-
-### tag_key_value (JSON object)
-
-<p>The `tag_key_value` parameter accepts a JSON-encoded object and applies AND logic across all specified pairs. To filter by a single tag:</p>
+<p>The `tag_key_value` parameter accepts a JSON-encoded object. To filter by a single tag:</p>
 
 ```bash
 curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%7D" \
