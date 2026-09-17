@@ -204,11 +204,9 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Find available detector targets
 
-<p>When `target_type` is `detector`, retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's ID and name, which are the values to pass in `target_ids` when creating an override.</p>
+<p>When `target_type` is `detector`, retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's `id` and `name`, which are the values to pass in `target_ids` when creating an override.</p>
 
-<Info>
-When `target_type` is `rule`, obtain rule IDs from the [Policies](/api-reference/waap#policies) endpoint (`GET /waap/v2/domains/{domain_id}/policies`). Pass the returned rule IDs in `target_ids`.
-</Info>
+<p>Each result also includes an optional `policy` object. When `target_type` is `rule`, pass the numeric `policy.id` value in `target_ids` instead. This targets the entire parent rule rather than an individual detector.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -258,7 +256,7 @@ When `target_type` is `rule`, obtain rule IDs from the [Policies](/api-reference
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/default-rule-overrides/target-options" \
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policy-override-targets/owasp-top-threats" \
       -H "Authorization: apikey ${GCORE_API_KEY}"
     ```
   </Tab>
@@ -286,7 +284,7 @@ When `target_type` is `rule`, obtain rule IDs from the [Policies](/api-reference
 |----------------|----------|-----------------|-------|
 | IP address | `ip` | `ip_address` | Single IPv4 or IPv6 address |
 | IP range | `ip_range` | `lower_bound`, `upper_bound` | Both bounds are IPv4 or IPv6 |
-| Country | `country` | `country_code` | Array of ISO 3166-1 alpha-2 codes, up to 100 entries |
+| Country | `country` | `country_code` | One ISO 3166-1 alpha-2 code per condition, such as `"CN"` |
 | Organization | `organization` | `organization` | Organization name from WHOIS |
 | Header | `header` | `header`, `value`, `match_type` | `match_type`: `Exact` or `Contains` (default) |
 | Header exists | `header_exists` | `header` | Matches when the named header is present |
@@ -414,7 +412,7 @@ When `target_type` is `rule`, obtain rule IDs from the [Policies](/api-reference
 
 ## Update a policy override
 
-<p>Update a policy override using a partial request — only the fields included in the request body are changed. Use this to rename an override, swap its target detector, add or remove conditions, or enable or disable it without deleting it.</p>
+<p>Update a policy override using a partial request — only the fields included in the request body are changed. Use this to rename an override, swap its target detector or rule, add or remove conditions, or enable or disable it without deleting it.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -493,7 +491,7 @@ When `target_type` is `rule`, obtain rule IDs from the [Policies](/api-reference
 
 ## Delete a policy override
 
-<p>Remove a policy override permanently. The linked detector continues to apply to all traffic after deletion.</p>
+<p>Remove a policy override permanently. The linked detector or rule continues to apply to all traffic after deletion.</p>
 
 <Tabs>
   <Tab title="Python SDK">
