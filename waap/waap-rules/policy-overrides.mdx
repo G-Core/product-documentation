@@ -89,7 +89,7 @@ Policy overrides created by Gcore Support on behalf of a customer are displayed 
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>The [Policy Overrides](/api-reference/waap/policy-overrides/retrieve-policy-overrides) endpoints create, retrieve, update, and delete domain-level suppressions for WAAP default rule detectors.</p>
+<p>The [Policy Overrides](/api-reference/waap/policy-overrides/retrieve-policy-overrides) endpoints create, retrieve, update, and delete domain-level suppressions for WAAP default rule detectors or rules.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). Install the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK to run the SDK examples.
@@ -202,7 +202,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
   </Tab>
 </Tabs>
 
-## Find available detector targets
+## Available override targets
 
 <p>When `target_type` is `detector`, retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's `id` and `name`, which are the values to pass in `target_ids` when creating an override.</p>
 
@@ -219,7 +219,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
     targets = client.waap.domains.default_rule_overrides.list_owasp_targets(domain_id)
     for t in targets:
-        print(f"{t.id}: {t.name}")
+        policy_info = f"  (rule target: policy.id={t.policy.id})" if t.policy else ""
+        print(f"detector id={t.id}: {t.name}{policy_info}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -249,7 +250,11 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             panic(err.Error())
         }
         for _, t := range targets.Results {
-            fmt.Printf("%d: %s\n", t.ID, t.Name)
+            policyInfo := ""
+            if t.Policy != nil {
+                policyInfo = fmt.Sprintf("  (rule target: policy.id=%d)", t.Policy.ID)
+            }
+            fmt.Printf("detector id=%d: %s%s\n", t.ID, t.Name, policyInfo)
         }
     }
     ```
@@ -272,7 +277,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 |-------|----------|-------------|
 | `name` | Yes | Display name, up to 100 characters |
 | `target_type` | Yes | `detector` or `rule` — whether `target_ids` refers to detector IDs or rule IDs |
-| `target_ids` | Yes | Array of detector or rule IDs to suppress. Use [Find available detector targets](#find-available-detector-targets) to retrieve valid IDs |
+| `target_ids` | Yes | Array of detector or rule IDs to suppress. Use [Available override targets](#available-override-targets) to retrieve valid IDs |
 | `enabled` | Yes | `true` to activate the override immediately; `false` to create it disabled |
 | `description` | No | Explanatory note, up to 1,000 characters |
 | `conditions` | No | Up to five conditions; all must match. Omit to suppress the target on all traffic for the domain |
