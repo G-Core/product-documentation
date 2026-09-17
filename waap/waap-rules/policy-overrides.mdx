@@ -63,10 +63,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Effect of a policy override
 
-<p>When a policy override matches a request, the request is not blocked and is not counted as an attack. The underlying default rule detector remains active and continues to block all traffic outside the override scope.</p>
+<p>When a policy override matches a request, the request is not blocked and is not counted as an attack. The effect on the underlying default rule depends on the action selected when the override was created:</p>
+
+- **Ignore detector**: Only the specific detector is suppressed for matching traffic. Other detectors in the same rule remain active and continue to evaluate requests within the override scope.
+- **Ignore rule**: The entire default rule is suppressed for matching traffic. Its detectors do not remain active for requests that match the override scope.
+
+<p>Outside the override scope, the underlying rule and all its detectors continue to protect all other traffic.</p>
 
 <Warning>
-If a detector linked to an override is deleted or disabled, the override becomes stale and stops suppressing traffic. A stale override has no effect until its target is updated to a valid detector.
+If the linked detector or rule is deleted, disabled, or otherwise becomes invalid, the override becomes stale and stops suppressing traffic. A stale override has no effect until its target is updated to a valid target.
 </Warning>
 
 ## Policy override management
@@ -78,7 +83,7 @@ If a detector linked to an override is deleted or disabled, the override becomes
 <p>To edit an override, click its name or use the row actions menu and select **Edit**. To disable an override without deleting it, toggle the **Status** switch. To remove an override permanently, select **Delete** from the row actions menu.</p>
 
 <Info>
-Policy overrides created by Gcore support on behalf of a customer are displayed with a user ID instead of a name. All override creation and modification actions are recorded in the audit log with the user identity, timestamp, and override scope.
+Policy overrides created by Gcore Support on behalf of a customer are displayed with a user ID instead of a name. All override creation and modification actions are recorded in the audit log with the user identity, timestamp, and override scope.
 </Info>
 
   </MethodSection>
@@ -199,7 +204,11 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Find available detector targets
 
-<p>Retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's ID and name, which are the values to pass in `target_ids` when creating an override.</p>
+<p>When `target_type` is `detector`, retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's ID and name, which are the values to pass in `target_ids` when creating an override.</p>
+
+<Info>
+When `target_type` is `rule`, obtain rule IDs from the [Default Rules](/api-reference/waap/default-rules/list-default-rules) endpoint. Pass the returned rule IDs in `target_ids`.
+</Info>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -257,7 +266,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Create a policy override
 
-<p>Create a policy override by specifying the detector to suppress, the conditions under which the suppression applies, and whether the override is immediately active.</p>
+<p>Create a policy override by specifying the target to suppress, the conditions under which the suppression applies, and whether the override is immediately active.</p>
 
 <p>The following fields are accepted in the request body:</p>
 
@@ -268,7 +277,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 | `target_ids` | Yes | Array of detector or rule IDs to suppress. Use [Find available detector targets](#find-available-detector-targets) to retrieve valid IDs |
 | `enabled` | Yes | `true` to activate the override immediately; `false` to create it disabled |
 | `description` | No | Explanatory note, up to 1,000 characters |
-| `conditions` | No | Up to five conditions; all must match. Omit to suppress the detector on all traffic for the domain |
+| `conditions` | No | Up to five conditions; all must match. Omit to suppress the target on all traffic for the domain |
+| `request_id` | No | ID of the event request that prompted this override, in the format `{32-char hex}-{6 digits}`. Associates the override with the source event for audit purposes; has no effect on override behavior |
 
 <p>Each object in the `conditions` array contains exactly one condition type. The table below lists all supported types and their required fields:</p>
 
@@ -283,8 +293,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 | User-Agent | `user_agent` | `user_agent`, `match_type` | `match_type`: `Exact` or `Contains` (default) |
 | URL | `url` | `url`, `match_type` | `match_type`: `Exact`, `Contains` (default), or `Regex` |
 | HTTP method | `http_method` | `http_method` | Request method, such as `GET` or `POST` |
-| JA3 fingerprint | `ja3` | `ja3_fingerprint` | TLS client fingerprint string |
-| JA4 fingerprint | `ja4` | `ja4_fingerprint` | Extended TLS client fingerprint string |
+| JA3 fingerprint | `ja3` | `ja3_fingerprints` | Array of up to 10 JA3 TLS client fingerprint strings |
+| JA4 fingerprint | `ja4` | `ja4_fingerprints` | Array of up to 10 JA4 TLS client fingerprint strings |
 
 <p>Every condition type supports an optional `negation` boolean (default `false`). Set `"negation": true` to invert the match — the override applies when the condition does NOT match.</p>
 
