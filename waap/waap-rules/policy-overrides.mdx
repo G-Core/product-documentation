@@ -11,78 +11,59 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Policy overrides suppress false-positive detections from WAAP default rules for a defined scope of traffic. When a legitimate request is incorrectly flagged by a detector, a policy override prevents matching requests from being blocked and excludes them from attack counts, while the underlying rule continues to protect all other traffic outside that scope.</p>
 
-<p>Overrides are created from the **Events** page and are listed under **Custom Rules** > **Policy overriding**. An account can hold up to 1,000 policy overrides across all domains.</p>
+<p>Overrides are created from the **Events** page and are listed under **WAAP** > **Custom Rules** > **Policy overriding**.</p>
 
 ## Policy override creation
 
-<p>Policy overrides can only be created from Event details and only for events triggered by WAAP default rules. To create an override:</p>
+<p>Policy overrides are created from the **Events** page. When WAAP incorrectly flags a legitimate request, you can suppress that detection for a defined traffic scope without disabling the underlying rule. You can only create overrides for events triggered by WAAP default rules.</p>
 
 <Steps>
-  <Step title="Open Event details">
-    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Events** and click an event row triggered by a default rule to open Event details.
+  <Step title="Open the Events page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Events**.
 
-    {/* TODO: screenshot — Events list with a triggered default rule event row expanded */}
+    <Frame>![WAAP Events page showing a list of SQL injection events with date, action, source, domain, request, and response columns](/images/docs/waap/waap-rules/policy-overrides/events-list.png)</Frame>
   </Step>
-  <Step title="Mark as false positive">
-    In the Event details panel, click **Mark as False Positive**.
+  <Step title="Select Mark as False Positive">
+    On the event row you want to suppress, click the gear (⚙) icon and select **Mark as False Positive**.
 
-    {/* TODO: screenshot — Event details panel with Mark as False Positive button highlighted */}
+    <Frame>![Gear icon dropdown on an event row showing options: Edit Rule, Create custom rule, Add IP to Deny list, Add IP to Allow list, Mark as False Positive](/images/docs/waap/waap-rules/policy-overrides/events-gear-dropdown.png)</Frame>
   </Step>
-  <Step title="Name the override">
-    In the **Name** field, enter a display name for the override. An optional **Description** field is available for a note explaining why the override exists.
+  <Step title="Fill in the override form">
+    The **Mark as False Positive** page opens with the **Policy Overriding** rule type pre-selected. The **Define rule** section is auto-populated with the conditions from the triggering event: the domain, source IP, country, HTTP method, URL, and user agent.
+
+    <Frame>![Mark as False Positive form showing Rule name field, Policy Overriding rule type, and auto-filled conditions including IP, Country, HTTP method, URL, User Agent, and an Ignore detector action](/images/docs/waap/waap-rules/policy-overrides/mark-as-fp-form-clean.png)</Frame>
+
+    In the **Rule name** field, enter a display name for the override. An optional **Description** field is available for notes.
   </Step>
-  <Step title="Set the domain scope">
-    Under **Domains**, select which domains the override applies to:
-
-    - **All domains** — applies the override to every WAAP-protected domain on the account.
-    - **Specific domains** — select one or more domains from a list.
-    - **All except selected** — applies to all domains except those explicitly excluded.
-
-    {/* TODO: screenshot — Domain scope selector in the policy override form */}
-  </Step>
-  <Step title="Set the endpoint scope">
-    Under **Endpoints**, define which request paths the override covers:
-
-    - **All endpoints** — suppresses the detector on every path of the selected domains.
-    - **Specific endpoint** — enter a single exact path, such as `/api/v1/users/login`.
-    - **List of endpoints** — enter multiple paths, one per line.
-    - **Endpoint pattern** — enter a glob pattern, such as `/api/v1/orders/*`, to match a range of paths.
-
-    When creating an override from Event details, the system may auto-suggest an endpoint pattern by replacing detected dynamic segments (such as order IDs or UUIDs) with `*`. Hover over any `*` in the suggestion to see the original value it replaces. Edit the pattern before saving if needed. Patterns that are too broad are rejected on save.
-
-    {/* TODO: screenshot — Endpoint scope selector showing pattern suggestion */}
-  </Step>
-  <Step title="Add conditions (optional)">
-    To narrow the override further, click **Add condition** and select a condition type. An override supports up to five conditions; all must match for the override to apply to a request.
+  <Step title="Adjust the conditions (optional)">
+    Review the auto-populated conditions. Remove any that are too specific or not relevant to the false positive. To add a condition, click **+ And** and select a condition type.
 
     | Condition | Description |
     |-----------|-------------|
-    | IP address | Single IPv4 or IPv6 address |
+    | IP | Single IPv4 or IPv6 address |
     | IP range | Addresses between a lower and upper bound |
     | Country | One or more countries identified by ISO 3166-1 alpha-2 code |
     | Organization | Originating organization, determined by a WHOIS lookup of the requesting IP |
     | Header | HTTP request header name and value |
     | Header exists | Whether a named HTTP request header is present |
-    | User-Agent | User-agent string (Exact or Contains match) |
+    | User Agent | User-agent string (Exact or Contains match) |
     | URL | Request URL path or query string (Exact, Contains, or Regex match) |
     | HTTP method | Request method, such as GET or POST |
     | JA3 fingerprint | TLS client fingerprint |
     | JA4 fingerprint | Extended TLS client fingerprint |
 
-    Each condition can be inverted by enabling the **Negate** option, which makes the override apply when the condition does NOT match.
+    <Frame>![Condition type dropdown showing all available options: IP, IP range, Country, Organization, Header, Header exists, User Agent, URL, HTTP method, JA3, JA4](/images/docs/waap/waap-rules/policy-overrides/condition-types.png)</Frame>
 
-    {/* TODO: screenshot — Add condition panel with condition type options */}
+    The **Then** action is pre-set to **Ignore detector**, which suppresses the specific detector that triggered the event. Select **Ignore rule** instead to suppress the entire default rule.
   </Step>
   <Step title="Save the override">
-    Click **Save**. The override becomes active immediately and appears in **Custom Rules** > **Policy overriding**.
+    Click **Save**. The override becomes active immediately and appears in **WAAP** > **Custom Rules** > **Policy overriding**.
   </Step>
 </Steps>
 
 ## Effect of a policy override
 
 <p>When a policy override matches a request, the request is not blocked and is not counted as an attack. The underlying default rule detector remains active and continues to block all traffic outside the override scope.</p>
-
-<p>Suppressed events are excluded from security analytics by default. They remain visible in the event log with a **Suppressed: False Positive** label for audit purposes.</p>
 
 <Warning>
 If a detector linked to an override is deleted or disabled, the override becomes stale and stops suppressing traffic. A stale override has no effect until its target is updated to a valid detector.
