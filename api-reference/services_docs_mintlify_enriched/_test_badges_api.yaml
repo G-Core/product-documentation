@@ -1,0 +1,167 @@
+openapi: 3.1.0
+info:
+  title: "Badges demo (internal test)"
+  version: "1.0.0"
+  description: >
+    Internal test spec to demonstrate Mintlify's alternatives to Redocly x-badges.
+    Shows: x-mint parameter pills, deprecated operations, and global pill via x-beta field.
+
+tags:
+  - name: Standard
+    description: Regular endpoints — no special labels
+  - name: Beta
+    description: Endpoints using x-mint.pre pill to mark BETA status
+  - name: Deprecated
+    description: Endpoints using native deprecated field
+
+paths:
+
+  /load-balancers:
+    get:
+      operationId: listLoadBalancers
+      tags: [Standard]
+      summary: List load balancers
+      description: Returns a list of all load balancers in the project. No special labels — baseline for comparison.
+      parameters:
+        - name: project_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Numeric project identifier.
+        - name: region_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Numeric region identifier.
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Maximum number of results to return.
+      responses:
+        "200":
+          description: List of load balancers.
+
+  /load-balancers/network-optimised:
+    post:
+      operationId: createNetworkOptimisedLB
+      tags: [Beta]
+      summary: Create a network-optimised load balancer
+      description: >
+        Creates an lb2 network-optimised load balancer.
+        The `flavor` parameter uses **x-mint.pre** to show a `BETA` pill before the parameter name.
+        The `bandwidth_gbps` parameter uses **x-mint.post** to show an `lb2 only` pill after the name.
+        The `qos_policy_id` parameter uses **x-mint.pre** with `REQUIRED` to override the default required pill appearance.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [project_id, region_id, flavor]
+              properties:
+                project_id:
+                  type: integer
+                  description: Numeric project identifier.
+                region_id:
+                  type: integer
+                  description: Numeric region identifier.
+                flavor:
+                  type: string
+                  description: "Load balancer flavor. lb2 flavors: lb2-2-2, lb2-4-4, lb2-8-8, lb2-16-16."
+                  example: lb2-4-4
+                  x-mint:
+                    pre: ["BETA"]
+                bandwidth_gbps:
+                  type: integer
+                  description: Guaranteed network bandwidth in Gbps. Applies to lb2 flavors only.
+                  example: 5
+                  x-mint:
+                    post: ["lb2 only"]
+                qos_policy_id:
+                  type: string
+                  format: uuid
+                  description: QoS policy UUID. Required when bandwidth_gbps is specified.
+                  x-mint:
+                    pre: ["CONDITIONAL"]
+      responses:
+        "201":
+          description: Load balancer created.
+
+  /load-balancers/{lb_id}/stats:
+    get:
+      operationId: getLoadBalancerStats
+      tags: [Beta]
+      summary: Get load balancer statistics
+      description: >
+        Returns performance statistics for a load balancer.
+        The `resolution` parameter uses **x-mint.post** to show a `preview` pill — the feature
+        is available but the response format may change.
+        Shows how multiple pills can appear on one parameter.
+      parameters:
+        - name: lb_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Load balancer UUID.
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: Start of the time range (ISO 8601).
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+          description: End of the time range (ISO 8601).
+        - name: resolution
+          in: query
+          schema:
+            type: string
+            enum: [1m, 5m, 1h]
+            default: 5m
+          description: Time series resolution.
+          x-mint:
+            post: ["preview"]
+        - name: include_lb2_metrics
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: Include lb2-specific QoS and bandwidth metrics in the response.
+          x-mint:
+            pre: ["BETA"]
+            post: ["lb2 only"]
+      responses:
+        "200":
+          description: Statistics object.
+
+  /load-balancers/v1/list:
+    get:
+      operationId: listLoadBalancersV1Deprecated
+      tags: [Deprecated]
+      deprecated: true
+      summary: List load balancers (v1)
+      description: >
+        **Deprecated.** Use `GET /load-balancers` instead.
+        This endpoint is marked with the native OpenAPI `deprecated: true` field.
+        Mintlify renders a built-in Deprecated indicator on the operation automatically — no extension needed.
+      parameters:
+        - name: project_id
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Numeric project identifier.
+      responses:
+        "200":
+          description: List of load balancers (legacy format).
