@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: c92cc541c6c1
+  version: d9b0c2c32a15
 servers:
 - url: https://api.gcore.com
 tags:
@@ -6727,9 +6727,9 @@ paths:
       - SSL certificates
       summary: Get SSL certificate usage
       description: |-
-        Get list of CDN resources that are using this SSL certificate.
+        Get list of CDN resources and aliases that are using this SSL certificate.
 
-        This endpoint is useful to check which resources depend on a certificate
+        This endpoint is useful to check which resources and aliases depend on a certificate
         before renewing, modifying, or deleting it.
       parameters:
       - in: path
@@ -6752,6 +6752,10 @@ paths:
                   status: active
                 - id: 102
                   cname: app.example.com
+                  status: active
+                aliases:
+                - id: 201
+                  cname: shop.example.com
                   status: active
         '404':
           description: Certificate not found.
@@ -10508,11 +10512,11 @@ components:
         hasRelatedResources:
           type: boolean
           description: |-
-            Defines whether the SSL certificate is used by a CDN resource.
+            Defines whether the SSL certificate is used by a CDN resource or an alias.
 
             Possible values:
-            - **true** - Certificate is used by a CDN resource.
-            - **false** - Certificate is not used by a CDN resource.
+            - **true** - Certificate is used by a CDN resource or an alias.
+            - **false** - Certificate is not used by a CDN resource or an alias.
           example: true
         name:
           type: string
@@ -13546,7 +13550,7 @@ components:
             $ref: '#/components/schemas/SLSAuthConfigResponse'
     SSLCertificateUsage:
       type: object
-      description: List of CDN resources using this SSL certificate.
+      description: List of CDN resources and aliases using this SSL certificate.
       properties:
         resources:
           type: array
@@ -13568,8 +13572,29 @@ components:
             - id
             - cname
             - status
+        aliases:
+          type: array
+          description: Aliases that have this certificate attached, including one in the process of issuance.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Alias ID.
+                example: 201
+              cname:
+                type: string
+                description: Alias hostname.
+                example: shop.example.com
+              status:
+                $ref: '#/components/schemas/AliasStatus'
+            required:
+            - id
+            - cname
+            - status
       required:
       - resources
+      - aliases
     ScaleFieldConversion:
       type: object
       additionalProperties: false
