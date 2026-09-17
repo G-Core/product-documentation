@@ -1,0 +1,113 @@
+---
+title: "API badges: Mintlify alternatives to x-badges"
+sidebarTitle: "API badges demo"
+description: "Visual reference for available badge and label options in Mintlify — as an alternative to Redocly x-badges extension."
+---
+
+Redocly's `x-badges` extension is not supported by Mintlify. The options below cover what Mintlify provides for the same use cases.
+
+## Option 1 — Badge component (MDX pages)
+
+Use the `<Badge>` component inline in MDX content. Works on any documentation page, not inside generated API reference.
+
+**Status labels:**
+
+<Badge color="blue">Beta</Badge> <Badge color="green">Stable</Badge> <Badge color="orange">Preview</Badge> <Badge color="red">Deprecated</Badge> <Badge color="purple">Enterprise</Badge> <Badge color="gray">Internal</Badge>
+
+**Shaped variants:**
+
+<Badge color="blue" shape="pill">Beta</Badge> <Badge color="green" shape="rounded">Stable</Badge> <Badge color="orange" shape="rounded">Preview</Badge>
+
+**With outline:**
+
+<Badge color="blue" stroke>Beta</Badge> <Badge color="red" stroke>Deprecated</Badge> <Badge color="purple" stroke>Enterprise</Badge>
+
+**Inline in text:**
+
+The <Badge color="orange">Preview</Badge> endpoint accepts optional fields. The <Badge color="red">Deprecated</Badge> response format will be removed in the next major version.
+
+---
+
+## Option 2 — x-mint parameter pills (OpenAPI spec)
+
+Parameter-level annotations added directly to the OpenAPI YAML. Renders as pills next to parameter names in the API reference and playground — similar to built-in `required` and `read-only` pills.
+
+**YAML configuration:**
+
+```yaml
+paths:
+  /load-balancers:
+    post:
+      parameters:
+        - name: flavor
+          in: body
+          schema:
+            type: string
+            x-mint:
+              pre: ["BETA"]
+              post: ["lb2 only"]
+        - name: region_id
+          in: body
+          schema:
+            type: string
+            x-mint:
+              pre: ["REQUIRED"]
+```
+
+Pills defined with `x-mint.pre` appear **before** the parameter name; `x-mint.post` appear **after** it.
+
+---
+
+## Option 3 — Global pills via docs.json
+
+Apply a custom field as a pill across every parameter in the API reference without editing each schema. Configure once in `docs.json`:
+
+```json
+{
+  "api": {
+    "params": {
+      "post": ["x-beta", "x-internal"]
+    }
+  }
+}
+```
+
+Then in the OpenAPI YAML, mark individual parameters:
+
+```yaml
+properties:
+  region_id:
+    type: string
+    x-beta: true
+  flavor:
+    type: string
+    x-internal: admin
+```
+
+Mintlify reads the value and renders it as a pill: `true` or `admin` appear next to the parameter name automatically.
+
+---
+
+## Option 4 — deprecated: true (OpenAPI spec)
+
+Native OpenAPI field. Mintlify renders a visual "Deprecated" indicator on the operation automatically — no extension needed.
+
+```yaml
+paths:
+  /v1/load-balancers:
+    get:
+      deprecated: true
+      summary: List load balancers (deprecated)
+```
+
+---
+
+## Summary
+
+| Need | Mintlify option |
+|---|---|
+| Badge on a docs page (Beta, Enterprise, etc.) | `<Badge>` MDX component |
+| Label on a specific parameter in API reference | `x-mint.pre` / `x-mint.post` in OpenAPI YAML |
+| Label on all parameters with a given field | `api.params.post` in `docs.json` |
+| Mark an entire endpoint as deprecated | `deprecated: true` in OpenAPI YAML |
+| Badge on an entire operation (like Redocly x-badges) | **Not supported natively** — use MDX page with `<Badge>` |
