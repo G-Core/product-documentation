@@ -3,14 +3,20 @@ info:
   title: "Badges demo (internal test)"
   version: "1.0.0"
   description: >
-    Internal test spec to demonstrate Mintlify's alternatives to Redocly x-badges.
-    Shows: x-mint parameter pills, deprecated operations, and global pill via x-beta field.
+    Internal test spec to demonstrate Mintlify labels on API endpoints and parameters.
+    Shows: x-mint.metadata.tag in the sidebar, x-mint.content Badge on the page,
+    x-mint.pre / x-mint.post parameter pills, and native deprecated operations.
 
 tags:
   - name: Standard
     description: Regular endpoints — no special labels
   - name: Beta
-    description: Endpoints using x-mint.pre pill to mark BETA status
+    description: Endpoints labeled BETA in the sidebar via x-mint.metadata.tag
+  - name: coming-soon
+    x-group: Coming soon
+    description: Endpoints labeled Coming soon in the sidebar via x-mint.metadata.tag
+  - name: New
+    description: Endpoints labeled NEW in the sidebar via x-mint.metadata.tag
   - name: Deprecated
     description: Endpoints using native deprecated field
 
@@ -52,9 +58,16 @@ paths:
       summary: Create a network-optimised load balancer
       description: >
         Creates an lb2 network-optimised load balancer.
-        The `flavor` parameter uses **x-mint.pre** to show a `BETA` pill before the parameter name.
-        The `bandwidth_gbps` parameter uses **x-mint.post** to show an `lb2 only` pill after the name.
-        The `qos_policy_id` parameter uses **x-mint.pre** with `REQUIRED` to override the default required pill appearance.
+        The operation uses **x-mint.metadata.tag** so a `BETA` label appears next to the
+        endpoint name in the sidebar. The `flavor` parameter uses **x-mint.pre** for a
+        `BETA` pill. The `bandwidth_gbps` parameter uses **x-mint.post** for an `lb2 only` pill.
+      x-mint:
+        metadata:
+          tag: "BETA"
+        content: |
+          <Info>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
+          </Info>
       requestBody:
         required: true
         content:
@@ -98,9 +111,11 @@ paths:
       summary: Get load balancer statistics
       description: >
         Returns performance statistics for a load balancer.
-        The `resolution` parameter uses **x-mint.post** to show a `preview` pill — the feature
-        is available but the response format may change.
-        Shows how multiple pills can appear on one parameter.
+        The `resolution` parameter uses **x-mint.post** to show a `preview` pill.
+        The `include_lb2_metrics` parameter combines **x-mint.pre** and **x-mint.post**.
+      x-mint:
+        metadata:
+          tag: "BETA"
       parameters:
         - name: lb_id
           in: path
@@ -144,6 +159,90 @@ paths:
       responses:
         "200":
           description: Statistics object.
+
+  /load-balancers/ai-accelerator:
+    post:
+      operationId: createAiAcceleratedLB
+      tags: [coming-soon]
+      summary: Create an AI-accelerated load balancer
+      description: >
+        Creates a load balancer with AI-assisted traffic steering.
+        The operation uses **x-mint.metadata.tag** so a `Coming soon` label appears next
+        to the endpoint name in the sidebar. The page also injects an on-page
+        **Badge** via **x-mint.content**.
+      x-mint:
+        metadata:
+          tag: "Coming soon"
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [project_id, region_id, name]
+              properties:
+                project_id:
+                  type: integer
+                  description: Numeric project identifier.
+                region_id:
+                  type: integer
+                  description: Numeric region identifier.
+                name:
+                  type: string
+                  description: Display name for the load balancer.
+                steering_mode:
+                  type: string
+                  enum: [latency, cost, availability]
+                  description: Traffic steering strategy. The API does not accept this field yet.
+                  x-mint:
+                    post: ["Coming soon"]
+      responses:
+        "201":
+          description: Load balancer created.
+
+  /load-balancers/global-anycast:
+    post:
+      operationId: createGlobalAnycastLB
+      tags: [New]
+      summary: Create a global anycast load balancer
+      description: >
+        Creates a global anycast load balancer.
+        The operation uses **x-mint.metadata.tag** so a `NEW` label appears next to the
+        endpoint name in the sidebar.
+      x-mint:
+        metadata:
+          tag: "NEW"
+        content: |
+          <Tip>
+          This endpoint is generally available. <Badge color="green">NEW</Badge>
+          </Tip>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [project_id, name]
+              properties:
+                project_id:
+                  type: integer
+                  description: Numeric project identifier.
+                name:
+                  type: string
+                  description: Display name for the load balancer.
+                anycast_ip:
+                  type: string
+                  format: ipv4
+                  description: Anycast IP address assigned to the load balancer.
+                  x-mint:
+                    pre: ["NEW"]
+      responses:
+        "201":
+          description: Load balancer created.
 
   /load-balancers/v1/list:
     get:
