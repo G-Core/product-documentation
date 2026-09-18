@@ -51,6 +51,19 @@ Stop and cancel if the change is only one of the following:
 - **Internal-only change** — admin API, internal billing, backend refactoring, library update.
 - **We never documented this thing** and it is not blocking any task described in our articles — silence is fine; adding it would be noise.
 
+### Scope of change — match the size of the fix
+
+A bug fix or a behavior change to an existing feature does **not** justify a new section,
+a new heading, or a new table. It justifies the **minimum change** that makes the article accurate:
+
+- A previously undocumented parameter → add one row to the existing table, plus a note if behavior is non-obvious.
+- A previously broken behavior that now works → update the existing description in place.
+- A new option on an existing flow → one sentence or one row, in the existing structure.
+
+Never create a new `###` heading for a fix. Never add a dedicated curl example block for a
+parameter that can be described in a table cell. The article already has structure — fit
+the change into it.
+
 ### Decision checklist
 
 Go through these in order. Stop at the first YES or NO that resolves the question.
@@ -249,6 +262,11 @@ After making changes, check:
 **Frontmatter:**
 - [ ] `ai-navigation` still accurately describes the article after changes
   (update it if the article's scope changed)
+- [ ] `ai-navigation` is a **high-level summary of the article** — what tasks it covers,
+  what products/methods it involves. Never list individual parameters, filter syntax,
+  field names, or implementation details. Those belong in the article body, not here.
+  Example of wrong: "filter by tag key and value using tags[key]=value (supports OR logic)"
+  Example of right: "filter resources by tag key and value"
 - [ ] No `description` field present
 
 **Style:**
