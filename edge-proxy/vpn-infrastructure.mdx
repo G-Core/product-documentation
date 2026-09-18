@@ -1,0 +1,105 @@
+---
+title: VPN infrastructure with customer-owned IP addresses
+sidebarTitle: VPN infrastructure with BYOIP
+ai-navigation: Configure Edge Proxy with BYOIP or DDoS Protection with BGP to accept TCP/UDP traffic on customer-owned IP prefixes and forward it to origin servers over the Gcore global edge network.
+---
+
+Edge Proxy with BYOIP and DDoS Protection with BGP route traffic addressed to customer-owned IP prefixes through the Gcore global edge network. The main architectural difference is the traffic path: DDoS Protection routes all traffic through scrubbing centers before delivery, while Edge Proxy forwards it directly.
+
+To start onboarding, contact [Gcore sales](https://gcore.com/contact-sales) with a description of the use case, expected traffic volumes, and whether a customer ASN is available.
+
+Prepare a Letter of Authorization (LOA) as a PDF, an IRR Route Object (`route:` + `origin:`), and an RPKI ROA in the RIR account — these authorize Gcore to announce the prefixes and allow the global routing infrastructure to validate the announcement.
+
+## Edge Proxy with BYOIP
+
+Edge Proxy accepts traffic on customer-owned IP addresses at the nearest Gcore PoP and forwards it to origin servers. There is no filtering or inspection on this path.
+
+```
+Client
+  |  TCP/UDP to customer IP
+  v
+Gcore PoP (nearest)
+  |  L4 proxy
+  v
+Origin server
+```
+
+During onboarding, provide the origin IP and the ports to proxy — incoming connections on those ports are forwarded to that address.
+
+A customer ASN is optional. Without one, Gcore uses its own ASN for the announcement and no additional BGP configuration is required on the customer side. With a customer ASN, Gcore announces under it instead — the prefix then appears in the global routing table under the customer's identity, which matters when existing BGP policies or routing identity requirements are in play.
+
+Once the LOA, prefix list, and origin details are submitted, the IRR Route Object and RPKI ROA are validated and the BGP announcement is configured.
+
+If the active prefix later needs to be replaced, open a support request — Gcore withdraws the old prefix and announces the replacement.
+
+After activation is confirmed, verify that traffic on the customer IP reaches the origin server on the configured ports.
+
+## DDoS Protection with BGP
+
+DDoS Protection with BGP adds a filtering layer between the internet and the origin. All incoming traffic — legitimate and attack — arrives at Gcore scrubbing centers, where volumetric and protocol attacks are dropped. Only clean traffic continues to the origin over a [GRE tunnel](/ddos-protection/onboarding-service/gre-tunneling/set-a-gre-tunnel-with-gcore).
+
+```
+Client / attacker
+  |  TCP/UDP to customer IP
+  v
+Gcore BGP edge (customer ASN announced)
+  |
+  v
+Gcore scrubbing center (L3/L4 filtering, optional L7)
+  |  clean traffic only
+  v
+GRE tunnel to origin server
+  |
+  v
+Origin server  →  return traffic via own gateway (not through Gcore)
+```
+
+The GRE tunnel carries cleaned inbound traffic from Gcore to the origin. Return traffic uses the origin's default gateway and does not pass through Gcore.
+
+A dedicated customer ASN is required.
+
+Static BGP leaves prefix and policy management with Gcore; API+BGP transfers that control to the customer through the DDoS Protection API:
+
+| | Static BGP | API+BGP |
+|---|---|---|
+| Prefix announcement | Permanent, configured once | Managed dynamically via API |
+| Prefix rotation | Via support request | Via API |
+| IPv6 | Yes | Yes |
+| Protection policies | Managed by Gcore | Managed via API |
+| Self-service after onboarding | No | Yes |
+
+Onboarding requires the customer ASN, border router IP, protected prefixes, and the origin-side GRE endpoint IP. Gcore provides the Route Reflector IP, Gcore ASN, and scrubbing center endpoint for the configurations below.
+
+### BGP session
+
+Open a session to the Gcore Route Reflector on the border router, using the provided Route Reflector IP and Gcore ASN. Cisco IOS example:
+
+```
+router bgp <CUSTOMER_ASN>
+  neighbor <GCORE_RR_IP> remote-as <GCORE_ASN>
+  neighbor <GCORE_RR_IP> description Gcore Route Reflector
+  !
+  address-family ipv4
+    neighbor <GCORE_RR_IP> activate
+    network <PREFIX> mask <MASK>
+```
+
+### GRE tunnel
+
+Create a GRE tunnel to the Gcore scrubbing center endpoint. Linux iproute2 example:
+
+```bash
+ip tunnel add gre1 mode gre \
+  local <ORIGIN_IP> \
+  remote <GCORE_SCRUBBING_IP> \
+  ttl 255
+ip link set gre1 mtu 1476
+ip link set gre1 up
+ip route add <PREFIX> dev gre1
+```
+
+After activation is confirmed, verify on the border router that the BGP session with the Route Reflector is established and that the protected prefix is being advertised.
+
+<Info>
+After activation, the scrubbing platform takes approximately three days to build a traffic baseline. Protection is active from the first day, but mitigation precision improves as the baseline stabilizes.
+</Info>
