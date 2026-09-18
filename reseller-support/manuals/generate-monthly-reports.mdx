@@ -1,10 +1,15 @@
 ---
 title: Generate monthly reports
 sidebarTitle: Monthly reports
-ai-navigation: Describe how resellers generate, read, and delete customer usage reports for billing.
+ai-navigation: Describe how resellers generate, read, and delete usage reports via Customer Portal, or pull WAAP consumption data via REST API.
 ---
 
-A usage report summarizes customer product consumption over a chosen date range, useful for calculating customer costs based on that consumption.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>A usage report summarizes customer product consumption over a chosen date range, useful for calculating customer costs based on that consumption.</p>
 
 ## Generate a report
 
@@ -31,13 +36,13 @@ A usage report summarizes customer product consumption over a chosen date range,
   </Step>
 </Steps>
 
-Generating a report can take a few minutes; the **Status** column on the **Reports** page shows the progress and switches to **Completed** once the report is ready. Because of a short delay in stats collection, generate a report for the previous period a day or two into the new one rather than immediately.
+<p>Generating a report can take a few minutes; the **Status** column on the **Reports** page shows the progress and switches to **Completed** once the report is ready. Because of a short delay in stats collection, generate a report for the previous period a day or two into the new one rather than immediately.</p>
 
 ## Read a report
 
-Once a report is **Completed**, its row's action menu downloads the report as CSV, JSON, or Excel.
+<p>Once a report is **Completed**, its row's action menu downloads the report as CSV, JSON, or Excel.</p>
 
-The CSV file lists one row per usage metric for each of the reseller's customers, grouped by client:
+<p>The CSV file lists one row per usage metric for each of the reseller's customers, grouped by client:</p>
 
 | Column | Description |
 |---|---|
@@ -52,7 +57,7 @@ The CSV file lists one row per usage metric for each of the reseller's customers
 | Metric value | The measured usage value for the row. |
 | Unit name | The unit the metric value is measured in, for example GB or PC. |
 
-An example of two rows from a CSV report:
+<p>An example of two rows from a CSV report:</p>
 
 ```csv
 Client ID,Company name,Feature ID,Feature name,Resource ID,Resource name,Region external name,Region name,Metric value,Unit name
@@ -62,8 +67,89 @@ Client ID,Company name,Feature ID,Feature name,Resource ID,Resource name,Region 
 
 ## Delete a report
 
-Opening a report row's action menu also deletes the report, alongside the CSV, JSON, and Excel download options.
+<p>Opening a report row's action menu also deletes the report, alongside the CSV, JSON, and Excel download options.</p>
 
 <Frame>
 <img src="/images/docs/reseller-support/manuals/generate-monthly-reports/generate-monthly-reports-image3.png" alt="Report row action menu with Download CSV, Download JSON, Download Excel, and Delete options" width="30%"/>
 </Frame>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The WAAP Reseller API reports billable consumption for a reseller's clients by metric: number of protected domains, data volume, or request count. Two endpoints expose this data, one aggregated into a single total and one broken down per client.</p>
+
+<p>An [API&nbsp;token](/account-settings/api-tokens) is required. Set it as an environment variable before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Get aggregated consumption
+
+<p>Returns the selected metric aggregated across all matching clients into a single daily total for the date range.</p>
+
+| Parameter | Description |
+|---|---|
+| `metric` | Path parameter: `domains`, `volume`, or `requests` |
+| `from` | Report start date (inclusive), in ISO 8601 format; required |
+| `to` | Report end date (exclusive), in ISO 8601 format; required |
+| `client_ids` | Client IDs to filter by, omitted to include every client |
+| `limit` | Number of items to return, up to 100, defaults to 100 |
+| `offset` | Number of items to skip, defaults to 0 |
+
+```bash
+curl -s "https://api.gcore.com/waap/v1/prebilling/total/requests?from=2026-07-01&to=2026-07-08" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "limit": 100,
+  "offset": 0,
+  "count": 7,
+  "results": [
+    {"date": "2026-07-01", "amount": 128340},
+    {"date": "2026-07-02", "amount": 131980}
+  ]
+}
+```
+
+<p>The `amount` field reports the accrued value of the selected metric for that date. `{TODO: verify in live environment - confirm the exact unit for the "volume" metric, since the spec does not state it}`</p>
+
+## Get consumption broken down per client
+
+<p>Returns the same metric keyed by client ID, with one list of daily entries per client instead of a single aggregated total. It accepts the same parameters as the aggregated total endpoint.</p>
+
+```bash
+curl -s "https://api.gcore.com/waap/v1/prebilling/breakdown/requests?from=2026-07-01&to=2026-07-08" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "limit": 100,
+  "offset": 0,
+  "count": 2,
+  "results": {
+    "clients": {
+      "12345": [
+        {"date": "2026-07-01", "amount": 54200},
+        {"date": "2026-07-02", "amount": 55830}
+      ],
+      "67890": [
+        {"date": "2026-07-01", "amount": 74140},
+        {"date": "2026-07-02", "amount": 76150}
+      ]
+    }
+  }
+}
+```
+
+<p>Each key under `clients` is a client ID, and its value is the same `date` and `amount` pairs returned by the aggregated total endpoint, scoped to that one client.</p>
+
+  </MethodSection>
+</MethodSwitch>
