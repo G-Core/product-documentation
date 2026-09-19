@@ -196,7 +196,7 @@ srt://<hostname>:<port>?mode=caller&latency=<microseconds>&streamid=<ID>
 
 ## Create a restream
 
-<p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet.</p>
+<p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet. Set `source` to `"transcoded"` to restream the processed version of the stream (with overlays applied); the default is `"original"`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -213,6 +213,7 @@ resp = client.streaming.restreams.with_raw_response.create(
         "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
         "stream_id": stream_id,
         "active": False,
+        "source": "original",
     }
 )
 data = resp.http_response.json()
@@ -277,7 +278,8 @@ curl -X POST "https://api.gcore.com/streaming/restreams" \
          "name": "YouTube restream",
          "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
          "stream_id": '"$STREAM_ID"',
-         "active": false
+         "active": false,
+         "source": "original"
        }
      }'
 ```
@@ -439,7 +441,7 @@ curl "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
 
 ## Update a restream
 
-<p>Use `PATCH /streaming/restreams/{"{restream_id}"}` to update the target URI (for example, after a stream key rotation) or to enable/disable the restream without deleting it.</p>
+<p>Use `PATCH /streaming/restreams/{"{restream_id}"}` to update the target URI (for example, after a stream key rotation), enable/disable the restream, or switch the `source` between `"original"` and `"transcoded"` without deleting it.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -507,7 +509,8 @@ curl -X PATCH "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
      -d '{
        "restream": {
          "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
-         "active": true
+         "active": true,
+         "source": "transcoded"
        }
      }'
 ```
@@ -522,7 +525,7 @@ curl -X PATCH "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
   "active": true,
   "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
   "stream_id": 4523975,
-  "source": "original"
+  "source": "transcoded"
 }
 ```
   </Tab>
