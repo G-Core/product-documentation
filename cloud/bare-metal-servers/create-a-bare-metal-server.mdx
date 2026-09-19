@@ -17,7 +17,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 1. Open the creation page
 
-In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Cloud** > **Bare Metal** and click **Create Bare Metal**.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Cloud** > **Bare Metal** and click **Create Bare Metal**.</p>
 
 <Frame>![Bare metal page in Gcore Customer Portal](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bare-metal-page-2.png)</Frame>
 
@@ -208,7 +208,6 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
     client = Gcore()
@@ -330,7 +329,7 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
 
 ### Step 1. List available flavors
 
-<p>BM [flavors](/api-reference/cloud/bare-metal/list-bare-metal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. The `capacity` field shows how many machines of that type are physically available in the region.</p>
+<p>BM [flavors](/api-reference/cloud/bare-metal/list-bare-metal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. Use `GET /cloud/v1/projects/{project_id}/baremetal/flavors` to retrieve flavors across all regions in one call. The legacy per-region endpoint `GET /cloud/v1/bmflavors/$PROJECT_ID/$REGION_ID` remains available.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -352,42 +351,32 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
     ```
   </Tab>
   <Tab title="curl">
+    List flavors across all regions:
+
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bmflavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?disabled=false&include_capacity=true" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/flavors?include_capacity=true" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
-    Response:
+    To filter by specific regions, add one or more `region_ids` parameters:
 
-    ```json
-    {
-      "results": [
-        {
-          "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
-          "vcpus": 32,
-          "ram": 131072,
-          "hardware_description": {
-            "cpu": "1x AMD Ryzen 7950X 16C/32T 4.5 GHz",
-            "ram": "128 GB",
-            "disk": "2x 960GB NVMe",
-            "network": "2x 10GbE"
-          },
-          "capacity": 5
-        }
-      ]
-    }
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/flavors?region_ids=1&region_ids=5&include_capacity=true" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
     ```
+
+    Each flavor in the response includes per-region capacity. `capacity: 0` for a region means the flavor is temporarily unavailable there.
   </Tab>
 </Tabs>
 
-<p>`capacity: 0` means the flavor is temporarily unavailable in the region. Flavor IDs are region-specific — run this call to see what is available in the target region. Save the chosen flavor ID for the next step:</p>
+<p>Save the chosen flavor ID for the next step:</p>
 
 ```bash
 export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 ```
 
 <Info>
-Replace `{YOUR_FLAVOR_ID}` with a `flavor_id` value from the response above. Flavor IDs are region-specific — use a value returned for your target region.
+Flavor IDs are consistent across regions — the same `flavor_id` string identifies the same hardware type regardless of which region it is offered in.
 </Info>
 
 ### Step 2. List bare metal images
