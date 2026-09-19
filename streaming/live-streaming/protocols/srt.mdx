@@ -1,14 +1,19 @@
 ---
 title: "SRT"
 sidebarTitle: "SRT"
-ai-navigation: Configure SRT live stream ingest; obtain push credentials, set encoder latency, configure passphrase, or set up pull ingest.
+ai-navigation: Configure SRT live stream ingest via Customer Portal or REST API; obtain push credentials, set encoder latency, configure passphrase, or set up pull ingest.
 ---
 
-SRT (Secure Reliable Transport) is an open-source, UDP-based protocol for live stream ingest. It provides low-latency delivery over unpredictable networks and supports H.265/HEVC in addition to H.264.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>SRT (Secure Reliable Transport) is an open-source, UDP-based protocol for live stream ingest. It provides low-latency delivery over unpredictable networks and supports H.265/HEVC in addition to H.264.</p>
 
 ## SRT requirements
 
-SRT ingest uses port `5001` (UDP). Configure the encoder with:
+<p>SRT ingest uses port `5001` (UDP). Configure the encoder with:</p>
 
 - Video codec and bitrate — [input&nbsp;parameters](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
 - SRT latency: configure based on network conditions — [Configure&nbsp;SRT&nbsp;latency](#configure-srt-latency)
@@ -17,7 +22,7 @@ SRT ingest uses port `5001` (UDP). Configure the encoder with:
 - Profile: `baseline`
 - Low-latency encoder tuning: disable lookahead and B-frames — [Zerolatency&nbsp;encoder&nbsp;tuning](#zerolatency-encoder-tuning)
 
-For differences between SRT and RTMP — [RTMP&nbsp;vs&nbsp;SRT](/streaming/live-streaming/protocols/rtmp-srt).
+<p>For differences between SRT and RTMP — [RTMP&nbsp;vs&nbsp;SRT](/streaming/live-streaming/protocols/rtmp-srt).</p>
 
 <Info>
 When the SRT encoder connects, live transcoding reads the source FPS once from the incoming stream metadata at the beginning of the session. That FPS value is not re-read later and is not changed dynamically during transcoding. Gcore does not upscale a 10-12 fps source to 50 or 60 fps. If the source FPS was already degraded when the SRT session started, reconnect the stream from the encoder side after fixing the source settings.
@@ -26,13 +31,11 @@ When the SRT encoder connects, live transcoding reads the source FPS once from t
 
 ## SRT PUSH
 
-In PUSH mode, the encoder establishes the connection and sends the stream to a Gcore ingest point. This mode works with software encoders (OBS, FFmpeg) and hardware encoders (Elemental, Haivision).
+<p>In PUSH mode, the encoder establishes the connection and sends the stream to a Gcore ingest point. This mode works with software encoders (OBS, FFmpeg) and hardware encoders (Elemental, Haivision).</p>
 
 ### Obtain the server URLs
 
-There are two ways to obtain the SRT server URLs: via the [Gcore Customer Portal](https://portal.gcore.com) or via the API.
-
-#### Via UI
+<p>Obtain the SRT push URLs from the Customer Portal live stream settings page.</p>
 
 1. In the Customer Portal, navigate to **Streaming** \> [**Live&nbsp;Streaming**](https://portal.gcore.com/streaming/streaming/list).
 
@@ -54,35 +57,20 @@ There are two ways to obtain the SRT server URLs: via the [Gcore Customer Portal
   ![URLs for encoder section with SRT selected, showing Push URL SRT and Backup Push URL SRT fields](/images/docs/streaming/live-streaming/protocols/srt/srt-urls-for-encoder.png)
 </Frame>
 
-The ingest URL has the format `srt://vp-push-ed2-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd`:
+<p>The ingest URL has the format `srt://vp-push-ed2-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd`:</p>
+
 - protocol `srt://`
 - server location — `vp-push-ed2-srt` is in Europe
 - port `:5001`
 - stream ID and key `?streamid=12345#aaabbbcccddd`
 
-Backup ingest URLs and region selection: [Ingest&nbsp;&amp;&nbsp;Backup](/streaming/live-streaming/primary-backup).
-
-#### Via API
-
-The Gcore API returns the ingest URLs and stream key.
-
-```http
-GET /streaming/streams/{stream_id}
-```
-
-```json
-{
-  "push_url_srt": "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=12345#xxxxxxxxxxxxxxxx",
-  "backup_push_url_srt": "srt://vp-push-anx1-srt.gvideo.co:5001?streamid=12345b#xxxxxxxxxxxxxxxx",
-  ...
-}
-```
+<p>Backup ingest URLs and region selection: [Ingest&nbsp;&amp;&nbsp;Backup](/streaming/live-streaming/primary-backup).</p>
 
 ### Configure SRT latency
 
-The SRT `latency` parameter defines how long SRT buffers data to recover from packet loss and jitter. A shorter latency reduces end-to-end delay but exposes more network issues; a longer latency increases stability by masking errors.
+<p>The SRT `latency` parameter defines how long SRT buffers data to recover from packet loss and jitter. A shorter latency reduces end-to-end delay but exposes more network issues; a longer latency increases stability by masking errors.</p>
 
-Set the latency value manually — do not rely on encoder defaults. Recommended ranges by network conditions:
+<p>Set the latency value manually — do not rely on encoder defaults. Recommended ranges by network conditions:</p>
 
 | Network conditions | Typical RTT (ms) | Jitter/Loss | Recommended latency (ms) |
 |---|---|---|---|
@@ -91,15 +79,15 @@ Set the latency value manually — do not rely on encoder defaults. Recommended 
 | Cross-region, higher variability | 100–300 | Moderate (&lt;1%) | 1000–2000 |
 | Unstable or mobile internet | &gt;300 | High (&gt;1% bursts) | 2000–2500 |
 
-Keep latency below 3000 ms — Gcore ingest has a three-second inactivity timeout.
+<p>Keep latency below 3000 ms — Gcore ingest has a three-second inactivity timeout.</p>
 
-The latency unit depends on the encoder: FFmpeg requires microseconds (`&latency=2500000`), while OBS, GStreamer, and most other encoders use milliseconds (`&latency=2500`). Full reference: [FFmpeg&nbsp;protocol&nbsp;reference](https://ffmpeg.org//ffmpeg-protocols.html#srt).
+<p>The latency unit depends on the encoder: FFmpeg requires microseconds (`&latency=2500000`), while OBS, GStreamer, and most other encoders use milliseconds (`&latency=2500`). Full reference: [FFmpeg&nbsp;protocol&nbsp;reference](https://ffmpeg.org//ffmpeg-protocols.html#srt).</p>
 
 #### Zerolatency encoder tuning
 
-Lookahead and B-frames buffer and reorder frames inside the encoder before they reach the SRT sender. This encoder-side delay can cause packets to arrive outside the configured SRT latency window, resulting in late-packet drops and broken ingest.
+<p>Lookahead and B-frames buffer and reorder frames inside the encoder before they reach the SRT sender. This encoder-side delay can cause packets to arrive outside the configured SRT latency window, resulting in late-packet drops and broken ingest.</p>
 
-For live SRT ingest, disable lookahead and B-frames:
+<p>For live SRT ingest, disable lookahead and B-frames:</p>
 
 - `-tune zerolatency` — disables lookahead and frame reordering
 - `rc-lookahead=0` — disables the lookahead cache
@@ -110,7 +98,7 @@ For live SRT ingest, disable lookahead and B-frames:
 ![Lookahead buffer window of 40 frames](/images/docs/streaming/live-streaming/protocols/srt/lookahead-40.png)
 </Frame>
 
-With `zerolatency` tuning, the buffer collapses to near zero:
+<p>With `zerolatency` tuning, the buffer collapses to near zero:</p>
 
 <Frame>
 ![Lookahead buffer window is minimized](/images/docs/streaming/live-streaming/protocols/srt/lookahead-0.png)
@@ -122,15 +110,15 @@ A video showing both protocols under unstable conditions: [RTMP&nbsp;vs&nbsp;SRT
 
 #### Verify with SRT statistics
 
-Enable SRT stats on the sender and monitor:
+<p>Enable SRT stats on the sender and monitor:</p>
 
 - RTT and jitter: round-trip time and variability. Drives latency sizing.
 - Loss and retransmissions: `pkt*Loss`, `pkt*Retrans`, `pkt*Drop`. Rising values — increase latency or reduce bitrate.
 - Buffer occupancy: send/receive buffer fill vs negotiated latency; approaching 0 under loss means the latency window is too small.
 
-Full reference: [SRT&nbsp;statistics&nbsp;documentation](https://github.com/Haivision/srt/blob/master/docs/API/statistics.md).
+<p>Full reference: [SRT&nbsp;statistics&nbsp;documentation](https://github.com/Haivision/srt/blob/master/docs/API/statistics.md).</p>
 
-A healthy send with a 2500 ms window and zero packet loss:
+<p>A healthy send with a 2500 ms window and zero packet loss:</p>
 
 ```json
 {
@@ -151,54 +139,41 @@ A healthy send with a 2500 ms window and zero packet loss:
 
 ### Protect SRT ingest with a passphrase
 
-For SRT PUSH streams, a passphrase can be required on the ingest connection. When `srt_passphrase` is set for a live stream, the encoder must send the same passphrase when connecting to the SRT ingest URL. The incoming MPEG-TS stream is then AES-encrypted by SRT between the sender and the Gcore ingester.
+<p>For SRT PUSH streams, a passphrase can be required on the ingest connection. When set, the encoder must send the same passphrase when connecting to the SRT ingest URL. The incoming MPEG-TS stream is then AES-encrypted by SRT between the sender and the Gcore ingester.</p>
 
-This protects the ingest path from the encoder to Gcore. It does not encrypt playback URLs and does not replace viewer-side access protection.
+<p>This protects the ingest path from the encoder to Gcore. It does not encrypt playback URLs and does not replace viewer-side access protection.</p>
 
-Passphrase requirements:
+<p>Passphrase requirements:</p>
+
 - 10 to 80 characters
 - ASCII letters, digits, and punctuation only
 - No spaces or non-ASCII characters
 
-Set the passphrase via the API:
+<p>Configure the passphrase using the Gcore API — see the **REST API** tab.</p>
 
-```http
-PATCH /streaming/streams/{stream_id}
-```
-
-```json
-{
-  "stream": {
-    "srt_passphrase": "01234567890"
-  }
-}
-```
-
-To disable passphrase protection, update `srt_passphrase` to `null`.
-
-Send the same passphrase from the encoder. In FFmpeg, pass it as a separate output option:
+<p>Send the same passphrase from the encoder. In FFmpeg, pass it as a separate output option:</p>
 
 ```sh
 ffmpeg -hide_banner -re -i file.mp4 -c copy -passphrase 01234567890 -f mpegts \
   "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719"
 ```
 
-Or add it to the SRT URL:
+<p>Or add it to the SRT URL:</p>
 
 ```sh
 ffmpeg -hide_banner -re -i file.mp4 -c copy -f mpegts \
   "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719&passphrase=01234567890"
 ```
 
-If the passphrase in the stream settings and the passphrase sent by the encoder do not match, the SRT ingest connection is rejected.
+<p>If the passphrase in the stream settings and the passphrase sent by the encoder do not match, the SRT ingest connection is rejected.</p>
 
 ### Encoder examples
 
-Each encoder below uses the zerolatency preset and explicit SRT latency. Latency units vary: FFmpeg requires microseconds, GStreamer and OBS use milliseconds.
+<p>Each encoder below uses the zerolatency preset and explicit SRT latency. Latency units vary: FFmpeg requires microseconds, GStreamer and OBS use milliseconds.</p>
 
 #### FFmpeg SRT
 
-This FFmpeg command generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.
+<p>This FFmpeg command generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
 
 ```sh
 ffmpeg -re \
@@ -211,7 +186,8 @@ ffmpeg -re \
   "srt://vp-push-ed2-srt.gvideo.co:5001?mode=caller&latency=2500000&streamid=123#abc719"
 ```
 
-FFmpeg key points:
+<p>FFmpeg key points:</p>
+
 - `-tune zerolatency` — disables lookahead and frame reordering
 - `-g 30 -keyint_min 30` — keeps GOP strictly predictable
 - `-pix_fmt yuv420p` — forces common YUV planar pixel format for broad H.264 encoder compatibility
@@ -219,11 +195,11 @@ FFmpeg key points:
 - `&latency=2500000` — 2.5 sec SRT buffering (µs, microseconds in FFmpeg)
 - `&streamid=id#key` — stream ID taken from the portal or API, ID and key separated by `#`
 
-Full reference: [FFmpeg](/streaming/live-streaming/broadcasting-software/ffmpeg).
+<p>Full reference: [FFmpeg](/streaming/live-streaming/broadcasting-software/ffmpeg).</p>
 
 #### GStreamer SRT
 
-This GStreamer pipeline generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.
+<p>This GStreamer pipeline generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
 
 ```sh
 gst-launch-1.0 -v \
@@ -240,7 +216,7 @@ gst-launch-1.0 -v \
             streamid="123#abc719"
 ```
 
-Full reference: [GStreamer](/streaming/live-streaming/broadcasting-software/gstreamer).
+<p>Full reference: [GStreamer](/streaming/live-streaming/broadcasting-software/gstreamer).</p>
 
 #### OBS SRT
 
@@ -256,7 +232,7 @@ srt://vp-push-ed2-srt.gvideo.co:5001?mode=caller&latency=2000000&streamid=123#ab
    - Tune: zerolatency
    - x264 Options: `rc-lookahead=0`
 
-Full reference: [OBS](/streaming/live-streaming/broadcasting-software/obs).
+<p>Full reference: [OBS](/streaming/live-streaming/broadcasting-software/obs).</p>
 
 #### vMix SRT
 
@@ -272,23 +248,22 @@ Full reference: [OBS](/streaming/live-streaming/broadcasting-software/obs).
 
 #### Other encoders
 
-For other encoders, consult the encoder documentation to apply the equivalent low-latency tuning parameters.
+<p>For other encoders, consult the encoder documentation to apply the equivalent low-latency tuning parameters.</p>
 
 
 ## SRT PULL
 
-In PULL mode, Gcore Video Streaming connects to an origin URL and retrieves the stream.
+<p>In PULL mode, Gcore Video Streaming connects to an origin URL and retrieves the stream.</p>
 
-Source requirements:
+<p>Source requirements:</p>
+
 - The source URL can use RTMP, SRT, or HLS (M3U8) format.
 - The URL of the stream to pull from must be publicly available and return data for all requests.
 - To restrict access with an allowlist, contact support for the current list of Gcore networks.
 
 ### Setting up PULL stream
 
-There are two ways to set up a pull stream: via the Gcore Customer Portal or via the API.
-
-#### Via UI
+<p>Configure a pull stream from the Customer Portal live stream settings page.</p>
 
 1. In the Customer Portal, navigate to **Streaming** \> [**Live&nbsp;Streaming**](https://portal.gcore.com/streaming/streaming/list).
 
@@ -310,41 +285,322 @@ There are two ways to set up a pull stream: via the Gcore Customer Portal or via
   ![Live stream settings page in Pull mode with the URL field showing an SRT source URL](/images/docs/streaming/live-streaming/protocols/srt/srt-pull-stream-settings.png)
 </Frame>
 
-#### Via API
-
-Pull ingest can also be configured via the Gcore API.
-
-```http
-PATCH /streaming/streams/{stream_id}
-```
-
-```json
-{
-  "stream": {
-    "pull": true,
-    "uri": "srt://example.com/path/to/stream",
-    ...
-  }
-}
-```
-
-Full API reference: [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream).
-
 
 ## Ingest limits
 
-Gcore applies two constraints to all live stream ingest connections.
+<p>Gcore applies two constraints to all live stream ingest connections.</p>
 
 <Info>
 Only one ingest protocol type can be used for a live stream at a time.
 Pushing SRT and another protocol (e.g., RTMP) to the same stream at once will cause transcoding to fail.
 </Info>
 
-The ingester timeout is 3 seconds (3000&nbsp;ms). If no data arrives within this period, the connection is discarded as inactive and the encoder must reconnect.
+<p>The ingester timeout is 3 seconds (3000&nbsp;ms). If no data arrives within this period, the connection is discarded as inactive and the encoder must reconnect.</p>
 
 
 ## SRT troubleshooting
 
-Packet loss on the ingest path can cause picture corruption, dropped frames, or buffering.
+<p>Packet loss on the ingest path can cause picture corruption, dropped frames, or buffering.</p>
 
-Check SRT statistics for packet loss and retransmissions. If loss is present, adjust latency according to the recommendations in [Configure&nbsp;SRT&nbsp;latency](#configure-srt-latency) and reduce bitrate if the available uplink bandwidth is insufficient.
+<p>Check SRT statistics for packet loss and retransmissions. If loss is present, adjust latency according to the recommendations in [Configure&nbsp;SRT&nbsp;latency](#configure-srt-latency) and reduce bitrate if the available uplink bandwidth is insufficient.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Retrieve push ingest URLs and configure stream settings through the Gcore Streaming API.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Get push ingest URL
+
+<p>Returns the SRT push URL and backup URL for a stream. The stream ID is available in the Customer Portal URL or from the [list&nbsp;streams](/api-reference/streaming/streams/get-all-live-streams) endpoint.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+stream = client.streaming.streams.get({STREAM_ID})
+print(stream.push_url_srt)
+print(stream.backup_push_url_srt)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	stream, err := client.Streaming.Streams.Get(ctx, {STREAM_ID})
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(stream.PushURLSrt)
+	fmt.Println(stream.BackupPushURLSrt)
+}
+```
+
+  </Tab>
+  <Tab title="curl">
+
+```bash
+curl "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "id": 12345,
+  "push_url_srt": "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=12345#xxxxxxxxxxxxxxxx",
+  "backup_push_url_srt": "srt://vp-push-anx1-srt.gvideo.co:5001?streamid=12345b#xxxxxxxxxxxxxxxx",
+  "token": "xxxxxxxxxxxxxxxx",
+  "srt_passphrase": null,
+  "pull": false
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Set SRT passphrase
+
+<p>Requires the encoder to authenticate with a passphrase when pushing to the SRT ingest URL. The incoming MPEG-TS stream is AES-encrypted between the sender and the Gcore ingester. Set `srt_passphrase` to `null` to disable passphrase protection.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `stream.srt_passphrase` | Yes | Passphrase string, 10–80 printable ASCII characters. Set to `null` to disable. |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+# Set passphrase
+stream = client.streaming.streams.update(
+    {STREAM_ID},
+    stream={"srt_passphrase": "your-passphrase"},
+)
+print(stream.srt_passphrase)
+
+# Remove passphrase
+stream = client.streaming.streams.update(
+    {STREAM_ID},
+    stream={"srt_passphrase": None},
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/packages/param"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	// Fetch the stream first — the Go SDK requires Name in every PATCH call
+	s, err := client.Streaming.Streams.Get(ctx, {STREAM_ID})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Set passphrase
+	stream, err := client.Streaming.Streams.Update(ctx, {STREAM_ID}, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name:          s.Name,
+			SrtPassphrase: gcore.String("your-passphrase"),
+		},
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(stream.SrtPassphrase)
+
+	// Remove passphrase
+	_, err = client.Streaming.Streams.Update(ctx, {STREAM_ID}, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name:          s.Name,
+			SrtPassphrase: param.Null[string](),
+		},
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+}
+```
+
+  </Tab>
+  <Tab title="curl">
+
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"stream": {"srt_passphrase": "your-passphrase"}}'
+```
+
+<p>The API returns the updated stream object. The `srt_passphrase` field reflects the new value:</p>
+
+```json
+{"id": 12345, "srt_passphrase": "your-passphrase"}
+```
+
+<p>To remove the passphrase:</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"stream": {"srt_passphrase": null}}'
+```
+
+  </Tab>
+</Tabs>
+
+## Configure pull ingest
+
+<p>Switches the stream to PULL mode. Gcore Video Streaming connects to the origin URL and retrieves the stream. The source must be a publicly available RTMP, SRT, or HLS (M3U8) URL. Set `pull` to `false` to revert to PUSH mode.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `stream.pull` | Yes | `true` to enable PULL mode |
+| `stream.uri` | Yes | Source URL — RTMP, SRT, or HLS (M3U8) |
+
+<Tabs>
+  <Tab title="Python SDK">
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+
+# Enable PULL
+stream = client.streaming.streams.update(
+    {STREAM_ID},
+    stream={
+        "pull": True,
+        "uri": "srt://your-source.example.com:5001?streamid=yourstream",
+    },
+)
+print(stream.pull, stream.uri)
+
+# Revert to PUSH
+stream = client.streaming.streams.update(
+    {STREAM_ID},
+    stream={"pull": False, "uri": ""},
+)
+```
+
+  </Tab>
+  <Tab title="Go SDK">
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+
+	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	// Fetch the stream first — the Go SDK requires Name in every PATCH call
+	s, err := client.Streaming.Streams.Get(ctx, {STREAM_ID})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// Enable PULL
+	stream, err := client.Streaming.Streams.Update(ctx, {STREAM_ID}, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name: s.Name,
+			Pull: gcore.Bool(true),
+			Uri:  gcore.String("srt://your-source.example.com:5001?streamid=yourstream"),
+		},
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+	fmt.Println(stream.Pull, stream.Uri)
+
+	// Revert to PUSH
+	_, err = client.Streaming.Streams.Update(ctx, {STREAM_ID}, streaming.StreamUpdateParams{
+		Stream: streaming.StreamUpdateParamsStream{
+			Name: s.Name,
+			Pull: gcore.Bool(false),
+			Uri:  gcore.String(""),
+		},
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+}
+```
+
+  </Tab>
+  <Tab title="curl">
+
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"stream": {"pull": true, "uri": "srt://your-source.example.com:5001?streamid=yourstream"}}'
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "id": 12345,
+  "pull": true,
+  "uri": "srt://your-source.example.com:5001?streamid=yourstream"
+}
+```
+
+  </Tab>
+</Tabs>
+
+<p>Full API reference: [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream).</p>
+
+</MethodSection>
+</MethodSwitch>
