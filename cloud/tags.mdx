@@ -289,101 +289,39 @@ System tags (e.g. `image_id`, `os_type`, `os_version`) have `"read_only": true` 
 
 | Parameter | Format | Example |
 |-----------|--------|---------|
-| `tags[key]` | repeated per value; tag values match case-insensitively; repeat the same key for OR logic | `?tags[env]=production&tags[env]=staging` |
 | `tag_key_value` | JSON object | `{"env":"production"}` |
 | `tag_key` | plain string | `env` |
 | `tag_value` | plain string | `production` |
 
 <p>The `tag_key_value` parameter accepts a JSON-encoded object. To filter by a single tag:</p>
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import json
-    from gcore import Gcore
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%7D" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
 
-    client = Gcore()
+<p>To filter by multiple tags simultaneously, include all key-value pairs in the same JSON object:</p>
 
-    instances = list(client.cloud.instances.list(
-        tag_key_value=json.dumps({"env": "production"}),
-    ))
-    print(f"Found {len(instances)} instances tagged env=production")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
+```bash
+# URL-decoded form for readability:
+# tag_key_value={"env":"production","team":"backend"}
+curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%2C%22team%22%3A%22backend%22%7D" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
 
-    import (
-        "context"
-        "encoding/json"
-        "fmt"
-        "log"
+<p>Using the Python SDK:</p>
 
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/packages/param"
-    )
+```python
+import json
+from gcore import Gcore
 
-    func main() {
-        client := gcore.NewClient()
+client = Gcore()
 
-        tagKV, err := json.Marshal(map[string]string{"env": "production"})
-        if err != nil {
-            log.Fatal(err)
-        }
-
-        page, err := client.Cloud.Instances.List(context.Background(), cloud.InstanceListParams{
-            TagKeyValue: param.NewOpt(string(tagKV)),
-        })
-        if err != nil {
-            log.Fatal(err)
-        }
-        fmt.Printf("Found %d instances\n", len(page.Results))
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    # URL-decoded: ?tag_key_value={"env":"production"}
-    curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%7D" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
-    ```
-  </Tab>
-</Tabs>
-
-<p>To filter by multiple tags simultaneously (AND logic), include all key-value pairs in the same JSON object:</p>
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import json
-    from gcore import Gcore
-
-    client = Gcore()
-
-    instances = list(client.cloud.instances.list(
-        tag_key_value=json.dumps({"env": "production", "team": "backend"}),
-    ))
-    print(f"Found {len(instances)} instances")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    tagKV, _ := json.Marshal(map[string]string{"env": "production", "team": "backend"})
-    page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{
-        TagKeyValue: param.NewOpt(string(tagKV)),
-    })
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    # URL-decoded: ?tag_key_value={"env":"production","team":"backend"}
-    curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%2C%22team%22%3A%22backend%22%7D" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
-    ```
-  </Tab>
-</Tabs>
+instances = list(client.cloud.instances.list(
+    tag_key_value=json.dumps({"env": "production"}),
+))
+print(f"Found {len(instances)} instances tagged env=production")
+```
 
 </MethodSection>
 <MethodSection id="terraform" label="Terraform">
