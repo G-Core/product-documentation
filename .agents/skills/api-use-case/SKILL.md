@@ -72,6 +72,26 @@ Wait for the answer before proceeding.
 - Only after the full flow runs end-to-end for BOTH curl AND SDK — move to Phase 3
 - Delete test resources immediately after each test, not at the end
 
+**MANDATORY: Report discrepancies found during live testing.**
+
+If a live test reveals a discrepancy — endpoint returns unexpected results, SDK calls a
+different endpoint than documented, response fields differ from the spec, or an endpoint
+returns empty when it should have data — **stop and report it explicitly before proceeding.**
+
+Do NOT silently mark it as `{TODO: verify}` and move on. Report:
+1. What was expected (spec, Jira ticket, or existing documentation says X)
+2. What was observed (live test returned Y)
+3. Why this blocks the documentation (e.g. can't verify response structure, can't confirm
+   field names, endpoint appears non-functional for the test account)
+
+Only after the discrepancy is acknowledged by the user — decide together whether to:
+- Block the PR and report a bug to the developer (e.g. endpoint returns empty when it
+  should not)
+- Document what is known, explicitly note what is unverified, and open a follow-up ticket
+- Escalate to an SME for clarification
+
+**Never write documentation that silently skips a discrepancy.**
+
 **If no → spec only:**
 - Mark steps that cannot be verified from the spec as `{TODO: verify in live environment}`
 - These will need a follow-up `regression-test` run to verify

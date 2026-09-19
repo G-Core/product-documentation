@@ -299,64 +299,64 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 ### Step 1. List available flavors
 
-<p>BM [flavors](/api-reference/cloud/bare-metal-servers/list-baremetal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. The `capacity` field shows how many machines of that type are physically available in the region.</p>
+<p>BM [flavors](/api-reference/cloud/bare-metal/list-bare-metal-flavors) describe the physical hardware: CPU model, core count, RAM, local storage, and NIC speed. Use `GET /cloud/v1/projects/{project_id}/baremetal/flavors` to retrieve flavors across all regions in one call.</p>
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    flavors = client.cloud.baremetal.flavors.list(disabled=False, include_capacity=True)
-    for f in flavors.results:
-        print(f.flavor_id, f.capacity, f.hardware_description)
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    flavors, err := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
-        Disabled:        gcore.Bool(false),
-        IncludeCapacity: gcore.Bool(true),
-    })
-    for _, f := range flavors.Results {
-        fmt.Println(f.FlavorID, f.Capacity)
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cloud/v1/bmflavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?disabled=false&include_capacity=true" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response:
-
-    ```json
-    {
-      "results": [
-        {
-          "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
-          "vcpus": 32,
-          "ram": 131072,
-          "hardware_description": {
-            "cpu": "1x AMD Ryzen 7950X 16C/32T 4.5 GHz",
-            "ram": "128 GB",
-            "disk": "2x 960GB NVMe",
-            "network": "2x 10GbE"
-          },
-          "capacity": 5
-        }
-      ]
-    }
-    ```
-  </Tab>
-</Tabs>
-
-<p>`capacity: 0` means the flavor is temporarily unavailable in the region. Flavor IDs are region-specific — run this call to see what is available in the target region. Save the chosen flavor ID for the next step:</p>
+<p>List flavors across all regions:</p>
 
 ```bash
-export FLAVOR_ID="{YOUR_FLAVOR_ID}"
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/flavors?include_capacity=true" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>To filter by specific regions, add `region_ids` parameters:</p>
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/flavors?region_ids=148&region_ids=5&include_capacity=true" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+    <p>The API returns one entry per flavor per region. Each entry includes `networking_capabilities`, which describes the network features supported by that hardware:</p>
+
+```json
+{
+  "count": 18,
+  "results": [
+    {
+      "name": "bm1-hf-medium",
+      "region_id": 148,
+      "cpu_threads": 32,
+      "ram_mib": 131072,
+      "os_type": "linux",
+      "architecture": "x86_64",
+      "resource_class": "bm1-hf-medium",
+      "capacity": 3,
+      "reserved_capacity": 0,
+      "hardware_description": {
+        "cpu": "1x AMD Ryzen 7950X 16C/32T 4.5 GHz",
+        "ram": "128 GB",
+        "disk": "2x 960GB NVMe",
+        "network": "2x 10GbE"
+      },
+      "networking_capabilities": {
+        "security_groups": false,
+        "port_security": false,
+        "allowed_address_pairs": false
+      }
+    }
+  ]
+}
+```
+
+<p>`capacity: 0` means the flavor is temporarily unavailable in that region. Filter to entries with `capacity > 0` before provisioning.</p>
+
+<p>Save the `name` value of the chosen flavor for the next step:</p>
+
+```bash
+export BM_FLAVOR="{flavor-name}"
 ```
 
 <Info>
-Replace `{YOUR_FLAVOR_ID}` with a `flavor_id` value from the response above. Flavor IDs are region-specific — use a value returned for your target region.
+The same `name` value is used in the server creation request as the `flavor` field.
 </Info>
 
 ### Step 2. List bare metal images
