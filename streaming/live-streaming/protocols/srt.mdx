@@ -22,8 +22,6 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - Profile: `baseline`
 - Low-latency encoder tuning: disable lookahead and B-frames — [Zerolatency&nbsp;encoder&nbsp;tuning](#zerolatency-encoder-tuning)
 
-<p>For differences between SRT and RTMP — [RTMP&nbsp;vs&nbsp;SRT](/streaming/live-streaming/protocols/rtmp-srt).</p>
-
 <Info>
 When the SRT encoder connects, live transcoding reads the source FPS once from the incoming stream metadata at the beginning of the session. That FPS value is not re-read later and is not changed dynamically during transcoding. Gcore does not upscale a 10-12 fps source to 50 or 60 fps. If the source FPS was already degraded when the SRT session started, reconnect the stream from the encoder side after fixing the source settings.
 </Info>
@@ -64,7 +62,6 @@ When the SRT encoder connects, live transcoding reads the source FPS once from t
 - port `:5001`
 - stream ID and key `?streamid=12345#aaabbbcccddd`
 
-<p>Backup ingest URLs and region selection: [Ingest&nbsp;&amp;&nbsp;Backup](/streaming/live-streaming/primary-backup).</p>
 
 ### Configure SRT latency
 
@@ -81,7 +78,7 @@ When the SRT encoder connects, live transcoding reads the source FPS once from t
 
 <p>Keep latency below 3000 ms — Gcore ingest has a three-second inactivity timeout.</p>
 
-<p>The latency unit depends on how the encoder passes the parameter to SRT: FFmpeg and OBS pass it as a URL query parameter in microseconds (`&latency=2500000` = 2.5 s), while GStreamer's `srtsink` accepts it as an element property in milliseconds (`latency=2500` = 2.5 s). Full reference: [FFmpeg&nbsp;protocol&nbsp;reference](https://ffmpeg.org//ffmpeg-protocols.html#srt).</p>
+<p>The latency unit depends on how the encoder passes the parameter to SRT. FFmpeg and OBS pass it as a URL query parameter in microseconds (`&latency=2500000` = 2.5 s), while GStreamer's `srtsink` accepts it as an element property in milliseconds (`latency=2500` = 2.5 s).</p>
 
 #### Zerolatency encoder tuning
 
@@ -105,18 +102,16 @@ When the SRT encoder connects, live transcoding reads the source FPS once from t
 </Frame>
 
 <Tip>
-A video showing both protocols under unstable conditions: [RTMP&nbsp;vs&nbsp;SRT](/streaming/live-streaming/protocols/rtmp-srt#demo-rtmp%2Fsrt-comparison).
+The [RTMP&nbsp;vs&nbsp;SRT](/streaming/live-streaming/protocols/rtmp-srt#demo-rtmp%2Fsrt-comparison) article includes a side-by-side demo under unstable network conditions.
 </Tip>
 
 #### Verify with SRT statistics
 
-<p>Enable SRT stats on the sender and monitor:</p>
+<p>Enable SRT stats on the sender and monitor these [SRT&nbsp;statistics](https://github.com/Haivision/srt/blob/master/docs/API/statistics.md):</p>
 
 - RTT and jitter: round-trip time and variability. Drives latency sizing.
 - Loss and retransmissions: `pkt*Loss`, `pkt*Retrans`, `pkt*Drop`. Rising values — increase latency or reduce bitrate.
 - Buffer occupancy: send/receive buffer fill vs negotiated latency; approaching 0 under loss means the latency window is too small.
-
-<p>Full reference: [SRT&nbsp;statistics&nbsp;documentation](https://github.com/Haivision/srt/blob/master/docs/API/statistics.md).</p>
 
 <p>A healthy send with a 2500 ms window and zero packet loss:</p>
 
@@ -167,13 +162,13 @@ ffmpeg -hide_banner -re -i file.mp4 -c copy -f mpegts \
 
 <p>If the passphrase in the stream settings and the passphrase sent by the encoder do not match, the SRT ingest connection is rejected.</p>
 
-### Encoder examples
+### Encoder commands
 
-<p>Each encoder below uses the zerolatency preset and explicit SRT latency. FFmpeg and OBS pass latency as a URL query parameter in microseconds; GStreamer sets it as an element property in milliseconds.</p>
+<p>Each encoder below uses the zerolatency preset and explicit SRT latency. FFmpeg and OBS pass latency as a URL query parameter in microseconds; GStreamer sets it as a `srtsink` element property in milliseconds.</p>
 
 #### FFmpeg SRT
 
-<p>This FFmpeg command generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
+<p>Using [FFmpeg](/streaming/live-streaming/broadcasting-software/ffmpeg), this command generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
 
 ```sh
 ffmpeg -re \
@@ -195,11 +190,9 @@ ffmpeg -re \
 - `&latency=2500000` — 2.5 sec SRT buffering (µs, microseconds in FFmpeg)
 - `&streamid=id#key` — stream ID taken from the portal or API, ID and key separated by `#`
 
-<p>Full reference: [FFmpeg](/streaming/live-streaming/broadcasting-software/ffmpeg).</p>
-
 #### GStreamer SRT
 
-<p>This GStreamer pipeline generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
+<p>Using [GStreamer](/streaming/live-streaming/broadcasting-software/gstreamer), this pipeline generates a live 1080p/30fps test video with sine-wave audio, encodes it as MPEG-TS, and sends it over SRT in caller mode with a 2.5-second latency window.</p>
 
 ```sh
 gst-launch-1.0 -v \
@@ -216,8 +209,6 @@ gst-launch-1.0 -v \
             streamid="123#abc719"
 ```
 
-<p>Full reference: [GStreamer](/streaming/live-streaming/broadcasting-software/gstreamer).</p>
-
 #### OBS SRT
 
 1. In **Settings** > **Stream**, select **Custom** and enter the full SRT URL in **Server**:
@@ -225,14 +216,12 @@ gst-launch-1.0 -v \
 srt://vp-push-ed2-srt.gvideo.co:5001?mode=caller&latency=2000000&streamid=123#abc719
 ```
 2. Use x264 with low-latency settings to prevent encoder buffering that can exceed the SRT latency window.
-3. Set H.264 parameters via **Advanced Encoder Options** in OBS:
+3. Set H.264 parameters via **Advanced Encoder Options** in [OBS](/streaming/live-streaming/broadcasting-software/obs):
    - Keyframe interval: 1s
    - CPU Usage Preset: veryfast
    - Profile: baseline
    - Tune: zerolatency
    - x264 Options: `rc-lookahead=0`
-
-<p>Full reference: [OBS](/streaming/live-streaming/broadcasting-software/obs).</p>
 
 #### vMix SRT
 
@@ -319,7 +308,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Get push ingest URL
 
-<p>Returns the SRT push URL and backup URL for a stream. The stream ID is available in the Customer Portal URL or from the [list&nbsp;streams](/api-reference/streaming/streams/get-all-live-streams) endpoint.</p>
+<p>The [GET&nbsp;stream](/api-reference/streaming/streams/get-live-stream) endpoint returns the SRT push URL and backup URL. The stream ID is available in the Customer Portal URL or from the [list&nbsp;streams](/api-reference/streaming/streams/get-all-live-streams) endpoint.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -384,11 +373,9 @@ curl "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
   </Tab>
 </Tabs>
 
-<p>Full API reference: [Get&nbsp;live&nbsp;stream](/api-reference/streaming/streams/get-live-stream).</p>
-
 ## Set SRT passphrase
 
-<p>Requires the encoder to authenticate with a passphrase when pushing to the SRT ingest URL. The incoming MPEG-TS stream is AES-encrypted between the sender and the Gcore ingester. Set `srt_passphrase` to `null` to disable passphrase protection.</p>
+<p>The [PATCH&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint's `srt_passphrase` field enables passphrase protection on the ingest connection. When set, the encoder must send the same passphrase; the incoming MPEG-TS stream is AES-encrypted between the sender and the Gcore ingester. Set `srt_passphrase` to `null` to disable.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -493,8 +480,6 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
 
   </Tab>
 </Tabs>
-
-<p>Full API reference: [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream).</p>
 
 ## Configure pull ingest
 
@@ -604,7 +589,6 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/{STREAM_ID}" \
   </Tab>
 </Tabs>
 
-<p>Full API reference: [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream).</p>
 
 </MethodSection>
 </MethodSwitch>
