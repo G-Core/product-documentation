@@ -152,6 +152,28 @@ and read a prompt. Do not explain actions that the interface or terminal output 
 - Explaining what a button does after the reader just clicked it
 - "Click **Save** to save your changes" — saving is implied by clicking Save
 
+### Do not narrate the reader's reaction
+
+Do not frame technical behavior through an assumed user reaction or editorial commentary.
+
+**Forbidden patterns:** `a common surprise`, `surprisingly`, `unexpectedly`, `you may be surprised`,
+`a common source of confusion`, `confusingly`, `interestingly`, `unfortunately`, `this can be frustrating`.
+
+State the product behavior directly — what happens and under which conditions.
+
+**Bad:**
+```
+A common billing surprise: two servers in the same data center communicating through
+public IP addresses generate billed egress.
+```
+
+**Good:**
+```
+Two servers in the same data center communicating through public IP addresses generate billed egress.
+```
+
+**Test:** Remove the phrase describing the reader's reaction. If the technical meaning is unchanged — remove it.
+
 ### Do not describe features by what they are not
 
 Never write a sentence whose only purpose is to say that a feature lacks something or exists outside a context the reader is not in. Describe what the feature IS and what it DOES — not where it is absent.
