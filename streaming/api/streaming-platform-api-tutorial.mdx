@@ -1,510 +1,417 @@
 ---
 title: Video streaming API tutorial
 sidebarTitle: Streaming API
-ai-navigation: Create streams and broadcasts using Video Streaming API endpoints post_streams_id and post_broadcasts, activate streams with patch_streams_id, update broadcast status to live with patch_broadcasts_id, and handle webhooks with live status notifications for video streaming integration.
+ai-navigation: Create streams and broadcasts via the Video Streaming API, activate recording, handle status webhooks, and manage the stream lifecycle from setup to deletion.
 ---
 
-You can integrate your product to use the Video Streaming for unlimited video streaming and hosting services. In this guide, we'll take you through the API and webhook operations involved in integrating with the Video Streaming.
+The Video Streaming API supports full integration workflows, from creating streams and broadcasts through managing status transitions and receiving webhook notifications.
 
-## How integration works
+## Integration overview
 
-Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Video Streaming API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
-
+A typical integration exposes a streaming interface to end users. Each user action maps to a Video Streaming API request and a corresponding webhook notification. The following diagram shows the high-level sequence grouped into stages:
 
 <Frame>![How integration works](/images/docs/streaming/api/streaming-platform-api-tutorial/12876274382481.png)</Frame>
 
+Before starting, confirm the following are in place. Each is required for the API calls and webhook delivery in the workflow:
 
+- A Gcore account with an active [Streaming](/account-settings/account/create-account) subscription — the API endpoints are only accessible with an active subscription
+- [API&nbsp;authentication](/api-reference/streaming) configured — all requests require a valid API key
+- A [webhook](/streaming/extra-features/get-webhooks-from-the-streaming-platform) endpoint registered to receive event notifications — without it, stream and broadcast status transitions are not delivered to the integration
 
-You'll need to have:
-
-  * Your own video streaming interface created
-  * A Gcore account with an active [Streaming](/account-settings/account/create-account) subscription
-  * An [authentication](/api-reference/streaming) set up using the user credentials
-  * A [webhook](/streaming/extra-features/get-webhooks-from-the-streaming-platform) set up
-
-
+<Info>
+The Broadcasts API used in this tutorial is deprecated and will be replaced by the Multicamera API. Existing integrations continue to work, but the Multicamera API will eventually replace the broadcast object and the create, status-change, and deletion operations used in this workflow. New integrations should monitor Gcore announcements for the migration path before building on this workflow.
+</Info>
 
 ## Basic operations
 
 ### Stage 1. Setup
 
-#### Step 1. Create a stream
+<Steps>
+  <Step title="Create a stream">
+    The [Create&nbsp;live&nbsp;stream](/api-reference/streaming/streams/create-live-stream) endpoint (`POST /streaming/streams`) creates a stream object.
 
-Use the [post_streams_id](/api-reference/streaming) method to create a stream object in the Video Streaming.
+    - To prevent errors due to the quota for concurrent active sessions, set the `active` property to `false`.
+    - Select the transcoding region based on the user's location.
 
-Sample request payload:
-
-  * To prevent errors due to the quota for concurrent active sessions, set the **active** property to **false**.
-  * Choose the right transcoding region based on the user's location.
-
-
-
-```json
-{
-    "stream": {
-        "name": "test_stream",
-        "pull": false,
-        "uri": null,
-        "active": false,
-        "transcoding_region": "ix1",
-        "auto_record": false,
-        "webrtc": false,
-        "dvr_enabled": false,
-        "cdn_id": 53949,
-        "projection": "regular"
+    ```json
+    {
+        "stream": {
+            "name": "test_stream",
+            "pull": false,
+            "uri": null,
+            "active": false,
+            "transcoding_region": "ix1",
+            "auto_record": false,
+            "webrtc": false,
+            "dvr_enabled": false,
+            "cdn_id": 53949,
+            "projection": "regular"
+        }
     }
-}
- ```
+    ```
 
-Sample response payload:
+    If successful, the endpoint returns information about the stream created. Save the returned `id` and other necessary data for later steps.
 
-  * If successful, the method returns information about the stream that you created.
-  * Save the returned **id** and other necessary data to use later.
-
-
-
-```json
-{
-    "id": 320423,
-    "active": false
-    ...
-}
- ```
-
-#### Step 2. Create a broadcast
-
-Use the [post_broadcasts](/api-reference/streaming) method to create a broadcast object.
-
-Sample request payload:
-
-  * Set **stream_ids** property to the returned id from Step 1 to bind the broadcast and stream together.
-  * Set **status** property to **pending**.
-
-
-
-```json
-{
-    "broadcast": {
-        "name": "test_broadcast",
-        "status": "pending",
-        "share_url": "",
-        "custom_iframe_url": "",
-        "show_dvr_after_finish": false,
-        "pending_message": "Please wait ...",
-        "ad_id": null,
-        "stream_ids": [320423]
+    ```json
+    {
+        "id": 320423,
+        "active": false
         ...
     }
-}
- ```
+    ```
+  </Step>
+  <Step title="Create a broadcast">
+    The [Create&nbsp;broadcast](/api-reference/streaming/broadcasts/create-broadcast) endpoint (`POST /streaming/broadcasts`) creates a broadcast object.
 
-Sample response payload:
+    - Set the `stream_ids` property to the `id` returned from step 1 to bind the broadcast and stream together.
+    - Set the `status` property to `pending`.
 
-  * If successful, the method returns information about the broadcast that you created.
-  * Save the returned **id** and other necessary data to use later.
+    ```json
+    {
+        "broadcast": {
+            "name": "test_broadcast",
+            "status": "pending",
+            "share_url": "",
+            "custom_iframe_url": "",
+            "show_dvr_after_finish": false,
+            "pending_message": "Please wait ...",
+            "ad_id": null,
+            "stream_ids": [320423]
+            ...
+        }
+    }
+    ```
 
+    If successful, the endpoint returns information about the broadcast created. Save the returned `id` and other necessary data for later steps.
 
+    ```json
+    {
+       "id": 192470,
+       "status": "pending",
+       "stream_ids": [320423],
+       ...
+    }
+    ```
+  </Step>
+  <Step title="Enable the stream">
+    Once the stream and broadcast are created, the user can publish the stream. Setting `active` to `true` makes the stream ready to receive ingest from the encoder. The [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint (`PATCH /streaming/streams/{id}`) activates the stream.
 
-```json
-{
-   "id": 192470,
-   "status": "pending",
-   "stream_ids": [320423],
-   ...
-}
- ```
+    ```json
+    {
+       "stream": {
+          "active": true
+       }
+    }
+    ```
 
-#### Step 3. Enable the stream
-
-Having received a successful response from your app, the user can now publish the stream. Use the [patch_streams_id](/api-reference/streaming) method to activate the stream.
-
-Sample request payload:
-
-```json
-{
-   "stream": {
-      "active": true
-   }
-}
- ```
-
-Sample response payload:
-
-```json
-{
-    "id": 320423,
-    "active": true
-    ...
-}
- ```
-
-#### Step 4. Send a webhook when the stream has started
-
-The Video Streaming sends a webhook that contains **"live": true** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "stream",
-   "message": {
-      "stream": {
+    ```json
+    {
         "id": 320423,
-        "live": true,
-        "recording": false
-      }
-   }
-}
- ```
+        "active": true
+        ...
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: stream started">
+    The Video Streaming sends a webhook that contains `"live": true` to the subscribed endpoint.
+
+    ```json
+    {
+       "type": "stream",
+       "message": {
+          "stream": {
+            "id": 320423,
+            "live": true,
+            "recording": false
+          }
+       }
+    }
+    ```
+  </Step>
+</Steps>
 
 ### Stage 2. Test
 
 The user tests the broadcast at this stage.
 
-#### Step 5. Change the broadcast status to live
+<Steps>
+  <Step title="Change the broadcast status to live">
+    The [Change&nbsp;broadcast](/api-reference/streaming/broadcasts/change-broadcast) endpoint (`PATCH /streaming/broadcasts/{id}`) updates the broadcast status to `live`.
 
-Use the [patch_broadcasts_id](/api-reference/streaming) method to update the broadcast status to _Live_.
-
-Sample request payload:
-
-```json
-{
-   "broadcast": {
-      "status": "live"
-   }
-}
- ```
-
-Sample response payload:
-
-```json
-{
-   "id": 192470,
-   "status": "live"
-   ...
-}
- ```
-
-#### Step 6. Send a webhook when the broadcast has transitioned to Live status
-
-The Video Streaming sends a webhook that contains **"status": live** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "broadcast",
-   "message": {
-      "broadcast": {
-        "id": 192470,
-        "status": "live"
+    ```json
+    {
+       "broadcast": {
+          "status": "live"
+       }
     }
-  }
-}
- ```
+    ```
+
+    ```json
+    {
+       "id": 192470,
+       "status": "live"
+       ...
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: broadcast live">
+    The Video Streaming sends a webhook that contains `"status": "live"` to the subscribed endpoint.
+
+    ```json
+    {
+       "type": "broadcast",
+       "message": {
+          "broadcast": {
+            "id": 192470,
+            "status": "live"
+          }
+       }
+    }
+    ```
+  </Step>
+</Steps>
 
 ### Stage 3. Live
 
-The user starts streaming at this stage. The broadcast is visible to the audience. 
+The stream and broadcast are now live and visible to the audience. Start recording if the session should be saved as a video.
 
-#### Step 7. Start recording
+<Steps>
+  <Step title="Start recording">
+    The [Start&nbsp;recording](/api-reference/streaming/streams/start-recording) endpoint (`PUT /streaming/streams/{id}/start_recording`) begins recording.
 
-Use the [put_streams_id_start_recording](/api-reference/streaming) method to begin recording.
+    If the returned HTTP status code is 204, the request is successful.
+  </Step>
+  <Step title="Receive a webhook: recording started">
+    The Video Streaming sends a webhook that contains `"recording": true` to the subscribed endpoint.
 
-If the returned HTTP status code is 204, the request is successful.
-
-#### Step 8. Send a webhook when stream recording has started
-
-The Video Streaming sends a webhook that contains **"recording": true** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "stream",
-   "message": {
-      "stream": {
-        "id": 320423,
-        "live": true,
-        "recording": true
+    ```json
+    {
+       "type": "stream",
+       "message": {
+          "stream": {
+            "id": 320423,
+            "live": true,
+            "recording": true
+          }
+       }
     }
-  }
-}
- ```
+    ```
+  </Step>
+</Steps>
 
 ### Stage 4. Stop
 
 The user stops streaming at this stage.
 
-#### Step 9. Stop recording
+<Steps>
+  <Step title="Stop recording">
+    The [Stop&nbsp;recording](/api-reference/streaming/streams/stop-recording) endpoint (`PUT /streaming/streams/{id}/stop_recording`) stops recording.
 
-Use the [put_streams_id_stop_recording](/api-reference/streaming) method to stop recording
+    The response contains information about the recorded video.
 
-The response to this request contains information about the recorded video.
-
-Sample response payload:
-
-```json
-{
-    "id": 803111,
-    "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
-    "recording_started_at": "2022-06-03T13:24:29.000Z",
-    "created_at": "2022-06-03T13:25:16.000Z",
-    ...
-}
- ```
-
-#### Step 10. Send a webhook when stream recording has stopped
-
-The Video Streaming sends a webhook that contains **"recording": false** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "stream",
-   "message": {
-      "stream": {
-        "id": 320423,
-        "live": true,
-        "recording": false
-    }
-  }
-}
- ```
-
-#### Step 11. Send a webhook when the recorded video is being processed
-
-The Video Streaming sends a webhook that contains **"status": "pending"** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-  "type": "video",
-  "message": {
-    "video": {
-      "id": 803111,
-      "slug": "MTdaAbW7IzBsjgvy",
-      "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
-      "duration": 48410,
-      "status": "pending",
-      ...
-    }
-  }
-}
- ```
-
-#### Step 12. Change broadcast status to finished
-
-Use the [patch_broadcasts_id](/api-reference/streaming) method to update the broadcast status to Finished.
-
-Sample request payload:
-
-```json
-{
-   "broadcast": {
-      "status": "finished"
-   }
-}
- ```
-
-Sample response payload:
-
-```json
-{
-   "id": 192470,
-   "status": "finished"
-   ...
-}
- ```
-
-#### Step 13. Send a webhook when the broadcast has transitioned to finished status
-
-The Video Streaming sends a webhook that contains **"status": "finished"** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "broadcast",
-   "message": {
-      "broadcast": {
-        "id": 192470,
-        "status": "finished"
-    }
-  }
-}
- ```
-
-#### Step 14. Disable the stream
-
-Use the [patch_streams_id](/api-reference/streaming) method to deactivate the stream.
-
-Sample request payload:
-
-```json
-{
-   "stream": {
-      "active": false
-   }
-}
- ```
-
-Sample response payload:
-
-```json
-{
-   "id": 320423,
-   "live": true,
-   "transcoded_qualities": ["360n", "480n", "720n"],
-   "transcoding_speed": 1.0,
-   "active": false,
-   "rtmp_play_url": [ 
-      "rtmp://pull-ix1.gvideo.co:1939/in/320423?4a5d279b6371c7bcc5ce47afb0f74637",
-      "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_360n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out",
-      "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_480n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out",
-      "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_720n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out"
-    ],
-   "transcoding_enabled": true,
-   ...
-}
- ```
-
-#### Step 15. Send a webhook when the stream has ended
-
-The Video Streaming sends a webhook that contains **"live": false** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "stream",
-   "message": {
-      "stream": {
-        "id": 320423,
-        "live": false,
-        "recording": false
-    }
-  }
-}
- ```
-
-#### Step 16. Delete the broadcast
-
-Use the [delete_broadcasts_id](/api-reference/streaming) method to delete the broadcast.
-
-If the returned HTTP status code is 204, the request is successful.
-
-#### Step 17. Send a webhook when the recorded video is partially processed
-
-This indicates that one quality version of the video currently being processed is ready for the viewers to watch.
-
-The Video Streaming sends a webhook that contains **"status": "viewable"** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-  "type": "video",
-  "message": {
-    "video": {
-      "id": 803111,
-      "slug": "MTdaAbW7IzBsjgvy",
-      "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
-      "duration": 48410,
-      "status": "viewable",
-      "converted_videos": [
-        {
-          "name": "vod720n",
-          "status": "complete"
-        },
-        {
-          "name": "vod480n",
-          "status": "processing"
-        },
-        {
-          "name": "vod360n",
-          "status": "processing"
-        },
-        {
-          "name": "vod240n",
-          "status": "processing"
-        }
-      ]
-    }
-  }
-}
- ```
-
-#### Step 18. Send a webhook when the recorded video is completely processed
-
-This indicates that all quality versions of the video are ready for viewers to watch.
-
-The Video Streaming sends a webhook that contains **"status": "ready"** to your subscribed endpoint.
-
-Sample webhook payload:
-
-```json
-{
-   "type": "video",
-   "message": {
-      "video": {
+    ```json
+    {
         "id": 803111,
-        "slug": "MTdaAbW7IzBsjgvy",
         "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
-        "duration": 48410,
-        "status": "ready",
-        "converted_videos": [
-          {
-            "name": "vod720n",
-            "status": "complete"
-          },
-          {
-            "name": "vod480n",
-            "status": "complete"
-          },
-          {
-            "name": "vod360n",
-            "status": "complete"
-          },
-          {
-            "name": "vod240n",
-            "status": "complete"
-        }
-      ]
+        "recording_started_at": "2022-06-03T13:24:29.000Z",
+        "created_at": "2022-06-03T13:25:16.000Z",
+        ...
     }
-  }
-}
- ```
+    ```
+  </Step>
+  <Step title="Receive a webhook: recording stopped">
+    The Video Streaming sends a webhook that contains `"recording": false` to the subscribed endpoint.
 
-### Step 19. Get video information
+    ```json
+    {
+       "type": "stream",
+       "message": {
+          "stream": {
+            "id": 320423,
+            "live": true,
+            "recording": false
+          }
+       }
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: video processing started">
+    The Video Streaming sends a webhook that contains `"status": "pending"` to the subscribed endpoint.
 
-Use the [get_api_videos_id](/api-reference/streaming) method to retrieve detailed information about the video.
+    ```json
+    {
+      "type": "video",
+      "message": {
+        "video": {
+          "id": 803111,
+          "slug": "MTdaAbW7IzBsjgvy",
+          "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
+          "duration": 48410,
+          "status": "pending",
+          ...
+        }
+      }
+    }
+    ```
+  </Step>
+  <Step title="Change broadcast status to finished">
+    The [Change&nbsp;broadcast](/api-reference/streaming/broadcasts/change-broadcast) endpoint (`PATCH /streaming/broadcasts/{id}`) updates the broadcast status to `finished`.
 
-Sample response payload:
+    ```json
+    {
+       "broadcast": {
+          "status": "finished"
+       }
+    }
+    ```
 
-```json
-{
-    "id": 803111,
-    "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
-    "client_id": 58725,
-    "duration": 48410,
-    "stream_id": 320423,
-    "recording_started_at": "2022-06-03T13:24:29.000Z",
-    "created_at": "2022-06-03T13:25:16.000Z",
-    "sprite": "https://s-ed1.cloud.gcore.lu/videoplatform/sprites/58725/803111_803111.mp4_sprite.jpg",
-    ...
-}
- ```
+    ```json
+    {
+       "id": 192470,
+       "status": "finished"
+       ...
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: broadcast finished">
+    The Video Streaming sends a webhook that contains `"status": "finished"` to the subscribed endpoint.
+
+    ```json
+    {
+       "type": "broadcast",
+       "message": {
+          "broadcast": {
+            "id": 192470,
+            "status": "finished"
+          }
+       }
+    }
+    ```
+  </Step>
+  <Step title="Disable the stream">
+    The [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint (`PATCH /streaming/streams/{id}`) deactivates the stream.
+
+    ```json
+    {
+       "stream": {
+          "active": false
+       }
+    }
+    ```
+
+    ```json
+    {
+       "id": 320423,
+       "live": true,
+       "transcoded_qualities": ["360n", "480n", "720n"],
+       "transcoding_speed": 1.0,
+       "active": false,
+       "rtmp_play_url": [
+          "rtmp://pull-ix1.gvideo.co:1939/in/320423?4a5d279b6371c7bcc5ce47afb0f74637",
+          "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_360n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out",
+          "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_480n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out",
+          "rtmp://pull-ix1.gvideo.co:1939/out/58725_320423_720n?4a5d279b6371c7bcc5ce47afb0f74637?vhost=out"
+        ],
+       "transcoding_enabled": true,
+       ...
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: stream ended">
+    The response may still show `"live": true` while the stream transitions to inactive. Wait for the subsequent webhook with `"live": false` to confirm that streaming has ended.
+
+    The Video Streaming sends a webhook that contains `"live": false` to the subscribed endpoint.
+
+    ```json
+    {
+       "type": "stream",
+       "message": {
+          "stream": {
+            "id": 320423,
+            "live": false,
+            "recording": false
+          }
+       }
+    }
+    ```
+  </Step>
+  <Step title="Delete the broadcast">
+    The [Delete&nbsp;broadcast](/api-reference/streaming/broadcasts/delete-broadcast) endpoint (`DELETE /streaming/broadcasts/{id}`) deletes the broadcast.
+
+    If the returned HTTP status code is 204, the request is successful.
+  </Step>
+  <Step title="Receive a webhook: video partially processed">
+    One quality version of the recorded video is ready for viewers to watch. The Video Streaming sends a webhook that contains `"status": "viewable"` to the subscribed endpoint.
+
+    ```json
+    {
+      "type": "video",
+      "message": {
+        "video": {
+          "id": 803111,
+          "slug": "MTdaAbW7IzBsjgvy",
+          "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
+          "duration": 48410,
+          "status": "viewable",
+          "converted_videos": [
+            { "name": "vod720n", "status": "complete" },
+            { "name": "vod480n", "status": "processing" },
+            { "name": "vod360n", "status": "processing" },
+            { "name": "vod240n", "status": "processing" }
+          ]
+        }
+      }
+    }
+    ```
+  </Step>
+  <Step title="Receive a webhook: video fully processed">
+    All quality versions of the recorded video are ready for viewers to watch. The Video Streaming sends a webhook that contains `"status": "ready"` to the subscribed endpoint.
+
+    ```json
+    {
+       "type": "video",
+       "message": {
+          "video": {
+            "id": 803111,
+            "slug": "MTdaAbW7IzBsjgvy",
+            "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
+            "duration": 48410,
+            "status": "ready",
+            "converted_videos": [
+              { "name": "vod720n", "status": "complete" },
+              { "name": "vod480n", "status": "complete" },
+              { "name": "vod360n", "status": "complete" },
+              { "name": "vod240n", "status": "complete" }
+            ]
+          }
+       }
+    }
+    ```
+  </Step>
+  <Step title="Get video information">
+    The [Get&nbsp;video](/api-reference/streaming/videos/get-video) endpoint (`GET /streaming/videos/{id}`) retrieves detailed information about the recorded video.
+
+    ```json
+    {
+        "id": 803111,
+        "name": "Stream Record: test_stream, 2022-06-03 13:25:16 +0000",
+        "client_id": 58725,
+        "duration": 48410,
+        "stream_id": 320423,
+        "recording_started_at": "2022-06-03T13:24:29.000Z",
+        "created_at": "2022-06-03T13:25:16.000Z",
+        "sprite": "https://s-ed1.cloud.gcore.lu/videoplatform/sprites/58725/803111_803111.mp4_sprite.jpg",
+        ...
+    }
+    ```
+  </Step>
+</Steps>
 
 ## Special cases
 
 ### Reuse of a stream
 
-The user can reuse the same stream for each broadcast. In this case, you don't need to create a new one. Just update the stream using the [patch_streams_id](/api-reference/streaming) method with the appropriate transcoding region.
-
-Sample request payload:
+The same stream can be reused for multiple broadcasts — this avoids recreating push URLs and reconfiguring the encoder between sessions. Instead of creating a new stream, update the existing one with the [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint (`PATCH /streaming/streams/{id}`) to set the appropriate transcoding region.
 
 ```json
 {
@@ -512,9 +419,7 @@ Sample request payload:
       "transcoding_region": "dt1"
    }
 }
- ```
-
-Sample response payload:
+```
 
 ```json
 {
@@ -529,15 +434,11 @@ Sample response payload:
    "backup_push_url_srt": "srt://vp-push-ix2-srt.gvideo.co:5001?streamid=320423b#6460e735eda6b61bd4c99e02abf0c8df",
    ...
 }
- ```
+```
 
 ### Interruption during streaming
 
-  * The Video Streaming sends a webhook when the stream is briefly interrupted.
-
-
-
-Sample webhook payload:
+- The Video Streaming sends a webhook when the stream is briefly interrupted.
 
 ```json
 {
@@ -547,16 +448,12 @@ Sample webhook payload:
         "id": 320423,
         "live": false,
         "recording": false
-    }
-  }
+      }
+   }
 }
- ```
+```
 
-  * You can also check for the stream status using the [get_streams_id](/api-reference/streaming) method. If the response contains **"active": false** and the stream wasn't manually interrupted, then you can call the [patch_broadcasts_id](/api-reference/streaming) method to transition the broadcast to "Paused" status.
-
-
-
-Sample request payload:
+- The [Get&nbsp;live&nbsp;stream](/api-reference/streaming/streams/get-live-stream) endpoint (`GET /streaming/streams/{id}`) returns the current stream state. If the response contains `"active": false` and the stream was not manually interrupted, the [Change&nbsp;broadcast](/api-reference/streaming/broadcasts/change-broadcast) endpoint (`PATCH /streaming/broadcasts/{id}`) transitions the broadcast to `paused` status.
 
 ```json
 {
@@ -564,9 +461,7 @@ Sample request payload:
      "status": "paused"
   }
 }
- ```
-
-Sample response payload:
+```
 
 ```json
 {
@@ -574,20 +469,18 @@ Sample response payload:
    "status": "paused",
    ...
 }
- ```
+```
 
-  * You can also [stop the recording](/api-reference/streaming) when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
+- [Stop&nbsp;recording](/api-reference/streaming/streams/stop-recording) (`PUT /streaming/streams/{id}/stop_recording`) when an interruption occurs (even for a couple of minutes). After the stream resumes, the recording splits into two files: data recorded before the interruption and data recorded after the stream resumes.
 
+The Video Streaming does not reconnect without interrupting the recording if the stream encounters a temporary disruption.
 
+### Recording deletion
 
-The Video Streaming can't currently reconnect without interrupting the recording if the stream gets temporary disruption. But we plan to implement this in the future.
-
-### Stream deletion
-
-You can delete streams that have been inactive for some time and are associated with a deleted user account. To do this, use the [delete_api_videos_id](/api-reference/streaming) method.
+Recorded videos associated with a deleted user account can be removed using the [Delete&nbsp;video](/api-reference/streaming/videos/delete-video) endpoint (`DELETE /streaming/videos/{id}`).
 
 If the returned HTTP status code is 204, the request is successful.
 
 ## Other API methods
 
-Check out our Video Streaming API [documentation](/api-reference/streaming) for more methods that might come in handy for other use cases.
+The [Streaming&nbsp;API&nbsp;reference](/api-reference/streaming) documents additional methods for other use cases.
