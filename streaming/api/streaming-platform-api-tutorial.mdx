@@ -19,7 +19,7 @@ Before starting, confirm the following are in place. Each is required for the AP
 - A [webhook](/streaming/extra-features/get-webhooks-from-the-streaming-platform) endpoint registered to receive event notifications — without it, stream and broadcast status transitions are not delivered to the integration
 
 <Info>
-The Broadcasts API used in this tutorial is deprecated and will be replaced by the Multicamera API. Existing integrations continue to work, but the Multicamera API will eventually replace the broadcast object and status model described in steps 2, 5, 12, and 16. New integrations should monitor Gcore announcements for the migration path before building on this workflow.
+The Broadcasts API used in this tutorial is deprecated and will be replaced by the Multicamera API. Existing integrations continue to work, but the Multicamera API will eventually replace the broadcast object and the create, status-change, and deletion operations used in this workflow. New integrations should monitor Gcore announcements for the migration path before building on this workflow.
 </Info>
 
 ## Basic operations
@@ -94,7 +94,7 @@ The Broadcasts API used in this tutorial is deprecated and will be replaced by t
     ```
   </Step>
   <Step title="Enable the stream">
-    Once the stream and broadcast are created, the user can publish the stream. The [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint (`PATCH /streaming/streams/{id}`) activates the stream.
+    Once the stream and broadcast are created, the user can publish the stream. Setting `active` to `true` makes the stream ready to receive ingest from the encoder. The [Change&nbsp;live&nbsp;stream](/api-reference/streaming/streams/change-live-stream) endpoint (`PATCH /streaming/streams/{id}`) activates the stream.
 
     ```json
     {
@@ -173,7 +173,7 @@ The user tests the broadcast at this stage.
 
 ### Stage 3. Live
 
-The user starts streaming at this stage. The broadcast is visible to the audience.
+The stream and broadcast are now live and visible to the audience. Start recording if the session should be saved as a video.
 
 <Steps>
   <Step title="Start recording">
@@ -318,6 +318,8 @@ The user stops streaming at this stage.
     ```
   </Step>
   <Step title="Receive a webhook: stream ended">
+    The response may still show `"live": true` while the stream transitions to inactive. Wait for the subsequent webhook with `"live": false` to confirm that streaming has ended.
+
     The Video Streaming sends a webhook that contains `"live": false` to the subscribed endpoint.
 
     ```json
@@ -473,9 +475,9 @@ The same stream can be reused for multiple broadcasts — this avoids recreating
 
 The Video Streaming does not reconnect without interrupting the recording if the stream encounters a temporary disruption.
 
-### Stream deletion
+### Recording deletion
 
-Streams that have been inactive for some time and are associated with a deleted user account can be deleted. The [Delete&nbsp;video](/api-reference/streaming/videos/delete-video) endpoint (`DELETE /streaming/videos/{id}`) removes the associated recording.
+Recorded videos associated with a deleted user account can be removed using the [Delete&nbsp;video](/api-reference/streaming/videos/delete-video) endpoint (`DELETE /streaming/videos/{id}`).
 
 If the returned HTTP status code is 204, the request is successful.
 
