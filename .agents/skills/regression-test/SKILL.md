@@ -9,6 +9,29 @@ then apply all fixes and check against the style guide.
 
 ---
 
+## RESUMING A SESSION — Read this first if the conversation has a prior summary
+
+When a session is resumed (a conversation summary exists), run these checks
+before doing anything else:
+
+```powershell
+cd C:\Projects\product-documentation
+git branch --show-current   # must NOT be main — must be the ticket branch
+git status --short           # verify the working tree state
+```
+
+If the current branch is `main` and a Jira ticket was already created in Phase 4
+of the previous session:
+1. Do NOT create a new ticket.
+2. Immediately run `git checkout -b DOC-XXXX` using the existing ticket key.
+3. Continue from the phase where the previous session left off.
+
+If `send_to_review.py` has already been run in a previous session for this ticket,
+do NOT run it again — check the Jira ticket status first and skip Phase 10 if the
+ticket is already In Review.
+
+---
+
 ## FIRST ACTION — Create a todo list
 
 Before doing anything else, create a todo list with every phase as a separate item,
@@ -752,6 +775,20 @@ it is needed in Phase 9.
 
 Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
 the ticket so the script is ready for the next article.
+
+### Create the feature branch immediately after the ticket
+
+Do not wait until Phase 9. Create the branch now, right after the ticket is
+created, so all subsequent edits land on the feature branch and never on `main`:
+
+```powershell
+cd C:\Projects\product-documentation
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key just returned by the script.
 
 Immediately proceed to Phase 5 without asking for confirmation.
 
