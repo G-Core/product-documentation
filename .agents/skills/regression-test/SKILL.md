@@ -61,7 +61,7 @@ Every row starts as `[ ]`. Mark `[V]` only after the specific deliverable exists
 | 7   | MDX rules checklist: every item marked [V] in the message | [ ] |
 | 8   | LLM review script run; score shown; score ≥ 9.5 or fixes applied | [ ] |
 | 9a  | Pre-commit checklist: every item [V] in the message | [ ] |
-| 9b  | git commit output shown; git push output shown | [ ] |
+| 9b  | git commit + push — ONLY after user says коммить/commit/пуш/push | [ ] |
 | 10  | Jira status confirmed; plan file row updated to done | [ ] |
 ```
 
@@ -1252,29 +1252,20 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Create branch, commit, and push
+## Phase 9 — Pre-commit checklist + present for review
 
-**One article = one branch.** The branch name is always the Jira ticket key
-created in Phase 4 — even if the user mentioned a different name earlier in the
-conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
+**STOP. DO NOT COMMIT. DO NOT PUSH.**
 
-**CRITICAL — never reuse a ticket number from earlier in the conversation or from
-a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
-during work on a different article as a planned next ticket — it does not belong
-to the current article. Always use the ticket key that was actually created and
-returned by the Phase 4 script in this session. Anything else is wrong.
+Phase 9 ends after the pre-commit checklist is complete and shown to the user.
+Commit and push happen ONLY when the user explicitly says one of:
+`коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, `запушь`.
 
-```powershell
-cd C:\Projects\product-documentation_2
-git checkout main
-git pull origin main
-git checkout -b DOC-XXXX
-```
+If none of these words appear in the current user message — stop after showing the checklist.
 
-Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
-was mentioned earlier in the conversation).
+**Branch context:** The feature branch was created in Phase 4 immediately after the Jira ticket.
+The branch name is the Jira ticket key. All edits since Phase 4 already land on that branch.
 
-Run the pre-commit checklist below, then commit and push.
+Run the pre-commit checklist below and present the results to the user. Then stop and wait.
 
 **PowerShell git commit — do NOT use bash heredoc syntax.**
 
@@ -1359,7 +1350,8 @@ Run all three checks before committing:
 
 ## Phase 10 — Send to review
 
-Run this phase immediately after the commit has been pushed — do not wait for separate user confirmation.
+Run this phase only after the user has confirmed the commit and push (Phase 9).
+Do not run Phase 10 automatically — wait for the user to trigger it explicitly or to say "коммить/пуш/commit/push".
 
 The Jira ticket was already created in Phase 4. This phase only transitions it
 to In Review and records the completion.
