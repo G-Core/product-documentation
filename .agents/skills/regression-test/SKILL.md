@@ -32,14 +32,80 @@ ticket is already In Review.
 
 ---
 
-## FIRST ACTION — Create a todo list
+## FIRST ACTION — Create the progress table
 
-Before doing anything else, create a todo list with every phase as a separate item,
-all set to `pending`. Update each item to `in_progress` when you start it and
-`completed` only when it is fully done. Do not start a new phase until the previous
-one is marked `completed`.
+**This is the very first thing you do. No exceptions.**
 
-Phases to track:
+Post the table below as your first message. Keep it updated throughout the session.
+Every row starts as `[ ]`. Mark `[V]` only after the specific deliverable exists.
+
+```
+| Row | Deliverable | Done |
+|-----|-------------|------|
+| 0a  | Article file read; full content in context | [ ] |
+| 0b  | Images folder path derived; existing files listed | [ ] |
+| 0c  | Article claimed in plan (status → in_progress) | [ ] |
+| 0d  | portal_type, portal_url, login_method, jira_org_unit, jira_epic recorded | [ ] |
+| 1   | Portal open, logged in, correct region confirmed with screenshot | [ ] |
+| 2a  | Every article step followed in portal in order | [ ] |
+| 2b  | Every tested element has a VERIFIED OK or FINDING block | [ ] |
+| 2c  | Test resources cleaned up | [ ] |
+| 3   | Screenshot checklist posted; every <Frame> row has ok / retaken / skip | [ ] |
+| 4a  | All findings presented as numbered grouped list | [ ] |
+| 4b  | Jira ticket created; key and URL shown | [ ] |
+| 4c  | Feature branch created (git checkout -b DOC-XXXX confirmed) | [ ] |
+| 5   | Every confirmed FINDING applied; each fix shown with before/after | [ ] |
+| 5b  | All 4 anti-reference checks run: UI inventory, flow, positioning, headings | [ ] |
+| 6a  | Style linter run; terminal output shown; exit code 0 | [ ] |
+| 6b  | Manual checklist: every item marked [V] in the message | [ ] |
+| 7   | MDX rules checklist: every item marked [V] in the message | [ ] |
+| 8   | LLM review script run; score shown; score ≥ 9.5 or fixes applied | [ ] |
+| 9a  | Pre-commit checklist: every item [V] in the message | [ ] |
+| 9b  | git commit output shown; git push output shown | [ ] |
+| 10  | Jira status confirmed; plan file row updated to done | [ ] |
+```
+
+### Gate rule — applies before every [V] mark
+
+Before marking any row [V], write one sentence naming the specific evidence:
+
+> **Evidence:** [exact output / screenshot / terminal line / file path that proves this row is done]
+
+If you cannot name specific evidence — the row is not done. Do the work, then come back.
+
+For the rows below, evidence is not a sentence — it is the **literal output pasted inline**:
+
+| Row | Required inline output |
+|-----|------------------------|
+| 0c  | The exact line changed in the plan file (old → new) |
+| 4b  | The Jira URL printed by the script |
+| 4c  | The `git checkout -b` terminal output line |
+| 6a  | The full style linter output block (last line must be `OK` or list what was fixed) |
+| 6b  | The full manual checklist with every item marked `[V]` |
+| 7   | The full MDX checklist with every item marked `[V]` |
+| 8   | The score line from the review script (e.g. `Score: 9.64 / 10`) |
+| 9b  | The `git commit` output line and the `git push` output line |
+| 10  | The plan file line after update (status = done) |
+
+An agent that writes "Evidence: exit code 0" without pasting the actual output has not satisfied the gate. Rerun and paste.
+
+### Phase-end gate — applies before moving to the next phase
+
+At the end of every phase, repost the full table. Then run this check:
+
+1. Count rows that belong to the completed phase.
+2. Count how many are [V].
+3. If any are still [ ] — stop. Do those items now. Do not advance.
+
+Reposting the table is not optional. It is the verification mechanism. Skipping it
+means skipping the gate.
+
+### Todo list (high-level, for phase tracking)
+
+Also create a todo list with every phase set to `pending`. Advance it in parallel
+with the table — both must stay in sync.
+
+Phases:
 
 - Phase 0: Find and read the article; claim in plan
 - Phase 1: Open the portal and log in
