@@ -109,6 +109,15 @@ Do not force a bridge into every section. Use it when the section would otherwis
 
 **Do not treat each section as an independent mini-procedure. Read the article top to bottom and make neighboring sections feel like parts of one document.**
 
+## Do not create a section whose only purpose is to point to another article
+
+A heading promises that the current article will cover that subject. If the content under the heading only says that another article covers it, remove the heading and integrate the cross-reference into the preceding paragraph or the article's concluding sentence. Do not reproduce the linked article's table of contents as a substitute for content.
+
+**Heading-content test:** after reading a heading, ask what the reader will learn or do before the next heading. If the answer is only "learn that another article exists," this is not a real section.
+
+- Bad: `## Player integration` followed by `[Player guide] covers three implementations: Gcore Player, hls.js, dash.js.`
+- Better: Remove the heading. At the end of the preceding section: `To implement the client side, [Player guide] provides code examples for Gcore Player, hls.js, and dash.js.`
+
 ## Examples
 
 Consult [references/examples.md](references/examples.md) when this anti-pattern appears. Add new real examples there over time instead of expanding this file.

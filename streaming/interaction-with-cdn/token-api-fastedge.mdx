@@ -1,0 +1,158 @@
+---
+title: Create a video token API with FastEdge
+sidebarTitle: Video token API (FastEdge)
+ai-navigation: Implement a backend video token signing API using Gcore FastEdge and Rust to generate signed HLS and DASH URLs for player-side token auto-refresh.
+---
+
+Token signing is a stateless, CPU-bound operation: the backend receives a request, verifies the user, combines the video ID with the CDN secret key, and returns a signed URL. [Gcore FastEdge](https://gcore.com/fastedge) runs this at the CDN edge in WebAssembly with no infrastructure to manage.
+
+<Warning>
+Add an authentication check before generating a token. Verify the requesting user has a valid session and is authorized to access the requested video. Without this check, any caller can request a token for any asset.
+</Warning>
+
+## Demo endpoint
+
+A working endpoint is available for testing and development:
+
+GET: [https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=20](https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=20)
+
+```text
+GET https://video-token-102748.fastedge.app/
+    ?video=iKbrdNMcS9ylGuw   # video slug (VOD) or stream ID (Live)
+    &type=vod                # vod | live
+    &expire=20               # token lifetime in seconds
+```
+
+This app is bound to the Gcore demo CDN resource and signs tokens for `demo-protected.gvideo.io` only. Use it for testing — it cannot be used with a custom CDN resource.
+
+## Response
+
+```json
+{
+  "token":     "rI1224fiE3USCa8q...",
+  "token_ip":  "9y9nJqRofJQw-DbX...",
+  "client_ip": "203.0.113.42",
+  "expires":   1700000060,
+  "url":       "https://demo-protected.gvideo.io/videos/2675_iKbrdNMcS9ylGuw/.../master.m3u8",
+  "url_ip":    "https://demo-protected-ip.gvideo.io/videos/2675_iKbrdNMcS9ylGuw/.../master.m3u8"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `token` | Plain secure token — valid from any IP |
+| `token_ip` | IP-bound secure token — locked to `client_ip` |
+| `client_ip` | Viewer's IP as seen by the API |
+| `expires` | Unix timestamp when both tokens expire |
+| `url` | HLS master playlist URL with plain token embedded in path |
+| `url_ip` | HLS master playlist URL with IP-bound token embedded in path |
+
+## Environment variables
+
+Configure these in the FastEdge dashboard before deploying the app:
+
+| Variable | Description |
+|----------|-------------|
+| `CLIENT_ID` | Gcore account ID |
+| `SECRET_KEY` | CDN resource secret key |
+| `CDN_DOMAIN` | CDN hostname for plain-token URLs |
+| `CDN_DOMAIN_IP` | CDN hostname for IP-bound-token URLs |
+
+## FastEdge app source code
+
+Use this as a starting point. Before deploying, replace the body of `main` with an authentication check appropriate for the application.
+
+```rust
+use base64::Engine;
+use fastedge::body::Body;
+use fastedge::http::{Error, Request, Response, StatusCode};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+fn get_query_param<'a>(query: &'a str, key: &str) -> Option<&'a str> {
+    query.split('&').find_map(|p| {
+        let mut kv = p.splitn(2, '=');
+        if kv.next() == Some(key) { kv.next() } else { None }
+    })
+}
+
+/// Generates a Gcore secure token.
+/// Formula: base64url( md5( "{client_id}_{video}_{secret}_{expires}_{ip}" ) )
+/// Pass ip = "" for plain tokens; pass the viewer's IP for IP-bound tokens.
+fn make_token(client_id: &str, video: &str, secret: &str, expires: u64, ip: &str) -> String {
+    let hash_input = format!("{}_{}_{}_{}_{}", client_id, video, secret, expires, ip);
+    let digest = md5::compute(hash_input.as_bytes());
+    let b64 = base64::engine::general_purpose::STANDARD.encode(digest.0);
+    b64.replace('+', "-").replace('/', "_").replace('=', "")
+}
+
+/// Builds the full HLS master playlist URL with the token embedded in the path:
+///   VOD:  https://domain/videos/{client_id}_{video}/{token}/{expires}/master.m3u8
+///   Live: https://domain/cmaf/{client_id}_{video}/{token}/{expires}/master.m3u8
+fn make_url(domain: &str, client_id: &str, video: &str, token: &str, expires: u64, stream_type: &str) -> String {
+    match stream_type {
+        "vod" => format!("https://{}/videos/{}_{}/{}/{}/master.m3u8", domain, client_id, video, token, expires),
+        _     => format!("https://{}/cmaf/{}_{}/{}/{}/master.m3u8",   domain, client_id, video, token, expires),
+    }
+}
+
+#[fastedge::http]
+fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
+    let query = req.uri().query().unwrap_or("");
+
+    // Required: video slug (VOD) or stream ID (Live).
+    let video = match get_query_param(query, "video") {
+        Some(v) => v,
+        None => return Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .header("Content-Type", "application/json")
+            .body(Body::from(r#"{"error":"missing required parameter: video"}"#)),
+    };
+
+    let stream_type = get_query_param(query, "type").unwrap_or("live");
+
+    // Configuration from FastEdge environment variables (see table below).
+    let client_id  = std::env::var("CLIENT_ID").unwrap_or_else(|_| "your-account-id-here".to_string());
+    let secret     = std::env::var("SECRET_KEY").unwrap_or_else(|_| "your-secret-token-here".to_string());
+    let domain     = std::env::var("CDN_DOMAIN").unwrap_or_else(|_| "demo-protected.gvideo.io".to_string());
+    let domain_ip  = std::env::var("CDN_DOMAIN_IP").unwrap_or_else(|_| "demo-protected-ip.gvideo.io".to_string());
+
+    // Detect client IP for IP-bound tokens. Override with &client_ip= if behind a proxy.
+    let client_ip = get_query_param(query, "client_ip")
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| {
+            req.headers()
+                .get("x-real-ip")
+                .or_else(|| req.headers().get("x-forwarded-for"))
+                .and_then(|v| v.to_str().ok())
+                .map(|s| s.split(',').next().unwrap_or("").trim().to_string())
+                .unwrap_or_else(|| "0.0.0.0".to_string())
+        });
+
+    // Parse expiry:
+    //   missing or <= 0       → now + 3600 s (default)
+    //   > 2025-01-01 (Unix)   → treat as an absolute Unix timestamp
+    //   otherwise             → now + value seconds
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let expires = match get_query_param(query, "expire").and_then(|v| v.parse::<i64>().ok()) {
+        Some(v) if v > 1_735_689_600 => v as u64,  // absolute Unix timestamp (after 2025-01-01)
+        Some(v) if v > 0             => now + v as u64,
+        _                            => now + 3600,
+    };
+
+    let token    = make_token(&client_id, video, &secret, expires, "");
+    let url      = make_url(&domain, &client_id, video, &token, expires, stream_type);
+    let token_ip = make_token(&client_id, video, &secret, expires, &client_ip);
+    let url_ip   = make_url(&domain_ip, &client_id, video, &token_ip, expires, stream_type);
+
+    let json = format!(
+        r#"{{"token":"{}","token_ip":"{}","client_ip":"{}","expires":{},"url":"{}","url_ip":"{}"}}"#,
+        token, token_ip, client_ip, expires, url, url_ip
+    );
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "application/json")
+        .body(Body::from(json))
+}
+```
+
