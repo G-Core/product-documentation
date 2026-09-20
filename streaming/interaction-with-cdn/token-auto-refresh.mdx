@@ -5,10 +5,10 @@ ai-navigation: Configure auto-refresh video secure tokens with short TTL (60 sec
 ---
 
 <Info>
-This page extends the [Video secure token](/streaming/interaction-with-cdn/video-secure-token) guide. If you haven't set up secure tokens yet, start there first — it covers enabling the feature, the URL format, and token generation. This page picks up where that guide leaves off and shows how to keep tokens short-lived and auto-refreshed so viewers can't share links.
+This article extends the [Video&nbsp;secure&nbsp;token](/streaming/interaction-with-cdn/video-secure-token) guide, which covers enabling the feature, URL format, and token generation. This article picks up from there and shows how to keep tokens short-lived and auto-refreshed so copied URLs become worthless within seconds.
 </Info>
 
-Short-lived tokens are the most effective defence against link sharing during live events or pay-per-view streams. Set the token to expire in 60 seconds, refresh it automatically in the player before it expires, and anyone who copies the URL from the browser or network inspector will have a useless link within a minute — while your legitimate viewers experience uninterrupted playback.
+Short-lived tokens are the most effective defence against link sharing during live events or pay-per-view streams. Set the token to expire in 60 seconds, refresh it automatically in the player before it expires, and anyone who copies the URL from the browser or network inspector will have a useless link within a minute — while authenticated viewers experience uninterrupted playback.
 
 ## The link-sharing problem
 
@@ -38,21 +38,21 @@ This URL is visible to any viewer who opens developer tools or copies the addres
 
 1. The player loads with a signed URL containing a short-lived token (e.g., 60 s).
 2. A timer fires a few seconds before expiry.
-3. The player calls your backend and receives a fresh `{ token, expires, url }` response.
+3. The player calls the backend and receives a fresh `{ token, expires, url }` response.
 4. The new `{token}/{expires}` path segments replace the old ones in every outgoing request.
 5. Playback continues without a visible interruption. The viewer's browser still shows a URL that will expire in seconds — sharing it is pointless.
 
 
 ## Token modes
 
-There are two types of secure tokens you can use with auto-refresh:
+Auto-refresh works with two secure token modes:
 
 | Mode | Description | Best for |
 |------|-------------|---------|
 | **Plain token** | Valid from any IP. Shared URL is worthless within the TTL. | Users behind NAT, VPNs, or mobile networks where IP can change |
 | **IP-bound token** | Tied to the viewer's IP at generation time. Sharing fails even within the TTL. | Desktop viewers on stable connections; highest security |
 
-For maximum protection, use short-lived IP-bound tokens — a shared URL is both nearly expired and locked to the original viewer's IP. But keep in mind the tradeoff: the shorter the token lifetime, the more sensitive the system becomes to poor network conditions (see [Choosing a token lifetime](#choosing-a-token-lifetime) below).
+For maximum protection, use short-lived IP-bound tokens — a shared URL is both nearly expired and locked to the original viewer's IP. The tradeoff: the shorter the token lifetime, the more sensitive the system becomes to poor network conditions on the viewer's end.
 
 
 ## Choosing a token lifetime
@@ -79,8 +79,8 @@ A rule of thumb: set `refreshLeadSeconds` to at least 20-30% of the token lifeti
 
 Token refresh is a **client-side responsibility** — the CDN validates tokens but has no mechanism to issue new ones on behalf of viewers. Making this seamless requires two things working together:
 
-- **A backend endpoint** that generates fresh signed URLs on demand (your server holds the secret key and verifies that the user is still authorized).
-- **Player-side refresh logic** that calls your endpoint shortly before the current token expires and updates all outgoing URLs transparently — without stopping or reloading the stream.
+- **A backend endpoint** that generates fresh signed URLs on demand (the server holds the secret key and verifies that the user is still authorized).
+- **Player-side refresh logic** that calls the backend endpoint shortly before the current token expires and updates all outgoing URLs transparently — without stopping or reloading the stream.
 
 The CDN's role is to validate each request efficiently and enforce expiry precisely, making the short-TTL approach reliable at scale. The examples in this guide show how to implement both pieces.
 
@@ -107,17 +107,17 @@ The CDN's role is to validate each request efficiently and enforce expiry precis
 
 ## Backend: generating tokens
 
-Token generation must run on your server — the CDN secret key must never be sent to the browser. Your backend must verify that the requesting user has a valid session and the right to access the specific video _before_ generating a token.
+Token generation must run server-side — the CDN secret key must never be sent to the browser. The backend must verify that the requesting user has a valid session and the right to access the specific video _before_ generating a token.
 
 
 ### What is Gcore FastEdge?
 
-[Gcore FastEdge](https://gcore.com/fastedge) is a serverless edge-compute platform that runs WebAssembly applications at CDN edge locations worldwide. Apps compile to WASM, start in microseconds with no cold starts, and respond in milliseconds. Billing is per request with no idle cost.
+[Gcore FastEdge](https://gcore.com/fastedge) is a serverless edge-compute service that runs WebAssembly applications at CDN edge locations worldwide. Apps compile to WASM, start in microseconds with no cold starts, and respond in milliseconds. Billing is per request with no idle cost.
 
 For token signing — a stateless, CPU-bound computation — FastEdge is a natural fit: it runs close to the viewer, scales automatically to any load, and requires no dedicated infrastructure to manage.
 
 <Info>
-**Need user authentication?** The demo FastEdge app generates tokens for anyone who calls it — there is no login check. If you need to restrict access to authenticated users only (subscribers, paid accounts, ticket holders), you must implement your own backend endpoint that verifies the user's session or JWT before generating a token. FastEdge can still be used for that, but the authentication logic must be added to the app. Alternatively, use any backend stack you already have (Node.js, Python, Go, etc.) — the token generation formula is the same regardless of the platform.
+**Need user authentication?** The demo FastEdge app generates tokens for anyone who calls it — there is no login check. To restrict access to authenticated users only (subscribers, paid accounts, ticket holders), implement a backend endpoint that verifies the user session or JWT before generating a token. FastEdge can still be used for that, but the authentication logic must be added to the app. Any backend stack works — the token generation formula is the same regardless of language.
 </Info>
 
 ### Demo token API
@@ -133,7 +133,7 @@ GET https://video-token-102748.fastedge.app/
     &expire=60               # token lifetime in seconds
 ```
 
-This FastEdge app is bound to the Gcore demo CDN resource and signs tokens for the `demo-protected.gvideo.io` domain only. Use it for testing and integration purposes — it cannot be used with your own CDN resource or content.
+This FastEdge app is bound to the Gcore demo CDN resource and signs tokens for the `demo-protected.gvideo.io` domain only. Use it for testing and integration purposes — it cannot be used with a custom CDN resource or other content.
 
 Response:
 
@@ -163,7 +163,7 @@ The demo endpoint has no authentication and serves a sample video only. Do not u
 
 ### FastEdge app source code
 
-The demo endpoint is a Rust WebAssembly application deployed on FastEdge. You can use it as a starting point for your own token API.
+The demo endpoint is a Rust WebAssembly application deployed on FastEdge. Use it as a starting point for a custom token API.
 
 ```rust
 // ┌──────────────────────────────────────────────────────────────────────────┐
@@ -290,14 +290,14 @@ fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
 ```
 
 <Warning>
-**Production requirement:** Add your own authentication check before generating a token. Verify that the requesting user has a valid session and is authorised to access the specific video. Without this check, any caller can request a token for any asset.
+**Production requirement:** Add an authentication check before generating a token. Verify that the requesting user has a valid session and is authorised to access the specific video. Without this check, any caller can request a token for any asset.
 
-If you need user authentication, implement your own backend that validates the session and returns the signed URL from the server — never expose the CDN secret key to the client.
+For user authentication, implement a backend that validates the session and returns the signed URL from the server — never expose the CDN secret key to the client.
 </Warning>
 
 ## Player integration
 
-The examples below use the demo API. Replace `TOKEN_API_URL` with your own authenticated backend endpoint before deploying to production.
+The examples below use the demo API. Replace `TOKEN_API_URL` with an authenticated backend endpoint before deploying to production.
 
 Demo app for Gcore Video Player is available here: [https://g-core.github.io/gcore-videoplayer-js/example/protected-content.html](https://g-core.github.io/gcore-videoplayer-js/example/protected-content.html)
 
@@ -709,11 +709,3 @@ The demo token API returns HLS URLs ending in `master.m3u8`. For DASH, replace t
 </body>
 </html>
 ```
-
-
-## Next steps
-
-- **Replace the demo endpoint** with your own authenticated backend that verifies user sessions before issuing tokens.
-- **IP-bound tokens:** use `tokenData.url_ip` as the source URL and `tokenData.token_ip` in the state; set `ipBound: true` in the Gcore Player `tokenRefresh` config.
-- **Tune timing:** the demo uses 60 s for visibility, but real-world deployments typically use 300–600 s (5–10 minutes). See [Choosing a token lifetime](#choosing-a-token-lifetime) for the full tradeoff table.
-- **Defense in depth:** combine short-lived tokens with geo-blocking and referrer validation on your [Custom CDN resource](/streaming/interaction-with-cdn/custom-cdn-resource).
