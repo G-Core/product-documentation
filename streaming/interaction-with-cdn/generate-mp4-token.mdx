@@ -1,0 +1,153 @@
+---
+title: Generate advanced secure tokens for MP4
+sidebarTitle: Advanced token for MP4
+ai-navigation: Generate advanced MP4 secure tokens for Gcore Video Streaming with optional download speed limiting and IP binding, using Python or Go.
+---
+
+MP4 files use a different signing formula from HLS/DASH. The token is passed as a query parameter rather than embedded in the URL path. The formula optionally includes download speed limiting parameters (`speed` and `buffer`).
+
+<Info>
+Advanced MP4 tokens cannot be combined with [video secure tokens for HLS/DASH](/streaming/interaction-with-cdn/video-secure-token). If both are configured on the same CDN resource, the HLS/DASH token takes precedence.
+</Info>
+
+## Protected URL format
+
+```sh
+https://domain.com/videos/account_id_video_id/filename.mp4?md5={token}&expires={expiration}[&speed={speed}][&buffer={buffer}]
+```
+
+Where:
+* `{token}` — MD5 hash of the MP4 file path and signing parameters
+* `{expiration}` — Unix timestamp (seconds) at which the URL expires
+* `&speed={speed}` — optional; download speed limit (e.g. `1M`, `500K`)
+* `&buffer={buffer}` — optional; buffer size for rate limiting (e.g. `10M`)
+
+The `speed` and `buffer` query parameters must match the values included in the token signature. Tampering with these values returns 403 Forbidden.
+
+## String to sign
+
+Without IP binding:
+
+```text
+${uri}_${secret}_${expires}_${speed}_${buffer}_
+```
+
+With IP binding:
+
+```text
+${uri}_${secret}_${expires}_${speed}_${buffer}_${user_ip}
+```
+
+| Parameter | Required | Description |
+|---|---|---|
+| **uri** | yes | Path portion of the MP4 file URL (e.g. `/videos/account_video/filename.mp4`) |
+| **secret** | yes | Key from CDN resource **Access** > **Secure token** settings |
+| **expires** | yes | Expiration time as a Unix timestamp (UTC) |
+| **speed** | optional | Download speed limit in bytes/sec (e.g. `1M`, `500K`). Use an empty string if not required |
+| **buffer** | optional | Buffer size for rate limiting (e.g. `10M`). Used together with `speed`; leave empty when `speed` is not set |
+| **user_ip** | IP binding only | Client IP address |
+
+An [MP4&nbsp;speed&nbsp;limit](/streaming/video-hosting/hls-and-mp4#mp4-dynamic-speed-limiting) must be configured on the CDN resource for `speed` and `buffer` to take effect.
+
+## Sign examples
+
+The following examples show how different parameter combinations change both the string to sign and the resulting URL.
+
+Secret: `MySecr3tStr1ng`
+
+Without speed limit or IP binding:
+```text
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062___
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=QX39c77lbQKvYgMMAvpyMQ&expires=1743167062
+```
+
+With speed limit (`1M`), buffer (`10M`), and IP binding (`1.2.3.4`):
+```text
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062_1M_10M_1.2.3.4
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=xyRBh7y3LB9ER4Ijr-0hQA&expires=1743167062&speed=1M&buffer=10M
+```
+
+## Code examples
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import base64
+    from hashlib import md5
+    from time import time
+
+    def gethash_mp4(uri, secret, expires, speed, buffer, ip):
+        hash_body = "%s_%s_%d_%s_%s_%s" % (uri, secret, expires, speed, buffer, ip)
+        hash_md5 = base64.b64encode(
+            md5(hash_body.encode()).digest()
+        ).decode().replace("+", "-").replace("/", "_").replace("=", "")
+        return hash_md5
+
+    secret = ""                                                   # enter your key from the CDN resource (Access > Secure token)
+    uri = "/videos/2675_pG8TfmKx2LU2qs/qid3570v1_h264_1800_720.mp4"
+
+    expires = int(time()) + 24 * 60 * 60                          # expiration = now + 24 hours
+
+    # MP4 without speed limit (CDN resource: "Add a client's IP to the token" disabled)
+    token = gethash_mp4(uri, secret, expires, "", "", "")
+    print(f"https://demo-protected.gvideo.io{uri}?md5={token}&expires={expires}")
+
+    # MP4 with speed and buffer limit
+    speed = "1M"
+    buffer = "10M"
+    token = gethash_mp4(uri, secret, expires, speed, buffer, "")
+    print(f"https://demo-protected.gvideo.io{uri}?md5={token}&expires={expires}&speed={speed}&buffer={buffer}")
+
+    # MP4 with IP binding (CDN resource: "Add a client's IP to the token" enabled)
+    ip = "92.223.112.84"
+    token = gethash_mp4(uri, secret, expires, "", "", ip)
+    print(f"https://demo-protected-ip.gvideo.io{uri}?md5={token}&expires={expires}")
+    ```
+    Python playground – https://www.onlineide.pro/playground/share/d6126cff-e97f-456b-b667-6a95030563b4
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+        "crypto/md5"
+        "encoding/base64"
+        "fmt"
+        "time"
+    )
+
+    func getHashMP4(uri, secret string, expires int64, speed, buffer, ip string) string {
+        hashBody := fmt.Sprintf("%s_%s_%d_%s_%s_%s", uri, secret, expires, speed, buffer, ip)
+        md5sum := md5.Sum([]byte(hashBody))
+        hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+        return hashMd5
+    }
+
+    func main() {
+        var token, speed, buffer string
+
+        secret := ""                                                         // enter your key from the CDN resource (Access > Secure token)
+        uri := "/videos/2675_pG8TfmKx2LU2qs/qid3570v1_h264_1800_720.mp4"
+
+        timeNow := time.Now().UTC()
+        expires := timeNow.Add(24 * time.Hour).Unix()                       // expiration = now + 24 hours
+
+        // MP4 without speed limit
+        token = getHashMP4(uri, secret, expires, "", "", "")
+        fmt.Printf("https://demo-protected.gvideo.io%s?md5=%s&expires=%d\n", uri, token, expires)
+
+        // MP4 with speed and buffer limit
+        speed = "1M"
+        buffer = "10M"
+        token = getHashMP4(uri, secret, expires, speed, buffer, "")
+        fmt.Printf("https://demo-protected.gvideo.io%s?md5=%s&expires=%d&speed=%s&buffer=%s\n", uri, token, expires, speed, buffer)
+
+        // MP4 with IP binding (CDN resource: "Add a client's IP to the token" enabled)
+        ip := "92.223.112.84"
+        token = getHashMP4(uri, secret, expires, "", "", ip)
+        fmt.Printf("https://demo-protected-ip.gvideo.io%s?md5=%s&expires=%d\n", uri, token, expires)
+    }
+    ```
+    Go playground – https://goplay.tools/snippet/iqktoxSaTh3
+  </Tab>
+</Tabs>

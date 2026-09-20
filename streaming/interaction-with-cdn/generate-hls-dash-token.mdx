@@ -1,0 +1,107 @@
+---
+title: Generate secure tokens for HLS/DASH
+sidebarTitle: Token generation for HLS/DASH
+ai-navigation: Generate MD5-based secure tokens for Gcore Video Streaming HLS and DASH content with optional IP binding, using Python or Go backend code.
+---
+
+HLS/DASH secure tokens are generated server-side by computing an MD5 hash of the video identifier, secret key, and expiration timestamp. The backend embeds the token and expiration in the URL path before delivering the signed URL to the client. A CDN resource with [secure token protection enabled](/streaming/interaction-with-cdn/video-secure-token) is required.
+
+## String to sign
+
+`video_id` is the video slug for VOD or the stream ID for live streams.
+
+Without IP binding:
+
+```text
+${account_id}_${video_id}_${secret}_${expires}_
+```
+
+With IP binding (ties the token to the client's IP address; requests from a different IP return 403 Forbidden):
+
+```text
+${account_id}_${video_id}_${secret}_${expires}_${user_ip}
+```
+
+| Parameter | Required | Description |
+|---|---|---|
+| **account_id** | yes | Account ID |
+| **video_id** | yes | Video slug (VOD) or stream ID (live) |
+| **secret** | yes | Key from CDN resource **Access** > **Secure token** settings |
+| **expires** | yes | Expiration time as a Unix timestamp (UTC) |
+| **user_ip** | IP binding only | Client IP address |
+
+The MD5 digest is encoded using unpadded Base64 URL encoding (Base64URL), where `+` and `/` are represented as `-` and `_`, and trailing `=` padding is omitted.
+
+## Code examples
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import base64
+    from hashlib import md5
+    from time import time
+
+    def gethash(account_id, video_id, secret, expires):
+        hash_body = "%s_%s_%s_%s_" % (account_id, video_id, secret, expires)
+        hash_md5 = base64.b64encode(
+            md5(hash_body.encode()).digest()
+        ).decode().replace("+", "-").replace("/", "_").replace("=", "")
+        return hash_md5
+
+    account_id = "2675"      # enter your account ID here
+    secret = ""              # enter your key from the CDN resource (Access > Secure token)
+
+    # VOD
+    video_slug = "3dk4NsRt6vWsffEr"     # enter your video slug here
+    expires = int(time()) + 24 * 60 * 60    # expiration = now + 24 hours
+
+    token = gethash(account_id, video_slug, secret, expires)
+    print(f"https://demo-protected.gvideo.io/videos/{account_id}_{video_slug}/{token}/{expires}/master.m3u8")
+
+    # LIVE
+    stream_id = "201693"                    # enter your stream ID here
+    expires = int(time()) + 24 * 60 * 60
+
+    token = gethash(account_id, stream_id, secret, expires)
+    print(f"https://demo-protected.gvideo.io/cmaf/{account_id}_{stream_id}/{token}/{expires}/master.m3u8")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+        "crypto/md5"
+        "encoding/base64"
+        "fmt"
+        "time"
+    )
+
+    func gethash(clientId string, videoId string, secret string, expires int64) string {
+        hashBody := fmt.Sprintf("%s_%s_%s_%d_", clientId, videoId, secret, expires)
+        md5sum := md5.Sum([]byte(hashBody))
+        hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+        return hashMd5
+    }
+
+    func main() {
+        clientId := "2675"
+        secret := ""       // enter your key from the CDN resource (Access > Secure token)
+
+        // VOD
+        videoSlug := "3dk4NsRt6vWsffEr"         // enter your video slug here
+        expires := time.Now().Unix() + 24*60*60 // expiration = now + 24 hours
+
+        token := gethash(clientId, videoSlug, secret, expires)
+        fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8\n", clientId, videoSlug, token, expires)
+
+        // LIVE
+        streamId := "201693"                    // enter your stream ID here
+        expires = time.Now().Unix() + 24*60*60
+
+        token = gethash(clientId, streamId, secret, expires)
+        fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8\n", clientId, streamId, token, expires)
+    }
+    ```
+  </Tab>
+</Tabs>
