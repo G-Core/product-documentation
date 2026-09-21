@@ -1,6 +1,6 @@
 ---
-title: Add an origin group to a CDN resource
-sidebarTitle: Origin group
+title: "Origin groups for CDN resources"
+sidebarTitle: "Origin group"
 ai-navigation: Create and attach origin groups with URL, S3 storage, or FastEdge HTTP application origins and configure load balancing and failover.
 ---
 
@@ -10,50 +10,9 @@ Origin groups define where the CDN fetches content from for a CDN resource. Orig
 
 One origin group can contain a single website, private bucket, or FastEdge HTTP application, or multiple origins.
 
-With multiple active origins, the CDN distributes requests using a round-robin algorithm. Backup origins handle requests when an active origin returns a 5xx error, which increases fault tolerance.
+With multiple active origins, the CDN distributes requests using a round-robin algorithm. Failover and retry behavior — including when to activate backup origins and which failure conditions trigger a retry — depend on origin roles and the **Use next upstream** option. See [Available options](#available-options) for details.
 
-## Step 1. Add a new origin group
-
-Create an origin group during [resource&nbsp;creation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource#step-1-start-creation), from an existing resource, or on the **Origin groups** page.
-
-### In resource settings
-
-Add a group while configuring an existing CDN resource.
-
-<Steps>
-  <Step title="Open the resource settings">
-    In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), navigate to **CDN**, find the resource, and click its **CNAME**.
-
-    <Frame>![Resource name highlighted](/images/docs/cdn/add-an-origin-group/cdn-resources.png)</Frame>
-  </Step>
-  <Step title="Open the origin group form">
-    In the **Pull content from** section, click **Add group**.
-
-    <Frame>![New origin group option in resource settings](/images/docs/cdn/add-an-origin-group/add-group-resource-settings.png)</Frame>
-  </Step>
-</Steps>
-
-### On the origin groups page
-
-Groups created on the **Origin groups** page must be attached to a CDN resource after creation.
-
-<Steps>
-  <Step title="Open the origin groups page">
-    In the Customer Portal, navigate to **CDN** > **Origin groups**.
-
-    <Frame>![Origin groups page](/images/docs/cdn/add-an-origin-group/origin-groups-page.png)</Frame>
-  </Step>
-  <Step title="Open the creation form">
-    Click **Add origin group**.
-  </Step>
-</Steps>
-
-## Step 2. Enter the origin group name
-
-Enter a unique **Origin group name**.
-
-<Frame>![Choose a new origin group in resource settings](/images/docs/cdn/add-an-origin-group/origin-group-name.png)</Frame>
-## Step 3. Configure the origin group
+## Origin group configuration
 
 Add one or more origins to the group. For URL and S3 origins, **Host header override** is optional; when left empty, the CDN uses the **Host header** value from the CDN resource settings.
 
@@ -62,7 +21,7 @@ Add one or more origins to the group. For URL and S3 origins, **Host header over
 Select **Amazon** for Amazon S3 or **Other** for another S3-compatible storage service.
 
 <Warning>
-Without Origin Shielding, each cache miss on a CDN node sends a request directly to the S3 bucket. At scale, this can overload the storage cluster — enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to route cache misses through a single shielding node and reduce S3 load.
+Without Origin Shielding, each cache miss on a CDN node sends a request directly to the S3 bucket. At scale, this can overload the storage cluster — enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to consolidate edge cache misses through a shared shield cache and reduce requests to the S3 origin.
 </Warning>
 
 #### Amazon S3 storage
@@ -88,7 +47,7 @@ Amazon S3 requires an access key ID and secret access key; the [AWS&nbsp;guide](
 
 #### Other S3 storage
 
-Other S3-compatible services require the storage hostname, credentials, region, and bucket name. Gcore Object Storage uses **Other**. Hostname is in **Details**. Create keys in [access keys](/storage/manage-object-storage/manage-s3-access-keys).
+For Gcore Object Storage, select **Other**, copy the storage hostname from **Details**, and create the required credentials under [Access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys).
 
 <Steps>
   <Step title="Select another S3 service">
@@ -110,7 +69,7 @@ Other S3-compatible services require the storage hostname, credentials, region, 
 
 ### URL origin
 
-Use a URL origin for a website or IP address that doesn't require S3 authentication.
+Use a URL origin for a website or IP address that does not require S3 authentication.
 
 <Steps>
   <Step title="Select the origin type">
@@ -134,6 +93,10 @@ Use a URL origin for a website or IP address that doesn't require S3 authenticat
 
 A FastEdge HTTP application can serve as a native CDN origin. Requests reach the application directly on the same edge node, which avoids duplicate response headers, preserves client GeoIP data, and reduces latency.
 
+<Info>
+Because the FastEdge application runs on the same edge node as the CDN, the upstream address in CDN logs and metrics can appear as that node's IP rather than a remote origin address. This applies only when the origin type is a FastEdge HTTP application, not when a FastEdge hook is attached to a regular CDN origin.
+</Info>
+
 <Steps>
   <Step title="Select the origin type">
     Select **FastEdge**.
@@ -147,7 +110,7 @@ A FastEdge HTTP application can serve as a native CDN origin. Requests reach the
 
 ### Available options
 
-#### Set up multiple origins
+#### Multiple-origin configuration
 
 For groups with multiple origins, configure their availability, roles, and failover behavior:
 
@@ -157,7 +120,7 @@ For groups with multiple origins, configure their availability, roles, and failo
 
 <Frame>![Set up multiple origins](/images/docs/cdn/add-an-origin-group/multiple-origins.png)</Frame>
 
-#### Enable or disable an origin
+#### Origin availability
 
 Each origin has the **On** toggle enabled by default, so the CDN can pull content from it. Disable the toggle to remove the origin from this group's load balancing; requests stop reaching it within 15 minutes.
 
@@ -165,31 +128,84 @@ Each origin has the **On** toggle enabled by default, so the CDN can pull conten
 At least one active origin must remain enabled.
 </Info>
 
-#### Activate origin or use it as backup
+#### Active and backup origins
 
-New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when an active origin returns a 5xx error.
+New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when the active origins meet the applicable failover conditions.
 
 #### Use next upstream
 
-Enable **Use next upstream** only when every origin contains the exact same content. Gcore CDN tries fetching content from the next available origin(s) after receiving any 4xx or 5xx responses (except status code 400); if no origin is available, the CDN serves the last origin's response.
+Enable **Use next upstream** only when every origin contains the exact same content. When enabled via the Customer Portal, the CDN retries the request on the next available origin after connection errors or timeouts. Additional retry conditions — such as specific HTTP response codes — can be configured through the [Create origin group API](https://docs.gcore.com/api-reference/cdn/origins/create-origin-group) using the `proxy_next_upstream` array. If no origin is available, the CDN serves the last origin's response.
 
 The resulting request behavior depends on the origin roles and option state:
 
 | Case | CDN request behavior |
 | --- | --- |
-| **Use next upstream** is disabled; all origins are active | The CDN returns an active origin's error response to the client |
-| **Use next upstream** is enabled; one origin is active and the rest are backups | After a 4xx or 5xx response, the CDN tries the remaining origins in list order |
-| **Use next upstream** is enabled; all origins are active | After a 404, 500, 502, 503, or 504 response, the CDN tries the remaining origins in list order |
-| **Use next upstream** is disabled; one origin is active and the rest are backups | After a 5 s timeout or 5xx response, the CDN tries a backup origin. For a 4xx response, it returns the error to the client |
+| **Use next upstream** disabled; all origins active | The CDN returns the active origin's error response to the client without retrying |
+| **Use next upstream** disabled; active and backup origins present | After a 5 s timeout or 5xx response from an active origin, the CDN tries the backup origins in list order. For a 4xx response, it returns the error to the client |
+| **Use next upstream** enabled; no backup origins | After connection errors or timeouts, the CDN tries the remaining active origins in list order. If all active origins fail, the CDN serves the last origin's response |
+| **Use next upstream** enabled; active and backup origins present | After connection errors or timeouts, the CDN tries the remaining active origins first, then backup origins, in list order |
 
-## Step 4. Save changes
+## Origin group creation
 
-Click **Add group**.
+Origin groups can be created directly from CDN resource settings or from the **Origin groups** page.
 
-## Step 5. Attach the origin group
+### From resource settings
+
+<Steps>
+  <Step title="Open the resource settings">
+    In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), navigate to **CDN**, find the resource, and click its **CNAME**.
+
+    <Frame>![Resource name highlighted](/images/docs/cdn/add-an-origin-group/cdn-resources.png)</Frame>
+  </Step>
+  <Step title="Open the origin group form">
+    In the **Pull content from** section, click **Add group**.
+
+    <Frame>![New origin group option in resource settings](/images/docs/cdn/add-an-origin-group/add-group-resource-settings.png)</Frame>
+  </Step>
+  <Step title="Enter the origin group name">
+    Enter a unique **Origin group name**.
+
+    <Frame>![Choose a new origin group in resource settings](/images/docs/cdn/add-an-origin-group/origin-group-name.png)</Frame>
+  </Step>
+  <Step title="Configure the origin group">
+    Select the origin type and configure it as described in Origin group configuration.
+  </Step>
+  <Step title="Save the origin group">
+    Click **Add group**.
+  </Step>
+  <Step title="Save the CDN resource">
+    Click **Save changes**.
+  </Step>
+</Steps>
+
+### From the Origin groups page
+
+Groups created on the **Origin groups** page must be attached to a CDN resource after creation. See [Origin group attachment](#origin-group-attachment).
+
+<Steps>
+  <Step title="Open the origin groups page">
+    In the Customer Portal, navigate to **CDN** > **Origin groups**.
+
+    <Frame>![Origin groups page](/images/docs/cdn/add-an-origin-group/origin-groups-page.png)</Frame>
+  </Step>
+  <Step title="Open the creation form">
+    Click **Add origin group**.
+  </Step>
+  <Step title="Enter the origin group name">
+    Enter a unique **Origin group name**.
+  </Step>
+  <Step title="Configure the origin group">
+    Select the origin type and configure it as described in Origin group configuration.
+  </Step>
+  <Step title="Save the origin group">
+    Click **Add group**.
+  </Step>
+</Steps>
+
+## Origin group attachment
 
 <Info>
-Changing a resource's origin group doesn't update its Host header. Update the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header#how-to-manage-the-host-header) separately.
+Changing a resource's origin group does not update its Host header. Update the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header#how-to-manage-the-host-header) separately.
 </Info>
 
 Attach a group created from the **Origin groups** page to its CDN resource.
