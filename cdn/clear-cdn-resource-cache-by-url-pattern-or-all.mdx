@@ -56,7 +56,7 @@ The cache can be cleared in the [Gcore Customer Portal](https://portal.gcore.com
     Avoid this method in the following cases:
 
     - **A Vary HTTP response header is present on the origin**. Purge by URL deletes only one version of the file.
-    - **Large file delivery optimization is enabled**. When several files on the origin are updated without clearing the CDN cache, Purge by URL deletes only the first slice (with bytes=0…).
+    - **Large file delivery optimization is enabled**. When Large file delivery optimization is enabled, Purge by URL removes only the first cached byte-range slice, which starts at byte 0.
 
     The behavior of Purge by URL also depends on the **Ignore Query string** option:
 
@@ -88,7 +88,7 @@ The cache can be cleared in the [Gcore Customer Portal](https://portal.gcore.com
     | **1. Purge the selected file**<br /><br />Specify a file path without a domain name. As a result, all files at `cdn.example.com/static/image.jpg` are purged, including query string variants — `.jpg?VERSION`, for instance.<br />To purge only a file with a specific query string, include it in the file path: `/static/image.jpg?VERSION`. | `cdn.example.com/static/image.jpg` | `/static/image.jpg` |
     | **2. Purge the group of files from one folder**<br /><br />Use the `*` operator: `/static/*`                                                                                                                                                                                                                                                            | `cdn.example.com/static`           | `/static/*`         |
     | **3. Purge the group of files with a certain type**<br /><br />Use the `*` operator with the file name extension. All `.jpg` files are purged, including query string variants.                                                                                                                                                     | `cdn.example.com/static/*.jpg`     | `/static/*.jpg`     |
-    | **4. Purge the group of files having a common folder in the path**<br /><br />Use the `*` operator twice.                                                                                                                                                                                                                                              | `cdn.example.com/img/static/files` | `/img/*/files`      |
+    | **4. Purge the group of files having a common folder in the path**<br /><br />Place the `*` operator between path segments.                                                                                                                                                                                                                                               | `cdn.example.com/img/static/files` | `/img/*/files`      |
     | **5. Purge the group of files with a certain type having a common folder in the path**<br /><br />Use the `*` operator with a path pattern.                                                                                                                                                                                                         | `cdn.example.com/img/static/*.jpg` | `/img/static/*.jpg` |
   </Tab>
 </Tabs>
@@ -97,7 +97,9 @@ The cache can be cleared in the [Gcore Customer Portal](https://portal.gcore.com
 
 An [API token](/account-settings/api-tokens) is required for authenticated requests. The example below uses Postman to send a purge by URL request.
 
-<Accordion title="API request details">
+Send a `POST` request to `https://api.gcore.com/cdn/resources/{resource_id}/purge` with the headers `Authorization: apikey {{api_token}}` and `Content-Type: application/json`. Replace `{resource_id}` with the ID of the CDN resource to purge.
+
+<Accordion title="Request parameters and responses">
   | **Field**             | **Value**                                                                                                                                                                                                                                                                |
   | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
   | **Method**            | `POST`                                                                                                                                                                                                                                                                   |
@@ -170,12 +172,12 @@ Select a tab for the request body of each purge type:
   </Step>
 </Steps>
 
-If an error occurs, the API returns a status code and a response body describing the cause. Example:
+If an error occurs, the API returns a status code and a response body describing the cause. Example (Purge by URL, invalid URL format):
 
 ```json
 {
   "errors": {
-    "paths": ["A path should start with /."]
+    "urls": ["A path should start with /."]
   }
 }
 ```
