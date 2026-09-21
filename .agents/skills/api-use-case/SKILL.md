@@ -76,7 +76,6 @@ the link is directly relevant to mapping a Portal step to an API call.
 | Input | Required | Notes |
 |-------|----------|-------|
 | Path to existing Portal article | Yes | The article that will receive the API tab |
-| Real API testing | No | Ask the user — see Phase 2 |
 
 ---
 
@@ -98,20 +97,10 @@ Test: "Can the user do Step 3 without Steps 1 and 2?" If yes → Structure B.
 
 ---
 
-## Phase 2 — API testing (ask the user)
+## Phase 2 — Live API testing
 
-Before writing, ask:
+Always test against the live API. Do not ask the user. Do not use spec-only mode.
 
-> The API section can be based on the OpenAPI spec alone, or I can also run
-> the actual API calls against the live environment to verify real responses,
-> catch undocumented errors, and confirm field behavior.
->
-> - **Yes, test with real API** — more accurate, takes longer
-> - **No, use the spec only** — faster, mark uncertain steps as `{TODO: verify}`
-
-Wait for the answer before proceeding.
-
-**If yes → real testing:**
 - API credentials are in `C:\Projects\docops-agent2\access.md`
 - Use Luxembourg-3 (`region_id: 148`) — `GCORE_CLOUD_REGION_ID`. Kubernetes uses this region. Do not override it.
 - Container Registry and CaaS only: Luxembourg-2 (`region_id: 76`). Those products are not in Luxembourg-3; the articles state this.
@@ -123,10 +112,8 @@ Wait for the answer before proceeding.
 - SDK field names (method names, struct fields, response object attributes) must match the actual SDK — never extrapolate or guess them
 - Only after the full flow runs end-to-end for BOTH curl AND SDK — move to Phase 3
 - Delete test resources immediately after each test, not at the end
-
-**If no → spec only:**
-- Mark steps that cannot be verified from the spec as `{TODO: verify in live environment}`
-- These will need a follow-up `regression-test` run to verify
+- If the flow needs supporting resources, create the full environment first, then run the article operations, then delete everything
+- Never leave `{TODO: verify}` placeholders — live-test until the call is confirmed
 
 ---
 
@@ -708,10 +695,7 @@ Show the complete updated article. Then:
 Article: [path]
 API structure: [A — sequential / B — independent]
 Steps covered: [N]
-Real API tested: [yes / no — N steps marked TODO]
-
-TODO items:
-- {TODO: verify ...} at Step N — [what to check]
+Real API tested: yes
 ```
 
 When the user confirms the result looks good — load `.agents/skills/pr/SKILL.md`
