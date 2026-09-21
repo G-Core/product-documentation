@@ -1,10 +1,15 @@
 ---
 title: Manage DNS records
 sidebarTitle: Manage DNS records
-ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via the Customer Portal.
+ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via Customer Portal or REST API.
 ---
 
-Create and manage DNS records in the [Gcore Customer Portal](https://portal.gcore.com).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Create and manage DNS records in the [Gcore Customer Portal](https://portal.gcore.com).</p>
 
 <Info>
 Non-advanced interface mode. Verify that the **Advanced** toggle is off before following these steps:
@@ -16,25 +21,31 @@ Balancing and dynamic response are available in [advanced&nbsp;mode](/dns/dns-re
 
 ## Create a DNS record
 
-1\. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the domain zone to which records should be added. Or, click the three-dot icon on the right and then click **Go to records**.
+1. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the domain zone to which records should be added. Or, click the three-dot icon on the right and then click **Go to records**.
 
 <Frame>![DNS zone records list with Add record, Export records, and Import records buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image2.png)</Frame>
 
-2\. Click **Add record**. The form opens in the records list.
+2. Click **Add record**. The form opens in the records list.
 
 <Frame>![Add record form with Type, Name, TTL, and Content fields](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image3.png)</Frame>
 
-3\. In the **Type** field, select a [record&nbsp;type](/dns/dns-records) — A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB.
+3. In the **Type** field, select a [record&nbsp;type](/dns/dns-records) — A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB.
 
-4\. In the **Name** field, specify the subdomain to which the record belongs. Select from the following options:
+4. In the **Name** field, specify the subdomain to which the record belongs. Select from the following options:
 
   * Leave the field blank to add a record for the main domain (apex/naked domain).
   * Enter the subdomain name for a specific subdomain — `one` creates a record for `one.example.com`.
   * Enter an asterisk (`*`) to add a wildcard record for all subdomains at once.
 
-5\. In the **TTL** field, specify the time to live in seconds. This determines how long recursive DNS servers cache the record. With a TTL of 300 seconds, a change to an A record value from `1.2.3.4` to `5.6.7.8` takes up to 5 minutes to propagate — resolvers return the old value until the cache expires.
+5. In the **TTL** field, specify the time to live in seconds. This determines how long recursive DNS servers cache the record. With a TTL of 300 seconds, a change to an A record value from `1.2.3.4` to `5.6.7.8` takes up to 5 minutes to propagate — resolvers return the old value until the cache expires.
 
-6\. In the **Content** field, enter a value for the record type.
+6. In the **Content** field, enter the value for the selected record type.
+
+7. Click **Add**.
+
+<p>Verify the record with the [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool.</p>
+
+### Record value examples
 
 <Accordion title="Examples of values for different record types">
 | **Record type** | **Value** |
@@ -51,22 +62,345 @@ Balancing and dynamic response are available in [advanced&nbsp;mode](/dns/dns-re
 | **SVCB** | Service binding record that specifies connection parameters for a service endpoint.<br/>Example: *1 . alpn=h2* |
 </Accordion>
 
-7\. Click **Add**.
-
-The [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool confirms the record was created correctly.
-
 ## Manage a DNS record
 
-1\. Navigate to All zones and select the domain zone to manage. Or, click the three-dot icon on the right and click **Go to records**.
+1. Navigate to All zones and select the domain zone to manage. Or, click the three-dot icon on the right and click **Go to records**.
 
 <Frame>![DNS zone records list with Add record, Export records, and Import records buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image2.png)</Frame>
 
-2\. Click the pencil icon next to the record to expand the edit panel.
+2. Click the pencil icon next to the record to expand the edit panel.
 
-3\. Change the TTL, value, or both.
+<p>To update the record, change the TTL, value, or both, then click **Save**.</p>
 
-4\. Click **Save** to apply the changes.
-
-5\. To delete the record, click **Delete record** in the expanded panel, then click **Yes, delete** in the confirmation dialog.
+<p>To delete the record, click **Delete record** in the expanded panel, then click **Yes, delete** in the confirmation dialog.</p>
 
 <Frame>![Edit record panel with TTL and content fields, Save and Delete record buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image4.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create, update, and delete DNS records in a zone using the RRset API. The API manages records as RRsets identified by record name and type. An RRset can contain multiple values, such as two IP addresses for the same A record.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+export RECORD_NAME="{RECORD_FQDN}"
+export RECORD_TYPE="{A|AAAA|CNAME|MX|TXT|...}"
+```
+
+<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it equals `ZONE_NAME`; for a subdomain it is the full FQDN — `www.example.com`.</p>
+
+## Create a record
+
+<p>This example creates an A record with a TTL of 300 seconds and one IP address. To assign multiple IP addresses to the same name, add one object to `resource_records` per address.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    record = client.dns.zones.rrsets.create(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        resource_records=[{"content": ["1.2.3.4"]}],
+        ttl=300,
+    )
+    print(record.name, record.type, record.ttl)
+    for rr in record.resource_records:
+        print(rr.content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        record, err := client.DNS.Zones.Rrsets.New(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetNewParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+                ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                    {Content: []any{"1.2.3.4"}},
+                },
+                Ttl: gcore.Int(300),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(record.Name, record.Type, record.Ttl)
+        for _, rr := range record.ResourceRecords {
+            fmt.Println(rr.Content)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"ttl": 300, "resource_records": [{"content": ["1.2.3.4"]}]}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "A",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["1.2.3.4"], "enabled": true, "meta": {}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List records
+
+<p>List the RRsets in a zone to inspect their names, types, TTLs, and current values. The response also includes system records such as NS.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    page = client.dns.zones.rrsets.list(os.environ["ZONE_NAME"])
+    print(page.total_amount)
+    for r in page:
+        print(r.name, r.type, r.ttl)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.DNS.Zones.Rrsets.List(ctx, os.Getenv("ZONE_NAME"),
+            dns.ZoneRrsetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(page.TotalAmount)
+        for _, r := range page.Rrsets {
+            fmt.Println(r.Name, r.Type, r.Ttl)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "rrsets": [
+        {
+          "name": "example.com",
+          "type": "A",
+          "ttl": 300,
+          "resource_records": [{"content": ["1.2.3.4"], "enabled": true}]
+        },
+        {
+          "name": "example.com",
+          "type": "NS",
+          "ttl": 3600,
+          "resource_records": [
+            {"content": ["ns1.gcorelabs.net"], "enabled": true},
+            {"content": ["ns2.gcdn.services"], "enabled": true}
+          ]
+        }
+      ],
+      "total_amount": 2
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a record
+
+<p>PUT replaces the full RRset — all previous values are overwritten. Send every IP or value the record should have after the update.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    record = client.dns.zones.rrsets.replace(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        resource_records=[{"content": ["5.6.7.8"]}],
+        ttl=600,
+    )
+    print(record.ttl)
+    for rr in record.resource_records:
+        print(rr.content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        record, err := client.DNS.Zones.Rrsets.Replace(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetReplaceParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+                ResourceRecords: []dns.ZoneRrsetReplaceParamsResourceRecord{
+                    {Content: []any{"5.6.7.8"}},
+                },
+                Ttl: gcore.Int(600),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(record.Ttl)
+        for _, rr := range record.ResourceRecords {
+            fmt.Println(rr.Content)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"resource_records": [{"content": ["5.6.7.8"]}], "ttl": 600}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "A",
+      "ttl": 600,
+      "resource_records": [
+        {"content": ["5.6.7.8"], "enabled": true, "meta": {}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete a record
+
+<p>Delete the RRset identified by `RECORD_NAME` and `RECORD_TYPE`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.dns.zones.rrsets.delete(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        _, err := client.DNS.Zones.Rrsets.Delete(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetDeleteParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+            })
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X DELETE "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns an empty response body:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
