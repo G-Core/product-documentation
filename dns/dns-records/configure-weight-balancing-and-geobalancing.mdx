@@ -1,23 +1,17 @@
 ---
 title: Dynamic response
 sidebarTitle: Dynamic response
-ai-navigation: Configure dynamic DNS responses in Gcore Managed DNS using pickers and metadata to route records by geolocation, ASN, subnet, weight, or failover criteria.
+ai-navigation: Configure dynamic DNS responses in Gcore Managed DNS to route queries by weight, geolocation, country, ASN, or proximity via Customer Portal or REST API.
 ---
 
-Dynamic response is a Gcore DNS feature that delivers different records to different clients based on configured criteria. Depending on the parameter used — geolocation, ASN, subnet, or weight — the feature is also referred to as weight balancing, traffic steering, GeoDNS, or failover.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-## Dynamic response overview
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-Pickers are rule sets that determine how the DNS server chooses which record to return for each query. They control dynamic responses by checking DNS query data against the metadata set for each record, in the order configured.
+<p>Dynamic response selects which records from an RRset are returned for a DNS query. **Pickers** define how records are selected, while **metadata** provides the values compared per query — country, ASN, subnet, coordinates, or weight.</p>
 
-Dynamic response makes the RRSet dynamic. Multiple records can be added to determine which one appears in DNS responses, based on criteria — user subnet, ASN, geolocation metadata, or others.
-
-Dynamic response setup consists of two stages:
-
-  1. **Set the metadata** or other data types against which the query parameters will be compared.
-  2. **Select pickers** to define the sequence in which the resolver compares query data against the metadata or other criteria of the record.
-
-Setting the "Continent" picker and adding metadata of the "continent" type with the value "Africa" limits the record to users located in Africa.
+<p>The Continent picker with `continents: Africa` metadata, for instance, returns that record only to clients in Africa.</p>
 
 ## Configure dynamic response
 
@@ -26,56 +20,18 @@ Setting the "Continent" picker and adding metadata of the "continent" type with 
   Create a DNS record set in [advanced&nbsp;mode](/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#1-go-to-records-settings) (steps 1–4).
   </Step>
   <Step title="Enable the Dynamic response toggle">
+  Turn on **Dynamic response**.
   </Step>
   <Step title="Select pickers">
-  Select a picker preset from the "Presets" buttons or manually select pickers from the list on the right. The order of pickers in the left list determines priority: the topmost picker is checked first.
-
-  <Tip>
-  Presets are editable: select a preset and then change the position of pickers or add/remove pickers manually.
-  </Tip>
-  <Accordion title="Available pickers">
-  The following pickers are available:
-
-   * **GeoDistance.** Geo proximity to the latlong (latitude and longitude) in the metadata determines the record in the response; the fallback metadata will be ignored.
-   * **Weighted shuffle.** Weight metadata determines the probability of the record hitting the response.
-   * **Default.** Fallback metadata determines the record in the response if no other pickers were selected.
-   * **ASN.** The match with the ASN (autonomous system number) in the metadata determines the record in the response.
-   * **Country.** The match with the country in the metadata determines the record in the response.
-   * **Continent.** The match with the continent in the metadata determines the record in the response.
-   * **Region.** The match with the region in the metadata determines the record in the response.
-   * **IP.** The match with IP address or CIDR notation (in IPv4 and IPv6) determines the record in the response.
-   * **Healthcheck.** The record in the response is selected based on availability determined with [Healthcheck](/dns/dns-failover/configure-and-use-dns-failover).
-
-  The **First N** option is also in the list of pickers. It controls the maximum number of records used per response and is added to each preset. The default value is 1.
-  </Accordion>
-
-  Adjust pickers as follows:
-
-    * To raise or lower a picker, use drag and drop.
-    * To remove a picker, click the cross.
-    * To remove all selected pickers, click **Clear**.
+  Select a preset, or add pickers manually. Pickers run in the order shown, top to bottom — drag to change priority.
 
   <Frame>![Dynamic response configuration](/images/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/pickers-10.png)</Frame>
   </Step>
   <Step title="Specify the record value">
+  Enter the DNS record value that this metadata applies to.
   </Step>
   <Step title="Set metadata">
-  Set the appropriate metadata against which the query value will be compared and specify the value. Multiple metadata fields can be added for one value by clicking the plus button.
-
-  <Accordion title="Available metadata">
-  Ten metadata types are available:
-
-   * asn (autonomous system number)
-   * continents
-   * countries
-   * regions
-   * latlong (latitude and longitude)
-   * fallback (only used in the response if no other metadata type is selected)
-   * backup (only used in combination with health checks to provide failover capability; if the rest of the records are not "healthy," backup records will be used to form an answer; if at least one non-backup record is "healthy," the record with the backup metadata does not participate in the response)
-   * notes (any comments — a city name, data center name, or cluster name)
-   * weight
-   * ip (IP address or CIDR notation, IPv4 and IPv6)
-  </Accordion>
+  Add the metadata required by the selected pickers and specify its value. Use **+** to add another metadata field to the same record.
   </Step>
   <Step title="Add more records (optional)">
   Click **Add record** to add more records and repeat steps 4 and 5.
@@ -84,6 +40,45 @@ Setting the "Continent" picker and adding metadata of the "continent" type with 
   Click **Create**.
   </Step>
 </Steps>
+
+### Available pickers
+
+<p>Select pickers to define routing logic. Presets are editable — select a preset and then adjust picker order or add pickers manually.</p>
+
+<Accordion title="Picker types">
+The following pickers are available:
+
+ * **GeoDistance.** Geo proximity to the latlong (latitude and longitude) in the metadata determines the record in the response; the fallback metadata will be ignored.
+ * **Weighted shuffle.** Weight metadata determines the probability of the record hitting the response.
+ * **Default.** Fallback metadata determines the record in the response if no other pickers were selected.
+ * **ASN.** The match with the ASN (autonomous system number) in the metadata determines the record in the response.
+ * **Country.** The match with the country in the metadata determines the record in the response.
+ * **Continent.** The match with the continent in the metadata determines the record in the response.
+ * **Region.** The match with the region in the metadata determines the record in the response.
+ * **IP.** The match with IP address or CIDR notation (in IPv4 and IPv6) determines the record in the response.
+ * **Healthcheck.** The record in the response is selected based on availability determined with [Healthcheck](/dns/dns-failover/configure-and-use-dns-failover).
+
+The **First N** option is also in the list of pickers. It controls the maximum number of records used per response and is added to each preset. The default value is 1.
+</Accordion>
+
+### Available metadata
+
+<p>Each record can carry one or more metadata fields. Add the fields required by the selected pickers.</p>
+
+<Accordion title="Metadata types">
+Ten metadata types are available:
+
+ * asn (autonomous system number)
+ * continents
+ * countries
+ * regions
+ * latlong (latitude and longitude)
+ * fallback (only used in the response if no other metadata type is selected)
+ * backup (only used in combination with health checks to provide failover capability; if the rest of the records are not "healthy," backup records will be used to form an answer; if at least one non-backup record is "healthy," the record with the backup metadata does not participate in the response)
+ * notes (any comments — a city name, data center name, or cluster name)
+ * weight
+ * ip (IP address or CIDR notation, IPv4 and IPv6)
+</Accordion>
 
 ## Examples of preset settings
 
@@ -95,19 +90,7 @@ Setting the "Continent" picker and adding metadata of the "continent" type with 
     The latlong and weight metadata are ignored if the corresponding pickers are not added from the list.
     </Warning>
 
-    When a DNS request is made, the response is formed using the selected "Records selection" option and the metadata specified for records.
-
-    The system checks whether a client matches the criteria from the metadata in the following order: IP, ASN, country, and continent. The processing logic works like this:
-
-      1. Gcore's DNS server receives a request to the domain.
-      2. If Health Checks are configured, all "non-healthy" records are filtered out.
-      3. Gcore's DNS server compares the requestor's IP (respecting EDNS(0)) with the IP from the metadata. Records with matching metadata are used to form an answer if possible.
-      4. If no matches are found, the ASN meta is considered as in step 3.
-      5. If no matches are found, the country meta is considered as in step 3.
-      6. If no matches are found, the continent meta is considered as in step 3.
-      7. If no matches are found, the region meta is considered as in step 3.
-      8. If no matches are found, the records with "fallback=true" metadata are considered.
-      9. If no matches are found, all records are used in the answer (respecting the max answers value).
+    Gcore evaluates matching metadata in picker order: IP → ASN → country → continent → region. If no criterion matches, it uses a record with `fallback=true`; if no fallback exists, the response is formed from the remaining records according to **First N**. Unhealthy records are excluded first when Health Checks are configured.
 
     **Example**: The "Geo DNS" preset is selected with one record per response in the First N.
 
@@ -146,7 +129,7 @@ Setting the "Continent" picker and adding metadata of the "continent" type with 
     If the metadata field "weight" is left empty, a default value of 50, 33.3, or 25 is applied depending on the number of records. Each record without an explicit weight has equal probability.
     </Info>
 
-    Probability is calculated only if the value of First N exceeds the number of resource records. For a record R1 from RRset with weight W1, its probability(P1) is calculated as its weight divided by the sum of the weights of all other records.
+    When the number of resource records exceeds First N, probability determines which records appear per response. A record's probability is its weight divided by the sum of the weights of all participating records:
 
     ```sh
     P1= W1 / Sumi(Wi)
@@ -171,3 +154,345 @@ Setting the "Continent" picker and adding metadata of the "continent" type with 
       * `~100` responses with the record `7.8.9.0` (weight 50)
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Dynamic response is configured on the RRset level. Each record in `resource_records` carries a `meta` object with routing criteria, and the `pickers` array defines the strategy the resolver uses to select a record per query. The `first_n` picker controls how many records appear in each response.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+export RECORD_NAME="{RECORD_FQDN}"
+```
+
+<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it equals `ZONE_NAME`; for a subdomain it is the full FQDN — `www.example.com`.</p>
+
+## Weighted shuffle
+
+<p>Weighted shuffle distributes queries across records based on their `weight` metadata value — higher weight means the record appears more often, proportional to its weight relative to the total. Use the `weighted_shuffle` picker together with `first_n` to limit the number of records per response.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.create(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[
+        {"content": ["1.2.3.4"], "meta": {"weight": 90}},
+        {"content": ["4.5.6.7"], "meta": {"weight": 10}},
+        {"content": ["7.8.9.0"], "meta": {"weight": 50}},
+    ],
+    pickers=[
+        {"type": "weighted_shuffle"},
+        {"type": "first_n", "limit": 1},
+    ],
+    ttl=300,
+)
+print(rrset.name, rrset.pickers)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+            {Content: []any{"1.2.3.4"}, Meta: map[string]any{"weight": 90}},
+            {Content: []any{"4.5.6.7"}, Meta: map[string]any{"weight": 10}},
+            {Content: []any{"7.8.9.0"}, Meta: map[string]any{"weight": 50}},
+        },
+        Pickers: []dns.ZoneRrsetNewParamsPicker{
+            {Type: "weighted_shuffle"},
+            {Type: "first_n", Limit: gcore.Int(1)},
+        },
+        Ttl: gcore.Int(300),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Pickers)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ttl": 300,
+    "resource_records": [
+      {"content": ["1.2.3.4"], "meta": {"weight": 90}},
+      {"content": ["4.5.6.7"], "meta": {"weight": 10}},
+      {"content": ["7.8.9.0"], "meta": {"weight": 50}}
+    ],
+    "pickers": [
+      {"type": "weighted_shuffle"},
+      {"type": "first_n", "limit": 1}
+    ]
+  }'
+```
+
+<p>The API returns the created RRset with its picker configuration:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 300,
+  "pickers": [
+    {"type": "weighted_shuffle", "strict": false},
+    {"type": "first_n", "limit": 1, "strict": false}
+  ],
+  "resource_records": [
+    {"content": ["1.2.3.4"], "enabled": true, "meta": {"weight": 90}},
+    {"content": ["4.5.6.7"], "enabled": true, "meta": {"weight": 10}},
+    {"content": ["7.8.9.0"], "enabled": true, "meta": {"weight": 50}}
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Geo DNS
+
+<p>Geo DNS routes queries based on the client's geolocation. The resolver evaluates IP, ASN, country, continent, and region metadata in that order and uses the first criterion that produces a match. Add a record with `"fallback": true` to handle queries that match no other criteria. Use `first_n` to limit how many matching records appear in the response. Set `meta.countries` to two-letter ISO 3166-1 alpha-2 country codes.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.create(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[
+        {"content": ["10.0.0.1"], "meta": {"countries": ["de", "at"]}},
+        {"content": ["10.0.0.2"], "meta": {"countries": ["fr", "be"]}},
+        {"content": ["10.0.0.3"], "meta": {"fallback": True}},
+    ],
+    pickers=[
+        {"type": "geodns"},
+        {"type": "first_n", "limit": 1},
+    ],
+    ttl=300,
+)
+print(rrset.name, rrset.pickers)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+            {Content: []any{"10.0.0.1"}, Meta: map[string]any{"countries": []string{"de", "at"}}},
+            {Content: []any{"10.0.0.2"}, Meta: map[string]any{"countries": []string{"fr", "be"}}},
+            {Content: []any{"10.0.0.3"}, Meta: map[string]any{"fallback": true}},
+        },
+        Pickers: []dns.ZoneRrsetNewParamsPicker{
+            {Type: "geodns"},
+            {Type: "first_n", Limit: gcore.Int(1)},
+        },
+        Ttl: gcore.Int(300),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Pickers)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ttl": 300,
+    "resource_records": [
+      {"content": ["10.0.0.1"], "meta": {"countries": ["de", "at"]}},
+      {"content": ["10.0.0.2"], "meta": {"countries": ["fr", "be"]}},
+      {"content": ["10.0.0.3"], "meta": {"fallback": true}}
+    ],
+    "pickers": [
+      {"type": "geodns"},
+      {"type": "first_n", "limit": 1}
+    ]
+  }'
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 300,
+  "pickers": [
+    {"type": "geodns", "strict": false},
+    {"type": "first_n", "limit": 1, "strict": false}
+  ],
+  "resource_records": [
+    {"content": ["10.0.0.1"], "enabled": true, "meta": {"countries": ["de", "at"]}},
+    {"content": ["10.0.0.2"], "enabled": true, "meta": {"countries": ["fr", "be"]}},
+    {"content": ["10.0.0.3"], "enabled": true, "meta": {"fallback": true}}
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Geo distance
+
+<p>Geo distance routes queries to the record whose coordinates are closest to the client's geolocation. Use the `geodistance` picker with `meta.latlong` set to a two-element array `[latitude, longitude]` in decimal degrees.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.create(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[
+        {"content": ["10.0.0.1"], "meta": {"latlong": [51.52, -0.13]}},
+        {"content": ["10.0.0.2"], "meta": {"latlong": [48.86, 2.34]}},
+    ],
+    pickers=[
+        {"type": "geodistance"},
+        {"type": "first_n", "limit": 1},
+    ],
+    ttl=300,
+)
+print(rrset.name, rrset.pickers)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+            {Content: []any{"10.0.0.1"}, Meta: map[string]any{"latlong": []float64{51.52, -0.13}}},
+            {Content: []any{"10.0.0.2"}, Meta: map[string]any{"latlong": []float64{48.86, 2.34}}},
+        },
+        Pickers: []dns.ZoneRrsetNewParamsPicker{
+            {Type: "geodistance"},
+            {Type: "first_n", Limit: gcore.Int(1)},
+        },
+        Ttl: gcore.Int(300),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Pickers)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ttl": 300,
+    "resource_records": [
+      {"content": ["10.0.0.1"], "meta": {"latlong": [51.52, -0.13]}},
+      {"content": ["10.0.0.2"], "meta": {"latlong": [48.86, 2.34]}}
+    ],
+    "pickers": [
+      {"type": "geodistance"},
+      {"type": "first_n", "limit": 1}
+    ]
+  }'
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 300,
+  "pickers": [
+    {"type": "geodistance", "strict": false},
+    {"type": "first_n", "limit": 1, "strict": false}
+  ],
+  "resource_records": [
+    {"content": ["10.0.0.1"], "enabled": true, "meta": {"latlong": [51.52, -0.13]}},
+    {"content": ["10.0.0.2"], "enabled": true, "meta": {"latlong": [48.86, 2.34]}}
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
