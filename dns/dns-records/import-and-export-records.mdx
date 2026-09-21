@@ -1,53 +1,173 @@
 ---
 title: Import and export records
 sidebarTitle: Import and export
-ai-navigation: Export or import Gcore Managed DNS records using BIND .zone files that include domain name, TTL, RRsets, time intervals, and authoritative NS server records.
+ai-navigation: Export DNS records to a BIND zone file or import records from a BIND zone file into an existing Gcore Managed DNS zone via Customer Portal or REST API. Import adds new RRsets; existing RRsets with the same name and type are skipped.
 ---
 
-Use import and export to gain more control over DNS records and make domain migration easier.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-<Steps>
-  <Step title="Open the domain zone">
-    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Managed DNS** → [**All&nbsp;zones**](https://portal.gcore.com/dns/zones).
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-    Click the domain zone to open it.
+<p>Export DNS records to a BIND zone file for backup or migration, or import records from a BIND zone file into an existing Gcore DNS zone.</p>
 
-    <Frame>![All zones list](/images/docs/dns/dns-records/import-and-export-records/import-and-export-records-image1.png)</Frame>
-  </Step>
-  <Step title="Click Export records or Import records">
-    <Frame>![Zone records page with Export records and Import records buttons](/images/docs/dns/dns-records/import-and-export-records/import-and-export-records-image2.png)</Frame>
+## Export or import records
 
-    <Tabs>
-      <Tab title="Export">
-        After clicking **Export records**, the BIND zone file will be downloaded to the local machine as a text file with the .zone extension, e.g., `sample-test.com.zone`.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Managed DNS** → [**All&nbsp;zones**](https://portal.gcore.com/dns/zones) and open the domain zone.</p>
 
-        The downloaded file includes domain name, TTL, RRsets, time intervals (refresh, update, and expiry), and the authoritative NS server:
+<Frame>![Zone records page with Export records and Import records buttons](/images/docs/dns/dns-records/import-and-export-records/import-and-export-records-image2.png)</Frame>
 
-        ```sh
-        $ORIGIN test.dnsexample.com.
-        $TTL 300
-        @ IN SOA ns1.gcorelabs.net. support.gcore.com. (
-          1690969313 ; serial number
-          5400 ; refresh
-          3600 ; update retry
-          1209600 ; expiry
-          300 ; minimum
-        )
-        $TTL 3600
-        @ IN NS ns1.gcorelabs.net.
-        @ IN NS ns2.gcdn.services.
-        $TTL 600
-        @ IN A 1.2.3.4
-        @ IN A 4.5.6.7
-        * IN CNAME sample.domains.com.
-        * IN CNAME sample-2.domains.com.
-        ```
-      </Tab>
-      <Tab title="Import">
-        After clicking **Import records**, a dialog will appear. Specify the content of the BIND zone file for the domain or click **Upload zone file** to import records from a file with the .zone extension. Then, click **Import**.
+<Tabs>
+  <Tab title="Export">
+    Click **Export records**. The portal downloads the records as a BIND zone file with the `.zone` extension, for example, `sample-test.com.zone`.
 
-        <Frame>![Import records dialog with zone file content field and Upload zone file button](/images/docs/dns/dns-records/import-and-export-records/import-and-export-records-image3.png)</Frame>
-      </Tab>
-    </Tabs>
-  </Step>
-</Steps>
+    The exported file contains the zone origin, TTLs, SOA parameters, authoritative nameservers, and DNS records:
+
+    ```sh
+    $ORIGIN test.dnsexample.com.
+    $TTL 300
+    @ IN SOA ns1.gcorelabs.net. support.gcore.com. (
+      1690969313 ; serial number
+      5400 ; refresh
+      3600 ; update retry
+      1209600 ; expiry
+      300 ; minimum
+    )
+    $TTL 3600
+    @ IN NS ns1.gcorelabs.net.
+    @ IN NS ns2.gcdn.services.
+    $TTL 600
+    @ IN A 1.2.3.4
+    @ IN A 4.5.6.7
+    * IN CNAME sample.domains.com.
+    * IN CNAME sample-2.domains.com.
+    ```
+  </Tab>
+  <Tab title="Import">
+    Click **Import records**. Paste the BIND zone content into the dialog, or click **Upload zone file** to select a `.zone` file. Then click **Import**.
+
+    <Frame>![Import records dialog with zone file content field and Upload zone file button](/images/docs/dns/dns-records/import-and-export-records/import-and-export-records-image3.png)</Frame>
+
+    Import adds new RRsets to the zone. Existing RRsets with the same name and type are skipped; records not mentioned in the file remain unchanged.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Export and import DNS zone records as BIND-format zone files. Export returns the full zone file; import adds new RRsets to the zone. Existing RRsets with the same name and type are skipped — records not in the file remain unchanged.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+```
+
+## Export zone records
+
+<p>The response contains the full zone as a BIND-formatted string in the `raw_zone` field. SOA and NS records are included automatically.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    exported = client.dns.zones.export(os.environ["ZONE_NAME"])
+    with open("zone-file.zone", "w") as f:
+        f.write(exported.raw_zone)
+    print("Saved to zone-file.zone")
+    print(exported.raw_zone)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        exported, err := client.DNS.Zones.Export(ctx, os.Getenv("ZONE_NAME"))
+        if err != nil {
+            panic(err)
+        }
+        err = os.WriteFile("zone-file.zone", []byte(exported.RawZone), 0644)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("Saved to zone-file.zone")
+        fmt.Println(exported.RawZone)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    <p>To inspect the API response:</p>
+
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/export" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "raw_zone": "$ORIGIN example.com.\n$TTL 300\n@ IN SOA ns1.gcorelabs.net. ...\n$TTL 3600\n@ IN NS ns1.gcorelabs.net.\n@ IN NS ns2.gcdn.services.\n$TTL 300\n@ IN A 1.2.3.4\nwww IN A 5.6.7.8\n"
+    }
+    ```
+
+    <p>To export directly to a zone file:</p>
+
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/export" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      | python3 -c "import sys, json; print(json.load(sys.stdin)['raw_zone'])" \
+      > zone-file.zone
+    ```
+  </Tab>
+</Tabs>
+
+## Import zone records
+
+<p>Send the BIND zone file as a plain-text request body. Import adds new RRsets to the zone; existing RRsets with the same name and type are skipped and listed in `warnings`. Records not present in the file remain unchanged.</p>
+
+```bash
+curl -s -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/import" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: text/plain" \
+  --data-binary @zone-file.zone
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "imported": {
+    "rrsets": 1,
+    "resource_records": 1,
+    "qtype": 1,
+    "skipped_resource_records": 0
+  },
+  "success": true,
+  "warnings": {}
+}
+```
+
+</MethodSection>
+</MethodSwitch>
