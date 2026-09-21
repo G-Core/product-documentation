@@ -1,7 +1,7 @@
 ---
 title: "Clear CDN resource cache by URL, pattern, or all and check purge history"
 sidebarTitle: "Purge"
-ai-navigation: Configure CDN cache purging by URL, pattern, or all via the Customer Portal or API, and track purge requests in the purge history.
+ai-navigation: Configure CDN cache purging by URL, pattern, or all via the Customer Portal or API, and retrieve purge history via the Customer Portal or API.
 ---
 
 [Purge](https://portal.gcore.com/cdn/purge/purge-request) is an option that clears the CDN resource cache. Use it when content on the origin is updated and waiting for natural cache expiration is not acceptable, or when CDN servers are serving incorrect content.
@@ -162,6 +162,8 @@ If an error occurs, the API returns a status code and a response body describing
   Purge history stores requests for the past month only.
 </Note>
 
+### Customer Portal
+
 To view the history, navigate to the [Purge&nbsp;history](https://portal.gcore.com/cdn/purge/purge-history) page. The page displays all existing requests.
 
 Use filters to display specific requests:
@@ -170,3 +172,26 @@ Use filters to display specific requests:
 - **Type.** Select the purge type (Purge by URL, Purge all, or Purge by pattern).
 - **Status.** Select the status (In progress, Successful, Failed, or Status report disabled).
 - **Date.** Set the time period (up to one month).
+
+### API
+
+An [API token](/account-settings/api-tokens) is required for authenticated requests.
+
+To retrieve purge history, send a `GET` request to `https://api.gcore.com/cdn/purge_statuses`:
+
+```bash
+curl -X GET "https://api.gcore.com/cdn/purge_statuses" \
+  -H "Authorization: apikey ${GCORE_API_KEY}"
+```
+
+Use query parameters to filter results:
+
+| Parameter | Description |
+| --- | --- |
+| `cname` | CDN resource CNAME. Example: `example.com` |
+| `purge_type` | Purge type: `purge_by_url`, `purge_by_pattern`, or `purge_all` |
+| `status` | Purge status: `In progress`, `Successful`, `Failed`, or `Status report disabled` |
+| `from_created` | Start of the time range in ISO 8601 format (UTC). Example: `2024-01-01T00:00:00Z` |
+| `to_created` | End of the time range in ISO 8601 format (UTC). Example: `2024-01-31T23:59:59Z` |
+
+For the full parameter reference, see [Get purges history list](/api-reference/cdn/purge-history/get-purges-history-list).
