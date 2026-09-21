@@ -130,20 +130,20 @@ At least one active origin must remain enabled.
 
 #### Active and backup origins
 
-New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when an active origin returns a 5xx error.
+New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when the active origins meet the applicable failover conditions.
 
 #### Use next upstream
 
-Enable **Use next upstream** only when every origin contains the exact same content. When enabled, Gcore CDN retries the request on the next available origin after connection errors, timeouts, invalid headers, or response codes 403, 404, 429, 500, 502, 503, or 504. If no origin is available, the CDN serves the last origin's response.
+Enable **Use next upstream** only when every origin contains the exact same content. When enabled via the Customer Portal, the CDN retries the request on the next available origin after connection errors or timeouts. Additional retry conditions — such as specific HTTP response codes — can be configured through the [Create origin group API](https://docs.gcore.com/api-reference/cdn/origins/create-origin-group) using the `proxy_next_upstream` array. If no origin is available, the CDN serves the last origin's response.
 
 The resulting request behavior depends on the origin roles and option state:
 
 | Case | CDN request behavior |
 | --- | --- |
-| **Use next upstream** is disabled; all origins are active | The CDN returns an active origin's error response to the client |
-| **Use next upstream** is enabled; one origin is active and the rest are backups | After connection errors, timeouts, invalid headers, or response codes 403, 404, 429, 500, 502, 503, or 504, the CDN tries the remaining origins in list order |
-| **Use next upstream** is enabled; all origins are active | After connection errors, timeouts, invalid headers, or response codes 403, 404, 429, 500, 502, 503, or 504, the CDN tries the remaining origins in list order |
-| **Use next upstream** is disabled; one origin is active and the rest are backups | After a 5 s timeout or 5xx response, the CDN tries a backup origin. For a 4xx response, it returns the error to the client |
+| **Use next upstream** disabled; all origins active | The CDN returns the active origin's error response to the client without retrying |
+| **Use next upstream** disabled; active and backup origins present | After a 5 s timeout or 5xx response from an active origin, the CDN tries the backup origins in list order. For a 4xx response, it returns the error to the client |
+| **Use next upstream** enabled; no backup origins | After connection errors or timeouts, the CDN tries the remaining active origins in list order. If all active origins fail, the CDN serves the last origin's response |
+| **Use next upstream** enabled; active and backup origins present | After connection errors or timeouts, the CDN tries the remaining active origins first, then backup origins, in list order |
 
 ## Origin group creation
 
