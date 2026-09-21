@@ -61,7 +61,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>An application may also stop automatically if payment for the product fails. In that case, it cannot be restarted until payment is completed.</p>
 
 <Warning>
-Deleting an application is permanent. All configuration, environment variables, secrets, and associated data are removed and cannot be recovered.
+Deleting an application is permanent and cannot be undone. The application configuration, environment variables, and logs are removed. Linked Secrets Manager secrets and Edge Storage stores are not deleted — they remain available in their respective services. The application binary is also retained and can be reused in a new application.
 </Warning>
 
 ## Metrics
@@ -107,15 +107,35 @@ Deleting an application is permanent. All configuration, environment variables, 
 
 <Frame>![Response headers tab with an Access-Control-Allow-Origin header set to https://example.com](/images/docs/fastedge/manage-apps/response-headers.png)</Frame>
 
-<p>To add a header, click **Add response header**, enter the header name in the **Key** field and the value in the **Value** field, then click **Save changes**.</p>
+<Steps>
+  <Step title="Add a header entry">
+    Click **Add response header**.
+  </Step>
+  <Step title="Set the header">
+    Enter the header name in the **Key** field and the value in the **Value** field.
+  </Step>
+  <Step title="Save">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 ### Environment variables
 
-<p>Environment variables pass configuration values to the application at runtime. Each variable can store up to 64 KB of data; for larger values, define the parameter here and read it from code through the [dictionary](#dictionary) using the same key name.</p>
+<p>Environment variables pass configuration values to the application at runtime. Each variable can store up to 64 KB of data. Values over 64 KB can be entered on the **Environment variables** tab but must be accessed through the [dictionary](#dictionary) rather than standard environment-variable access — define the variable with the same key name and read it from code using the dictionary API.</p>
 
 <Frame>![Environment variables tab with three variables configured showing key-value pairs](/images/docs/fastedge/manage-apps/env-vars.png)</Frame>
 
-<p>To add a variable, click **Add environment variable**, enter the variable name in the **Key** field and its value in the **Value** field, then click **Save changes**.</p>
+<Steps>
+  <Step title="Add a variable entry">
+    Click **Add environment variable**.
+  </Step>
+  <Step title="Set the variable">
+    Enter the variable name in the **Key** field and its value in the **Value** field.
+  </Step>
+  <Step title="Save">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 <p>Access environment variables in code using the [JavaScript&nbsp;SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) or standard Rust `std::env::var("KEY_NAME")`.</p>
 
@@ -242,7 +262,7 @@ curl -X GET "https://api.gcore.com/fastedge/v1/apps/$APP_ID" \
   -H "Authorization: apikey ${GCORE_API_KEY}"
 ```
 
-<p>The response includes all application fields: `id`, `binary`, `name`, `status`, `rsp_headers`, `env`, `secrets`, and `stores`.</p>
+<p>The response includes the following fields used in these procedures: `id`, `binary`, `name`, `status`, `rsp_headers`, `env`, `secrets`, and `stores`.</p>
 
 <p>To stop the application, send a PATCH request with `"status": 0`. To start it again, use `"status": 1`:</p>
 
@@ -254,7 +274,7 @@ curl -X PATCH "https://api.gcore.com/fastedge/v1/apps/$APP_ID" \
 ```
 
 <Warning>
-Deleting an application is permanent. All configuration, environment variables, secrets, and associated data are removed and cannot be recovered.
+Deleting an application is permanent and cannot be undone. The application configuration, environment variables, and logs are removed. Linked Secrets Manager secrets and Edge Storage stores are not deleted — they remain available in their respective services. The application binary is also retained and can be reused in a new application.
 </Warning>
 
 <p>To delete the application permanently:</p>
@@ -302,7 +322,7 @@ curl "https://api.gcore.com/fastedge/v1/apps/$APP_ID/logs?from=2026-06-17T00:00:
 
 <p>Response headers, environment variables, secrets, and Edge&nbsp;Storage can each be updated independently using PATCH <code>/fastedge/v1/apps/{app_id}</code>. Only the fields included in the request body are updated — other fields remain unchanged.</p>
 
-**Response headers**
+### Response headers
 
 <p>Set headers in the `rsp_headers` object:</p>
 
@@ -313,7 +333,7 @@ curl "https://api.gcore.com/fastedge/v1/apps/$APP_ID/logs?from=2026-06-17T00:00:
 }
 ```
 
-**Environment variables**
+### Environment variables
 
 <p>Set variables in the `env` object:</p>
 
@@ -324,7 +344,7 @@ curl "https://api.gcore.com/fastedge/v1/apps/$APP_ID/logs?from=2026-06-17T00:00:
 }
 ```
 
-**Secrets**
+### Secrets
 
 <p>To link a secret, get its numeric ID from <code>GET /fastedge/v1/secrets</code>, then reference it in the `secrets` object:</p>
 
@@ -334,7 +354,7 @@ curl "https://api.gcore.com/fastedge/v1/apps/$APP_ID/logs?from=2026-06-17T00:00:
 }
 ```
 
-**Edge Storage**
+### Edge Storage
 
 <p>To link a key-value store, get its numeric ID from <code>GET /fastedge/v1/kv</code>, then reference it in the `stores` object:</p>
 
