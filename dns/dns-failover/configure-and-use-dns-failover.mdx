@@ -1,13 +1,16 @@
 ---
 title: DNS Healthchecks
 sidebarTitle: Healthchecks
-ai-navigation: Configure DNS Healthchecks to monitor server availability, exclude failing IPs from DNS responses, and set up backup records via the Gcore Customer Portal.
+ai-navigation: Configure DNS Healthchecks in Gcore Managed DNS to monitor server availability, exclude failing records from DNS responses, and set up backup records via Customer Portal or REST API.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Healthchecks keep a site or application available when one or more servers go down. This feature monitors server availability and excludes non-working IPs from DNS responses when issues occur. As a result, traffic is redirected from the problematic server to a working one, and the resource stays available for all users.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
+<p>Healthchecks keep a site or application available when one or more servers go down. This feature monitors server availability and excludes non-working IPs from DNS responses when issues occur. As a result, traffic is redirected from the problematic server to a working one, and the resource stays available for all users.</p>
 
 <Accordion title="Example of how Healthchecks works">
 This feature is especially important for business areas where the loss of availability means the loss of customers. Consider an online store that serves Europe and the US. The site runs on two servers — a European one and an American one — with Geobalancing routing visitors to the closest server. Customers from Paris and Barcelona are balanced to the European server, while customers from Vancouver and Chicago are balanced to the American one.
@@ -37,28 +40,26 @@ When the European server recovers, Healthchecks detects that and restores its IP
 
 ## Healthchecks mechanism
 
-Healthchecks operate in a continuous poll-detect-respond cycle. The brief overview below covers the essentials; the step-by-step breakdown that follows explains each stage in detail.
-
-**Basic explanation:**
-
-DNS Healthchecks sends regular requests to each configured record to determine whether the server is reachable. A record is excluded from DNS responses when its server stops responding, and restored when it comes back online. By default, round-robin balancing distributes requests across available servers; Geobalancing can also be enabled.
-
-**Detailed explanation:**
+<p>Healthchecks continuously poll configured records and update DNS responses based on server availability:</p>
 
 <Steps>
   <Step title="Healthchecks send requests to servers">
   DNS Healthchecks sends requests to servers to check their availability. Configure request settings — protocol, frequency, and others — in the Gcore Customer Portal after the feature is enabled.
 
-  The following is an example configuration:
+  A sample configuration:
 
   * Protocol: ICMP
   * Frequency: 1 minute
   * Timeout: 10 seconds
 
   With this configuration, DNS Healthchecks sends requests to web servers via ICMP every 60 seconds.
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-4.png)</Frame>
   </Step>
   <Step title="Healthchecks classify servers">
-  Requests are sent from all Gcore DNS server locations. If web servers respond within the set timeout (e.g., 10 seconds) in 85% of locations, the feature marks them as available. If a web server fails to respond within the timeout in 20% of locations, the feature marks it as unavailable. The gap between these thresholds is intentional — a server must fall below 20% to be marked unavailable, and must recover above 85% to be marked available again, preventing flapping when availability is borderline.
+  A server is marked available when it responds successfully from at least 85% of Gcore DNS locations. It is marked unavailable when successful responses drop below 20% of locations. The gap between these thresholds prevents status flapping — a server must fully recover above 85% before being restored to DNS responses.
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-5.png)</Frame>
   </Step>
   <Step title="Unavailable records are excluded from DNS responses">
   If a web server is unavailable, Healthchecks marks the corresponding record as unavailable, and the DNS server excludes it from responses.
@@ -66,32 +67,32 @@ DNS Healthchecks sends regular requests to each configured record to determine w
   <Info>
   If all Healthchecks fail, their A records will be included in the DNS response, while still adhering to other filters like _geo county_ or _first_n_.
   </Info>
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-6.png)</Frame>
   </Step>
-  <Step title="Traffic is redirected to available servers">
-  The DNS server removes the A record of the unavailable server from its responses. Any requests intended for the unavailable server are redirected to other available servers.
+  <Step title="DNS responses include only available servers">
+  The DNS server removes the unavailable record from responses. Subsequent DNS queries return only available records, so clients resolve the hostname to working servers.
 
   The load balancing mechanism decides which server responds. By default, DNS Healthchecks use round-robin, but a custom mechanism can be configured. [Dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the available load balancing options.
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-7.png)</Frame>
   </Step>
   <Step title="Recovered servers are restored to DNS responses">
   Healthchecks keep sending requests to web servers. When the web server becomes available and responds, the feature sends the appropriate update to the DNS server, and the web server goes back online for end-users.
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-8.png)</Frame>
+
+  <Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-9.png)</Frame>
   </Step>
 </Steps>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-4.png)</Frame>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-5.png)</Frame>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-6.png)</Frame>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-7.png)</Frame>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-8.png)</Frame>
-
-<Frame>![Health Checks scheme](/images/docs/dns/dns-failover/configure-and-use-dns-failover/health-checks-9.png)</Frame>
 
 
 
 ## Configure healthchecks
+
+<Caution>
+<p>Healthchecks are available only in advanced interface mode and apply to A, AAAA, and CNAME records only.</p>
+</Caution>
 
 <Steps>
   <Step title="Open the DNS section">
@@ -102,25 +103,18 @@ DNS Healthchecks sends regular requests to each configured record to determine w
 
   <Frame>![Open a DNS zone](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-08.png)</Frame>
   </Step>
-  <Step title="Confirm advanced interface mode is enabled">
-  In non-advanced mode, the Healthchecks feature isn't available.
-
-  <Caution>
-  A Healthcheck picker can be applied only to records of the **A**, **AAAA**, or **CNAME** type.
-  </Caution>
-  </Step>
   <Step title="Open the record for editing">
   Click the three-dot icon and click **Edit record** in the row of the A, AAAA, or CNAME record.
 
   <Frame>![Open a Records list/Edit record set page](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-10.png)</Frame>
-
-  The "Records list/Edit record set" page will open. Perform the remaining steps there.
-
-  <Frame>![Select a Healthchecks picker](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-20.png)</Frame>
   </Step>
   <Step title="Enable Dynamic response">
+  Enable the **Dynamic response** toggle.
   </Step>
   <Step title="Add a Healthcheck picker">
+  In the left column, select the **Healthcheck** picker.
+
+  <Frame>![Select a Healthchecks picker](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-20.png)</Frame>
   </Step>
   <Step title="Open picker settings">
   Click the edit icon when the picker is added to the left column.
@@ -166,22 +160,268 @@ DNS Healthchecks sends regular requests to each configured record to determine w
   </Step>
 </Steps>
 
-Healthchecks begin monitoring the configured address on the next check interval. If the server is unreachable, its record is excluded from DNS responses automatically and restored once it recovers. Recent monitoring events are available in the health check logs section below.
+<p>Healthchecks begin monitoring the configured address on the next check interval. If the server is unreachable, its record is excluded from DNS responses automatically and restored once it recovers. Recent monitoring events are available in the logs.</p>
 
 ## Enable backup metadata
 
-Backup metadata keeps designated records out of DNS responses as long as at least one non-backup record is healthy. When all primary records fail, backup records take over automatically.
+<p>Backup metadata keeps designated records out of DNS responses as long as at least one non-backup record is healthy. When all primary records fail, backup records take over automatically.</p>
 
-To configure backup metadata, select which record will be used as a backup (Record one in the example), select "backup" from the dropdown list, and enable the toggle.
+<p>In the record settings, open the metadata dropdown for the record that should serve as the backup, select **backup**, and enable it.</p>
 
 <Frame>![Configure backup metadata](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-60.png)</Frame>
 
-By default, DNS Healthchecks use round-robin balancing. [Dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the options for configuring how requests are distributed among available servers.
+<p>By default, DNS Healthchecks use round-robin balancing. [Dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) covers the options for configuring how requests are distributed among available servers.</p>
 
 ## Check healthchecks logs
 
-After a DNS cache renewal, Healthchecks will start monitoring availability.
-
-To check for recent monitoring events, open the DNS zone page where Healthchecks is configured. Select the relevant record, click the three-dot icon on the right, and click **Health check logs**.
+<p>To check for recent monitoring events, open the DNS zone page where Healthchecks is configured. Select the relevant record, click the three-dot icon on the right, and click **Health check logs**.</p>
 
 <Frame>![Check monitoring logs](/images/docs/dns/dns-failover/configure-and-use-dns-failover/healthchecks-70.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Healthchecks are configured at the RRset level. The `meta.failover` object defines the check protocol and parameters; the `healthcheck` picker activates monitoring. Individual records that act as backup — used only when all primary records fail — carry `meta.backup: true` at the record level.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. Healthchecks apply to A, AAAA, and CNAME records only.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+export RECORD_NAME="{RECORD_FQDN}"
+```
+
+<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it matches `ZONE_NAME`; for a subdomain it is the full FQDN, such as `www.company.com`.</p>
+
+## Configure healthchecks
+
+<p>This code creates an A record with HTTP health monitoring and a backup record that takes over when the primary fails. The `meta.failover` object sits at the RRset level and applies to all records; `meta.backup: true` marks a single record as the failover target. The `first_n` picker limits each DNS response to one available record.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.create(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[
+        {"content": ["1.2.3.4"]},
+        {"content": ["5.6.7.8"], "meta": {"backup": True}},
+    ],
+    meta={
+        "failover": {
+            "protocol": "HTTP",
+            "port": 80,
+            "frequency": 300,
+            "timeout": 10,
+            "method": "GET",
+            "url": "/health",
+            "tls": False,
+            "http_status_code": 200,
+        }
+    },
+    pickers=[
+        {"type": "healthcheck"},
+        {"type": "first_n", "limit": 1},
+    ],
+    ttl=300,
+)
+print(rrset.name, rrset.pickers)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+            {Content: []any{"1.2.3.4"}},
+            {Content: []any{"5.6.7.8"}, Meta: map[string]any{"backup": true}},
+        },
+        Meta: map[string]any{
+            "failover": map[string]any{
+                "protocol":         "HTTP",
+                "port":             80,
+                "frequency":        300,
+                "timeout":          10,
+                "method":           "GET",
+                "url":              "/health",
+                "tls":              false,
+                "http_status_code": 200,
+            },
+        },
+        Pickers: []dns.ZoneRrsetNewParamsPicker{
+            {Type: "healthcheck"},
+            {Type: "first_n", Limit: gcore.Int(1)},
+        },
+        Ttl: gcore.Int(300),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Pickers)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ttl": 300,
+    "resource_records": [
+      {"content": ["1.2.3.4"]},
+      {"content": ["5.6.7.8"], "meta": {"backup": true}}
+    ],
+    "meta": {
+      "failover": {
+        "protocol": "HTTP",
+        "port": 80,
+        "frequency": 300,
+        "timeout": 10,
+        "method": "GET",
+        "url": "/health",
+        "tls": false,
+        "http_status_code": 200
+      }
+    },
+    "pickers": [
+      {"type": "healthcheck"},
+      {"type": "first_n", "limit": 1}
+    ]
+  }'
+```
+
+<p>The API returns the created RRset:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 300,
+  "meta": {
+    "failover": {
+      "frequency": 300,
+      "http_status_code": 200,
+      "method": "GET",
+      "port": 80,
+      "protocol": "HTTP",
+      "timeout": 10,
+      "tls": false,
+      "url": "/health"
+    }
+  },
+  "pickers": [
+    {"type": "healthcheck", "strict": false},
+    {"type": "first_n", "limit": 1, "strict": false}
+  ],
+  "resource_records": [
+    {"content": ["1.2.3.4"], "enabled": true, "meta": {}},
+    {"content": ["5.6.7.8"], "enabled": true, "meta": {"backup": true}}
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+| Protocol | Required `meta.failover` changes |
+| --- | --- |
+| ICMP | `"protocol": "ICMP"`, `"port": 0`; omit HTTP-specific fields |
+| TCP/UDP | `"protocol": "TCP"` or `"UDP"`, port required; add `"command"` to send a specific payload |
+| HTTP | Full configuration shown above |
+
+## Failover logs
+
+<p>Retrieve recent monitoring events for an RRset. Each log entry reports the record address, the action taken (`activated` or `deactivated`), and the Unix timestamp.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+logs = client.dns.zones.rrsets.get_failover_logs(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+)
+print(logs.total_amount, logs.log)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    logs, err := client.DNS.Zones.Rrsets.GetFailoverLogs(ctx, "A", dns.ZoneRrsetGetFailoverLogsParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(logs.TotalAmount, logs.Log)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A/failover/log" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "log": [
+    {"action": "deactivated", "address": "1.2.3.4", "time": 1790000000},
+    {"action": "activated",   "address": "1.2.3.4", "time": 1790003600}
+  ],
+  "total_amount": 2
+}
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
