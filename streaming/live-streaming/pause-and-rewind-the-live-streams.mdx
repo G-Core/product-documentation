@@ -1,14 +1,19 @@
 ---
 title: Pause and rewind live streams
 sidebarTitle: DVR
-ai-navigation: Configure DVR on live streams to let viewers pause and rewind broadcasts. Enable DVR, set the DVR window duration, and clear the cache between broadcasts via the Customer Portal or REST API using Python SDK, Go SDK, and curl.
+ai-navigation: Configure DVR on live streams to let viewers pause and rewind broadcasts via the Customer Portal or REST API using Python SDK, Go SDK, and curl.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
 <p>DVR (Digital Video Recorder) lets viewers pause and rewind a live broadcast by caching recent stream content.</p>
 
-<p>The DVR window defines how far back viewers can rewind. The default window is 1 hour. `dvr_duration` can be set through the API to extend the window up to 4 hours; the Customer Portal does not support changing the DVR duration. Enterprise accounts can [contact support](https://gcore.com/contact-us) to request a DVR window of up to 24 hours.</p>
+<p>The DVR window defines how far back viewers can rewind. The default window is 1 hour. The DVR duration cannot be changed in the Customer Portal — set `dvr_duration` via the API to extend it up to 4 hours.</p>
+
+<p>A 24-hour DVR window is available for Enterprise accounts — the [Gcore&nbsp;support](https://gcore.com/contact-us) team enables it on request.</p>
 
 <p>Example of how the DVR window works for a stream that has been running for more than 1 hour:</p>
 
@@ -18,12 +23,9 @@ Start                                                     Now
   |  older part of the stream   | viewers can rewind here  |
 ```
 
-<MethodSwitch>
-  <MethodSection id="portal" label="Customer Portal">
-
 ## Enable DVR
 
-<p>1. Create a new live stream (see [Create a live stream](/streaming/live-streaming/create-a-live-stream)) or open an existing one.</p>
+<p>1. Create a new [live&nbsp;stream](/streaming/live-streaming/create-a-live-stream) or open an existing one.</p>
 
 <p>2. On the Live stream settings page, enable the **DVR** toggle. After the broadcast starts, allow about 10 minutes for content to accumulate before viewers can rewind.</p>
 
@@ -44,11 +46,21 @@ Start                                                     Now
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Enable DVR when creating or updating a stream, and clear the DVR cache between broadcasts.</p>
+<p>DVR (Digital Video Recorder) lets viewers pause and rewind a live broadcast by caching recent stream content.</p>
 
-<Info>
-An [API&nbsp;token](/account-settings/api-tokens) is required.
-</Info>
+<p>The DVR window defines how far back viewers can rewind. The default window is 1 hour. Set `dvr_duration` (in seconds) to extend the window up to 4 hours.</p>
+
+<p>A 24-hour DVR window is available for Enterprise accounts — the [Gcore&nbsp;support](https://gcore.com/contact-us) team enables it on request.</p>
+
+<p>Example of how the DVR window works for a stream that has been running for more than 1 hour:</p>
+
+```text
+Start                                                     Now
+  |----- outside DVR window ----|<--- DVR: last 1 hour --->| Live edge
+  |  older part of the stream   | viewers can rewind here  |
+```
+
+<p>All requests require an [API&nbsp;token](/account-settings/api-tokens). Set the API key and stream ID as environment variables before running the commands:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -128,7 +140,7 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
   </Tab>
 </Tabs>
 
-<p>The `dvr_enabled` and `dvr_duration` fields are also accepted in `POST /streaming/streams` when creating a new stream. The full create request is documented in [Create a live stream](/streaming/live-streaming/create-a-live-stream).</p>
+<p>The `dvr_enabled` and `dvr_duration` fields are also accepted when [creating&nbsp;a&nbsp;stream](/streaming/live-streaming/create-a-live-stream) with `POST /streaming/streams`.</p>
 
 ## Clear the DVR cache
 
@@ -187,6 +199,8 @@ curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/dvr_cleanup" \
 </MethodSwitch>
 
 ## DVR demo
+
+The player below shows a live stream with DVR enabled — the rewind timeline bar appears once the cache has accumulated enough content.
 
 <iframe
   src="https://demo.gvideo.io/broadcasts/2675_23340"
