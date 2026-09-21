@@ -56,11 +56,16 @@ Read more about latency in section [SRT Latency](/streaming/live-streaming/proto
 
 ## Restream failed
 
-Each social platform enforces its own technical requirements for ingesting live video streams. These limits typically include constraints on bitrate, codec profiles, audio formats, keyframe intervals (GOP), and connection behavior. When restreaming through Gcore, the output must comply with the destination platform’s specifications; otherwise, the remote side may reject the connection or terminate the stream during broadcasting.
+Each destination enforces its own technical requirements for ingesting live video streams. These limits typically include constraints on bitrate, codec profiles, audio formats, keyframe intervals (GOP), and connection behavior. When restreaming through Gcore, the output must comply with destination specifications; otherwise, the remote side can reject the connection or terminate the stream.
 
-When troubleshooting restreaming, always remember that **when restreaming, your master-stream is multipied as is without transcoding**. So verify your master-stream parameters to match the requirements of the target platform. In many cases, connection refusals or stream instability occur because of mismatched keyframe intervals, unsupported codecs, or exceeding bitrate thresholds.
+By default, restreaming forwards the master stream as is without transcoding (`source: "original"`). Verify that master stream parameters match destination requirements. To broadcast overlays and processed video instead, switch the restream source to `transcoded`.
 
-We collected some common cases on our page [Restreaming troubleshooting](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-troubleshooting)
+Common causes of connection refusals and stream drops:
+- **Mismatched encoding parameters**: Mismatched keyframe intervals (GOP), unsupported video codecs, or exceeding bitrate thresholds.
+- **Missing audio tracks on YouTube**: YouTube rejects incoming streams that lack an audio track. When disabling restream audio via API, set `no_audio_mode` to `silence` instead of `drop`.
+- **Expired stream keys**: Expired or rotated stream keys on the target destination.
+
+For destination-specific requirements, see [Restream troubleshooting](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-troubleshooting).
 
 
 ## Stream is frozen or buffered
@@ -122,6 +127,10 @@ NEW SESSION INIT
 NEW LIVE TRANSCODING SESSION
   starts with fps=50
 ```
+
+<Note>
+This is the default behavior. Gcore can also enable a **Force FPS** setting per stream to keep the output pinned to a configured frame rate regardless of the input — see [Can Gcore force my live stream 10-12 fps to 50 or 60 fps?](/streaming/faq/streaming-faq#can-gcore-force-my-live-stream-10-12-fps-to-50-or-60-fps)
+</Note>
 
 _Suggested solution_:
 - Check the stream monitoring graphs in the Customer Portal. FPS, bitrate, and keyframe interval should be stable from the beginning of the session.

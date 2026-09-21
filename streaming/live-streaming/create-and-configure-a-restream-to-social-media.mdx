@@ -46,7 +46,7 @@ For SRT target URLs, only `mode=caller` is supported. Gcore initiates the outbou
 </Info>
 
 <Warning>
-Restreaming sends the source stream to the destination as is. Make sure the source bitrate, codecs, resolution, keyframe interval, and audio format match the destination requirements.
+By default, restreaming forwards the source stream to the destination as is (`source: "original"`). Verify that source bitrate, codecs, resolution, keyframe interval, and audio format match destination requirements. To broadcast overlays and transcoded output instead, use `source: "transcoded"`. To remove copyrighted audio or satisfy destination requirements (such as YouTube's requirement for a silent track), configure `no_audio` and `no_audio_mode`.
 </Warning>
 
 ## When to use RTMP or SRT targets
@@ -196,7 +196,16 @@ srt://<hostname>:<port>?mode=caller&latency=<microseconds>&streamid=<ID>
 
 ## Create a restream
 
-<p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet. Set `source` to `"transcoded"` to restream the processed version of the stream (with overlays applied); the default is `"original"`.</p>
+<p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet. Set `source` to `"transcoded"` to restream the processed version of the stream (with overlays applied, using the highest ladder resolution); the default is `"original"`.</p>
+
+<p>To control the audio track (to prevent copyright claims on destinations like YouTube), configure `no_audio` and `no_audio_mode`:</p>
+
+- **no_audio** (boolean): Set to <code>true</code> to remove or replace the source audio track. Default is <code>false</code>. Accepts strict boolean values only; other values return HTTP 422.
+- **no_audio_mode** (string): Determines handling when <code>no_audio: true</code>. Options are <code>"drop"</code> (default; strips the audio track completely) or <code>"silence"</code> (replaces audio with silence).
+
+<Tip>
+YouTube rejects incoming streams with no audio track. When restreaming to YouTube with audio removed, set <code>no_audio_mode: "silence"</code>.
+</Tip>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -279,7 +288,9 @@ curl -X POST "https://api.gcore.com/streaming/restreams" \
          "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
          "stream_id": '"$STREAM_ID"',
          "active": false,
-         "source": "original"
+         "source": "original",
+         "no_audio": false,
+         "no_audio_mode": "silence"
        }
      }'
 ```
@@ -294,7 +305,10 @@ curl -X POST "https://api.gcore.com/streaming/restreams" \
   "active": false,
   "uri": "rtmp://a.rtmp.youtube.com/live2/{YOUR_STREAM_KEY}",
   "stream_id": 4523975,
-  "source": "original"
+  "client_id": 102748,
+  "source": "original",
+  "playlist_id": null,
+  "quality_id": null
 }
 ```
   </Tab>
@@ -441,7 +455,7 @@ curl "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
 
 ## Update a restream
 
-<p>Use `PATCH /streaming/restreams/{"{restream_id}"}` to update the target URI (for example, after a stream key rotation), enable/disable the restream, or switch the `source` between `"original"` and `"transcoded"` without deleting it.</p>
+<p>Use `PATCH /streaming/restreams/{"{restream_id}"}` to update the target URI (after a stream key rotation), enable/disable the restream, switch the `source` between `"original"` and `"transcoded"`, or configure `no_audio` and `no_audio_mode` without deleting the restream.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -510,7 +524,9 @@ curl -X PATCH "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
        "restream": {
          "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
          "active": true,
-         "source": "transcoded"
+         "source": "transcoded",
+         "no_audio": true,
+         "no_audio_mode": "silence"
        }
      }'
 ```
@@ -525,7 +541,10 @@ curl -X PATCH "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
   "active": true,
   "uri": "rtmps://a.rtmp.youtube.com/live2/{NEW_STREAM_KEY}",
   "stream_id": 4523975,
-  "source": "transcoded"
+  "client_id": 102748,
+  "source": "transcoded",
+  "playlist_id": null,
+  "quality_id": null
 }
 ```
   </Tab>
@@ -672,6 +691,7 @@ Facebook documentation: https://www.facebook.com/business/help/162540111070395?i
 **Common issues:**
 
 - **Invalid stream key or inactive event**: YouTube rejects connections when the key is incorrect or the event is not yet open.
+- **Missing audio track**: YouTube rejects incoming streams that lack an audio track. When disabling restream audio via API, `no_audio_mode` must be set to `silence`.
 - **Unsupported codec or profile**: YouTube requires H.264 (Baseline/Main/High) and AAC audio.
 - **Unstable input bitrate**: Bitrate drops cause buffering and disconnects.
 - **High keyframe interval**: YouTube recommends a GOP of **2 seconds**.
@@ -679,9 +699,10 @@ Facebook documentation: https://www.facebook.com/business/help/162540111070395?i
 **Solutions:**
 
 - Verify the stream key and event status before connecting.
+- When disabling audio on a restream to YouTube, set `no_audio_mode="silence"` instead of dropping the audio track.
 - Use H.264 + AAC encoding.
 - Set keyframe interval to **2 seconds**.
-- Ensure encoder output is stable and avoids bitrate spikes.
+- Verify encoder output is stable and avoids bitrate spikes.
 
 YouTube documentation: https://support.google.com/youtube/answer/2853702
 
