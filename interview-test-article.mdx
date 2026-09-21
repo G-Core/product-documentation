@@ -1,0 +1,204 @@
+﻿---
+title: "CDN cache purging"
+---
+
+[Purge](https://portal.gcore.com/cdn/purge/purge-request) clears the CDN resource cache. Use it when content on the origin is updated and waiting for natural cache expiration is not acceptable, or when CDN servers are serving stale content.
+
+Three purge options are available:
+
+1. **Purge by URL** (recommended) to remove specific files from the cache without affecting other cached content.
+2. **Purge all** to remove all cached data for a resource.
+3. **Purge by pattern** to remove content selectively using path patterns with the `*` operator.
+
+The cache can be purged in the [Gcore Customer Portal](https://portal.gcore.com) or via the [CDN Purge API](/api-reference/cdn/tools/purge-cache).
+
+After a purge is submitted, changes typically propagate to all edge locations within 30 seconds. Propagation time may vary based on network conditions and PoP load, and in some scenarios may take longer before the updated content is visible.
+
+## Customer Portal
+
+<Steps>
+  <Step title="Open Purge request">
+    In the Customer Portal, navigate to **CDN** > **Purge** > **Purge request**.
+  </Step>
+  <Step title="Select a CDN resource">
+    Select the relevant CDN resource from the dropdown.
+  </Step>
+  <Step title="Configure the purge">
+    Select the purge type and follow the instructions for that type.
+  </Step>
+  <Step title="Apply">
+    Click the **Clear Cache** button.
+  </Step>
+</Steps>
+
+<Tabs>
+  <Tab title="Purge by URL">
+    <Warning>
+      Five purge requests per resource per minute are allowed. One purge request is limited to 100 URLs.
+    </Warning>
+
+    In the text area, specify one or more content URLs to purge, one per line. Each URL must:
+
+    - Start with `/`. The URL may optionally include `http://` or `https://` before the path.
+    - Not include a domain name or wildcard (`*`).
+    - Include query strings if the CDN resource cache is configured to consider the query string.
+
+    To purge `https://www.example.com/pictures/icon.jpg?size=small`, specify `/pictures/icon.jpg?size=small`.
+
+    Avoid Purge by URL in the following cases:
+
+    - **A Vary HTTP response header is present on the origin.** Purge by URL deletes only one version of the file.
+    - **Large files delivery optimization is enabled.** Purge by URL is not supported in this configuration. Use Purge by pattern instead.
+
+    The behavior of Purge by URL also depends on the **Ignore Query string** option:
+
+    - If the value is **Ignore All**, do not specify parameters in the purge request.
+    - If the value is **Ignore All Except**, only files with the listed parameters are cached as separate objects. Specify those parameters in any order.
+    - If the value is **Ignore Only**, files with the listed parameters are cached as one object. Specify other parameters in the purge request.
+  </Tab>
+  <Tab title="Purge all">
+    <Warning>
+      One purge request per resource per minute is allowed. After a full purge, all subsequent cache misses cause CDN servers to fetch content from origin, which can sharply increase origin load.
+    </Warning>
+
+    Select **Purge all** and click the **Clear Cache** button.
+  </Tab>
+  <Tab title="Purge by pattern">
+    <Warning>
+      One purge request per resource per minute is allowed. One purge request is limited to 50 patterns.
+    </Warning>
+
+    Specify a path or path pattern in the text area, one per line. Use the `*` operator to match any number of characters. Each path must start with `/`.
+
+    | Type | Purge target | Pattern |
+    | --- | --- | --- |
+    | Selected file | `cdn.example.com/static/image.jpg` | `/static/image.jpg` |
+    | All files in a folder | `cdn.example.com/static` | `/static/*` |
+    | All files of a type | `cdn.example.com/static/*.jpg` | `/static/*.jpg` |
+    | Files with a common path segment | `cdn.example.com/img/static/files` | `/img/*/files` |
+  </Tab>
+</Tabs>
+
+## API
+
+An [API token](/account-settings/api-tokens) is required for authenticated requests.
+
+Send a `POST` request to `https://api.gcore.com/cdn/resources/{resource_id}/purge` with the following headers. Replace `{resource_id}` with the ID of the CDN resource.
+
+| Field | Value |
+| --- | --- |
+| Method | `POST` |
+| URL | `https://api.gcore.com/cdn/resources/{resource_id}/purge` |
+| Header | `Authorization: apikey {{api_token}}` |
+| Header | `Content-Type: application/json` |
+| Body parameter | **urls** — array of URLs to purge (Purge by URL). Each must start with `/`. |
+| Body parameter | **paths** — empty array (Purge all) or array of patterns (Purge by pattern). Each must start with `/`. |
+
+Response codes:
+
+| Code | Meaning |
+| --- | --- |
+| `200 OK` | The purge request was accepted. |
+| `400 Bad Request` | The request body is invalid or the URL quota has been exceeded. |
+| `401 Unauthorized` | The authentication credentials are missing or invalid. |
+| `429 Too Many Requests` | The purge request quota for the resource has been exceeded. |
+
+### Request body examples
+
+<Tabs>
+  <Tab title="Purge by URL">
+    ```json
+    {
+      "urls": [
+        "/example1.jpg",
+        "/img/example2.png",
+        "/style.css?ver=2.0"
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="Purge all">
+    ```json
+    {
+      "paths": [],
+      "type": "full"
+    }
+    ```
+  </Tab>
+  <Tab title="Purge by pattern">
+    ```json
+    {
+      "paths": [
+        "/images/*"
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Postman example
+
+<Steps>
+  <Step title="Set method and URL">
+    Open a new request tab in Postman. Set the method to **POST** and enter the URL. Replace `{resource_id}` with the actual resource ID.
+  </Step>
+  <Step title="Set authorization">
+    Navigate to the **Authorization** tab and add the following header:
+
+    - **Key:** `Authorization`
+    - **Value:** `apikey {{api_token}}`
+  </Step>
+  <Step title="Set request body">
+    Navigate to the **Body** tab. Select **raw** and **JSON**. Enter the request payload for the desired purge type.
+  </Step>
+  <Step title="Send the request">
+    Click **Send**. A successful request returns HTTP 200.
+  </Step>
+</Steps>
+
+If an error occurs, the API returns a status code and a body describing the cause. Example:
+
+```json
+{
+  "errors": {
+    "urls": ["A path should start with /."]
+  }
+}
+```
+
+## Purge history
+
+<Note>
+  Purge history stores requests for the past month only.
+</Note>
+
+### Customer Portal
+
+Navigate to [Purge history](https://portal.gcore.com/cdn/purge/purge-history). Use filters to narrow results:
+
+- **Search by CNAME.** Specify the CNAME of the CDN resource.
+- **Type.** Select the purge type: Purge by URL, Purge all, or Purge by pattern.
+- **Status.** Select the status: In progress, Successful, Failed, or Status report disabled.
+- **Owner.** Filter by the user account that submitted the purge request.
+- **Date.** Set the time period (up to one month).
+
+### API
+
+Send a `GET` request to `https://api.gcore.com/cdn/purge_statuses`:
+
+```bash
+curl -X GET "https://api.gcore.com/cdn/purge_statuses" \
+  -H "Authorization: apikey ${GCORE_API_KEY}"
+```
+
+Use query parameters to filter results:
+
+| Parameter | Description |
+| --- | --- |
+| `cname` | CDN resource CNAME |
+| `purge_type` | `purge_by_url`, `purge_by_pattern`, or `purge_all` |
+| `status` | `In progress`, `Successful`, `Failed`, or `Status report disabled` |
+| `from_created` | Start of time range in ISO 8601 (UTC). Example: `2024-01-01T00:00:00Z` |
+| `to_created` | End of time range in ISO 8601 (UTC). Example: `2024-01-31T23:59:59Z` |
+
+For the full parameter reference, see [Get purges history list](/api-reference/cdn/purge-history/get-purges-history-list).
