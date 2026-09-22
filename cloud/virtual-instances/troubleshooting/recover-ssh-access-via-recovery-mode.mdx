@@ -1,104 +1,115 @@
 ---
 title: Recover SSH access in recovery mode
 sidebarTitle: Recovery mode
-ai-navigation: Recover SSH access to a Linux virtual machine or Bare Metal server from the VNC console when the private key is lost and no console password is set.
+ai-navigation: Recover SSH access to a Linux Virtual Machine or Bare Metal server from the VNC console when the private key is lost and no console password is set.
 ---
 
-A lost private SSH key cannot be restored from the server. When no VNC console password was set at creation, boot recovery mode from the console and install a new public key for the default login.
+Recovery mode restores SSH on a Linux Virtual Machine or Bare Metal server after the private key is lost. It installs a new public key from the console when the server has no console password.
 
-1. Open the server in the [Gcore Customer Portal](https://portal.gcore.com):
+<Steps>
+  <Step title="Open the server">
+    <Tabs>
+      <Tab title="Virtual Machine">
+        Log in to the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) and navigate to **Cloud** > **Virtual Instances**. Open the Virtual Machine.
 
-<Tabs>
-  <Tab title="Virtual machine">
-    Go to **Cloud** > **Virtual Instances** and open the instance.
+        <Frame>![Virtual Instance page with Access to Console and the ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/access-to-console.png)</Frame>
+      </Tab>
+      <Tab title="Bare Metal">
+        Log in to the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) and navigate to **Cloud** > **Bare Metal**. Open the Bare Metal server.
 
-    <Frame>![Virtual instance page with Access to Console and the ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/access-to-console.png)</Frame>
-  </Tab>
-  <Tab title="Bare Metal">
-    Go to **Cloud** > **Bare Metal** and open the server.
+        <Frame>![Bare Metal page with Access to Console and the ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/bare-metal-access-to-console.png)</Frame>
+      </Tab>
+    </Tabs>
 
-    <Frame>![Bare Metal page with Access to Console and the ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/bare-metal-access-to-console.png)</Frame>
-  </Tab>
-</Tabs>
+    The login beside **Access to Console** owns the new key, because SSH accepts that account. On the Ubuntu image that account is `ubuntu`.
+  </Step>
+  <Step title="Open the console">
+    <Frame>![Bare Metal server page with Access to Console beside the IP address](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/server-page-access-to-console.png)</Frame>
 
-The login beside **Access to Console** is the account that must own the new key. On the Ubuntu image that account is `ubuntu`.
+    Click **Access to Console** to open the console in a browser tab, with **Send CtrlAltDel** at the top right.
 
-The steps after the console opens match an Ubuntu cloud image. If the GRUB menu has no entry that ends with `(recovery mode)`, this procedure does not apply.
+    <Frame>![VNC console with Send CtrlAltDel and the Ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/console-connected.png)</Frame>
+  </Step>
+  <Step title="Open the GRUB menu">
+    Open the boot menu before the login prompt:
 
-2. Click **Access to Console**. The console opens in a browser tab, and the control at the top right is **Send CtrlAltDel**.
+    1. Click the console screen so keystrokes reach the server.
+    2. Click **Send CtrlAltDel**.
+    3. Press Escape until **GNU GRUB** appears.
 
-<Frame>![VNC console connected to the instance, with Send CtrlAltDel](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/console-connected.png)</Frame>
+    <Warning>
+    The GRUB menu stays hidden, and Escape registers only during `Booting from Hard Disk...`. If the Ubuntu login prompt appears, Escape missed the menu, so click the console screen and repeat this step.
+    </Warning>
 
-3. To send keystrokes to the server, click the console screen. Click **Send CtrlAltDel**, then press Escape until **GNU GRUB** appears.
+    <Frame>![GNU GRUB menu with Ubuntu and Advanced options for Ubuntu](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/grub-menu.png)</Frame>
+  </Step>
+  <Step title="Boot recovery mode">
+    On an Ubuntu cloud image, select **Advanced options for Ubuntu** and press Enter. Then select the entry that ends with `(recovery mode)` and press Enter.
 
-<Warning>
-The GRUB menu is hidden, and Escape is accepted only during the boot line `Booting from Hard Disk...`. If the Ubuntu login prompt appears, Escape missed the menu, so click the console screen and repeat this step.
-</Warning>
+    <Frame>![GRUB advanced options with the recovery mode entry highlighted](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/grub-recovery.png)</Frame>
+  </Step>
+  <Step title="Open a root shell">
+    In **Recovery Menu (filesystem state: read-only)**, select **root** (**Drop to root shell prompt**) and press Enter.
 
-<Frame>![GNU GRUB menu with Ubuntu and Advanced options for Ubuntu](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/grub-menu.png)</Frame>
+    <Frame>![Recovery menu with Drop to root shell prompt highlighted](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/recovery-menu-root.png)</Frame>
 
-4. Highlight **Advanced options for Ubuntu** and press Enter. Highlight the entry that ends with `(recovery mode)` and press Enter.
+    At `Press Enter for system maintenance (or press Control-D to continue):`, press Enter. The menu frame can remain on screen after the shell starts, while the shell is active once a prompt ending in `~#` appears at the bottom.
+  </Step>
+  <Step title="Remount the root filesystem">
+    Recovery mounts the root filesystem read-only, so remount it before writing the key:
 
-<Frame>![GRUB advanced options with the recovery mode entry highlighted](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/grub-recovery.png)</Frame>
+    ```bash
+    mount -o remount,rw /
+    findmnt -n -o OPTIONS /
+    ```
 
-5. The recovery menu title reads **Recovery Menu (filesystem state: read-only)**. Highlight **root**, labeled **Drop to root shell prompt**, and press Enter.
+    The option list starts with `rw`, so the root filesystem accepts writes, while `errors=remount-ro` only sets the behavior after a filesystem error.
 
-<Frame>![Recovery menu with Drop to root shell prompt highlighted](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/recovery-menu-root.png)</Frame>
+    <Frame>![Root shell after remount, with mount options starting with rw](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/remount-read-write.png)</Frame>
+  </Step>
+  <Step title="Install the public key">
+    Write the new public key for the login beside **Access to Console** into `authorized_keys` on the local disk. On Ubuntu the file is `/home/ubuntu/.ssh/authorized_keys`, and when the login label names another account, use that account's home directory.
 
-6. At `Press Enter for system maintenance (or press Control-D to continue):`, press Enter.
+    ```bash
+    printf '%s\n' 'PUBLIC_KEY' > /home/ubuntu/.ssh/authorized_keys
+    ```
 
-The menu frame can stay drawn after the shell starts. The shell is active when a prompt that ends with `~#` appears at the bottom of the screen.
+    Replace `PUBLIC_KEY` with the OpenSSH public key on one line.
 
-7. The root filesystem is read-only until it is remounted:
+    <Warning>
+    The `>` operator replaces the file, so keys already in it stop authenticating.
+    </Warning>
+  </Step>
+  <Step title="Set ownership and permissions">
+    Set ownership and modes, then run `sync` before the reboot:
 
-```sh
-mount -o remount,rw /
-findmnt -n -o OPTIONS /
-```
+    ```bash
+    chown ubuntu:ubuntu /home/ubuntu/.ssh /home/ubuntu/.ssh/authorized_keys
+    chmod 700 /home/ubuntu/.ssh
+    chmod 600 /home/ubuntu/.ssh/authorized_keys
+    sync
+    ```
 
-The option list starts with `rw`, so the root filesystem accepts writes. The token `errors=remount-ro` is the behavior after a filesystem error, and it does not mean the remount failed.
+    Keep `/home/ubuntu` at mode `750`, because SSH succeeded with that mode on the Ubuntu image.
+  </Step>
+  <Step title="Reboot the server">
+    Reboot into the default GRUB entry:
 
-<Frame>![Root shell after remount, with mount options starting with rw](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/remount-read-write.png)</Frame>
+    ```bash
+    reboot
+    ```
+  </Step>
+  <Step title="Confirm SSH access">
+    From a client that holds the matching private key, connect with the login from the server page:
 
-8. The `authorized_keys` file is stored on the local disk, so **Enable networking** in the recovery menu is not required. Write the new public key for the login shown beside **Access to Console**.
+    ```bash
+    ssh -i /path/to/private_key ubuntu@INSTANCE_IP
+    ```
 
-On Ubuntu the file is `/home/ubuntu/.ssh/authorized_keys`. If the login label names a different account, use that account's home directory.
-
-```sh
-printf '%s\n' 'PUBLIC_KEY' > /home/ubuntu/.ssh/authorized_keys
-```
-
-Replace `PUBLIC_KEY` with the OpenSSH public key, on one line.
-
-<Warning>
-The `>` operator replaces the file. Keys already stored in that file stop authenticating.
-</Warning>
-
-9. Set the owner to the login account and apply the required permissions, then flush the changes to disk:
-
-```sh
-chown ubuntu:ubuntu /home/ubuntu/.ssh /home/ubuntu/.ssh/authorized_keys
-chmod 700 /home/ubuntu/.ssh
-chmod 600 /home/ubuntu/.ssh/authorized_keys
-sync
-```
-
-Leave the home directory mode unchanged. On this image `/home/ubuntu` is mode `750`, and SSH succeeded with that mode.
-
-10. Reboot the server. The next boot uses the default GRUB entry:
-
-```sh
-reboot
-```
-
-11. From a client that holds the matching private key, connect with the login from the server page:
-
-```sh
-ssh -i /path/to/private_key ubuntu@INSTANCE_IP
-```
-
-Because `authorized_keys` was replaced, the previous private key now fails with `Permission denied (publickey)`.
+    Replacing `authorized_keys` makes the previous private key fail with `Permission denied (publickey)`.
+  </Step>
+</Steps>
 
 <Tip>
-Add [more than one public key](/cloud/virtual-instances/troubleshooting/troubleshoot-issues-with-ssh-connection#add-multiple-ssh-keys) when creating the instance. A [VNC console password](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine) set in user data opens the console without the SSH key.
+Add [multiple&nbsp;SSH&nbsp;keys](/cloud/virtual-instances/troubleshooting/troubleshoot-issues-with-ssh-connection#add-multiple-ssh-keys) at creation time. Set a console password in user data for a [Virtual&nbsp;Machine](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine) or a [Bare&nbsp;Metal&nbsp;server](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh#connect-with-a-password) so the console opens without the SSH key.
 </Tip>
