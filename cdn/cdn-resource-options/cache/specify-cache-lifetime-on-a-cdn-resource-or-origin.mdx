@@ -10,7 +10,7 @@ Files cannot be stored in CDN servers' cache indefinitely. The CDN caching featu
 Files users have not requested within 36 hours will be removed from the CDN servers' cache, regardless of the feature settings.
 </Note>
 
-When a cached file's lifetime expires, Gcore CDN performs conditional revalidation with the origin if the cached response includes a validator such as an [ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) or `Last-Modified` header. The CDN sends a conditional request (`If-None-Match` or `If-Modified-Since`); if the origin responds with 304 Not Modified, the cached copy is reused and its lifetime is reset. If the origin returns a new response, the CDN stores and serves the updated content.
+When a cached file's lifetime expires, Gcore CDN performs conditional revalidation with the origin if the cached response includes a validator such as an [ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) or `Last-Modified` header. The CDN sends a conditional request (`If-None-Match` or `If-Modified-Since`); if the origin responds with `304 Not Modified`, the cached copy is reused and its lifetime is reset. If the origin returns a new response, the CDN stores and serves the updated content.
 
 If the cached response includes no validator, the CDN cannot perform conditional revalidation and must retrieve the full response from the origin after expiration.
 
@@ -69,7 +69,7 @@ Set the `Cache-Control` header on the origin server, then configure the fallback
     Specify the timespan in the **Default cache expiry** field. Select a predefined value from the list or select **Custom value** and enter the time in seconds. This value is used as a fallback when the origin does not send caching HTTP headers.
 
     <Info>
-    For Origin controlled mode, CDN servers store responses with codes 200, 201, 204, 206, 301, 302, 303, 307, and 308. A 304 Not Modified response is not independently stored; it revalidates and extends an existing cached entry. Responses with other codes are not cached.
+    For Origin controlled mode, CDN servers store responses with codes `200`, `201`, `204`, `206`, `301`, `302`, `303`, `307`, and `308`. A `304 Not Modified` response is not independently stored; it revalidates and extends an existing cached entry. Responses with other codes are not cached.
     </Info>
 
     <Frame>![CDN caching settings with Origin controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-origin-controlled.png)</Frame>
@@ -90,7 +90,7 @@ CDN caching can be configured at two levels:
 These settings are independent — CDN caching can be set to **Do not cache** in the main settings while enabled in an advanced rule, and vice versa.
 
 <Warning>
-CDN caching applies only to responses with status codes 200, 206, 301, and 302. Responses with 4xx and 5xx status codes are not cached by default. To cache 404 or other non-default status codes, configure an advanced caching rule under the **Enable CDN caching via advanced caching rules** tab below.
+CDN caching applies only to responses with status codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` status codes are not cached by default. To cache `404` or other non-default status codes, configure an advanced caching rule under the **Enable CDN caching via advanced caching rules** tab below.
 </Warning>
 
 <Tabs>
@@ -118,7 +118,7 @@ CDN caching applies only to responses with status codes 200, 206, 301, and 302. 
       <Step title="Set the cache expiry">
         Specify the caching timespan in the **Cache expiry** field. Select a predefined value from the list or select **Custom value** and enter a time in seconds.
 
-        This caching time applies to response codes 200, 206, 301, and 302. Responses with 4xx and 5xx are not cached.
+        This caching time applies to response codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` are not cached.
 
         <Warning>
         If the **Do not cache** option is selected, caching is disabled even when the **Enable CDN caching** toggle is enabled.
@@ -135,7 +135,7 @@ CDN caching applies only to responses with status codes 200, 206, 301, and 302. 
   <Tab title="Enable CDN caching via advanced caching rules">
     <Steps>
       <Step title="Navigate to CDN caching">
-        In the CDN resource settings, navigate to the **Cache** section.
+        In the CDN resource settings, navigate to **Cache** > **CDN caching**.
       </Step>
       <Step title="Enable CDN caching">
         Confirm the **Enable CDN caching** toggle is enabled. If not, click the toggle to enable it.
@@ -154,12 +154,12 @@ CDN caching applies only to responses with status codes 200, 206, 301, and 302. 
 
         The Caching time in advanced rules takes priority over the general Cache expiry.
 
-        With a Cache expiry of 4 days and two advanced rules — one for the 200 response code configured for 10 minutes and another for 404 configured for 1 minute — requests are cached as follows:
+        With a Cache expiry of 4 days and two advanced rules — one for the `200` response code configured for 10 minutes and another for `404` configured for 1 minute — requests are cached as follows:
 
-          * Requests with response code 200: cached for 10 minutes.
-          * Requests with response code 404: cached for 1 minute.
-          * Requests with response codes 206, 301, and 302: cached for 4 days.
-          * Requests with response codes 4xx (except 404) and 5xx: not cached.
+          * Requests with response code `200`: cached for 10 minutes.
+          * Requests with response code `404`: cached for 1 minute.
+          * Requests with response codes `206`, `301`, and `302`: cached for 4 days.
+          * Requests with response codes `4xx` (except `404`) and `5xx`: not cached.
       </Step>
       <Step title="Save changes">
         Click **Save changes** to apply the settings.
@@ -180,13 +180,15 @@ To verify that CDN caching is working correctly, inspect HTTP response headers u
     Open a terminal (macOS or Linux) or command prompt (Windows).
   </Step>
   <Step title="Run the command">
-    Run the following command, replacing the URL with a file delivered via your CDN resource. Run it twice — the first request fetches the file from the origin and stores it in cache; the second confirms it is served from cache.
+    Run the following command, replacing the URL with a file delivered via your CDN resource:
 
     ```sh
     curl -sS -D - -o /dev/null https://cdn.example.com/css/style.css
     ```
 
-    First request output (cache miss — file fetched from origin and stored):
+    If the first request returns `cache: MISS`, the file was fetched from the origin and stored in cache; the next request should return `cache: HIT`. If the first request already returns `cache: HIT`, the object is already cached. Example outputs:
+
+    Cache miss (file fetched from origin and stored):
 
     ```http
     HTTP/2 200
@@ -195,7 +197,7 @@ To verify that CDN caching is working correctly, inspect HTTP response headers u
     x-id: ab-cd-e123
     ```
 
-    Second request output (cache hit — file served from CDN cache):
+    Cache hit (file served from CDN cache):
 
     ```http
     HTTP/2 200
@@ -248,13 +250,13 @@ HTTP header | Explanation
 CACHE: HIT | The file was served from the CDN cache. Caching is working correctly.
 CACHE: MISS | The file was not in the CDN cache and was fetched from the origin. This occurs on the first request for a file, after the cached copy has expired and the origin returned a new response, or after any purge type (purge by URL, purge by pattern, or purge all) removes the cached object. The response is stored in cache; subsequent requests for a cacheable file return CACHE: HIT.
 CACHE: BYPASS | The CDN cache was skipped and the file was served directly from the origin without being stored. This occurs when the response carries a `Cache-Control: no-store` or `Cache-Control: no-cache` directive. By standard, `no-store` prohibits storage entirely; `no-cache` permits storage but requires revalidation before reuse. Gcore CDN treats both directives as uncacheable. Unlike CACHE: MISS, the response is not stored in cache.
-X-ID: ab-cd-d123 | Identifier of the Gcore CDN edge server that delivered the file. Resolve `{x-id}.fe.gc.onl` using `nslookup` or `dig` to get the server's IP address — useful for [cache&nbsp;diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
+X-ID: ab-cd-e123 | Identifier of the Gcore CDN edge server that delivered the file. Resolve `{x-id}.fe.gc.onl` using `nslookup` or `dig` to get the server's IP address — useful for [cache&nbsp;diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
 X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.
 
 
 
 ## Video cache recommendations
 
-Video files, video on demand (VOD) or live video, need different cache lifetimes by file type. Cache segments and single-file MP4 content longer, while keeping manifests short so players receive fresh live and playlist updates.
+Video-on-demand (VOD) and live-streaming files require different cache lifetimes based on file type. Cache segments and single-file MP4 content longer, while keeping manifests short so players receive fresh live and playlist updates.
 
-For video-specific values, apply the [caching&nbsp;rules](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules) used when creating a CDN resource for video streaming. They include recommended time-to-live (TTL) values for MP4, HLS, MPEG-DASH, live manifests, and segment files.
+For video-specific values, apply the [caching&nbsp;rules](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules) used when creating a CDN resource for video streaming. They include recommended time-to-live (TTL) values for MP4, HTTP Live Streaming (HLS), Dynamic Adaptive Streaming over HTTP (MPEG-DASH), live manifests, and segment files.
