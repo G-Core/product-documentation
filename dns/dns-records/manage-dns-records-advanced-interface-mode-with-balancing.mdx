@@ -1,10 +1,15 @@
 ---
 title: Manage DNS records (advanced interface mode with dynamic response)
 sidebarTitle: Advanced managing
-ai-navigation: Create and manage DNS record sets in advanced interface mode with dynamic response, supporting A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB types.
+ai-navigation: Create and manage DNS RRsets with dynamic response (pickers) via Customer Portal or REST API, in advanced interface mode, supporting A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB types.
 ---
 
-Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows creating DNS record sets (RRSets) with [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) — routing DNS responses based on geography, weight, latency, or health checks.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows creating DNS record sets (RRSets) with [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) — routing DNS responses based on geography, weight, latency, or health checks.</p>
 
 ## Create a DNS record
 
@@ -41,9 +46,9 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
     In the **TTL** field, specify the TTL (time to live) in seconds.
 
     <Accordion title="TTL operation">
-    Consider an A record with a TTL of 300 seconds, equal to 5 minutes. If the value changes from `10.0.0.1` to `10.0.0.0`, users requesting the domain will receive the server with IP `10.0.0.1` for up to 5 minutes (this value will be stored in the cache of recursive DNS servers). Within a maximum of 5 minutes, the DNS server will see the new value of the A record and refresh its cache, after which users will be directed to the server with IP `10.0.0.0`.
+    Consider an A record with a TTL of 300 seconds, equal to 5 minutes. If the value changes from `10.0.0.1` to `10.0.0.0`, users whose recursive DNS resolver cached the old value can continue receiving `10.0.0.1` until the cached record expires. After the TTL expires, the resolver requests the record again and receives the new value, `10.0.0.0`.
 
-    The point within the 300-second interval at which the record changes determines how long users wait to access the new record. If the change occurs 240 seconds into the TTL, users wait only one minute; if it occurs at 1 second, they wait 4 minutes and 59 seconds. Select a TTL duration according to the maximum wait-time tolerance.
+    After a record changes, resolvers that cached the previous value can continue returning it until its remaining TTL expires. With a TTL of 300 seconds, the old value can therefore remain visible for up to 5 minutes. Select a TTL duration according to the maximum acceptable propagation delay.
     </Accordion>
   </Step>
   <Step title="Configure dynamic response (optional)">
@@ -54,8 +59,6 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
     Gcore's DNS servers can return different DNS records to different users — users in Asia can be directed to an Asian server and users in Europe to a European one. This is called dynamic response. Full configuration instructions are in [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing).
 
     To enable dynamic response, check the **Dynamic response** checkbox. Leave it unchecked to proceed without dynamic response.
-
-    Dynamic response can also be configured via API using dynamic RRsets. The [DNS&nbsp;API](/api-reference/dns/rrsets/create-rrset) reference covers picker and selector options.
   </Step>
   <Step title="Set the record value status">
     Each record value is active by default. To save a value without activating it, uncheck the toggle next to that record.
@@ -65,7 +68,7 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
 
     <Accordion title="Example values by record type">
     Record type | Example value
-    \---|---
+    ---|---
     A | ```128.128.128.128```
     AAAA | ```2001:0db8:85a3:0000:0000:8a2e:0370:7334```
     NS | ```ns1.smth.com```
@@ -86,7 +89,7 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
   <Step title="Create the record">
     Click **Create**.
 
-    The record set is created with the specified parameters. The [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool verifies that the record is propagated correctly.
+    The record set is created with the specified parameters. Use the [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool to verify that the record resolves with the expected values.
   </Step>
 </Steps>
 
@@ -99,8 +102,429 @@ Gcore [Managed&nbsp;DNS](https://gcore.com/dns) advanced interface mode allows c
     <Frame>![All zones list with a DNS zone ready to open](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image1.png)</Frame>
   </Step>
   <Step title="Edit or delete a record">
-    To edit a record, click its name or select **Edit record** from the three-dot menu — both open the same edit form. To delete a record, click the three-dot icon and select **Delete**.
-
     <Frame>![Zone records list with the three-dot menu showing Edit record and Delete options](/images/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/manage-dns-records-advanced-interface-mode-with-balancing-image5.png)</Frame>
+
+    **Edit a record:** Click the record name or select **Edit record** from the three-dot menu. Change the required values and click **Save**.
+
+    **Delete a record:** Open the three-dot menu and select **Delete**.
   </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The DNS API manages record sets (RRsets) using `POST`, `GET`, `PUT`, and `DELETE` requests. Advanced interface mode enables dynamic response: pickers control which records are returned based on per-record metadata such as `weight`, `countries`, or `continents`. Full picker and selector options are documented in the [dynamic response guide](/dns/dns-records/configure-weight-balancing-and-geobalancing).</p>
+
+<p>The code samples below use an A record. To work with another supported type (AAAA, CNAME, MX, TXT, and others), replace `A` with the required RRset type and provide the corresponding record content.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"        # e.g. example.com
+export RECORD_NAME="{YOUR_RECORD_NAME}"    # e.g. app.example.com
+```
+
+## Create a record
+
+<p>Creating an RRset with pickers enables dynamic response. The two-picker chain below applies weighted probability to distribute traffic and then limits the response to a single record: `weighted_shuffle` assigns each record a relative probability proportional to its `weight`, and `first_n` with `limit: 1` selects one record from the shuffled list. Omit the `pickers` field to create a static record that always returns all values.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.create(
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        rrset_type="A",
+        ttl=300,
+        resource_records=[
+            {"content": ["1.2.3.4"], "meta": {"weight": 10}},
+            {"content": ["5.6.7.8"], "meta": {"weight": 5}},
+        ],
+        pickers=[
+            {"type": "weighted_shuffle"},
+            {"type": "first_n", "limit": 1},
+        ],
+    )
+    print(rrset.name, rrset.type, [p.type for p in (rrset.pickers or [])])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rrset, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+            ZoneName:  os.Getenv("ZONE_NAME"),
+            RrsetName: os.Getenv("RECORD_NAME"),
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"1.2.3.4"}, Meta: map[string]any{"weight": 10}},
+                {Content: []any{"5.6.7.8"}, Meta: map[string]any{"weight": 5}},
+            },
+            Pickers: []dns.ZoneRrsetNewParamsPicker{
+                {Type: "weighted_shuffle"},
+                {Type: "first_n", Limit: gcore.Int(1)},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("created: %s %s pickers:%d\n", rrset.Name, rrset.Type, len(rrset.Pickers))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$RECORD_NAME/A" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 300,
+        "resource_records": [
+          {"content": ["1.2.3.4"], "meta": {"weight": 10}},
+          {"content": ["5.6.7.8"], "meta": {"weight": 5}}
+        ],
+        "pickers": [
+          {"type": "weighted_shuffle"},
+          {"type": "first_n", "limit": 1}
+        ]
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "app.example.com",
+      "type": "A",
+      "ttl": 300,
+      "pickers": [
+        {"type": "weighted_shuffle", "strict": false},
+        {"type": "first_n", "limit": 1, "strict": false}
+      ],
+      "resource_records": [
+        {"id": 1001, "content": ["1.2.3.4"], "enabled": true, "meta": {"weight": 10}},
+        {"id": 1002, "content": ["5.6.7.8"], "enabled": true, "meta": {"weight": 5}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List records
+
+<p>Returns all RRsets in a zone, including their type, TTL, and pickers. Use this to locate an RRset when its name or type is unknown before retrieving or editing it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    result = client.dns.zones.rrsets.list(zone_name=os.environ["ZONE_NAME"])
+    print("total:", result.total_amount)
+    for r in result.rrsets or []:
+        print(r.name, r.type, "pickers:", [p.type for p in (r.pickers or [])])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        result, err := client.DNS.Zones.Rrsets.List(ctx, os.Getenv("ZONE_NAME"), dns.ZoneRrsetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("total:", result.TotalAmount)
+        for _, r := range result.Rrsets {
+            fmt.Printf("  %s %s pickers:%d\n", r.Name, r.Type, len(r.Pickers))
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "rrsets": [
+        {
+          "name": "app.example.com",
+          "type": "A",
+          "ttl": 300,
+          "pickers": [
+            {"type": "weighted_shuffle", "strict": false},
+            {"type": "first_n", "limit": 1, "strict": false}
+          ]
+        }
+      ],
+      "total_amount": 1
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Get a record
+
+<p>Returns the full RRset including all resource records and their metadata. Retrieve the current state before editing to preserve existing values that should not change.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.get(
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        rrset_type="A",
+    )
+    print(rrset.name, "ttl:", rrset.ttl, "records:", len(rrset.resource_records or []))
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rrset, err := client.DNS.Zones.Rrsets.Get(ctx, "A", dns.ZoneRrsetGetParams{
+            ZoneName:  os.Getenv("ZONE_NAME"),
+            RrsetName: os.Getenv("RECORD_NAME"),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s ttl:%d records:%d\n", rrset.Name, rrset.Ttl, len(rrset.ResourceRecords))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$RECORD_NAME/A" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "app.example.com",
+      "type": "A",
+      "ttl": 300,
+      "pickers": [
+        {"type": "weighted_shuffle", "strict": false},
+        {"type": "first_n", "limit": 1, "strict": false}
+      ],
+      "resource_records": [
+        {"id": 1001, "content": ["1.2.3.4"], "enabled": true, "meta": {"weight": 10}},
+        {"id": 1002, "content": ["5.6.7.8"], "enabled": true, "meta": {"weight": 5}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Edit a record
+
+<p>`PUT` fully replaces the RRset — all existing resource records and pickers are overwritten. Fetch the current state first (see [Get a record](#get-a-record)), then submit the complete updated body.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.replace(
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        rrset_type="A",
+        ttl=600,
+        resource_records=[
+            {"content": ["1.2.3.4"], "meta": {"weight": 20}},
+            {"content": ["5.6.7.8"], "meta": {"weight": 5}},
+        ],
+        pickers=[
+            {"type": "weighted_shuffle"},
+            {"type": "first_n", "limit": 1},
+        ],
+    )
+    print("updated ttl:", rrset.ttl)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rrset, err := client.DNS.Zones.Rrsets.Replace(ctx, "A", dns.ZoneRrsetReplaceParams{
+            ZoneName:  os.Getenv("ZONE_NAME"),
+            RrsetName: os.Getenv("RECORD_NAME"),
+            Ttl:       gcore.Int(600),
+            ResourceRecords: []dns.ZoneRrsetReplaceParamsResourceRecord{
+                {Content: []any{"1.2.3.4"}, Meta: map[string]any{"weight": 20}},
+                {Content: []any{"5.6.7.8"}, Meta: map[string]any{"weight": 5}},
+            },
+            Pickers: []dns.ZoneRrsetReplaceParamsPicker{
+                {Type: "weighted_shuffle"},
+                {Type: "first_n", Limit: gcore.Int(1)},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("updated ttl:%d pickers:%d\n", rrset.Ttl, len(rrset.Pickers))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$RECORD_NAME/A" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 600,
+        "resource_records": [
+          {"content": ["1.2.3.4"], "meta": {"weight": 20}},
+          {"content": ["5.6.7.8"], "meta": {"weight": 5}}
+        ],
+        "pickers": [
+          {"type": "weighted_shuffle"},
+          {"type": "first_n", "limit": 1}
+        ]
+      }'
+    ```
+
+    <p>The API returns the updated RRset with the same structure as the create response.</p>
+  </Tab>
+</Tabs>
+
+## Delete a record
+
+<p>Removes the RRset and all its resource records permanently.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.dns.zones.rrsets.delete(
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        rrset_type="A",
+    )
+    print("deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        _, err := client.DNS.Zones.Rrsets.Delete(ctx, "A", dns.ZoneRrsetDeleteParams{
+            ZoneName:  os.Getenv("ZONE_NAME"),
+            RrsetName: os.Getenv("RECORD_NAME"),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$RECORD_NAME/A" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 200 with an empty body on success.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
