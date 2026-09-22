@@ -11,14 +11,14 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
 ## PUSH ingest
 
-<p>In PUSH mode, an encoder, broadcast software, app, or automation agent initiates the connection and sends the live stream to Gcore. The encoder is configured with a target ingest URL and stream key; the platform listens for incoming connections and authenticates them using the push token embedded in the URL.</p>
+<p>In PUSH mode, an encoder, broadcast software, app, or automation agent initiates the connection and sends the live stream to Gcore. The encoder is configured with a target ingest URL and stream key; Gcore Streaming listens for incoming connections and authenticates them using the push token embedded in the URL.</p>
 
 ```text
 PUSH:
 Encoder (FFmpeg/OBS/etc.)  --->  Gcore ingest  --->  Transcoding + CDN  --->  HTML player
 ```
 
-<p>The push token is the secret part of the ingest URL. Only one push token exists for a stream at a time; anyone with a valid push URL can publish to that stream. To rotate the token, use the [Reset push token](/api-reference/streaming/streams/reset-live-stream-push-token) API method or follow the steps in the **Reset the PUSH token** section below.</p>
+<p>The push token is the secret part of the ingest URL. Only one push token exists for a stream at a time; anyone with a valid push URL can publish to that stream. The [Reset&nbsp;push&nbsp;token](/api-reference/streaming/streams/reset-live-stream-push-token) API endpoint rotates the token programmatically; the **Reset the PUSH token** section below covers the portal procedure.</p>
 
 ### Supported protocols
 
@@ -29,7 +29,7 @@ Encoder (FFmpeg/OBS/etc.)  --->  Gcore ingest  --->  Transcoding + CDN  --->  HT
 - WebRTC WHIP -- Low-latency contribution from browsers or apps.
 
 <Info>
-  Only one ingest protocol type can be used for a live stream at a time. For example, pushing RTMP and then attempting WebRTC WHIP simultaneously causes the transcoding process to fail.
+  Only one ingest protocol type can be used for a live stream at a time -- pushing RTMP and then attempting WebRTC WHIP simultaneously causes the transcoding process to fail.
 
   Example of server response after sending a second stream:
 
@@ -49,7 +49,7 @@ Encoder (FFmpeg/OBS/etc.)  --->  Gcore ingest  --->  Transcoding + CDN  --->  HT
 3. Verify that the network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
 
 <Info>
-  The origin stream must comply with the codec requirements in [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs). Streams that deviate from the documented specifications may be rejected by the ingest server or cause unstable transcoding.
+  The origin stream must meet the [codec&nbsp;requirements](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) for supported protocols, video and audio codecs, GOP structure, and bitrate. Streams that deviate from the documented specifications may be rejected by the ingest server or cause unstable transcoding.
 </Info>
 
 ### PUSH link formats
@@ -77,7 +77,7 @@ https://whip.domain.com/1234567_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/whip
 rtmp://rtmp.domain.com/in/1234567/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 ```
 
-<p>For enterprise projects, the ingest URL format can be adapted to existing business or encoder requirements. For example, if the current workflow uses this style:</p>
+<p>For enterprise projects, the ingest URL format can be adapted to existing business or encoder requirements. If the current workflow uses this style:</p>
 
 ```text
 rtmp(s)://<ip:port>/app/<uuid>
@@ -93,7 +93,7 @@ rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
 
 ### Primary and backup ingest points
 
-<p>The Streaming Platform provides a failover mechanism for RTMP and SRT origin streams: both primary and backup streams can be pushed simultaneously. Primary and backup streams use their respective dedicated ingest URLs -- do not send both encoder outputs to the same push URL.</p>
+<p>Gcore Streaming provides a failover mechanism for RTMP and SRT origin streams: both primary and backup streams can be pushed simultaneously. Primary and backup streams use their respective dedicated ingest URLs -- do not send both encoder outputs to the same push URL.</p>
 
 <p>Use for RTMP/S:</p>
 
@@ -111,7 +111,7 @@ rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
 2. When the primary stream fails and is unavailable for more than 3 seconds, the fallback process begins (the backup stream must be available and online):
    1. A new transcoding process starts for the backup stream.
    2. End-viewers will be without stream data for approximately 15 seconds.
-3. When the primary stream is restored, a timer starts counting how long the primary has been active. The primary must remain available for at least 60 consecutive seconds before the platform transitions back to it:
+3. When the primary stream is restored, a timer starts counting how long the primary has been active. The primary must remain available for at least 60 consecutive seconds before Gcore Streaming transitions back to it:
    1. A new transcoding process starts for the primary stream.
    2. End-viewers will be without stream data for approximately 15 seconds.
 
@@ -139,9 +139,7 @@ rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
 2. The server enforces a connection rate limit: if too many reconnection attempts are made in a short period, new attempts will be denied. This is relevant when an encoder restarts repeatedly after a failure. To avoid triggering the limiter, allow at least 10 seconds between connection attempts.
 
 <Info>
-  Each stream key accepts one active connection using one ingest protocol at a time. Additional simultaneous connections or protocols on the same input are rejected.
-
-  For example, pushing primary RTMP and backup RTMP to the same single `push_url` simultaneously causes the transcoding process to fail.
+  Each stream key accepts one active connection using one ingest protocol at a time. Additional simultaneous connections or protocols on the same input are rejected -- pushing primary RTMP and backup RTMP to the same single `push_url` simultaneously causes the transcoding process to fail.
 </Info>
 
 ### Reset the PUSH token
@@ -151,7 +149,7 @@ rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
 - The old token is immediately invalidated.
 - The new token is returned by the API and becomes available in the control panel.
 - Encoders that still use the old URL will be rejected.
-- The platform tries to terminate active primary and backup ingest connections automatically.
+- Gcore Streaming tries to terminate active primary and backup ingest connections automatically.
 
 <Info>
   Token reset affects active broadcasting. Plan token rotation during a maintenance window or be ready to restart the encoder with the new ingest URL.
@@ -172,13 +170,13 @@ Public origin URL  <---  Gcore ingest  --->  Transcoding + CDN  --->  HTML playe
 
 <p>The **URL** field accepts one or more source addresses. Multiple addresses are separated by a space, providing an additional backup plan.</p>
 
-<p>Example #1:</p>
+<p>Single source:</p>
 
 ```text
 rtmp://encoder.example.com/live/stream123
 ```
 
-<p>Example #2:</p>
+<p>Multiple sources with fallback:</p>
 
 ```text
 rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=1000000&streamid=stream123
@@ -189,11 +187,11 @@ rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stre
 <p>**PULL fallback algorithm:**</p>
 
 1. Stream #1 is active.
-2. If stream #1 is unavailable for more than approximately 3 seconds, the platform switches to the next address in the **URL** field:
+2. If the first source is unavailable for more than approximately 3 seconds, Gcore Streaming switches to the next address in the **URL** field:
    1. A new transcoding for the backup stream is started.
    2. End viewers will be without stream data for approximately 15 seconds.
-   3. If stream #2 also fails, the platform repeats this process for the next address using a round-robin algorithm. If only one address is configured, the platform retries that address.
-3. The platform retries for approximately 2 hours, making requests every 3 seconds.
+   3. If the second source also fails, Gcore Streaming repeats this process for the next address using a round-robin algorithm. If only one address is configured, Gcore Streaming retries that address.
+3. Gcore Streaming retries for approximately 2 hours, making requests every 3 seconds.
    1. If a link becomes available, the timer resets and transcoding begins.
    2. If no link responds within 2 hours, the stream stops. Resume by reactivating the stream manually or via API.
 
@@ -201,7 +199,7 @@ rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stre
 
 ## Backup playback demo
 
-<p>The following demo shows how a PUSH stream switches from the primary to the backup ingest in a real failover scenario. Two streams are configured -- "Stream 1 Primary" and "Stream 2 Backup" -- both pushed via FFmpeg simultaneously. A separate terminal continuously polls the CDN manifest endpoint for HTTP status to track availability.</p>
+<p>The following demo shows how a PUSH stream switches from the primary to the backup ingest in a real failover scenario. Two streams are configured -- a primary and a backup -- both pushed via FFmpeg simultaneously. A separate terminal continuously polls the CDN manifest endpoint for HTTP status to track availability.</p>
 
 <p>The screen displays:</p>
 
@@ -214,23 +212,23 @@ rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stre
 
 <p>Timing (as displayed by the playback clock in the player):</p>
 
-1. 13:52:16 UTC -- Stream 1 Primary started
-2. 13:52:19 UTC -- Stream 1 Primary displayed
-3. 13:52:27 UTC -- Stream 2 Backup started
-4. 13:52:50 UTC -- Stream 1 Primary stopped
-5. 13:52:53 UTC -- Stream 2 Primary enabling
-6. 13:53:02 UTC -- Stream 2 Backup displayed **(12 seconds without playback)**
-7. 13:53:10 UTC -- Stream 1 Primary started
-8. 13:54:20 UTC -- Stream 1 Primary enabling
-9. 13:54:31 UTC -- Stream 1 Primary displayed **(11 seconds without playback)**
+1. 13:52:16 UTC -- Primary stream started
+2. 13:52:19 UTC -- Primary stream displayed
+3. 13:52:27 UTC -- Backup stream started
+4. 13:52:50 UTC -- Primary stream stopped
+5. 13:52:53 UTC -- Primary enabling
+6. 13:53:02 UTC -- Backup stream displayed **(12 seconds without playback)**
+7. 13:53:10 UTC -- Primary stream started
+8. 13:54:20 UTC -- Primary enabling
+9. 13:54:31 UTC -- Primary stream displayed **(11 seconds without playback)**
 
 <Info>
-  Players in automatic mode may take longer to restore playback. After switching from backup to primary, the Gcore Video Player may use a 4-second latency target and will catch up with the live feed shortly.
+  Players in automatic mode may take longer to restore playback. After switching from backup to primary, the Gcore Video Player may use a four-second latency target and will catch up with the live feed shortly.
 </Info>
 
 <Accordion title="Scripts used in the demo">
 
-<p>Encoding of the "Stream 1 Primary", and similar for backup:</p>
+<p>Encoding of the primary stream (the backup stream uses the same parameters with its own ingest URL):</p>
 
 ```text
 ffmpeg -re -stream_loop -1 \
@@ -437,7 +435,7 @@ curl "https://api.gcore.com/streaming/streams/$STREAM_ID" \
 
 ## Failover with multiple source URIs for PULL
 
-<p>Set `pull: true` and provide one or more source URLs in the `uri` field, separated by spaces. The platform cycles through URIs in round-robin order on failure. After 2 hours with no successful connection, the stream deactivates (`active` -> `false`); use the Reactivate section below to resume it.</p>
+<p>Set `pull: true` and provide one or more source URLs in the `uri` field, separated by spaces. Gcore Streaming cycles through URIs in round-robin order on failure. After 2 hours with no successful connection, the stream deactivates (`active` -> `false`); use the Reactivate section below to resume it.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -509,7 +507,7 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
 
 ## Reactivate a stopped PULL stream
 
-<p>After the 2-hour retry period expires without a successful connection, the platform sets `active` to `false`. Send a PATCH request with `active: true` to resume pulling.</p>
+<p>After the two-hour retry period expires without a successful connection, Gcore Streaming sets `active` to `false`. Send a PATCH request with `active: true` to resume pulling.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -582,7 +580,7 @@ curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
 
 <p>Send <code>POST&nbsp;/streaming/streams/{"{stream_id}"}/reset_push_token</code>. The response contains the full updated stream object with the new token embedded in all push URLs.</p>
 
-<p>The reset takes effect immediately. The old token is invalidated -- any encoder still using the old ingest URL will be rejected. Active primary and backup ingest connections may be terminated by the platform. Plan token rotation during a maintenance window, or be prepared to restart the encoder with the new ingest URL immediately after the reset.</p>
+<p>The reset takes effect immediately. The old token is invalidated -- any encoder still using the old ingest URL will be rejected. Gcore Streaming tries to terminate active primary and backup ingest connections. Plan token rotation during a maintenance window, or be prepared to restart the encoder with the new ingest URL immediately after the reset.</p>
 
 ```bash
 curl -X POST "https://api.gcore.com/streaming/streams/$STREAM_ID/reset_push_token" \
