@@ -17,10 +17,20 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Lower the TTL on critical DNS records in Cloudflare before the cutover. During the migration window, some resolvers still serve records from Cloudflare while the nameserver change propagates. A shorter TTL limits how long those resolvers cache the records, so any corrections to the zone take effect faster.</p>
 
-1. Log in to the Cloudflare dashboard and select the domain.
-2. Navigate to **DNS** > **Records**.
-3. Edit each critical record and set the TTL to **10 minutes** (or the lowest available value).
-4. Wait for the current TTL to expire before continuing, so old cached records stop being served.
+<Steps>
+  <Step title="Select the domain">
+  Log in to the Cloudflare dashboard and select the domain.
+  </Step>
+  <Step title="Go to DNS Records">
+  Navigate to **DNS** > **Records**.
+  </Step>
+  <Step title="Lower the TTL">
+  Edit each critical record and set the TTL to **10 minutes** (or the lowest available value).
+  </Step>
+  <Step title="Wait for cache to expire">
+  Wait for the current TTL to expire before continuing, so old cached records stop being served.
+  </Step>
+</Steps>
 
 <Warning>
 If DNSSEC is enabled on the domain in Cloudflare, disable it before switching nameservers. Changing nameservers while DNSSEC is active causes DNSSEC validation to fail, and the domain stops resolving for many clients. Disable DNSSEC in Cloudflare, remove the DS record at the registrar, wait for the DS record TTL to expire, then proceed with the nameserver switch.
@@ -30,8 +40,14 @@ If DNSSEC is enabled on the domain in Cloudflare, disable it before switching na
 
 <p>Download a BIND zone file from Cloudflare so the same records can be imported into Gcore.</p>
 
-1. In the Cloudflare dashboard, select the domain and navigate to **DNS** > **Records**.
-2. Click **Export** to download the DNS records as a BIND zone file (`.txt` format).
+<Steps>
+  <Step title="Select the domain">
+  In the Cloudflare dashboard, select the domain and navigate to **DNS** > **Records**.
+  </Step>
+  <Step title="Export the zone file">
+  Click **Export** to download the DNS records as a BIND zone file (`.txt` format).
+  </Step>
+</Steps>
 
 <Warning>
 Before importing the zone file, review records that were proxied through Cloudflare and confirm their values point to the intended origin server or Gcore CDN endpoint.
@@ -41,22 +57,40 @@ Before importing the zone file, review records that were proxied through Cloudfl
 
 <p>Create a zone in the [Gcore Customer Portal](https://portal.gcore.com) so imported records have a destination. The [zone creation](/dns/manage-a-dns-zone) guide covers the same flow with screenshots.</p>
 
-1. Navigate to [DNS](https://portal.gcore.com/dns/zones) in the Customer Portal and click **Add zone**.
-2. Enter the domain name and click **Confirm**.
-3. Gcore scans and displays any existing DNS records it can detect. Review them, then click **Confirm**.
+<Steps>
+  <Step title="Add a zone">
+  Navigate to [DNS](https://portal.gcore.com/dns/zones) in the Customer Portal and click **Add zone**.
+  </Step>
+  <Step title="Enter the domain name">
+  Enter the domain name and click **Confirm**.
+  </Step>
+  <Step title="Review detected records">
+  Gcore scans and displays any existing DNS records it can detect. Review them, then click **Confirm**.
 
-<Tip>
-Check the **Skip scanning** box to import all records manually from the Cloudflare zone file in the next step.
-</Tip>
+  <Tip>
+  Check the **Skip scanning** box to import all records manually from the Cloudflare zone file in the next step.
+  </Tip>
+  </Step>
+</Steps>
 
 ## Step 3. Import DNS records
 
 <p>Import the Cloudflare zone file into the new Gcore zone, then review every record before changing nameservers.</p>
 
-1. In the All zones tab, open the newly created zone.
-2. Click **Import records**.
-3. In the pop-up, either paste the contents of the Cloudflare zone file directly, or rename the exported `.txt` file to `.zone` and click **Upload zone file** to upload it.
-4. Click **Import**.
+<Steps>
+  <Step title="Open the zone">
+  In the All zones tab, open the newly created zone.
+  </Step>
+  <Step title="Click Import records">
+  Click **Import records**.
+  </Step>
+  <Step title="Upload or paste the zone file">
+  In the pop-up, either paste the contents of the Cloudflare zone file directly, or rename the exported `.txt` file to `.zone` and click **Upload zone file** to upload it.
+  </Step>
+  <Step title="Import">
+  Click **Import**.
+  </Step>
+</Steps>
 
 <p>Review the imported records and confirm they look correct. Pay particular attention to records that were previously proxied through Cloudflare and verify that they point to the intended origin server or Gcore CDN endpoint.</p>
 
@@ -219,221 +253,221 @@ export ZONE_FILE="{PATH_TO_ZONE_FILE}"
 
 ## Create the zone and import records
 
-### Step 1. Create the DNS zone
+<Steps>
+  <Step title="Create the DNS zone">
+  Create the destination zone. The request requires only the domain name.
 
-<p>Create the destination zone. The request requires only the domain name.</p>
+  | Parameter | Required | Description |
+  |-----------|----------|-------------|
+  | `name` | Yes | The domain name to create the zone for, e.g. `yourdomain.com`. |
 
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | The domain name to create the zone for, e.g. `yourdomain.com`. |
+  <Tabs>
+    <Tab title="Python SDK">
+      ```python
+      import os
+      from gcore import Gcore
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+      client = Gcore()
+      client.dns.zones.create(name=os.environ["ZONE_NAME"])
+      print(f"Zone created: {os.environ['ZONE_NAME']}")
+      ```
+    </Tab>
+    <Tab title="Go SDK">
+      ```go
+      package main
 
-    client = Gcore()
-    client.dns.zones.create(name=os.environ["ZONE_NAME"])
-    print(f"Zone created: {os.environ['ZONE_NAME']}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
+      import (
+          "context"
+          "fmt"
+          "os"
 
-    import (
-        "context"
-        "fmt"
-        "os"
+          gcore "github.com/G-Core/gcore-go"
+          "github.com/G-Core/gcore-go/dns"
+      )
 
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/dns"
-    )
+      func main() {
+          client := gcore.NewClient()
+          ctx := context.Background()
 
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
+          _, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{Name: os.Getenv("ZONE_NAME")})
+          if err != nil {
+              panic(err)
+          }
+          fmt.Printf("Zone created: %s\n", os.Getenv("ZONE_NAME"))
+      }
+      ```
+    </Tab>
+    <Tab title="curl">
+      ```bash
+      curl -s -X POST "https://api.gcore.com/dns/v2/zones" \
+        -H "Authorization: APIKey $GCORE_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "{\"name\": \"${ZONE_NAME}\"}"
+      ```
 
-        _, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{Name: os.Getenv("ZONE_NAME")})
-        if err != nil {
-            panic(err)
-        }
-        fmt.Printf("Zone created: %s\n", os.Getenv("ZONE_NAME"))
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/dns/v2/zones" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d "{\"name\": \"${ZONE_NAME}\"}"
-    ```
+      <p>The API returns:</p>
 
-    <p>The API returns:</p>
+      ```json
+      {"id": 12345}
+      ```
+    </Tab>
+  </Tabs>
+  </Step>
+  <Step title="Import DNS records">
+  Send the BIND zone file as a plain-text request body. Import adds new RRsets to the zone; existing RRsets with the same name and type are skipped. The `warnings` field in the response lists any skipped records.
 
-    ```json
-    {"id": 12345}
-    ```
-  </Tab>
-</Tabs>
+  <Tabs>
+    <Tab title="Python SDK">
+      ```python
+      import os
+      from gcore import Gcore
 
-### Step 2. Import DNS records
+      client = Gcore()
 
-<p>Send the BIND zone file as a plain-text request body. Import adds new RRsets to the zone; existing RRsets with the same name and type are skipped. The `warnings` field in the response lists any skipped records.</p>
+      with open(os.environ["ZONE_FILE"], "rb") as f:
+          zone_data = f.read()
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+      result = client.dns.zones.import_(
+          zone_name=os.environ["ZONE_NAME"],
+          body=zone_data,
+          extra_headers={"Content-Type": "text/plain"},
+      )
+      print(f"Imported: {result.imported.rrsets} RRsets, {result.imported.resource_records} records")
+      ```
+    </Tab>
+    <Tab title="Go SDK">
+      ```go
+      package main
 
-    client = Gcore()
+      import (
+          "bytes"
+          "fmt"
+          "io"
+          "net/http"
+          "os"
+      )
 
-    with open(os.environ["ZONE_FILE"], "rb") as f:
-        zone_data = f.read()
+      func main() {
+          zoneName := os.Getenv("ZONE_NAME")
 
-    result = client.dns.zones.import_(
-        zone_name=os.environ["ZONE_NAME"],
-        body=zone_data,
-        extra_headers={"Content-Type": "text/plain"},
-    )
-    print(f"Imported: {result.imported.rrsets} RRsets, {result.imported.resource_records} records")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
+          zoneData, err := os.ReadFile(os.Getenv("ZONE_FILE"))
+          if err != nil {
+              panic(err)
+          }
 
-    import (
-        "bytes"
-        "fmt"
-        "io"
-        "net/http"
-        "os"
-    )
+          req, err := http.NewRequest("POST",
+              "https://api.gcore.com/dns/v2/zones/"+zoneName+"/import",
+              bytes.NewReader(zoneData))
+          if err != nil {
+              panic(err)
+          }
+          req.Header.Set("Authorization", "APIKey "+os.Getenv("GCORE_API_KEY"))
+          req.Header.Set("Content-Type", "text/plain")
 
-    func main() {
-        zoneName := os.Getenv("ZONE_NAME")
+          resp, err := http.DefaultClient.Do(req)
+          if err != nil {
+              panic(err)
+          }
+          defer resp.Body.Close()
+          body, _ := io.ReadAll(resp.Body)
+          fmt.Printf("Status: %d\n%s\n", resp.StatusCode, string(body))
+      }
+      ```
+    </Tab>
+    <Tab title="curl">
+      ```bash
+      curl -s -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/import" \
+        -H "Authorization: APIKey $GCORE_API_KEY" \
+        -H "Content-Type: text/plain" \
+        --data-binary "@$ZONE_FILE"
+      ```
 
-        zoneData, err := os.ReadFile(os.Getenv("ZONE_FILE"))
-        if err != nil {
-            panic(err)
-        }
+      <p>The API returns:</p>
 
-        req, err := http.NewRequest("POST",
-            "https://api.gcore.com/dns/v2/zones/"+zoneName+"/import",
-            bytes.NewReader(zoneData))
-        if err != nil {
-            panic(err)
-        }
-        req.Header.Set("Authorization", "APIKey "+os.Getenv("GCORE_API_KEY"))
-        req.Header.Set("Content-Type", "text/plain")
+      ```json
+      {
+        "imported": {
+          "rrsets": 5,
+          "resource_records": 5,
+          "qtype": 4,
+          "skipped_resource_records": 0
+        },
+        "success": true,
+        "warnings": {}
+      }
+      ```
+    </Tab>
+  </Tabs>
+  </Step>
+  <Step title="Verify imported records">
+  List all RRsets in the zone to confirm the records were created.
 
-        resp, err := http.DefaultClient.Do(req)
-        if err != nil {
-            panic(err)
-        }
-        defer resp.Body.Close()
-        body, _ := io.ReadAll(resp.Body)
-        fmt.Printf("Status: %d\n%s\n", resp.StatusCode, string(body))
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/import" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: text/plain" \
-      --data-binary "@$ZONE_FILE"
-    ```
+  <Tabs>
+    <Tab title="Python SDK">
+      ```python
+      import os
+      from gcore import Gcore
 
-    <p>The API returns:</p>
+      client = Gcore()
+      page = client.dns.zones.rrsets.list(zone_name=os.environ["ZONE_NAME"])
+      print(f"Total RRsets: {page.total_amount}")
+      for rr in page.rrsets or []:
+          print(f"  {rr.type:<6}  {rr.name}")
+      ```
+    </Tab>
+    <Tab title="Go SDK">
+      ```go
+      package main
 
-    ```json
-    {
-      "imported": {
-        "rrsets": 5,
-        "resource_records": 5,
-        "qtype": 4,
-        "skipped_resource_records": 0
-      },
-      "success": true,
-      "warnings": {}
-    }
-    ```
-  </Tab>
-</Tabs>
+      import (
+          "context"
+          "fmt"
+          "os"
 
-### Step 3. Verify imported records
+          gcore "github.com/G-Core/gcore-go"
+          "github.com/G-Core/gcore-go/dns"
+      )
 
-<p>List all RRsets in the zone to confirm the records were created.</p>
+      func main() {
+          client := gcore.NewClient()
+          ctx := context.Background()
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+          page, err := client.DNS.Zones.Rrsets.List(ctx, os.Getenv("ZONE_NAME"), dns.ZoneRrsetListParams{})
+          if err != nil {
+              panic(err)
+          }
+          fmt.Printf("Total RRsets: %d\n", page.TotalAmount)
+          for _, rr := range page.Rrsets {
+              fmt.Printf("  %-6s  %s\n", rr.Type, rr.Name)
+          }
+      }
+      ```
+    </Tab>
+    <Tab title="curl">
+      ```bash
+      curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+        -H "Authorization: APIKey $GCORE_API_KEY"
+      ```
 
-    client = Gcore()
-    page = client.dns.zones.rrsets.list(zone_name=os.environ["ZONE_NAME"])
-    print(f"Total RRsets: {page.total_amount}")
-    for rr in page.rrsets or []:
-        print(f"  {rr.type:<6}  {rr.name}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
+      <p>The API returns:</p>
 
-    import (
-        "context"
-        "fmt"
-        "os"
-
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/dns"
-    )
-
-    func main() {
-        client := gcore.NewClient()
-        ctx := context.Background()
-
-        page, err := client.DNS.Zones.Rrsets.List(ctx, os.Getenv("ZONE_NAME"), dns.ZoneRrsetListParams{})
-        if err != nil {
-            panic(err)
-        }
-        fmt.Printf("Total RRsets: %d\n", page.TotalAmount)
-        for _, rr := range page.Rrsets {
-            fmt.Printf("  %-6s  %s\n", rr.Type, rr.Name)
-        }
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    <p>The API returns:</p>
-
-    ```json
-    {
-      "rrsets": [
-        {"name": "example.com", "type": "A",     "ttl": 300,  "resource_records": [{"content": ["203.0.113.10"]}]},
-        {"name": "example.com", "type": "MX",    "ttl": 300,  "resource_records": [{"content": [10, "mail.example.com."]}]},
-        {"name": "example.com", "type": "NS",    "ttl": 3600, "resource_records": [{"content": ["ns1.gcorelabs.net."]}]},
-        {"name": "example.com", "type": "TXT",   "ttl": 300,  "resource_records": [{"content": ["v=spf1 mx -all"]}]},
-        {"name": "mail.example.com", "type": "A",     "ttl": 300, "resource_records": [{"content": ["203.0.113.11"]}]},
-        {"name": "www.example.com",  "type": "CNAME", "ttl": 300, "resource_records": [{"content": ["example.com."]}]}
-      ],
-      "total_amount": 6
-    }
-    ```
-  </Tab>
-</Tabs>
+      ```json
+      {
+        "rrsets": [
+          {"name": "example.com", "type": "A",     "ttl": 300,  "resource_records": [{"content": ["203.0.113.10"]}]},
+          {"name": "example.com", "type": "MX",    "ttl": 300,  "resource_records": [{"content": [10, "mail.example.com."]}]},
+          {"name": "example.com", "type": "NS",    "ttl": 3600, "resource_records": [{"content": ["ns1.gcorelabs.net."]}]},
+          {"name": "example.com", "type": "TXT",   "ttl": 300,  "resource_records": [{"content": ["v=spf1 mx -all"]}]},
+          {"name": "mail.example.com", "type": "A",     "ttl": 300, "resource_records": [{"content": ["203.0.113.11"]}]},
+          {"name": "www.example.com",  "type": "CNAME", "ttl": 300, "resource_records": [{"content": ["example.com."]}]}
+        ],
+        "total_amount": 6
+      }
+      ```
+    </Tab>
+  </Tabs>
+  </Step>
+</Steps>
 
 <p>After confirming the imported records are correct, update the nameservers at the domain registrar to `ns1.gcorelabs.net` and `ns2.gcdn.services`. Nameserver changes can take up to 24 hours to propagate globally.</p>
 
