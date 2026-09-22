@@ -1,7 +1,7 @@
 ---
 title: Getting started with Managed DNS
 sidebarTitle: Getting started (Create a DNS zone)
-ai-navigation: Create a DNS zone in Gcore Managed DNS via Customer Portal or REST API, point nameservers to Gcore, and verify public delegation.
+ai-navigation: Create a DNS zone in Gcore Managed DNS via Customer Portal, REST API, or Terraform, point nameservers to Gcore, and verify public delegation.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -125,7 +125,7 @@ export ZONE_NAME="{YOUR_ZONE_NAME}"
 
     ```json
     {
-      "id": 1300358,
+      "id": 12345,
       "warnings": [
         "The contract is currently set to reseller default and in order to modify it, you need to upgrade your tariff plan.",
         "Your primary server has been set to default. In order to alter the primary server, you are required to upgrade your tariff plan."
@@ -218,6 +218,62 @@ export ZONE_NAME="{YOUR_ZONE_NAME}"
 <p>`gcore_authorized_count` is the number of Gcore nameservers currently authoritative for the zone. A value of `0` means registrar NS records do not yet point to Gcore, or propagation is still in progress.</p>
 
 <p>When `gcore_authorized_count` is greater than zero, add and edit records with the [DNS&nbsp;records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode) API.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare and manage a DNS zone using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). DNS zones are account-global — the resource requires no `project_id` or `region_id`.</p>
+
+## Create a DNS zone
+
+<p>The minimum configuration requires only the zone name. Gcore adds default NS records for `ns1.gcorelabs.net` and `ns2.gcdn.services` automatically.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+  # terraform import gcore_dns_zone.example example.com
+}
+```
+
+<p>After `terraform apply`, update the nameservers at the domain registrar to `ns1.gcorelabs.net` and `ns2.gcdn.services`. Nameserver changes can take up to 24 hours to propagate.</p>
+
+## Edit zone settings
+
+<p>Edit fields in the resource block and run `terraform apply` to update the zone in-place.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name    = "example.com"
+  enabled = false   # disable zone — records stop resolving
+  refresh = 3600    # how often secondary servers check for changes (seconds)
+  retry   = 1800    # how long secondary servers wait before retrying (seconds)
+  expiry  = 604800  # how long secondary servers serve the zone without a refresh (seconds)
+  nx_ttl  = 300     # TTL for negative responses (seconds)
+}
+```
+
+## Delete a DNS zone
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the zone on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone" "example" {
+#   name = "example.com"
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing zone
+
+<p>Use when a zone was created outside Terraform and needs to be managed as code. Add the resource block to `main.tf`, then run:</p>
+
+```bash
+terraform import gcore_dns_zone.example example.com
+```
 
 </MethodSection>
 </MethodSwitch>
