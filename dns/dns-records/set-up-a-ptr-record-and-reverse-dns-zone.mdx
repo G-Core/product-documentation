@@ -78,6 +78,77 @@ export RDNS_ZONE="{YOUR_REVERSE_ZONE}"
 
 <p>The reverse zone name for an IPv4 /24 subnet is the three network octets reversed with `.in-addr.arpa` appended. For subnet `203.0.113.0/24`, the zone name is `113.0.203.in-addr.arpa`. The PTR rrset name for a host at `203.0.113.1` is `1.113.0.203.in-addr.arpa` — the full reversed IP address.</p>
 
+## Quickstart
+
+<p>Create the zone and add a PTR record.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    zone = os.environ["RDNS_ZONE"]  # e.g. 113.0.203.in-addr.arpa
+
+    # Step 1. Create the reverse DNS zone
+    client.dns.zones.create(name=zone)
+
+    # Step 2. Add a PTR record for the first host in the subnet
+    ptr_name = "1." + zone  # maps 203.0.113.1 -> mail.sample-test.com
+    rrset = client.dns.zones.rrsets.create(
+        "PTR",
+        zone_name=zone,
+        rrset_name=ptr_name,
+        ttl=300,
+        resource_records=[{"content": ["mail.sample-test.com."]}],
+    )
+    print(rrset.type, rrset.name, (rrset.resource_records or [{}])[0].content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("RDNS_ZONE") // e.g. 113.0.203.in-addr.arpa
+
+        // Step 1. Create the reverse DNS zone
+        _, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{Name: zone})
+        if err != nil {
+            panic(err)
+        }
+
+        // Step 2. Add a PTR record for the first host in the subnet
+        ptrName := "1." + zone // maps 203.0.113.1 -> mail.sample-test.com
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "PTR", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: ptrName,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"mail.sample-test.com."}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s %v\n", rr.Type, rr.Name, rr.ResourceRecords[0].Content)
+    }
+    ```
+  </Tab>
+</Tabs>
+
 ## Create the zone and PTR record
 
 ### Step 1. Create the reverse DNS zone
