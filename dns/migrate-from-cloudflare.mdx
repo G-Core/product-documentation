@@ -17,130 +17,98 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Lower the TTL on critical DNS records in Cloudflare before the cutover. During the migration window, some resolvers still serve records from Cloudflare while the nameserver change propagates. A shorter TTL limits how long those resolvers cache the records, so any corrections to the zone take effect faster.</p>
 
-<Steps>
-  <Step title="Select the domain">
-  Log in to the Cloudflare dashboard and select the domain.
-  </Step>
-  <Step title="Go to DNS Records">
-  Navigate to **DNS** > **Records**.
-  </Step>
-  <Step title="Lower the TTL">
-  Edit each critical record and set the TTL to **10 minutes** (or the lowest available value).
-  </Step>
-  <Step title="Wait for cache to expire">
-  Wait for the current TTL to expire before continuing, so old cached records stop being served.
-  </Step>
-</Steps>
+1. Log in to the Cloudflare dashboard and select the domain.
+2. Navigate to **DNS** > **Records**.
+3. Edit each critical record and set the TTL to **10 minutes** (or the lowest available value).
+4. Wait for the current TTL to expire before continuing, so old cached records stop being served.
 
 <Warning>
 If DNSSEC is enabled on the domain in Cloudflare, disable it before switching nameservers. Changing nameservers while DNSSEC is active causes DNSSEC validation to fail, and the domain stops resolving for many clients. Disable DNSSEC in Cloudflare, remove the DS record at the registrar, wait for the DS record TTL to expire, then proceed with the nameserver switch.
 </Warning>
 
-## Step 1. Export DNS records from Cloudflare
-
-<p>Download a BIND zone file from Cloudflare so the same records can be imported into Gcore.</p>
-
 <Steps>
-  <Step title="Select the domain">
-  In the Cloudflare dashboard, select the domain and navigate to **DNS** > **Records**.
-  </Step>
-  <Step title="Export the zone file">
-  Click **Export** to download the DNS records as a BIND zone file (`.txt` format).
-  </Step>
-</Steps>
+  <Step title="Export DNS records from Cloudflare">
+  <p>Download a BIND zone file from Cloudflare so the same records can be imported into Gcore.</p>
 
-<Warning>
-Before importing the zone file, review records that were proxied through Cloudflare and confirm their values point to the intended origin server or Gcore CDN endpoint.
-</Warning>
+  1. In the Cloudflare dashboard, select the domain and navigate to **DNS** > **Records**.
+  2. Click **Export** to download the DNS records as a BIND zone file (`.txt` format).
 
-## Step 2. Create a DNS zone in Gcore
-
-<p>Create a zone in the [Gcore Customer Portal](https://portal.gcore.com) so imported records have a destination. The [zone creation](/dns/manage-a-dns-zone) guide covers the same flow with screenshots.</p>
-
-<Steps>
-  <Step title="Add a zone">
-  Navigate to [DNS](https://portal.gcore.com/dns/zones) in the Customer Portal and click **Add zone**.
+  <Warning>
+  Before importing the zone file, review records that were proxied through Cloudflare and confirm their values point to the intended origin server or Gcore CDN endpoint.
+  </Warning>
   </Step>
-  <Step title="Enter the domain name">
-  Enter the domain name and click **Confirm**.
-  </Step>
-  <Step title="Review detected records">
-  Gcore scans and displays any existing DNS records it can detect. Review them, then click **Confirm**.
+
+  <Step title="Create a DNS zone in Gcore">
+  <p>Create a zone in the [Gcore Customer Portal](https://portal.gcore.com) so imported records have a destination. The [zone creation](/dns/manage-a-dns-zone) guide covers the same flow with screenshots.</p>
+
+  1. Navigate to [DNS](https://portal.gcore.com/dns/zones) in the Customer Portal and click **Add zone**.
+  2. Enter the domain name and click **Confirm**.
+  3. Gcore scans and displays any existing DNS records it can detect. Review them, then click **Confirm**.
 
   <Tip>
   Check the **Skip scanning** box to import all records manually from the Cloudflare zone file in the next step.
   </Tip>
   </Step>
+
+  <Step title="Import DNS records">
+  <p>Import the Cloudflare zone file into the new Gcore zone, then review every record before changing nameservers.</p>
+
+  1. In the All zones tab, open the newly created zone.
+  2. Click **Import records**.
+  3. In the pop-up, either paste the contents of the Cloudflare zone file directly, or rename the exported `.txt` file to `.zone` and click **Upload zone file** to upload it.
+  4. Click **Import**.
+
+  <p>Review the imported records and confirm they look correct. Pay particular attention to records that were previously proxied through Cloudflare and verify that they point to the intended origin server or Gcore CDN endpoint.</p>
+
+  <Info>
+  Cloudflare supports CNAME flattening, which lets a CNAME record exist at the domain root (`example.com`). Standard DNS does not permit CNAME at the apex. Root records that used CNAME flattening in Cloudflare may appear differently in the zone file or after import — check them carefully and confirm they resolve to the expected address.
+  </Info>
+
+  <Warning>
+  Only DNS records are migrated. Cloudflare CDN, proxy rules, WAF, page rules, redirects, Workers, and SSL/TLS settings are not transferred automatically. Configure those services separately in Gcore or another provider after the DNS cutover.
+  </Warning>
+  </Step>
+
+  <Step title="Update nameservers at the registrar">
+  <p>Point the domain to Gcore nameservers by updating the nameserver settings at the domain registrar (the company where the domain was purchased or is managed).</p>
+
+  <Warning>
+  Update the nameserver settings at the domain registrar, not inside Cloudflare. Adding or editing NS records inside the Cloudflare dashboard does not change which DNS provider is authoritative for the domain, because the registrar controls that setting.
+  </Warning>
+
+  <p>Set the nameservers to the following Gcore values:</p>
+
+  | Nameserver | Value |
+  |---|---|
+  | NS 1 | `ns1.gcorelabs.net` |
+  | NS 2 | `ns2.gcdn.services` |
+
+  <p>Look for a **Nameservers** or **DNS** section in the registrar control panel. The exact steps vary by registrar.</p>
+  </Step>
+
+  <Step title="Verify propagation">
+  <p>DNS changes can take up to 24 hours to propagate globally. Check progress in both of these places:</p>
+
+  - Use a DNS propagation checker to verify that the domain's NS records resolve to Gcore nameservers worldwide. {/* LEGAL REVIEW NEEDED: third-party tool reference removed pending legal clearance */}
+  - In the Customer Portal, a notification appears on the DNS zone until propagation is complete. This is expected and clears automatically.
+
+  <p>Once the NS records resolve to Gcore, verify that critical migrated records return the expected values:</p>
+
+  ```sh
+  dig A yourdomain.com
+  dig AAAA yourdomain.com
+  dig MX yourdomain.com
+  dig TXT yourdomain.com
+  dig CNAME www.yourdomain.com
+  ```
+
+  <p>Compare the answers against the values in the original Cloudflare zone to confirm the migration is complete.</p>
+
+  <Info>
+  Keep the Cloudflare DNS zone intact for at least 48 hours after migration. Switching the nameservers back at the registrar provides a rollback path if the Gcore configuration needs to be corrected — the rollback is subject to the same DNS propagation delay.
+  </Info>
+  </Step>
 </Steps>
-
-## Step 3. Import DNS records
-
-<p>Import the Cloudflare zone file into the new Gcore zone, then review every record before changing nameservers.</p>
-
-<Steps>
-  <Step title="Open the zone">
-  In the All zones tab, open the newly created zone.
-  </Step>
-  <Step title="Click Import records">
-  Click **Import records**.
-  </Step>
-  <Step title="Upload or paste the zone file">
-  In the pop-up, either paste the contents of the Cloudflare zone file directly, or rename the exported `.txt` file to `.zone` and click **Upload zone file** to upload it.
-  </Step>
-  <Step title="Import">
-  Click **Import**.
-  </Step>
-</Steps>
-
-<p>Review the imported records and confirm they look correct. Pay particular attention to records that were previously proxied through Cloudflare and verify that they point to the intended origin server or Gcore CDN endpoint.</p>
-
-<Info>
-Cloudflare supports CNAME flattening, which lets a CNAME record exist at the domain root (`example.com`). Standard DNS does not permit CNAME at the apex. Root records that used CNAME flattening in Cloudflare may appear differently in the zone file or after import — check them carefully and confirm they resolve to the expected address.
-</Info>
-
-<Warning>
-Only DNS records are migrated. Cloudflare CDN, proxy rules, WAF, page rules, redirects, Workers, and SSL/TLS settings are not transferred automatically. Configure those services separately in Gcore or another provider after the DNS cutover.
-</Warning>
-
-## Step 4. Update nameservers at the registrar
-
-<p>Point the domain to Gcore nameservers by updating the nameserver settings at the domain registrar (the company where the domain was purchased or is managed).</p>
-
-<Warning>
-Update the nameserver settings at the domain registrar, not inside Cloudflare. Adding or editing NS records inside the Cloudflare dashboard does not change which DNS provider is authoritative for the domain, because the registrar controls that setting.
-</Warning>
-
-<p>Set the nameservers to the following Gcore values:</p>
-
-| Nameserver | Value |
-|---|---|
-| NS 1 | `ns1.gcorelabs.net` |
-| NS 2 | `ns2.gcdn.services` |
-
-<p>Look for a **Nameservers** or **DNS** section in the registrar control panel. The exact steps vary by registrar.</p>
-
-## Step 5. Verify propagation
-
-<p>DNS changes can take up to 24 hours to propagate globally. Check progress in both of these places:</p>
-
-- Use a DNS propagation checker to verify that the domain's NS records resolve to Gcore nameservers worldwide. {/* LEGAL REVIEW NEEDED: third-party tool reference removed pending legal clearance */}
-- In the Customer Portal, a notification appears on the DNS zone until propagation is complete. This is expected and clears automatically.
-
-<p>Once the NS records resolve to Gcore, verify that critical migrated records return the expected values:</p>
-
-```sh
-dig A yourdomain.com
-dig AAAA yourdomain.com
-dig MX yourdomain.com
-dig TXT yourdomain.com
-dig CNAME www.yourdomain.com
-```
-
-<p>Compare the answers against the values in the original Cloudflare zone to confirm the migration is complete.</p>
-
-<Info>
-Keep the Cloudflare DNS zone intact for at least 48 hours after migration. Switching the nameservers back at the registrar provides a rollback path if the Gcore configuration needs to be corrected — the rollback is subject to the same DNS propagation delay.
-</Info>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -313,6 +281,7 @@ export ZONE_FILE="{PATH_TO_ZONE_FILE}"
     </Tab>
   </Tabs>
   </Step>
+
   <Step title="Import DNS records">
   Send the BIND zone file as a plain-text request body. Import adds new RRsets to the zone; existing RRsets with the same name and type are skipped. The `warnings` field in the response lists any skipped records.
 
@@ -399,6 +368,7 @@ export ZONE_FILE="{PATH_TO_ZONE_FILE}"
     </Tab>
   </Tabs>
   </Step>
+
   <Step title="Verify imported records">
   List all RRsets in the zone to confirm the records were created.
 
