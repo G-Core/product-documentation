@@ -1,22 +1,25 @@
 ---
-title: Configure DNS records to send emails
-sidebarTitle: Sending emails
-ai-navigation: Configure A, MX, PTR, SPF, DKIM, and DMARC records in Gcore Managed DNS to enable email delivery and prevent spam and spoofing.
+title: Configure DNS records for email
+sidebarTitle: Email DNS records
+ai-navigation: Configure A, MX, PTR, SPF, DKIM, and DMARC records in Gcore Managed DNS for email delivery and authentication via Customer Portal or via REST API.
 ---
 
-After setting up a mail server, configuring the correct DNS settings is crucial for it to work properly. The server must be configured so that emails sent from it do not end up in spam and attackers cannot send phishing emails on its behalf.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Anti-spam and anti-spoofing measures to counter such threats are configured via DNS. This is because usually only the true owner of the mail server has control over the DNS domain zone and can prove the validity of the mail server configuration.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>After setting up a mail server, configure its DNS records so that other mail systems can locate the server and authenticate messages sent from the domain. A, MX, PTR, SPF, DKIM, and DMARC records provide the addressing and authentication information used for mail delivery and anti-spoofing checks.</p>
 
 <Info>
 The domain must already be delegated to Gcore name servers — the [Getting&nbsp;started](/dns/manage-a-dns-zone) guide covers zone creation and delegation.
 </Info>
 
-Add each record in the [Gcore Customer Portal](https://portal.gcore.com) using the [DNS&nbsp;records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode) portal procedure.
+<p>Add each record in the [Gcore Customer Portal](https://portal.gcore.com) using the [DNS&nbsp;records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode) portal procedure.</p>
 
 ## Step 1. Set up an A record
 
-An A record maps a subdomain to an IP address — for a mail server at `192.0.2.1`, the record for `mail.sample-test.com` looks like this:
+<p>An A record maps a subdomain to an IP address — for a mail server at `192.0.2.1`, the record for `mail.sample-test.com` looks like this:</p>
 
 ```sh
 mail.sample-test.com. IN A 192.0.2.1
@@ -27,7 +30,7 @@ mail.sample-test.com. IN A 192.0.2.1
 
 ## Step 2. Set up an MX record
 
-An [MX&nbsp;record](https://gcore.com/learning/dns-mx-record-explained) binds a domain to the mail server. Without an MX record, incoming mail will not work. It is recommended to have more than one mail server so that the second one acts as a backup if the first one fails. For a domain `sample-test.com` with a mail server at `mail.sample-test.com`, the record looks like this:
+<p>An [MX&nbsp;record](https://gcore.com/learning/dns-mx-record-explained) binds a domain to the mail server. Without an MX record, incoming mail will not work. It is recommended to have more than one mail server so that the second one acts as a backup if the first one fails. For a domain `sample-test.com` with a mail server at `mail.sample-test.com`, the record looks like this:</p>
 
 ```sh
 sample-test.com. IN MX 10 mail.sample-test.com.
@@ -38,11 +41,11 @@ sample-test.com. IN MX 10 mail.sample-test.com.
 
 ## Step 3. Set up a PTR record
 
-A PTR record, or reverse DNS record, links an IP address to a domain name to help verify server authenticity. The [reverse&nbsp;DNS](/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone) guide covers the full configuration.
+<p>A PTR record, or reverse DNS record, links an IP address to a domain name to help verify server authenticity. The [reverse&nbsp;DNS](/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone) guide covers the full configuration.</p>
 
-PTR records are provisioned by the hosting provider that owns the IP address. Contact the provider to create a reverse DNS zone (RDNS).
+<p>PTR records are provisioned by the hosting provider that owns the IP address. Contact the provider to create a reverse DNS zone (RDNS).</p>
 
-For a mail server at `192.0.2.1`, the PTR record looks like this:
+<p>For a mail server at `192.0.2.1`, the PTR record looks like this:</p>
 
 ```sh
 1.2.0.192.in-addr.arpa IN PTR mail.sample-test.com.
@@ -50,7 +53,7 @@ For a mail server at `192.0.2.1`, the PTR record looks like this:
 
 ## Step 4. Set up SPF (TXT)
 
-An SPF (Sender Policy Framework) record defines which IP addresses are allowed to send mail from a domain. It is added as a TXT record in DNS and helps prevent spam from being sent. An example SPF record for `sample-test.com` is:
+<p>An SPF (Sender Policy Framework) record defines which IP addresses are allowed to send mail from a domain. It is added as a TXT record in DNS and helps prevent spam from being sent. An example SPF record for `sample-test.com` is:</p>
 
 ```sh
 sample-test.com. IN TXT "v=spf1 mx -all"
@@ -61,29 +64,27 @@ sample-test.com. IN TXT "v=spf1 mx -all"
 
 
 
-This means only the IP addresses for the MX records in `sample-test.com`, i.e. `mail.sample-test.com` (with the IP `192.0.2.1`,) are allowed to send mail on behalf of the domain. `-all` means all other traffic should be considered spam.
+<p>This means that only the IP addresses associated with the MX records for `sample-test.com` — here, `192.0.2.1` for `mail.sample-test.com` — are allowed to send mail on behalf of the domain. `-all` means that senders not matched by the preceding SPF mechanisms are not authorized to send mail for the domain.</p>
 
 ## Step 5. Set up a DKIM record
 
-A [DKIM&nbsp;record](https://gcore.com/learning/what-is-a-dkim-record) (DomainKeys Identified Mail) adds a digital signature to outgoing messages, allowing recipients to verify that the mail came from the listed server.
+<p>A [DKIM&nbsp;record](https://gcore.com/learning/what-is-a-dkim-record) (DomainKeys Identified Mail) adds a digital signature to outgoing messages, allowing recipients to verify that the mail came from the listed server.</p>
 
-A DKIM record requires adjustments to the mail server configuration, including generating a public/private key pair for signing and verification. The [EasyDMARC](https://easydmarc.com/tools/dkim-record-generator) and [DMARCLY](https://dmarcly.com/tools/dkim-record-generator) key generators automate this process.
+<p>A DKIM record requires adjustments to the mail server configuration, including generating a public/private key pair for signing and verification. The [EasyDMARC](https://easydmarc.com/tools/dkim-record-generator) and [DMARCLY](https://dmarcly.com/tools/dkim-record-generator) key generators automate this process.</p>
 
-Once the key pair is generated, the public key is published as a TXT record under a selector subdomain. For a selector named `selector1` on `sample-test.com`, the record looks like this:
+<p>Once the key pair is generated, the public key is published as a TXT record under a selector subdomain. For a selector named `selector1` on `sample-test.com`, the record looks like this:</p>
 
 ```sh
 selector1._domainkey.sample-test.com. IN TXT "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC..."
 ```
 
-The `p=` field contains the base64-encoded public key generated for the domain.
+<p>The `p=` field contains the base64-encoded public key generated for the domain.</p>
 
 ## Step 6. Set up a DMARC policy (TXT)
 
-A DMARC (Domain-based Message Authentication, Reporting, and Conformance) record defines how to handle emails that fail SPF and DKIM checks. This helps minimize harm from spam and security vulnerabilities. When an email is received, the recipient's mail server checks the sending domain's SPF and DKIM records. If the records pass the checks, the email is considered legitimate. If either or both checks fail, the DMARC policy is examined.
+<p>A DMARC (Domain-based Message Authentication, Reporting, and Conformance) record defines how to handle emails that fail SPF and DKIM checks. When a message fails the applicable authentication checks, the recipient's mail server applies the DMARC policy: none (no requested action), quarantine, or reject.</p>
 
-The DMARC policy instructs the recipient's mail server on how to handle failed authentication emails. The policy can be set to none (no action taken), quarantine (mark as spam or place in a separate folder), or reject (block the email).
-
-The following record sets the policy to `quarantine` and configures report recipients:
+<p>The following record sets the policy to `quarantine` and configures report recipients:</p>
 
 ```sh
 _dmarc.sample-test.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@sample-test.com; ruf=mailto:dmarc-forensics@sample-test.com;"
@@ -94,4 +95,496 @@ _dmarc.sample-test.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@sample-
 
 
 
-In this example, the domain owner has set a DMARC policy to `quarantine` any emails that fail authentication. The `rua` parameter specifies the email address where aggregate reports will be sent, while the `ruf` parameter specifies the email address where forensic (detailed) reports will be sent.
+<p>In this example, the domain owner has set a DMARC policy to `quarantine` any emails that fail authentication. The `rua` parameter specifies the email address where aggregate reports will be sent, while the `ruf` parameter specifies the email address where forensic (detailed) reports will be sent.</p>
+
+## Step 7. Verify the records
+
+<p>Use the [Gcore DNS Lookup](https://gcore.com/dns-lookup) tool or `dig` to confirm each record is published:</p>
+
+```sh
+dig A mail.sample-test.com
+dig MX sample-test.com
+dig TXT sample-test.com
+dig TXT selector1._domainkey.sample-test.com
+dig TXT _dmarc.sample-test.com
+```
+
+<p>For the PTR record, run a reverse lookup against the mail server IP address:</p>
+
+```sh
+dig -x 192.0.2.1
+```
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Configuring a mail server requires six DNS record types. The Gcore DNS API manages five of them — PTR records are provisioned by the hosting provider that owns the IP address block.</p>
+
+<p>All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Export these variables before running the commands:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+```
+
+## Add an A record
+
+<p>An A record maps the mail subdomain to the server IP address. Receiving servers perform forward-confirmed reverse DNS (FCrDNS) checks — the A record must resolve to the same IP as the PTR record configured on the hosting side.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.create(
+        "A",
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name="mail." + os.environ["ZONE_NAME"],
+        ttl=300,
+        resource_records=[{"content": ["192.0.2.1"]}],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("ZONE_NAME")
+
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "A", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: "mail." + zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"192.0.2.1"}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/mail.$ZONE_NAME/A" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 300,
+        "resource_records": [
+          {"content": ["192.0.2.1"]}
+        ]
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "mail.example.com",
+      "type": "A",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["192.0.2.1"]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add an MX record
+
+<p>An MX record designates the mail server for the domain. The priority value (first element of `content`) determines preference when multiple mail servers exist — a lower number is preferred. The hostname requires a trailing dot to indicate an absolute domain name.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.create(
+        "MX",
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["ZONE_NAME"],
+        ttl=300,
+        resource_records=[
+            {"content": [10, "mail." + os.environ["ZONE_NAME"] + "."]}
+        ],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("ZONE_NAME")
+
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "MX", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{10, "mail." + zone + "."}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$ZONE_NAME/MX" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"ttl\": 300,
+        \"resource_records\": [
+          {\"content\": [10, \"mail.$ZONE_NAME.\"]}
+        ]
+      }"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "MX",
+      "ttl": 300,
+      "resource_records": [
+        {"content": [10, "mail.example.com."]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## PTR record
+
+<p>PTR records link an IP address to a domain name and are managed by the provider that owns the IP address block, not by Gcore Managed DNS.</p>
+
+<Info>
+Contact the hosting provider to configure a reverse DNS zone (RDNS) for the mail server IP address.
+</Info>
+
+## Add an SPF record
+
+<p>An SPF record is a TXT record published at the zone apex. The `mx` mechanism authorizes all IPs listed in MX records to send mail for the domain; `-all` rejects all other senders.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rrset = client.dns.zones.rrsets.create(
+        "TXT",
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["ZONE_NAME"],
+        ttl=300,
+        resource_records=[{"content": ["v=spf1 mx -all"]}],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("ZONE_NAME")
+
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "TXT", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"v=spf1 mx -all"}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/$ZONE_NAME/TXT" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 300,
+        "resource_records": [
+          {"content": ["v=spf1 mx -all"]}
+        ]
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "TXT",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["v=spf1 mx -all"]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add a DKIM record
+
+<p>A DKIM record is a TXT record published under the selector subdomain `selector1._domainkey.zone-name`. Generate the public/private key pair using [EasyDMARC](https://easydmarc.com/tools/dkim-record-generator) or [DMARCLY](https://dmarcly.com/tools/dkim-record-generator), then publish the public key as the TXT content.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    zone = os.environ["ZONE_NAME"]
+    dkim_value = "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC..."
+
+    rrset = client.dns.zones.rrsets.create(
+        "TXT",
+        zone_name=zone,
+        rrset_name="selector1._domainkey." + zone,
+        ttl=300,
+        resource_records=[{"content": [dkim_value]}],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("ZONE_NAME")
+
+        dkimValue := "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC..."
+
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "TXT", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: "selector1._domainkey." + zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{dkimValue}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/selector1._domainkey.$ZONE_NAME/TXT" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 300,
+        "resource_records": [
+          {"content": ["v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC..."]}
+        ]
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "selector1._domainkey.example.com",
+      "type": "TXT",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC..."]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add a DMARC policy
+
+<p>A DMARC record is a TXT record at `_dmarc.zone-name`. It instructs receiving servers how to handle messages that fail SPF or DKIM checks — set `p` to `none`, `quarantine`, or `reject`, and configure `rua` and `ruf` to receive aggregate and forensic reports.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    zone = os.environ["ZONE_NAME"]
+    dmarc_value = (
+        "v=DMARC1; p=quarantine; "
+        + "rua=mailto:dmarc@" + zone + "; "
+        + "ruf=mailto:dmarc-forensics@" + zone + ";"
+    )
+
+    rrset = client.dns.zones.rrsets.create(
+        "TXT",
+        zone_name=zone,
+        rrset_name="_dmarc." + zone,
+        ttl=300,
+        resource_records=[{"content": [dmarc_value]}],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("ZONE_NAME")
+
+        dmarcValue := "v=DMARC1; p=quarantine; " +
+            "rua=mailto:dmarc@" + zone + "; " +
+            "ruf=mailto:dmarc-forensics@" + zone + ";"
+
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "TXT", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: "_dmarc." + zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{dmarcValue}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$ZONE_NAME/_dmarc.$ZONE_NAME/TXT" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"ttl\": 300,
+        \"resource_records\": [
+          {\"content\": [\"v=DMARC1; p=quarantine; rua=mailto:dmarc@$ZONE_NAME; ruf=mailto:dmarc-forensics@$ZONE_NAME;\"]}
+        ]
+      }"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "_dmarc.example.com",
+      "type": "TXT",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com; ruf=mailto:dmarc-forensics@example.com;"]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Verify the DNS records
+
+<p>Run DNS queries to confirm each record is published. Gcore authoritative nameservers reflect changes immediately; external resolvers may cache responses for up to the record's TTL.</p>
+
+```bash
+dig A mail.$ZONE_NAME
+dig MX $ZONE_NAME
+dig TXT $ZONE_NAME
+dig TXT selector1._domainkey.$ZONE_NAME
+dig TXT _dmarc.$ZONE_NAME
+```
+
+<p>For the PTR record, run a reverse lookup — this queries the IP provider's nameservers, not Gcore DNS:</p>
+
+```bash
+dig -x 192.0.2.1
+```
+
+</MethodSection>
+</MethodSwitch>
