@@ -1,62 +1,66 @@
 ---
 title: "View statistics of live streams and videos"
-ai-navigation: View and query viewer statistics for videos and live streams via the Customer Portal or REST API - get view counts, browser breakdowns, and geographic data using Python SDK, Go SDK, or curl.
+sidebarTitle: "View statistics"
+ai-navigation: View and query viewer statistics for videos, live streams, and playlists via the Customer Portal or REST API — get view counts, browser breakdowns, and geographic data using Python SDK, Go SDK, or curl.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
-Statistics data is collected only when you use the standard player.
-
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
-<p>The **Reports** page shows information about [videos](https://portal.gcore.com/streaming/video/list) and [live streams](https://portal.gcore.com/streaming/streaming/list): viewers, their browsers and operating systems, geography, popular videos (only for the **Video** page), as well as URLs of pages that host a player with your video. The data is updated every five minutes and stored for one year.</p>
+<p>Statistics data is collected only when the Gcore built-in player is in use. Third-party players do not report data to this page.</p>
 
-<p>You can check reports for all videos and live streams or only for a single one. To see overall statistics:</p>
+<p>The **Reports** page shows information about [videos](https://portal.gcore.com/streaming/video/list) and [live streams](https://portal.gcore.com/streaming/streaming/list): viewers, their browsers and operating systems, geography, popular videos (only for the **Built-in player: VOD** page), as well as URLs of pages that host a player with the video. The data is updated every five minutes and stored for one year.</p>
+
+<p>To see overall statistics:</p>
 
 1\. In the Gcore Customer Portal, navigate to **Streaming** > **Reports**.
 
 2\. Choose the relevant subsection: **Built-in player: VOD** or **Built-in player: Live**.
 
-2\. Select the preferred interval (24 hours, 48 hours, week, or month) and dates.
+3\. Select a predefined interval (**Last 24 hours**, **Last 48 hours**, **Last week**, **Last month**, or **Last 3 months**) or specify a custom date range.
 
-3\. Choose one or more parameters: **Browsers**, **Geography**, **Hosts**, **OS**, or **Viewers**.
+4\. Choose a parameter from the dropdown: **Browsers**, **Geography**, **Hosts**, **OS**, **Popular videos**, or **Viewers**.
 
-<Frame>![Reports page](/images/docs/streaming/billing/usage-and-billing-reports/reports.png)</Frame>
+<Frame>![Reports page showing VOD statistics with Viewers parameter selected](/images/docs/streaming/statistics/view-statistics-of-live-streams-videos-and-billing/reports.png)</Frame>
 
 **Parameters overview**
 
-  * **Viewers**: The number of viewers. We collect the following information about their behavior:
+  * **Viewers**: The number of viewers. The following information is collected about viewer behavior:
 
-    * **Uploads**: Shows how many times users opened a video or live stream page.
-    * **Starts**: Indicates how many times users clicked the **Play** button.
-    * **Viewers**: Specifies how many viewers have watched a video or a live stream for at least 5 seconds.
-    * **Unique viewers**: Represents the number of unique viewers (we distinguish viewers using several parameters at once: an IP address, screen size, browser, and cookie).
+    * **Uploads**: The number of times a page containing the video or live stream was opened. This metric does not refer to uploading content to Gcore.
+    * **Starts**: The number of times viewers clicked the **Play** button.
+    * **Viewers**: The number of viewers who watched a video or a live stream for at least 5 seconds. Each viewing session is counted separately, including repeat views by the same person.
+    * **Unique viewers**: The number of deduplicated viewers. Viewers are identified by a combination of IP address, screen size, browser, and cookie — repeat views by the same identified viewer are counted once.
 
-  * **Popular videos** (available only for videos): A list of the most viewed videos. We consider only views that are longer than five seconds.
+  * **Popular videos** (available only for videos): A list of the most viewed videos. Only views longer than five seconds are counted.
 
-  * **Browsers**: Statistics on browsers that your viewers use to watch your video/live stream.
+  * **Browsers**: Statistics on browsers that viewers use to watch the video or live stream.
 
-  * **OS**: Statistics on users' operating systems.
+  * **OS**: Statistics on viewers' operating systems.
 
-  * **Hosts**: Static data on the URL of requested pages. We consider only views that are longer than five seconds. The `"streaming.gcore.com"` URL means a video was watched from a personal account.
+  * **Hosts**: Statistics on the URL of requested pages. Only views longer than five seconds are counted. The `"streaming.gcore.com"` URL means a video was watched from the Customer Portal.
 
-  * **Geography**: A world map that highlights countries where your viewers watch videos/live streams for at least 5 seconds. A user's IP address determines a country.
+  * **Geography**: A world map highlighting countries where viewers watch videos or live streams for at least 5 seconds. A viewer's IP address determines the country.
 
-<p>If you want to see reports for a specific video or live stream, open its settings and navigate to the **Statistics** tab.</p>
+### View statistics for a specific video or live stream
+
+<p>Open the video or live stream settings and go to the **Statistics** tab.</p>
   </MethodSection>
   <MethodSection id="api" label="REST API">
+<p>Statistics data is collected only when the Gcore built-in player is in use. Third-party players do not report data to this page.</p>
+
 <Info>
-An [API token](/account-settings/api-tokens) is required. All statistics endpoints accept `date_from` and `date_to` as ISO 8601 datetime strings.
+An [API token](/account-settings/api-tokens) is required. All statistics endpoints accept `date_from` and `date_to` as ISO 8601 datetime strings. Aggregation endpoints also accept the optional `type` query parameter (`"live"`, `"vod"`, or `"playlist"`) to filter metrics by content type.
 </Info>
 
 ## Get viewer statistics
 
-<p>Use `GET /streaming/statistics/views` to retrieve view counts for a time range. Filter by `type` (`"vod"` or `"live"`) to scope results to videos or live streams.</p>
+<p>Use `GET /streaming/statistics/views` to retrieve view counts for a time range. Filter by `type` (`"vod"`, `"live"`, or `"playlist"`) to scope results to videos, live streams, or playlists.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
-import os
 import datetime
 from gcore import Gcore
 
@@ -98,6 +102,7 @@ func main() {
         streaming.StatisticGetViewsParams{
             DateFrom: weekAgo.Format(time.RFC3339),
             DateTo:   now.Format(time.RFC3339),
+            Type:     "vod",
         },
     )
     if err != nil {
@@ -121,12 +126,11 @@ curl "https://api.gcore.com/streaming/statistics/views?date_from=${DATE_FROM}&da
 
 ## Get statistics by browser
 
-<p>Use `GET /streaming/statistics/browsers` to see which browsers your viewers use.</p>
+<p>Use `GET /streaming/statistics/browsers` to see which browsers viewers use. Filter by `type` (`"vod"`, `"live"`, or `"playlist"`) to scope statistics to a specific content type.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
-import os
 import datetime
 from gcore import Gcore
 
@@ -138,6 +142,7 @@ week_ago = now - datetime.timedelta(days=7)
 by_browser = client.streaming.statistics.get_views_by_browsers(
     date_from=week_ago.strftime("%Y-%m-%dT%H:%M:%SZ"),
     date_to=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    type="vod",
 )
 for item in by_browser.data:
     print(item)
@@ -166,6 +171,7 @@ func main() {
         streaming.StatisticGetViewsByBrowsersParams{
             DateFrom: weekAgo.Format(time.RFC3339),
             DateTo:   now.Format(time.RFC3339),
+            Type:     "vod",
         },
     )
     if err != nil {
@@ -177,7 +183,11 @@ func main() {
   </Tab>
   <Tab title="curl">
 ```bash
-curl "https://api.gcore.com/streaming/statistics/browsers?date_from=${DATE_FROM}&date_to=${DATE_TO}" \
+DATE_FROM=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v-7d '+%Y-%m-%dT%H:%M:%SZ')
+DATE_TO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+curl "https://api.gcore.com/streaming/statistics/browsers?date_from=${DATE_FROM}&date_to=${DATE_TO}&type=vod" \
      -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
@@ -185,12 +195,11 @@ curl "https://api.gcore.com/streaming/statistics/browsers?date_from=${DATE_FROM}
 
 ## Get statistics by country
 
-<p>Use `GET /streaming/statistics/countries` to see geographic distribution of your viewers.</p>
+<p>Use `GET /streaming/statistics/countries` to see geographic distribution of viewers. Filter by `type` (`"vod"`, `"live"`, or `"playlist"`) to scope statistics to a specific content type.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
-import os
 import datetime
 from gcore import Gcore
 
@@ -202,6 +211,7 @@ week_ago = now - datetime.timedelta(days=7)
 by_country = client.streaming.statistics.get_views_by_country(
     date_from=week_ago.strftime("%Y-%m-%dT%H:%M:%SZ"),
     date_to=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    type="vod",
 )
 for item in by_country.data:
     print(item)
@@ -230,6 +240,7 @@ func main() {
         streaming.StatisticGetViewsByCountryParams{
             DateFrom: weekAgo.Format(time.RFC3339),
             DateTo:   now.Format(time.RFC3339),
+            Type:     "vod",
         },
     )
     if err != nil {
@@ -241,7 +252,11 @@ func main() {
   </Tab>
   <Tab title="curl">
 ```bash
-curl "https://api.gcore.com/streaming/statistics/countries?date_from=${DATE_FROM}&date_to=${DATE_TO}" \
+DATE_FROM=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v-7d '+%Y-%m-%dT%H:%M:%SZ')
+DATE_TO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+curl "https://api.gcore.com/streaming/statistics/countries?date_from=${DATE_FROM}&date_to=${DATE_TO}&type=vod" \
      -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
