@@ -4,156 +4,120 @@ sidebarTitle: "Live Streaming issues"
 ai-navigation: Troubleshoot Live Streaming issues including DVR chunk retention, low-latency HLS buffering, empty manifests, packet loss via SRT, and restream failures by checking encoder settings, bitrate stability, key frame intervals, network latency, and manifest generation.
 ---
 
-Common issues you may encounter when working with Live Streaming, as well as steps you can take to troubleshoot them.
+Common issues encountered when working with Live Streaming, and steps to troubleshoot them.
 
 ## Current broadcast contains DVR chunks of the previous broadcast
 
-_Possible cause_: The broadcast is over, but the stream has not been stopped.  
-_Suggested solution_: This is a normal behavior.
+_Possible cause_: The broadcast ended, but the stream has not been stopped.  
+_Suggested solution_: This is expected behavior, not an error. DVR chunks from the previous broadcast persist until the stream is stopped and the archive is cleared.
 
-To avoid this situation:
- - Stop the stream when the broadcast is finished.
- - Delete the DVR archive before starting a new broadcast.
+To prevent this:
+- Stop the stream when the broadcast ends.
+- Clear the DVR archive before starting a new broadcast.
 
 
 ## Low-latency streaming is buffering
 
-_Possible cause_: Perhaps end-user's public internet speed and quality aren't sufficient to download data in a timely manner.
-_Suggested solution_: For such users, provide an alternative viewing experience: display /master_mpegts.m3u8 link (HLS non-low-latency manifest URL from UI) in your player or add an attribute `?no_low_latency` to our built-in player.
+_Possible cause_: The viewer's internet speed or quality is insufficient to download data in time.  
+_Suggested solution_: Switch affected viewers to the non-low-latency path. Standard HLS MPEG-TS segments are less sensitive to network variability and work on a wider range of devices. Use the HLS non-low-latency manifest URL (`/master_mpegts.m3u8`) shown in the Customer Portal, or add the `?no_low_latency` attribute to the built-in player.
 
-Read more:
- - [Switch to legacy HLS mode](/streaming/live-streaming/how-low-latency-streaming-works#switch-to-legacy-hls-modes)
- - [Built-in player](/streaming/extra-features/customize-appearance-of-the-built-in-player#no-low-latency)
+- [Switch to legacy HLS mode](/streaming/live-streaming/how-low-latency-streaming-works#switch-to-legacy-hls-modes) describes this fallback option.
+- [Built-in player](/streaming/extra-features/customize-appearance-of-the-built-in-player#no-low-latency) describes the `?no_low_latency` parameter.
 
 
 ## Manifest is empty and stream is not working
 
-The stream is sent to ingester normally, ffmpeg or OBS show correct info. But the manifest .m3u8 is empty and the stream is not shown.
+The stream reaches the ingest point normally — ffmpeg or OBS show correct output — but the `.m3u8` manifest is empty and playback fails.
 
-_Possible cause_: The master stream is being sent with network problems, or the encoder settings are set incorrectly.
-_Suggested solution_: Our low latency solution has a latency of 4-5 seconds. If the delay is more than 5 seconds:
+_Possible cause_: The master stream is being sent with network problems, or the encoder settings are incorrect.  
+_Suggested solution_: Check the Monitoring graphs for the stream in the Customer Portal. FPS, keyframe interval, and bitrate should remain stable. Breaks in these graphs indicate problems with the incoming stream.
 
-Check the graphs for the relevant stream in your personal account under "Monitoring." Frames per second, Interval between key frames, and Bitrate should be stable. If you see breaks in the graph, this means your stream is being sent from your encoder with issues.
-
-Check your encoder's latency and settings. See the relevant sections in the documentation:
- - [Input parameters of your live streams and videos](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
- - [Use RTMP protocol](/streaming/live-streaming/protocols/rtmp)
- - [Use SRT protocol](/streaming/live-streaming/protocols/srt)
- - [Use broadcasting software (ffmpeg, OBS, Streamlabs, etc)](/streaming/live-streaming/broadcasting-software/ffmpeg)
+Check encoder settings:
+- [Input parameters and codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
+- [RTMP protocol](/streaming/live-streaming/protocols/rtmp)
+- [SRT protocol](/streaming/live-streaming/protocols/srt)
+- [Broadcasting software (ffmpeg, OBS)](/streaming/live-streaming/broadcasting-software/ffmpeg)
 
 
-## Picture is falling apart
+## Picture breaks into artifacts when streaming via SRT
 
-When you see this picture, it means there is packet loss in the network from your encoder to our ingester.
+When the picture breaks into artifacts like the example below:
 
 ![Picture is falling apart](/images/docs/streaming/faq/live-streaming-issues/falling-apart.png)
 
-_Possible cause_: Packet loss during delivery from your encoder via SRT.
-_Suggested solution_: Try sending from another network of another provider, and also reduce the bitrate of the master stream plus set SRT latency explicitly.
+_Possible cause_: Packet loss during delivery from the encoder via SRT.  
+_Suggested solution_: Try sending from a different network or provider. Reduce the master stream bitrate and set SRT latency explicitly.
 
-Read more about latency in section [SRT Latency](/streaming/live-streaming/protocols/srt#srt-latency). And validate that PTS/DTS values in the master stream follow a continuous and monotonic timeline [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
+- [SRT Latency](/streaming/live-streaming/protocols/srt#srt-latency) covers latency configuration.
+- If packet loss is not the cause, validate that PTS/DTS values follow a continuous and monotonic timeline — [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
 
 
 ## Restream failed
 
-Each social platform enforces its own technical requirements for ingesting live video streams. These limits typically include constraints on bitrate, codec profiles, audio formats, keyframe intervals (GOP), and connection behavior. When restreaming through Gcore, the output must comply with the destination platform’s specifications; otherwise, the remote side may reject the connection or terminate the stream during broadcasting.
+Each destination enforces its own technical requirements for ingesting live video streams. These limits typically include constraints on bitrate, codec profiles, audio formats, keyframe intervals (GOP), and connection behavior. When restreaming through Gcore, the output must comply with destination specifications; otherwise, the remote side can reject the connection or terminate the stream.
 
-When troubleshooting restreaming, always remember that **when restreaming, your master-stream is multipied as is without transcoding**. So verify your master-stream parameters to match the requirements of the target platform. In many cases, connection refusals or stream instability occur because of mismatched keyframe intervals, unsupported codecs, or exceeding bitrate thresholds.
+By default, restreaming forwards the master stream as is without transcoding (`source: "original"`). Verify that master stream parameters match destination requirements. To broadcast overlays and processed video instead, switch the restream source to `transcoded`.
 
-We collected some common cases on our page [Restreaming troubleshooting](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-troubleshooting)
+Common causes of connection refusals and stream drops:
+- **Mismatched encoding parameters**: Mismatched keyframe intervals (GOP), unsupported video codecs, or exceeding bitrate thresholds.
+- **Missing audio track on YouTube**: YouTube rejects incoming streams that lack an audio track. When disabling restream audio via API, set `no_audio_mode` to `silence` instead of `drop`.
+- **Expired stream keys**: Expired or rotated stream keys on the target destination.
+
+For destination-specific requirements, the [Restream troubleshooting](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-troubleshooting) article covers common destination-specific issues.
 
 
-## Stream is frozen or buffered
+## RTMP stream freezes or buffers
 
-When the player stops and starts showing running dots or a clock.
+_Possible cause_: Packet loss during delivery from the encoder via RTMP.  
+_Suggested solution_: Try sending from a different network or provider and reduce the master stream bitrate — this resolves most cases.
 
-_Possible cause_: Packet loss during delivery from your encoder via RTMP.
-_Suggested solution_: Try sending from another network of another provider, and also reduce the bitrate of the master stream. 
+If the issue persists, check these settings:
+- Input bitrate: use the minimum recommended values from [Input parameters and codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs). Quality impact is minimal, but broadcast stability improves.
+- Encoder settings: verify the master stream uses recommended low-latency encoding parameters from the [RTMP protocol](/streaming/live-streaming/protocols/rtmp) article.
+- Timestamps: validate that PTS and DTS values follow a continuous and monotonic timeline — [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
 
-Advanced solution:
- - Read more about recommended input parameters in section [Input parameters](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs). Set et the minimum specified values ​​or even lower (You won't lose much quality, but you'll still get the broadcast).
- - Verify that your master stream is configured with the recommended low-latency encoding parameters. See section [RTMP](/streaming/live-streaming/protocols/rtmp).
- - Validate that PTS and DTS values in the master stream follow a continuous and monotonic timeline [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
 
 ## Live stream is 10-12 fps, but recording looks fine
 
-The live player may show 10-12 fps or another unexpectedly low frame rate, while the saved recording still looks smooth.
-
-_Possible cause_: The encoder connected while already sending reduced source FPS, or with unstable timestamps and buffering. At the beginning of the live session, the transcoder reads FPS once from the incoming stream metadata. This value is not re-detected later, and Gcore does not upscale it to 50 or 60 fps during the current session. Recording is a separate workflow, so it may still look correct even when the live session started from degraded source metadata.
-
-```text
-CUSTOMER ENCODER
-  sends live stream + source metadata
-  example at connection time: fps=12
-            |
-            | 1. live session starts
-            v
-INGEST / SESSION INIT
-  reads source metadata once
-  locks session parameters for transcoding
-            |
-            | 2. transcoding starts with locked fps=12
-            v
-LIVE TRANSCODER
-  keeps using fps=12 for the whole current session
-  does not re-read metadata later
-  does not auto-convert 12 fps -> 50 fps
-            |
-            +------------------> LIVE PLAYBACK
-            |
-            +------------------> RECORDING WORKFLOW
-                                   saved separately
-```
-
-If the encoder later becomes healthy and starts sending 50 fps,
-the current live transcoding session still keeps the old locked fps.
-
-Only a new customer-side reconnect creates a new session:
-
-```text
-CUSTOMER RECONNECTS ENCODER
-            |
-            v
-NEW SESSION INIT
-  reads source metadata again
-  example now: fps=50
-            |
-            v
-NEW LIVE TRANSCODING SESSION
-  starts with fps=50
-```
+_Possible cause_: The transcoder reads the source FPS once when the live session starts and keeps that value for the entire session. By default, Gcore does not upscale the detected FPS during the current session. If the encoder connected while already sending a reduced or unstable frame rate, the transcoder locks in that value. Recording is a separate workflow and may still look correct even when the live session started from degraded source metadata.
 
 _Suggested solution_:
-- Check the stream monitoring graphs in the Customer Portal. FPS, bitrate, and keyframe interval should be stable from the beginning of the session.
+- Check the stream Monitoring graphs in the Customer Portal. FPS, bitrate, and keyframe interval should be stable from the beginning of the session.
 - Verify that the encoder is configured with a fixed FPS value rather than auto or variable behavior.
 - Check encoder CPU load, dropped frames, and sender logs.
 - Use the recommended low-latency encoder settings, including fixed GOP and monotonic timestamps.
-- If the encoder settings were corrected after the stream had already started, the customer must reconnect the live stream from the encoder side so the transcoder starts a new session and reads the correct FPS metadata again.
+- If encoder settings were corrected after the stream had already started, reconnect the encoder so the transcoder starts a new session with the correct FPS metadata.
 
-Read more:
-- [RTMP](/streaming/live-streaming/protocols/rtmp)
-- [SRT](/streaming/live-streaming/protocols/srt)
+<Note>
+Gcore can also enable a **Force FPS** setting per stream to keep the output pinned to a configured frame rate regardless of the input. This option is described in [Can Gcore force my live stream 10-12 fps to 50 or 60 fps?](/streaming/faq/streaming-faq#can-gcore-force-my-live-stream-10-12-fps-to-50-or-60-fps)
+</Note>
+
+For encoder settings reference:
+- [RTMP protocol](/streaming/live-streaming/protocols/rtmp)
+- [SRT protocol](/streaming/live-streaming/protocols/srt)
 - [PTS/DTS timestamps](/streaming/live-streaming/pts-dts)
 - [Record live streams](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos)
 
-## Smart TV playback issues
 
-Samsung Tizen and LG WebOS, as well as older SmartTV platforms, are often limited in hardware performance. Some advanced streaming functions may not work as reliably as on PCs or mobile devices.
+## Low-latency playback fails on older Smart TVs
 
-### Low-latency on old models
-Low-latency (LL-HLS/LL-DASH) is not suitable for many older TV models. If you encounter playback issues, use **classic HLS MPEG-TS** for maximum compatibility.
+_Possible cause_: LL-HLS and LL-DASH are not supported on many older Samsung Tizen, LG WebOS, and similar Smart TV models.  
+_Suggested solution_: Use **classic HLS MPEG-TS** for maximum compatibility with older devices. Switch to the non-low-latency manifest URL (`/master_mpegts.m3u8`) for those viewers.
 
-### Let's Encrypt certificate compatibility
-By default, Gcore CDN resources use Let's Encrypt certificates. Some older Smart TV models do not trust this CA. If your broadcast doesn't play on specific TVs, we recommend uploading your own commercial SSL certificate to the CDN resource.
 
-### MPEG-DASH drift on Smart TVs
-Our tests show that the number-based `SegmentTemplate` can be unreliable for long-duration (24/7) live streaming on Smart TVs. Clock drift between the encoder and player can cause segments to fall out of sync.
+## Broadcast does not play on some Smart TVs
 
-**Recommended Solution**: Use the **time-based SegmentTimeline** template in your `.mpd` manifests. This ensures stable playback by accurately aligning segment requests with the transmuxer clock.
+_Possible cause_: Some older Smart TV models do not trust the Let's Encrypt CA used by Gcore CDN resources by default.  
+_Suggested solution_: Upload a commercial SSL certificate from a CA trusted by the affected TVs to the CDN resource.
+
+
+## MPEG-DASH playback drifts on Smart TVs during long broadcasts
+
+_Possible cause_: The number-based `SegmentTemplate` in `.mpd` manifests can cause clock drift between the encoder and player during long-duration (24/7) streams on Smart TVs, causing segments to fall out of sync.  
+_Suggested solution_: Use the **time-based SegmentTimeline** template in `.mpd` manifests. This aligns segment requests with the transmuxer clock and prevents drift.
+
 
 ## HTTP 404 Not Found error
 
-A 404 error typically indicates that the master stream is missing (not pushed from the encoder), or the initial segments haven't been generated yet (transcoding delay). Check extra header "X-Err-Code" for more details.
-
-For a complete list of 404 error sub-codes and other responses, please refer to our [HTTP status codes](/streaming/faq/http-status-codes) guide.
-
+_Possible cause_: The master stream is missing (not pushed from the encoder), or the initial segments have not been generated yet (transcoding delay).  
+_Suggested solution_: Check the `X-Err-Code` response header for the specific error sub-code. The [HTTP status codes](/streaming/faq/http-status-codes) guide lists all 404 sub-codes and their meanings.
