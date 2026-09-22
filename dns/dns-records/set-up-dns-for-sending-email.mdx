@@ -1,7 +1,7 @@
 ---
 title: Configure DNS records for email
 sidebarTitle: Email DNS records
-ai-navigation: Configure A, MX, PTR, SPF, DKIM, and DMARC records in Gcore Managed DNS for email delivery and authentication via Customer Portal or via REST API.
+ai-navigation: Configure A, MX, PTR, SPF, DKIM, and DMARC records in Gcore Managed DNS for email delivery and authentication via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -99,7 +99,7 @@ _dmarc.sample-test.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:dmarc@sample-
 
 ## Step 7. Verify the records
 
-<p>Use the [Gcore DNS Lookup](https://gcore.com/dns-lookup) tool or `dig` to confirm each record is published:</p>
+<p>The [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dns-lookup) tool and `dig` confirm whether each record is published:</p>
 
 ```sh
 dig A mail.sample-test.com
@@ -584,6 +584,106 @@ dig TXT _dmarc.$ZONE_NAME
 
 ```bash
 dig -x 192.0.2.1
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare all five email DNS records in one configuration using the `gcore_dns_zone_rrset` resource from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. PTR records are managed by the hosting provider that owns the IP block — contact that provider to configure reverse DNS separately.</p>
+
+## Configure email records
+
+<p>The configuration below creates the zone, the mail server A record, and the MX, SPF, DKIM, and DMARC TXT records. Apply it once to provision the full email DNS setup.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+# A record: mail server address
+resource "gcore_dns_zone_rrset" "mail_a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "mail.${gcore_dns_zone.example.name}"
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["192.0.2.1"] },  # replace with the mail server IP
+  ]
+  # terraform import gcore_dns_zone_rrset.mail_a yourdomain.com/mail.yourdomain.com/A
+}
+
+# MX record: directs incoming mail to the mail server
+resource "gcore_dns_zone_rrset" "mx" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "MX"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["10", "mail.${gcore_dns_zone.example.name}."] },  # priority, then hostname with trailing dot
+  ]
+  # terraform import gcore_dns_zone_rrset.mx yourdomain.com/yourdomain.com/MX
+}
+
+# SPF record: authorizes the mail server to send on behalf of the domain
+resource "gcore_dns_zone_rrset" "spf" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "TXT"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["v=spf1 mx -all"] },
+  ]
+  # terraform import gcore_dns_zone_rrset.spf yourdomain.com/yourdomain.com/TXT
+}
+
+# DKIM record: publishes the public key for message signing verification
+resource "gcore_dns_zone_rrset" "dkim" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "selector1._domainkey.${gcore_dns_zone.example.name}"
+  rrset_type = "TXT"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["v=DKIM1; k=rsa; p=<BASE64_PUBLIC_KEY>"] },  # replace with the generated public key
+  ]
+  # terraform import gcore_dns_zone_rrset.dkim yourdomain.com/selector1._domainkey.yourdomain.com/TXT
+}
+
+# DMARC record: policy for messages that fail SPF or DKIM checks
+resource "gcore_dns_zone_rrset" "dmarc" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "_dmarc.${gcore_dns_zone.example.name}"
+  rrset_type = "TXT"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["v=DMARC1; p=quarantine; rua=mailto:dmarc@yourdomain.com; ruf=mailto:dmarc-forensics@yourdomain.com;"] },
+  ]
+  # terraform import gcore_dns_zone_rrset.dmarc yourdomain.com/_dmarc.yourdomain.com/TXT
+}
+```
+
+<p>Generate the DKIM key pair using [EasyDMARC](https://easydmarc.com/tools/dkim-record-generator) or [DMARCLY](https://dmarcly.com/tools/dkim-record-generator), then paste the base64 public key into the `p=` field.</p>
+
+## Delete the email configuration
+
+<p>Remove all resource blocks — Terraform deletes each RRset on the next `terraform apply`. Remove `gcore_dns_zone.example` last, or let Terraform handle the dependency order automatically.</p>
+
+```hcl
+# Remove or comment out all blocks:
+# resource "gcore_dns_zone_rrset" "mail_a"  { ... }
+# resource "gcore_dns_zone_rrset" "mx"      { ... }
+# resource "gcore_dns_zone_rrset" "spf"     { ... }
+# resource "gcore_dns_zone_rrset" "dkim"    { ... }
+# resource "gcore_dns_zone_rrset" "dmarc"   { ... }
+# resource "gcore_dns_zone" "example"       { ... }
+```
+
+```bash
+terraform apply
 ```
 
 </MethodSection>
