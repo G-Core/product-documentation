@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: b69c757c8d61
+  version: 04e4b1846e74
 servers:
 - url: https://api.gcore.com
 tags:
@@ -4767,10 +4767,10 @@ paths:
       summary: Get aliases list
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Get information about aliases.
@@ -4861,10 +4861,10 @@ paths:
       summary: Create alias
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Create an alias: a hostname you own that is served with the settings of one of your CDN resources and
@@ -4912,10 +4912,10 @@ paths:
       summary: Add aliases in bulk
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Create up to 1000 aliases for one CDN resource in a single request.
@@ -4956,10 +4956,10 @@ paths:
       summary: Remove aliases in bulk
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Delete up to 1000 aliases in a single request, selected either by ID or by hostname.
@@ -4994,10 +4994,10 @@ paths:
       summary: Get alias details
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       parameters:
       - $ref: '#/components/parameters/alias_id_parameter'
@@ -5019,10 +5019,10 @@ paths:
       summary: Change alias
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Change an alias. The hostname and the CDN resource of an alias cannot be changed; delete the alias
@@ -5075,10 +5075,10 @@ paths:
       summary: Delete alias
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Delete an alias. The hostname stops being served and can be used again. A certificate you added
@@ -5100,10 +5100,10 @@ paths:
       summary: Retry alias certificate issuance
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Start a new Let's Encrypt certificate issuance attempt for an alias that has none running. Use it after
@@ -5141,10 +5141,10 @@ paths:
       summary: Get alias certificate issuing details
       x-mint:
         metadata:
-          tag: Coming soon
+          tag: BETA
         content: |
           <Info>
-          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          This endpoint is in beta. <Badge color="blue">BETA</Badge>
           </Info>
       description: |-
         Get details about the latest Let's Encrypt certificate issuing attempt for an alias, including the CNAME
@@ -8352,6 +8352,10 @@ components:
                     type: string
                     description: Value the CNAME record must point to.
                     example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
+    AliasIdentifier:
+      oneOf:
+      - type: integer
+      - type: string
     AliasListResponse:
       allOf:
       - $ref: '#/components/schemas/PaginatedResponse'
@@ -8376,6 +8380,15 @@ components:
           status: pending
           created: '2026-09-01T10:00:00Z'
           updated: '2026-09-01T10:00:00Z'
+    AliasRemoved:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        cname:
+          type: string
+          example: a.customer.com
     AliasStatus:
       type: string
       description: |-
@@ -8504,21 +8517,12 @@ components:
           type: array
           description: Aliases deleted by this request.
           items:
-            type: object
-            properties:
-              id:
-                type: integer
-                example: 1
-              cname:
-                type: string
-                example: a.customer.com
+            $ref: '#/components/schemas/AliasRemoved'
         not_found:
           type: array
           description: Requested IDs or hostnames that did not match an alias.
           items:
-            oneOf:
-            - type: integer
-            - type: string
+            $ref: '#/components/schemas/AliasIdentifier'
       example:
         removed:
         - id: 1
@@ -10097,6 +10101,15 @@ components:
           $ref: '#/components/schemas/enabled'
         host_header_override:
           $ref: '#/components/schemas/host_header_override'
+    FieldConversion:
+      oneOf:
+      - $ref: '#/components/schemas/ScaleFieldConversion'
+      - $ref: '#/components/schemas/ReplaceFieldConversion'
+      discriminator:
+        propertyName: type
+        mapping:
+          scale: '#/components/schemas/ScaleFieldConversion'
+          replace: '#/components/schemas/ReplaceFieldConversion'
     FieldConversionPipeline:
       type: object
       additionalProperties: false
@@ -10108,14 +10121,7 @@ components:
           minItems: 1
           maxItems: 3
           items:
-            oneOf:
-            - $ref: '#/components/schemas/ScaleFieldConversion'
-            - $ref: '#/components/schemas/ReplaceFieldConversion'
-            discriminator:
-              propertyName: type
-              mapping:
-                scale: '#/components/schemas/ScaleFieldConversion'
-                replace: '#/components/schemas/ReplaceFieldConversion'
+            $ref: '#/components/schemas/FieldConversion'
     FieldConversions:
       type: object
       maxProperties: 50
