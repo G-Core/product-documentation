@@ -1,7 +1,7 @@
 ---
 title: Generate monthly reports
 sidebarTitle: Monthly reports
-ai-navigation: Describe how resellers generate, read, and delete usage reports via Customer Portal, or pull WAAP consumption data via REST API.
+ai-navigation: Describe how resellers generate, read, and delete usage reports via Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -76,7 +76,7 @@ Client ID,Company name,Feature ID,Feature name,Resource ID,Resource name,Region 
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>The WAAP Reseller API reports billable consumption for a reseller's clients by metric: number of protected domains, data volume, or request count. Two endpoints expose this data, one aggregated into a single total and one broken down per client.</p>
+<p>The Billing Reseller API generates, checks the status of, downloads, and deletes the same usage reports available in the Customer Portal's **Reports** page.</p>
 
 <p>An [API&nbsp;token](/account-settings/api-tokens) is required. Set it as an environment variable before running the examples:</p>
 
@@ -84,21 +84,12 @@ Client ID,Company name,Feature ID,Feature name,Resource ID,Resource name,Region 
 export GCORE_API_KEY="{YOUR_API_KEY}"
 ```
 
-## Get aggregated consumption
+## Generate a report
 
-<p>Returns the selected metric aggregated across all matching clients into a single daily total for the date range.</p>
-
-| Parameter | Description |
-|---|---|
-| `metric` | Path parameter: `domains`, `volume`, or `requests` |
-| `from` | Report start date (inclusive), in ISO 8601 format; required |
-| `to` | Report end date (exclusive), in ISO 8601 format; required |
-| `client_ids` | Client IDs to filter by, omitted to include every client |
-| `limit` | Number of items to return, up to 100, defaults to 100 |
-| `offset` | Number of items to skip, defaults to 0 |
+<p>A report generation task requires the target template's `code`. List the available templates and match the `name_en` field against the template name shown in the Portal's **Report template** dropdown, then pass that `code` to the create call along with the reporting period.</p>
 
 ```bash
-curl -s "https://api.gcore.com/waap/v1/prebilling/total/requests?from=2026-07-01&to=2026-07-08" \
+curl -s "https://api.gcore.com/billing/org/v1/reports/templates?name_en__icontains=Reseller%20Statistics" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -106,24 +97,54 @@ curl -s "https://api.gcore.com/waap/v1/prebilling/total/requests?from=2026-07-01
 
 ```json
 {
-  "limit": 100,
-  "offset": 0,
-  "count": 7,
+  "count": 1,
   "results": [
-    {"date": "2026-07-01", "amount": 128340},
-    {"date": "2026-07-02", "amount": 131980}
+    {
+      "id": 12,
+      "code": "ResellerStatistics",
+      "name_en": "Reseller Statistics V2",
+      "description": "Usage report broken down by client, resource, and region.",
+      "parameters": {
+        "parameters": [
+          {"name": "date_from", "type": "string", "format": "date", "required": true},
+          {"name": "date_to", "type": "string", "format": "date", "required": true},
+          {"name": "client_id", "type": "integer", "required": false}
+        ]
+      }
+    }
   ]
 }
 ```
 
-<p>The `amount` field reports the accrued value of the selected metric for that date. `{TODO: verify in live environment - confirm the exact unit for the "volume" metric, since the spec does not state it}`</p>
-
-## Get consumption broken down per client
-
-<p>Returns the same metric keyed by client ID, with one list of daily entries per client instead of a single aggregated total. It accepts the same parameters as the aggregated total endpoint.</p>
+<p>The matched template's `parameters` field lists every key it accepts, including the equivalents of the Portal's **Group data** selections and **Product** filter. Pass `code` as `template_code` in the create call, together with `date_from`, `date_to`, and any other keys the template supports:</p>
 
 ```bash
-curl -s "https://api.gcore.com/waap/v1/prebilling/breakdown/requests?from=2026-07-01&to=2026-07-08" \
+curl -s -X POST "https://api.gcore.com/billing/org/v1/reports" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "template_code": "ResellerStatistics",
+    "parameters": {"date_from": "2026-07-01", "date_to": "2026-07-08"}
+  }'
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "uuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "status": "Pending",
+  "task_type": "Report",
+  "created_at": "2026-07-09T10:15:00Z"
+}
+```
+
+## Read a report
+
+<p>Poll the task by its `uuid` until `status` reaches `Completed`, then download the file.</p>
+
+```bash
+curl -s "https://api.gcore.com/billing/org/v1/reports/3fa85f64-5717-4562-b3fc-2c963f66afa6" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -131,25 +152,43 @@ curl -s "https://api.gcore.com/waap/v1/prebilling/breakdown/requests?from=2026-0
 
 ```json
 {
-  "limit": 100,
-  "offset": 0,
-  "count": 2,
-  "results": {
-    "clients": {
-      "12345": [
-        {"date": "2026-07-01", "amount": 54200},
-        {"date": "2026-07-02", "amount": 55830}
-      ],
-      "67890": [
-        {"date": "2026-07-01", "amount": 74140},
-        {"date": "2026-07-02", "amount": 76150}
-      ]
-    }
-  }
+  "uuid": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "status": "Completed",
+  "task_type": "Report",
+  "created_at": "2026-07-09T10:15:00Z",
+  "updated_at": "2026-07-09T10:17:32Z"
 }
 ```
 
-<p>Each key under `clients` is a client ID, and its value is the same `date` and `amount` pairs returned by the aggregated total endpoint, scoped to that one client.</p>
+<p>The `Accept` header on the download call selects the file format, `text/csv`, `application/json`, or the Excel MIME type `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`:</p>
+
+```bash
+curl -s "https://api.gcore.com/billing/org/v1/reports/3fa85f64-5717-4562-b3fc-2c963f66afa6/download" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Accept: application/json"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "headers": ["Client ID", "Company name", "Feature ID", "Feature name", "Metric value", "Unit name"],
+  "rows": [
+    ["00001", "Example Company", "2296", "Origin Shielding", "0.0000", "PC"]
+  ]
+}
+```
+
+## Delete a report
+
+<p>Deleting a report generation task removes it from the list and makes its downloads unavailable.</p>
+
+```bash
+curl -s -X DELETE "https://api.gcore.com/billing/org/v1/reports/3fa85f64-5717-4562-b3fc-2c963f66afa6" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>A successful deletion returns an empty `204 No Content` response.</p>
 
   </MethodSection>
 </MethodSwitch>
