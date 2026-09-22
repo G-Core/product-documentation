@@ -1,7 +1,7 @@
 ---
 title: Setting up a PTR record and reverse DNS zone
 sidebarTitle: PTR record and reverse DNS zone
-ai-navigation: Add PTR records to reverse DNS zones to map IP addresses to hostnames for email anti-spam validation and subnet tracing via Customer Portal or via REST API.
+ai-navigation: Add PTR records to reverse DNS zones to map IP addresses to hostnames for anti-spam validation and subnet tracing via Customer Portal, API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -27,7 +27,7 @@ PTR records can only be added to a reverse DNS zone (RDNS), not to a regular [do
 
 <p>PTR records must be created inside a reverse DNS zone — a special zone named `*.in-addr.arpa` (for IPv4) or `*.ip6.arpa` (for IPv6). Only after that zone is created can PTR records be added to it in the portal.</p>
 
-<p>For IPv4, the octets are reversed under `in-addr.arpa`. The IP address `80.240.113.62` has the reverse DNS name `62.113.240.80.in-addr.arpa`. For a /24 subnet such as `203.0.113.0/24`, the reverse DNS zone is `113.0.203.in-addr.arpa`, and the PTR record for `203.0.113.1` is created at `1.113.0.203.in-addr.arpa`. IPv6 follows the same reversal pattern under `ip6.arpa`.</p>
+<p>For IPv4, the octets are reversed under `in-addr.arpa`. The IP address `80.240.113.62` has the reverse DNS name `62.113.240.80.in-addr.arpa`. For a /24 subnet — `203.0.113.0/24`, for instance — the reverse DNS zone is `113.0.203.in-addr.arpa`, and the PTR record for `203.0.113.1` is created at `1.113.0.203.in-addr.arpa`. IPv6 follows the same reversal pattern under `ip6.arpa`.</p>
 
 ## Configure reverse DNS zone and PTR record
 
@@ -45,7 +45,7 @@ PTR records can only be added to a reverse DNS zone (RDNS), not to a regular [do
     </Tip>
   </Step>
   <Step title="Add PTR records">
-    In the Customer Portal, open the added reverse zone and add PTR records. For each IP address, enter the full reversed address as the record name — for `203.0.113.1` in zone `113.0.203.in-addr.arpa`, the name is `1.113.0.203.in-addr.arpa`. Enter the target hostname with a trailing dot as the value, such as `mail.sample-test.com.`
+    In the Customer Portal, open the added reverse zone and add PTR records. For each IP address, enter the full reversed address as the record name — for `203.0.113.1` in zone `113.0.203.in-addr.arpa`, the name is `1.113.0.203.in-addr.arpa`. Enter the target hostname with a trailing dot as the value: `mail.sample-test.com.`
 
     <Frame>![PTR record form inside a reverse DNS zone](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png)</Frame>
   </Step>
@@ -389,6 +389,84 @@ export RDNS_ZONE="{YOUR_REVERSE_ZONE}"
 dig -x 203.0.113.1
 ```
 
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Create a reverse DNS zone and PTR records using `gcore_dns_zone` and `gcore_dns_zone_rrset` from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<Info>
+Before applying this configuration, contact the provider that manages the IP address space and request delegation of the subnet's reverse DNS zone to Gcore nameservers: `ns1.gcorelabs.net` and `ns2.gcdn.services`. Terraform creates the zone and records in Gcore DNS, but reverse lookups resolve only after delegation is active.
+</Info>
+
+## Create a reverse DNS zone and PTR records
+
+<p>The reverse zone name is the subnet octets reversed with `.in-addr.arpa` appended — for `203.0.113.0/24`, the zone is `113.0.203.in-addr.arpa`. Each PTR record's `rrset_name` is the full reversed IP address. Hostnames in `content` require a trailing dot.</p>
+
+```hcl
+resource "gcore_dns_zone" "rdns" {
+  name = "113.0.203.in-addr.arpa"  # reverse zone for 203.0.113.0/24
+  # terraform import gcore_dns_zone.rdns 113.0.203.in-addr.arpa
+}
+
+resource "gcore_dns_zone_rrset" "ptr_1" {
+  zone_name  = gcore_dns_zone.rdns.name
+  rrset_name = "1.${gcore_dns_zone.rdns.name}"  # maps 203.0.113.1
+  rrset_type = "PTR"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["mail.yourdomain.com."] },  # trailing dot required
+  ]
+  # terraform import gcore_dns_zone_rrset.ptr_1 113.0.203.in-addr.arpa/1.113.0.203.in-addr.arpa/PTR
+}
+
+resource "gcore_dns_zone_rrset" "ptr_2" {
+  zone_name  = gcore_dns_zone.rdns.name
+  rrset_name = "2.${gcore_dns_zone.rdns.name}"  # maps 203.0.113.2
+  rrset_type = "PTR"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["www.yourdomain.com."] },
+  ]
+  # terraform import gcore_dns_zone_rrset.ptr_2 113.0.203.in-addr.arpa/2.113.0.203.in-addr.arpa/PTR
+}
+```
+
+<p>Add one `gcore_dns_zone_rrset` block per IP address in the subnet.</p>
+
+## Update a PTR record
+
+<p>Edit the hostname in `content` and run `terraform apply` — Terraform updates the record in place.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "ptr_1" {
+  zone_name  = gcore_dns_zone.rdns.name
+  rrset_name = "1.${gcore_dns_zone.rdns.name}"
+  rrset_type = "PTR"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["smtp.yourdomain.com."] },  # updated hostname
+  ]
+}
+```
+
+## Delete PTR records and the zone
+
+<p>Remove the resource blocks — Terraform deletes each PTR record, then the zone, on the next `terraform apply`. Remove PTR records before the zone, or Terraform handles the dependency order automatically.</p>
+
+```hcl
+# Remove or comment out all blocks:
+# resource "gcore_dns_zone_rrset" "ptr_1" { ... }
+# resource "gcore_dns_zone_rrset" "ptr_2" { ... }
+# resource "gcore_dns_zone" "rdns"        { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
