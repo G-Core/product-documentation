@@ -1,7 +1,7 @@
 ---
 title: Manage DNS records
 sidebarTitle: Manage DNS records
-ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via Customer Portal or REST API.
+ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -401,6 +401,97 @@ export RECORD_TYPE="{A|AAAA|CNAME|MX|TXT|...}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Manage DNS records as code using the `gcore_dns_zone_rrset` resource from the [Gcore Terraform provider v2](/developer-tools/terraform/overview). Each `gcore_dns_zone_rrset` block declares one RRset — a record name, type, TTL, and one or more values.</p>
+
+## Create a DNS record
+
+<p>Declare the zone and the RRset in the same configuration. Set `rrset_name` to the zone name for an apex record, or to the full FQDN for a subdomain.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+}
+
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name  # apex record
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+  ]
+  # terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+}
+```
+
+<p>Each `resource_records` entry is one value. The `content` field is a list of strings whose length and meaning depends on the record type.</p>
+
+### Record type reference
+
+<p>The table below shows the `content` format for each record type. One `resource_records` entry maps to one value in the RRset.</p>
+
+| Record type | `content` format | Sample value |
+|-------------|-----------------|--------------|
+| A | `["ipv4"]` | `["203.0.113.1"]` |
+| AAAA | `["ipv6"]` | `["2001:db8::1"]` |
+| CNAME | `["target."]` (trailing dot required) | `["origin.example.com."]` |
+| MX | `["priority", "hostname."]` | `["10", "mail.example.com."]` |
+| TXT | `["text"]` | `["v=spf1 mx -all"]` |
+| CAA | `["flags", "tag", "value"]` | `["0", "issue", "letsencrypt.org"]` |
+| SRV | `["priority", "weight", "port", "target."]` | `["10", "20", "5060", "sip.example.com."]` |
+
+## Update a record
+
+<p>Edit fields in the resource block and run `terraform apply` to replace the RRset in-place. PUT semantics apply — all `resource_records` values must be present after the update.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 600  # changed
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+    { content = ["203.0.113.3"] },  # added
+  ]
+}
+```
+
+## Delete a record
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "a" {
+#   zone_name  = gcore_dns_zone.example.name
+#   rrset_name = gcore_dns_zone.example.name
+#   rrset_type = "A"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing record
+
+<p>Use when a record was created outside Terraform and needs to be managed as code. Add the resource block to `main.tf`, then run:</p>
+
+```bash
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+<p>The import ID format is `zone_name/rrset_name/TYPE`.</p>
 
 </MethodSection>
 </MethodSwitch>
