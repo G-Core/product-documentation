@@ -1,7 +1,7 @@
 ---
 title: Configure HTTPS records
 sidebarTitle: HTTPS record
-ai-navigation: Create HTTPS records in Gcore Managed DNS via Customer Portal or REST API to deliver protocol versions and IP address hints in a single DNS query.
+ai-navigation: Create HTTPS records in Gcore Managed DNS via Customer Portal, REST API, or Terraform to deliver protocol versions and IP address hints in a single DNS query.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -13,7 +13,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## HTTPS connection overhead
 
-<p>A and AAAA records provide the server IP address but do not describe other connection parameters such as supported application protocols, ports, or alternate endpoints. Clients may therefore need to discover this information separately during connection establishment — often via a subsequent DNS query or an [Alt-Svc&nbsp;header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Alt-Svc) returned only after the first response. Sites that still redirect HTTP to HTTPS add an extra round trip before any of this begins.</p>
+<p>A and AAAA records provide the server IP address but do not describe other connection parameters — supported application protocols, ports, or alternate endpoints. Clients may therefore need to discover this information separately during connection establishment — often via a subsequent DNS query or an [Alt-Svc&nbsp;header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Alt-Svc) returned only after the first response. Sites that still redirect HTTP to HTTPS add an extra round trip before any of this begins.</p>
 
 <p>HTTPS records deliver these parameters — ALPN identifiers, IP hints, and port information — as part of the original DNS response, allowing compatible clients to begin the connection with more information already available.</p>
 
@@ -65,7 +65,7 @@ www.sample-test.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6
     1. **Type**: Select **HTTPS**.
     2. (Optional) **Name**: Leave empty to create a record for the zone apex. To target a specific subdomain, enter the prefix — `www` for `www.sample-test.com`.
     3. (Optional) **TTL**: Leave empty or enter a value in seconds. For production, 1800 or higher allows recursive resolvers to cache the record effectively.
-    4. **Priority**: Enter a number. Use incrementing values — 1, 10, 20 — when multiple HTTPS records exist for the same name.
+    4. **Priority**: Enter a number. Use incrementing values when multiple HTTPS records exist for the same name.
     5. **TargetName**: Enter a valid domain name or leave it as `.`.
     6. In the **Key** dropdown, select **alpn**, then enter the supported protocol identifiers as a comma-separated list: `h3`, `h2`, `http/1.1`, or `h3-29`.
     7. (Optional) Add an **ipv4hint** or **ipv6hint** key and enter the corresponding server IP addresses.
@@ -80,7 +80,7 @@ www.sample-test.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6
 
 <Frame>![Zone records list showing the new HTTPS record](/images/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/https-conf-30.png)</Frame>
 
-<p>Verify the record using kdig (the [Knot&nbsp;DNS](https://www.knot-dns.cz/) variant of `dig`). When using standard `dig`, confirm the version is current — older versions don't support HTTPS record types. You can also use the [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool to verify the HTTPS record.</p>
+<p>Verify the record using kdig (the [Knot&nbsp;DNS](https://www.knot-dns.cz/) variant of `dig`). When using standard `dig`, confirm the version is current — older versions don't support HTTPS record types. The [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool also resolves HTTPS records.</p>
 
 ```sh
 kdig https sample-test.com @ns1.gcorelabs.net
@@ -101,7 +101,7 @@ sample-test.com. 1800 IN HTTPS 1 . alpn=h3,h2,http/1.1 ipv4hint=1.2.3.4,9.8.7.6 
 <p>The DNS API creates an HTTPS RRset with a single `POST` request. The record content is an ordered array: priority, target name, then one sub-array per SvcParam key — `alpn`, `ipv4hint`, `ipv6hint`, `port`, or `ech`.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
 <p>Open a terminal and export the required variables:</p>
@@ -282,7 +282,81 @@ export RECORD_NAME="{YOUR_RECORD_NAME}"  # e.g. www.example.com
   </Tab>
 </Tabs>
 
-<p>To verify the record through DNS, query it with kdig or use the [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool.</p>
+<p>Query the record through DNS using kdig, or resolve it with the [DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Create HTTPS records using `gcore_dns_zone_rrset` from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `content` field is a list of strings — SvcParam entries (alpn, ipv4hint, ipv6hint, port) must be JSON-encoded because they are arrays internally. Wire-format strings like `"alpn=h3,h2"` are rejected by the API.</p>
+
+## Create an HTTPS record
+
+<p>Each `content` element maps to one field in the HTTPS record wire format: priority, target, then SvcParams. Encode each SvcParam array with `jsonencode()`.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+resource "gcore_dns_zone_rrset" "https_www" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "www.${gcore_dns_zone.example.name}"
+  rrset_type = "HTTPS"
+  ttl        = 1800
+
+  resource_records = [
+    {
+      content = [
+        "1",                                                       # priority
+        ".",                                                       # target (. = same domain)
+        jsonencode(["alpn", "h3", "h2", "http/1.1"]),             # supported protocols
+        jsonencode(["ipv4hint", "1.2.3.4", "9.8.7.6"]),           # IPv4 address hints
+        jsonencode(["ipv6hint", "2001:db8::1", "2001:db8::2"]),   # IPv6 address hints (optional)
+      ]
+    },
+  ]
+  # terraform import gcore_dns_zone_rrset.https_www yourdomain.com/www.yourdomain.com/HTTPS
+}
+```
+
+<p>To create the record at the zone apex, set `rrset_name = gcore_dns_zone.example.name`. HTTPS records at the apex coexist with NS and SOA records without conflict.</p>
+
+## Update an HTTPS record
+
+<p>Edit `content` — add or remove SvcParam entries, change protocol list, update IP hints — and run `terraform apply`. Terraform updates the record in place.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "https_www" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "www.${gcore_dns_zone.example.name}"
+  rrset_type = "HTTPS"
+  ttl        = 1800
+
+  resource_records = [
+    {
+      content = [
+        "1",
+        ".",
+        jsonencode(["alpn", "h3", "h2"]),       # removed http/1.1
+        jsonencode(["ipv4hint", "203.0.113.1"]), # updated IP
+      ]
+    },
+  ]
+}
+```
+
+## Delete an HTTPS record
+
+<p>Remove the resource block — Terraform deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "https_www" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
