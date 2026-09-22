@@ -10,7 +10,7 @@ Prefetch requests files from the origin and stores them in CDN cache before visi
 Prefetch causes CDN servers to request the listed files from the origin, which increases origin load and traffic.
 </Warning>
 
-Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each request is limited to 100 paths, and one prefetch request is allowed per CDN resource per minute.
+Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each request is limited to 100 paths, and one prefetch request is allowed per CDN resource per minute. To prefetch more than 100 files, divide the paths into batches of up to 100 and wait at least 1 minute between batches for the same CDN resource.
 
 <Steps>
   <Step title="Open Prefetch">
@@ -32,13 +32,17 @@ Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each
   <Step title="Confirm the files are cached">
     Prefetch processing time depends on the number and size of the files — allow time for the operation to complete before testing.
 
-    To verify, request a listed path from the CDN hostname and inspect the `Cache` response header on the first request from your test location:
+    To verify, send a request to a listed path and inspect the `Cache` response header. The following command performs a GET request and prints only the response headers:
 
-    - `Cache: HIT` on the first request means prefetch already populated that edge location.
+    ```bash
+    curl -sS -D - -o /dev/null https://cdn.example.com/path/file1.jpg
+    ```
+
+    - `Cache: HIT` means the file was already cached at that edge location when tested. To attribute the hit specifically to prefetch, test a new URL or [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the file before prefetching.
     - `Cache: MISS` on the first request followed by `Cache: HIT` on the next means the first request filled the cache. That edge was not populated by prefetch — either prefetch has not yet completed, or that location was not reached.
   </Step>
 </Steps>
 
 To replace files that are already in cache, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) those files, then prefetch.
 
-Prefetch requests are not retained in a history log. To review past cache-clearing operations, use [purge history](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all#purge-history).
+Prefetch requests are not retained in a history log and do not appear in [purge history](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all#purge-history), which contains only cache-purge operations.
