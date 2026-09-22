@@ -34,7 +34,7 @@ Set the `Cache-Control` header on the origin server, then configure the fallback
 
     The following Apache configuration caches `.gif` and `.ico` files for 4 days (`max-age=345600` seconds):
 
-    ```
+    ```apache
     <ifModule mod_headers.c>   
       <FilesMatch "\.(gif|ico)$">   
         Header set Cache-Control "max-age=345600, public"   
@@ -44,7 +44,7 @@ Set the `Cache-Control` header on the origin server, then configure the fallback
 
     The following Nginx configuration caches `.ico`, `.css`, `.js`, `.gif`, `.jpeg`, and `.png` files for 1 day (86,400 seconds):
 
-    ```
+    ```nginx
     server {   
      #...   
       location ~* \.(?:ico|css|js|gif|jpeg|png)$ {   
@@ -69,7 +69,7 @@ Set the `Cache-Control` header on the origin server, then configure the fallback
     Specify the timespan in the **Default cache expiry** field. Select a predefined value from the list or select **Custom value** and enter the time in seconds. This value is used as a fallback when the origin does not send caching HTTP headers.
 
     <Info>
-    For Origin controlled mode, CDN servers cache responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308. Responses with other codes are not cached.
+    For Origin controlled mode, CDN servers store responses with codes 200, 201, 204, 206, 301, 302, 303, 307, and 308. A 304 Not Modified response is not independently stored; it revalidates and extends an existing cached entry. Responses with other codes are not cached.
     </Info>
 
     <Frame>![CDN caching settings with Origin controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-origin-controlled.png)</Frame>
@@ -154,11 +154,11 @@ CDN caching applies only to responses with status codes 200, 206, 301, and 302. 
 
         The Caching time in advanced rules takes priority over the general Cache expiry.
 
-        With a Cache expiry of four days and two advanced rules — one for the 200 response code configured for 10 minutes and another for 404 configured for one minute — requests are cached as follows:
+        With a Cache expiry of 4 days and two advanced rules — one for the 200 response code configured for 10 minutes and another for 404 configured for 1 minute — requests are cached as follows:
 
           * Requests with response code 200: cached for 10 minutes.
-          * Requests with response code 404: cached for one minute.
-          * Requests with response codes 206, 301, and 302: cached for four days.
+          * Requests with response code 404: cached for 1 minute.
+          * Requests with response codes 206, 301, and 302: cached for 4 days.
           * Requests with response codes 4xx (except 404) and 5xx: not cached.
       </Step>
       <Step title="Save changes">
@@ -171,30 +171,41 @@ CDN caching applies only to responses with status codes 200, 206, 301, and 302. 
 
 ## CDN caching verification
 
-To verify that CDN caching is working correctly, inspect HTTP response headers using curl or browser DevTools.
+To verify that CDN caching is working correctly, inspect HTTP response headers using `curl` or browser DevTools.
 
-### Verification with curl
+### Verification with `curl`
 
 <Steps>
   <Step title="Open a terminal">
     Open a terminal (macOS or Linux) or command prompt (Windows).
   </Step>
   <Step title="Run the command">
-    Run the following command, replacing the URL with a file delivered via your CDN resource:
+    Run the following command, replacing the URL with a file delivered via your CDN resource. Run it twice — the first request fetches the file from the origin and stores it in cache; the second confirms it is served from cache.
 
     ```sh
     curl -sS -D - -o /dev/null https://cdn.example.com/css/style.css
     ```
 
-    The command sends a GET request and prints only the response headers. The example output below shows the key headers for cache diagnostics. For a description of each header, see [Caching response headers](#caching-response-headers).
+    First request output (cache miss — file fetched from origin and stored):
 
+    ```http
+    HTTP/2 200
+    cache-control: max-age=86400, public
+    cache: MISS
+    x-id: ab-cd-e123
     ```
+
+    Second request output (cache hit — file served from CDN cache):
+
+    ```http
     HTTP/2 200
     cache-control: max-age=86400, public
     cache: HIT
     x-cached-since: 2026-09-22T08:00:00+00:00
     x-id: ab-cd-e123
     ```
+
+    For a description of each header, see [Caching response headers](#caching-response-headers).
 
     For content caching issues, verify the origin settings or contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).
   </Step>
@@ -235,8 +246,8 @@ There are several HTTP response headers that help analyze the state of the cache
 HTTP header | Explanation
 ---|---
 CACHE: HIT | The file was served from the CDN cache. Caching is working correctly.
-CACHE: MISS | The file was not in the CDN cache and was fetched from the origin. This occurs on the first request for a file that has not been cached yet, after the cached copy has expired and the origin returned a new response, or after a purge by URL. The response is stored in cache; subsequent requests for a cacheable file return CACHE: HIT.
-CACHE: BYPASS | The CDN cache was skipped and the file was served directly from the origin without being stored. This occurs after a full purge (purge all) or purge by pattern, or when the response carries a `Cache-Control: no-store` or `Cache-Control: no-cache` directive. By standard (`no-store` prohibits caching; `no-cache` permits storage but requires revalidation), Gcore CDN treats both directives as uncacheable. Unlike CACHE: MISS, the response is not stored in cache.
+CACHE: MISS | The file was not in the CDN cache and was fetched from the origin. This occurs on the first request for a file, after the cached copy has expired and the origin returned a new response, or after any purge type (purge by URL, purge by pattern, or purge all) removes the cached object. The response is stored in cache; subsequent requests for a cacheable file return CACHE: HIT.
+CACHE: BYPASS | The CDN cache was skipped and the file was served directly from the origin without being stored. This occurs when the response carries a `Cache-Control: no-store` or `Cache-Control: no-cache` directive. By standard, `no-store` prohibits storage entirely; `no-cache` permits storage but requires revalidation before reuse. Gcore CDN treats both directives as uncacheable. Unlike CACHE: MISS, the response is not stored in cache.
 X-ID: ab-cd-d123 | Identifier of the Gcore CDN edge server that delivered the file. Resolve `{x-id}.fe.gc.onl` using `nslookup` or `dig` to get the server's IP address — useful for [cache&nbsp;diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
 X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.
 
