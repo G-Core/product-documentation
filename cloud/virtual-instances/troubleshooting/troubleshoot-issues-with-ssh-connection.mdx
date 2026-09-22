@@ -1,34 +1,16 @@
 ---
 title: Troubleshoot issues with an SSH connection
 sidebarTitle: SSH connection
-ai-navigation: "Troubleshoot SSH connection issues for Gcore VMs - permission denied, SSH key format, firewall rules, floating IP, Windows RDP, and lost key recovery."
+ai-navigation: Troubleshoot SSH for a Virtual Machine or Bare Metal server, including a lost key, the default login, firewall rules, and a missing public IP.
 ---
 
-SSH connections to Gcore Virtual Machines use key-based authentication by default. Most failures trace back to a misconfigured key, the wrong default username, a missing floating IP, or a blocked firewall port.
-
-## Recommended SSH connection method
-
-SSH key authentication provides better security than password-based access and is the recommended way to connect to Virtual Machines.
-
-To set up SSH key authentication:
-
-1. Generate [SSH keys](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys) or use existing ones.
-2. Upload the public key to the [SSH Keys](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section.
-3. Select the key when [creating a VM](/cloud/virtual-instances/create-an-instance).
-
-<Warning>
-The private key cannot be downloaded again after creation. Save it in a secure location immediately after generating it.
-</Warning>
-
-### Add multiple SSH keys
-
-To allow multiple users or devices to access the same VM, add several keys through the [Gcore Customer Portal](https://portal.gcore.com) when creating a VM. In the **SSH key** section, select multiple keys from the saved keys list. Upload additional keys from the SSH Keys section.
+SSH connections to Virtual Machines and Bare Metal servers use the key from [SSH&nbsp;keys](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) or [Bare&nbsp;Metal&nbsp;SSH](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh). Most failures trace back to a misconfigured key, the wrong default username, a missing public IP, or a blocked firewall port.
 
 ## Cannot log in as root. Permission denied error
 
 Gcore images have root SSH login disabled by default for security reasons.
 
-The default username depends on the operating system. When creating a VM, the portal displays the correct username in the format `ssh [username]@ipaddress`.
+The default username depends on the operating system. During creation, the portal shows it as `ssh [username]@ipaddress`.
 
 | Operating system | Default username |
 |------------------|------------------|
@@ -41,7 +23,16 @@ The default username depends on the operating system. When creating a VM, the po
 | Fedora-CoreOS | `core` |
 | Windows | `Admin` (RDP only) |
 
-The VM username is also available in the Customer Portal: navigate to **Cloud** > **Virtual Instances**, open the instance, and check the **Access to Console** button area where the SSH login is displayed in the format `[login]@[ip-of-the-VM]`.
+The same login is shown beside **Access to Console**:
+
+<Tabs>
+  <Tab title="Virtual Machine">
+    Navigate to **Cloud** > **Virtual Instances** and open the Virtual Machine.
+  </Tab>
+  <Tab title="Bare Metal">
+    Navigate to **Cloud** > **Bare Metal** and open the server.
+  </Tab>
+</Tabs>
 
 After connecting with the default user, switch to root with:
 
@@ -55,72 +46,93 @@ Custom images may have different default usernames or allow root login. Check wi
 
 ## No password received via email
 
-Gcore does not send VM credentials via email. By default, Virtual Machines only accept SSH key authentication.
+Gcore does not send server credentials by email. Linux servers use SSH keys by default. If password access through the console is required for recovery, configure a console password when creating the server.
 
-For password access to the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a [password](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine) during VM creation.
-
-<Warning>
-VNC console passwords are for emergency access only. SSH key authentication is the recommended method for connecting to Virtual Machines.
-</Warning>
+<Tabs>
+  <Tab title="Virtual Machine">
+    Set the [console&nbsp;password](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine) in **User data** under **Additional options**.
+  </Tab>
+  <Tab title="Bare Metal">
+    For Linux, add a [password&nbsp;script](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh#connect-with-a-password) in the **User data** field. For Windows, enter the password on the [creation&nbsp;form](/cloud/bare-metal-servers/create-a-bare-metal-server).
+  </Tab>
+</Tabs>
 
 ## Lost SSH key and cannot connect
 
-If the private key is lost:
+If a console password was set at creation:
 
-1. If a password was configured during VM creation: access the VM via the VNC console and add a new public key to `~/.ssh/authorized_keys`.
+<Steps>
+  <Step title="Open Access to Console">
+    [Log&nbsp;in](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel#connect-to-a-linux-instance) with the username beside the button.
+  </Step>
+  <Step title="Append the public key">
+    ```bash
+    mkdir -p ~/.ssh
+    chmod 700 ~/.ssh
+    printf '%s\n' 'PUBLIC_KEY' >> ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys
+    ```
 
-2. If no password was configured: boot recovery mode from the console and install a new public key. See [Recover SSH access in recovery mode](/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode).
+    Replace `PUBLIC_KEY` with the OpenSSH public key on one line.
+  </Step>
+</Steps>
+
+If no console password was set, open **Access to Console** and install a new public key from the [recovery&nbsp;shell](/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode). On a Bare Metal server, reinstall with a new SSH key when the GRUB menu has no recovery mode entry.
 
 <Tip>
-To prevent losing access, add multiple keys to the VM during creation or use the User Data field to configure a VNC console password as a backup access method.
+Add more than one key during that setup. Set a console password in **User data**, so the console opens without the SSH key.
 </Tip>
 
 ## Connection timed out
 
-This error is caused by incorrect security group configuration.
+On a Virtual Machine, check whether the attached security group allows SSH.
 
-Allow ICMP for connectivity testing:
+<Steps>
+  <Step title="Open the attached security group">
+    In **Cloud** > **Networking** > **Security Groups**, open the group on the Virtual Machine. [Security&nbsp;groups](/cloud/networking/add-and-configure-a-firewall) include an SSH template for this port.
+  </Step>
+  <Step title="Allow inbound TCP port 22">
+    | Protocol | Port | Source |
+    |----------|------|--------|
+    | TCP | 22 | 0.0.0.0/0 |
+  </Step>
+  <Step title="Allow ICMP for connectivity testing">
+    | Protocol | Type | Code | Source |
+    |----------|------|------|--------|
+    | ICMP | Any | Any | 0.0.0.0/0 |
+  </Step>
+</Steps>
 
-| Protocol | Type | Code | Source |
-|----------|------|------|--------|
-| ICMP | Any | Any | 0.0.0.0/0 |
-
-Allow TCP port 22 for SSH:
-
-| Protocol | Port | Source |
-|----------|------|--------|
-| TCP | 22 | 0.0.0.0/0 |
-
-The default security group includes these rules. Select the default group when creating a VM to avoid misconfiguring a custom security group.
+The default security group already includes these rules. Select the default group when creating a Virtual Machine to avoid misconfiguring a custom security group.
 
 ## Permission denied (publickey) error
 
-PuTTY and OpenSSH use different public key formats. If the public key starts with `BEGIN SSH2 PUBLIC KEY`, it will not work with Gcore Virtual Machines. The key must start with `ssh-rsa AAAA...` (OpenSSH format).
+PuTTY and OpenSSH use different public key formats.
 
-When generating a key with PuTTYgen, copy the key from the **Public key for pasting into OpenSSH authorized_keys file** field at the top of the PuTTYgen window — do not use the text from **Save public key**.
+<Steps>
+  <Step title="Use an OpenSSH public key">
+    The key must start with `ssh-rsa AAAA...` or `ssh-ed25519 AAAA...`. A key that starts with `BEGIN SSH2 PUBLIC KEY` will not work.
+  </Step>
+  <Step title="Copy the PuTTYgen OpenSSH field">
+    The field is **Public key for pasting into OpenSSH authorized_keys file**, at the top of the window. **Save public key** writes a different format.
+  </Step>
+</Steps>
 
-## No floating (public) IP address. Connection refused error
+## No floating (public) IP address
 
-When creating a VM with a pre-existing subnet, it is possible to create a server without a floating (public) IP.
+A server created on a private subnet can have no public IP. SSH from an external network cannot reach the internal address, so attach a [floating&nbsp;IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address).
 
-Without a floating IP, SSH connections from external networks are not possible because the internal IP address is not reachable from the Internet. Add a [floating IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to the VM to enable external SSH access.
+## Cannot connect to a Windows server
 
-## Cannot connect to a VM with Windows OS
-
-SSH is not supported for Windows-based VMs, so use RDP (Remote Desktop Protocol) instead. On Windows PCs, the Remote Desktop client is installed by default.
+For Windows servers, use Remote Desktop instead of SSH. Connect to the public IP shown on the server page. Remote Desktop uses TCP port 3389, and on Windows PCs the client is installed by default.
 
 ## Network appliance images (FortiGate, MikroTik)
 
-Network appliance images use their own authentication methods, not standard SSH key authentication.
+These Virtual Machine images use their own authentication, not an SSH key from **SSH Keys**.
 
 | Appliance | Default username | Default password |
 |-----------|------------------|------------------|
 | FortiGate | `admin` | empty (new password required on first login) |
 | MikroTik CHR | `admin` | empty |
 
-Access these appliances via:
-
-- **VNC console** in the Customer Portal
-- **Web interface** (FortiGate: `https://[VM-IP]`, MikroTik: `http://[VM-IP]`)
-- **SSH** (after initial configuration via console)
-- **WinBox** (MikroTik only)
+Use **Access to Console** on the Virtual Machine page for the initial login. After initial configuration, use the access methods supported by the appliance.
