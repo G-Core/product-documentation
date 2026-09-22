@@ -184,13 +184,15 @@ The [How low-latency streaming works](/streaming/live-streaming/how-low-latency-
 
 ### Can Gcore force my live stream 10-12 fps to 50 or 60 fps?
 
-No. Gcore Live Streaming does not generate extra frames to convert a 10-12 fps source into 50 or 60 fps.
+By default, no. The output FPS follows the source, up to the frame rate configured in the transcoding preset (30 fps unless changed). Gcore does not generate extra frames to raise a lower input rate on its own.
 
-When the encoder connects, the live transcoder reads the source FPS once from the incoming stream metadata at the beginning of the live session. This FPS value is not re-detected later and is not changed dynamically during transcoding.
+When the encoder connects, the live transcoder reads the source FPS once from the incoming stream metadata at the beginning of the live session. This FPS value is not re-detected later and is not changed dynamically during transcoding. If the encoder connects while it is already sending a reduced frame rate because of CPU overload, unstable timestamps, encoder-side buffering, or network issues, the live output will continue with that lower frame rate for the whole current session. The only way to apply the corrected FPS is for the encoder to reconnect and start a new live session.
 
-If the encoder connects while it is already sending a reduced frame rate because of CPU overload, unstable timestamps, encoder-side buffering, or network issues, the live output will continue with that lower frame rate for the whole current session. The only way to apply the corrected FPS is for the encoder to reconnect and start a new live session.
+**Force FPS** is a special per-stream setting that overrides this behavior: when enabled, the output is always at the frame rate configured in the preset, no matter what frame rate the encoder sends. This is useful for events where encoders are repeatedly stopped and restarted (for example, between event stages) and may briefly reconnect at an unstable or lower frame rate.
 
-For troubleshooting, verify that the encoder is configured with a fixed FPS value, enough bitrate for that FPS, and low-latency settings:
+Force FPS is not available through the Customer Portal or the API. It is applied by Gcore on a per-stream or per-account basis together with a preset that has the target frame rate (for example, 50 or 60 fps) configured. Contact an account manager or Gcore support to enable it.
+
+For troubleshooting without Force FPS, verify that the encoder is configured with a fixed FPS value, enough bitrate for that FPS, and low-latency settings:
 - [RTMP](/streaming/live-streaming/protocols/rtmp)
 - [SRT](/streaming/live-streaming/protocols/srt)
 - [PTS/DTS timestamps](/streaming/live-streaming/pts-dts)
