@@ -32378,7 +32378,7 @@ paths:
           placement_group = client.cloud.placement_groups.create(
               project_id=1,
               region_id=1,
-              name="my-server-group",
+              name="my-placement-group",
               policy="anti-affinity",
           )
           print(placement_group.project_id)
@@ -32402,7 +32402,7 @@ paths:
           	placementGroup, err := client.Cloud.PlacementGroups.New(context.TODO(), cloud.PlacementGroupNewParams{
           		ProjectID: gcore.Int(1),
           		RegionID:  gcore.Int(1),
-          		Name:      "my-server-group",
+          		Name:      "my-placement-group",
           		Policy:    cloud.PlacementGroupNewParamsPolicyAntiAffinity,
           	})
           	if err != nil {
@@ -36030,12 +36030,16 @@ paths:
       - lang: Python
         source: |-
           import os
+          from datetime import datetime
           from gcore import Gcore
 
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          billing_reservations = client.cloud.billing_reservations.list()
+          billing_reservations = client.cloud.billing_reservations.list(
+              time_from=datetime.fromisoformat("2025-01-01T00:00:00"),
+              time_to=datetime.fromisoformat("2025-02-01T00:00:00"),
+          )
           print(billing_reservations.count)
       - lang: Go
         source: |
@@ -36044,6 +36048,7 @@ paths:
           import (
           	"context"
           	"fmt"
+          	"time"
 
           	"github.com/G-Core/gcore-go"
           	"github.com/G-Core/gcore-go/cloud"
@@ -36054,7 +36059,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	billingReservations, err := client.Cloud.BillingReservations.List(context.TODO(), cloud.BillingReservationListParams{})
+          	billingReservations, err := client.Cloud.BillingReservations.List(context.TODO(), cloud.BillingReservationListParams{
+          		TimeFrom: time.Now(),
+          		TimeTo:   time.Now(),
+          	})
           	if err != nil {
           		panic(err.Error())
           	}
