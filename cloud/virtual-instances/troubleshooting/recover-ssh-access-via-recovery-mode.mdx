@@ -1,10 +1,10 @@
 ---
 title: Recover SSH access in recovery mode
 sidebarTitle: Recovery mode
-ai-navigation: Recover SSH access to a Linux Virtual Machine or Bare Metal server from the VNC console when the private key is lost and no console password is set.
+ai-navigation: Open a root shell on a Linux Virtual Machine or Bare Metal server from the VNC console when the private key is lost, then install a public key only when SSH must accept a new key.
 ---
 
-Recovery mode restores SSH on a Linux Virtual Machine or Bare Metal server after the private key is lost. It installs a new public key from the console when the server has no console password.
+Recovery mode opens a root shell on a Linux Virtual Machine or Bare Metal server from the console when the private key is lost and no console password is set. [Install a public key](#install-a-public-key) when SSH must accept a new key.
 
 <Steps>
   <Step title="Open the server">
@@ -21,12 +21,16 @@ Recovery mode restores SSH on a Linux Virtual Machine or Bare Metal server after
       </Tab>
     </Tabs>
 
-    The login beside **Access to Console** owns the new key, because SSH accepts that account. On the Ubuntu image that account is `ubuntu`.
+    The login beside **Access to Console** is the account SSH accepts. On the Ubuntu image that account is `ubuntu`.
   </Step>
   <Step title="Open the console">
     <Frame>![Bare Metal server page with Access to Console beside the IP address](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/server-page-access-to-console.png)</Frame>
 
     Click **Access to Console** to open the console in a browser tab, with **Send CtrlAltDel** at the top right.
+
+    <Note>
+    Not every Bare Metal platform provides **Access to Console**.
+    </Note>
 
     <Frame>![VNC console with Send CtrlAltDel and the Ubuntu login](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/console-connected.png)</Frame>
   </Step>
@@ -55,17 +59,23 @@ Recovery mode restores SSH on a Linux Virtual Machine or Bare Metal server after
 
     At `Press Enter for system maintenance (or press Control-D to continue):`, press Enter. The menu frame can remain on screen after the shell starts, while the shell is active once a prompt ending in `~#` appears at the bottom.
   </Step>
+</Steps>
+
+## Install a public key
+
+Use this section when the server must accept a new SSH key. The root shell from the procedure above is already open.
+
+<Steps>
   <Step title="Remount the root filesystem">
     Recovery mounts the root filesystem read-only, so remount it before writing the key:
 
     ```bash
     mount -o remount,rw /
-    findmnt -n -o OPTIONS /
     ```
 
-    The option list starts with `rw`, so the root filesystem accepts writes, while `errors=remount-ro` only sets the behavior after a filesystem error.
+    When the command returns to the prompt without an error, the root filesystem accepts writes.
 
-    <Frame>![Root shell after remount, with mount options starting with rw](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/remount-read-write.png)</Frame>
+    <Frame>![Root shell after remounting the filesystem read-write](/images/docs/cloud/virtual-instances/troubleshooting/recover-ssh-access-via-recovery-mode/remount-read-write.png)</Frame>
   </Step>
   <Step title="Install the public key">
     Write the new public key for the login beside **Access to Console** into `authorized_keys` on the local disk. On Ubuntu the file is `/home/ubuntu/.ssh/authorized_keys`, and when the login label names another account, use that account's home directory.
