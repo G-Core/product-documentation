@@ -1,93 +1,33 @@
 ---
 title: "PTS and DTS in RTMP/SRT streams"
 sidebarTitle: "PTS/DTS timestamps"
-ai-navigation: Configure PTS and DTS for RTMP and SRT ingest; incorrect timestamps cause frame drops, segment misalignment, and streaming failures in Gcore Cloud.
+ai-navigation: Troubleshoot PTS and DTS timestamp problems in RTMP and SRT ingest; broken timestamps cause frame drops, segment misalignment, and stream rejections.
 ---
 
-PTS (Presentation Timestamp) and DTS (Decoding Timestamp) are frame-level timing values that control when each frame is displayed and decoded. The Gcore Streaming transcoder depends on monotonic, gapless timestamps at ingest — broken timestamps cause frame drops, segment misalignment, and playback failures downstream.
+RTMP and SRT ingest require a continuous, monotonic timestamp timeline. When the encoder sends frames with timestamps that move backward, reset mid-stream, or repeat unexpectedly, the Gcore transcoder and downstream components — CDN, packager, and end players — can produce damaged segments, audio/video drift, or reject the stream entirely.
 
-## PTS and DTS
+PTS (Presentation Timestamp) controls when a frame is displayed; DTS (Decoding Timestamp) controls when it is decoded. When frames arrive and decode in display order, PTS and DTS are equal.
 
-| Timestamp | Purpose | Usage |
-|----------|---------|--------|
-| **PTS, Presentation Timestamp** | Defines **when each frame must be displayed** | Used by the player, CDN, and transcoder to maintain playback timeline and audio/video sync |
-| **DTS, Decoding Timestamp** | Defines **when each frame must be decoded** | Required when frames arrive out of order (e.g., B-frames) to maintain correct decoder processing sequence |
-
-<Note>When streaming with low latency, if B-frames are disabled (as recommended in [RTMP](/streaming/live-streaming/protocols/rtmp) and [SRT](/streaming/live-streaming/protocols/srt)), PTS and DTS are equal.</Note>
+<Note>The [low-latency&nbsp;encoder&nbsp;settings](/streaming/live-streaming/protocols/rtmp#low-latency-tuning) for RTMP and [SRT](/streaming/live-streaming/protocols/srt#zerolatency-encoder-tuning) disable B-frames, which eliminates frame reordering and keeps PTS and DTS equal throughout the session.</Note>
 
 
-## Timestamp accuracy
+## Timestamp problems
 
-Live streaming pipelines depend on a continuous, monotonic timestamp timeline. When timestamps are correct:
+An encoder that produces any of the following patterns creates an unrecoverable or difficult-to-recover ingest condition:
 
-- Frames decode without interruption  
-- Segments are aligned for HLS/DASH  
-- Players maintain real-time playback  
-- Audio and video stay synchronized  
-- CDN caching and delivery remain stable  
+| Problem | PTS sequence example | Consequence |
+|---------|---------------------|-------------|
+| Non-monotonic PTS | `100 → 120 → 110 → 130` | Frame order becomes ambiguous — it is impossible to determine whether the reversed frame should be dropped or reordered; once the `.ts`/`.m4s` chunk is sent to CDN, recovery is not possible |
+| Timestamp reset | `100 → 120 → 140 → 0 → 20` | Timeline discontinuity forces the transcoder to stitch a new sequence, causing A/V drift and segment misalignment |
+| Repeated timestamps | `100 → 120 → 120 → 120` | Multiple frames share the same position — display duration and segment boundaries become undefined |
+| Large gap | `100 → 120 → 500` | Unexpected jump — players and CDN caches may stall or drop the affected segment |
 
-Incorrect timestamps break these assumptions. When timestamps are incorrect at the master encoder, every downstream component in Gcore Cloud — the transcoder, CDN, and end players — may experience failures ranging from minor buffering to complete playback interruption.
+The correct behavior is a strictly increasing sequence with a consistent increment:
 
-
-## Problems caused by incorrect or broken PTS/DTS
-
-The following scenarios illustrate poor PTS generation by an encoder:
-
-**Non-monotonic PTS/DTS:**
 ```
-┌───────────────────────────────────────────┐
-│   CUSTOMER ENCODER (BROKEN PTS INPUT)     │
-└───────────────────────────────────────────┘
-                │
-                ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│ 1) NON-MONOTONIC PTS (PTS goes backward)                                │
-│                                                                         │
-│   Frames:   F1   F2   F3   F4   F5                                      │
-│   PTS in:  100  120  110  130  140     ← PTS drops backward at F3       │
-│                     ↑                                                   │
-│                                                                         │
-│   Transcoder Output (damaged timeline):                                 │
-│   Frames:   F1   F2   F4   F5   F3?                                     │
-│   PTS out: 100  120  130  140   X  → jitter, freezes, decoder resets    │
-└─────────────────────────────────────────────────────────────────────────┘
+Frames:   F1   F2   F3   F4   F5
+PTS in:  100  110  120  130  140   ← monotonic, equal increment
 ```
-For frame `F3`, it is impossible to determine whether the frame should be dropped or reordered. Once the `.ts`/`.m4s` chunk has been prepared, saved, and sent to the CDN, recovery is not possible.
-
-
-**PTS/DTS gaps:**
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ 2) PTS GAP / RESET TO ZERO MID-STREAM                                   │
-│                                                                         │
-│   Frames:   F1   F2   F3   F4   F5   F6                                 │
-│   PTS in:  100  120  140    0   20   40     ← unexpected reset to zero  │
-│                            ↑                                            │
-│                                                                         │
-│   Transcoder Output (attempted repair):                                 │
-│   PTS out: 100  120  140  150?  160? 170?                               │
-│            (stitching fake timeline → A/V drift, segment misalignment)  │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-Starting from frame `F4`, the transcoder cannot determine whether frames should be dropped or reassigned, resulting in a stitched — and inaccurate — timeline.
-
-
-**Missing, repeated, or negative timestamps:**
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ 3) RANDOM / UNSTABLE PTS CHANGES                                        │
-│                                                                         │
-│   Frames:   F1   F2    F3   F4   F5   F6                                │
-│   PTS in:  100   500  140  300  300  300                                │
-│           big jump↑   ↑back  ↑staled values                             │
-│                                                                         │
-│   Transcoder Output (timeline collapse):                                │
-│   Frames:   F1   F3   F5   F2?  F4?  F6?                                │
-│   PTS out: 100  140  160    X    X   300                                │
-│            → stutter, dropped frames, impossible segment duration       │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-Starting from frame `F2`, the transcoder cannot determine which frames to drop or how to handle the repeated values.
 
 
 ## Gcore transcoder behavior
@@ -114,53 +54,50 @@ To rebuild a usable timestamp sequence, the transcoder may buffer additional fra
 
 If timestamps are severely corrupted and cannot be repaired, the ingest layer or the transcoder may reject the stream entirely to prevent downstream delivery failures.
 
-
-## Impact on end playback
-
-Incorrect PTS/DTS can cause:
-- Buffering
-- Stalled video
-- Audio ahead/behind video  
-- Abrupt quality switches (ABR logic confusion)  
-- Complete playback failure on Smart TVs and mobile players  
-
-Stable timestamps are one of the most critical factors for reliable live streaming delivery.
+The combined effect on playback includes buffering, stalled video, audio ahead or behind video, abrupt quality switches from ABR logic errors, and complete playback failure on Smart TVs and mobile players.
 
 
-## Best practices to avoid timestamp issues
+## Diagnose timestamp issues
 
-### Maintain monotonic timestamps
-- Keep PTS and DTS monotonically increasing in the master stream
-- Do not reset timestamps mid-stream  
-- Avoid switching timebases
+Use `ffprobe` (part of the [FFmpeg](/streaming/live-streaming/broadcasting-software/ffmpeg) package) to inspect PTS and DTS values in a recorded encoder output. Most encoders support local recording alongside active streaming — record a short segment, then analyze it:
 
-This is the expected behavior of the encoder for preparing the master stream:
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                                                                   │
-│   Frames:   F1   F2   F3   F4   F5                                │
-│   PTS in:  100  110  120  130  140         ← MONOTONIC PTS        │
-│                                                                   │
-└───────────────────────────────────────────────────────────────────┘
+```bash
+ffprobe -v quiet \
+  -select_streams v:0 \
+  -show_entries packet=pts_time,dts_time,flags \
+  -of csv=p=0 \
+  recording.mp4
 ```
 
-### Validate at ingest
-- Detect and normalize backwards or missing PTS/DTS  
-- Drop corrupted frames rather than passing them downstream  
-- Log PTS/DTS anomalies for troubleshooting
+Output shows one line per video packet with `pts_time`, `dts_time`, and packet flags (`K_` marks a keyframe):
 
-### Monitor stream quality
-- Track PTS gaps, overlaps, and drift  
-- Monitor GOP sizes and keyframe intervals  
-- Alert on timestamp irregularities that may affect playback
+```
+0.000000,0.000000,K_
+0.033333,0.033333,__
+0.066667,0.066667,__
+```
 
-### Encoder configuration
-- Disable B-frames: `bframes=0`  
-- Disable scene cuts: `scenecut=0`  
-- Disable deep lookahead: `rc-lookahead=0`  
-- Use fixed GOP intervals (keyframe every 1–2 seconds)  
-- Use low-latency presets:  
-  `-preset veryfast -tune zerolatency`
+A non-monotonic PTS appears as a line where `pts_time` is lower than the previous value:
+
+```
+0.100000,0.100000,__
+0.133333,0.133333,__
+0.110000,0.110000,__   ← backward PTS — broken timestamp
+```
+
+Look for: PTS values that decrease between consecutive packets, repeated PTS values, or sudden large jumps. Any of these patterns indicate an encoder configuration or source issue that must be corrected before the stream reaches the ingest point.
+
+For SRT ingest, also monitor sender-side [SRT&nbsp;statistics](/streaming/live-streaming/protocols/srt#verify-with-srt-statistics) — rising `pktLoss` and `pktRetrans` values indicate network conditions that can produce late or dropped packets at the ingest boundary, contributing to timestamp instability.
 
 
-By following recommended encoder settings, maintaining predictable GOP structures, and validating timestamps early in the workflow, live streaming remains reliable across all platforms.
+## Fix encoder settings
+
+Encoder-side B-frames and lookahead buffers are the most common sources of timestamp instability in live ingest. Disabling them produces a monotonic, gapless PTS/DTS stream compatible with Gcore ingest:
+
+- Disable B-frames: `bframes=0`
+- Disable scene cuts: `scenecut=0`
+- Disable deep lookahead: `rc-lookahead=0`
+- Use fixed GOP intervals — keyframe every 1–2 seconds
+- Use low-latency presets: `-preset veryfast -tune zerolatency`
+
+Full encoder commands using these settings are available in the [RTMP](/streaming/live-streaming/protocols/rtmp#low-latency-tuning) and [SRT](/streaming/live-streaming/protocols/srt#zerolatency-encoder-tuning) articles.
