@@ -1,20 +1,22 @@
 ---
-title: "Understanding of PTS and DTS in RTMP/SRT master streams"
+title: "PTS and DTS in RTMP/SRT streams"
 sidebarTitle: "PTS/DTS timestamps"
-ai-navigation: Configure PTS (Presentation Timestamp) and DTS (Decoding Timestamp) in RTMP and SRT master streams to ensure monotonic, non-gapped frame timelines; incorrect timestamps cause decoder frame drops, segment misalignment in HLS DASH, audio video desynchronization, and transcoder failures in Gcore Cloud.
+ai-navigation: Configure PTS and DTS for RTMP and SRT ingest; incorrect timestamps cause frame drops, segment misalignment, and streaming failures in Gcore Cloud.
 ---
 
-## What are PTS and DTS?
+PTS (Presentation Timestamp) and DTS (Decoding Timestamp) are frame-level timing values that control when each frame is displayed and decoded. The Gcore Streaming transcoder depends on monotonic, gapless timestamps at ingest — broken timestamps cause frame drops, segment misalignment, and playback failures downstream.
+
+## PTS and DTS
 
 | Timestamp | Purpose | Usage |
 |----------|---------|--------|
 | **PTS, Presentation Timestamp** | Defines **when each frame must be displayed** | Used by the player, CDN, and transcoder to maintain playback timeline and audio/video sync |
-| **DTS, Decoding Timestamp** | Defines **when each frame must be decoded** | Required when frames arrive out of order (e.g., B-frames) to ensure correct decoder processing sequence |
+| **DTS, Decoding Timestamp** | Defines **when each frame must be decoded** | Required when frames arrive out of order (e.g., B-frames) to maintain correct decoder processing sequence |
 
-Note: When streaming with low latency, if you turn off B-frames (as we recommend in [RTMP](/streaming/live-streaming/protocols/rtmp) and [SRT](/streaming/live-streaming/protocols/srt)), then PTS and DTS will match.
+<Note>When streaming with low latency, if B-frames are disabled (as recommended in [RTMP](/streaming/live-streaming/protocols/rtmp) and [SRT](/streaming/live-streaming/protocols/srt)), PTS and DTS are equal.</Note>
 
 
-## Why correct timestamps matter
+## Timestamp accuracy
 
 Live streaming pipelines depend on a continuous, monotonic timestamp timeline. When timestamps are correct:
 
@@ -24,13 +26,12 @@ Live streaming pipelines depend on a continuous, monotonic timestamp timeline. W
 - Audio and video stay synchronized  
 - CDN caching and delivery remain stable  
 
-Incorrect timestamps quickly break these assumptions.
-If timestamps are incorrect at the master-encoder, every downstream component in Cloud like cloud-transcoder, CDN, and even end-player, may experience failures ranging from minor buffering to complete playback interruption.
+Incorrect timestamps break these assumptions. When timestamps are incorrect at the master encoder, every downstream component in Gcore Cloud — the transcoder, CDN, and end players — may experience failures ranging from minor buffering to complete playback interruption.
 
 
 ## Problems caused by incorrect or broken PTS/DTS
 
-Below are some example scenarios of poor PTS generation by your encoder:
+The following scenarios illustrate poor PTS generation by an encoder:
 
 **Non-monotonic PTS/DTS:**
 ```
@@ -51,9 +52,7 @@ Below are some example scenarios of poor PTS generation by your encoder:
 │   PTS out: 100  120  130  140   X  → jitter, freezes, decoder resets    │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
-You see that for frame `F3` it is impossible to clearly determine whether the frame needs to be dropped or what to do with them.
-
-It is also often simply impossible to process such random PTSs when the .ts/.m4v chunk has already been prepared, saved, and sent to the CDN.
+For frame `F3`, it is impossible to determine whether the frame should be dropped or reordered. Once the `.ts`/`.m4s` chunk has been prepared, saved, and sent to the CDN, recovery is not possible.
 
 
 **PTS/DTS gaps:**
@@ -70,7 +69,7 @@ It is also often simply impossible to process such random PTSs when the .ts/.m4v
 │            (stitching fake timeline → A/V drift, segment misalignment)  │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
-You see that starting from frame `F4` it is impossible to clearly determine whether the frame needs to be dropped or what to do with them.
+Starting from frame `F4`, the transcoder cannot determine whether frames should be dropped or reassigned, resulting in a stitched — and inaccurate — timeline.
 
 
 **Missing, repeated, or negative timestamps:**
@@ -88,28 +87,38 @@ You see that starting from frame `F4` it is impossible to clearly determine whet
 │            → stutter, dropped frames, impossible segment duration       │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
-You see that starting from frame `F2` it is impossible to clearly determine whether frames need to be dropped, or what to do with constantly repeating frames.
+Starting from frame `F2`, the transcoder cannot determine which frames to drop or how to handle the repeated values.
 
 
-## What happens in Cloud transcoder
+## Gcore transcoder behavior
 
 When PTS/DTS timestamps arrive damaged or inconsistent, the transcoder attempts several forms of recovery. These actions help keep the stream running but often introduce visible or structural issues in the output.
 
-Decoder behavior: The transcoder may drop frames or introduce momentary visual artifacts while trying to reconstruct the correct order. If timestamps jump backward or become impossible to interpret, the decoder can trigger a full reset, causing brief interruptions in the output.
+### Decoder behavior
 
-Segment alignment issues: Incorrect PTS values lead to segment durations that are too short, too long, or overlapping. This breaks the timing model required for HLS and DASH, and low-latency variants (LL-HLS, LL-DASH) become unsynchronized because their chunk boundaries no longer match real frame timing.
+The transcoder may drop frames or introduce momentary visual artifacts while trying to reconstruct the correct order. If timestamps jump backward or become impossible to interpret, the decoder can trigger a full reset, causing brief interruptions in the output.
 
-Audio/video synchronization drift: As the transcoder attempts to normalize the timeline, A/V alignment may shift across renditions. Players often compensate by dropping or repeating frames, which can result in noticeable sync errors.
+### Segment alignment issues
 
-Increased end-to-end latency: To rebuild a usable timestamp sequence, the transcoder may buffer additional frames internally. This buffering pushes the entire pipeline further from real time, degrading low-latency performance.
+Incorrect PTS values lead to segment durations that are too short, too long, or overlapping. This breaks the timing model required for HLS and DASH, and low-latency variants (LL-HLS, LL-DASH) become unsynchronized because their chunk boundaries no longer match real frame timing.
 
-Stream rejection: If timestamps are severely corrupted and cannot be repaired, the ingest layer or the transcoder may reject the stream altogether to prevent downstream delivery failures.
+### Audio/video synchronization drift
+
+As the transcoder attempts to normalize the timeline, A/V alignment may shift across renditions. Players often compensate by dropping or repeating frames, which can result in noticeable sync errors.
+
+### Increased end-to-end latency
+
+To rebuild a usable timestamp sequence, the transcoder may buffer additional frames internally. This buffering pushes the entire pipeline further from real time, degrading low-latency performance.
+
+### Stream rejection
+
+If timestamps are severely corrupted and cannot be repaired, the ingest layer or the transcoder may reject the stream entirely to prevent downstream delivery failures.
 
 
 ## Impact on end playback
 
 Incorrect PTS/DTS can cause:
-- Bufferings
+- Buffering
 - Stalled video
 - Audio ahead/behind video  
 - Abrupt quality switches (ABR logic confusion)  
@@ -120,8 +129,8 @@ Stable timestamps are one of the most critical factors for reliable live streami
 
 ## Best practices to avoid timestamp issues
 
-### **Maintain Monotonic Timestamps**
-- **Ensure PTS and DTS always increase in your master stream**
+### Maintain monotonic timestamps
+- Keep PTS and DTS monotonically increasing in the master stream
 - Do not reset timestamps mid-stream  
 - Avoid switching timebases
 
@@ -135,23 +144,23 @@ This is the expected behavior of the encoder for preparing the master stream:
 └───────────────────────────────────────────────────────────────────┘
 ```
 
-### **Validate at Ingest**
+### Validate at ingest
 - Detect and normalize backwards or missing PTS/DTS  
 - Drop corrupted frames rather than passing them downstream  
 - Log PTS/DTS anomalies for troubleshooting
 
-### **Monitor Stream Quality**
+### Monitor stream quality
 - Track PTS gaps, overlaps, and drift  
 - Monitor GOP sizes and keyframe intervals  
 - Alert on timestamp irregularities that may affect playback
 
-### **Encoder Configuration**
+### Encoder configuration
 - Disable B-frames: `bframes=0`  
 - Disable scene cuts: `scenecut=0`  
 - Disable deep lookahead: `rc-lookahead=0`  
-- Use fixed GOP intervals (keyframe every 1-2s)  
+- Use fixed GOP intervals (keyframe every 1–2 seconds)  
 - Use low-latency presets:  
   `-preset veryfast -tune zerolatency`
 
 
-By following recommended encoder settings, maintaining predictable GOP structures, and validating timestamps early in the workflow, you ensure resilient live streaming across all platforms.
+By following recommended encoder settings, maintaining predictable GOP structures, and validating timestamps early in the workflow, live streaming remains reliable across all platforms.
