@@ -8,7 +8,7 @@ RTMP and SRT ingest require a continuous, monotonic timestamp timeline. When the
 
 PTS (Presentation Timestamp) controls when a frame is displayed; DTS (Decoding Timestamp) controls when it is decoded. When frames arrive and decode in display order, PTS and DTS are equal.
 
-<Note>The [low-latency&nbsp;encoder&nbsp;settings](/streaming/live-streaming/protocols/rtmp#low-latency-tuning) for RTMP and [SRT](/streaming/live-streaming/protocols/srt#zerolatency-encoder-tuning) disable B-frames, which eliminates frame reordering and keeps PTS and DTS equal throughout the session.</Note>
+<Note>The recommended RTMP and SRT low-latency configurations disable B-frames, which eliminates frame reordering and keeps PTS and DTS equal throughout the session.</Note>
 
 
 ## Timestamp problems
@@ -29,32 +29,24 @@ Frames:   F1   F2   F3   F4   F5
 PTS in:  100  110  120  130  140   ← monotonic, equal increment
 ```
 
+These timestamp errors affect different stages of the transcoding and delivery pipeline.
+
 
 ## Gcore transcoder behavior
 
-When PTS/DTS timestamps arrive damaged or inconsistent, the transcoder attempts several forms of recovery. These actions help keep the stream running but often introduce visible or structural issues in the output.
+When PTS/DTS timestamps arrive damaged or inconsistent, the transcoder attempts several forms of recovery. It may drop frames or introduce momentary visual artifacts while trying to reconstruct the correct order. If timestamps jump backward or become impossible to interpret, the decoder can trigger a full reset, causing brief interruptions in the output.
 
-### Decoder behavior
-
-The transcoder may drop frames or introduce momentary visual artifacts while trying to reconstruct the correct order. If timestamps jump backward or become impossible to interpret, the decoder can trigger a full reset, causing brief interruptions in the output.
-
-### Segment alignment issues
-
-Incorrect PTS values lead to segment durations that are too short, too long, or overlapping. This breaks the timing model required for HLS and DASH, and low-latency variants (LL-HLS, LL-DASH) become unsynchronized because their chunk boundaries no longer match real frame timing.
-
-### Audio/video synchronization drift
+Incorrect PTS values can also produce segments that are too short, too long, or overlapping. This breaks the timing model required for HLS and DASH. Low-latency variants — LL-HLS and LL-DASH — can become unsynchronized because their chunk boundaries no longer match real frame timing.
 
 As the transcoder attempts to normalize the timeline, A/V alignment may shift across renditions. Players often compensate by dropping or repeating frames, which can result in noticeable sync errors.
 
-### Increased end-to-end latency
-
 To rebuild a usable timestamp sequence, the transcoder may buffer additional frames internally. This buffering pushes the entire pipeline further from real time, degrading low-latency performance.
-
-### Stream rejection
 
 If timestamps are severely corrupted and cannot be repaired, the ingest layer or the transcoder may reject the stream entirely to prevent downstream delivery failures.
 
 The combined effect on playback includes buffering, stalled video, audio ahead or behind video, abrupt quality switches from ABR logic errors, and complete playback failure on Smart TVs and mobile players.
+
+If these symptoms appear during playback, inspect the encoder output to determine whether the source timestamps are the cause.
 
 
 ## Diagnose timestamp issues
@@ -85,7 +77,7 @@ A non-monotonic PTS appears as a line where `pts_time` is lower than the previou
 0.110000,0.110000,__   ← backward PTS — broken timestamp
 ```
 
-Look for: PTS values that decrease between consecutive packets, repeated PTS values, or sudden large jumps. Any of these patterns indicate an encoder configuration or source issue that must be corrected before the stream reaches the ingest point.
+Look for repeated PTS values or sudden large jumps as well. Any of these patterns indicate an encoder configuration or source issue that must be corrected before the stream reaches the ingest point.
 
 For SRT ingest, also monitor sender-side [SRT&nbsp;statistics](/streaming/live-streaming/protocols/srt#verify-with-srt-statistics) — rising `pktLoss` and `pktRetrans` values indicate network conditions that can produce late or dropped packets at the ingest boundary, contributing to timestamp instability.
 
