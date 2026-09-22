@@ -1,7 +1,7 @@
 ---
-title: Specify cache lifetime on a CDN resource or origin
+title: CDN cache lifetime configuration
 sidebarTitle: Configure CDN caching
-ai-navigation: Configure CDN cache lifetime with origin or CDN controlled settings, advanced caching rules, video TTL guidance, and cache header checks.
+ai-navigation: Configure CDN cache lifetime with origin or CDN controlled settings, advanced caching rules, video time-to-live (TTL) guidance, and cache header verification.
 ---
 
 Files cannot be stored in CDN servers' cache indefinitely. The CDN caching feature controls how long files from an origin server are stored in the CDN server's cache. When users request these files, they are served from cache without additional requests to the origin, reducing delivery time, costs, and origin server load.
@@ -10,59 +10,74 @@ Files cannot be stored in CDN servers' cache indefinitely. The CDN caching featu
 Files users have not requested within 36 hours will be removed from the CDN servers' cache, regardless of the feature settings.
 </Note>
 
-When the specified timespan for storing files in the cache has expired, CDN servers send requests to the origin to compare the HTTP [ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) header and determine if the files have changed.
+When a cached file's lifetime expires, Gcore CDN performs conditional revalidation with the origin if the cached response includes a validator such as an [ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag) or `Last-Modified` header. The CDN sends a conditional request (`If-None-Match` or `If-Modified-Since`); if the origin responds with `304 Not Modified`, the cached copy is reused and its lifetime is reset. If the origin returns a new response, the CDN stores and serves the updated content.
 
-If the values of the `ETag` header for previous and current versions do not match, CDN servers load a new version and cache it for the time specified in the feature. If the values match, the storage time of the file in the cache is extended for the specified time.
+If the cached response includes no validator, the CDN cannot perform conditional revalidation and must retrieve the full response from the origin after expiration.
 
-## Configure CDN caching
+## CDN caching configuration
 
 The CDN caching feature has two options: Origin controlled (enabled by default) and CDN controlled. Select one to set the caching time either in the origin server's HTTP `Cache-Control` header or in the CDN settings.
+
+<Info>
+CDN caching eligibility is based on HTTP response status codes and `Cache-Control` headers, not on file extensions. All file types—including `.webp`, `.swf`, and others—follow the same caching rules as any other object.
+</Info>
 
 ### Origin controlled
 
 Set the `Cache-Control` header on the origin server, then configure the fallback cache expiry in the portal.
 
-1\. Depending on the web server (Apache or Nginx), add the `Cache-Control` header with the _max-age_ and _public_ parameters to the .htaccess (for Apache) or nginx.conf (for Nginx) file.
+<Steps>
+  <Step title="Configure Cache-Control on the origin server">
+    Depending on the web server (Apache or Nginx), add the `Cache-Control` header with the `max-age` and `public` parameters to the `.htaccess` (for Apache) or `nginx.conf` (for Nginx) file.
 
-The following Apache configuration caches .gif and .ico files (the _public_ parameter) for 4 days (_max-age=345600_ in seconds):
+    In `Cache-Control`, `public` permits shared-cache (CDN) storage, and `max-age` sets the freshness duration in seconds.
 
-```
-<ifModule mod_headers.c>   
-  <FilesMatch "\.(gif|ico)$">   
-    Header set Cache-Control "max-age=345600, public"   
-  </FilesMatch>   
-</ifModule> 
-```
+    The following Apache configuration caches `.gif` and `.ico` files for 4 days (`max-age=345600` seconds):
 
-The following Nginx configuration caches all ico, css, js, gif, jpeg, and png files (the _public_ parameter) for about 1 day (_max-age=88000_ in seconds):
+    ```apache
+    <ifModule mod_headers.c>   
+      <FilesMatch "\.(gif|ico)$">   
+        Header set Cache-Control "max-age=345600, public"   
+      </FilesMatch>   
+    </ifModule>
+    ```
 
-```
-server {   
- #...   
-  location ~* \.(?:ico|css|js|gif|jpeg|png)$ {   
-    add_header Cache-Control "max-age=88000, public";   
-  }   
- #...   
-} 
-```
+    The following Nginx configuration caches `.ico`, `.css`, `.js`, `.gif`, `.jpeg`, and `.png` files for 1 day (86,400 seconds):
 
-2\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CNAME of the resource where the `Cache-Control` header is configured.
+    ```nginx
+    server {   
+     #...   
+      location ~* \.(?:ico|css|js|gif|jpeg|png)$ {   
+        add_header Cache-Control "max-age=86400, public";   
+      }   
+     #...   
+    }
+    ```
+  </Step>
+  <Step title="Open the CDN resource settings">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CNAME of the resource where the `Cache-Control` header is configured.
 
-<Frame>![CDN resources list page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources.png)</Frame>
+    <Frame>![CDN resources list page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources.png)</Frame>
+  </Step>
+  <Step title="Navigate to CDN caching">
+    Navigate to **Cache** > **CDN caching**.
+  </Step>
+  <Step title="Confirm Origin controlled is selected">
+    Confirm that **Origin controlled** is selected in the dropdown.
+  </Step>
+  <Step title="Set the default cache expiry">
+    Specify the timespan in the **Default cache expiry** field. Select a predefined value from the list or select **Custom value** and enter the time in seconds. This value is used as a fallback when the origin does not send caching HTTP headers.
 
-3\. Navigate to **Cache** > **CDN caching**.
+    <Info>
+    For Origin controlled mode, CDN servers store responses with codes `200`, `201`, `204`, `206`, `301`, `302`, `303`, `307`, and `308`. A `304 Not Modified` response is not independently stored; it revalidates and extends an existing cached entry. Responses with other codes are not cached.
+    </Info>
 
-4\. Confirm that **Origin controlled** is selected in the dropdown.
-
-5\. Specify the timespan in the **Default cache expiry** field. Select a predefined value from the list or select **Custom value** and enter the time in seconds. This value is used as a fallback when the origin does not send caching HTTP headers.
-
-<Info>
-For Origin controlled mode, CDN servers cache responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308. Responses with other codes are not cached.
-</Info>
-
-<Frame>![CDN caching settings with Origin controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-origin-controlled.png)</Frame>
-
-6\. Click **Save changes**.
+    <Frame>![CDN caching settings with Origin controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-origin-controlled.png)</Frame>
+  </Step>
+  <Step title="Save changes">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 ### CDN controlled
 
@@ -75,145 +90,173 @@ CDN caching can be configured at two levels:
 These settings are independent — CDN caching can be set to **Do not cache** in the main settings while enabled in an advanced rule, and vice versa.
 
 <Warning>
-CDN caching applies only to responses with status codes 200, 206, 301, and 302. Responses with 4xx and 5xx status codes are not cached by default. To cache 404 or other non-default status codes, configure an advanced caching rule under the **Enable CDN caching via advanced caching rules** tab below.
+CDN caching applies only to responses with status codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` status codes are not cached by default. To cache `404` or other non-default status codes, configure an advanced caching rule under the **Enable CDN caching via advanced caching rules** tab below.
 </Warning>
 
 <Tabs>
   <Tab title="Enable CDN caching for the whole resource">
-    1\. In the Customer Portal, navigate to **CDN** > **CDN resources**.
+    <Steps>
+      <Step title="Open CDN resources">
+        In the Customer Portal, navigate to **CDN** > **CDN resources**.
+      </Step>
+      <Step title="Open the resource settings">
+        Click the CNAME of the required resource to open its settings.
 
-    2\. Click the CNAME of the required resource to open its settings.
+        <Frame>![CDN resources list page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources.png)</Frame>
+      </Step>
+      <Step title="Navigate to CDN caching">
+        Navigate to **Cache** > **CDN caching**.
+      </Step>
+      <Step title="Enable CDN caching">
+        Confirm the **Enable CDN caching** toggle is enabled. If not, click the toggle to enable it.
+      </Step>
+      <Step title="Select CDN controlled">
+        Select **CDN controlled** from the dropdown.
 
-    <Frame>![CDN resources list page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources.png)</Frame>
+        <Frame>![CDN caching settings with CDN controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-cdn-controlled.png)</Frame>
+      </Step>
+      <Step title="Set the cache expiry">
+        Specify the caching timespan in the **Cache expiry** field. Select a predefined value from the list or select **Custom value** and enter a time in seconds.
 
-    3\. Navigate to **Cache** > **CDN caching**.
+        This caching time applies to response codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` are not cached.
 
-    4\. Confirm the **Enable CDN caching** toggle is enabled. If not, click the toggle to enable it.
-
-    5\. Select **CDN controlled** from the dropdown.
-
-    <Frame>![CDN caching settings with CDN controlled selected](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-caching-cdn-controlled.png)</Frame>
-
-    6\. Specify the caching timespan in the **Cache expiry** field. Select a predefined value from the list or select **Custom value** and enter a time in seconds.
-
-    Note that this caching time applies to response codes 200, 206, 301, and 302. Responses with 4xx and 5xx are not cached.
-
-    <Warning>
-    If the **Do not cache** option is selected, caching is disabled even when the **Enable CDN caching** toggle is enabled.
-    </Warning>
-
-    7\. (Optional) Configure advanced caching rules for different caching times by response code.
-
-    8\. Click **Save changes**.
-
+        <Warning>
+        If the **Do not cache** option is selected, caching is disabled even when the **Enable CDN caching** toggle is enabled.
+        </Warning>
+      </Step>
+      <Step title="Configure advanced rules (optional)">
+        Optionally, configure advanced caching rules for different caching times by response code.
+      </Step>
+      <Step title="Save changes">
+        Click **Save changes**.
+      </Step>
+    </Steps>
   </Tab>
   <Tab title="Enable CDN caching via advanced caching rules">
-    1\. In the CDN resource settings, navigate to the **Cache** section.
+    <Steps>
+      <Step title="Navigate to CDN caching">
+        In the CDN resource settings, navigate to **Cache** > **CDN caching**.
+      </Step>
+      <Step title="Enable CDN caching">
+        Confirm the **Enable CDN caching** toggle is enabled. If not, click the toggle to enable it.
+      </Step>
+      <Step title="Select CDN controlled">
+        Select **CDN controlled** from the dropdown.
+      </Step>
+      <Step title="Add a caching rule">
+        Click **Add rule** and configure it as follows:
 
-    2\. Confirm the **Enable CDN caching** toggle is enabled. If not, click the toggle to enable it.
+          * **Response code**: enter the HTTP response code to apply caching to.
 
-    3\. Select **CDN controlled** from the dropdown.
+          * **Caching time**: specify how long the data will be stored in the cache before it expires.
 
-    4\. Click **Add rule** and configure it as follows:
+        <Frame>![Advanced caching rule form with Response code and Caching time fields](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/advanced-caching-rule.png)</Frame>
 
-      * **Response code**: enter the HTTP response code to apply caching to.
+        The Caching time in advanced rules takes priority over the general Cache expiry.
 
-      * **Caching time**: specify how long the data will be stored in the cache before it expires.
+        With a Cache expiry of 4 days and two advanced rules — one for the `200` response code configured for 10 minutes and another for `404` configured for 1 minute — requests are cached as follows:
 
-    <Frame>![Advanced caching rule form with Response code and Caching time fields](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/advanced-caching-rule.png)</Frame>
-
-    5\. Click **Save changes** to apply the settings.
-
-    The Caching time in advanced rules takes priority over the general Cache expiry.
-
-    With a Cache expiry of four days and two advanced rules — one for the 200 response code configured for 10 minutes and another for 404 configured for one minute — requests are cached as follows:
-
-      * Requests with response code 200: cached for 10 minutes.
-      * Requests with response code 404: cached for one minute.
-      * Requests with response codes 206, 301, and 302: cached for four days.
-      * Requests with response codes 4xx (except 404) and 5xx: not cached.
-
+          * Requests with response code `200`: cached for 10 minutes.
+          * Requests with response code `404`: cached for 1 minute.
+          * Requests with response codes `206`, `301`, and `302`: cached for 4 days.
+          * Requests with response codes `4xx` (except `404`) and `5xx`: not cached.
+      </Step>
+      <Step title="Save changes">
+        Click **Save changes** to apply the settings.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
 
-## Check CDN caching settings
+## CDN caching verification
 
-To verify that CDN caching is working correctly, inspect HTTP response headers using cURL or browser DevTools.
+To verify that CDN caching is working correctly, inspect HTTP response headers using `curl` or browser DevTools.
 
-### Check through cURL
+### Verification with `curl`
 
-Run a cURL request against a CDN-delivered URL and inspect the HTTP response headers.
+<Steps>
+  <Step title="Open a terminal">
+    Open a terminal (macOS or Linux) or command prompt (Windows).
+  </Step>
+  <Step title="Run the command">
+    Run the following command, replacing the URL with a file delivered via your CDN resource:
 
-1\. Open a terminal (macOS) or command prompt (Windows).
+    ```sh
+    curl -sS -D - -o /dev/null https://cdn.example.com/css/style.css
+    ```
 
-2\. Run the following command:
+    If the first request returns `cache: MISS`, the file was fetched from the origin and stored in cache; the next request should return `cache: HIT`. If the first request already returns `cache: HIT`, the object is already cached. Example outputs:
 
-```sh
-curl -I http://cdn.testdomain.com/css/style.css
-```
+    Cache miss (file fetched from origin and stored):
 
-where `http://cdn.testdomain.com/css/style.css` is the URL of a file delivered via CDN.
+    ```http
+    HTTP/2 200
+    cache-control: max-age=86400, public
+    cache: MISS
+    x-id: ab-cd-e123
+    ```
 
-The output includes HTTP response headers. The headers relevant for diagnosing cache behavior are described in the [caching&nbsp;HTTP&nbsp;headers](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin#check-caching-http-headers) section.
+    Cache hit (file served from CDN cache):
 
-```
-HTTP/1.1 200 OK   
-Server: nginx/1.13.1   
-Date: Fri, 09 Jun 2017 12:54:24 GMT   
-Content-Type: image/jpeg   
-Content-Length: 124024   
-Connection: keep-alive   
-X-Image-Generated: 29   
-X-Image-Meta: 1024x768   
-X-Image-Read: 71   
-Expires: Wed, 06 Dec 2017 12:51:43 GMT   
-Access-Control-Allow-Origin: *   
-Last-Modified: Sun, 01 Jan 2017 12:00:00 GMT   
-Cache-Control: max-age=3153600, public  
-Cache: HIT   
-X-Cached-Since: 2017-06-09T12:51:43+00:00  
-X-ID: m9-up-e245
-```
+    ```http
+    HTTP/2 200
+    cache-control: max-age=86400, public
+    cache: HIT
+    x-cached-since: 2026-09-22T08:00:00+00:00
+    x-id: ab-cd-e123
+    ```
 
-For content caching issues, verify the origin settings or contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).
+    For a description of each header, see [Caching response headers](#caching-response-headers).
 
-### Check with DevTools in a browser
+    For content caching issues, verify the origin settings or contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).
+  </Step>
+</Steps>
 
-Use browser DevTools to inspect the HTTP response headers for a CDN-delivered file.
+### Browser DevTools verification
 
-1\. Open a web browser.
+<Steps>
+  <Step title="Open a web browser">
+    Open a web browser.
+  </Step>
+  <Step title="Navigate to the website">
+    Navigate to the website served via CDN.
+  </Step>
+  <Step title="Open DevTools">
+    Right-click and select **Inspect** to open DevTools.
+  </Step>
+  <Step title="Select the Network tab">
+    Select the **Network** tab.
+  </Step>
+  <Step title="Refresh the page">
+    Refresh the page.
+  </Step>
+  <Step title="Select a CDN-delivered file">
+    Select any file from the list that is delivered via CDN.
+  </Step>
+  <Step title="Review response headers">
+    On the **Headers** tab, review the response headers. The key cache-related headers are described in the [Caching response headers](#caching-response-headers) section.
 
-2\. Navigate to the website.
+    <Frame>![Browser DevTools Network tab showing response headers](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/devtools-headers.png)</Frame>
+  </Step>
+</Steps>
 
-3\. Right-click and select **Inspect** to open DevTools.
+### Caching response headers
 
-4\. Select the **Network** tab.
+There are several HTTP response headers that help analyze the state of the cache:
 
-5\. Refresh the page.
-
-6\. Select any file from the list that is delivered via CDN.
-
-7\. On the **Headers** tab, review the response headers. The key cache-related headers are described in the section below.
-
-<Frame>![Browser DevTools Network tab showing response headers](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/devtools-headers.png)</Frame>
-
-### Check caching HTTP headers
-
-There are several HTTP header parameters that help analyze the state of the cache:
-
-HTTP header with parameters | Explanation  
----|---  
-CACHE: HIT | The file has been delivered from the CDN. Caching is working correctly  
-CACHE: MISS | The file has been delivered from the origin server. Appears on the first request after a cache purge, or when CDN settings force skipping the cache — `no-store` and `no-cache` `Cache-Control` directives prevent caching. If the asset is cacheable, subsequent requests return CACHE: HIT. If not cacheable, the status remains CACHE: MISS 
-| CACHE: BYPASS | The file was requested directly from the origin. Appears on the first request after a cache purge by pattern or purge all. Subsequent requests should return CACHE: HIT once the content is re-cached |
-X-ID: ab-cd-d123 | Identifier of the Gcore CDN edge server that delivered the file. Resolve `{x-id}.fe.gc.onl` using `nslookup` or `dig` to get the server's IP address — useful for [cache&nbsp;diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue)  
-X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC
+HTTP header | Explanation
+---|---
+CACHE: HIT | The file was served from the CDN cache. Caching is working correctly.
+CACHE: MISS | The file was not in the CDN cache and was fetched from the origin. This occurs on the first request for a file, after the cached copy has expired and the origin returned a new response, or after any purge type (purge by URL, purge by pattern, or purge all) removes the cached object. The response is stored in cache; subsequent requests for a cacheable file return CACHE: HIT.
+CACHE: BYPASS | The CDN cache was skipped and the file was served directly from the origin without being stored. This occurs when the response carries a `Cache-Control: no-store` or `Cache-Control: no-cache` directive. By standard, `no-store` prohibits storage entirely; `no-cache` permits storage but requires revalidation before reuse. Gcore CDN treats both directives as uncacheable. Unlike CACHE: MISS, the response is not stored in cache.
+X-ID: ab-cd-e123 | Identifier of the Gcore CDN edge server that delivered the file. Resolve `{x-id}.fe.gc.onl` using `nslookup` or `dig` to get the server's IP address — useful for [cache&nbsp;diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
+X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.
 
 
 
 ## Video cache recommendations
 
-Video files, VOD or Live, need different cache lifetimes by file type. Cache segments and single-file MP4 content longer, while keeping manifests short so players receive fresh live and playlist updates.
+Video-on-demand (VOD) and live-streaming files require different cache lifetimes based on file type. Cache segments and single-file MP4 content longer, while keeping manifests short so players receive fresh live and playlist updates.
 
-For video-specific values, apply the [caching&nbsp;rules](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules) used when creating a CDN resource for video streaming. They include recommended TTLs for MP4, HLS, MPEG-DASH, live manifests, and segment files.
+For video-specific values, apply the [caching&nbsp;rules](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules) used when creating a CDN resource for video streaming. They include recommended time-to-live (TTL) values for MP4, HTTP Live Streaming (HLS), Dynamic Adaptive Streaming over HTTP (MPEG-DASH), live manifests, and segment files.
