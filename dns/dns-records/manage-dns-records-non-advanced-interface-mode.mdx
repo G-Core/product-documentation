@@ -1,13 +1,18 @@
 ---
 title: Manage DNS records
 sidebarTitle: Manage DNS records
-ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via the Customer Portal.
+ai-navigation: Create and manage A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, and SVCB DNS records in Gcore Managed DNS zones via Customer Portal, REST API, or Terraform.
 ---
 
-Create and manage DNS records in the [Gcore Customer Portal](https://portal.gcore.com).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Create and manage DNS records in the [Gcore Customer Portal](https://portal.gcore.com).</p>
 
 <Info>
-Non-advanced interface mode. Verify that the **Advanced** toggle is off before following these steps:
+Non-advanced interface mode. Verify that the **Advanced** toggle is off:
 
 <Frame>![Zone header with Interface mode toggle in off position](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image1.png)</Frame>
 
@@ -16,57 +21,477 @@ Balancing and dynamic response are available in [advanced&nbsp;mode](/dns/dns-re
 
 ## Create a DNS record
 
-1\. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the domain zone to which records should be added. Or, click the three-dot icon on the right and then click **Go to records**.
+1. Navigate to [All&nbsp;zones](https://portal.gcore.com/dns/zones) and select the domain zone to which records should be added. Or, click the three-dot icon on the right and then click **Go to records**.
 
 <Frame>![DNS zone records list with Add record, Export records, and Import records buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image2.png)</Frame>
 
-2\. Click **Add record**. The form opens in the records list.
+2. Click **Add record**. The form opens in the records list.
 
 <Frame>![Add record form with Type, Name, TTL, and Content fields](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image3.png)</Frame>
 
-3\. In the **Type** field, select a [record&nbsp;type](/dns/dns-records) — A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB.
+3. In the **Type** field, select a [record&nbsp;type](/dns/dns-records) — A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, CAA, or SVCB.
 
-4\. In the **Name** field, specify the subdomain to which the record belongs. Select from the following options:
+4. In the **Name** field, specify the subdomain to which the record belongs:
 
   * Leave the field blank to add a record for the main domain (apex/naked domain).
-  * Enter the subdomain name for a specific subdomain — `one` creates a record for `one.example.com`.
+  * Enter the subdomain name — `one` creates a record for `one.yourdomain.com`.
   * Enter an asterisk (`*`) to add a wildcard record for all subdomains at once.
 
-5\. In the **TTL** field, specify the time to live in seconds. This determines how long recursive DNS servers cache the record. With a TTL of 300 seconds, a change to an A record value from `1.2.3.4` to `5.6.7.8` takes up to 5 minutes to propagate — resolvers return the old value until the cache expires.
+5. In the **TTL** field, specify the time to live in seconds. This determines how long recursive DNS servers cache the record. With a TTL of 300 seconds, a change to an A record value from `1.2.3.4` to `5.6.7.8` takes up to 5 minutes to propagate — resolvers return the old value until the cache expires.
 
-6\. In the **Content** field, enter a value for the record type.
+6. In the **Content** field, enter the value for the selected record type.
 
-<Accordion title="Examples of values for different record types">
+7. Click **Add**.
+
+<p>Verify the record with the [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool.</p>
+
+### Record values
+
+<Accordion title="Values for different record types">
 | **Record type** | **Value** |
 |-----------------|-----------|
-| **A** | IPv4 address of the server to which the domain resolves.<br/>Example: *128.128.128.128* |
-| **AAAA** | IPv6 address of the server to which the domain resolves.<br/>Example: *2001:0db8:85a3:0000:0000:8a2e:0370:7334* |
-| **NS** | Name of the zone to which the domain is delegated.<br/>Example: *ns1.smth.com* |
-| **CNAME** | Domain name or zone the domain redirects to.<br/>Example: *uuuuu8.cdn.co* |
-| **MX** | Name of the mail server that receives mail for the domain.<br/>When using multiple mail servers, fill in the **Priority** field for each. The lower the value, the higher the priority.<br/>Example: *ASPMX.L.GOOGLE.COM* |
-| **SRV** | Canonical name of the machine providing the service.<br/>Example: *sip.example.com* |
-| **HTTPS** | Parameters for accessing a web service via HTTPS, including protocol version and IP hints.<br/>Example:<br/>*example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2*<br/>*ipv4hint=1.2.3.4,9.8.7.6*<br/>*ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,*<br/>*2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF* |
-| **TXT** | Arbitrary text associated with the domain.<br/>Example: *logmein-verification-code=976afe6f-8039-40e4-95a5-261b462* |
-| **CAA** | Certificate authorities permitted to issue SSL/TLS certificates for the domain.<br/>Format: *CAA [flags] [tag] "[value]"* — the value must be enclosed in double quotes.<br/>Example: *0 issue "comodo.com"* |
-| **SVCB** | Service binding record that specifies connection parameters for a service endpoint.<br/>Example: *1 . alpn=h2* |
+| **A** | IPv4 address of the server. *128.128.128.128* |
+| **AAAA** | IPv6 address of the server. *2001:0db8:85a3:0000:0000:8a2e:0370:7334* |
+| **NS** | Name of the zone the domain is delegated to. *ns1.smth.com* |
+| **CNAME** | Domain name or zone the domain redirects to. *uuuuu8.cdn.co* |
+| **MX** | Name of the mail server that receives mail for the domain.<br/>When using multiple mail servers, fill in the **Priority** field for each. The lower the value, the higher the priority. *ASPMX.L.GOOGLE.COM* |
+| **SRV** | Canonical name of the machine providing the service. *sip.yourdomain.com* |
+| **HTTPS** | Parameters for accessing a web service via HTTPS, including protocol version and IP hints.<br/>*yourdomain.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2*<br/>*ipv4hint=1.2.3.4,9.8.7.6*<br/>*ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,*<br/>*2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF* |
+| **TXT** | Arbitrary text associated with the domain. *logmein-verification-code=976afe6f-8039-40e4-95a5-261b462* |
+| **CAA** | Certificate authorities permitted to issue SSL/TLS certificates for the domain.<br/>Format: *CAA [flags] [tag] "[value]"* — the value must be enclosed in double quotes. *0 issue "comodo.com"* |
+| **SVCB** | Service binding record that specifies connection parameters for a service endpoint. *1 . alpn=h2* |
 </Accordion>
-
-7\. Click **Add**.
-
-The [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool confirms the record was created correctly.
 
 ## Manage a DNS record
 
-1\. Navigate to All zones and select the domain zone to manage. Or, click the three-dot icon on the right and click **Go to records**.
+1. Navigate to All zones and select the domain zone to manage. Or, click the three-dot icon on the right and click **Go to records**.
 
 <Frame>![DNS zone records list with Add record, Export records, and Import records buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image2.png)</Frame>
 
-2\. Click the pencil icon next to the record to expand the edit panel.
+2. Click the pencil icon next to the record to expand the edit panel.
 
-3\. Change the TTL, value, or both.
+<p>To update the record, change the TTL, value, or both, then click **Save**.</p>
 
-4\. Click **Save** to apply the changes.
-
-5\. To delete the record, click **Delete record** in the expanded panel, then click **Yes, delete** in the confirmation dialog.
+<p>To delete the record, click **Delete record** in the expanded panel, then click **Yes, delete** in the confirmation dialog.</p>
 
 <Frame>![Edit record panel with TTL and content fields, Save and Delete record buttons](/images/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/manage-dns-records-non-advanced-interface-mode-image4.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create, update, and delete DNS records in a zone using the RRset API. The API manages records as RRsets identified by record name and type. An RRset can contain multiple values, such as two IP addresses for the same A record.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+export RECORD_NAME="{RECORD_FQDN}"
+export RECORD_TYPE="{A|AAAA|CNAME|MX|TXT|...}"
+```
+
+<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it equals `ZONE_NAME`; for a subdomain it is the full FQDN — `www.yourdomain.com`.</p>
+
+## Create a record
+
+<p>Creates an A record with a TTL of 300 seconds. To assign multiple IP addresses to the same name, add one object to `resource_records` per address.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    record = client.dns.zones.rrsets.create(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        resource_records=[{"content": ["1.2.3.4"]}],
+        ttl=300,
+    )
+    print(record.name, record.type, record.ttl)
+    for rr in record.resource_records:
+        print(rr.content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        record, err := client.DNS.Zones.Rrsets.New(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetNewParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+                ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                    {Content: []any{"1.2.3.4"}},
+                },
+                Ttl: gcore.Int(300),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(record.Name, record.Type, record.Ttl)
+        for _, rr := range record.ResourceRecords {
+            fmt.Println(rr.Content)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"ttl": 300, "resource_records": [{"content": ["1.2.3.4"]}]}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "A",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["1.2.3.4"], "enabled": true, "meta": {}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List records
+
+<p>List the RRsets in a zone to inspect their names, types, TTLs, and current values. The response also includes system records such as NS.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    page = client.dns.zones.rrsets.list(os.environ["ZONE_NAME"])
+    print(page.total_amount)
+    for r in page:
+        print(r.name, r.type, r.ttl)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.DNS.Zones.Rrsets.List(ctx, os.Getenv("ZONE_NAME"),
+            dns.ZoneRrsetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(page.TotalAmount)
+        for _, r := range page.Rrsets {
+            fmt.Println(r.Name, r.Type, r.Ttl)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "rrsets": [
+        {
+          "name": "example.com",
+          "type": "A",
+          "ttl": 300,
+          "resource_records": [{"content": ["1.2.3.4"], "enabled": true}]
+        },
+        {
+          "name": "example.com",
+          "type": "NS",
+          "ttl": 3600,
+          "resource_records": [
+            {"content": ["ns1.gcorelabs.net"], "enabled": true},
+            {"content": ["ns2.gcdn.services"], "enabled": true}
+          ]
+        }
+      ],
+      "total_amount": 2
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a record
+
+<p>PUT replaces the full RRset — all previous values are overwritten. Send every IP or value the record should have after the update.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    record = client.dns.zones.rrsets.replace(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+        resource_records=[{"content": ["5.6.7.8"]}],
+        ttl=600,
+    )
+    print(record.ttl)
+    for rr in record.resource_records:
+        print(rr.content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        record, err := client.DNS.Zones.Rrsets.Replace(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetReplaceParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+                ResourceRecords: []dns.ZoneRrsetReplaceParamsResourceRecord{
+                    {Content: []any{"5.6.7.8"}},
+                },
+                Ttl: gcore.Int(600),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(record.Ttl)
+        for _, rr := range record.ResourceRecords {
+            fmt.Println(rr.Content)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"resource_records": [{"content": ["5.6.7.8"]}], "ttl": 600}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "example.com",
+      "type": "A",
+      "ttl": 600,
+      "resource_records": [
+        {"content": ["5.6.7.8"], "enabled": true, "meta": {}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete a record
+
+<p>Delete the RRset identified by `RECORD_NAME` and `RECORD_TYPE`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.dns.zones.rrsets.delete(
+        os.environ["RECORD_TYPE"],
+        zone_name=os.environ["ZONE_NAME"],
+        rrset_name=os.environ["RECORD_NAME"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        _, err := client.DNS.Zones.Rrsets.Delete(ctx, os.Getenv("RECORD_TYPE"),
+            dns.ZoneRrsetDeleteParams{
+                ZoneName:  os.Getenv("ZONE_NAME"),
+                RrsetName: os.Getenv("RECORD_NAME"),
+            })
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X DELETE "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/${RECORD_TYPE}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns an empty response body:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Manage DNS records as code using the `gcore_dns_zone_rrset` resource from the [Gcore Terraform provider v2](/developer-tools/terraform/overview). Each `gcore_dns_zone_rrset` block declares one RRset — a record name, type, TTL, and one or more values.</p>
+
+## Create a DNS record
+
+<p>Declare the zone and the RRset in the same configuration. Set `rrset_name` to the zone name for an apex record, or to the full FQDN for a subdomain.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+}
+
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name  # apex record
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+  ]
+  # terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+}
+```
+
+<p>Each `resource_records` entry is one value. The `content` field is a list of strings whose length and meaning depends on the record type.</p>
+
+### Record type reference
+
+<p>The table below shows the `content` format for each record type. One `resource_records` entry maps to one value in the RRset.</p>
+
+| Record type | `content` format | Sample value |
+|-------------|-----------------|--------------|
+| A | `["ipv4"]` | `["203.0.113.1"]` |
+| AAAA | `["ipv6"]` | `["2001:db8::1"]` |
+| CNAME | `["target."]` (trailing dot required) | `["origin.yourdomain.com."]` |
+| MX | `["priority", "hostname."]` | `["10", "mail.yourdomain.com."]` |
+| TXT | `["text"]` | `["v=spf1 mx -all"]` |
+| CAA | `["flags", "tag", "value"]` | `["0", "issue", "letsencrypt.org"]` |
+| SRV | `["priority", "weight", "port", "target."]` | `["10", "20", "5060", "sip.yourdomain.com."]` |
+
+## Update a record
+
+<p>Edit fields in the resource block and run `terraform apply` to replace the RRset in-place. PUT semantics apply — all `resource_records` values must be present after the update.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 600  # changed
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+    { content = ["203.0.113.3"] },  # added
+  ]
+}
+```
+
+## Delete a record
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "a" {
+#   zone_name  = gcore_dns_zone.example.name
+#   rrset_name = gcore_dns_zone.example.name
+#   rrset_type = "A"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing record
+
+<p>Use when a record was created outside Terraform and needs to be managed as code. Add the resource block to `main.tf`, then run:</p>
+
+```bash
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+<p>The import ID format is `zone_name/rrset_name/TYPE`.</p>
+
+</MethodSection>
+</MethodSwitch>

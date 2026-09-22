@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '447212539857'
+  version: d8ee19ecc12c
 servers:
 - url: https://api.gcore.com
 paths:
@@ -149,10 +149,10 @@ paths:
       - in: query
         name: console_type
         required: false
-        description: Console type
+        description: Console type you expect the server to give. The server hardware sets the available types. A value that the hardware does not give causes an error. Omit this parameter to accept the type of the server.
         schema:
           $ref: '#/components/schemas/BareMetalConsoleType'
-          description: Console type
+          description: Console type you expect the server to give. The server hardware sets the available types. A value that the hardware does not give causes an error. Omit this parameter to accept the type of the server.
           examples:
           - vnc
       responses:
@@ -10991,12 +10991,13 @@ paths:
       - in: query
         name: tags
         required: false
-        description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Pairs are ANDed; values match case-insensitively.
+        description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Repeat a key to match any of several values for it, e.g. `tags[env]=prod&tags[env]=dev`. Values for one key are ORed, different keys are ANDed; values match case-insensitively.
         schema:
           $ref: '#/components/schemas/TagFilter'
-          description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Pairs are ANDed; values match case-insensitively.
+          description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Repeat a key to match any of several values for it, e.g. `tags[env]=prod&tags[env]=dev`. Values for one key are ORed, different keys are ANDed; values match case-insensitively.
           examples:
-          - env: prod
+          - env:
+            - prod
         style: deepObject
         explode: true
       - in: query
@@ -14156,12 +14157,13 @@ paths:
       - in: query
         name: tags
         required: false
-        description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Pairs are ANDed; values match case-insensitively.
+        description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Repeat a key to match any of several values for it, e.g. `tags[env]=prod&tags[env]=dev`. Values for one key are ORed, different keys are ANDed; values match case-insensitively.
         schema:
           $ref: '#/components/schemas/TagFilter'
-          description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Pairs are ANDed; values match case-insensitively.
+          description: Filter by exact tag key-value pairs, e.g. `tags[env]=prod&tags[team]=core`. Repeat a key to match any of several values for it, e.g. `tags[env]=prod&tags[env]=dev`. Values for one key are ORed, different keys are ANDed; values match case-insensitively.
           examples:
-          - env: prod
+          - env:
+            - prod
         style: deepObject
         explode: true
       - in: query
@@ -19550,11 +19552,11 @@ paths:
   /cloud/v1/instances/{project_id}/{region_id}/{instance_id}/put_into_servergroup:
     post:
       operationId: PutServerInstanceGroupHandler.post
-      summary: Put instance into the server group
+      summary: Put instance into the placement group
       description: |-
-        Add an instance to a server group.
-        The instance must not already be in a server group.
-        Bare metal servers do not support server groups.
+        Add an instance to a placement group.
+        The instance must not already be in a placement group.
+        Bare metal servers do not support placement groups.
       parameters:
       - in: path
         name: project_id
@@ -19654,11 +19656,11 @@ paths:
   /cloud/v1/instances/{project_id}/{region_id}/{instance_id}/remove_from_servergroup:
     post:
       operationId: RemoveServerInstanceGroupHandler.post
-      summary: Remove instance from the server group
+      summary: Remove instance from the placement group
       description: |-
-        Remove an instance from its current server group.
-        The instance must be in a server group to be removed.
-        Bare metal servers do not support server groups.
+        Remove an instance from its current placement group.
+        The instance must be in a placement group to be removed.
+        Bare metal servers do not support placement groups.
       parameters:
       - in: path
         name: project_id
@@ -32376,7 +32378,7 @@ paths:
           placement_group = client.cloud.placement_groups.create(
               project_id=1,
               region_id=1,
-              name="my-server-group",
+              name="my-placement-group",
               policy="anti-affinity",
           )
           print(placement_group.project_id)
@@ -32400,7 +32402,7 @@ paths:
           	placementGroup, err := client.Cloud.PlacementGroups.New(context.TODO(), cloud.PlacementGroupNewParams{
           		ProjectID: gcore.Int(1),
           		RegionID:  gcore.Int(1),
-          		Name:      "my-server-group",
+          		Name:      "my-placement-group",
           		Policy:    cloud.PlacementGroupNewParamsPolicyAntiAffinity,
           	})
           	if err != nil {
@@ -32543,9 +32545,9 @@ paths:
       - in: path
         name: group_id
         required: true
-        description: The ID of the server group.
+        description: The ID of the placement group.
         schema:
-          description: The ID of the server group.
+          description: The ID of the placement group.
           example: 47003067-550a-6f17-93b6-81ee16ba061e
           examples:
           - 47003067-550a-6f17-93b6-81ee16ba061e
@@ -32635,9 +32637,9 @@ paths:
       - in: path
         name: group_id
         required: true
-        description: The ID of the server group.
+        description: The ID of the placement group.
         schema:
-          description: The ID of the server group.
+          description: The ID of the placement group.
           example: 47003067-550a-6f17-93b6-81ee16ba061e
           examples:
           - 47003067-550a-6f17-93b6-81ee16ba061e
@@ -35965,6 +35967,30 @@ paths:
         on resource configurations and associated pricing.
       parameters:
       - in: query
+        name: time_from
+        required: true
+        description: Start of the reservation period (ISO 8601). The period must not exceed 31 days. The API returns monthly pricing for this period.
+        schema:
+          description: Start of the reservation period (ISO 8601). The period must not exceed 31 days. The API returns monthly pricing for this period.
+          example: '2025-01-01T00:00:00Z'
+          examples:
+          - '2025-01-01T00:00:00Z'
+          format: date-time
+          title: Time From
+          type: string
+      - in: query
+        name: time_to
+        required: true
+        description: End of the reservation period (ISO 8601). The period must not exceed 31 days. The API returns monthly pricing for this period.
+        schema:
+          description: End of the reservation period (ISO 8601). The period must not exceed 31 days. The API returns monthly pricing for this period.
+          example: '2025-02-01T00:00:00Z'
+          examples:
+          - '2025-02-01T00:00:00Z'
+          format: date-time
+          title: Time To
+          type: string
+      - in: query
         name: metric_name
         required: false
         description: Metric name for the resource (e.g., 'bm1-hf-medium_min')
@@ -35991,40 +36017,6 @@ paths:
           description: Region for reservation
           title: Region Id
           type: integer
-      - in: query
-        name: show_inactive
-        required: false
-        description: Include inactive commits in the response. Only applies when no period is given; ignored when 'time_from'/'time_to' are supplied, since the period defines the window.
-        schema:
-          default: true
-          deprecated: true
-          description: Include inactive commits in the response. Only applies when no period is given; ignored when 'time_from'/'time_to' are supplied, since the period defines the window.
-          title: Show Inactive
-          type: boolean
-      - in: query
-        name: time_from
-        required: false
-        description: Start of the reservation period (ISO 8601). Must be supplied together with 'time_to'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
-        schema:
-          description: Start of the reservation period (ISO 8601). Must be supplied together with 'time_to'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
-          example: '2025-01-01T00:00:00Z'
-          examples:
-          - '2025-01-01T00:00:00Z'
-          format: date-time
-          title: Time From
-          type: string
-      - in: query
-        name: time_to
-        required: false
-        description: End of the reservation period (ISO 8601). Must be supplied together with 'time_from'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
-        schema:
-          description: End of the reservation period (ISO 8601). Must be supplied together with 'time_from'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
-          example: '2025-02-01T00:00:00Z'
-          examples:
-          - '2025-02-01T00:00:00Z'
-          format: date-time
-          title: Time To
-          type: string
       responses:
         '200':
           description: OK
@@ -36038,12 +36030,16 @@ paths:
       - lang: Python
         source: |-
           import os
+          from datetime import datetime
           from gcore import Gcore
 
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          billing_reservations = client.cloud.billing_reservations.list()
+          billing_reservations = client.cloud.billing_reservations.list(
+              time_from=datetime.fromisoformat("2025-01-01T00:00:00"),
+              time_to=datetime.fromisoformat("2025-02-01T00:00:00"),
+          )
           print(billing_reservations.count)
       - lang: Go
         source: |
@@ -36052,6 +36048,7 @@ paths:
           import (
           	"context"
           	"fmt"
+          	"time"
 
           	"github.com/G-Core/gcore-go"
           	"github.com/G-Core/gcore-go/cloud"
@@ -36062,7 +36059,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	billingReservations, err := client.Cloud.BillingReservations.List(context.TODO(), cloud.BillingReservationListParams{})
+          	billingReservations, err := client.Cloud.BillingReservations.List(context.TODO(), cloud.BillingReservationListParams{
+          		TimeFrom: time.Now(),
+          		TimeTo:   time.Now(),
+          	})
           	if err != nil {
           		panic(err.Error())
           	}
@@ -40625,7 +40625,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.create(
+          lifecycle_policy = client.cloud.snapshot_schedules.create(
               project_id=1,
               region_id=1,
               action="volume_snapshot",
@@ -40649,10 +40649,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.New(context.TODO(), cloud.LifecyclePolicyNewParams{
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.New(context.TODO(), cloud.SnapshotScheduleNewParams{
           		ProjectID: gcore.Int(1),
           		RegionID:  gcore.Int(1),
-          		Action:    cloud.LifecyclePolicyNewParamsActionVolumeSnapshot,
+          		Action:    cloud.SnapshotScheduleNewParamsActionVolumeSnapshot,
           		Name:      "schedule_1",
           	})
           	if err != nil {
@@ -40705,11 +40705,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policies = client.cloud.lifecycle_policies.list(
+          snapshot_schedules = client.cloud.snapshot_schedules.list(
               project_id=1,
               region_id=1,
           )
-          print(lifecycle_policies.count)
+          print(snapshot_schedules.count)
       - lang: Go
         source: |
           package main
@@ -40727,14 +40727,14 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicies, err := client.Cloud.LifecyclePolicies.List(context.TODO(), cloud.LifecyclePolicyListParams{
+          	snapshotSchedules, err := client.Cloud.SnapshotSchedules.List(context.TODO(), cloud.SnapshotScheduleListParams{
           		ProjectID: gcore.Int(1),
           		RegionID:  gcore.Int(1),
           	})
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", lifecyclePolicies.Count)
+          	fmt.Printf("%+v\n", snapshotSchedules.Count)
           }
   /cloud/v1/lifecycle_policy/{project_id}/{region_id}/{policy_id}:
     get:
@@ -40793,7 +40793,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.get(
+          lifecycle_policy = client.cloud.snapshot_schedules.get(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -40816,10 +40816,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.Get(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.Get(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyGetParams{
+          		cloud.SnapshotScheduleGetParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
           		},
@@ -40890,7 +40890,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.update(
+          lifecycle_policy = client.cloud.snapshot_schedules.update(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -40913,10 +40913,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.Update(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.Update(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyUpdateParams{
+          		cloud.SnapshotScheduleUpdateParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
           		},
@@ -40978,7 +40978,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          client.cloud.lifecycle_policies.delete(
+          client.cloud.snapshot_schedules.delete(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -40999,10 +40999,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	err := client.Cloud.LifecyclePolicies.Delete(
+          	err := client.Cloud.SnapshotSchedules.Delete(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyDeleteParams{
+          		cloud.SnapshotScheduleDeleteParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
           		},
@@ -41073,7 +41073,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.add_schedules(
+          lifecycle_policy = client.cloud.snapshot_schedules.add_schedules(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -41101,16 +41101,16 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.AddSchedules(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.AddSchedules(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyAddSchedulesParams{
+          		cloud.SnapshotScheduleAddSchedulesParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
-          			Schedules: []cloud.LifecyclePolicyAddSchedulesParamsScheduleUnion{{
-          				OfCron: &cloud.LifecyclePolicyAddSchedulesParamsScheduleCron{},
+          			Schedules: []cloud.SnapshotScheduleAddSchedulesParamsScheduleUnion{{
+          				OfCron: &cloud.SnapshotScheduleAddSchedulesParamsScheduleCron{},
           			}, {
-          				OfInterval: &cloud.LifecyclePolicyAddSchedulesParamsScheduleInterval{},
+          				OfInterval: &cloud.SnapshotScheduleAddSchedulesParamsScheduleInterval{},
           			}},
           		},
           	)
@@ -41181,7 +41181,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.add_volumes(
+          lifecycle_policy = client.cloud.snapshot_schedules.add_volumes(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -41205,10 +41205,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.AddVolumes(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.AddVolumes(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyAddVolumesParams{
+          		cloud.SnapshotScheduleAddVolumesParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
           			VolumeIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
@@ -41281,7 +41281,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.remove_schedules(
+          lifecycle_policy = client.cloud.snapshot_schedules.remove_schedules(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -41305,10 +41305,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.RemoveSchedules(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.RemoveSchedules(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyRemoveSchedulesParams{
+          		cloud.SnapshotScheduleRemoveSchedulesParams{
           			ProjectID:   gcore.Int(1),
           			RegionID:    gcore.Int(1),
           			ScheduleIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
@@ -41381,7 +41381,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          lifecycle_policy = client.cloud.lifecycle_policies.remove_volumes(
+          lifecycle_policy = client.cloud.snapshot_schedules.remove_volumes(
               policy_id=1,
               project_id=1,
               region_id=1,
@@ -41405,10 +41405,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	lifecyclePolicy, err := client.Cloud.LifecyclePolicies.RemoveVolumes(
+          	lifecyclePolicy, err := client.Cloud.SnapshotSchedules.RemoveVolumes(
           		context.TODO(),
           		1,
-          		cloud.LifecyclePolicyRemoveVolumesParams{
+          		cloud.SnapshotScheduleRemoveVolumesParams{
           			ProjectID: gcore.Int(1),
           			RegionID:  gcore.Int(1),
           			VolumeIDs: []string{"1488e2ce-f906-47fb-ba32-c25a3f63df4f"},
@@ -41470,7 +41470,7 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.cloud.lifecycle_policies.estimate_max_usage(
+          response = client.cloud.snapshot_schedules.estimate_max_usage(
               project_id=1,
               region_id=1,
               action="volume_snapshot",
@@ -41494,10 +41494,10 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Cloud.LifecyclePolicies.EstimateMaxUsage(context.TODO(), cloud.LifecyclePolicyEstimateMaxUsageParams{
+          	response, err := client.Cloud.SnapshotSchedules.EstimateMaxUsage(context.TODO(), cloud.SnapshotScheduleEstimateMaxUsageParams{
           		ProjectID: gcore.Int(1),
           		RegionID:  gcore.Int(1),
-          		Action:    cloud.LifecyclePolicyEstimateMaxUsageParamsActionVolumeSnapshot,
+          		Action:    cloud.SnapshotScheduleEstimateMaxUsageParamsActionVolumeSnapshot,
           		Name:      "schedule_1",
           	})
           	if err != nil {
@@ -57273,22 +57273,22 @@ components:
     CreateServerGroupSerializer:
       properties:
         name:
-          description: The name of the server group.
-          example: my-server-group
+          description: The name of the placement group.
+          example: my-placement-group
           examples:
-          - my-server-group
+          - my-placement-group
           pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,108}[a-zA-Z0-9._]$
           title: Name
           type: string
         policy:
           $ref: '#/components/schemas/ServerGroupPolicyEnum'
-          description: The server group policy.
+          description: The placement group policy.
           examples:
           - anti-affinity
       required:
       - name
       - policy
-      title: Create server group schema
+      title: Create placement group schema
       type: object
     CreateSnapshotSerializer:
       properties:
@@ -58144,7 +58144,7 @@ components:
           title: Security Groups
           type: array
         servergroups:
-          description: IDs of created server groups
+          description: IDs of created placement groups
           items:
             type: string
           title: Servergroups
@@ -65690,7 +65690,7 @@ components:
     InstancePutServerGroupSerializer:
       properties:
         servergroup_id:
-          description: Anti-affinity or affinity or soft-anti-affinity server group ID.
+          description: Anti-affinity or affinity or soft-anti-affinity placement group ID.
           example: 47003067-550a-6f17-93b6-81ee16ba061e
           examples:
           - 47003067-550a-6f17-93b6-81ee16ba061e
@@ -65698,7 +65698,7 @@ components:
           type: string
       required:
       - servergroup_id
-      title: InstancePutServerGroup schema
+      title: InstancePutPlacementGroup schema
       type: object
     InstanceSecurityGroupListSerializer:
       properties:
@@ -66584,7 +66584,7 @@ components:
           - $ref: '#/components/schemas/ServerGroupPolicyEnum'
           - type: 'null'
           default: null
-          description: 'Server group policy: anti-affinity, soft-anti-affinity or affinity'
+          description: 'Placement group policy: anti-affinity, soft-anti-affinity or affinity'
           examples:
           - anti-affinity
       required:
@@ -67479,7 +67479,7 @@ components:
           - $ref: '#/components/schemas/ServerGroupPolicyEnum'
           - type: 'null'
           default: null
-          description: 'Server group policy: anti-affinity, soft-anti-affinity or affinity'
+          description: 'Placement group policy: anti-affinity, soft-anti-affinity or affinity'
         taints:
           anyOf:
           - additionalProperties:
@@ -67772,7 +67772,7 @@ components:
           type: array
         servergroup_id:
           default: ''
-          description: Server group ID
+          description: Placement group ID
           example: 1772de21-f013-4b70-9f8f-a518985b3bc2
           examples:
           - 1772de21-f013-4b70-9f8f-a518985b3bc2
@@ -67780,15 +67780,15 @@ components:
           type: string
         servergroup_name:
           default: ''
-          description: Server group name
-          example: my-server-group
+          description: Placement group name
+          example: my-placement-group
           examples:
-          - my-server-group
+          - my-placement-group
           title: Servergroup Name
           type: string
         servergroup_policy:
           default: ''
-          description: Anti-affinity, affinity or soft-anti-affinity server group policy
+          description: Anti-affinity, affinity or soft-anti-affinity placement group policy
           example: anti-affinity
           examples:
           - anti-affinity
@@ -68843,8 +68843,11 @@ components:
     K8sClusterV2Status:
       enum:
       - Deleting
+      - Failed
+      - Pending
       - Provisioned
       - Provisioning
+      - Unknown
       title: K8sClusterV2Status
       type: string
     K8sClusterVersionV2CollectionSerializer:
@@ -68994,7 +68997,7 @@ components:
           - 1
           title: Id
         keystone_federated_domain_id:
-          description: ID of Keystone federated domain that was created during initialization
+          description: ID of the federated identity domain. The system creates it during initialization
           example: 2b2798cc-eb87-475e-8eab-1e711e5dbe46
           examples:
           - 2b2798cc-eb87-475e-8eab-1e711e5dbe46
@@ -69006,20 +69009,20 @@ components:
             type: string
             writeOnly: true
           - type: 'null'
-          description: '''null'' if the keystone doesn''t have the password stored, and ''******'' (some password) otherwise'
+          description: The value is '******' when a password exists, and 'null' when no password exists
           examples:
           - '******'
           title: Password
         state:
           $ref: '#/components/schemas/KeystoneState'
-          description: Keystone state
+          description: Identity service state
           examples:
           - NEW
         url:
-          description: Unique constraint. Keystone endpoint to use when interacting with Openstack API
-          example: https://10.100.167.20:5000/v3
+          description: Unique constraint. Identity service endpoint of the region
+          example: https://identity.example.com:5000/v3
           examples:
-          - https://10.100.167.20:5000/v3
+          - https://identity.example.com:5000/v3
           title: Url
           type: string
         username:
@@ -69035,7 +69038,7 @@ components:
       - keystone_federated_domain_id
       - username
       - password
-      title: Keystone object
+      title: Identity service object
       type: object
     KeystoneState:
       enum:
@@ -69924,9 +69927,9 @@ components:
           title: Load Balancer Id
         name:
           description: Load balancer listener name
-          example: lbaas_test_listener
+          example: my_listener
           examples:
-          - lbaas_test_listener
+          - my_listener
           pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
           title: Name
           type: string
@@ -70173,9 +70176,9 @@ components:
           type: array
         name:
           description: Pool name
-          example: lbaas_test_pool
+          example: my-pool
           examples:
-          - lbaas_test_pool
+          - my-pool
           pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
           title: Name
           type: string
@@ -70415,9 +70418,9 @@ components:
           type: array
         name:
           description: Pool name
-          example: lbaas_test_pool
+          example: my-pool
           examples:
-          - lbaas_test_pool
+          - my-pool
           pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
           title: Name
           type: string
@@ -71957,9 +71960,9 @@ components:
             topic_name: my-log-name
         name:
           description: Load balancer name
-          example: lbaas_test_lb
+          example: my_load_balancer
           examples:
-          - lbaas_test_lb
+          - my_load_balancer
           pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
           title: Name
           type: string
@@ -72587,9 +72590,9 @@ components:
       properties:
         host:
           description: Metrics database host
-          example: 10.100.167.20
+          example: metrics.example.com
           examples:
-          - 10.100.167.20
+          - metrics.example.com
           title: Host
           type: string
         id:
@@ -72615,6 +72618,11 @@ components:
           - 9097
           title: Port
           type: integer
+        type:
+          $ref: '#/components/schemas/MetricsDatabaseType'
+          description: Metrics database backend type
+          examples:
+          - INFLUXDB
         username:
           description: Metrics database username
           example: metrics_username
@@ -72628,8 +72636,15 @@ components:
       - port
       - username
       - password
+      - type
       title: Metrics database schema
       type: object
+    MetricsDatabaseType:
+      enum:
+      - INFLUXDB
+      - PROMETHEUS
+      title: MetricsDatabaseType
+      type: string
     MutateClientProfileSerializer:
       properties:
         fields:
@@ -78028,7 +78043,7 @@ components:
           anyOf:
           - type: string
           - type: 'null'
-          description: External network ID for Neutron
+          description: External network ID
           examples:
           - c843c3e6-ef4d-4b92-8db2-e16ac05c5650
           title: External Network Id
@@ -78095,7 +78110,7 @@ components:
           title: Has K8S
           type: boolean
         has_kvm:
-          description: Region has KVM virtualization capability
+          description: Region supports virtual machine instances
           example: true
           examples:
           - true
@@ -78116,7 +78131,7 @@ components:
           title: Id
           type: integer
         keystone_id:
-          description: Foreign key to Keystone entity
+          description: ID of the identity service record
           example: 1
           examples:
           - 1
@@ -78269,7 +78284,7 @@ components:
           examples:
           - public
         external_network_id:
-          description: External network ID for Neutron
+          description: External network ID
           example: c843c3e6-ef4d-4b92-8db2-e16ac05c5650
           examples:
           - c843c3e6-ef4d-4b92-8db2-e16ac05c5650
@@ -78319,7 +78334,7 @@ components:
           title: Has K8S
           type: boolean
         has_kvm:
-          description: Region has KVM virtualization capability
+          description: Region supports virtual machine instances
           example: true
           examples:
           - true
@@ -78341,16 +78356,16 @@ components:
           type: integer
         keystone:
           $ref: '#/components/schemas/KeystoneSerializerAi'
-          description: Keystone object in the JSON format
+          description: Identity service object in the JSON format
         keystone_id:
-          description: Foreign key for Keystone entity
+          description: ID of the identity service record
           example: 1
           examples:
           - 1
           title: Keystone Id
           type: integer
         keystone_name:
-          description: Region name exactly as stated in keystone
+          description: Region name. It must match the name in the identity service exactly
           example: ED-8
           examples:
           - ED-8
@@ -89760,7 +89775,7 @@ components:
     ServerGroupSerializer:
       properties:
         instances:
-          description: The list of instances in this server group.
+          description: The list of instances in this placement group.
           example: &id265
           - instance_id: 6d14f194-6c1e-49b3-9fc7-50dc8401eb74
             instance_name: my-instance-1
@@ -89773,14 +89788,14 @@ components:
           title: Instances
           type: array
         name:
-          description: The name of the server group.
-          example: my-server-group
+          description: The name of the placement group.
+          example: my-placement-group
           examples:
-          - my-server-group
+          - my-placement-group
           title: Name
           type: string
         policy:
-          description: 'The server group policy. Options are: anti-affinity, affinity, or soft-anti-affinity.'
+          description: 'The placement group policy. Options are: anti-affinity, affinity, or soft-anti-affinity.'
           example: anti-affinity
           examples:
           - anti-affinity
@@ -89808,7 +89823,7 @@ components:
           title: Region Id
           type: integer
         servergroup_id:
-          description: The ID of the server group.
+          description: The ID of the placement group.
           example: 47003067-550a-6f17-93b6-81ee16ba061e
           examples:
           - 47003067-550a-6f17-93b6-81ee16ba061e
@@ -89822,7 +89837,7 @@ components:
       - policy
       - name
       - instances
-      title: Server group schema
+      title: Placement group schema
       type: object
     ServiceEndpointSerializer:
       additionalProperties: false
@@ -90916,7 +90931,10 @@ components:
     TagFilter:
       description: |-
         Exact tag key-value pair filter, e.g. `tags[env]=prod&tags[team]=core`.
-        Different pairs are ANDed.
+
+        Repeat a key to match any of several values for it
+        (`tags[env]=prod&tags[env]=dev` -> the `env` tag is prod OR dev); different
+        keys are ANDed. Values match case-insensitively.
       propertyNames:
         description: Tag key. Maximum 255 characters. Cannot contain spaces, tabs, newlines, empty string or '=' character. Trailing or leading whitespaces will be stripped.
         examples:
@@ -90927,14 +90945,18 @@ components:
       title: TagFilter
       type: object
       additionalProperties:
-        description: Tag value. Maximum 255 characters. Cannot contain tabs, newlines, or empty strings. Trailing or leading whitespaces will be stripped.
-        example: my-tag-value
-        examples:
-        - my-tag-value
-        maxLength: 255
-        minLength: 1
-        pattern: ^[^ \t\n\r\f\v]([^\t\n\r\f\v]*[^ \t\n\r\f\v])?$
-        type: string
+        items:
+          description: Tag value. Maximum 255 characters. Cannot contain tabs, newlines, or empty strings. Trailing or leading whitespaces will be stripped.
+          example: my-tag-value
+          examples:
+          - my-tag-value
+          maxLength: 255
+          minLength: 1
+          pattern: ^[^ \t\n\r\f\v]([^\t\n\r\f\v]*[^ \t\n\r\f\v])?$
+          type: string
+        maxItems: 20
+        minItems: 1
+        type: array
     TagSerializer:
       description: |-
         A tag is a key-value pair that can be associated with a resource,

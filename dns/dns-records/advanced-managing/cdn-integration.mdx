@@ -1,10 +1,17 @@
 ---
 title: Configure CDN integration
 sidebarTitle: CDN integration
-ai-navigation: Configure A or AAAA DNS records in Gcore Managed DNS to route directly to Gcore CDN, avoiding CNAME lookups and enabling automatic CDN endpoint selection.
+ai-navigation: Configure A or AAAA DNS records in Gcore Managed DNS to route directly to Gcore CDN by linking a record to a CDN resource via the Customer Portal or REST API.
 ---
 
-When using both Gcore Managed DNS and Gcore CDN, A and AAAA records can be configured to resolve directly to CDN addresses. CDN integration eliminates the need for a CNAME record and the associated additional DNS lookup on the end-user side — Gcore DNS resolves the record to the optimal CDN address automatically.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>CDN integration links an A or AAAA record directly to a Gcore CDN resource, so Gcore DNS resolves the hostname to CDN addresses without a CNAME record.</p>
+
+## Configure CDN integration
 
 <Steps>
   <Step title="Navigate to DNS">
@@ -25,12 +32,210 @@ When using both Gcore Managed DNS and Gcore CDN, A and AAAA records can be confi
     <Frame>![Record sets list with CDN Integration option in the three-dot menu](/images/docs/dns/dns-records/advanced-managing/cdn-integration/cdn-integration-10.png)</Frame>
   </Step>
   <Step title="Save the settings">
-    In the **CDN Integration** popup, the **Domain** field is pre-filled with the endpoint from CDN resource settings. Click **Save changes**.
+    In the **CDN Integration** popup, the **Domain** field shows the delivery domain of the CDN resource associated with this account. Click **Save changes**.
 
     <Frame>![CDN Integration popup with the Domain field pre-filled](/images/docs/dns/dns-records/advanced-managing/cdn-integration/cdn-integration-20.png)</Frame>
   </Step>
 </Steps>
 
-The DNS zone is now integrated with Gcore CDN. The record content changes to **Managed by CDN** and the details column shows **CDN Integration**.
+<p>The DNS record is now linked to Gcore CDN. The record content changes to **Managed by CDN** and the details column shows **CDN Integration**.</p>
 
 <Frame>![DNS record set showing Managed by CDN content and CDN Integration in the details column](/images/docs/dns/dns-records/advanced-managing/cdn-integration/cdn-integration-30.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>CDN integration links an A or AAAA record to a Gcore CDN resource so DNS resolves the hostname directly to the optimal CDN endpoint. The link is set via the `geodns_link` field in the RRset metadata — its value is the CNAME of the target CDN resource.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. CDN integration applies to A and AAAA records only.
+</Info>
+
+<p>Export these variables before running the code:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
+export RECORD_NAME="{RECORD_FQDN}"
+export CDN_CNAME="{YOUR_CDN_CNAME}"
+```
+
+<p>`RECORD_NAME` is the FQDN of the target record. `CDN_CNAME` is the delivery domain of the Gcore CDN resource — find it in **CDN** → **Resources** in the portal, or retrieve it with `GET /cdn/resources`.</p>
+
+## Enable CDN integration
+
+<p>The code uses an A record. For AAAA, replace `"A"` with `"AAAA"` and preserve the existing IPv6 addresses in `resource_records`.</p>
+
+<Warning>
+`replace` (PUT) overwrites the entire RRset. Fetch the current resource records and TTL before sending — `GET /dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A` — and include them unchanged in the request body.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.replace(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[{"content": ["1.2.3.4"]}],  # use the existing IP(s)
+    meta={"geodns_link": os.environ["CDN_CNAME"]},
+    ttl=600,
+)
+print(rrset.name, rrset.meta)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.Replace(ctx, "A", dns.ZoneRrsetReplaceParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetReplaceParamsResourceRecord{
+            {Content: []any{"1.2.3.4"}}, // use the existing IP(s)
+        },
+        Meta: map[string]any{"geodns_link": os.Getenv("CDN_CNAME")},
+        Ttl:  gcore.Int(600),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Meta)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"ttl\": 600,
+    \"resource_records\": [{\"content\": [\"<CURRENT_IP>\"]}],
+    \"meta\": {\"geodns_link\": \"${CDN_CNAME}\"}
+  }"
+```
+
+<p>The API returns the updated RRset:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 600,
+  "meta": {
+    "geodns_link": "www.my-domain-1.com"
+  },
+  "resource_records": [
+    {"content": ["1.2.3.4"], "enabled": true, "meta": {}}
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Disable CDN integration
+
+<p>Remove `geodns_link` from the RRset metadata. If the RRset has other metadata fields (such as `failover` configuration), include them in the request body while omitting only `geodns_link`. The record reverts to standard DNS resolution.</p>
+
+<Warning>
+`replace` (PUT) overwrites the entire RRset. Preserve the existing resource records and TTL — retrieve them first with `GET /dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A`.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+rrset = client.dns.zones.rrsets.replace(
+    "A",
+    zone_name=os.environ["ZONE_NAME"],
+    rrset_name=os.environ["RECORD_NAME"],
+    resource_records=[{"content": ["1.2.3.4"]}],  # use the existing IP(s)
+    meta={},  # omit geodns_link; include other metadata fields if present
+    ttl=600,
+)
+print(rrset.name, rrset.meta)
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/dns"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    rrset, err := client.DNS.Zones.Rrsets.Replace(ctx, "A", dns.ZoneRrsetReplaceParams{
+        ZoneName:  os.Getenv("ZONE_NAME"),
+        RrsetName: os.Getenv("RECORD_NAME"),
+        ResourceRecords: []dns.ZoneRrsetReplaceParamsResourceRecord{
+            {Content: []any{"1.2.3.4"}}, // use the existing IP(s)
+        },
+        Meta: map[string]any{}, // omit geodns_link; include other metadata fields if present
+        Ttl:  gcore.Int(600),
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println(rrset.Name, rrset.Meta)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "ttl": 600,
+    "resource_records": [{"content": ["<CURRENT_IP>"]}],
+    "meta": {}
+  }'
+```
+
+<p>The API returns the updated RRset with `geodns_link` removed:</p>
+
+```json
+{
+  "name": "example.com",
+  "type": "A",
+  "ttl": 600,
+  "meta": {}
+}
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

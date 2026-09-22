@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – DNS API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 88ab66bc0456
+  version: 2a13a4eda450
 servers:
 - url: https://api.gcore.com
 paths:
@@ -2328,6 +2328,35 @@ paths:
               schema:
                 type: string
           content: {}
+  /dns/v2/zones/{name}/dnssec/parent-ds/scan:
+    post:
+      tags:
+      - DNSSEC
+      summary: Trigger Parent DS Scan
+      description: |-
+        Trigger an immediate parent DS scan for a DNS zone, instead of waiting for the periodic
+        scan cron, and return the freshly scanned state.
+      operationId: ScanParentDsNow
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ScanParentDsNowResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanParentDsNowResponse'
+        '400':
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
   /dns/v2/zones/{name}/enable:
     patch:
       tags:
@@ -4262,6 +4291,16 @@ components:
           type: string
         name_server_2:
           type: string
+    ScanParentDsNowResponse:
+      type: object
+      properties:
+        has_valid_parent_ds:
+          type: boolean
+        parent_zone:
+          type: string
+        scanned_at:
+          type: string
+          format: date-time
     SecondaryZoneErrorResponse:
       type: object
       properties:

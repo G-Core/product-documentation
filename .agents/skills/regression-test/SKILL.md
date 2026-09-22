@@ -9,14 +9,103 @@ then apply all fixes and check against the style guide.
 
 ---
 
-## FIRST ACTION — Create a todo list
+## RESUMING A SESSION — Read this first if the conversation has a prior summary
 
-Before doing anything else, create a todo list with every phase as a separate item,
-all set to `pending`. Update each item to `in_progress` when you start it and
-`completed` only when it is fully done. Do not start a new phase until the previous
-one is marked `completed`.
+When a session is resumed (a conversation summary exists), run these checks
+before doing anything else:
 
-Phases to track:
+```powershell
+cd C:\Projects\product-documentation
+git branch --show-current   # must NOT be main — must be the ticket branch
+git status --short           # verify the working tree state
+```
+
+If the current branch is `main` and a Jira ticket was already created in Phase 4
+of the previous session:
+1. Do NOT create a new ticket.
+2. Immediately run `git checkout -b DOC-XXXX` using the existing ticket key.
+3. Continue from the phase where the previous session left off.
+
+If `send_to_review.py` has already been run in a previous session for this ticket,
+do NOT run it again — check the Jira ticket status first and skip Phase 10 if the
+ticket is already In Review.
+
+---
+
+## FIRST ACTION — Create the progress table
+
+**This is the very first thing you do. No exceptions.**
+
+Post the table below as your first message. Keep it updated throughout the session.
+Every row starts as `[ ]`. Mark `[V]` only after the specific deliverable exists.
+
+```
+| Row | Deliverable | Done |
+|-----|-------------|------|
+| 0a  | Article file read; full content in context | [ ] |
+| 0b  | Images folder path derived; existing files listed | [ ] |
+| 0c  | Article claimed in plan (status → in_progress) | [ ] |
+| 0d  | portal_type, portal_url, login_method, jira_org_unit, jira_epic recorded | [ ] |
+| 1   | Portal open, logged in, correct region confirmed with screenshot | [ ] |
+| 2a  | Every article step followed in portal in order | [ ] |
+| 2b  | Every tested element has a VERIFIED OK or FINDING block | [ ] |
+| 2c  | Test resources cleaned up | [ ] |
+| 3   | Screenshot checklist posted; every <Frame> row has ok / retaken / skip | [ ] |
+| 4a  | All findings presented as numbered grouped list | [ ] |
+| 4b  | Jira ticket created; key and URL shown | [ ] |
+| 4c  | Feature branch created (git checkout -b DOC-XXXX confirmed) | [ ] |
+| 5   | Every confirmed FINDING applied; each fix shown with before/after | [ ] |
+| 5b  | All 4 anti-reference checks run: UI inventory, flow, positioning, headings | [ ] |
+| 6a  | Style linter run; terminal output shown; exit code 0 | [ ] |
+| 6b  | Manual checklist: every item marked [V] in the message | [ ] |
+| 7   | MDX rules checklist: every item marked [V] in the message | [ ] |
+| 8   | LLM review script run; score shown; score ≥ 9.5 or fixes applied | [ ] |
+| 9a  | Pre-commit checklist: every item [V] in the message | [ ] |
+| 9b  | git commit + push — ONLY after user says коммить/commit/пуш/push | [ ] |
+| 10  | Jira status confirmed; plan file row updated to done | [ ] |
+```
+
+### Gate rule — applies before every [V] mark
+
+Before marking any row [V], write one sentence naming the specific evidence:
+
+> **Evidence:** [exact output / screenshot / terminal line / file path that proves this row is done]
+
+If you cannot name specific evidence — the row is not done. Do the work, then come back.
+
+For the rows below, evidence is not a sentence — it is the **literal output pasted inline**:
+
+| Row | Required inline output |
+|-----|------------------------|
+| 0c  | The exact line changed in the plan file (old → new) |
+| 4b  | The Jira URL printed by the script |
+| 4c  | The `git checkout -b` terminal output line |
+| 6a  | The full style linter output block (last line must be `OK` or list what was fixed) |
+| 6b  | The full manual checklist with every item marked `[V]` |
+| 7   | The full MDX checklist with every item marked `[V]` |
+| 8   | The score line from the review script (e.g. `Score: 9.64 / 10`) |
+| 9b  | The `git commit` output line and the `git push` output line |
+| 10  | The plan file line after update (status = done) |
+
+An agent that writes "Evidence: exit code 0" without pasting the actual output has not satisfied the gate. Rerun and paste.
+
+### Phase-end gate — applies before moving to the next phase
+
+At the end of every phase, repost the full table. Then run this check:
+
+1. Count rows that belong to the completed phase.
+2. Count how many are [V].
+3. If any are still [ ] — stop. Do those items now. Do not advance.
+
+Reposting the table is not optional. It is the verification mechanism. Skipping it
+means skipping the gate.
+
+### Todo list (high-level, for phase tracking)
+
+Also create a todo list with every phase set to `pending`. Advance it in parallel
+with the table — both must stay in sync.
+
+Phases:
 
 - Phase 0: Find and read the article; claim in plan
 - Phase 1: Open the portal and log in
@@ -24,6 +113,7 @@ Phases to track:
 - Phase 3: Screenshot audit (retake all screenshots)
 - Phase 4: Findings summary + create Jira ticket
 - Phase 5: Apply fixes
+- Phase 5b: Structure and flow review (anti-reference checks)
 - Phase 6: Style guide check
 - Phase 7: MDX rules check
 - Phase 8: LLM quality review
@@ -752,6 +842,20 @@ it is needed in Phase 9.
 Reset `SUMMARY` and `DESCRIPTION` back to placeholder values after creating
 the ticket so the script is ready for the next article.
 
+### Create the feature branch immediately after the ticket
+
+Do not wait until Phase 9. Create the branch now, right after the ticket is
+created, so all subsequent edits land on the feature branch and never on `main`:
+
+```powershell
+cd C:\Projects\product-documentation
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key just returned by the script.
+
 Immediately proceed to Phase 5 without asking for confirmation.
 
 ---
@@ -848,6 +952,58 @@ The rule depends on whether the article uses `<MethodSwitch>`:
   correctly without it.
 - Never delete a `<p>` tag that acts as a structural separator between numbered steps
   inside `<MethodSection>`. If the text inside is outdated, replace the text — not the tag.
+
+---
+
+## Phase 5b — Structure and flow review
+
+Load `.agents/skills/docs-styleguide-anti-reference/SKILL.md` now.
+
+Read the article top to bottom as a single document — not section by section. Apply the four checks below in sequence.
+
+### UI inventory test
+
+Could the article outline be recreated by reading the UI from top to bottom? If the sections map to tabs, panels, or form fields rather than to user tasks or decisions — restructure.
+
+### Flow test
+
+Does the article restart its workflow, repeat setup instructions in a different location, or surface information before the reader needs it? Specifically:
+
+- Credentials, URLs, or keys must be obtained before they are discussed or used.
+- Related modes (e.g., PUSH and PULL) must be grouped before common behavior or limits shared by both.
+- Demos, examples, and code snippets must follow the content they illustrate — not appear pages later.
+- The same fact must not appear twice in different phrasing. Merge or remove the duplicate.
+- Optional or recommended settings must not be presented as mandatory requirements.
+
+### Positioning test
+
+Does any language make a claim stronger than the evidence supports?
+
+- "Cause:" in troubleshooting must name a confirmed cause, not a possible one. If the cause is not confirmed, use "Possible cause:".
+- "Best choice for", "always", "will" used as guarantees without showing the comparison or basis — soften or remove.
+- Optional/recommended settings labeled as required — fix the labeling.
+- Universal protocol claims ("X only supports Y") when the actual constraint is the product's implementation — scope to the product.
+
+### Section heading test
+
+Does any H2 or H3 exist solely to name a concept or list what is available, with no user action or decision inside?
+
+Examples of headings that signal a reference dump: "Main principles", "Overview", "Key concepts", or a standalone H2 that contains only a cross-reference paragraph. Merge into the preceding section, inline the content, or convert to a cross-reference sentence.
+
+### Applying fixes
+
+For each structural issue found, record it in FINDING format with category `Structural flow` or `Content positioning`:
+
+```
+FINDING: Structural flow
+Location: Section "[heading]"
+Issue: [one-line description — e.g., "PUSH setup restarts workflow after URL anatomy"]
+Action needed: [reorder / merge / remove / rewrite]
+```
+
+Apply all structural fixes before proceeding to Phase 6. Do not treat structural issues as "nice to have" — they affect whether the article reads as a single document or as an assembly of independent sections.
+
+**Do not move to Phase 6 until the article reads as one continuous document.**
 
 ---
 
@@ -1096,29 +1252,20 @@ Auto-review (GPT-4): X.X / 10 — no actionable remarks.
 
 ---
 
-## Phase 9 — Create branch, commit, and push
+## Phase 9 — Pre-commit checklist + present for review
 
-**One article = one branch.** The branch name is always the Jira ticket key
-created in Phase 4 — even if the user mentioned a different name earlier in the
-conversation. The Phase 4 ticket is the canonical source of truth for the branch name.
+**STOP. DO NOT COMMIT. DO NOT PUSH.**
 
-**CRITICAL — never reuse a ticket number from earlier in the conversation or from
-a previous session's summary.** A number like "DOC-XXXX" may have been mentioned
-during work on a different article as a planned next ticket — it does not belong
-to the current article. Always use the ticket key that was actually created and
-returned by the Phase 4 script in this session. Anything else is wrong.
+Phase 9 ends after the pre-commit checklist is complete and shown to the user.
+Commit and push happen ONLY when the user explicitly says one of:
+`коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, `запушь`.
 
-```powershell
-cd C:\Projects\product-documentation_2
-git checkout main
-git pull origin main
-git checkout -b DOC-XXXX
-```
+If none of these words appear in the current user message — stop after showing the checklist.
 
-Replace `DOC-XXXX` with the ticket key from Phase 4 (e.g. `DOC-1730`, not whatever
-was mentioned earlier in the conversation).
+**Branch context:** The feature branch was created in Phase 4 immediately after the Jira ticket.
+The branch name is the Jira ticket key. All edits since Phase 4 already land on that branch.
 
-Run the pre-commit checklist below, then commit and push.
+Run the pre-commit checklist below and present the results to the user. Then stop and wait.
 
 **PowerShell git commit — do NOT use bash heredoc syntax.**
 
@@ -1203,7 +1350,8 @@ Run all three checks before committing:
 
 ## Phase 10 — Send to review
 
-Run this phase immediately after the commit has been pushed — do not wait for separate user confirmation.
+Run this phase only after the user has confirmed the commit and push (Phase 9).
+Do not run Phase 10 automatically — wait for the user to trigger it explicitly or to say "коммить/пуш/commit/push".
 
 The Jira ticket was already created in Phase 4. This phase only transitions it
 to In Review and records the completion.

@@ -1,10 +1,15 @@
 ---
 title: Setting up a PTR record and reverse DNS zone
 sidebarTitle: PTR record and reverse DNS zone
-ai-navigation: Add PTR records to reverse DNS zones to map IP addresses to hostnames for email anti-spam validation and subnet tracing using Gcore Managed DNS.
+ai-navigation: Add PTR records to reverse DNS zones to map IP addresses to hostnames for email anti-spam validation and subnet tracing via Customer Portal or via REST API.
 ---
 
-A PoinTeR (PTR) record maps a server's IP address to a domain name — the reverse of an A record. PTR records are required for anti-spam validation: receiving mail servers perform a reverse lookup on the sender's IP and reject messages if no PTR record exists. PTR records are also used to assign readable names to dedicated subnets.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>A PoinTeR (PTR) record maps an IP address to a domain name — the reverse of an A record. PTR records can only be created in reverse DNS zones.</p>
 
 <Info>
 PTR records can only be added to a reverse DNS zone (RDNS), not to a regular [domain&nbsp;zone](https://gcore.com/learning/what-is-dns-zone). The [Gcore Customer Portal](https://portal.gcore.com) does not include PTR in the list of [DNS&nbsp;records](/dns/dns-records) available for forward domain zones.
@@ -12,25 +17,25 @@ PTR records can only be added to a reverse DNS zone (RDNS), not to a regular [do
 
 ## PTR record use cases
 
-As an anti-spam measure in email delivery, the destination mail server performs a reverse lookup on the sender IP and compares the result against the sender's domain. Mail servers often reject messages from IPs with no PTR record.
+<p>As an anti-spam measure in email delivery, the destination mail server performs a reverse lookup on the sender IP and compares the result against the sender's domain. Mail servers often reject messages from IPs with no PTR record.</p>
 
-For dedicated subnet management, PTR records map raw IP addresses to human-readable names, making it easier to trace and monitor traffic across large subnets.
+<p>For dedicated subnet management, PTR records map raw IP addresses to human-readable names, making it easier to trace and monitor traffic across large subnets.</p>
 
 ## Reverse DNS lookup zone
 
-A reverse DNS lookup zone maps IPv4 or IPv6 addresses to hostnames using PTR records.
+<p>A reverse DNS lookup zone maps IPv4 or IPv6 addresses to hostnames using PTR records.</p>
 
-PTR records must be created inside a reverse DNS zone — a special zone named `*.in-addr.arpa` (for IPv4) or `*.ip6.arpa` (for IPv6). Only after that zone is created can PTR records be added to it in the portal.
+<p>PTR records must be created inside a reverse DNS zone — a special zone named `*.in-addr.arpa` (for IPv4) or `*.ip6.arpa` (for IPv6). Only after that zone is created can PTR records be added to it in the portal.</p>
 
-An IPv4 host address _AAA.BBB.CCC.DDD_ is represented in its reverse DNS zone as _DDD.CCC.BBB.AAA.in-addr.arpa_ — a Gcore address _80.240.113.62_ becomes _62.113.240.80.in-addr.arpa_. IPv6 addresses follow the same digit-reversal pattern under `ip6.arpa`.
+<p>For IPv4, the octets are reversed under `in-addr.arpa`. The IP address `80.240.113.62` has the reverse DNS name `62.113.240.80.in-addr.arpa`. For a /24 subnet such as `203.0.113.0/24`, the reverse DNS zone is `113.0.203.in-addr.arpa`, and the PTR record for `203.0.113.1` is created at `1.113.0.203.in-addr.arpa`. IPv6 follows the same reversal pattern under `ip6.arpa`.</p>
 
 ## Configure reverse DNS zone and PTR record
 
-A dedicated IP space (IPv4 or IPv6) is required to configure a reverse DNS zone.
+<p>A dedicated IP space (IPv4 or IPv6) is required to configure a reverse DNS zone.</p>
 
 <Steps>
   <Step title="Request zone delegation">
-    Contact an organization with [RIR&nbsp;status](https://nro.net/about/rirs) — a registrar authorized to manage IP address space and delegate reverse DNS zones — and request delegation of the subnet's reverse zone to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`). The RIR creates the zone and points it to the specified nameservers.
+    Contact the provider that manages the IP address space and request delegation of the subnet's reverse DNS zone to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`).
   </Step>
   <Step title="Add the zone in the Customer Portal">
     Once delegation is confirmed, add the reverse DNS zone in the Customer Portal. The [zone&nbsp;creation](/dns/manage-a-dns-zone#create-dns-zones) process is the same as for any other DNS zone.
@@ -40,13 +45,350 @@ A dedicated IP space (IPv4 or IPv6) is required to configure a reverse DNS zone.
     </Tip>
   </Step>
   <Step title="Add PTR records">
-    In the Customer Portal, open the added reverse zone _xx.xx.xx.in-addr.arpa_ and add the PTR records.
+    In the Customer Portal, open the added reverse zone and add PTR records. For each IP address, enter the full reversed address as the record name — for `203.0.113.1` in zone `113.0.203.in-addr.arpa`, the name is `1.113.0.203.in-addr.arpa`. Enter the target hostname with a trailing dot as the value, such as `mail.sample-test.com.`
 
     <Frame>![PTR record form inside a reverse DNS zone](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png)</Frame>
   </Step>
   <Step title="Verify DNS propagation">
     After the PTR records are saved, run a reverse DNS lookup to confirm the records are resolving correctly. DNS cache propagation takes up to 24 hours, so the records may not be immediately visible from all locations.
 
+    ```sh
+    dig -x 203.0.113.1
+    ```
+
     <Frame>![Reverse DNS zone records list after PTR record is added](/images/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/added-record-20.png)</Frame>
   </Step>
 </Steps>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Create a reverse DNS zone and add PTR records to map IP addresses to hostnames.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. Zone delegation from the IP address provider to Gcore nameservers (`ns1.gcorelabs.net` and `ns2.gcdn.services`) must be completed before creating the zone — this step cannot be performed via the API.
+</Info>
+
+<p>Export these variables before running the commands:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export RDNS_ZONE="{YOUR_REVERSE_ZONE}"
+```
+
+<p>The reverse zone name for an IPv4 /24 subnet is the three network octets reversed with `.in-addr.arpa` appended. For subnet `203.0.113.0/24`, the zone name is `113.0.203.in-addr.arpa`. The PTR rrset name for a host at `203.0.113.1` is `1.113.0.203.in-addr.arpa` — the full reversed IP address.</p>
+
+## Quickstart
+
+<p>Create the zone and add a PTR record.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    zone = os.environ["RDNS_ZONE"]  # e.g. 113.0.203.in-addr.arpa
+
+    # Step 1. Create the reverse DNS zone
+    client.dns.zones.create(name=zone)
+
+    # Step 2. Add a PTR record for the first host in the subnet
+    ptr_name = "1." + zone  # maps 203.0.113.1 -> mail.sample-test.com
+    rrset = client.dns.zones.rrsets.create(
+        "PTR",
+        zone_name=zone,
+        rrset_name=ptr_name,
+        ttl=300,
+        resource_records=[{"content": ["mail.sample-test.com."]}],
+    )
+    print(rrset.type, rrset.name, (rrset.resource_records or [{}])[0].content)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("RDNS_ZONE") // e.g. 113.0.203.in-addr.arpa
+
+        // Step 1. Create the reverse DNS zone
+        _, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{Name: zone})
+        if err != nil {
+            panic(err)
+        }
+
+        // Step 2. Add a PTR record for the first host in the subnet
+        ptrName := "1." + zone // maps 203.0.113.1 -> mail.sample-test.com
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "PTR", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: ptrName,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"mail.sample-test.com."}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s %v\n", rr.Type, rr.Name, rr.ResourceRecords[0].Content)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Create the zone and PTR record
+
+### Step 1. Create the reverse DNS zone
+
+<p>The zone name must match the subnet's reversed notation — three octets reversed with `.in-addr.arpa` appended for a /24 subnet. For IPv6, the format is `*.ip6.arpa`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Reverse zone name: `*.in-addr.arpa` for IPv4 or `*.ip6.arpa` for IPv6 |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    zone = os.environ["RDNS_ZONE"]
+
+    client.dns.zones.create(name=zone)
+    print("Zone created:", zone)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("RDNS_ZONE")
+
+        _, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{Name: zone})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("Zone created:", zone)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"$RDNS_ZONE\"}"
+    ```
+
+    <p>The API returns the zone ID:</p>
+
+    ```json
+    {"id": 1234567}
+    ```
+  </Tab>
+</Tabs>
+
+### Step 2. Add PTR records
+
+<p>Each PTR record maps one IP address to a hostname. The rrset name is the full reversed IP address — for `203.0.113.1` in zone `113.0.203.in-addr.arpa`, the rrset name is `1.113.0.203.in-addr.arpa`. The hostname in the content field requires a trailing dot.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `rrset_name` | Yes | Full reversed IP in `host.zone-name` format, e.g. `1.113.0.203.in-addr.arpa` |
+| `content[0]` | Yes | Target hostname with a trailing dot: `mail.sample-test.com.` |
+| `ttl` | Yes | Time-to-live in seconds |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    zone = os.environ["RDNS_ZONE"]
+
+    # Add PTR for 203.0.113.1 -> mail.sample-test.com
+    rrset = client.dns.zones.rrsets.create(
+        "PTR",
+        zone_name=zone,
+        rrset_name="1." + zone,
+        ttl=300,
+        resource_records=[{"content": ["mail.sample-test.com."]}],
+    )
+    print(rrset.type, rrset.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("RDNS_ZONE")
+
+        // Add PTR for 203.0.113.1 -> mail.sample-test.com
+        rr, err := client.DNS.Zones.Rrsets.New(ctx, "PTR", dns.ZoneRrsetNewParams{
+            ZoneName:  zone,
+            RrsetName: "1." + zone,
+            Ttl:       gcore.Int(300),
+            ResourceRecords: []dns.ZoneRrsetNewParamsResourceRecord{
+                {Content: []any{"mail.sample-test.com."}},
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s %s\n", rr.Type, rr.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/$RDNS_ZONE/1.$RDNS_ZONE/PTR" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "ttl": 300,
+        "resource_records": [
+          {"content": ["mail.sample-test.com."]}
+        ]
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "name": "1.113.0.203.in-addr.arpa",
+      "type": "PTR",
+      "ttl": 300,
+      "resource_records": [
+        {"content": ["mail.sample-test.com."]}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 3. Verify the records
+
+<p>List all RRsets in the zone to confirm the PTR records are stored. After zone delegation is active, run a reverse lookup to confirm DNS propagation.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    zone = os.environ["RDNS_ZONE"]
+
+    page = client.dns.zones.rrsets.list(zone_name=zone)
+    for rr in page.rrsets or []:
+        print(rr.type, rr.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        ctx := context.Background()
+        client := gcore.NewClient()
+        zone := os.Getenv("RDNS_ZONE")
+
+        page, err := client.DNS.Zones.Rrsets.List(ctx, zone, dns.ZoneRrsetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, rr := range page.Rrsets {
+            fmt.Printf("%s %s\n", rr.Type, rr.Name)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/dns/v2/zones/$RDNS_ZONE/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "rrsets": [
+        {
+          "name": "113.0.203.in-addr.arpa",
+          "type": "NS",
+          "ttl": 86400
+        },
+        {
+          "name": "1.113.0.203.in-addr.arpa",
+          "type": "PTR",
+          "ttl": 300,
+          "resource_records": [
+            {"content": ["mail.sample-test.com."]}
+          ]
+        }
+      ],
+      "total_amount": 2
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>For DNS propagation verification, run a reverse lookup once zone delegation is active:</p>
+
+```bash
+dig -x 203.0.113.1
+```
+
+
+</MethodSection>
+</MethodSwitch>

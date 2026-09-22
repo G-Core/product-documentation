@@ -1,67 +1,59 @@
 ---
 title: "FFmpeg"
 sidebarTitle: "FFmpeg"
-ai-navigation: Configure FFmpeg command-line parameters for RTMP live streaming to Gcore Video Streaming, including video bitrate (2000Kbps for 720p, 4000Kbps for 1080p), audio bitrate (128Kbps), H.264 encoder, keyframe interval (2s), CPU preset (veryfast), and resolution downscaling via bicubic filter.
+ai-navigation: Push a live stream to Gcore Video Streaming over RTMP using FFmpeg, get server URL and stream key from the portal, then run FFmpeg with the recommended H.264 encoding settings.
 ---
 
-FFmpeg is a free and open-source command-line tool for recording, screencasting, and live streaming. It’s suitable for video game streaming, blogging, educational content, and more.
-
-FFmpeg links your device (e.g, a laptop or a PC) to different streaming platforms (e.g., Gcore Video Streaming, YouTube, Twitch, etc.). It takes an image captured by a camera, converts it into a video stream, and then sends it to the streaming platform.
+FFmpeg can push a live stream to Gcore Video Streaming over RTMP. Configure it with the server URL and stream key from the Gcore Customer Portal, then run FFmpeg with the recommended encoding settings for live ingest.
 
 ## Setup
 
-1. Install FFmpeg on your device. Follow the download instructions on [the official website](https://ffmpeg.org/download.html).
-2. To get the server URL and stream key, go to the [Streaming list](https://portal.gcore.com/streaming/streaming/list), open the **Live stream settings** you need, and copy the relevant value from the **URLs for the encoder** section.
+1. Install FFmpeg. Download instructions are available on [ffmpeg.org](https://ffmpeg.org/download.html).
 
-For example, if you see these values on the **Live stream settings** page:
+2. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Streaming** → **Live Streaming**, then open the live stream settings for the target stream. In the **URLs for encoder** section, select **RTMP** and copy the **Server** URL and **Stream Key** values.
 
-![Live stream settings](https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/11774973436177.png)
+<Frame>![Live stream settings page showing the URLs for encoder section with Server and Stream Key fields](/images/docs/streaming/live-streaming/broadcasting-software/ffmpeg/live-stream-encoder-urls.png)</Frame>
 
-Concatenate them to form the full RTMP URL for the stream:
-```
-rtmp://vp-push-ix1.gvideo.co/in/400448?cdf2a7ccf990e464c2b…
-```
-
-3. Open the command line interface (CLI) on your device and run the following command:
-```
-ffmpeg -f {input format params} -f flv {RTMP URL}
-```
-
-
-## Configure the stream parameters for optimal performance
-
-We recommend configuring the stream parameters you will send to our server to ensure optimal streaming performance. You can adjust these settings via the CLI parameters of FFmpeg.
-Example of a command line for streaming via FFmpeg with the recommended parameters:
+Append the Stream Key to the Server URL to form the full RTMP URL:
 
 ```
-ffmpeg -f {input format params} \
-  -c:v libx264 -preset veryfast -b:v 2000000 \
+rtmp://vp-push-ed2.gvideo.co/in/400448?cdf2a7ccf990e464c2b…
+```
+
+3. Open a terminal and run FFmpeg with the input source and the RTMP URL:
+
+```bash
+ffmpeg {INPUT_OPTIONS} \
+  -c:v libx264 -preset veryfast -b:v 2000k \
   -profile:v baseline -vf format=yuv420p \
-  -crf 23 -g 60 \
-  -b:a 128k -ar 44100 -ac 2 \
-  -f flv {RTMP URL}
+  -r 30 -g 60 \
+  -c:a aac -b:a 128k -ar 48000 -ac 2 \
+  -f flv {RTMP_URL}
 ```
 
-### Output parameters
+Replace `{INPUT_OPTIONS}` with the FFmpeg input flags for the camera, screen capture, or media file. Replace `{RTMP_URL}` with the URL formed in step 2.
 
-- **Video Bitrate:** To stream at 720p resolution, set the bitrate to 2000Kbps (`-b:v 2000k`). If you’re broadcasting at 1080p, set the bitrate to 4000Kbps (`-b:v 4000k`)
-- **Audio Bitrate:** 128 (`-b:a 128k`)
-- **Encoder:** Software (`-c:v libx264`), or any other H264 codec
-- **Rate control:** CRF (`-crf 23`)
-- **Keyframe Interval:** 2s (`-g 60`)
-- **CPU Usage Preset:** veryfast (`-preset veryfast`)
-- **Profile:** baseline (`-profile:v baseline -vf format=yuv420p`)
+## Recommended encoding settings
 
-### Audio parameters
+| Setting | Value | FFmpeg flag |
+|---------|-------|-------------|
+| Video encoder | H.264 | `-c:v libx264` |
+| Video bitrate | 2000 Kbps (720p) or 4000 Kbps (1080p) | `-b:v 2000k` or `-b:v 4000k` |
+| CPU preset | veryfast | `-preset veryfast` |
+| Profile | Baseline | `-profile:v baseline -vf format=yuv420p` |
+| Frame rate | 30 fps | `-r 30` |
+| Keyframe interval | 60 frames (2 seconds at 30 fps) | `-g 60` |
+| Audio encoder | AAC | `-c:a aac` |
+| Audio bitrate | 128 Kbps | `-b:a 128k` |
+| Sample rate | 48 kHz | `-ar 48000` |
+| Channels | Stereo | `-ac 2` |
 
-- **Sample Rate**: 48 kHz (`-ar 48000`)
-- Use **Stereo** for the best sound quality (`-ac 2`)
+## Downscale resolution (optional)
 
+To reduce the source resolution, replace `-vf format=yuv420p` in the main command with a combined filter chain that applies both scaling and pixel format conversion:
 
-### Video parameters
+```bash
+-vf "scale=1280:720:flags=bicubic,format=yuv420p"
+```
 
-If you need to reduce the original resolution (downscale), follow the instructions in this section. If no resolution change is required, you can skip this step.
-
-- **Output (Scaled) Resolution:** 1280×720
-- **Downscale Filter:** Bicubic
-- **Common FPS Values:** 30
+Keep the rest of the command unchanged.

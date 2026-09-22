@@ -1,14 +1,19 @@
 ---
 title: Getting started with Managed DNS
 sidebarTitle: Getting started (Create a DNS zone)
-ai-navigation: Create and manage DNS zones in Gcore Managed DNS, add a zone, update NS records, and verify zone delegation status.
+ai-navigation: Create a DNS zone in Gcore Managed DNS via Customer Portal, REST API, or Terraform, point nameservers to Gcore, and verify public delegation.
 ---
 
-To use Managed DNS, create a DNS zone for a domain or subdomain in the [Gcore Customer Portal](https://portal.gcore.com) and point the domain to Gcore's nameservers. The zone can then serve DNS queries through Gcore's global network.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>To use Managed DNS, create a DNS zone for a domain or subdomain in the [Gcore Customer Portal](https://portal.gcore.com) and point the domain to Gcore's nameservers. The zone can then serve DNS queries through Gcore's global network.</p>
 
 ## Create DNS zones
 
-Navigate to the [DNS](https://portal.gcore.com/dns/zones) section of the Customer Portal, then follow these steps:
+<p>Navigate to the [DNS](https://portal.gcore.com/dns/zones) section of the Customer Portal, then follow these steps:</p>
 
 <Steps>
   <Step title="Open the zone creation wizard">
@@ -37,51 +42,238 @@ Navigate to the [DNS](https://portal.gcore.com/dns/zones) section of the Custome
   </Step>
 </Steps>
 
-The zone is now active. Records and settings are available in the Customer Portal.
+<p>The zone is now created in Gcore. Records and settings are available in the Customer Portal.</p>
 
 <Info>
-NS record changes may remain active for up to 24 hours while DNS caches update across the internet.
-<Frame>![The change nameservers notification](/images/docs/dns/manage-a-dns-zone/getting-started-dns-50.png)</Frame>
+Nameserver changes may take up to 24 hours to propagate through DNS caches.
 </Info>
 
-## Manage DNS zones
+<p>The status on [All&nbsp;zones](https://portal.gcore.com/dns/zones) reflects the zone in Gcore, not whether public nameserver records already point to Gcore. Confirm public delegation in the REST API tab.</p>
 
-DNS zones are managed in the [All&nbsp;zones](https://portal.gcore.com/dns/zones) section. In the row of the desired zone, click the three-dot icon and select an action:
+<p>Open the zone from All zones to add or edit [DNS&nbsp;records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode).</p>
 
-- **Turn off the zone.** Disables a zone. The zone continues to appear, but the records added in the Customer Portal are not active.
-- **Go to records.** Create, edit, and delete records.
-- **Settings.** Edit the TTL of the records in the zone.
-- **Delete zone.** Delete the zone.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-<Frame>![Manage DNS zones](/images/docs/dns/manage-a-dns-zone/getting-started-dns-60.png)</Frame>
+<p>Create a DNS zone through the API, point the domain to Gcore nameservers, and verify public delegation before adding records.</p>
 
-## Zone delegation status
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
 
-Check whether a DNS zone is active and correctly delegated to Gcore.
-
-The **All zones** section of the Customer Portal shows a status indicator next to each zone. This reflects the zone's operational state in Gcore: a zone that has been turned off does not serve records until re-enabled, regardless of how NS records are configured at the registrar.
-
-To confirm that NS records at the registrar point to Gcore nameservers, use the [Delegation status](/api-reference/dns/analyze/check-delegation-status) endpoint:
+<p>Export these variables:</p>
 
 ```bash
-curl -s "https://api.gcore.com/dns/v2/analyze/{name}/delegation-status" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_ZONE_NAME}"
 ```
 
-The response includes the following fields:
+## Create a DNS zone
 
-```json
-{
-  "zone_exists": true,
-  "gcore_authorized_count": 2,
-  "non_gcore_authorized_count": 0,
-  "is_whitelabel_delegation": false,
-  "authoritative_name_servers": [
-    { "name": "ns1.gcorelabs.net", "ipv4Addresses": ["..."] },
-    { "name": "ns2.gcdn.services", "ipv4Addresses": ["..."] }
-  ]
+<p>Create the zone for the domain or subdomain that Gcore will serve. Gcore automatically adds the default NS records for `ns1.gcorelabs.net` and `ns2.gcdn.services`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    zone = client.dns.zones.create(name=os.environ["ZONE_NAME"])
+    print(zone.id)
+    print(zone.warnings)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/dns"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        zone, err := client.DNS.Zones.New(ctx, dns.ZoneNewParams{
+            Name: os.Getenv("ZONE_NAME"),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(zone.ID)
+        fmt.Println(zone.Warnings)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"${ZONE_NAME}\"}"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "warnings": [
+        "The contract is currently set to reseller default and in order to modify it, you need to upgrade your tariff plan.",
+        "Your primary server has been set to default. In order to alter the primary server, you are required to upgrade your tariff plan."
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>The zone now exists in Gcore, but DNS traffic will reach it only after the domain is delegated to Gcore nameservers. At the registrar, replace the current NS records with `ns1.gcorelabs.net` and `ns2.gcdn.services`.</p>
+
+## Check zone delegation
+
+<p>The [Delegation&nbsp;status](/api-reference/dns/analyze/check-delegation-status) call looks up public NS records for the domain. When those NS records point to Gcore, `gcore_authorized_count` is greater than zero and `zone_exists` is `true`.</p>
+
+<p>When the domain has no public NS records, the API returns HTTP 404. Nameserver changes may take up to 24 hours to propagate through DNS caches.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    status = client.dns.zones.check_delegation_status(os.environ["ZONE_NAME"])
+    print(status.zone_exists, status.gcore_authorized_count)
+    for ns in status.authoritative_name_servers:
+        print(ns.name, ns.ipv4_addresses)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        status, err := client.DNS.Zones.CheckDelegationStatus(ctx, os.Getenv("ZONE_NAME"))
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(status.ZoneExists, status.GcoreAuthorizedCount)
+        for _, ns := range status.AuthoritativeNameServers {
+            fmt.Println(ns.Name, ns.Ipv4Addresses)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/analyze/${ZONE_NAME}/delegation-status" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns for a domain delegated to Gcore:</p>
+
+    ```json
+    {
+      "zone_exists": true,
+      "gcore_authorized_count": 5,
+      "non_gcore_authorized_count": 0,
+      "is_whitelabel_delegation": false,
+      "authoritative_name_servers": [
+        {
+          "name": "ns1.gcorelabs.net.",
+          "ipv4Addresses": ["92.223.100.253", "92.223.100.53"],
+          "ipv6Addresses": ["2a03:90c0:9990::1053"]
+        },
+        {
+          "name": "ns2.gcdn.services.",
+          "ipv4Addresses": ["92.223.77.53"],
+          "ipv6Addresses": ["2a03:90c0:9990::2053"]
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>`gcore_authorized_count` is the number of Gcore nameservers currently authoritative for the zone. A value of `0` means registrar NS records do not yet point to Gcore, or propagation is still in progress.</p>
+
+<p>When `gcore_authorized_count` is greater than zero, add and edit records with the [DNS&nbsp;records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode) API.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare and manage a DNS zone using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). DNS zones are account-global — the resource requires no `project_id` or `region_id`.</p>
+
+## Create a DNS zone
+
+<p>The minimum configuration requires only the zone name. Gcore adds default NS records for `ns1.gcorelabs.net` and `ns2.gcdn.services` automatically.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+  # terraform import gcore_dns_zone.example example.com
 }
 ```
 
-- `gcore_authorized_count`: number of Gcore nameservers currently authoritative for the zone. A value of `0` means NS records at the registrar have not been updated to point to Gcore, or propagation is still in progress (up to 24 hours).
-- `is_whitelabel_delegation`: `true` when the zone is served through white-label nameservers on an Enterprise plan instead of the default `ns1.gcorelabs.net` and `ns2.gcdn.services`.
+<p>After `terraform apply`, update the nameservers at the domain registrar to `ns1.gcorelabs.net` and `ns2.gcdn.services`. Nameserver changes can take up to 24 hours to propagate.</p>
+
+## Edit zone settings
+
+<p>Edit fields in the resource block and run `terraform apply` to update the zone in-place.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name    = "example.com"
+  enabled = false   # disable zone — records stop resolving
+  refresh = 3600    # how often secondary servers check for changes (seconds)
+  retry   = 1800    # how long secondary servers wait before retrying (seconds)
+  expiry  = 604800  # how long secondary servers serve the zone without a refresh (seconds)
+  nx_ttl  = 300     # TTL for negative responses (seconds)
+}
+```
+
+## Delete a DNS zone
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the zone on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone" "example" {
+#   name = "example.com"
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing zone
+
+<p>Use when a zone was created outside Terraform and needs to be managed as code. Add the resource block to `main.tf`, then run:</p>
+
+```bash
+terraform import gcore_dns_zone.example example.com
+```
+
+</MethodSection>
+</MethodSwitch>

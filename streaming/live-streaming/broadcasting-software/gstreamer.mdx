@@ -1,41 +1,46 @@
 ---
 title: "GStreamer"
 sidebarTitle: "GStreamer"
-ai-navigation: Configure GStreamer pipelines with videotestsrc, audiotestsrc, x264enc, and container multiplexers (FLV, MPEG-TS) to encode and push live streams to Gcore RTMP or SRT ingest endpoints using H.264 video, AAC audio, and protocol-specific sink elements (rtmpsink, srtsink).
+ai-navigation: Configure GStreamer pipelines to push a live stream to Gcore Video Streaming over RTMP or SRT, using H.264 and AAC encoding with x264enc and avenc_aac.
 ---
 
-## What is GStreamer?
+GStreamer can push a live stream to Gcore Video Streaming over RTMP or SRT. Get the ingest URL and stream key from the Gcore Customer Portal, then run a `gst-launch-1.0` pipeline with H.264 video and AAC audio encoding.
 
-GStreamer is an open‑source multimedia framework used to build **streaming pipelines** that capture, process and transmit audio and video.  Instead of being a single application, GStreamer provides a modular set of elements that can be assembled to perform tasks like **media playback, recording, transcoding** or **live broadcasting**.  This flexibility makes it popular for both desktop applications and server‑side streaming platforms, including broadcasting software for live events.
+## Setup
 
-For live streaming, GStreamer can act as the “encoder” component of your broadcast workflow.  It takes raw video/audio from sources (e.g. cameras or test patterns), encodes them with a codec (such as H.264 for video and AAC for audio), packs the streams into a container and sends them to an ingest server over protocols like **RTMP** or **SRT**.
+1. Install GStreamer and the required plugins. Download instructions are available on [gstreamer.freedesktop.org](https://gstreamer.freedesktop.org/download/).
 
-An example pipeline below is a concise example of how to contribute a stable test stream to the Gcore RTMP/SRT ingest point using GStreamer:
- - Synthetic test sources: videotestsrc pattern=smpte and audiotestsrc wave=sine produce a continuous 1080p, 30 fps color bar video and a sine‑tone audio track. This allows you to test the ingest without needing any external media files.
- - Efficient, low‑latency encoding: The caps filter enforces YUV 4:2:0 (I420) and 30 fps, while x264enc tune=zerolatency combined with key‑int‑max=30 and bframes=0 produces a GOP every second and avoids B‑frames. This keeps latency low and ensures the stream is easy for downstream transcoding.
+   The pipelines below require the following plugin packages:
+   - `gstreamer1.0-plugins-ugly` — provides `x264enc` for H.264 encoding
+   - `gstreamer1.0-libav` — provides `avenc_aac` for AAC encoding
+   - `gstreamer1.0-plugins-good` — provides `flvmux`, `rtpbin`, and other elements
 
+2. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Streaming** → **Live Streaming**, then open the live stream settings for the target stream. In the **URLs for encoder** section, select the protocol to use:
+   - **RTMP** — copy the **Server** URL and **Stream Key**. Append the Stream Key to the Server URL to form the full ingest URL: `rtmp://vp-push-ed2.gvideo.co/in/{STREAM_ID}?{TOKEN}`
+   - **SRT** — copy the full SRT URL. The URL format is `srt://vp-push-ed2-srt.gvideo.co:5001?streamid={STREAM_ID}#{TOKEN}`
 
 ## Pushing via RTMP
 
-To push a test stream via RTMP, you can generate a synthetic video and audio source, encode them, wrap them into an FLV container and send them to your ingest endpoint.  The following command demonstrates how to do this with GStreamer:
+The pipeline below encodes a synthetic test source and sends it to the Gcore RTMP ingest endpoint:
 
 ```sh
 gst-launch-1.0 -v \
     videotestsrc is-live=true pattern=smpte ! \
         video/x-raw,format=I420,width=1920,height=1080,framerate=30/1 ! \
-        x264enc tune=zerolatency bitrate=3000 speed-preset=veryfast key-int-max=30 bframes=0 ! \
+        x264enc tune=zerolatency bitrate=3000 speed-preset=veryfast key-int-max=60 bframes=0 ! \
         h264parse config-interval=1 ! queue ! mux. \
     audiotestsrc is-live=true wave=sine ! \
         audio/x-raw,channels=2,rate=48000 ! \
         avenc_aac bitrate=128000 ! queue ! mux. \
     flvmux name=mux streamable=true ! \
-    rtmpsink location="rtmp://vp-push-ed2.gvideo.co/in/123?719"
+    rtmpsink location="rtmp://vp-push-ed2.gvideo.co/in/{STREAM_ID}?{TOKEN}"
 ```
 
+Replace `{STREAM_ID}` and `{TOKEN}` with the values from the **URLs for encoder** section of the live stream settings. The example uses synthetic video and audio sources for testing.
 
 ## Pushing via SRT
 
-For stability contribution, you can push the same test stream via **SRT** instead of RTMP.  The main differences are the container (MPEG‑TS rather than FLV) and the sink element.  SRT also allows you to specify latency and mode parameters.  Here is a sample SRT pipeline using the provided ingest URL:
+The SRT example keeps the same H.264/AAC encoding settings, then packages the output as MPEG-TS and sends it through `srtsink`:
 
 ```sh
 gst-launch-1.0 -v \
@@ -49,12 +54,16 @@ gst-launch-1.0 -v \
     mpegtsmux name=mux ! \
     srtsink uri="srt://vp-push-ed2-srt.gvideo.co:5001" \
             mode=caller latency=1500 \
-            streamid="123#719"
+            streamid="{STREAM_ID}#{TOKEN}"
 ```
 
-This pipeline mirrors the RTMP example but uses an MPEG‑TS container and the SRT protocol:
- - "mpegtsmux" multiplexes the H.264 video and AAC audio into a MPEG‑TS stream, which is a more common container for SRT.
- - "srtsink" sends the MPEG‑TS stream to the SRT ingest URL. The "uri" parameter is taken from UI/API from igester server field. The mode=caller option says that GStreamer initiates the connection, the latency in milliseconds (1.5 sec in this example).
- - Pay attention to the stream identification: The "streamid" parameter uniquely identifies your stream to the server. Using the uri plus separate mode and latency properties ensures the # in your stream ID is passed correctly.
+Pass the value after `?streamid=` as the separate `streamid` parameter. This avoids URI parsing issues caused by the `#` separator between the stream ID and token.
 
+Replace `{STREAM_ID}` and `{TOKEN}` with the values from the portal SRT URL.
 
+## Pipeline notes
+
+- `videotestsrc pattern=smpte` and `audiotestsrc wave=sine` are synthetic sources that produce color bar video and a sine tone. Use them to verify the pipeline without a physical camera. Replace them with the appropriate GStreamer source elements when streaming from a real device or file.
+- `x264enc tune=zerolatency` combined with `key-int-max=60` and `bframes=0` produces a keyframe every 2 seconds at 30 fps and avoids B-frames, keeping latency low for live ingest.
+- For this RTMP pipeline, `flvmux streamable=true` produces a live FLV stream suitable for RTMP ingest — it enables output of the FLV header before all streams are configured.
+- `mpegtsmux` multiplexes H.264 and AAC into MPEG-TS, the container used by Gcore SRT ingest. This is why RTMP uses `flvmux` and SRT uses `mpegtsmux`.

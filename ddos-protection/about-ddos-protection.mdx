@@ -4,7 +4,16 @@ sidebarTitle: "Overview"
 ai-navigation: Configure Gcore DDoS Protection by choosing Basic (free) or Advanced (paid, always-on TMS) protection based on attack frequency and server criticality.
 ---
 
-Gcore DDoS Protection safeguards servers and instances against distributed denial-of-service (DDoS) attacks. Two protection modes are available: Basic (free, enabled by default on all servers) and Advanced (paid, always-on filtering via a Threat Mitigation System).
+Gcore DDoS Protection safeguards networks, servers, and instances against distributed denial-of-service (DDoS) attacks. Two protection modes are available: Basic (free, enabled by default) and Advanced (paid, always-on filtering via a Threat Mitigation System (TMS)).
+
+<Info>
+This article covers Basic protection for Gcore-hosted resources and Advanced protection for customer networks onboarded through Generic Routing Encapsulation (GRE). Basic protection is applied automatically to all Gcore-hosted resources with no enrollment required. Advanced protection is a paid service activated through the GRE-based onboarding flow.
+
+Bare Metal servers and dedicated servers are not covered here; they use separate procedures with different specifications and pricing:
+
+- [Advanced DDoS Protection for Bare Metal servers](/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers)
+- [DDoS protection for dedicated servers](/hosting/other-services/ddos-protection/about-gcore-ddos-protection-for-dedicated-servers)
+</Info>
 
 ## Protection modes
 
@@ -14,20 +23,24 @@ The two modes differ in detection speed, traffic coverage, and cost.
 | --- | --- | --- |
 | Pricing model | Paid | Free |
 | Attack detection time | Under 1 second | 3 minutes |
-| Attacks it protects from | Common amplification attacks, IP spoofing attacks, volumetric attacks (L3), connection attacks (L4), application-layer attacks (L5-L7) | Common amplification attacks, IP spoofing attacks |
-| Protection technology | 1. All traffic passes through TMS.<br /><br />2. In case of an attack, TMS immediately filters the traffic.<br /><br />3. TMS sends legitimate traffic to the server. | 1. Attack is detected.<br /><br />2. The attacked IP is null-routed for 12 hours. |
-| Best for | Servers attacked frequently, servers attacked at the application layer (L7), servers hosting critical business applications | Servers rarely attacked, servers not hosting critical business applications |
+| Attacks it protects from | Common amplification attacks, IP spoofing attacks, volumetric attacks (L3), connection attacks (L4), application-layer attacks (L7) | Common amplification attacks, IP spoofing attacks |
+| Protection technology | 1. All network traffic passes through TMS.<br /><br />2. In case of an attack, TMS immediately filters the traffic.<br /><br />3. TMS forwards legitimate traffic to the protected network. | 1. Attack is detected.<br /><br />2. The attacked IP is null-routed for 12 hours. |
+| Best for | Networks attacked frequently, networks hosting services that require continuous availability, or use cases where application-layer (L7) attacks are a concern | Networks rarely attacked, or where short-term unavailability during an attack is acceptable |
+
+<Info>
+Detection times apply to network protection. Advanced DDoS Protection for [Bare Metal servers](/cloud/bare-metal-servers/advanced-ddos-protection/about-advanced-ddos-protection-for-bare-metal-servers) and [dedicated servers](/hosting/other-services/ddos-protection/about-gcore-ddos-protection-for-dedicated-servers) detects attacks within 5 seconds.
+</Info>
 
 ### Basic protection
 
-Basic protection is enabled by default.
+Basic protection is applied automatically to all Gcore-hosted resources. No additional enrollment or network submission is required.
 
-#### ACL rules
+#### Access control list (ACL) rules
 
 Basic protection uses predefined ACL rules to block the following traffic types:
 
 - Reflection attacks: DNS, NTP, SSDP, MSSQL, LDAP, SNMP, CharGen, Memcache, Echo, RIP, ARMS
-- Fake source IP attacks: `0/32`, `127.0.0.0/8`, `192.0.2.0/24`, `224.0.0.0/3`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`
+- Fake source IP attacks: `0.0.0.0/32`, `127.0.0.0/8`, `192.0.2.0/24`, `224.0.0.0/3`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`
 
 Volumetric filtering on Basic protection does not apply to floods below 200 Mbit/s per destination IP.
 
@@ -35,7 +48,7 @@ To customize ACL rules, upgrade to [Advanced protection](#advanced-protection).
 
 #### Null-routing
 
-When Basic protection detects a DDoS attack, the system temporarily blocks the target IP address. This mechanism is known as null-routing: the server is protected from attack traffic but becomes unreachable from the internet for 12 hours.
+When Basic protection detects a DDoS attack, the system temporarily blocks the targeted IP address. This mechanism is known as null-routing: the targeted IP address is protected from attack traffic but becomes unreachable from the internet for 12 hours.
 
 To keep the service available during an attack, upgrade to Advanced protection.
 
@@ -43,7 +56,7 @@ To keep the service available during an attack, upgrade to Advanced protection.
 
 Advanced protection keeps the TMS active at all times, including when no attack is underway, so filtering starts the moment traffic turns malicious instead of only after an attack begins.
 
-Activate Advanced protection in the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) using the self-service setup flow. Start with [service&nbsp;activation](/ddos-protection/onboarding-service/service-activation), which covers plan activation, network submission, NOC review, and network configuration.
+Activate Advanced protection in the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com) using the self-service setup flow. Start with [service&nbsp;activation](/ddos-protection/onboarding-service/service-activation), which covers plan activation, network submission, Network Operations Center (NOC) review, and network configuration.
 
 #### Allowlists
 
@@ -51,7 +64,15 @@ IP addresses added to an allowlist are treated as trusted resources. For Enterpr
 
 ## DDoS attack statistics
 
-The real-time DDoS attack statistics feature provides a live dashboard with an overview of ongoing attacks on protected resources. Filter by data center, time interval, and attack metrics such as bits per second (bps) and packets per second (pps).
+The DDoS attack statistics dashboard provides a live overview of traffic on protected resources. Filter by data center, time interval, and traffic type.
+
+Three traffic categories are displayed:
+
+- **Input** — all traffic received before filtering
+- **Dropped** — traffic blocked by TMS as malicious
+- **Passed** — clean traffic forwarded to the protected IP address
+
+Each category shows real-time metrics in bits per second (bps) and packets per second (pps). Outside the chart, each category also displays a **95th percentile** value (`bits_95` and `packets_95`). The 95th percentile of clean traffic volume is the billing metric for the Advanced protection service. For the applicable measurement period and billing rules, see [Plan activation](/ddos-protection/onboarding-service/plan-activation).
 
 <Frame>
   ![DDoS attack statistics](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/ddos-attack-statistics.png)
@@ -59,9 +80,11 @@ The real-time DDoS attack statistics feature provides a live dashboard with an o
 
 ## Pricing
 
-Advanced protection pricing depends on the plan tier and the server location.
+Advanced network protection pricing depends on the plan tier and the data center location.
 
-- Plan tier. [Plan activation](/ddos-protection/onboarding-service/plan-activation) lists the available tiers (PAYG, Start, Pro, and Pro+), based on the clean traffic volume and number of network prefixes to protect.
-- Server location. Prices vary by data center. Contact the [Gcore sales team](mailto:sales@gcore.com) for pricing on a specific location.
+- Plan tier. [Plan activation](/ddos-protection/onboarding-service/plan-activation) lists the available tiers — pay as you go (PAYG), Start, Pro, and Pro+ — based on the clean traffic volume and number of network prefixes to protect.
+- Data center location. Prices vary by data center. Contact the [Gcore sales team](mailto:sales@gcore.com) for pricing at a specific location.
 
-Every tier covers L3-L7 attacks by default. For custom configurations, contact the Gcore sales team to request a tailored plan.
+Every tier covers L3–L7 attacks by default. For custom configurations, contact the Gcore sales team to request a tailored plan.
+
+For Bare Metal and dedicated server protection, pricing depends on the data center location, the traffic capacity, and the protected OSI layers. See [Advanced DDoS Protection for Bare Metal](/cloud/bare-metal-servers/advanced-ddos-protection/about-advanced-ddos-protection-for-bare-metal-servers) and [DDoS protection for dedicated servers](/hosting/other-services/ddos-protection/about-gcore-ddos-protection-for-dedicated-servers) for details.

@@ -1,13 +1,12 @@
 ---
 title: Webhooks on system state changes
 sidebarTitle: Webhooks
-ai-navigation: Configure webhooks for Video Streaming system state changes on Live streams, VOD videos, VOD deletes, and Restreamings entities via HTTP POST callbacks with payload fields including stream id, live status, backup_live, recording, transcoding readiness, pull origin type, uri, and stream_source_type.
+ai-navigation: Configure webhooks for Video Streaming events on live streams, VOD videos, VOD deletions, and restreamings via HTTP POST callbacks to a server-side endpoint.
 ---
 
-## Webhook types
+A webhook is an HTTP POST callback sent to a server-side endpoint when a defined event occurs. The Video Streaming service uses webhooks to notify an app when the state of a live stream, VOD video, or restream changes, eliminating the need to poll the API.
 
-A webhook is a real-time callback that sends an HTTP POST request to your server-side app when a defined event happens in our Video Streaming service. 
-This way, you instantly receive updates and can trigger automated actions without manual checks by constant pulling API.
+## Webhook types
 
 A single universal endpoint is used for all types of webhooks.
 
@@ -18,33 +17,25 @@ A single universal endpoint is used for all types of webhooks.
 }
 ```
 
-Supported entities:
-  1. Live streams – `type: stream`
-  2. VOD videos:
-      - on state change – `type: video`
-      - on delete – `type: video_delete`
-  3. Restreamings – `type: restream`
+| Entity | Event | `type` value |
+|--------|-------|-------------|
+| Live stream | State change | `stream` |
+| VOD video | State change | `video` |
+| VOD video | Deletion | `video_delete` |
+| Restream | State change | `restream` |
+
+Each payload contains the main fields needed to identify the entity and process the state change.
 
 
-The webhook will contain main fields of the entity for which the event occurred. This allows you to not pull the API to get additional data each time.
+## Webhooks for live streams
 
+When the state of a live stream changes, the system triggers a webhook with type `stream`. The payload contains a `message.stream` object. Webhooks fire on key state changes — ingest start, transcoding start, stream stop — and carry enough data to track whether a stream is active, whether playback output is ready, and the stream source (PUSH or PULL).
 
-## Webhooks for Live
+The state fields change as the stream moves through the following stages:
 
-When the state of a live stream changes, the system triggers a webhook with type `stream`. The payload contains a message.stream object with stream properties.
-
-**Behavior:**
-  - A webhook is fired on key state changes, such as ingest start, transcoding start, or stream stop.
-  - The payload allows you to track whether a stream is active, whether playback output is ready, its source, and related metadata.
-  - Both PUSH and PULL origins are supported.
-
-**Live stream lifecycle:**
-
-For live streams, `type: stream` webhooks can be sent at different stages of the stream lifecycle:
-
-| Stage | live/backup_live | transcoding | recording | Description |
+| Stage | `live` / `backup_live` | transcoding | recording | Description |
 |-------|------|-------------|-------------|-----------|
-| Primary ingest starts | `true` | `false` | `false` | Primary source connects; ingest is active, but playback might still be preparing, users will see 404 still. |
+| Primary ingest starts | `true` | `false` | `false` | Primary source connects; ingest is active, but playback output is not ready yet. |
 | Transcoding starts | `true` | `true` | `false` | Playback output is ready with status 200 OK; use this stage to show or activate a player for users. |
 | Recording starts | `true` | `true` | `true` | The live stream is being recorded. |
 | Stream stops | `false` | `false` | `false` | Final stage: the stream source disconnects or the broadcast ends, so the stream is not active. |
@@ -52,21 +43,20 @@ For live streams, `type: stream` webhooks can be sent at different stages of the
 <Info>
   Use `live: true` (or `backup_live: true`) to track active ingest. Use `transcoding: true` to track when the live stream is ready for playback.
   
-  Read more in the article [Ingest & Backup](/streaming/live-streaming/primary-backup#stream-availability).
+  Read more in [stream&nbsp;availability](/streaming/live-streaming/primary-backup#stream-availability).
 </Info>
 
-**Fields:**
 | Field               | Type    | Description                                                                |
 |---------------------|---------|----------------------------------------------------------------------------|
 | **id**              | int     | Unique identifier of the stream                                            |
-| **live**            | bool    | `true` if the stream is currently active, `false` if it has stopped        |
-| **backup_live**     | bool    | `true` if the backup source is currently active                            |
+| **live**            | bool    | `true` while the primary ingest source is connected; `false` after it disconnects |
+| **backup_live**     | bool    | `true` while the backup ingest source is connected; `false` otherwise      |
 | **recording**       | bool    | `true` if the stream is being recorded                                     |
 | **transcoding**     | bool    | `true` if transcoding has started and playback output is ready, `false` by default |
 | **client_user_id**  | string  | Optional client-defined user ID, `null` if not provided                    |
 | **client_entity_data** | string | Optional client metadata associated with the stream, `null` if not provided |
 | **pull**            | bool    | `true` if the stream is pulled from an external origin, `false` if pushed  |
-| **uri**             | string  | The source URI of the stream:                                              |
+| **uri**             | string  | The source URI of the stream                                               |
 | **stream_source_type** | string | Type of the stream source: `rtmp`, `srt`, `webrtc`, `https`              |
 
 **Example:**
@@ -127,38 +117,34 @@ VOD webhooks use `type: video` for create and status updates, and `type: video_d
 | `video` | `error` | Upload or processing failed; check the `error` field. |
 | `video_delete` | Current video status | Video entity was deleted. |
 
-Read more about VOD statuses in [Video Lifecycle and Statuses](/streaming/video-hosting/vod-status).
+A full description of each status is in [VOD&nbsp;statuses](/streaming/video-hosting/vod-status).
 
 ### VOD create and update
 
-A webhook with type `video` fires when a VOD file is created, processed, or becomes playable. Use the payload to track processing progress and available renditions.
+The `converted_videos[].status` field tracks each rendition independently of the top-level `status`.
 
-**Behavior:**
-  - Sent on key status changes of a video: empty → pending → viewable → ready or error.
-  - converted_videos[].status reflects per-rendition progress like processing or complete.
 
-**Fields:**
 | Field                | Type        | Description                                                                |
 |----------------------|-------------|----------------------------------------------------------------------------|
-| **id**               | int         | VideoID                                                                    |
+| **id**               | int         | Video ID                                                                   |
 | **slug**             | string      | Public identifier used in playback URLs                                    |
 | **name**             | string      | Video name                                                                 |
 | **duration**         | int         | Duration of the video in milliseconds                                      |
-| **stream_id**        | int \| null | StreamID if it was recorded from a Live stream, otherwise `null`           |
+| **stream_id**        | int \| null | Stream ID if it was recorded from a live stream, otherwise `null`          |
 | **status**           | string      | Processing status of the video: `empty`, `pending`, `viewable`, `ready`, `error` |
 | **converted_videos** | array       | List of transcoded renditions with details                                 |
 | └─ **name**          | string      | Rendition label (e.g., `vod1080p`)                                         |
 | └─ **status**        | string      | Rendition status                       |
-| └─ **mp4_url**       | string      | Direct URL for a rendition in MP4 fromat                                   |
+| └─ **mp4_url**       | string      | Direct URL for a rendition in MP4 format                                   |
 
 
-See the statuses of VOD processing in API docs:
-  - Video status processing – [status](/api-reference/streaming/videos/get-video#response-status)
-  - Rendition status processing – [converted_videos/status](/api-reference/streaming/videos/get-video#response-converted-videos)
+VOD processing statuses in the API reference:
+  - Video status — [status](/api-reference/streaming/videos/get-video#response-status)
+  - Rendition status — [converted_videos/status](/api-reference/streaming/videos/get-video#response-converted-videos)
 
 **Example:**
 
-Video uploaded:
+Video upload started:
 ```json
 {
   "type": "video",
@@ -176,7 +162,7 @@ Video uploaded:
 }
 ```
 
-Video becomes viewable (not all renditions are ready yet, but video can be watched by end-users already):
+Video becomes viewable while some renditions are still processing:
 ```json
 {
   "type": "video",
@@ -213,17 +199,13 @@ Video becomes viewable (not all renditions are ready yet, but video can be watch
 
 ### VOD delete
 
-A webhook with type `video_delete` notify your system that a VOD entity was deleted so you can purge caches, revoke URLs, and clean metadata.
+A webhook with type `video_delete` fires when a video is deleted via API or portal. It carries the video ID, slug, name, status at the time of deletion, and deletion timestamp.
 
-**Behavior:**
-  - Fired when a video is deleted via API or UI. 
-  - Emitted once per deletion event.
 
-**Fields:**
 
 | Field          | Type        | Description                                                                 |
 |----------------|-------------|-----------------------------------------------------------------------------|
-| **id**         | integer     | VideoID                                                                     |
+| **id**         | int         | Video ID                                                                    |
 | **slug**       | string      | Public identifier used in playback URLs                                     |
 | **name**       | string      | Video name                                                                  |
 | **status**     | string      | Processing status of the video                   |
@@ -247,9 +229,9 @@ A webhook with type `video_delete` notify your system that a VOD entity was dele
 ```
 
 
-## Webhooks for Restream
+## Webhooks for restreams
 
-When a restream changes state (for example, starts or stops), the system sends a webhook with type `restream`. 
+When a restream changes state — starts or stops — the system sends a webhook with type `restream`. 
 The payload contains a message.restream object.
 
 | Stage | live | Description |
@@ -257,11 +239,6 @@ The payload contains a message.restream object.
 | Restream starts | `true` | Restream is active and sends the source live stream to the destination. |
 | Restream stops | `false` | Final stage: restream is not active and no longer sends content to the destination. |
 
-**Behavior:**
-  - Fired whenever a restream goes live or stops.
-  - Allows you to track the status of a specific restream linked to a live stream.
-
-**Fields:**
 | Field      | Type   | Description                                                        |
 |------------|--------|--------------------------------------------------------------------|
 | **id**     | int    | Unique identifier of the restream.                                 |
@@ -279,7 +256,7 @@ Restream starts:
   "message": {
     "restream": {
       "id": 3001,
-      "name": "RTMP from Brodcast#1 to Youtube",
+      "name": "RTMP from Broadcast#1 to YouTube",
       "stream_id": 1001,
       "live": true
     }
@@ -294,7 +271,7 @@ Restream stops:
   "message": {
     "restream": {
       "id": 3001,
-      "name": "RTMP from Brodcast#1 to Youtube",
+      "name": "RTMP from Broadcast#1 to YouTube",
       "stream_id": 1001,
       "live": false
     }
@@ -302,32 +279,39 @@ Restream stops:
 }
 ```
 
-## Sending events
+## Webhook delivery
 
-We deliver webhooks from IP addresses `92.223.112.0/24` and `92.223.123.0/24`. So put them into the whitelist.
+Webhooks are delivered from IP addresses `92.223.112.0/24` and `92.223.123.0/24`. Add these ranges to the server allowlist.
 
-Events are sent only once. If your server is unavailable, undelivered webhooks won't be sent again.
+<Warning>
+Each event is sent once. If the receiving server is unavailable, the webhook is not retried.
+</Warning>
 
 
-## How to enable webhooks
+## Enable webhooks
 
 <Info>
-At the moment, webhooks can only be set up with our help. Tell us your end-point and we will install it in your account.
+Webhooks require manual setup by Gcore. Contact the support team with the endpoint URL to configure webhooks for the account.
 </Info>
 
-1\. Prepare your HTTP server to receive webhooks.
+<Steps>
+  <Step title="Prepare an HTTP server">
+    Set up an HTTP server to receive webhooks.
+  </Step>
+  <Step title="Contact Gcore support">
+    Contact Gcore support via chat or email [support@gcore.com](mailto:support@gcore.com) and request the webhook integration. Include the following in the request:
 
-2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard).
+    - **Account ID** — click the profile icon in the top-right corner of the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard). The ID appears next to the account name in the dropdown.
 
-<Frame>![your ID in the Gcore Customer Portal](/images/docs/streaming/extra-features/get-webhooks-from-the-streaming-platform/image.png)</Frame>
+    <Frame>![Gcore Customer Portal profile dropdown showing the account ID](/images/docs/streaming/extra-features/get-webhooks-from-the-streaming-platform/webhooks-account-id.png)</Frame>
 
-The message template: _"Good afternoon! Please configure the Video Streaming webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."_.
-
-3\. We will notify you when we configure the webhook integration.
+    - **Webhook endpoint URL** — the server address that will receive the HTTP POST callbacks.
+  </Step>
+  <Step title="Receive confirmation">
+    Gcore support will confirm when the webhook integration is configured for the account.
+  </Step>
+</Steps>
 
 <Note>
-**Testing:**
-
-Also you can easily create and inspect webhook requests using web site https://webhook.site. 
-For example, the temporary link look like `https://webhook.site/56ce9331-4ec4-4fa1-bf23-4c4e14276f24` to capture and display incoming webhook payloads for debugging. Create your own and send it to us to set up. 
+A free tool for inspecting webhook payloads is available at https://webhook.site. It generates a temporary endpoint that captures and displays incoming requests. Send the generated endpoint URL to Gcore support when testing the integration.
 </Note>

@@ -1,0 +1,562 @@
+---
+title: "Policy overrides"
+sidebarTitle: Policy overrides
+ai-navigation: Create and manage WAAP policy overrides to suppress false-positive detections from default rules for a defined traffic scope, via Customer Portal or REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Policy overrides suppress false-positive detections from WAAP default rules for a defined scope of traffic. When a legitimate request is incorrectly flagged by a detector, a policy override prevents matching requests from being blocked and excludes them from attack counts, while the underlying rule continues to protect all other traffic outside that scope.</p>
+
+<p>Overrides are created from the **Events** page and are listed under **WAAP** > **Custom Rules** > **Policy overriding**.</p>
+
+## Policy override creation
+
+<p>Policy overrides are created from the **Events** page. When WAAP incorrectly flags a legitimate request, you can suppress that detection for a defined traffic scope without disabling the underlying rule. You can only create overrides for events triggered by WAAP default rules.</p>
+
+<Steps>
+  <Step title="Open the Events page">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Events**.
+
+    <Frame>![WAAP Events page showing a list of SQL injection events with date, action, source, domain, request, and response columns](/images/docs/waap/waap-rules/policy-overrides/events-list.png)</Frame>
+  </Step>
+  <Step title="Select Mark as False Positive">
+    On the event row you want to suppress, click the gear (⚙) icon and select **Mark as False Positive**.
+
+    <Frame>![Gear icon dropdown on an event row showing options: Edit Rule, Create custom rule, Add IP to Deny list, Add IP to Allow list, Mark as False Positive](/images/docs/waap/waap-rules/policy-overrides/events-gear-dropdown.png)</Frame>
+  </Step>
+  <Step title="Fill in the override form">
+    The **Mark as False Positive** page opens with the **Policy Overriding** rule type pre-selected. The **Define rule** section is auto-populated with the conditions from the triggering event: the domain, source IP, country, HTTP method, URL, and user agent.
+
+    <Frame>![Mark as False Positive form showing Rule name field, Policy Overriding rule type, and auto-filled conditions including IP, Country, HTTP method, URL, User Agent, and an Ignore detector action](/images/docs/waap/waap-rules/policy-overrides/mark-as-fp-form-clean.png)</Frame>
+
+    In the **Rule name** field, enter a display name for the override. An optional **Description** field is available for notes.
+  </Step>
+  <Step title="Adjust the conditions (optional)">
+    Review the auto-populated conditions. Remove any that are too specific or not relevant to the false positive. To add a condition, click **+ And** and select a condition type.
+
+    | Condition | Description |
+    |-----------|-------------|
+    | IP | Single IPv4 or IPv6 address |
+    | IP range | Addresses between a lower and upper bound |
+    | Country | One or more countries identified by ISO 3166-1 alpha-2 code |
+    | Organization | Originating organization, determined by a WHOIS lookup of the requesting IP |
+    | Header | HTTP request header name and value |
+    | Header exists | Whether a named HTTP request header is present |
+    | User Agent | User-agent string (Exact or Contains match) |
+    | URL | Request URL path or query string (Exact, Contains, or Regex match) |
+    | HTTP method | Request method, such as GET or POST |
+    | JA3 fingerprint | TLS client fingerprint |
+    | JA4 fingerprint | Extended TLS client fingerprint |
+
+    <Frame>![Condition type dropdown showing all available options: IP, IP range, Country, Organization, Header, Header exists, User Agent, URL, HTTP method, JA3, JA4](/images/docs/waap/waap-rules/policy-overrides/condition-types.png)</Frame>
+
+    The **Then** action is pre-set to **Ignore detector**, which suppresses the specific detector that triggered the event. Select **Ignore rule** instead to suppress the entire default rule.
+  </Step>
+  <Step title="Save the override">
+    Click **Save**. The override becomes active immediately and appears in **WAAP** > **Custom Rules** > **Policy overriding**.
+  </Step>
+</Steps>
+
+## Effect of a policy override
+
+<p>When a policy override matches a request, the request is not blocked and is not counted as an attack. The effect on the underlying default rule depends on the action selected when the override was created:</p>
+
+- **Ignore detector**: Only the specific detector is suppressed for matching traffic. Other detectors in the same rule remain active and continue to evaluate requests within the override scope.
+- **Ignore rule**: The entire default rule is suppressed for matching traffic. Its detectors do not remain active for requests that match the override scope.
+
+<p>Outside the override scope, the underlying rule and all its detectors continue to protect all other traffic.</p>
+
+<Warning>
+If the linked detector or rule is deleted, disabled, or otherwise becomes invalid, the override becomes stale and stops suppressing traffic. A stale override has no effect until its target is updated to a valid target.
+</Warning>
+
+## Policy override management
+
+<p>All policy overrides for a domain are listed on **WAAP** > **Custom Rules** > **Policy overriding**. Each entry shows the override name, action, targets, conditions, and enabled status.</p>
+
+<Frame>![Policy overriding tab in WAAP Custom Rules showing the list table with Name, Action, Targets, Conditions, and Status columns](/images/docs/waap/waap-rules/policy-overrides/policy-overrides-tab.png)</Frame>
+
+<p>To edit an override, click its name or use the row actions menu and select **Edit**. To disable an override without deleting it, toggle the **Status** switch. To remove an override permanently, select **Delete** from the row actions menu.</p>
+
+<Info>
+Policy overrides created by Gcore Support on behalf of a customer are displayed with a user ID instead of a name. All override creation and modification actions are recorded in the audit log with the user identity, timestamp, and override scope.
+</Info>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The [Policy Overrides](/api-reference/waap/policy-overrides/retrieve-policy-overrides) endpoints create, retrieve, update, and delete domain-level suppressions for WAAP default rule detectors or rules.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). Install the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK to run the SDK examples.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## List policy overrides
+
+<p>Retrieve all policy overrides configured for a domain, including their current enabled state, targets, and conditions.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore()
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    overrides = client.waap.domains.default_rule_overrides.list(domain_id)
+    for override in overrides:
+        status = "enabled" if override.enabled else "disabled"
+        stale = " [stale]" if override.stale else ""
+        print(f"{override.id}: {override.name} [{status}]{stale}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic("WAAP_DOMAIN_ID must be a valid integer: " + err.Error())
+        }
+
+        overrides, err := client.Waap.Domains.DefaultRuleOverrides.List(
+            context.Background(), domainID,
+            waap.DomainDefaultRuleOverrideListParams{},
+        )
+        if err != nil {
+            panic(err.Error())
+        }
+        for _, o := range overrides.Results {
+            status := "disabled"
+            if o.Enabled {
+                status = "enabled"
+            }
+            stale := ""
+            if o.Stale {
+                stale = " [stale]"
+            }
+            fmt.Printf("%d: %s [%s]%s\n", o.ID, o.Name, status, stale)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/default-rule-overrides" \
+      -H "Authorization: apikey ${GCORE_API_KEY}"
+    ```
+
+    The API returns a paginated list of overrides:
+
+    ```json
+    {
+      "limit": 100,
+      "offset": 0,
+      "count": 1,
+      "results": [
+        {
+          "id": 101,
+          "domain_id": 14043,
+          "name": "Allow monitoring tool",
+          "target_type": "detector",
+          "targets": [
+            {
+              "id": 1,
+              "ref": "sqli",
+              "snapshot": { "name": "SQL injection" }
+            }
+          ],
+          "conditions": [
+            { "organization": { "organization": "UptimeRobot s.r.o" } }
+          ],
+          "enabled": true,
+          "stale": false,
+          "created_at": "2026-09-01T10:00:00Z",
+          "updated_at": "2026-09-01T10:00:00Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Available override targets
+
+<p>When `target_type` is `detector`, retrieve the list of WAAP detectors that can be used as policy override targets. Each result includes the detector's `id` and `name`, which are the values to pass in `target_ids` when creating an override.</p>
+
+<p>Each result also includes an optional `policy` object. When `target_type` is `rule`, pass the numeric `policy.id` value in `target_ids` instead. This targets the entire parent rule rather than an individual detector.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore()
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    targets = client.waap.domains.default_rule_overrides.list_owasp_targets(domain_id)
+    for t in targets:
+        policy_info = f"  (rule target: policy.id={t.policy.id})" if t.policy else ""
+        print(f"detector id={t.id}: {t.name}{policy_info}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic("WAAP_DOMAIN_ID must be a valid integer: " + err.Error())
+        }
+
+        targets, err := client.Waap.Domains.DefaultRuleOverrides.ListOWASPTargets(
+            context.Background(), domainID,
+        )
+        if err != nil {
+            panic(err.Error())
+        }
+        for _, t := range targets.Results {
+            policyInfo := ""
+            if t.Policy != nil {
+                policyInfo = fmt.Sprintf("  (rule target: policy.id=%d)", t.Policy.ID)
+            }
+            fmt.Printf("detector id=%d: %s%s\n", t.ID, t.Name, policyInfo)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policy-override-targets/owasp-top-threats" \
+      -H "Authorization: apikey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+## Create a policy override
+
+<p>Create a policy override by specifying the target to suppress, the conditions under which the suppression applies, and whether the override is immediately active.</p>
+
+<p>The following fields are accepted in the request body:</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Display name, up to 100 characters |
+| `target_type` | Yes | `detector` or `rule` — whether `target_ids` refers to detector IDs or rule IDs |
+| `target_ids` | Yes | Array of detector or rule IDs to suppress. Retrieve valid IDs using the Available override targets section in this article |
+| `enabled` | Yes | `true` to activate the override immediately; `false` to create it disabled |
+| `description` | No | Explanatory note, up to 1,000 characters |
+| `conditions` | No | Up to five conditions; all must match. Omit to suppress the target on all traffic for the domain |
+| `request_id` | No | ID of the event request that prompted this override, in the format `{32-char hex}-{6 digits}`. Associates the override with the source event for audit purposes; has no effect on override behavior |
+
+<p>Each object in the `conditions` array contains exactly one condition type. The table below lists all supported types and their required fields:</p>
+
+| Condition type | JSON key | Required fields | Notes |
+|----------------|----------|-----------------|-------|
+| IP address | `ip` | `ip_address` | Single IPv4 or IPv6 address |
+| IP range | `ip_range` | `lower_bound`, `upper_bound` | Both bounds are IPv4 or IPv6 |
+| Country | `country` | `country_code` | One ISO 3166-1 alpha-2 code per condition, such as `"CN"` |
+| Organization | `organization` | `organization` | Organization name from WHOIS |
+| Header | `header` | `header`, `value`, `match_type` | `match_type`: `Exact` or `Contains` (default) |
+| Header exists | `header_exists` | `header` | Matches when the named header is present |
+| User-Agent | `user_agent` | `user_agent`, `match_type` | `match_type`: `Exact` or `Contains` (default) |
+| URL | `url` | `url`, `match_type` | `match_type`: `Exact`, `Contains` (default), or `Regex` |
+| HTTP method | `http_method` | `http_method` | Request method, such as `GET` or `POST` |
+| JA3 fingerprint | `ja3` | `ja3_fingerprints` | Array of up to 10 JA3 TLS client fingerprint strings |
+| JA4 fingerprint | `ja4` | `ja4_fingerprints` | Array of up to 10 JA4 TLS client fingerprint strings |
+
+<p>Every condition type supports an optional `negation` boolean (default `false`). Set `"negation": true` to invert the match — the override applies when the condition does NOT match.</p>
+
+<p>The example below suppresses the SQL injection detector for requests originating from a monitoring organization:</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore()
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    detector_id = int(os.environ["DETECTOR_ID"])
+
+    override = client.waap.domains.default_rule_overrides.create(
+        domain_id,
+        name="Allow monitoring tool",
+        target_type="detector",
+        target_ids=[detector_id],
+        enabled=True,
+        conditions=[
+            {"organization": {"organization": "UptimeRobot s.r.o"}}
+        ],
+    )
+    print(f"Created override {override.id}: {override.name}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic("WAAP_DOMAIN_ID must be a valid integer: " + err.Error())
+        }
+        detectorID, err := strconv.ParseInt(os.Getenv("DETECTOR_ID"), 10, 64)
+        if err != nil {
+            panic("DETECTOR_ID must be a valid integer: " + err.Error())
+        }
+
+        override, err := client.Waap.Domains.DefaultRuleOverrides.Create(
+            context.Background(), domainID,
+            waap.DomainDefaultRuleOverrideCreateParams{
+                Name:       "Allow monitoring tool",
+                TargetType: waap.PolicyOverrideTargetTypeDetector,
+                TargetIDs:  []int64{detectorID},
+                Enabled:    true,
+                Conditions: []waap.PolicyOverrideCondition{
+                    {Organization: &waap.OrganizationCondition{Organization: "UptimeRobot s.r.o"}},
+                },
+            },
+        )
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Created override %d: %s\n", override.ID, override.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export DETECTOR_ID="{DETECTOR_ID}"
+
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/default-rule-overrides" \
+      -H "Authorization: apikey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Allow monitoring tool",
+        "target_type": "detector",
+        "target_ids": ['"${DETECTOR_ID}"'],
+        "enabled": true,
+        "conditions": [
+          { "organization": { "organization": "UptimeRobot s.r.o" } }
+        ]
+      }'
+    ```
+
+    The API returns `201` with the created override:
+
+    ```json
+    {
+      "id": 101,
+      "domain_id": 14043,
+      "name": "Allow monitoring tool",
+      "target_type": "detector",
+      "targets": [
+        {
+          "id": 1,
+          "ref": "sqli",
+          "snapshot": { "name": "SQL injection" }
+        }
+      ],
+      "conditions": [
+        { "organization": { "organization": "UptimeRobot s.r.o" } }
+      ],
+      "enabled": true,
+      "stale": false,
+      "created_at": "2026-09-17T10:00:00Z",
+      "updated_at": "2026-09-17T10:00:00Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a policy override
+
+<p>Update a policy override using a partial request — only the fields included in the request body are changed. Use this to rename an override, swap its target detector or rule, add or remove conditions, or enable or disable it without deleting it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore()
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    override_id = int(os.environ["OVERRIDE_ID"])
+
+    updated = client.waap.domains.default_rule_overrides.update(
+        domain_id,
+        override_id,
+        enabled=False,
+    )
+    print(f"Override {updated.id} is now {'enabled' if updated.enabled else 'disabled'}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic("WAAP_DOMAIN_ID must be a valid integer: " + err.Error())
+        }
+        overrideID, err := strconv.ParseInt(os.Getenv("OVERRIDE_ID"), 10, 64)
+        if err != nil {
+            panic("OVERRIDE_ID must be a valid integer: " + err.Error())
+        }
+
+        enabled := false
+        updated, err := client.Waap.Domains.DefaultRuleOverrides.Update(
+            context.Background(), domainID, overrideID,
+            waap.DomainDefaultRuleOverrideUpdateParams{
+                Enabled: &enabled,
+            },
+        )
+        if err != nil {
+            panic(err.Error())
+        }
+        status := "disabled"
+        if updated.Enabled {
+            status = "enabled"
+        }
+        fmt.Printf("Override %d is now %s\n", updated.ID, status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export OVERRIDE_ID="{OVERRIDE_ID}"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/default-rule-overrides/${OVERRIDE_ID}" \
+      -H "Authorization: apikey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"enabled": false}'
+    ```
+
+    The API returns `200` with the full updated override object.
+  </Tab>
+</Tabs>
+
+## Delete a policy override
+
+<p>Remove a policy override permanently. The linked detector or rule continues to apply to all traffic after deletion.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore()
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    override_id = int(os.environ["OVERRIDE_ID"])
+
+    client.waap.domains.default_rule_overrides.delete(domain_id, override_id)
+    print(f"Override {override_id} deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        domainID, err := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic("WAAP_DOMAIN_ID must be a valid integer: " + err.Error())
+        }
+        overrideID, err := strconv.ParseInt(os.Getenv("OVERRIDE_ID"), 10, 64)
+        if err != nil {
+            panic("OVERRIDE_ID must be a valid integer: " + err.Error())
+        }
+
+        err = client.Waap.Domains.DefaultRuleOverrides.Delete(
+            context.Background(), domainID, overrideID,
+        )
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Override %d deleted\n", overrideID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export OVERRIDE_ID="{OVERRIDE_ID}"
+
+    curl -X DELETE "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/default-rule-overrides/${OVERRIDE_ID}" \
+      -H "Authorization: apikey ${GCORE_API_KEY}"
+    ```
+
+    The API returns `204` with an empty body on success.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

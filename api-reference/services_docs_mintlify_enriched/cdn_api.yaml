@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: e232bb9ff2d2
+  version: b69c757c8d61
 servers:
 - url: https://api.gcore.com
 tags:
@@ -4765,6 +4765,13 @@ paths:
       tags:
       - Aliases
       summary: Get aliases list
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Get information about aliases.
 
@@ -4852,6 +4859,13 @@ paths:
       tags:
       - Aliases
       summary: Create alias
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Create an alias: a hostname you own that is served with the settings of one of your CDN resources and
         with its own SSL certificate.
@@ -4864,6 +4878,9 @@ paths:
         becomes `active` immediately.
 
         The hostname must be unique across all CDN resources, additional CNAMEs and aliases.
+
+        If Let's Encrypt validation for the hostname requires a delegation record, it is reported as
+        `ssl_provisioning` when you get the alias.
       requestBody:
         required: true
         content:
@@ -4893,6 +4910,13 @@ paths:
       tags:
       - Aliases
       summary: Add aliases in bulk
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Create up to 1000 aliases for one CDN resource in a single request.
 
@@ -4930,6 +4954,13 @@ paths:
       tags:
       - Aliases
       summary: Remove aliases in bulk
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Delete up to 1000 aliases in a single request, selected either by ID or by hostname.
 
@@ -4961,6 +4992,13 @@ paths:
       tags:
       - Aliases
       summary: Get alias details
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       parameters:
       - $ref: '#/components/parameters/alias_id_parameter'
       responses:
@@ -4969,7 +5007,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Alias'
+                $ref: '#/components/schemas/AliasDetail'
         '403':
           description: Aliases are not enabled for your account.
         '404':
@@ -4979,14 +5017,30 @@ paths:
       tags:
       - Aliases
       summary: Change alias
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Change an alias. The hostname and the CDN resource of an alias cannot be changed; delete the alias
         and create a new one instead.
 
-        Set `active` to **false** to stop serving the alias; set it back to **true** to resume.
+        Set `active` to **false** to stop serving the alias; set it back to **true** to resume. Resuming an alias
+        that has no valid certificate starts a new issuance attempt, which is rate-limited, so it cannot be
+        combined with `automated` in one request.
 
         For an alias with your own certificate, pass a new certificate ID in `ssl_id` to replace it. The new
         certificate must cover the alias hostname.
+
+        Pass `automated` to switch how the certificate is managed. Switching to your own certificate takes
+        effect at once and the Let's Encrypt certificate issued for the alias is removed. Switching to a Let's
+        Encrypt certificate starts an issuance attempt while your certificate keeps being served, and the alias
+        starts serving the new certificate once it is issued; if the attempt fails, `status` becomes
+        **`ssl_error`** and your certificate keeps being served. The certificate mode cannot be changed while the
+        alias is paused — resume it first.
       parameters:
       - $ref: '#/components/parameters/alias_id_parameter'
       requestBody:
@@ -5001,7 +5055,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Alias'
+                $ref: '#/components/schemas/AliasDetail'
         '400':
           description: Validation failed.
           content:
@@ -5012,11 +5066,20 @@ paths:
           description: Aliases are not enabled for your account.
         '404':
           description: The alias does not exist.
+        '429':
+          description: Too many certificate issuance attempts have been started for the alias.
     delete:
       operationId: delete-alias
       tags:
       - Aliases
       summary: Delete alias
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
       description: |-
         Delete an alias. The hostname stops being served and can be used again. A certificate you added
         yourself is not affected.
@@ -5025,6 +5088,85 @@ paths:
       responses:
         '204':
           description: Successful.
+        '403':
+          description: Aliases are not enabled for your account.
+        '404':
+          description: The alias does not exist.
+  /cdn/aliases/{alias_id}/retry:
+    post:
+      operationId: retry-alias-certificate
+      tags:
+      - Aliases
+      summary: Retry alias certificate issuance
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
+      description: |-
+        Start a new Let's Encrypt certificate issuance attempt for an alias that has none running. Use it after
+        an attempt has failed and `status` is **`ssl_error`**.
+
+        The number of attempts you can start per hour is limited.
+      parameters:
+      - $ref: '#/components/parameters/alias_id_parameter'
+      responses:
+        '201':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasDetail'
+        '400':
+          description: |-
+            Issuance cannot be started. The alias serves a certificate you added yourself, is paused, already has
+            a valid certificate, or an attempt is already running.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonValidationError'
+        '403':
+          description: Aliases are not enabled for your account.
+        '404':
+          description: The alias does not exist.
+        '429':
+          description: Too many issuance attempts have been started for the alias.
+  /cdn/aliases/{alias_id}/status:
+    get:
+      operationId: get-alias-certificate-issuing-details
+      tags:
+      - Aliases
+      summary: Get alias certificate issuing details
+      x-mint:
+        metadata:
+          tag: Coming soon
+        content: |
+          <Info>
+          This endpoint is not available yet. <Badge color="yellow">Coming soon</Badge>
+          </Info>
+      description: |-
+        Get details about the latest Let's Encrypt certificate issuing attempt for an alias, including the CNAME
+        records to create for domain validation. Returns attempts in all statuses.
+
+        While the alias is switching to a Let's Encrypt certificate, the attempt for the new certificate is
+        returned.
+      parameters:
+      - $ref: '#/components/parameters/alias_id_parameter'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasCertificateStatus'
+        '400':
+          description: The alias serves a certificate you added yourself, or issuing has not started for it yet.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonValidationError'
         '403':
           description: Aliases are not enabled for your account.
         '404':
@@ -6648,9 +6790,9 @@ paths:
       - SSL certificates
       summary: Get SSL certificate usage
       description: |-
-        Get list of CDN resources that are using this SSL certificate.
+        Get list of CDN resources and aliases that are using this SSL certificate.
 
-        This endpoint is useful to check which resources depend on a certificate
+        This endpoint is useful to check which resources and aliases depend on a certificate
         before renewing, modifying, or deleting it.
       parameters:
       - in: path
@@ -6673,6 +6815,10 @@ paths:
                   status: active
                 - id: 102
                   cname: app.example.com
+                  status: active
+                aliases:
+                - id: 201
+                  cname: shop.example.com
                   status: active
         '404':
           description: Certificate not found.
@@ -8076,7 +8222,7 @@ components:
         automated:
           type: boolean
           description: |-
-            How the alias certificate is managed.
+            How the alias certificate is managed. Can be changed while the alias is served.
 
             Possible values:
             - **true** – A Let's Encrypt certificate is issued and renewed automatically.
@@ -8150,6 +8296,62 @@ components:
           example: shop.customer.com
         status:
           $ref: '#/components/schemas/AliasStatus'
+    AliasCertificateStatus:
+      allOf:
+      - $ref: '#/components/schemas/LERequestStatusV2'
+      - type: object
+        properties:
+          validation_state:
+            type: string
+            description: |-
+              State of the domain validation for this attempt.
+
+              Possible values:
+              - **PENDING** - Validation has not started yet.
+              - **`AWAITING_CNAME`** - Waiting for the CNAME records below to be created.
+              - **VALIDATING** - Validation is in progress.
+              - **COMPLETED** - Validation succeeded.
+              - **FAILED** - Validation did not succeed.
+            example: AWAITING_CNAME
+          cname_records:
+            type: array
+            description: CNAME records to create so Let's Encrypt domain validation can complete for the alias hostname.
+            items:
+              type: object
+              properties:
+                cname_name:
+                  type: string
+                  description: Hostname to create the CNAME record for.
+                  example: _acme-challenge.shop.customer.com
+                cname_target:
+                  type: string
+                  description: Value the CNAME record must point to.
+                  example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
+    AliasDetail:
+      allOf:
+      - $ref: '#/components/schemas/Alias'
+      - type: object
+        properties:
+          ssl_provisioning:
+            type: object
+            nullable: true
+            description: |-
+              DNS record delegating Let's Encrypt domain validation for the alias hostname. It is `null` for an
+              alias serving a certificate you added yourself, and until a delegation record has been prepared
+              for the hostname.
+            properties:
+              acme_delegation:
+                type: object
+                description: CNAME record to create so validation can be completed for the hostname.
+                properties:
+                  cname_name:
+                    type: string
+                    description: Hostname to create the CNAME record for.
+                    example: _acme-challenge.shop.customer.com
+                  cname_target:
+                    type: string
+                    description: Value the CNAME record must point to.
+                    example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
     AliasListResponse:
       allOf:
       - $ref: '#/components/schemas/PaginatedResponse'
@@ -8962,12 +9164,24 @@ components:
             - **true** – The alias is enabled and is served once its certificate is ready.
             - **false** – The alias is paused and is not served.
           example: false
+        automated:
+          type: boolean
+          description: |-
+            How the alias certificate is managed. Change it to switch the alias between a Let's Encrypt certificate
+            and your own. Cannot be changed while the alias is paused.
+
+            Possible values:
+            - **true** – Switch to a Let's Encrypt certificate. `ssl_id` must be omitted. The current certificate
+              keeps being served until the new one is issued.
+            - **false** – Switch to your own certificate. `ssl_id` is required and is served immediately.
+          example: true
         ssl_id:
           type: integer
           description: |-
             ID of your own SSL certificate to serve for the alias instead of the current one. The certificate must
             cover the alias hostname; a Let's Encrypt certificate issued for one of your CDN resources cannot be used.
-            Available only for aliases with `automated` set to **false**.
+            Available for an alias with `automated` set to **false**, and together with `automated` set to **false**
+            to switch to your own certificate.
           example: 891
     ChangeCDNService:
       type: object
@@ -10361,11 +10575,11 @@ components:
         hasRelatedResources:
           type: boolean
           description: |-
-            Defines whether the SSL certificate is used by a CDN resource.
+            Defines whether the SSL certificate is used by a CDN resource or an alias.
 
             Possible values:
-            - **true** - Certificate is used by a CDN resource.
-            - **false** - Certificate is not used by a CDN resource.
+            - **true** - Certificate is used by a CDN resource or an alias.
+            - **false** - Certificate is not used by a CDN resource or an alias.
           example: true
         name:
           type: string
@@ -13399,7 +13613,7 @@ components:
             $ref: '#/components/schemas/SLSAuthConfigResponse'
     SSLCertificateUsage:
       type: object
-      description: List of CDN resources using this SSL certificate.
+      description: List of CDN resources and aliases using this SSL certificate.
       properties:
         resources:
           type: array
@@ -13421,8 +13635,29 @@ components:
             - id
             - cname
             - status
+        aliases:
+          type: array
+          description: Aliases that have this certificate attached, including one in the process of issuance.
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: Alias ID.
+                example: 201
+              cname:
+                type: string
+                description: Alias hostname.
+                example: shop.example.com
+              status:
+                $ref: '#/components/schemas/AliasStatus'
+            required:
+            - id
+            - cname
+            - status
       required:
       - resources
+      - aliases
     ScaleFieldConversion:
       type: object
       additionalProperties: false
