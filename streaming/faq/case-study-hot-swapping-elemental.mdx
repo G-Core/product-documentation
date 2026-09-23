@@ -1,20 +1,14 @@
 ---
-title: "Case Study: Mastering 24/7 Live Streaming with Hot-Swapping"
+title: "Configure hot-swapping with AWS Elemental Live and Nimble Streamer"
 sidebarTitle: "Hot-swapping with Elemental"
-ai-navigation: Configure 24 7 live streaming with hot-swapping between primary and backup encoders using AWS Elemental Live, Nimble Streamer SRT gateway, and Gcore Video Streaming Global Ingest points; implement cross-pull redundancy via SRT protocol to prevent head-of-line blocking and maintain absolute timing synchronization during encoder failover.
+ai-navigation: Configure hot-swapping between primary and backup encoders with cross-pull SRT redundancy, SRT latency tuning, and PTS monitoring in Gcore Video Streaming.
 ---
 
-## Overview
+Hot-swapping between redundant encoders can fail even when both ingest paths remain available. In this production setup with AWS Elemental Live and Nimble Streamer, source transitions caused intermittent buffering and missing DASH segments.
 
-This case study showcases how a high-complexity 24/7 streaming pipeline for major live events was successfully solved. The architecture demonstrates mastery over "hot-swapping"—the seamless switching from a main signal to a dedicated separate broadcast without interrupting the user experience.
+## Architecture
 
-By aligning professional-grade encoders with platform-side real-time monitoring, the solution ensures that even the most complex transitions remain stable across Global Ingest points. 
-
-This incident highlights a critical lesson: in high-stakes broadcasting, even a single missed parameter or minor misconfiguration on the encoder side can have a critical impact on the entire 24/7 broadcast.
-
-## Architecture: From SDI to Playback
-
-The following scheme illustrates the complete chain of professional signal delivery:
+The pipeline moves the SDI signal from on-premise encoders through the SRT transport layer into Gcore Video Streaming, then out to viewers via CDN:
 
 ```mermaid
 graph TD
@@ -22,29 +16,25 @@ graph TD
     A["Broadcaster SDI"] --> B["Elemental Live"]
     B --> C["Nimble Streamer (Proxy/Gateway)"]
     end
-    
+
     subgraph "Gcore Video Streaming"
     C -- "SRT PUSH<br/>Primary/Backup" --> D["Ingester"]
     D --> E["Transcoder"]
     E --> F["JIT Packager"]
     end
-    
+
     subgraph "End User"
     F -- HLS/DASH --> G["Gcore CDN"]
     G --> H["Player"]
     end
 ```
 
-## Encoder Stack & Setup
+The on-premise ingest pipeline uses two components:
 
-To handle millions of viewers during national events initially there was implemented a robust multi-tier setup:
+1. **AWS Elemental Live** handles the SDI master signal and placeholder file composition.
+2. **Nimble Streamer** acts as the SRT gateway, using hardware-accelerated encoding for the final push to Gcore Video Streaming.
 
-1. **Main Composition, AWS Elemental Live**: Handles the SDI master signal and placeholder file composition. 
-2. **SRT Gateway & Encoder, Nimble Streamer**: Nimble Streamer acts as the intelligent gateway, utilizing hardware-accelerated encoding for the final push to Gcore Video Streaming.
-
-### The Ingest Pipeline
-
-The primary and backup flows are segregated but mirrors of each other, ensuring that a failure in one stack does not affect the other.
+Each Elemental–Nimble stage is duplicated to provide an independent primary and backup ingest path:
 
 ```mermaid
 graph TD
@@ -59,54 +49,86 @@ graph TD
     NA -- "SRT Transport" --> GMain["Gcore Main Ingest"]
     NB -- "SRT Transport" --> GBackup["Gcore Backup Ingest"]
 
-
     style EA fill:#e1f5fe,stroke:#01579b
     style EB fill:#e1f5fe,stroke:#01579b
     style NA fill:#fff3e0,stroke:#ef6c00
     style NB fill:#fff3e0,stroke:#ef6c00
 ```
 
-### Global Cross-Pull Redundancy
+### Cross-pull redundancy
 
-To prevent total signal loss if a single Elemental source fails, the Nimble gateway layer implements a cross-pull mechanism. This ensures that even if one Elemental encoder drops, both Gcore Ingest points still receive a valid signal.
+When a single Elemental source fails, the Nimble gateway layer implements a cross-pull so both Gcore Ingest points still receive a valid signal.
 
-If Elemental A fails, Nimble A automatically switches to receiving Elemental B's feed from Nimble B via SRT:
+In normal operation, each Nimble instance forwards its local Elemental feed to Gcore:
+
 ```text
-Elemental A -> Nimble A -> Nimble B
-Elemental B -> Nimble B -> Nimble A
+Normal:
+Elemental A → Nimble A → Gcore Main Ingest
+Elemental B → Nimble B → Gcore Backup Ingest
 ```
 
+When Elemental A fails, Nimble A pulls the Elemental B feed from Nimble B via SRT:
 
+```text
+On Elemental A failure:
+Elemental B → Nimble B → Gcore Backup Ingest
+                      ↘ (cross-pull to Nimble A)
+Nimble A ─────────────── Gcore Main Ingest
+```
 
-## RTMP vs. SRT: Choosing the Right Tool
+## Troubleshoot failed hot-swaps
 
-While RTMP is the industry legacy, this case illustrates why **SRT is mandatory** for high-complexity TV delivery:
-- **RTMP (TCP)**: Unlimited retransmissions cause "head-of-line blocking." If one packet is late, the entire stream stalls, leading to large, unpredictable latency spikes that break sync.
-- **SRT (UDP + ARQ)**: Allows the ingest layer to handle late packets within a strict window. If a packet is lost, SRT retransmits it immediately without stalling the entire feed. This is vital for "hot-swapping" where timing must be absolute.
+### Symptoms
 
-## Case Investigation: From 404 to PTS Fix
+CDN logs show `404` responses from upstream. Player analysis identifies missing `.m4s` DASH segments. End-users report intermittent buffering and stalled playback. Because segments are absent at the origin, initial investigation typically focuses on the transcoder or JIT Packager.
 
-### Initial Symptoms
-The issue was first noted by monitoring system and later confirmed by end-users as intermittent **buffering** and **stalled playback**.
-- **CDN Logs**: CDN reported `404` errors received from the upstream. 
-- **Player**: Analysis showed `404 Not Found` for specific `.m4s` (DASH) segments.
-- **Initial Assumption**: Because segments were missing, it was initially suspected to be a transcoding issue or a JIT Packager failure.
+<Frame>![CDN logs showing 404 errors for DASH segments](/images/docs/streaming/faq/case-study-hot-swapping-elemental/case-study-hot-swapping-elemental-404.png)</Frame>
 
-![404 errors](case-study-hot-swapping-elemental-404.png)
+### Identify the failure
 
-### Real-time Investigation Lifecycle
+The failure was isolated at three points in the delivery path:
 
-1.  **Traffic Audit**: We confirmed that segments were indeed missing from the origin buffer, not just the CDN cache.
-2.  **Ingester Validation**: Using SRT statistics, we noted that the bitrate remained stable, but "Late packet" drops were occurring exactly during source transitions.
-3.  **PTS/DTS Analysis**: We deployed our internal PTS/DTS stream monitor and detected that the PTS stalled and lost for several frames during the switch from the placeholder loop to the SDI feed.
+1. **CDN and origin**: Segments were confirmed missing from the origin buffer, not the CDN cache alone — ruling out a CDN-layer failure.
+2. **SRT ingest**: SRT statistics showed stable overall bitrate, but "Late packet" drops coincided exactly with source transitions.
+3. **PTS/DTS timestamp**: The PTS/DTS stream monitor detected a PTS (Presentation Time Stamp) stall lasting approximately 34 minutes during the switch from the placeholder loop to the SDI feed.
 
-## Solution: Real-Time Monitoring & Config
+### Root cause
 
-### 1. Gcore PTS/DTS Stream Monitor
+Two encoder misconfigurations caused the failure:
 
-We developed a dedicated stream monitor worker for PTS/DTS analysis that performs real-time timestamp analysis. This worker proactively flags AV sync drifts (>200ms) and timeline stalls, allowing us to notify broadcasters before small drifts become major 404 errors.
+- **SRT latency too low**: The encoder used the default 120 ms latency — a setting for low-jitter local networks. On a public internet path, packets arriving after 120 ms were dropped by the ingest layer, destabilizing the input timeline during source transitions.
+- **Incorrect timecode source**: Elemental Live was not set to System-Clock as the timecode source. During a source switch — from a placeholder loop to the live SDI feed — the timecode reference changed, causing PTS values to stall.
 
-Below is an excerpt from the monitor logs demonstrating the exact moment of the timeline stall:
+Both misconfigurations produced a single failure chain:
+
+> late packet drops during source transition → unstable input timeline → PTS stall → transcoder stops producing output segments → missing segments at origin → CDN reports `404`
+
+## Configure hot-swapping
+
+### AWS Elemental Live
+
+- **Timecode Source**: Set to **System-Clock**. This maintains a monotonic timeline and prevents PTS stalls when switching between sources — from a placeholder loop to the live SDI feed, for instance.
+- **Keyframe Interval**: Set to **1 second** to allow rapid recovery and synchronization during hot-swapping events.
+
+### Nimble Streamer
+
+- **Setup**: Configure in "Pass-through" mode for internal transport to minimize latency, with hardware-accelerated encoding only for the final handoff to Gcore.
+- **SRT latency**: Use at least 2000 ms (this deployment used 2000–2500 ms) for public internet transport. Set `mode=caller`.
+- **Keyframe Interval**: Match the encoder-side setting of **1 second**.
+
+### Why SRT latency matters
+
+SRT uses UDP with selective ARQ (Automatic Repeat reQuest). Lost packets are retransmitted within the configured latency window; packets that arrive after the window expires are dropped rather than held. This keeps the stream timeline stable — but only when the window is large enough to absorb jitter during a source transition on a public internet path.
+
+At 120 ms, the window was too narrow. During a hot-swap, the brief CPU and network spike caused packets to arrive late and be dropped. The resulting gap in the input stream destabilized the PTS and stopped transcoder output. At 2000–2500 ms, the retransmission window absorbs the transition spike without drops.
+
+The [SRT&nbsp;latency&nbsp;configuration](/streaming/live-streaming/protocols/srt#configure-srt-latency) article covers how to size this value for different network conditions.
+
+## Detect PTS stalls
+
+The Gcore PTS/DTS stream monitor flags AV sync drift (>200 ms) and timeline stalls, providing an early signal of timestamp problems before they disrupt downstream processing.
+
+The log excerpt below shows the stall. The `...` represents approximately 34 minutes of frozen PTS entries between the stall onset and recovery. The final line reflects the PTS reset to a new ingest cycle reference:
 
 ```log
 datetime,               pts,            pts_time,     status
@@ -116,41 +138,8 @@ datetime,               pts,            pts_time,     status
 ...
 [2026-01-01 09:31:43],  8776246432,     97513.849244
 [2026-01-01 09:31:47],  8776246432,     97513.849244  <-- NO FRAMES (4s GAP)
-[2026-01-01 09:31:47],  8776246432,     97513.849244  <-- PTS UNFROZEN
-[2026-01-01 09:31:47],  8775620240,     97506.891556
+[2026-01-01 09:31:47],  8776246432,     97513.849244  <-- LAST FROZEN PTS
+[2026-01-01 09:31:47],  8775620240,     97506.891556  <-- PTS RESET (new ingest cycle reference)
 ```
 
-### 2. SRT Latency & Stability
-
-Correctly sizing the SRT `latency` parameter is critical. In the analyzed case, the encoder was initially using the **default value of 120ms**—a setting optimized for low-jitter local networks (Ethernet). 
-
-While 120ms works in a controlled lab environment, it leaves almost no room for packet retransmission over the public internet. During even minor network fluctuations or high-CPU source switches, packets that arrived "late" (after 120ms) were dropped by the ingest layer, resulting in the 404 errors observed in the segments. 
-
-- [Deep Dive: SRT Latency and Buffer Management](/streaming/live-streaming/protocols/srt#srt-latency)
-
-### 3. Encoder Configuration Best Practices
-
-The investigation concluded that two critical adjustments were required to ensure seamless hot-swapping:
-
-**For AWS Elemental Live:**
-- **Timecode Source**: Must be set to **System-Clock**. This ensures a monotonic timeline and prevents PTS stalls during source switches (e.g., from placeholder to SDI).
-
-**For Nimble Streamer SRT Gateway:**
-- **Setup**: Configured in "Pass-through" mode for internal transport to minimize latency, with hardware-accelerated encoding only for the final handoff.
-- **SRT Parameters**: Use a `latency` of **2000-2500ms** (minimum) for public internet transport and `mode=caller`. This provides the necessary buffer for ARQ retransmissions, ensuring 100% data integrity before processing.
-- **Keyframe Interval**: Must be set to **1 second** on the encoder side to ensure rapid recovery and synchronization during hot-swapping events.
-
-## Conclusion & Resources
-
-Mastering a 24/7 broadcast requires treating your ingest as a precision-timed system. By utilizing SRT's selective retransmissions and ensuring monotonic timestamps, you can handle complex source transitions with 100% confidence.
-
-**Our Recommendation**: Before any major 24/7 live event, always perform a full-scale test-run including simulated "hot-swaps" between your primary and fallback signals. 
-
-At Gcore, our advantage is our **client-oriented service**. If you are planning a high-profile broadcast or need assistance with your encoder configuration, don't hesitate to reach out to our engineers. We are here to help you build the most resilient pipeline for your audience.
-
-### Further Reading
-- **[SRT Protocol](/streaming/live-streaming/protocols/srt)**: Detailed setup for software and hardware encoders.
-- **[PTS/DTS Timestamps](/streaming/live-streaming/pts-dts)**: Why invalid timestamps break CDN delivery and DASH packaging.
-- **[RTMP vs SRT Comparison](/streaming/live-streaming/protocols/rtmp-srt)**: Choosing the best protocol for your unstable uplink.
-
-By following these best practices, you can ensure a premium QoE for millions of end-users during business-critical broadcasts.
+For assistance with encoder configuration or high-profile broadcast support, contact [Gcore&nbsp;support](mailto:support@gcore.com).
