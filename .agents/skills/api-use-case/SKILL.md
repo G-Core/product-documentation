@@ -51,10 +51,11 @@ Select-String -Path "path/to/article.mdx" -Pattern 'MethodSection id="api"'
 4. Live-test every curl, Python SDK, and Go SDK code block (see Phase 2 for setup).
 5. Run the standalone tab test from Phase 7: mentally delete the Portal tab.
    List every topic the Portal tab covers that the API tab does not.
-6. Add missing operations. Fix broken code. Fix checker violations (API tab only).
-7. Run the checker again — exit code must be 0.
-8. Update `ai-navigation` if the tab content changed significantly.
-9. Show the diff to the user. **Do not commit.**
+6. **Create the Jira ticket and feature branch now** (Phase 3b). Do not write on `main`.
+7. Add missing operations. Fix broken code. Fix checker violations (API tab only).
+8. Run the checker again — exit code must be 0.
+9. Update `ai-navigation` if the tab content changed significantly.
+10. Show the diff to the user. **Do not commit** until the user says commit / коммит / push / пуш.
 
 ## Scope — read exactly these files
 
@@ -65,6 +66,7 @@ Select-String -Path "path/to/article.mdx" -Pattern 'MethodSection id="api"'
 5. `.agents/references/style-guide.md` — writing rules for the API section prose
 6. `.agents/references/procedures.md` — step format and ordering rules
 7. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+8. `.agents/references/product-routing.md` — Phase 3b only (Jira org unit and epic)
 
 Do not read other articles unless the existing article cross-links to them and
 the link is directly relevant to mapping a Portal step to an API call.
@@ -326,7 +328,64 @@ Key rules:
 
 ---
 
+## Phase 3b — Create Jira ticket and feature branch
+
+**Mandatory. Do this immediately after live testing and endpoint mapping, BEFORE writing any MDX.**
+
+Do not wait for the user to ask. Do not defer this to the PR skill. Do not write
+the API tab on `main`.
+
+This is the same rule as regression-test Phase 4: ticket first, branch second,
+then all edits land on the ticket branch.
+
+### If a Jira ticket already exists
+
+Use that ticket key. Do not create a duplicate. Checkout the existing branch
+(or create it from `main` if it does not exist yet) and continue to Phase 4.
+
+### Create the ticket
+
+Never call `jira_issue_create_tool`. Use the script:
+
+```powershell
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts/create_jira_ticket.py `
+  --summary "..." `
+  --description "..." `
+  --org-unit <id> `
+  --epic <epic-key>
+```
+
+Resolve `--org-unit` and `--epic` from `.agents/references/product-routing.md`
+by article path prefix (longest match). CDN is `16037` / `DOC-1936`. Cloud is
+`16036`. Default `--org-unit` is `16037` (Edge Network).
+
+Description uses Jira wiki markup (`h3.` headings, `{{path}}` for monospace).
+Include: article path, Add vs Audit mode, endpoints live-tested, Structure A or B.
+
+Report the created ticket key and URL to the user.
+
+### Create the feature branch immediately after the ticket
+
+```powershell
+cd C:\Projects\product-documentation_2
+git checkout main
+git pull origin main
+git checkout -b DOC-XXXX
+```
+
+Replace `DOC-XXXX` with the ticket key just returned by the script.
+
+All subsequent file edits go on this branch. Never write on `main`.
+
+Proceed to Phase 4 without asking for confirmation.
+
+---
+
 ## Phase 4 — Write the API section
+
+If `git branch --show-current` is `main`, Phase 3b was skipped. Stop writing.
+Create the ticket and branch first, then continue.
 
 **Run the checker after writing each code block (curl, Python SDK, Go SDK) before moving to the next:**
 ```powershell
@@ -696,10 +755,19 @@ Article: [path]
 API structure: [A — sequential / B — independent]
 Steps covered: [N]
 Real API tested: yes
+Ticket: DOC-XXXX
+Branch: DOC-XXXX
 ```
 
-When the user confirms the result looks good — load `.agents/skills/pr/SKILL.md`
-to create the branch, commit, and open a draft PR.
+The ticket and branch already exist from Phase 3b. Do not create another ticket
+or another branch.
+
+**Do not commit or push** until the user says one of: коммить / коммит / commit /
+пуш / пушь / push / закоммить / запушь.
+
+When the user asks to commit or push — commit only the article files changed in
+this session (never `git add .`), push the existing ticket branch, then load
+`.agents/skills/pr/SKILL.md` if the user also asked for a PR. Never push to `main`.
 
 
 ---

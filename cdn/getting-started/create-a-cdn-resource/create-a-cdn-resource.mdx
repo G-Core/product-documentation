@@ -1,10 +1,15 @@
 ---
 title: Create a CDN resource
 sidebarTitle: Create a resource
-ai-navigation: Create a CDN resource in the Customer Portal by selecting DNS management, configuring domains and origins, enabling WAAP, and activating delivery.
+ai-navigation: Create a CDN resource and origin group in the Customer Portal or via REST API to deliver content through Gcore edge servers.
 ---
 
-A CDN resource connects an origin to Gcore edge servers, which cache content and are hosted in geographically distributed data centers located closer to end users. An origin is required to create the resource in the [Gcore Customer Portal](https://portal.gcore.com); create it during setup or reuse an existing [origin group](/cdn/add-an-origin-group). To route production traffic through the CDN, access to the domain's DNS provider or registrar is required to point the domain to the resource's CNAME.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>A CDN resource connects an origin to Gcore edge servers, which cache content and are hosted in geographically distributed data centers located closer to end users. An origin is required to create the resource in the [Gcore Customer Portal](https://portal.gcore.com); create it during setup or reuse an existing [origin group](/cdn/add-an-origin-group). To route production traffic through the CDN, access to the domain's DNS provider or registrar is required to point the domain to the resource's CNAME.</p>
 
 <Steps>
   <Step title="Open the creation form">
@@ -110,10 +115,294 @@ A CDN resource connects an origin to Gcore edge servers, which cache content and
 
 ## Resource creation troubleshooting
 
-If content is not served through the CDN after setup, verify the following:
+<p>If content is not served through the CDN after setup, verify the following:</p>
 
 - The CNAME record, registrar nameservers, or parent-zone NS records match the values shown in the CDN resource's **Setup guide**.
 - DNS propagation has completed.
 - For **Do not delegate**, static file URLs use the CDN subdomain.
 
-If the issue persists, contact [Gcore&nbsp;Support](mailto:support@gcore.com).
+<p>If the issue persists, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a CDN resource programmatically in two steps: create an origin group that defines the content origin, then create the CDN resource that ties a delivery subdomain to that origin. DNS setup is completed at the domain registrar or DNS provider after the resource is created.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Quickstart
+
+<p>The scripts below create an origin group and CDN resource, then print the resource ID and delivery subdomain.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()  # Reads GCORE_API_KEY from env
+
+    # Step 1. Create an origin group
+    og = client.cdn.origin_groups.create(
+        name="my-origin-group",
+        sources=[{"source": "origin.example.com", "enabled": True}],
+    )
+
+    # Step 2. Create a CDN resource
+    resource = client.cdn.cdn_resources.create(
+        cname="cdn.example.com",
+        origin_group=og.id,
+        origin_protocol="HTTPS",
+    )
+
+    print(f"Resource ID:    {resource.id}")
+    print(f"Delivery CNAME: {resource.cname}")
+    print(f"CNAME target:   {resource.id}.gcdn.co")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()  // Reads GCORE_API_KEY from env
+        ctx := context.Background()
+
+        // Step 1. Create an origin group
+        og, err := client.CDN.OriginGroups.New(ctx, cdn.OriginGroupNewParams{
+            OfNoneAuth: &cdn.OriginGroupNewParamsBodyNoneAuth{
+                Name: "my-origin-group",
+                Sources: []cdn.OriginGroupNewParamsBodyNoneAuthSourceUnion{
+                    {OfHostSource: &cdn.OriginGroupNewParamsBodyNoneAuthSourceHostSource{
+                        Source:  "origin.example.com",
+                        Enabled: gcore.Bool(true),
+                    }},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+
+        // Step 2. Create a CDN resource
+        resource, err := client.CDN.CDNResources.New(ctx, cdn.CDNResourceNewParams{
+            Cname:          "cdn.example.com",
+            OriginGroup:    gcore.Int(og.ID),
+            OriginProtocol: cdn.CDNResourceNewParamsOriginProtocolHTTPS,
+        })
+        if err != nil {
+            panic(err)
+        }
+
+        fmt.Printf("Resource ID:    %v\n", resource.ID)
+        fmt.Printf("Delivery CNAME: %v\n", resource.Cname)
+        fmt.Printf("CNAME target:   %v.gcdn.co\n", resource.ID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step 1. Create an origin group
+
+<p>An origin group defines the server that CDN edge servers fetch content from. Create one group per origin server; reuse an existing group across multiple CDN resources when the origin is shared.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Unique label for the group |
+| `sources[].source` | Yes | Domain or IP address of the origin server |
+| `sources[].enabled` | No | Whether this source is active. Defaults to `true` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    og = client.cdn.origin_groups.create(
+        name="my-origin-group",
+        sources=[{"source": "origin.example.com", "enabled": True}],
+    )
+    print(og.id, og.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        og, err := client.CDN.OriginGroups.New(ctx, cdn.OriginGroupNewParams{
+            OfNoneAuth: &cdn.OriginGroupNewParamsBodyNoneAuth{
+                Name: "my-origin-group",
+                Sources: []cdn.OriginGroupNewParamsBodyNoneAuthSourceUnion{
+                    {OfHostSource: &cdn.OriginGroupNewParamsBodyNoneAuthSourceHostSource{
+                        Source:  "origin.example.com",
+                        Enabled: gcore.Bool(true),
+                    }},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(og.ID, og.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/origin_groups" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "sources": [
+          {"source": "origin.example.com", "enabled": true}
+        ]
+      }'
+    ```
+
+    <p>The API returns the created origin group:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "my-origin-group",
+      "sources": [
+        {
+          "source": "origin.example.com",
+          "backup": false,
+          "enabled": true
+        }
+      ],
+      "use_next": true,
+      "auth_type": "none"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step 2. Create a CDN resource
+
+<p>The CDN resource ties the delivery subdomain to the origin group. The `cname` value becomes the DNS name that end users access; it must match the subdomain configured at the DNS provider. After creation, use the returned resource `id` to construct the CNAME DNS record target: `{id}.gcdn.co`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cname` | Yes | Delivery subdomain — `cdn.example.com`. Cannot be changed after creation |
+| `originGroup` | Yes | Origin group ID from Step 1 |
+| `originProtocol` | No | Protocol CDN servers use to fetch content: `HTTP`, `HTTPS`, or `MATCH`. Defaults to `HTTP` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.create(
+        cname="cdn.example.com",
+        origin_group=10001,  # origin group ID from Step 1
+        origin_protocol="HTTPS",
+    )
+    print(resource.id, resource.cname, resource.status)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.New(ctx, cdn.CDNResourceNewParams{
+            Cname:          "cdn.example.com",
+            OriginGroup:    gcore.Int(10001),  // origin group ID from Step 1
+            OriginProtocol: cdn.CDNResourceNewParamsOriginProtocolHTTPS,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.Cname, resource.Status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "cname": "cdn.example.com",
+        "originGroup": 10001,
+        "originProtocol": "HTTPS"
+      }'
+    ```
+
+    <p>The API returns the created CDN resource:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "cname": "cdn.example.com",
+      "status": "processed",
+      "active": true,
+      "originGroup": 10001,
+      "originProtocol": "HTTPS"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## DNS setup
+
+<p>After the CDN resource is created, add a CNAME record at the domain's DNS provider to route traffic through the CDN. Use the `id` returned in Step 2 to determine the CNAME target.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `cdn.example.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co` — replace `{resource_id}` with the `id` returned in Step 2 |
+
+<p>DNS propagation takes up to 24 hours. To verify the record is live, run:</p>
+
+```bash
+dig cdn.example.com CNAME +short
+```
+
+<p>The output should show the `{resource_id}.gcdn.co` address.</p>
+
+</MethodSection>
+</MethodSwitch>
