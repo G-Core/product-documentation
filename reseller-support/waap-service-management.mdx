@@ -1,0 +1,80 @@
+---
+title: WAAP service management
+sidebarTitle: WAAP management
+ai-navigation: Describe how resellers activate WAAP, view its usage in reports, and pull per-client billable consumption via REST API.
+---
+
+WAAP activates for a customer through the same **Products** tab workflow as every other product, covered in [CDN service management](/reseller-support/cdn-service-management), and its usage appears as a **Product** filter option in the reseller's [usage reports](/reseller-support/manuals/generate-monthly-reports). The one capability outside those two flows is billable consumption data, available only through the WAAP Reseller API: the total or per-client accrual of protected domains, data volume, requests, or clean requests.
+
+<p>An [API&nbsp;token](/account-settings/api-tokens) is required. Set it as an environment variable before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Get aggregated consumption
+
+<p>Returns the selected metric aggregated across all matching clients into a single daily total for the reporting period.</p>
+
+| Parameter | Description |
+|---|---|
+| `metric` | Path parameter: `domains`, `volume`, `requests`, or `requests_clean`. |
+| `from` | Report start date (inclusive), in ISO 8601 format. Required. |
+| `to` | Report end date (exclusive), in ISO 8601 format. Required. |
+| `client_ids` | Client IDs to filter by. Omit to include every client. |
+| `limit` | Number of items to return, up to 100. Defaults to 100. |
+| `offset` | Number of items to skip. Defaults to 0. |
+
+```bash
+curl -s "https://api.gcore.com/waap/v1/prebilling/total/requests?from=2026-07-01&to=2026-07-08" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "limit": 100,
+  "offset": 0,
+  "count": 7,
+  "results": [
+    {"date": "2026-07-01", "amount": 128340},
+    {"date": "2026-07-02", "amount": 131980}
+  ]
+}
+```
+
+<p>The `amount` field reports the accrued value of the selected metric for that date. `{TODO: verify in live environment - confirm the exact unit for the "volume" metric, since the spec does not state it}`</p>
+
+## Get consumption per client
+
+<p>Returns the same metric keyed by client ID, with one list of daily entries per client instead of a single aggregated total. It accepts the same parameters as the aggregated total endpoint.</p>
+
+```bash
+curl -s "https://api.gcore.com/waap/v1/prebilling/breakdown/requests?from=2026-07-01&to=2026-07-08" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "limit": 100,
+  "offset": 0,
+  "count": 2,
+  "results": {
+    "clients": {
+      "12345": [
+        {"date": "2026-07-01", "amount": 54200},
+        {"date": "2026-07-02", "amount": 55830}
+      ],
+      "67890": [
+        {"date": "2026-07-01", "amount": 74140},
+        {"date": "2026-07-02", "amount": 76150}
+      ]
+    }
+  }
+}
+```
+
+<p>Each key under `clients` is a client ID, and its value is the same `date` and `amount` pairs returned by the aggregated total endpoint, scoped to that one client.</p>
