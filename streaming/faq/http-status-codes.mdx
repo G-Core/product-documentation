@@ -1,26 +1,28 @@
 ---
 title: Video streaming HTTP status codes
 sidebarTitle: HTTP status codes
-ai-navigation: Reference HTTP status codes 200, 403, 404, 422, 500, 502, 503, 504 returned by Gcore Video Streaming API when requesting manifests (.m3u8, .mpd) and chunks (.ts, .mp4), including geo-restriction, token authentication, CMAF format X-Err-Code headers, and transcoding error diagnostics.
+ai-navigation: Check HTTP status codes returned by Gcore Video Streaming for manifests and chunks, including CMAF X-Err-Code values for 404 errors.
 ---
 
-The following table includes all possible HTTP status codes returned when requesting videos and live streams for manifests (e.g., .m3u8 and .mpd) or chunks (e.g., .ts, .mp4, etc.).
+Gcore Video Streaming returns these HTTP status codes when requesting video and live stream manifests (.m3u8, .mpd) or chunks (.ts, .mp4):
 
 | Code | Status | Description |
 | ---- | ------ | ----------- |
-| 200 | OK | All OK |
-| 403 | Forbidden | Access is denied. If you use any distribution restriction, such as geo-restriction or token, you must satisfy this condition for access. |
-| 404 | Not Found | There is no video, or the live stream is temporarily not delivering chunks. Check the request link or activate your video.<br />For Live streams in CMAF format, you can check the extra header "X-Err-Code":<ul><li>1000 – Master-stream is missed. The stream is not pushed or not transcoded, so start a stream or restart transcoding.</li><li>2000 – Invalid StreamID. The identifier is not parsed from the requested URL; check the URL</li><li>3000 – Stream is not ready for delivery. Inspect the logs or contact support. Oftentimes, this happens when the master stream has wrong parameters, such as video and audio codecs, FPS, or bitrate. Verify the parameters to ensure everything works as expected.</li></ul> |
-| 422 | Unprocessable Content | This is advanced functionality (e.g., custom encoding presets). To enable it, contact your manager or the support team. |
-| 500 | Internal Server Error | An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your account. If the error is global, the information will be on the status page. |
-| 502 | Bad Gateway | An unexpected issue happened on the server. This may happen when VOD or Live can't be delivered over CDN because an incorrect response was received from an origin (storage or live transcoder). In this case, check the video processing status or live stream transcoding in your account. If the error is global, the information will appear on the status page. |
-| 503 | Service Unavailable | An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your account. If the error is global, the information will be on the status page. |
-| 504 | Gateway Time-out | Timeout for receiving data from the source. Try checking the status of video sending/ingesting and transcoding. |
+| 200 | OK | The request was successful |
+| 403 | Forbidden | Access is denied. If distribution restrictions are active — geo-restriction or token authentication — the request must satisfy those conditions |
+| 404 | Not Found | The requested video does not exist or is inactive, or the live stream is not producing chunks. Check the request URL and video status. For CMAF live streams, check the `X-Err-Code` response header — see the table below |
+| 422 | Unprocessable Content | The request requires custom encoding functionality that is not enabled for the account. Contact support to enable custom encoding presets |
+| 500 | Internal Server Error | An unexpected error occurred while processing the request. This is usually isolated to a specific video — verify the video processing status in the account. If the issue affects multiple streams or videos, current outages appear on the [Gcore&nbsp;status&nbsp;page](https://status.gcore.com/) |
+| 502 | Bad Gateway | The CDN received an invalid response from the VOD storage or live transcoder. Check the video processing status or live stream transcoding in the account. If the issue affects multiple streams or videos, current outages appear on the Gcore status page |
+| 503 | Service Unavailable | The server is temporarily unable to process the request. Retry after a short delay. For persistent errors, check the video processing status in the account. If the issue affects multiple streams or videos, current outages appear on the Gcore status page |
+| 504 | Gateway Time-out | Timeout receiving data from the source. Check whether the source is sending data and whether ingest and transcoding are active |
 
+## X-Err-Code header for CMAF live streams
 
+For CMAF live streams, a 404 response includes an `X-Err-Code` header with a numeric code that identifies the specific failure:
 
-<Info>
- 
-The system health status page is available at [https://status.gcore.com/](https://status.gcore.com/)
- 
-</Info>
+| X-Err-Code | Description |
+| ---------- | ----------- |
+| 1000 | Master stream is missing. No stream is being ingested, or transcoding is not producing output. Start sending the stream or restart transcoding |
+| 2000 | Invalid StreamID. The identifier could not be parsed from the requested URL — check the URL |
+| 3000 | Stream is not ready for delivery, typically because of invalid master-stream parameters — video or audio codec, FPS, or bitrate. Check the encoder parameters and logs. If the issue persists, contact support |
