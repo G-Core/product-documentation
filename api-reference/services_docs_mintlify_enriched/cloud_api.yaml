@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: d8ee19ecc12c
+  version: 1c42edce6c21
 servers:
 - url: https://api.gcore.com
 paths:
@@ -57607,7 +57607,7 @@ components:
           title: Protocol
           type: string
         share_settings:
-          $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
+          $ref: '#/components/schemas/CreateVastFileShareSettingsSerializer'
           description: Configuration settings for the share
         size:
           description: File share size in GiB
@@ -57640,6 +57640,63 @@ components:
       - protocol
       - size
       title: CreateVastFileShareSerializer
+      type: object
+    CreateVastFileShareSettingsSerializer:
+      additionalProperties: false
+      properties:
+        allowed_characters:
+          default: LCD
+          description: |-
+            Determines which characters are allowed in file names. Choose between:
+              - Lowest Common Denominator (LCD), allows only characters allowed by all VAST Cluster-supported protocols
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Allowed Characters
+          type: string
+        path_length:
+          default: LCD
+          description: |-
+            Affects the maximum limit of file path component name length. Choose between:
+              - Lowest Common Denominator (LCD), imposes the lowest common denominator file length limit of all VAST Cluster-supported protocols. With this option, the limitation on the length of a single component of the path is 255 characters
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Path Length
+          type: string
+        root_squash:
+          default: true
+          description: |-
+            Enables or disables root squash for NFS clients.
+              - If `true`, root squash is enabled: the root user is mapped to nobody for all file and folder management operations on the export.
+              - If `false`, root squash is disabled: the NFS client `root` user retains root privileges. Use this option if you trust the root user not to perform operations that will corrupt data.
+          example: true
+          examples:
+          - true
+          title: Root Squash
+          type: boolean
+        trash_access:
+          default: false
+          description: |-
+            Enables or disables access to the hidden `.vast_trash` folder of the share.
+              - If `false`, the folder is not accessible.
+              - If `true`, clients within the share's access range can move files and folders to `.vast_trash` for asynchronous deletion, which is much faster than deleting large directory trees in place.
+
+            Requires `root_squash` to be disabled, because VAST ignores trash folder access for hosts that are under root squash.
+          example: false
+          examples:
+          - false
+          title: Trash Access
+          type: boolean
+      title: CreateVastFileShareSettingsSerializer
       type: object
     CreateVirtualGpuClusterImageVolumeCheckLimitsSerializer:
       properties:
@@ -58794,7 +58851,7 @@ components:
           title: Name
           type: string
         share_settings:
-          $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
+          $ref: '#/components/schemas/UpdateVastFileShareSettingsSerializer'
           description: Configuration settings for the share
         tags:
           anyOf:
@@ -95007,7 +95064,7 @@ components:
         share_settings:
           anyOf:
           - $ref: '#/components/schemas/DdnFileShareSettingsInputSerializer'
-          - $ref: '#/components/schemas/VastFileShareSettingsInputSerializer'
+          - $ref: '#/components/schemas/UpdateVastFileShareSettingsSerializer'
           description: Configuration settings for the share
           title: Share Settings
         tags:
@@ -95627,6 +95684,67 @@ components:
         description: Tag value. Maximum 255 characters. Cannot contain tabs, newlines, empty string or start/end with whitespace. Trailing or leading whitespaces will be stripped. Set to `null` in order to delete this tag.
         examples:
         - my-tag-value
+    UpdateVastFileShareSettingsSerializer:
+      additionalProperties: false
+      properties:
+        allowed_characters:
+          description: |-
+            Determines which characters are allowed in file names. Choose between:
+              - Lowest Common Denominator (LCD), allows only characters allowed by all VAST Cluster-supported protocols
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+
+            Omit this field to keep the current setting.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Allowed Characters
+          type: string
+        path_length:
+          description: |-
+            Affects the maximum limit of file path component name length. Choose between:
+              - Lowest Common Denominator (LCD), imposes the lowest common denominator file length limit of all VAST Cluster-supported protocols. With this option, the limitation on the length of a single component of the path is 255 characters
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+
+            Omit this field to keep the current setting.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Path Length
+          type: string
+        root_squash:
+          description: |-
+            Enables or disables root squash for NFS clients.
+              - If `true`, root squash is enabled: the root user is mapped to nobody for all file and folder management operations on the export.
+              - If `false`, root squash is disabled: the NFS client `root` user retains root privileges. Use this option if you trust the root user not to perform operations that will corrupt data.
+
+            Omit this field to keep the current setting.
+          example: true
+          examples:
+          - true
+          title: Root Squash
+          type: boolean
+        trash_access:
+          description: |-
+            Enables or disables access to the hidden `.vast_trash` folder of the share.
+              - If `false`, the folder is not accessible.
+              - If `true`, clients within the share's access range can move files and folders to `.vast_trash` for asynchronous deletion, which is much faster than deleting large directory trees in place.
+
+            Requires `root_squash` to be disabled, because VAST ignores trash folder access for hosts that are under root squash.
+
+            Omit this field to keep the current setting.
+          example: false
+          examples:
+          - false
+          title: Trash Access
+          type: boolean
+      title: UpdateVastFileShareSettingsSerializer
+      type: object
     UpdateVolumeSerializer:
       properties:
         name:
@@ -96954,48 +97072,6 @@ components:
       - role
       title: VRRPIP
       type: object
-    VastFileShareSettingsInputSerializer:
-      additionalProperties: false
-      properties:
-        allowed_characters:
-          description: |-
-            Determines which characters are allowed in file names. Choose between:
-              - Lowest Common Denominator (LCD), allows only characters allowed by all VAST Cluster-supported protocols
-              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
-          enum:
-          - LCD
-          - NPL
-          example: LCD
-          examples:
-          - LCD
-          title: Allowed Characters
-          type: string
-        path_length:
-          description: |-
-            Affects the maximum limit of file path component name length. Choose between:
-              - Lowest Common Denominator (LCD), imposes the lowest common denominator file length limit of all VAST Cluster-supported protocols. With this (default) option, the limitation on the length of a single component of the path is 255 characters
-              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
-          enum:
-          - LCD
-          - NPL
-          example: LCD
-          examples:
-          - LCD
-          title: Path Length
-          type: string
-        root_squash:
-          default: true
-          description: |-
-            Enables or disables root squash for NFS clients.
-              - If `true` (default), root squash is enabled: the root user is mapped to nobody for all file and folder management operations on the export.
-              - If `false`, root squash is disabled: the NFS client `root` user retains root privileges. Use this option if you trust the root user not to perform operations that will corrupt data.
-          example: true
-          examples:
-          - true
-          title: Root Squash
-          type: boolean
-      title: VastFileShareSettingsInputSerializer
-      type: object
     VastShareSettingsOutputSerializer:
       properties:
         allowed_characters:
@@ -97028,6 +97104,13 @@ components:
           - true
           title: Root Squash
           type: boolean
+        trash_access:
+          description: Shows whether clients within the share's access range can move files and folders to the hidden `.vast_trash` folder for asynchronous deletion.
+          example: false
+          examples:
+          - false
+          title: Trash Access
+          type: boolean
         type_name:
           const: vast
           description: Vast file share type
@@ -97038,6 +97121,7 @@ components:
       - root_squash
       - path_length
       - allowed_characters
+      - trash_access
       title: VastShareSettingsOutputSerializer
       type: object
     VirtualClusterListSerializer:
