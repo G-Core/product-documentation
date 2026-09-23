@@ -1,13 +1,44 @@
 ---
 title: API
+ai-navigation: Describe the reseller API references for IAM, CDN, Cloud, FastEdge, WAAP, and Billing, plus Admin Portal token authentication.
 ---
 
-For managing Reseller's settings via API use the documentation.
+The reseller API exposes the same customer account, branding, and product configuration operations available in the [Admin Portal](https://admin.gcore.top/), split across six references: IAM, CDN, Cloud, FastEdge, WAAP, and Billing. Each reference covers a different product's reseller-only endpoints, layered on top of the same base API used by the [Gcore Customer Portal](https://portal.gcore.com).
 
-It can be found by [link](/api-reference/iam-resellers) from the Admin Portal.
+## API references by product
 
-<Frame>
-![API](https://assets.gcore.pro/docs/reseller-support/api/api-documentation-10.png)
-</Frame>
+Each product's reseller endpoints are documented separately, grouped by the operations they expose.
 
-**Important!** The API documentation cannot be reached by https://api.gcore.com/docs/ link.
+| Product | Covers | Reference |
+|---------|--------|-----------|
+| IAM | Client accounts, sellers, product availability, service status, branding, and notification settings | [IAM reseller](/api-reference/iam-resellers) |
+| CDN | CDN resource details, activity logs, feature activation, and usage statistics | [CDN reseller](/api-reference/cdn-resellers) |
+| Cloud | Reseller cloud quotas | [Cloud reseller](/api-reference/cloud-resellers) |
+| FastEdge | FastEdge usage statistics | [FastEdge reseller](/api-reference/fastedge-resellers) |
+| WAAP | Pre-billing usage data | [WAAP reseller](/api-reference/waap-resellers) |
+| Billing | Client addendums, expenses, tariff plans, reports, and ERP invoices | [Billing reseller](/api-reference/billing) |
+
+The IAM reference covers the widest range of operations, since it manages the customer accounts the other five references act on.
+
+## Authentication
+
+Reseller accounts authenticate differently from customer accounts, since a reseller can't create an [API&nbsp;token](/account-settings/api-tokens). The Admin Portal issues one token per reseller account instead, retrieved from the **Profile** section by clicking **Copy token**.
+
+Pass the token as an `APIKey` value in the `Authorization` header, the same format customer API tokens use:
+
+```http
+GET https://api.gcore.com/iam/clients
+Authorization: APIKey <RESELLER_TOKEN>
+```
+
+The IAM reference's Account operations also include generating an admin token for a specific client or user, which is the API equivalent of the **Log in** action described in [getting started](/reseller-support/getting-started).
+
+## Quick start
+
+Listing customer accounts confirms the token works:
+
+```bash
+curl -H "Authorization: APIKey $RESELLER_TOKEN" "https://api.gcore.com/iam/clients"
+```
+
+A `200 OK` response returns the same accounts visible in the Admin Portal's **Accounts** section.
