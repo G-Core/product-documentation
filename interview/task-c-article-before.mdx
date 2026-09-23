@@ -1,0 +1,124 @@
+---
+title: "Always Online — before"
+sidebarTitle: "Always Online (before)"
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The Always Online option serves stale cached content when the origin is unavailable. CDN checks origin availability on each incoming request and switches back to live content when the origin recovers. Stale responses include the `X-Cache: Stale` header.</p>
+
+<p>The following conditions trigger stale content delivery:</p>
+
+- **error** — network or connectivity issue
+- **updating** — cache is being refreshed
+- Timeout
+- Invalid Header
+- Error 500
+- Error 502
+- Error 503
+- Error 504
+- Error 403
+- Error 404
+- Error 429
+
+<Warning>
+When the origin is unavailable, the CDN cache may not contain all assets needed to render a complete page. Some images, scripts, or stylesheets may be missing from the stale response.
+</Warning>
+
+## Enable Always Online
+
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the resource.
+  </Step>
+  <Step title="Open Always Online settings">
+    In the sidebar, click **Cache**, then click **Always online**.
+  </Step>
+  <Step title="Enable the feature">
+    Enable the **Enable always online** toggle.
+  </Step>
+  <Step title="Select error codes">
+    In the **Serve stale cached content in case of the following errors** field, select the error codes for which CDN should serve stale content.
+  </Step>
+  <Step title="Save">
+    Click **Save changes**.
+  </Step>
+</Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Enable Always Online for a CDN resource and configure the error conditions that trigger stale content delivery.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Enable Always Online
+
+<p>Send a `PATCH` request with the `stale` option. The `triggers` array specifies which error conditions activate stale delivery.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/${RESOURCE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "stale": {
+            "enabled": true,
+            "triggers": [
+              "error", "updating", "timeout", "invalid_header",
+              "http_403", "http_404", "http_429",
+              "http_500", "http_502", "http_503", "http_504"
+            ]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns the updated resource object. Verify the `options.stale` field reflects the configured triggers.</p>
+
+    ```json
+    {
+      "id": 123456,
+      "cname": "cdn.example.com.gcdn.co",
+      "options": {
+        "stale": {
+          "enabled": true,
+          "triggers": ["error", "updating", "timeout", "invalid_header", "http_403", "http_404", "http_429", "http_500", "http_502", "http_503", "http_504"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Disable Always Online
+
+<p>To disable Always Online, set `enabled` to `false`.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/${RESOURCE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"options": {"stale": {"enabled": false}}}'
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

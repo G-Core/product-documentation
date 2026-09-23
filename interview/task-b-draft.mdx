@@ -1,0 +1,225 @@
+---
+title: "Set up DNS for a web application"
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Setting up DNS correctly is required before a web application can be reached by its domain name. This guide covers creating a DNS zone, configuring the main records, and delegating the domain to Gcore.</p>
+
+## Prerequisites
+
+- A Gcore account.
+- A domain name.
+
+## Step 1. Create a DNS zone
+
+<Steps>
+  <Step title="Open DNS">
+    Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **DNS** in the left sidebar.
+  </Step>
+  <Step title="Add a zone">
+    Click **Add zone** and enter your domain name (for example, `example.com`).
+
+    After the zone is created, Gcore assigns a set of nameservers to it. You will use these in a later step.
+  </Step>
+</Steps>
+
+## Step 2. Add an A record for the root domain
+
+<Steps>
+  <Step title="Add a record">
+    In the DNS zone editor, click **Add record**. Select **A** as the record type.
+  </Step>
+  <Step title="Configure the record">
+    Leave the **Name** field empty (or enter `@`) to target the root domain. Enter the IP address of your web server in the **Value** field.
+
+    Set the TTL to **300 seconds**. A short TTL makes it easier to correct mistakes during the initial setup.
+
+    <Note>
+    You will need your account login credentials and ownership of the domain name to proceed with these steps. Make sure you have access to your domain registrаr before continuing.
+    </Note>
+  </Step>
+  <Step title="Save">
+    Click **Add record** to save.
+  </Step>
+</Steps>
+
+## Step 3. Add a CNAME record for www
+
+<Steps>
+  <Step title="Add a record">
+    Click **Add record**. Select **CNAME** as the record type.
+  </Step>
+  <Step title="Configure the record">
+    Enter `www` in the **Name** field. In the **Value** field, enter your root domain followed by a dot: `example.com.`
+
+    Set the TTL to **3600 seconds** for long-term stability.
+  </Step>
+  <Step title="Save">
+    Click **Add record** to save.
+  </Step>
+</Steps>
+
+## Step 4. Wait for DNS propagation
+
+<p>Before adding any additional records, allow time for the changes to take effect. Since Gcore's DNS platform uses anycast routing, records typically reach global res�lvers within 15 minutes, though actual propagation depends on your ISP's caching interval and the TTL configured on the previous DNS provider. Once propagation is complete, proceed to the next step.</p>
+
+## Step 5. Add MX records for email
+
+<p>If you plan to send and receive email using your domain, add MX records now.</p>
+
+<Steps>
+  <Step title="Add a record">
+    Click **Add record** and select **MX**.
+  </Step>
+  <Step title="Configure the record">
+    Enter the mail server address provided by your email provider and set the priority value as instructed by them. You can add multiple MX records with different priorities for redundancy.
+  </Step>
+  <Step title="Save">
+    Click **Add record** to save.
+  </Step>
+</Steps>
+
+## Step 6. Update your nameservers
+
+<p>Log in to your domain registrаr and update the domain's nameservers to point to Gcore. After saving the changes, DNS resolution for your domain will be handled by Gcore's infrastructure.</p>
+
+<Warning>
+Propagation after a nameserver change can take up to 48 hours. During this time, some users may still be resolved by your previous DNS provider.
+</Warning>
+
+## Step 7. Verify the configuration
+
+<p>To confirm that DNS is working, open your domain in a browser. If the web application loads correctly, the configuration is complete.</p>
+
+<p>If the site is not loading, wait a few more minutes and try again. DNS propagation can sometimes take longer depending on your location and ISP.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a DNS zone and add the records required for a web application using the Gcore DNS API.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export ZONE_NAME="{YOUR_DOMAIN}"
+```
+
+## Create a DNS zone
+
+<p>Create the zone. Gcore automatically assigns nameservers `ns1.gcorelabs.net` and `ns2.gcdn.services` to the new zone.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"${ZONE_NAME}\"}"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1300358,
+      "name": "example.com"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add an A record
+
+<p>Create an A record pointing the root domain to your web server IP address.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "@",
+        "type": "A",
+        "ttl": 300,
+        "resource_records": [{"content": ["192.0.2.1"]}]
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Add a CNAME record for www
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"www\",
+        \"type\": \"CNAME\",
+        \"ttl\": 3600,
+        \"resource_records\": [{\"content\": [\"${ZONE_NAME}.\"]}]
+      }"
+    ```
+  </Tab>
+</Tabs>
+
+## Add MX records
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/rrsets" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "@",
+        "type": "MX",
+        "ttl": 3600,
+        "resource_records": [
+          {"content": ["10 mail1.example.com."]},
+          {"content": ["20 mail2.example.com."]}
+        ]
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Check delegation status
+
+<p>Verify that the domain is delegated to Gcore nameservers. Update NS records at the registrar first, then run this check.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/dns/v2/analyze/${ZONE_NAME}/delegation-status" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "zone_exists": true,
+      "gcore_authorized_count": 5,
+      "non_gcore_authorized_count": 0
+    }
+    ```
+
+    <p>`gcore_authorized_count` greater than zero confirms the zone is delegated to Gcore. A value of `0` means propagation is still in progress.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
