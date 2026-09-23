@@ -762,6 +762,11 @@ Branch: DOC-XXXX
 The ticket and branch already exist from Phase 3b. Do not create another ticket
 or another branch.
 
+If a planning file exists for this batch (for example `_planning/cdn-api-tabs.md`),
+mark the finished article `[V]` with the ticket key immediately after the work is
+on `main`. Mark the next article in progress before starting it. Never leave the
+plan stale.
+
 **Do not commit or push** until the user says one of: коммить / коммит / commit /
 пуш / пушь / push / закоммить / запушь.
 
