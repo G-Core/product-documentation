@@ -1,6 +1,6 @@
 ---
 title: "Logs Uploader"
-ai-navigation: Configure CDN Logs Uploader to export request and cache logs to Object Storage, S3, FTP, SFTP, HTTP, or Alibaba SLS destinations.
+ai-navigation: Configure CDN Logs Uploader to export request and cache logs to Object Storage, S3, FTP, SFTP, HTTP, or Alibaba Cloud Simple Log Service (SLS) destinations.
 ---
 
 Logs Uploader automatically exports CDN resource logs to configured storage destinations in near real time, providing continuous visibility into request activity and cache behavior. Exported logs can also contain requests processed by mid-tier cache servers when [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes these logs.
@@ -13,7 +13,7 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
 
 In the Customer Portal, open **CDN**, click **Logs**, and select **Logs Uploader**.
 
-Control which fields are exported, how frequently the logs are delivered, and which storage service they are sent to. Supported destinations include Gcore Object Storage, Amazon Simple Storage Service (S3)–compatible storage, File Transfer Protocol (FTP) and SSH File Transfer Protocol (SFTP) servers, HTTP(S) endpoints, and Alibaba SLS (Simple Log Service). Use these exports for observability, analytics, or compliance workflows while managing data volume and processing requirements.
+Control which fields are exported, how frequently the logs are delivered, and which storage service they are sent to. Supported destinations include Gcore Object Storage, Amazon Simple Storage Service (S3)–compatible storage, File Transfer Protocol (FTP) and SSH File Transfer Protocol (SFTP) servers, HTTP(S) endpoints, and Alibaba Cloud Simple Log Service (SLS). Use these exports for observability, analytics, or compliance workflows while managing data volume and processing requirements.
 
 The **Logs Uploader** screen has three tabs:
 
@@ -724,7 +724,7 @@ The exported log schema includes standard CDN request fields, internal status co
 When a CDN resource has [WAAP](/waap) enabled, the Logs Uploader automatically appends WAAP security event fields to each request log line, alongside the CDN fields described above. Each request produces a single merged log entry, so CDN access data and the matching WAAP security verdict arrive correlated on the same delivery channel as existing CDN logs — no separate file and no extra configuration.
 
 <Note>
-WAAP fields are added only when WAAP is enabled on the CDN resource. Confirm this in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list): on **CDN** > **CDN resources**, open the resource **Security** settings and check that the **WAAP** toggle is on, or confirm that the resource **WAAP Status** is Active. For resources where WAAP is not enabled, the CDN log line is unchanged.
+WAAP fields are added only when WAAP is enabled on the CDN resource. Confirm this in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). The **WAAP Status** column on the **CDN** > **CDN resources** page shows Active when WAAP is enabled. The **WAAP** toggle is in that resource's **Security** settings. For resources where WAAP is not enabled, the CDN log line is unchanged.
 </Note>
 
 <Note>
@@ -802,30 +802,30 @@ This section covers delivery failures after a target or configuration is saved, 
 
 A target showing `Authentication complete` confirms that Logs Uploader can reach and authenticate to the destination. It does not guarantee that log files are being delivered. Check the following if files are not appearing:
 
-**Delivery interval not elapsed**
+#### Unelapsed delivery interval
 
 Files are delivered at the end of each **Time interval** configured in the linked policy (minimum 5 minutes). Wait at least one full interval after CDN traffic has been generated before expecting the first file.
 
-**No CDN traffic to log**
+#### Missing CDN traffic
 
 If the CDN resources covered by the configuration receive no requests during an interval and **Include empty logs** is not selected, no file is sent. Enable **Include empty logs** in the policy to confirm delivery is working even when traffic is absent.
 
-**Destination path does not exist**
+#### Missing destination path
 
 For S3, FTP, SFTP, and SLS targets, the bucket, directory, or logstore specified in the target must already exist. Logs Uploader does not create missing paths. Verify that the destination path was created in the storage service before expecting files.
 
-**Insufficient write permissions**
+#### Insufficient write permissions
 
 The credentials used by the target must have write permission to the destination path. For S3 targets, the access key must have `s3:PutObject` (and `s3:GetBucketLocation` for some providers) on the target bucket. For FTP and SFTP targets, the login must have write access to the prepend directory. For SLS targets, the access key must have `Write` permission on the target logstore.
 
-**HTTP(S) target not returning 2xx**
+#### Non-2xx HTTP(S) response
 
-Logs Uploader treats any non-`2xx` response from an HTTP(S) endpoint as a delivery failure and retries. Ensure the receiver endpoint is running, returns `200 OK` or another `2xx` status, and does not time out before processing the request body. If compression is enabled on the target, the receiver must accept gzip-encoded bodies (`Content-Encoding: gzip`).
+Logs Uploader treats any non-`2xx` response from an HTTP(S) endpoint as a delivery failure and retries. The receiver endpoint must be running, return `200 OK` or another `2xx` status, and not time out before processing the request body. If compression is enabled on the target, the receiver must accept gzip-encoded bodies (`Content-Encoding: gzip`).
 
-**Configuration not linked to traffic-generating resources**
+#### Configuration resource scope
 
 A configuration set to **Specific Resources** only delivers logs for the CDN resources explicitly listed. Verify that the resources generating traffic are included in the configuration. Configurations set to **All Resources** cover all resources, including newly created ones.
 
-**Checking delivery errors**
+#### Delivery error details
 
 Delivery error details are not currently displayed in the portal. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) to request delivery logs for a specific target or time range.
