@@ -1,0 +1,77 @@
+---
+title: "Developer notes"
+sidebarTitle: "Dev notes"
+---
+
+Internal engineering notes. Not reviewed for accuracy. Some entries may be outdated.
+
+---
+
+## Custom error pages — Implementation notes
+
+**Author:** dmitry.k
+**Last updated:** see git blame
+
+### How it works internally
+
+When a CDN edge node encounters an error matching the configured code, it issues an internal subrequest to the configured URL. The subrequest is made from the edge node, not proxied from the user's connection. The response body is buffered and served to the user with the original error status code (unless overridden).
+
+The subrequest uses the same pull protocol (HTTP/HTTPS) configured on the CDN resource origin group.
+
+### URL validation
+
+Validated at save time:
+- Must parse as a valid URL (RFC 3986).
+- Scheme must be `http` or `https`.
+- Max length: **512 characters.**
+- Host must not be a private IP range (10.x, 172.16–31.x, 192.168.x). Requests to internal ranges are blocked.
+
+> Note: the 512-character limit was the original spec. Product requested an increase to 2048 in ticket CDN-8801. Check whether the limit has been updated in the validation code before documenting. Last I checked (3 weeks ago) the code still had 512.
+
+### Status code override
+
+Optional. If set, the CDN serves the custom page with the specified status code instead of the original error code. Useful for serving a 200 response on a 404 to avoid indexing issues.
+
+Accepted range: any valid HTTP status code. No server-side validation beyond range check (100–599).
+
+### Caching
+
+The custom error page response is cached according to the CDN resource's cache rules. There is no special caching bypass for error responses. If the origin sets `Cache-Control: no-store` on the custom error page, it will not be cached.
+
+> PM asked about serving it always fresh. This is not the current behavior. Ticket CDN-8842 is open to discuss whether to add a "no-cache" override option. Until resolved, document based on actual behavior: follows CDN cache rules.
+
+### Feature flag
+
+Internal flag: `cdn_custom_error_pages_enabled`. Disabled by default. Enabled per account by support.
+
+### Known edge cases
+
+- If the custom error page URL returns a redirect (3xx), CDN follows one level of redirect. Beyond that, falls back to default error page.
+- If the URL returns a non-2xx response, CDN falls back to default error page.
+- On resources with **Large files delivery optimization**, fallback behavior on cache miss may be delayed (CDN-8891, under investigation).
+
+---
+
+## Purge API — Notes on rate limiting implementation
+
+Rate limiting is enforced at the resource level using a token bucket algorithm. Tokens refill at 1 token per 30 seconds for Purge all and Purge by pattern (giving 2 requests/min). For Purge by URL, 2 tokens per 30 seconds (4 tokens/min... wait, this needs re-checking, the product spec says 2/min total. Ask alex.v).
+
+---
+
+## Origin shielding — Internal architecture note
+
+Shield nodes are deployed in 12 locations. Selection is presented to customers as a dropdown of ~40 data center names, but many of those map to the same underlying shield node. The UI name and the actual PoP are not 1:1.
+
+---
+
+## Old / possibly outdated entries below this line
+
+---
+
+## CDN statistics API v1 deprecation (2023)
+
+The XML-based statistics API was deprecated in 2023 and removed in v2.12.0. Any internal tools using `/cdn/resources/{id}/stats.xml` need to migrate to the JSON API.
+
+## Custom domain CNAME propagation (2022 note)
+
+When a customer adds a custom CNAME, propagation can take up to 24 hours in some regions due to ISP-level caching. This was a customer complaint in 2022; no action taken on our side, behavior is expected.
