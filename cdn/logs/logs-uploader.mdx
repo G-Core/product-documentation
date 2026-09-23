@@ -1,558 +1,144 @@
 ---
 title: "Logs Uploader"
-ai-navigation: Configure CDN Logs Uploader to export request and cache logs to Object Storage, S3, FTP, SFTP, HTTP, or Alibaba Cloud Simple Log Service (SLS) destinations.
+ai-navigation: Export CDN request logs to HTTP or object storage via the Customer Portal or REST API using a policy, target, and configuration.
 ---
 
-Logs Uploader automatically exports CDN resource logs to configured storage destinations in near real time, providing continuous visibility into request activity and cache behavior. Exported logs can also contain requests processed by mid-tier cache servers when [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes these logs.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Logs Uploader exports CDN request and cache logs to a storage destination as they arrive. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes those logs, the export also contains requests processed by mid-tier cache servers.</p>
+
+<p>To export logs, create a policy that defines what to export, connect a target that receives the logs, then create a configuration that links them to CDN resources.</p>
+
+<p>Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
 
 <Note>
 Logs Uploader must be enabled for the account before the configuration UI is available. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use **Contact support** on the Logs Uploader page in the [Gcore Customer Portal](https://portal.gcore.com).
 </Note>
 
-## Logs Uploader configuration
+## Create a policy
 
-In the Customer Portal, open **CDN**, click **Logs**, and select **Logs Uploader**.
+<p>A policy selects the log fields, the file name format, and how often files rotate. The **Time interval** is 5–60 minutes and defaults to 5. If no requests arrive during an interval and **Include empty logs** is selected, Logs Uploader sends an empty file of about 20 bytes.</p>
 
-Control which fields are exported, how frequently the logs are delivered, and which storage service they are sent to. Supported destinations include Gcore Object Storage, Amazon Simple Storage Service (S3)–compatible storage, File Transfer Protocol (FTP) and SSH File Transfer Protocol (SFTP) servers, HTTP(S) endpoints, and Alibaba Cloud Simple Log Service (SLS). Use these exports for observability, analytics, or compliance workflows while managing data volume and processing requirements.
+<p>In the [Customer&nbsp;Portal](https://portal.gcore.com), open **CDN** → **Logs** → **Logs Uploader**, then **Policies**, and click **Add policy**.</p>
 
-The **Logs Uploader** screen has three tabs:
+1. Enter a name.
+2. Leave **Include empty logs** cleared to skip empty intervals, or select it to confirm delivery when there is no traffic.
+3. Select **Include logs from origin shielding** when Origin Shielding is [enabled](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) and those mid-tier requests should appear in the export.
+4. Choose the log fields. The [field table](#log-schema-and-field-definitions) lists each field and its meaning.
+5. Set delimiter, separator, file name format, time interval, and file size limit. The size limit applies before compression — the delivered file can be up to 99% smaller.
+6. Click **Add policy**.
 
-- **Configurations** — link policies and targets to deliver logs
-- **Policies** — set export rules and schedules
-- **Targets** — connect upload destinations
+<p>To change an existing policy, open it by name. The same settings apply; click **Save changes** when done.</p>
 
-<Tip>
-  A configuration requires an existing policy and target.
-</Tip>
+## Create a target
 
-### First-time setup
+<p>A target is the destination. `Authentication complete` means Logs Uploader can reach and authenticate to that destination — it does not mean a log file has arrived.</p>
 
-A configuration links a policy and a target. Create them in this order before creating the configuration.
-
-<Steps>
-  <Step title="Create a policy">
-    Go to the **Policies** tab and click **Add policy**. Select the log fields, set the time interval, and configure the file name format and size limit.
-  </Step>
-  <Step title="Create a target">
-    Go to the **Targets** tab and click **Add target**. Select a destination type, such as S3, FTP, SFTP, or HTTP(S), and enter the connection details. A green `Authentication complete` status confirms the target is reachable.
-  </Step>
-  <Step title="Create a configuration">
-    Go to the **Configurations** tab and click **Add configuration**. Link the policy and target created in the previous steps, then click **Add configuration** to activate.
-  </Step>
-  <Step title="Verify log delivery">
-    Generate CDN traffic to a resource covered by the configuration. After the configured time interval has elapsed, check the destination for a new log file. Confirm that the file contains request entries with the expected fields.
-  </Step>
-</Steps>
+<p>On the **Targets** tab, click **Add target**, enter a name, and configure one destination:</p>
 
 <Tabs>
-  <Tab title="Configurations">
-    <AccordionGroup>
-      <Accordion title="Configurations tab">
-        Select the **Configurations** tab to view a table of configurations:
+  <Tab title="S3 Gcore">
+    [Gcore&nbsp;Object&nbsp;Storage](https://gcore.com/storage)
 
-        - Configuration **ID**\
-          Click the column header to sort the table by configuration IDs.
-        - **Configuration** name
-          - Click the column header to sort the table by configuration names.
-          - Click a configuration name to edit the configuration.
+    1. Select **HTTP** or **HTTPS** and specify the **Endpoint**.
+    2. Enter the **Access key ID** and **Secret Access Key**.
+    3. Enter the storage **region** and an existing **bucket**.
+    4. Optionally, specify an existing **folder** inside the bucket.
 
-        <Tip>
-          Use the search box at the top of the table to filter configurations by name or ID.
-        </Tip>
-        - **Policy**\
-          Click a policy name to edit the linked policy.
-        - **Target**\
-          Click a target name to edit the linked target.
-        - **Status**\
-          Linked target status is displayed in the **Status** column. To re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-        - **More options**\
-          Click **⋯** (more options) in the last column to **Edit**, **Disable**, or **Delete** the configuration in that row.
-        - **Add configuration**\
-          Click **Add configuration** (top right) to create a new configuration.
-      </Accordion>
-      <Accordion title="Configuration creation">
-        <Steps>
-          <Step title="Open the configuration form">
-            Navigate to **Logs Uploader**, select the **Configurations** tab, and click **Add configuration**.
-
-            <Info>
-              The **Enable configuration** switch appears at the top of the **Add configuration** window; to disable the configuration, toggle the switch to the left.
-            </Info>
-          </Step>
-          <Step title="Select resources">
-            Select the resources for this configuration:
-
-            <Tabs>
-              <Tab title="All Resources">
-                For all resources, including newly created:
-
-                1. Enter a **Name** for the configuration.
-              </Tab>
-              <Tab title="Specific Resource(s)">
-                For the specified CDN resources only:
-
-                1. Enter a **Name** for the configuration.
-                2. Select the **CDN resources** to link from the drop-down list.
-
-                <Tip>
-                  Use the search box at the top of the drop-down list to filter resources by CNAME and ID.
-                </Tip>
-              </Tab>
-            </Tabs>
-          </Step>
-          <Step title="Link a policy and target">
-            1. Select a **Policy** to link from the drop-down list.
-            2. Select a **Target** to link from the drop-down list.
-          </Step>
-          <Step title="Add the configuration">
-            Click **Add configuration** again to finish and return to the Logs Uploader. The new configuration appears in the table on the **Configurations** tab.
-
-            <Tip>
-              Configurations with correctly configured targets show `Authentication complete` in the **Status** column; to re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-            </Tip>
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Configuration editing">
-        <Steps>
-          <Step title="Open the configuration">
-            1. Navigate to **Logs Uploader** and select the **Configurations** tab.
-            2. Click the configuration name in the **Configurations** column, or click **⋯** (more options) at the end of that row and select **Edit**.
-
-            <Info>
-              The **Enable configuration** switch appears at the top of the **Edit configuration** window; to disable the configuration, toggle the switch to the left.
-            </Info>
-          </Step>
-          <Step title="Update resources">
-            Select the resources for this configuration:
-
-            <Tabs>
-              <Tab title="All Resources">
-                For all resources, including newly created:
-
-                1. Edit the **Name** field.
-              </Tab>
-              <Tab title="Specific Resource(s)">
-                For the specified CDN resources only:
-
-                1. Edit the **Name** field.
-                2. Select the **CDN resources** to link from the drop-down list.
-
-                <Tip>
-                  Use the search box at the top of the drop-down list to filter the list by CNAME and ID.
-                </Tip>
-              </Tab>
-            </Tabs>
-          </Step>
-          <Step title="Update the links">
-            1. Select a **Policy** to link from the drop-down list.
-            2. Select a **Target** to link from the drop-down list.
-          </Step>
-          <Step title="Save the configuration">
-            Click **Save changes** (top right) to return to the Logs Uploader.
-
-            <Tip>
-              Configurations with correctly configured targets show `Authentication complete` in the **Status** column; to re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-            </Tip>
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Configuration status and deletion">
-        <Steps>
-          <Step title="Find the configuration">
-            Navigate to **Logs Uploader** and select the **Configurations** tab.
-          </Step>
-          <Step title="Apply the action">
-            In the row with the configuration name, click **⋯** (more options) in the last column and select **Enable**, **Disable**, or **Delete**.
-
-            <Tip>
-              A configuration can also be enabled or disabled using the **Enable configuration** switch in **Edit configuration** or **Add configuration** windows.
-            </Tip>
-          </Step>
-        </Steps>
-      </Accordion>
-    </AccordionGroup>
+    <Info>
+      Connection details appear when the storage is [created](/storage/create-an-s3-or-sftp-storage#object-storage). Endpoint, region, and new keys are available from **⋯** on the Object Storages table.
+    </Info>
   </Tab>
-  <Tab title="Policies">
-    <AccordionGroup>
-      <Accordion title="Policies tab">
-        Select the **Policies** tab for a table of policies:
+  <Tab title="S3 OSS">
+    [Alibaba&nbsp;Cloud&nbsp;OSS](https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1)
 
-        - Policy **ID**\
-          Click the column header to order the table by policy IDs.
-        - **Policy** name
-          - Click the column header to order the table by policy names.
-          - Click a policy name to edit the policy.
+    1. Enter the **Access Key ID** and **Secret Access Key**.
+    2. Enter the **cloud region** and an existing **bucket**.
+    3. Optionally, specify an existing folder inside the bucket.
 
-        <Tip>
-          Use the search box at the top of the table to filter policies by name or ID.
-        </Tip>
-        - **Configuration**\
-          Click a configuration name to edit the linked configuration.
-
-          <Tip>
-            Click **Select configuration** at the top of the table, then select one or more linked configurations from the drop-down list to filter the policies table. Use the search box at the top of this drop-down list to filter list results by configuration name or ID.
-          </Tip>
-        - **More options**\
-          Click **⋯** (more options) in the last column to **Edit** or **Delete** the policy in that row.
-        - **Add policy**\
-          Click **Add policy** (top right) to create a new policy.
-      </Accordion>
-      <Accordion title="Policy creation">
-        <Steps>
-          <Step title="Open the policy form">
-            Navigate to **Logs Uploader**, select the **Policies** tab, and click **Add policy**.
-          </Step>
-          <Step title="Configure policy options">
-            1. Enter a **Name** for the policy.
-            2. Clear the **Include empty logs** checkbox to exclude empty logs.
-            3. Select **Include logs from origin shielding** to receive these logs.
-
-            <Note>
-              This option is only available if Origin Shielding is [enabled](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) for the account.
-            </Note>
-          </Step>
-          <Step title="Select log fields">
-            Use the multi-select picker to select the **Log fields** to include:
-
-            1. To remove a log field, click **✕** (close) on the chip with the field label. To remove all fields, click **Clear** at the bottom right of the picker field.
-            2. To add a log field, click in the empty area of the picker field and select a log field to add from the drop-down list.
-
-            <Tip>
-              Enter one or more characters from the field label to filter the list.
-            </Tip>
-          </Step>
-          <Step title="Configure file delivery">
-            1. To reorder fields, click **Edit order** at the bottom left to open the reorder panel, drag the **⋮⋮** handles to rearrange the fields in the list, and click **Apply changes**.
-            2. Change the **Delimiter** and the **Separator**, if needed.
-            3. Change or customize the log **File name format** template, if needed.
-            4. Change the logging **Time interval**, if needed.
-            5. Set the **Log file size limit**.
-
-            <Info>
-              The **Log file size limit** applies before compression. The compressed file delivered to the endpoint may be up to 99% smaller.
-            </Info>
-          </Step>
-          <Step title="Add the policy">
-            Click **Add policy** again to finish and return to the Logs Uploader. The new policy appears in the table on the **Policies** tab.
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Policy editing">
-        <Steps>
-          <Step title="Open the policy">
-            1. Navigate to **Logs Uploader** and select the **Policies** tab.
-            2. Click the policy name in the **Policy** column, or click **⋯** (more options) at the end of that row and select **Edit**.
-          </Step>
-          <Step title="Update policy options">
-            1. Edit the **Name** field.
-            2. Select the **Include empty logs** checkbox to receive empty logs.
-            3. Select **Include logs from origin shielding** to receive these logs.
-
-            <Note>
-              This option is only available if Origin Shielding is [enabled](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) for the account.
-            </Note>
-          </Step>
-          <Step title="Update log fields">
-            Use the multi-select picker to edit the **Log fields** to include:
-
-            1. To remove a log field, click **✕** (close) on the chip with the field label. To remove all fields, click **Clear** at the bottom right of the picker field.
-            2. To add a log field, click in the empty area of the picker field and select a log field to add from the drop-down list.
-
-            <Tip>
-              Enter one or more characters from the field label to filter the list.
-            </Tip>
-          </Step>
-          <Step title="Update file delivery">
-            1. To reorder fields, click **Edit order** at the bottom left to open the reorder panel, drag the **⋮⋮** handles to rearrange the fields in the list, and click **Apply changes**.
-            2. Edit the **Delimiter** and the **Separator**.
-            3. Edit or customize the log **File name format** template.
-            4. Edit the logging **Time interval**.
-            5. Edit the **Log file size limit**.
-
-            <Info>
-              The **Log file size limit** applies before compression. The compressed file delivered to the endpoint may be up to 99% smaller.
-            </Info>
-          </Step>
-          <Step title="Save the policy">
-            Click **Save changes** (top right) to return to the **Policies** tab.
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Policy deletion">
-        <Steps>
-          <Step title="Find the policy">
-            Navigate to **Logs Uploader** and select the **Policies** tab.
-          </Step>
-          <Step title="Delete the policy">
-            In the row with the policy name, click **⋯** (more options) in the last column and select **Delete**.
-          </Step>
-        </Steps>
-      </Accordion>
-    </AccordionGroup>
+    <Info>
+      Alibaba documents [OSS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation.
+    </Info>
   </Tab>
-  <Tab title="Targets">
-    <AccordionGroup>
-      <Accordion title="Targets tab">
-        Select the **Targets** tab to view a table of targets:
+  <Tab title="SLS">
+    [Alibaba&nbsp;Cloud&nbsp;SLS](https://www.alibabacloud.com/en/product/log-service)
 
-        - Target **ID**\
-          Click the column header to sort the table by target IDs.
-        - **Target** name
-          - Click the column header to sort the table by target names.
-          - Click a target name to edit configuration or connection details.
+    1. Enter the **Region** (such as `cn-hangzhou`).
+    2. Enter the **Project** name (3–63 characters; lowercase letters, digits, and hyphens).
+    3. Enter the **Logstore** name (3–36 characters; lowercase letters, digits, hyphens, and underscores).
+    4. Enter the **Access Key ID** and **Secret Access Key**.
+    5. Optionally, enter the **Endpoint** to override `region.log.aliyuncs.com`, and a **Topic** (up to 128 characters).
 
-        <Tip>
-          Use the search box at the top of the table to filter targets by name or ID.
-        </Tip>
-        - **Configuration**
-          - Click a configuration name to edit the linked configuration.
+    <Info>
+      Alibaba documents [SLS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation and project setup in the [SLS&nbsp;quick&nbsp;start](https://www.alibabacloud.com/help/en/sls/getting-started/getting-started-with-simple-log-service).
+    </Info>
+  </Tab>
+  <Tab title="S3 Other">
+    Generic S3-compatible object storage
 
-            <Tip>
-              Click **Select configuration** at the top of the table, then select one or more linked configurations from the drop-down list to filter the targets table. Use the search box at the top of this drop-down list to filter list results by configuration name or ID.
-            </Tip>
-        - **Status**\
-          Target authentication status is displayed in the **Status** column. To re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-        - **More options**\
-          Click **⋯** (more options) in the last column to **Edit** or **Delete** the target in that row.
-        - **Add target**\
-          Click **Add target** (top right) to connect a new target.
-      </Accordion>
-      <Accordion title="Target creation">
-        <Steps>
-          <Step title="Open the target form">
-            1. Navigate to **Logs Uploader**, select the **Targets** tab, and click **Add target**.
-            2. Enter a **Name** for the target.
-          </Step>
-          <Step title="Configure the destination">
-            Select and configure a destination or delivery protocol and connection details for log export:
+    1. Select **HTTP** or **HTTPS** and specify the **Endpoint**.
+    2. Enter the **Access Key ID** and **Secret Access Key**.
+    3. Enter the storage **region** and an existing **bucket**.
+    4. Optionally, specify an existing folder inside the bucket.
+  </Tab>
+  <Tab title="FTP">
+    <Warning>
+      FTP transmits credentials and log data without transport encryption. Use SFTP or HTTPS when logs contain IP addresses, cookies, or request URLs.
+    </Warning>
 
-            <Tabs>
-              <Tab title="S3 Gcore">
-                [Gcore&nbsp;Object&nbsp;Storage](https://gcore.com/storage)
+    1. Enter the **Hostname**, **Login**, and **Password**.
+    2. Optionally, specify an existing destination directory.
+  </Tab>
+  <Tab title="SFTP">
+    1. Enter the **Hostname** and **Login**.
+    2. Authenticate with a **Password**, or with a **Private Key** and **Passphrase**.
+    3. Optionally, specify an existing destination folder.
+  </Tab>
+  <Tab title="HTTP(S)">
+    <Warning>
+      Plain HTTP transmits log data without transport encryption. Use HTTPS when logs contain IP addresses, cookies, or request URLs.
+    </Warning>
 
-                1. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                2. Enter the **Access key ID** and the **Secret Access Key**.
-                3. Enter the storage **region** (location) and the name of an existing **bucket**.
-                4. Optionally, specify an existing **folder** within the bucket for receiving the logs.
-
-                <Info>
-                  Complete connection details are displayed when the storage is [created](/storage/create-an-s3-or-sftp-storage#object-storage).
-                </Info>
-                <Info>
-                  Storage endpoint (hostname) and region (location) can be viewed and new keys generated by clicking **⋯** (more options) in the **Actions** column of the [Object&nbsp;Storages](/storage/create-an-s3-or-sftp-storage#object-storage) table.
-                </Info>
-              </Tab>
-              <Tab title="S3 OSS">
-                [Alibaba&nbsp;Cloud&nbsp;OSS](https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1)
-
-                1. Enter the **Access Key ID** and the **Secret Access Key** for the storage target.
-                2. Enter the **cloud region** and the name of an existing **bucket**.
-                3. Optionally, specify an existing folder within the bucket for receiving the logs.
-
-                <Info>
-                  Alibaba documents [OSS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation.
-                </Info>
-              </Tab>
-              <Tab title="SLS">
-                [Alibaba&nbsp;Cloud&nbsp;SLS](https://www.alibabacloud.com/en/product/log-service)
-
-                1. Enter the **Region** for the SLS target (for example, `cn-hangzhou`).
-                2. Enter the **Project** name (3–63 characters; lowercase letters, digits, and hyphens only).
-                3. Enter the **Logstore** name (3–36 characters; lowercase letters, digits, hyphens, and underscores only).
-                4. Enter the **Access Key ID** and the **Secret Access Key**.
-                5. Optionally, enter the **Endpoint** to override the default (`region.log.aliyuncs.com`).
-                6. Optionally, enter a **Topic** (up to 128 characters).
-
-                <Info>
-                  Alibaba documents [SLS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation, and project and logstore setup in the [SLS&nbsp;quick&nbsp;start](https://www.alibabacloud.com/help/en/sls/getting-started/getting-started-with-simple-log-service).
-                </Info>
-              </Tab>
-              <Tab title="S3 Other">
-                Generic S3-compatible object storage
-
-                1. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                2. Enter the **Access Key ID** and the **Secret Access Key**, provided by the storage provider.
-                3. Enter the storage **region** and the name of an existing **bucket**.
-                4. Optionally, specify an existing folder within the bucket for receiving the logs.
-              </Tab>
-              <Tab title="FTP">
-                FTP target
-
-                <Warning>
-                  FTP transmits credentials and log data without transport encryption. Use SFTP or HTTPS targets when logs contain sensitive data such as IP addresses, cookies, or request URLs.
-                </Warning>
-
-                1. Enter the **Hostname** for the storage target.
-                2. Enter the **Login** and **Password** for the storage.
-                3. Optionally, specify an existing prepend (destination) directory for receiving the logs.
-              </Tab>
-              <Tab title="SFTP">
-                SFTP target
-
-                1. Enter the **Hostname** and **Login** for the storage target.
-                2. Select an **Authentication method**:
-                   - Password — enter the **Password**.
-                   - Private key — enter the **Private Key** and **Passphrase**.
-                3. Optionally, specify an existing prepend (destination) folder for receiving the logs.
-              </Tab>
-              <Tab title="HTTP(S)">
-                HTTP(S) target
-
-                <Warning>
-                  Plain HTTP transmits log data without transport encryption. Use HTTPS to protect log content in transit, especially when logs contain IP addresses, cookies, or request URLs.
-                </Warning>
-
-                1. Select **POST** or **PUT** HTTP method.
-                2. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                3. Add a custom header if needed; click **Add header** for additional key–value pairs.
-                4. Turn on the **Authentication** switch to enable token-based authentication using HTTP headers.
-                5. Turn on the **Use compression** switch to enable JSON log file compression.
-
-                <Tip>
-                  Use compression to reduce log file size by up to 99%.
-                </Tip>
-              </Tab>
-            </Tabs>
-          </Step>
-          <Step title="Add the target">
-            Click **Add target** again to finish configuration and return to the Logs Uploader. The new target appears in the table on the **Targets** tab.
-
-            <Tip>
-              Correctly configured targets show `Authentication complete` in the **Status** column; to re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-            </Tip>
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Target editing">
-        <Steps>
-          <Step title="Open the target">
-            1. Navigate to **Logs Uploader** and select the **Targets** tab.
-            2. Click the target name in the **Target** column, or click **⋯** (more options) at the end of that row and select **Edit**.
-
-            <Info>
-              Target authentication status appears at the top of the **Edit target** window. To re-run the authentication check, click <Icon icon="refresh" /> (refresh) next to the status message.
-            </Info>
-          </Step>
-          <Step title="Update the destination">
-            Edit the **Name** field, then select or configure the destination or delivery protocol and connection details for log export:
-
-            <Tabs>
-              <Tab title="S3 Gcore">
-                [Gcore&nbsp;Object&nbsp;Storage](https://gcore.com/storage)
-
-                1. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                2. Enter the **Access key ID** and the **Secret Access Key**.
-                3. Enter the storage **region** (location) and the name of an existing **bucket**.
-                4. Optionally, specify an existing **folder** within the bucket for receiving the logs.
-
-                <Info>
-                  Complete connection details are displayed when the storage is [created](/storage/create-an-s3-or-sftp-storage#object-storage).
-                </Info>
-                <Info>
-                  Storage endpoint (hostname) and region (location) can be viewed and new keys generated by clicking **⋯** (more options) in the **Actions** column of the [Object&nbsp;Storages](/storage/create-an-s3-or-sftp-storage#object-storage) table.
-                </Info>
-              </Tab>
-              <Tab title="S3 OSS">
-                [Alibaba&nbsp;Cloud&nbsp;OSS](https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1)
-
-                1. Enter the **Access Key ID** and the **Secret Access Key** for the storage target.
-                2. Enter the **cloud region** and the name of an existing **bucket**.
-                3. Optionally, specify an existing folder within the bucket for receiving the logs.
-
-                <Info>
-                  Alibaba documents [OSS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation.
-                </Info>
-              </Tab>
-              <Tab title="SLS">
-                [Alibaba&nbsp;Cloud&nbsp;SLS](https://www.alibabacloud.com/en/product/log-service)
-
-                1. Enter the **Region** for the SLS target (for example, `cn-hangzhou`).
-                2. Enter the **Project** name (3–63 characters; lowercase letters, digits, and hyphens only).
-                3. Enter the **Logstore** name (3–36 characters; lowercase letters, digits, hyphens, and underscores only).
-                4. Enter the **Access Key ID** and the **Secret Access Key**.
-                5. Optionally, enter the **Endpoint** to override the default (`region.log.aliyuncs.com`).
-                6. Optionally, enter a **Topic** (up to 128 characters).
-
-                <Info>
-                  Alibaba documents [SLS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation, and project and logstore setup in the [SLS&nbsp;quick&nbsp;start](https://www.alibabacloud.com/help/en/sls/getting-started/getting-started-with-simple-log-service).
-                </Info>
-              </Tab>
-              <Tab title="S3 Other">
-                Generic S3-compatible object storage
-
-                1. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                2. Enter the **Access Key ID** and the **Secret Access Key**, provided by the storage provider.
-                3. Enter the storage **region** and the name of an existing **bucket**.
-                4. Optionally, specify an existing folder within the bucket for receiving the logs.
-              </Tab>
-              <Tab title="FTP">
-                FTP target
-
-                <Warning>
-                  FTP transmits credentials and log data without transport encryption. Use SFTP or HTTPS targets when logs contain sensitive data such as IP addresses, cookies, or request URLs.
-                </Warning>
-
-                1. Enter the **Hostname** for the storage target.
-                2. Enter the **Login** and **Password** for the storage.
-                3. Optionally, specify an existing prepend (destination) directory for receiving the logs.
-              </Tab>
-              <Tab title="SFTP">
-                SFTP target
-
-                1. Enter the **Hostname** and **Login** for the storage target.
-                2. Select an **Authentication method**:
-                   - Password — enter the **Password**.
-                   - Private key — enter the **Private Key** and **Passphrase**.
-                3. Optionally, specify an existing prepend (destination) folder for receiving the logs.
-              </Tab>
-              <Tab title="HTTP(S)">
-                HTTP(S) target
-
-
-                <Warning>
-                  Plain HTTP transmits log data without transport encryption. Use HTTPS to protect log content in transit, especially when logs contain IP addresses, cookies, or request URLs.
-                </Warning>
-                1. Select **POST** or **PUT** HTTP method.
-                2. Select **HTTP** or **HTTPS** protocol and specify the **Endpoint** for the storage target.
-                3. Add a custom header if needed; click **Add header** for additional key–value pairs.
-                4. Turn on the **Authentication** switch to enable token-based authentication using HTTP headers.
-                5. Turn on the **Use compression** switch to enable JSON log file compression.
-
-                <Tip>
-                  Use compression to reduce log file size by up to 99%.
-                </Tip>
-              </Tab>
-            </Tabs>
-          </Step>
-          <Step title="Save the target">
-            Click **Save changes** (top right) to return to the Logs Uploader **Targets** tab.
-
-            <Tip>
-              Correctly configured targets show `Authentication complete` in the **Status** column; to re-run the authentication check, click <Icon icon="refresh" /> (refresh) at the end of the status message.
-            </Tip>
-          </Step>
-        </Steps>
-      </Accordion>
-      <Accordion title="Target deletion">
-        <Steps>
-          <Step title="Find the target">
-            Navigate to **Logs Uploader** and select the **Targets** tab.
-          </Step>
-          <Step title="Delete the target">
-            In the row with the target name, click **⋯** (more options) in the last column and select **Delete**.
-          </Step>
-        </Steps>
-      </Accordion>
-    </AccordionGroup>
+    1. Select **POST** or **PUT**, then **HTTP** or **HTTPS**, and specify the **Endpoint**.
+    2. Add custom headers if the receiver requires them.
+    3. Turn on **Authentication** for token-based header auth, and **Use compression** to gzip the JSON body (up to 99% smaller).
   </Tab>
 </Tabs>
 
+<p>Click **Add target**. A green `Authentication complete` status confirms the destination is reachable. Click the refresh icon next to the status to run the check again.</p>
+
+<p>To change an existing target, open it by name. The same connection settings apply.</p>
+
+## Create a configuration
+
+<p>A configuration links one policy and one target to CDN resources and starts delivery.</p>
+
+<p>On the **Configurations** tab, click **Add configuration**.</p>
+
+1. Enter a name.
+2. Cover **All Resources** (including resources created later) or select **Specific Resource(s)** from the list.
+3. Select the policy and the target.
+4. Leave **Enable configuration** on to start delivery, or turn it off to save the setup inactive.
+5. Click **Add configuration**.
+
+<p>The **Status** column repeats the linked target's authentication state. To change an existing configuration, open it by name — the same resource, policy, and target settings apply.</p>
+
+## Verify delivery
+
+<p>Generate traffic to a CDN resource covered by the configuration. After one full time interval, check the destination for a new file or HTTP POST and confirm the expected fields. `Authentication complete` is not proof that a file arrived — see [Troubleshooting](#troubleshooting) if the destination stays empty.</p>
+
+## Disable or delete a setup
+
+<p>Use **⋯** on a configuration to **Disable** delivery without deleting the setup, or **Enable** it again. The same switch is in the configuration form.</p>
+
+<p>Delete the configuration first. A policy or target that is still linked to a configuration cannot be deleted. Then delete the unused target or policy from **⋯** on its row.</p>
+
 ## Log schema and field definitions
 
-The exported log schema includes standard CDN request fields, internal status codes, and format examples.
+<p>The exported log schema includes standard CDN request fields, internal status codes, and format examples.</p>
 
 <AccordionGroup>
   <Accordion title="Log format example">
@@ -697,7 +283,7 @@ The exported log schema includes standard CDN request fields, internal status co
   <Accordion title="Log schema versioning">
     For HTTP(S) targets, Logs Uploader sends a JSON request payload to the configured endpoint. The `v` field in the payload identifies the schema version — for example, `"v":"10"`. This metadata belongs to the JSON envelope rather than the selectable CDN log fields, so it does not appear in the log format example or field table.
 
-    The version increments when fields are added, renamed, or removed. New fields are added in a backward-compatible way where possible, so most schema changes do not require parser updates. Breaking changes are announced in advance through standard CDN update notifications. Make downstream Security Information and Event Management (SIEM) and extract, transform, load (ETL) parsers version-aware, check the `v` value, and reject or flag unsupported schema versions.
+    The version increments when fields are added, renamed, or removed. New fields are added in a backward-compatible way where possible, so most schema changes do not require parser updates. Breaking changes are announced in advance through standard CDN update notifications. Check the `v` value in downstream parsers before processing a batch with an unsupported schema version.
 
     **HTTP(S) payload structure**
 
@@ -723,18 +309,12 @@ The exported log schema includes standard CDN request fields, internal status co
 
 ## WAAP log fields
 
-When a CDN resource has [WAAP](/waap) enabled, the Logs Uploader automatically appends WAAP security event fields to each request log line, alongside the CDN fields described above. Each request produces a single merged log entry, so CDN access data and the matching WAAP security verdict arrive correlated on the same delivery channel as existing CDN logs — no separate file and no extra configuration.
+<p>When a CDN resource has [WAAP](/waap) enabled, Logs Uploader appends WAAP security event fields to each request log line. CDN access data and the matching WAAP verdict share one entry — no separate file and no extra Logs Uploader setup.</p>
+
+<p>WAAP fields appear only when **WAAP Status** is Active on **CDN** → **CDN resources**. The toggle is in that resource's **Security** settings. After WAAP is enabled, the next exported batch includes the new fields at the end of the line, so positional parsers keep working. Parsers that reject unknown columns must accept the WAAP fields first. The `v` field in HTTP(S) payloads increments when the schema changes.</p>
 
 <Note>
-WAAP fields are added only when WAAP is enabled on the CDN resource. Confirm this in the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list). The **WAAP Status** column on the **CDN** > **CDN resources** page shows Active when WAAP is enabled. The **WAAP** toggle is in that resource's **Security** settings. For resources where WAAP is not enabled, the CDN log line is unchanged.
-</Note>
-
-<Note>
-WAAP fields are included in the next exported batch after WAAP is enabled. No Logs Uploader reconfiguration is required. Existing configurations and policies automatically start receiving the additional fields. Because new fields are appended at the end of each log line, positional parsers based on existing CDN fields continue to work without changes. Parsers that validate a fixed schema or reject unknown columns must be updated to accept the WAAP fields before WAAP is enabled, or they will encounter parse errors. The `v` field in HTTP(S) payloads increments when the schema changes; check it in downstream parsers to detect schema updates.
-</Note>
-
-<Note>
-DDoS protection logs are not exported through the Logs Uploader. Only per-request WAAP security events are included. DDoS attack analytics remain available through the WAAP API and dashboard.
+DDoS protection logs are not exported through Logs Uploader. Only per-request WAAP security events are included. DDoS attack analytics remain available through the WAAP API and dashboard.
 </Note>
 
 <AccordionGroup>
@@ -790,44 +370,439 @@ DDoS protection logs are not exported through the Logs Uploader. Only per-reques
   </Accordion>
 </AccordionGroup>
 
-## Near real-time log export
-
-The **Time interval** setting in a Policy defines how often logs are archived and exported. The default interval is 5 minutes and can be set between 5 and 60 minutes.
-
-If CDN servers receive no requests during the selected interval and **Include empty logs** is selected, Logs Uploader sends an empty file of approximately 20 bytes to the storage target.
-
 ## Troubleshooting
 
-This section covers delivery failures after a target or configuration is saved, including cases where authentication succeeds but no log file arrives.
+<p>`Authentication complete` confirms that Logs Uploader can reach the destination. It does not mean a log file has arrived.</p>
 
-### Missing files after successful authentication
+<p>Files are written at the end of the policy **Time interval** (minimum 5 minutes). Wait at least one full interval after generating CDN traffic.</p>
 
-A target showing `Authentication complete` confirms that Logs Uploader can reach and authenticate to the destination. It does not guarantee that log files are being delivered. Check the following if files are not appearing:
+<p>If the covered resources receive no requests during an interval and **Include empty logs** is off, no file is sent. Turn the option on in the policy to confirm delivery without traffic. An empty file is about 20 bytes.</p>
 
-#### Delivery interval timing
+<p>For S3, FTP, SFTP, and SLS, the bucket, directory, or logstore must already exist — Logs Uploader does not create missing paths. The credentials must allow writes: `s3:PutObject` (and often `s3:GetBucketLocation`) on S3, write access to the FTP/SFTP directory, or `Write` on an SLS logstore.</p>
 
-Files are delivered at the end of each **Time interval** configured in the linked policy (minimum 5 minutes). Wait at least one full interval after CDN traffic has been generated before expecting the first file.
+<p>An HTTP(S) receiver must return `2xx` before the request times out. Any other status is a delivery failure and is retried. If compression is on, the receiver must accept `Content-Encoding: gzip`.</p>
 
-#### Missing CDN traffic
+<p>A configuration limited to **Specific Resources** only exports those resources. **All Resources** includes resources created later.</p>
 
-If the CDN resources covered by the configuration receive no requests during an interval and **Include empty logs** is not selected, no file is sent. Enable **Include empty logs** in the policy to confirm delivery is working even when traffic is absent.
+<p>Delivery error details are not shown in the portal. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) for delivery logs for a target or time range.</p>
 
-#### Missing destination path
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-For S3, FTP, SFTP, and SLS targets, the bucket, directory, or logstore specified in the target must already exist. Logs Uploader does not create missing paths. Verify that the destination path was created in the storage service before expecting files.
+<p>Export CDN resource logs by creating a policy, a target, and a configuration that links them. Logs Uploader must be enabled for the account — a disabled account returns HTTP 403. A CDN resource ID is visible in the Customer Portal under **CDN** → **CDN Resources**, or from the [List CDN resources](/api-reference/cdn/cdn-resources/list-cdn-resources) API call.</p>
 
-#### Insufficient write permissions
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
 
-The credentials used by the target must have write permission to the destination path. For S3 targets, the access key must have `s3:PutObject` (and `s3:GetBucketLocation` for some providers) on the target bucket. For FTP and SFTP targets, the login must have write access to the prepend directory. For SLS targets, the access key must have `Write` permission on the target logstore.
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
 
-#### Non-2xx HTTP(S) response
+## Create a Logs Uploader configuration
 
-Logs Uploader treats any non-`2xx` response from an HTTP(S) endpoint as a delivery failure and retries. The receiver endpoint must be running, return `200 OK` or another `2xx` status, and not time out before processing the request body. If compression is enabled on the target, the receiver must accept gzip-encoded bodies (`Content-Encoding: gzip`).
+<p>Create a policy (`rotate_interval_minutes` is 5–60), an HTTP target, and a configuration for one CDN resource. Other `storage_type` values include `s3_gcore`, `s3_amazon`, `s3_oss`, `s3_other`, `ftp`, `sftp`, and `sls`. An HTTP receiver must return `2xx`, or Logs Uploader retries the batch. Target validation starts asynchronously — the first status is `in_progress`.</p>
 
-#### Configuration resource scope
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
 
-A configuration set to **Specific Resources** only delivers logs for the CDN resources explicitly listed. Verify that the resources generating traffic are included in the configuration. Configurations set to **All Resources** cover all resources, including newly created ones.
+    from gcore import Gcore
 
-#### Delivery error details
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
 
-Delivery error details are not currently displayed in the portal. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) to request delivery logs for a specific target or time range.
+    # Step 1. Create a policy
+    policy = client.cdn.logs_uploader.policies.create(
+        name="cdn-json-export",
+        fields=["cname", "code", "host"],
+        include_empty_logs=False,
+        rotate_interval_minutes=5,
+        format_type="json",
+    )
+    print(policy.id, policy.name)
+
+    # Step 2. Create an HTTP target
+    target = client.cdn.logs_uploader.targets.create(
+        name="http-collector",
+        storage_type="http",
+        config={
+            "content_type": "json",
+            "upload": {
+                "url": "https://logs.example.com/cdn",
+                "method": "POST",
+            },
+        },
+    )
+    print(target.id, target.storage_type)
+
+    # Step 3. Create a configuration
+    config = client.cdn.logs_uploader.configs.create(
+        name="export-store",
+        policy=policy.id,
+        target=target.id,
+        enabled=True,
+        for_all_resources=False,
+        resources=[resource_id],
+    )
+    print(config.id, config.enabled, config.policy, config.target)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        // Step 1. Create a policy
+        policy, err := client.CDN.LogsUploader.Policies.New(ctx, cdn.LogsUploaderPolicyNewParams{
+            Name:                  gcore.String("cdn-json-export"),
+            Fields:                []string{"cname", "code", "host"},
+            IncludeEmptyLogs:      gcore.Bool(false),
+            RotateIntervalMinutes: gcore.Int(5),
+            FormatType:            cdn.LogsUploaderPolicyNewParamsFormatTypeJson,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(policy.ID, policy.Name)
+
+        // Step 2. Create an HTTP target
+        target, err := client.CDN.LogsUploader.Targets.New(ctx, cdn.LogsUploaderTargetNewParams{
+            Name:        gcore.String("http-collector"),
+            StorageType: cdn.LogsUploaderTargetNewParamsStorageTypeHTTP,
+            Config: cdn.LogsUploaderTargetNewParamsConfigUnion{
+                OfHTTPConfig: &cdn.LogsUploaderTargetNewParamsConfigHTTPConfig{
+                    Upload: cdn.LogsUploaderTargetNewParamsConfigHTTPConfigUpload{
+                        URL:    "https://logs.example.com/cdn",
+                        Method: "POST",
+                    },
+                    ContentType: "json",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(target.ID, target.StorageType)
+
+        // Step 3. Create a configuration
+        config, err := client.CDN.LogsUploader.Configs.New(ctx, cdn.LogsUploaderConfigNewParams{
+            Name:            "export-store",
+            Policy:          policy.ID,
+            Target:          target.ID,
+            Enabled:         gcore.Bool(true),
+            ForAllResources: gcore.Bool(false),
+            Resources:       []int64{resourceID},
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(config.ID, config.Enabled)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    POLICY_ID=$(curl -sS -X POST "https://api.gcore.com/cdn/logs_uploader/policies" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "cdn-json-export",
+        "fields": ["cname", "code", "host"],
+        "include_empty_logs": false,
+        "rotate_interval_minutes": 5,
+        "format_type": "json"
+      }' | python -c "import json,sys; print(json.load(sys.stdin)['id'])")
+
+    TARGET_ID=$(curl -sS -X POST "https://api.gcore.com/cdn/logs_uploader/targets" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "http-collector",
+        "storage_type": "http",
+        "config": {
+          "content_type": "json",
+          "upload": {
+            "url": "https://logs.example.com/cdn",
+            "method": "POST"
+          }
+        }
+      }' | python -c "import json,sys; print(json.load(sys.stdin)['id'])")
+
+    curl -X POST "https://api.gcore.com/cdn/logs_uploader/configs" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"export-store\",
+        \"policy\": $POLICY_ID,
+        \"target\": $TARGET_ID,
+        \"enabled\": true,
+        \"for_all_resources\": false,
+        \"resources\": [$CDN_RESOURCE_ID]
+      }"
+    ```
+
+    <p>Each create call returns HTTP 201. The configuration body includes `policy`, `target`, `enabled`, and `resources`.</p>
+
+    ```json
+    {
+      "id": 434,
+      "name": "export-store",
+      "enabled": true,
+      "for_all_resources": false,
+      "resources": [12345],
+      "policy": 370,
+      "target": 501
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Generate traffic to the CDN resource, then wait one `rotate_interval_minutes` period and check the destination. A target status of `in_progress` or `Authentication complete` means reachability, not that a file has arrived. Available policy field names come from `GET /cdn/logs_uploader/policies/fields`.</p>
+
+## List policies, targets, and configs
+
+<p>List each object type, or retrieve one configuration by ID.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for policy in client.cdn.logs_uploader.policies.list(limit=10):
+        print(policy.id, policy.name)
+    for target in client.cdn.logs_uploader.targets.list(limit=10):
+        print(target.id, target.name, target.storage_type)
+    for config in client.cdn.logs_uploader.configs.list(limit=10):
+        print(config.id, config.name, config.enabled)
+
+    config = client.cdn.logs_uploader.configs.get(434)
+    print(config.id, config.policy, config.target)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        policies, err := client.CDN.LogsUploader.Policies.List(ctx, cdn.LogsUploaderPolicyListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, policy := range policies.Results {
+            fmt.Println(policy.ID, policy.Name)
+        }
+
+        targets, err := client.CDN.LogsUploader.Targets.List(ctx, cdn.LogsUploaderTargetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, target := range targets.Results {
+            fmt.Println(target.ID, target.Name, target.StorageType)
+        }
+
+        configs, err := client.CDN.LogsUploader.Configs.List(ctx, cdn.LogsUploaderConfigListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, config := range configs.Results {
+            fmt.Println(config.ID, config.Name, config.Enabled)
+        }
+
+        config, err := client.CDN.LogsUploader.Configs.Get(ctx, 434)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(config.ID, config.Policy, config.Target)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cdn/logs_uploader/policies?limit=10" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X GET "https://api.gcore.com/cdn/logs_uploader/targets?limit=10" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X GET "https://api.gcore.com/cdn/logs_uploader/configs?limit=10" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X GET "https://api.gcore.com/cdn/logs_uploader/configs/434" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>Each list request returns a paginated object:</p>
+
+    ```json
+    {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 434,
+          "name": "export-store",
+          "enabled": true,
+          "policy": 370,
+          "target": 501
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Disable a configuration
+
+<p>Set `enabled` to `false` to stop delivery without deleting the configuration. Set `enabled` to `true` to start it again.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    config = client.cdn.logs_uploader.configs.update(434, enabled=False)
+    print(config.id, config.enabled)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        config, err := client.CDN.LogsUploader.Configs.Update(ctx, 434, cdn.LogsUploaderConfigUpdateParams{
+            Enabled: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(config.ID, config.Enabled)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/logs_uploader/configs/434" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"enabled": false}'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 434,
+      "name": "export-store",
+      "enabled": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete a configuration, target, and policy
+
+<p>Delete the configuration first. A delete request against a policy or target that is still assigned returns HTTP 400. After the configuration is gone, delete the target and the policy. A successful delete returns HTTP 204.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.logs_uploader.configs.delete(434)
+    client.cdn.logs_uploader.targets.delete(501)
+    client.cdn.logs_uploader.policies.delete(370)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        if err := client.CDN.LogsUploader.Configs.Delete(ctx, 434); err != nil {
+            panic(err)
+        }
+        if err := client.CDN.LogsUploader.Targets.Delete(ctx, 501); err != nil {
+            panic(err)
+        }
+        if err := client.CDN.LogsUploader.Policies.Delete(ctx, 370); err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cdn/logs_uploader/configs/434" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X DELETE "https://api.gcore.com/cdn/logs_uploader/targets/501" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X DELETE "https://api.gcore.com/cdn/logs_uploader/policies/370" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful delete returns HTTP 204 with an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
