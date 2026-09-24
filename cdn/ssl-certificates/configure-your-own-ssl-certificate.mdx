@@ -1,12 +1,19 @@
 ---
 title: Custom SSL certificate configuration
 sidebarTitle: Custom SSL certificate
-ai-navigation: Configure a custom SSL certificate in PEM format, attach it to CDN resources, then renew or delete certificates.
+ai-navigation: Upload a custom PEM SSL certificate via the Customer Portal or REST API, attach it to a CDN resource, then replace or delete it.
 ---
 
-A custom SSL certificate must be issued for the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) of the CDN resource (`cdn.example.com`). A certificate for `*.example.com` covers one DNS label under that domain (`cdn.example.com`). It does not cover the apex domain `example.com` or a nested hostname `assets.cdn.example.com`. Confirm that every required hostname appears in the certificate's Subject Alternative Name (SAN) extension. Wildcard matching follows [RFC&nbsp;9525](https://www.rfc-editor.org/rfc/rfc9525).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Upload the certificate in the [Gcore Customer Portal](https://portal.gcore.com), then attach it to an existing CDN resource, because custom SSL is not selected on the resource creation form.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>A certificate is ready to upload when it covers the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) of the CDN resource (`cdn.example.com`).</p>
+
+<p>A certificate for `*.example.com` covers one DNS label under that domain (`cdn.example.com`). It does not cover the apex domain `example.com` or a nested hostname `assets.cdn.example.com`. Every required hostname belongs in the certificate's Subject Alternative Name (SAN) extension. Wildcard matching follows [RFC&nbsp;9525](https://www.rfc-editor.org/rfc/rfc9525).</p>
+
+<p>Upload the certificate in the [Gcore Customer Portal](https://portal.gcore.com), then attach it to an existing CDN resource, because custom SSL is not selected on the resource creation form.</p>
 
 ## Upload an SSL certificate
 
@@ -39,23 +46,23 @@ Upload the certificate in the [Gcore Customer Portal](https://portal.gcore.com),
   </Step>
 </Steps>
 
-Attach the certificate to a CDN resource after upload, because an uploaded certificate is not used until it is selected on a resource.
+<p>Attach the certificate to a CDN resource after upload, because an uploaded certificate is not used until it is selected on a resource.</p>
 
 ### Certificate chain and key
 
-Open the certificate file in PEM format (`.pem`, `.crt`, or `.cer`) in a text editor.
+<p>Open the certificate file in PEM format (`.pem`, `.crt`, or `.cer`) in a text editor.</p>
 
-Copy the chain in this order: leaf certificate, intermediate CA, root CA. Paste the full contents into **Certificate**, including the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` tags. Do not leave blank lines between certificates.
+<p>Copy the chain in this order: leaf certificate, intermediate CA, root CA. Paste the full contents into **Certificate**, including the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----` tags. Do not leave blank lines between certificates.</p>
 
 <Frame>![Certificate chain pasted into the Certificate field](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image4.png)</Frame>
 
-Add a new line at the end of the chain.
+<p>Add a new line at the end of the chain.</p>
 
-Open the private key file (`.key`) in a text editor. Paste the full contents into **Private key**, and keep the exact `BEGIN` and `END` lines from the key file. Common delimiters include `-----BEGIN PRIVATE KEY-----` and `-----BEGIN RSA PRIVATE KEY-----`.
+<p>Open the private key file (`.key`) in a text editor. Paste the full contents into **Private key**, and keep the exact `BEGIN` and `END` lines from the key file. Common delimiters include `-----BEGIN PRIVATE KEY-----` and `-----BEGIN RSA PRIVATE KEY-----`.</p>
 
 ## SSL certificate on a CDN resource
 
-Create the [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) first. On the create form, enter the hostname in **Add domain**. After the resource exists, attach the custom certificate in the resource SSL settings.
+<p>Create the [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) first. On the create form, enter the hostname in **Add domain**. After the resource exists, attach the custom certificate in the resource SSL settings.</p>
 
 <Steps>
   <Step title="Open the CDN resource">
@@ -84,15 +91,13 @@ Create the [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create
 
 ## Certificate management
 
-Uploaded certificates are listed under **CDN** > **SSL certificates**. The table shows ID, name, connected CDN resources, start date, and expiration date.
+<p>Uploaded certificates are available under **CDN** > **SSL certificates**. In the Customer Portal, only the certificate name can be changed after upload — use **Settings** on the certificate row. To change the certificate or private key, upload a replacement and attach it on every resource listed under **CDN resources**.</p>
 
 <Frame>![SSL certificates table with ID, name, resources, start, and expire](/images/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/configure-your-own-ssl-certificate-image1.png)</Frame>
 
-The certificate name can be changed from **Settings** on the certificate row, while the certificate and private key values cannot be edited after upload.
-
 ### SSL certificate renewal
 
-Before expiration, upload a replacement certificate and select it on every resource listed under **CDN resources** for the old certificate.
+<p>Before expiration, upload a replacement certificate and select it on every resource listed under **CDN resources** for the old certificate.</p>
 
 <Steps>
   <Step title="Upload a replacement certificate">
@@ -105,7 +110,7 @@ Before expiration, upload a replacement certificate and select it on every resou
     Wait at least 15 minutes after the last resource is saved.
   </Step>
   <Step title="Verify each hostname">
-    For each hostname on the connected resources, open the site over HTTPS, click the lock icon, open **Connection is secure**, then **Certificate is valid**. Compare the displayed data with the new certificate.
+    For each hostname, open the site over HTTPS and inspect the certificate presented by the browser. The subject, SAN, and validity dates should match the replacement certificate.
   </Step>
   <Step title="Delete the old certificate">
     After every hostname matches the new certificate, [delete](#delete-an-ssl-certificate) the old certificate. Removing it earlier interrupts HTTPS delivery on any resource that still selects it.
@@ -114,13 +119,13 @@ Before expiration, upload a replacement certificate and select it on every resou
 
 ### Expiration notifications
 
-Notification emails are sent to the administrator and engineer addresses 14 days before expiration, seven days before expiration, and on the expiration date. A reminder also appears on login during those 14 days and after expiration. **SSL certificates** in the side panel shows an exclamation mark when a certificate is expired or will expire within 14 days.
+<p>Notification emails are sent to the administrator and engineer addresses 14 days before expiration, seven days before expiration, and on the expiration date. A reminder also appears on login during those 14 days and after expiration. **SSL certificates** in the side panel shows an exclamation mark when a certificate is expired or will expire within 14 days.</p>
 
-A red exclamation mark marks an expired certificate, while a yellow warning marks a certificate that expires in 14 days or fewer.
+<p>A red exclamation mark marks an expired certificate, while a yellow warning marks a certificate that expires in 14 days or fewer.</p>
 
 ### Delete an SSL certificate
 
-A certificate that is selected on a CDN resource cannot be deleted. Replace it on every connected resource first.
+<p>A certificate that is selected on a CDN resource cannot be deleted. Replace it on every connected resource first.</p>
 
 <Warning>
 Turning off **Enable HTTPS** stops HTTPS delivery on that resource. To detach a certificate, select a replacement certificate on every connected resource. Turn off **Enable HTTPS** only when HTTPS delivery is being removed.
@@ -139,3 +144,608 @@ Turning off **Enable HTTPS** stops HTTPS delivery on that resource. To detach a 
     In the confirmation dialog, click **Yes, delete**.
   </Step>
 </Steps>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Upload a custom SSL certificate in PEM format, attach it to an existing [CDN resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource), and replace or delete it when the certificate changes. The certificate must cover the resource [custom domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in its Subject Alternative Name (SAN) extension.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+<p>Open a terminal and export the required variables. `SSL_CERTIFICATE` and `SSL_PRIVATE_KEY` are the PEM chain and key with a newline after every line, including the final `END` line:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+export SSL_CERTIFICATE="$(cat ./fullchain.pem)"
+export SSL_PRIVATE_KEY="$(cat ./privkey.pem)"
+```
+
+## Upload a custom certificate
+
+<p>Create the certificate object first. HTTPS does not use it until the ID is set on a CDN resource. `validate_root_ca` is `true` when a trusted CA signed the chain. Set it to `false` for a private or self-signed chain — otherwise the API returns HTTP 400.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Unique label for the certificate object |
+| `sslCertificate` | Yes | PEM chain: leaf, intermediates, root, separated by `\n` |
+| `sslPrivateKey` | Yes | Matching private key in PEM |
+| `validate_root_ca` | No | Set to `true` for a trusted CA chain, `false` for a private or self-signed chain |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.certificates.create(
+        name="cdn.example.com",
+        ssl_certificate=os.environ["SSL_CERTIFICATE"],
+        ssl_private_key=os.environ["SSL_PRIVATE_KEY"],
+        validate_root_ca=True,
+    )
+
+    uploaded = next(
+        item
+        for item in client.cdn.certificates.list(automated=False)
+        if item.name == "cdn.example.com"
+    )
+    print(uploaded.id, uploaded.cert_subject_cn, uploaded.validity_not_after)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
+            OfOwnCertificate: &cdn.CertificateNewParamsBodyOwnCertificate{
+                Name:           "cdn.example.com",
+                SslCertificate: os.Getenv("SSL_CERTIFICATE"),
+                SslPrivateKey:  os.Getenv("SSL_PRIVATE_KEY"),
+                ValidateRootCa: gcore.Bool(true),
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+
+        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{
+            Automated: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            if item.Name == "cdn.example.com" {
+                fmt.Println(item.ID, item.CertSubjectCn, item.ValidityNotAfter)
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    jq -n \
+      --arg name "cdn.example.com" \
+      --arg sslCertificate "$SSL_CERTIFICATE" \
+      --arg sslPrivateKey "$SSL_PRIVATE_KEY" \
+      '{
+        name: $name,
+        sslCertificate: $sslCertificate,
+        sslPrivateKey: $sslPrivateKey,
+        validate_root_ca: true
+      }' \
+    | curl -X POST "https://api.gcore.com/cdn/sslData" \
+        -H "Authorization: APIKey $GCORE_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d @-
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 312679,
+      "name": "cdn.example.com",
+      "deleted": false,
+      "cert_issuer": "Example CA",
+      "cert_subject_cn": "cdn.example.com",
+      "cert_subject_alt": "DNS:cdn.example.com",
+      "validity_not_before": "2026-09-24T09:15:27Z",
+      "validity_not_after": "2026-12-23T09:15:27Z",
+      "sslCertificateChain": "",
+      "hasRelatedResources": false,
+      "automated": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>The [upload endpoint](/api-reference/cdn/ssl-certificates/add-ssl-certificate) creates the certificate object. Use the returned `id` to attach it to a CDN resource. If the SDK create method does not return the object, retrieve the certificate by name from the certificate list.</p>
+
+## Get the certificate ID
+
+<p>The curl upload response already includes `id`. Use the list call when the SDK create method returns nothing, or when the ID is no longer at hand.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    uploaded = next(
+        item
+        for item in client.cdn.certificates.list(automated=False)
+        if item.name == "cdn.example.com"
+    )
+    print(uploaded.id, uploaded.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{
+            Automated: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            if item.Name == "cdn.example.com" {
+                fmt.Println(item.ID, item.Name)
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData/312679" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns the same certificate object as the upload response, including `id`.</p>
+  </Tab>
+</Tabs>
+
+## Attach a certificate to a CDN resource
+
+<p>Set `sslEnabled` to `true` and `sslData` to the certificate ID on the resource. An uploaded certificate is unused until this call succeeds. Wait at least 15 minutes after the last attach before checking HTTPS in a browser.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        resource_id=int(os.environ["CDN_RESOURCE_ID"]),
+        ssl_enabled=True,
+        ssl_data=312679,
+    )
+    print(resource.id, resource.ssl_enabled, resource.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(true),
+            SslData:    gcore.Int(312679),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.SslEnabled, resource.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": true,
+        "sslData": 312679
+      }'
+    ```
+
+    <p>The API returns the CDN resource. The SSL fields are:</p>
+
+    ```json
+    {
+      "id": 101,
+      "cname": "cdn.example.com",
+      "sslEnabled": true,
+      "sslData": 312679
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Find resources that use a certificate
+
+<p>Read the connected resource IDs and CNAMEs before replacing or deleting a certificate. Those IDs are the targets of the next attach call.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for resource in client.cdn.cdn_resources.list(ssl_data=312679):
+        print(resource.id, resource.cname)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.CDNResources.List(ctx, cdn.CDNResourceListParams{
+            SslData: gcore.Int(312679),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            fmt.Println(item.ID, item.Cname)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData/312679/usage" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "resources": [
+        {
+          "id": 101,
+          "cname": "cdn.example.com",
+          "status": "processed"
+        }
+      ],
+      "aliases": []
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Rename a certificate
+
+<p>The certificate name is a unique label. A curl `PUT` can send `name` alone. The REST API can also replace the uploaded chain and key on the existing certificate object — the Customer Portal cannot edit that material after create. The Python and Go replace methods send `name` together with the PEM files: pass the same files to change only the label, or a new chain to replace the uploaded material.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+
+    detail = client.cdn.certificates.replace(
+        ssl_id=312679,
+        name="cdn.example.com-2026",
+        ssl_certificate=os.environ["SSL_CERTIFICATE"],
+        ssl_private_key=os.environ["SSL_PRIVATE_KEY"],
+        validate_root_ca=True,
+    )
+    print(detail.id, detail.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        detail, err := client.CDN.Certificates.Replace(ctx, 312679, cdn.CertificateReplaceParams{
+            Name:           "cdn.example.com-2026",
+            SslCertificate: os.Getenv("SSL_CERTIFICATE"),
+            SslPrivateKey:  os.Getenv("SSL_PRIVATE_KEY"),
+            ValidateRootCa: gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(detail.ID, detail.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/cdn/sslData/312679" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "cdn.example.com-2026"}'
+    ```
+
+    <p>The API returns the certificate with the new `name`. The subject, issuer, and validity dates stay the same when only `name` is sent.</p>
+  </Tab>
+</Tabs>
+
+## Replace a certificate on a CDN resource
+
+<p>Upload the replacement certificate, then set `sslData` to the new ID on every connected resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    old_id = 312679
+    new_id = 312680
+
+    for resource in client.cdn.cdn_resources.list(ssl_data=old_id):
+        updated = client.cdn.cdn_resources.update(
+            resource_id=resource.id,
+            ssl_enabled=True,
+            ssl_data=new_id,
+        )
+        print(updated.id, updated.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        oldID := int64(312679)
+        newID := int64(312680)
+
+        page, err := client.CDN.CDNResources.List(ctx, cdn.CDNResourceListParams{
+            SslData: gcore.Int(oldID),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            updated, err := client.CDN.CDNResources.Update(ctx, item.ID, cdn.CDNResourceUpdateParams{
+                SslEnabled: gcore.Bool(true),
+                SslData:    gcore.Int(newID),
+            })
+            if err != nil {
+                panic(err)
+            }
+            fmt.Println(updated.ID, updated.SslData)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData/312679/usage" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X PATCH "https://api.gcore.com/cdn/resources/101" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": true,
+        "sslData": 312680
+      }'
+    ```
+
+    <p>The API returns the CDN resource with `sslData` set to the replacement ID. Repeat the PATCH for every resource in the usage list.</p>
+  </Tab>
+</Tabs>
+
+<p>Wait at least 15 minutes after the last resource update. For each hostname, open the site over HTTPS and inspect the certificate presented by the browser. The subject, SAN, and validity dates should match the replacement certificate. Keep the old certificate until that check succeeds.</p>
+
+## Delete a certificate
+
+<p>A certificate that is still selected on a resource cannot be deleted. After HTTPS presents the replacement certificate, delete the old object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    client.cdn.certificates.delete(312679)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        if err := client.CDN.Certificates.Delete(ctx, 312679); err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cdn/sslData/312679" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>Delete returns HTTP 204. If the certificate is still selected on a resource, the API returns HTTP 400:</p>
+
+    ```json
+    {
+      "errors": [
+        "You cannot delete this certificate because it is used by resources: [101]. Unlink the certificate and try again."
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Stop HTTPS delivery
+
+<p>When HTTPS delivery is being removed from a resource, set `sslEnabled` to `false` and `sslData` to `null` before deleting the unused certificate. That stops HTTPS on the resource.</p>
+
+<Warning>
+Setting `sslEnabled` to `false` stops HTTPS delivery on that resource.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.cdn_resources.update(
+        resource_id=int(os.environ["CDN_RESOURCE_ID"]),
+        ssl_enabled=False,
+        ssl_data=None,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        _, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(false),
+            SslData:    param.Null[int64](),
+        })
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": false,
+        "sslData": null
+      }'
+    ```
+  </Tab>
+</Tabs>
+</MethodSection>
+</MethodSwitch>
