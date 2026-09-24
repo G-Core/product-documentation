@@ -1,16 +1,21 @@
 ---
 title: Add or hide response headers
 sidebarTitle: Configure response headers
-ai-navigation: Add or hide HTTP response headers in Gcore CDN - configure custom response headers per status code or hide origin headers via the Customer Portal.
+ai-navigation: Add or hide CDN response headers in the Customer Portal or via REST API.
 ---
 
-Gcore CDN provides two options for controlling response headers: **Response headers (add)** adds custom HTTP headers to CDN server responses, and **Response headers (hide)** removes specific origin headers before delivery.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Gcore CDN provides two options for controlling response headers: **Response headers (add)** adds custom HTTP headers to CDN server responses, and **Response headers (hide)** removes specific origin headers before delivery.</p>
 
 ## Add response headers
 
-The **Response headers (add)** option sets custom HTTP headers that CDN servers include in responses to end users. If the same header is already configured on the origin server, the CDN server overrides its value.
+<p>The **Response headers (add)** option sets custom HTTP headers that CDN servers include in responses to end users. If the same header is already configured on the origin server, the CDN server overrides its value.</p>
 
-To configure the option:
+<p>To configure the option:</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources**.
 
@@ -34,38 +39,15 @@ To configure the option:
 
 9. Click **Save changes**.
 
-<Note>
-In the CDN API, this option is the `static_response_headers` field in the resource `options` object. Gcore deprecated `staticHeaders` in favor of `static_response_headers` — use the latter for all new configurations. The `always` field on each header object controls status code filtering: `false` limits the header to responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308; `true` adds it to all responses regardless of status code.
-</Note>
-
-To set custom response headers via the API, include `static_response_headers` in the resource `options`:
-
-```json
-{
-  "options": {
-    "static_response_headers": {
-      "enabled": true,
-      "value": [
-        {
-          "name": "X-Custom-Header",
-          "value": ["example-value"],
-          "always": false
-        }
-      ]
-    }
-  }
-}
-```
-
 ### Add multiple header values
 
-To add more than one value to the same header, enter them in the **Value** field in one of two ways:
+<p>To add more than one value to the same header, enter them in the **Value** field in one of two ways:</p>
 
-- **Separate strings:** enter the first value and press Enter, then enter the second value and press Enter. Repeat for each additional value.
+- **Separate header values:** enter a value and press Enter before adding the next one.
 
 <Frame>![Response headers add form with multiple values entered on separate lines in the Value field](/images/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/add-or-hide-response-headers-image2.png)</Frame>
 
-The response header appears as:
+<p>The response header appears as:</p>
 
 ```
 Example: one   
@@ -73,66 +55,58 @@ Example: two
 Example: three 
 ```
 
-- **Single string:** enter all values in the **Value** field separated by commas.
+- **Comma-separated value:** enter multiple values separated by commas without pressing Enter.
 
 <Frame>![Response headers add form with comma-separated values in the Value field](/images/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/add-or-hide-response-headers-image3.png)</Frame>
 
-The response header appears as:
+<p>The response header appears as:</p>
 
-`Example: one, two, three`
+<p>`Example: one, two, three`</p>
 
-Both methods can be combined: enter values separated by commas and press Enter to start a new string.
+<p>Both methods can be combined: enter comma-separated values, press Enter, and then add another value.</p>
 
 <Frame>![Response headers add form with combined comma-separated and multi-line values in the Value field](/images/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/add-or-hide-response-headers-image4.png)</Frame>
 
-The response header appears as:
+<p>The response header appears as:</p>
 
 ```
 Example: one, two   
 Example: three 
 ```
 
-**Valid characters for fields:**
+<p>**Valid characters for fields:**</p>
 
 - **Header name**: Latin letters (A–Z, a–z), numbers (0–9), underscore (_) and hyphen (-)
 - **Value**: Latin letters (A–Z, a–z), numbers (0–9), a space and the following special characters: `~!@#%^&*()-_=+ /|";:?.><{}[]`
 
-**Value field restrictions:**
+<p>**Value field restrictions:**</p>
 
 - Invalid characters: `$'`
-- Cannot start with a special character
+- The value must start with a letter, number, asterisk (*), or opening brace ({)
 - Cannot contain only special characters
 
 ### Check headers
 
-After saving the configuration, verify the header appears in CDN responses.
+<p>After saving the configuration, verify the header appears in CDN responses.</p>
 
 1. [Clear&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) of the CDN resource or files for which the header was added.
 
 2. Run the following cURL command, substituting the file URL:
 
-```sh
-curl -I http://cdn.site.com/images/1.jpg 
-HTTP/1.1 200 OK 
-Server: nginx/1.11.4 
-Date: Wed, 05 Apr 2017 19:27:14 GMT 
-Content-Type: image/jpeg 
-Content-Length: 62890 
-Connection: keep-alive 
-Last-Modified: Mon, 03 Oct 2016 22:21:05 GMT
-ETag: "f5aa-53dfd5c25d421" 
-FILE: Image 
-Example: yourvalue 
-Cache: HIT 
-X-ID: m9-up-e240 
-Accept-Ranges: bytes 
+```bash
+curl -I https://cdn.site.com/images/1.jpg
+```
+
+```text
+HTTP/2 200
+X-Custom-Header: header-value
 ```
 
 3. If the response contains the configured header, the setup is complete.
 
 ## Hide response headers
 
-By default, a CDN server passes all HTTP headers it receives from the origin server to end users. To control which headers are included in responses:
+<p>By default, a CDN server passes all HTTP headers it receives from the origin server to end users. To control which headers are included in responses:</p>
 
 1. In the Customer Portal, navigate to **CDN** → **CDN resources**.
 
@@ -154,8 +128,341 @@ By default, a CDN server passes all HTTP headers it receives from the origin ser
 
 <Frame>![Hide only mode with an empty field for entering headers to hide from responses](/images/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/add-or-hide-response-headers-image7.png)</Frame>
 
-Headers available in the portal: _accept, accept-charset, accept-encoding, accept-language, accept-ranges, age, allow, alternates, authorization, cache-control, content-disposition, content-encoding, content-language, content-location, content-md5, content-range, content-version, derived-from, etag, expect, expires, from, host, if-match, if-modified-since, if-none-match, if-range, if-unmodified-since, last-modified, link, location, max-forwards, mime-version, pragma, proxy-authenticate, proxy-authorization, public, range, referer, retry-after, title, te, trailer, transfer-encoding, upgrade, user-agent, vary, via, warning, www-authenticate, keep-alive_.
-
 <Info>The following headers are mandatory and cannot be hidden: _connection, content-length, content-type, server,_ and _date_.</Info>
 
 6. Click **Save changes**.
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Add custom headers to CDN responses, or hide selected origin headers before the response is delivered.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+<p>Use `static_response_headers` to add headers. The older `staticHeaders` field is not used for new configurations. Use `response_headers_hiding_policy` to hide origin headers. Set `enabled` to `false` to turn either option off.</p>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Add response headers
+
+<p>Set `options.static_response_headers`. Each item in `value` is one header. Strings in that item's `value` array are separate header values. A comma inside one string stays part of that single value. `always` set to `false` adds the header only to responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308. `always` set to `true` adds it to every response. A resource accepts up to 50 headers. The name uses letters, numbers, hyphens, and underscores. The value must start with a letter, number, asterisk (*), or opening brace ({).</p>
+
+<p>After the option is saved, [clear&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) and request the file. The header is present when the CDN response includes it.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "static_response_headers": {
+                "enabled": True,
+                "value": [
+                    {
+                        "name": "X-Custom-Header",
+                        "value": ["one", "two"],
+                        "always": False,
+                    }
+                ],
+            }
+        },
+    )
+    header = updated.options.static_response_headers.value[0]
+    print(header.name, header.value, header.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                StaticResponseHeaders: cdn.CDNResourceUpdateParamsOptionsStaticResponseHeaders{
+                    Enabled: true,
+                    Value: []cdn.CDNResourceUpdateParamsOptionsStaticResponseHeadersValue{{
+                        Name:   "X-Custom-Header",
+                        Value:  []string{"one", "two"},
+                        Always: gcore.Bool(false),
+                    }},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        header := updated.Options.StaticResponseHeaders.Value[0]
+        fmt.Println(header.Name, header.Value, header.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "static_response_headers": {
+            "enabled": true,
+            "value": [
+              {
+                "name": "X-Custom-Header",
+                "value": ["one", "two"],
+                "always": false
+              }
+            ]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": [
+        {
+          "name": "X-Custom-Header",
+          "value": ["one", "two"],
+          "always": false
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Hide response headers
+
+<p>Choose one policy. The API `mode` name does not match the Portal label.</p>
+
+| Portal mode | API `mode` | `excepted` contains |
+| --- | --- | --- |
+| Hide all except | `hide` | Headers to keep |
+| Hide only | `show` | Headers to remove |
+
+### Hide all except selected headers
+
+<p>Set `mode` to `hide`. `excepted` lists the headers that stay. The API also keeps `connection`, `content-length`, `content-type`, `date`, and `server`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "response_headers_hiding_policy": {
+                "enabled": True,
+                "mode": "hide",
+                "excepted": ["etag"],
+            }
+        },
+    )
+    policy = updated.options.response_headers_hiding_policy
+    print(policy.mode, policy.excepted)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ResponseHeadersHidingPolicy: cdn.CDNResourceUpdateParamsOptionsResponseHeadersHidingPolicy{
+                    Enabled:  true,
+                    Mode:     "hide",
+                    Excepted: []string{"etag"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        policy := updated.Options.ResponseHeadersHidingPolicy
+        fmt.Println(policy.Mode, policy.Excepted)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "response_headers_hiding_policy": {
+            "enabled": true,
+            "mode": "hide",
+            "excepted": ["etag"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option keeps the requested header and the headers that cannot be hidden:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "mode": "hide",
+      "excepted": ["etag", "content-type", "content-length", "connection", "date", "server"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Hide only selected headers
+
+<p>Set `mode` to `show`. `excepted` lists the headers to remove. `connection`, `content-length`, `content-type`, `date`, and `server` cannot be removed.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "response_headers_hiding_policy": {
+                "enabled": True,
+                "mode": "show",
+                "excepted": ["x-robots-tag"],
+            }
+        },
+    )
+    policy = updated.options.response_headers_hiding_policy
+    print(policy.mode, policy.excepted)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ResponseHeadersHidingPolicy: cdn.CDNResourceUpdateParamsOptionsResponseHeadersHidingPolicy{
+                    Enabled:  true,
+                    Mode:     "show",
+                    Excepted: []string{"x-robots-tag"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        policy := updated.Options.ResponseHeadersHidingPolicy
+        fmt.Println(policy.Mode, policy.Excepted)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "response_headers_hiding_policy": {
+            "enabled": true,
+            "mode": "show",
+            "excepted": ["x-robots-tag"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "mode": "show",
+      "excepted": ["x-robots-tag"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
