@@ -1,7 +1,7 @@
 ---
-title: Protect your videos with the AES-128 encryption
+title: Protect videos with AES-128 encryption
 sidebarTitle: AES-128
-ai-navigation: Enable and manage AES-128 encryption per video via the Streaming API and integrate a keyserver to retrieve decryption keys using the Gcore CDN encryption endpoint.
+ai-navigation: Enable AES-128 per video through the Streaming API and point a keyserver at the Gcore CDN encryption endpoint.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,66 +9,50 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-## What is AES-128?
+<p>AES-128 encrypts HLS video chunks. A keyserver controls access to the decryption key, so playback can be limited to authorized viewers.</p>
 
-<p>AES-128, or the Advanced Encryption Standard, is a block encryption algorithm. It operates by using substitutions and permutations on data blocks of 16 bytes with a 128-bit key length, making it difficult for anyone to intercept and decode the information. This encryption method is ideal for scenarios where you need to restrict access to content, such as videos with paid subscriptions.</p>
+## VoD playback
 
-<p>For maximum security, it is recommended to use AES-128 in conjunction with the [country](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) or [domain access policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#referrer-access-policy).</p>
+<p>VoDs are delivered over the [HLS&nbsp;protocol](/streaming/video-hosting/hls-and-mp4). Each video is split into playlists of encrypted chunks. The playlist <code>EXT-X-KEY</code> tag names the keyserver URL for the decryption key.</p>
 
-## How does AES-128 work with VoDs?
+<p>Playback follows this sequence:</p>
 
-<p>We deliver VoDs through the [HLS protocol](/streaming/video-hosting/hls-and-mp4). Each video is divided into playlists made up of fragments, or chunks. Using the AES-128 algorithm, these chunks are transmitted in encrypted form. On your end, you need to deploy a server, referred to as a keyserver, that determines which viewers have access to the video and which do not. Viewers who can watch it must retrieve the decryption key from us.</p>
-
-<p>The process for AES-128 video processing is as follows:</p>
-
-<p>**1.** The viewer requests to watch the video and his request is sent to your keyserver.</p>
-
-<p>**2.** The keyserver analyzes the request parameters, which will determine whether the video should be made available to the viewer. This could be based on the presence of cookies, session parameters, or any other method you choose.</p>
-
-<p>**3.a.** If the request does not meet the necessary parameters, access to the video is denied.</p>
-
-<p>**3.b.** If the request meets the required parameters, the keyserver sends a GET request to the Gcore API to retrieve the decryption key.</p>
-
-<p>**4.** The Gcore API provides the key to the keyserver.</p>
-
-<p>**5.** The keyserver sends the key to the viewer, providing access to the video.</p>
+1. The player loads the HLS playlist and requests the decryption key from the keyserver URL in the <code>EXT-X-KEY</code> tag.
+2. The keyserver checks the viewer. The check can use cookies, a session parameter, or another signal defined on the keyserver.
+3. If the check fails, the keyserver does not return a key.
+4. If the check passes, the keyserver requests the key from the CDN encryption endpoint and returns it to the player.
+5. The player decrypts the chunks.
 
 ## Enable AES-128
 
-<p>To enable the ability to send video using AES-128 encryption, please contact technical support either by email at [support@gcore.com](mailto:support@gcore.com) or through chat. In the request specify the URL of the keyserver, for example, _client-keyserver.com_.</p>
+<p>Gcore support enables AES-128 for the account and configures the keyserver URL. Email [support@gcore.com](mailto:support@gcore.com) or use chat in the [Gcore Customer Portal](https://portal.gcore.com), and include that URL. A typical URL is client-keyserver.com.</p>
 
-<p>Once encryption is enabled, an EXT-X-KEY tag will be added to the playlists (_m3u8_), indicating the URL from which the player will retrieve the key to decrypt the content as follows:</p>
-
-```sh
-EXT-X-KEY:METHOD=AES-128,URI="https://client-keyserver.com/videos/clientId_videoslug/encryption"
- ```
-
-## Configure the keyserver
-
-<p>When AES-128 is enabled for your account, you need to configure the keyserver to send and redirect requests for the decryption key.</p>
-
-<p>To do so, use API integration. Send an API request to Gcore API as follows:</p>
+<p>Videos then follow the account encryption setting. Playlists (m3u8) include an <code>EXT-X-KEY</code> tag:</p>
 
 ```sh
-GET baseUrl/videos/12345_0zdztmmvdxe8zpo/encryption
- ```
-
-<p>Where</p>
-
-  * _12345_ is the ID of your Gcore account;
-  * _0zdztmmvdxe8zpo_ is the slug that identifies the video.
-
-
-<p>This request will allow your keyserver to retrieve the decryption key, which should then pass to the viewer in its original format. An AES-128 key is a 16-byte binary value. In hexadecimal notation it looks like:</p>
-
-```
-a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
+#EXT-X-KEY:METHOD=AES-128,URI="https://client-keyserver.com/videos/clientId_videoslug/encryption"
 ```
 
-<p>To pass the key in this format, you can use the following HTTP headers:</p>
+## Keyserver configuration
 
-  * Content-transfer-encoding: binary
-  * Content-type: application/octet-stream
+<p>After AES-128 is enabled for the account, the keyserver validates the viewer and requests the decryption key from the CDN encryption endpoint:</p>
+
+```sh
+GET https://{CDN_HOST}/videos/{clientId_slug}/encryption
+```
+
+<p><code>clientId_slug</code> joins the Gcore account ID and the video slug, as in <code>1000503_cC4PEC0AWy1qu03R</code>.</p>
+
+<p>The response is the decryption key. Pass that 16-byte binary value to the player unchanged. Return the original bytes, not a hexadecimal rendering of them.</p>
+
+<p>Return the key with these HTTP headers:</p>
+
+* Content-transfer-encoding: binary
+* Content-type: application/octet-stream
+
+<Note>
+AES-128 can be combined with a [country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) or a [referrer&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#referrer-access-policy).
+</Note>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -76,7 +60,7 @@ a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
 <p>When AES-128 encryption is enabled for the account by Gcore support, the Streaming API exposes a per-video <code>encryption</code> field. Set it to <code>aes128</code> to encrypt a specific video regardless of the account-level default, or set it to <code>inherit</code> to follow the account setting. Configure the keyserver to call the CDN encryption endpoint to retrieve decryption keys.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
 ```bash
@@ -239,9 +223,9 @@ export VIDEO_ID="{YOUR_VIDEO_ID}"
   </Tab>
 </Tabs>
 
-## Disable AES-128 on a video
+## Restore the account-level encryption setting
 
-<p>Set <code>encryption</code> to <code>inherit</code> to revert to the account-level default.</p>
+<p>Set <code>encryption</code> to <code>inherit</code> to revert to the account-level default. If that default is AES-128, the video stays encrypted.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -323,7 +307,7 @@ export VIDEO_ID="{YOUR_VIDEO_ID}"
 
 ## Retrieve the decryption key (keyserver integration)
 
-<p>When AES-128 is enabled, Gcore adds an <code>EXT-X-KEY</code> tag to the HLS playlist pointing to the keyserver URL. The keyserver receives the viewer's request, verifies access, then calls the Gcore CDN encryption endpoint to retrieve the decryption key and forward it to the viewer.</p>
+<p>When AES-128 is enabled, Gcore adds an <code>EXT-X-KEY</code> tag to the HLS playlist pointing to the keyserver URL. The keyserver receives the player's request, verifies the viewer, then calls the Gcore CDN encryption endpoint to retrieve the decryption key and forward it to the player.</p>
 
 <p>The endpoint the keyserver calls to retrieve the key:</p>
 
@@ -331,9 +315,9 @@ export VIDEO_ID="{YOUR_VIDEO_ID}"
 GET https://{CDN_HOST}/videos/{clientId_slug}/encryption
 ```
 
-<p>Where <code>clientId_slug</code> is the combined string of the Gcore account ID and the video slug — for example, <code>1000503_cC4PEC0AWy1qu03R</code>. The account ID and slug are available in the video object returned by <code>GET /streaming/videos/{video_id}</code>.</p>
+<p><code>clientId_slug</code> joins the Gcore account ID and the video slug, as in <code>1000503_cC4PEC0AWy1qu03R</code>. The account ID and slug are available in the video object returned by <code>GET /streaming/videos/{video_id}</code>.</p>
 
-<p>Gcore returns the decryption key as a 16-byte binary value. Pass it to the viewer using these HTTP headers:</p>
+<p>Gcore returns the decryption key as a 16-byte binary value. Pass it to the player using these HTTP headers:</p>
 
 ```
 Content-Transfer-Encoding: binary
