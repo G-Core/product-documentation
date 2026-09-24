@@ -1,20 +1,25 @@
 ---
 title: Specify an origin and the origin pull protocol
 sidebarTitle: Specify an origin
-ai-navigation: Configure CDN origin pull protocol (HTTP, HTTPS, or HTTP and HTTPS) and specify the origin group for content delivery.
+ai-navigation: Set the CDN origin pull protocol and origin group in the Customer Portal or via REST API.
 ---
 
-The **Origin pull protocol** and **Pull content from** settings control how CDN servers fetch content from the origin. Both options are in the **General** section of the CDN resource settings.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The **Origin pull protocol** and **Pull content from** settings control how CDN servers fetch content from the origin. Both options are in the **General** section of the CDN resource settings.</p>
 
 ## Origin pull protocol
 
-In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **Resources** and click the resource name. Open the **OPTIONS** tab and scroll to the **General** section.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **Resources** and click the resource name. Open the **OPTIONS** tab and scroll to the **General** section.</p>
 
-Use the **Origin pull protocol** option to set the protocol that CDN servers use to pull content from an origin server: HTTP, HTTPS, or HTTP and HTTPS.
+<p>Use the **Origin pull protocol** option to set the protocol that CDN servers use to pull content from an origin server: HTTP, HTTPS, or HTTP and HTTPS.</p>
 
 <Frame>![Origin pull protocol and Pull content from settings in the General section](/images/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/specify-an-origin-and-the-origin-pull-protocol-image1.png)</Frame>
 
-Select the origin pull protocol based on the protocol supported by the origin server:
+<p>Select the origin pull protocol based on the protocol supported by the origin server:</p>
 
 1. **HTTP** — if the content on the origin server is available only via HTTP (port 80) or there is a redirect from HTTPS to HTTP on the origin server.
 2. **HTTPS** — if the content on the origin server is available only via HTTPS (port 443) or there is a redirect from HTTP to HTTPS on the origin server.
@@ -23,9 +28,9 @@ Select the origin pull protocol based on the protocol supported by the origin se
    - When a user sends a request to `https://cdn.example.com/image.jpg`, the CDN pulls from the origin through HTTPS (port 443).
    - When a user sends a request to `http://cdn.example.com/image.jpg`, the CDN pulls from the origin through HTTP (port 80).
 
-To understand the effect of an incorrect value, consider this example:
+<p>To understand the effect of an incorrect value, consider this example:</p>
 
-The origin server delivers content only through HTTPS (port 443), but **Origin pull protocol** is set to HTTP.
+<p>The origin server delivers content only through HTTPS (port 443), but **Origin pull protocol** is set to HTTP.</p>
 
 1. **Origin redirects from HTTP to HTTPS**
 
@@ -33,21 +38,230 @@ The origin server delivers content only through HTTPS (port 443), but **Origin p
    2. The CDN pulls from the origin at `http://example.com/image.jpg`.
    3. The origin redirects to `https://example.com/image.jpg`.
 
-   Conclusion: the user gets content from the origin, not from the CDN. Set the protocol to HTTPS to have content delivered through the CDN.
+   <p>Conclusion: the user gets content from the origin, not from the CDN. Set the protocol to HTTPS to have content delivered through the CDN.</p>
 
 2. **Origin does not redirect from HTTP to HTTPS**
 
    1. A user requests content at `http://cdn.example.com/image.jpg`.
    2. The CDN pulls from the origin at `http://example.com/image.jpg`.
 
-   Conclusion: the origin cannot provide content because it only accepts `https://example.com/image.jpg`. Set the protocol to HTTPS to have content delivered through the CDN.
+   <p>Conclusion: the origin cannot provide content because it only accepts `https://example.com/image.jpg`. Set the protocol to HTTPS to have content delivered through the CDN.</p>
 
 ## Pull content from
 
-Use the **Pull content from** section to specify the origin group that the CDN uses to pull content. The origin can be an IP address or a domain name.
+<p>Use the **Pull content from** section to specify the origin group that the CDN uses to pull content. The origin can be an IP address or a domain name.</p>
 
-To change the current [origin&nbsp;group](/cdn/add-an-origin-group), click **Edit this group**.
+<p>To change the current [origin&nbsp;group](/cdn/add-an-origin-group), click **Edit this group**.</p>
 
-To add a new origin group, click **Add group**. After the group is created, select it from the origin group dropdown — it is not assigned to the resource automatically.
+<p>To add a new origin group, click **Add group**. After the group is created, select it from the origin group dropdown — it is not assigned to the resource automatically.</p>
 
 <Frame>![Origin group dropdown showing available groups to select](/images/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/specify-an-origin-and-the-origin-pull-protocol-image2.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Set the protocol CDN servers use to pull content from the origin, and assign the origin group that supplies that content.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+- `HTTP` — CDN servers pull from the origin over HTTP.
+- `HTTPS` — CDN servers pull from the origin over HTTPS.
+- `MATCH` — the CDN uses the client request protocol. HTTP and HTTPS responses are cached separately.
+
+<p>Choose a protocol the origin accepts. If the CDN pulls over HTTP while the origin only serves HTTPS, the request may be redirected or fail, depending on the origin configuration.</p>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
+```
+
+## Set the origin pull protocol
+
+<p>Set `originProtocol` to the protocol the origin accepts.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        origin_protocol="HTTPS",
+    )
+    print(updated.origin_protocol)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            OriginProtocol: cdn.CDNResourceUpdateParamsOriginProtocolHTTPS,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.OriginProtocol)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"originProtocol": "HTTPS"}'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 101,
+      "originProtocol": "HTTPS",
+      "originGroup": 80
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Assign an origin group
+
+<p>List origin groups, then set `originGroup` to the group ID. `ORIGIN_GROUP_ID` is an `id` from this list. A new [origin&nbsp;group](/cdn/add-an-origin-group) is not assigned until this call sets `originGroup`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+    origin_group_id = int(os.environ["ORIGIN_GROUP_ID"])
+
+    for group in client.cdn.origin_groups.list():
+        print(group.id, group.name)
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        origin_group=origin_group_id,
+    )
+    print(updated.origin_group)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+        originGroupID, err := strconv.ParseInt(os.Getenv("ORIGIN_GROUP_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        page, err := client.CDN.OriginGroups.List(ctx, cdn.OriginGroupListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, group := range page.Results {
+            fmt.Println(group.ID, group.Name)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            OriginGroup: gcore.Int(originGroupID),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.OriginGroup)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/origin_groups" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 200. Use an `id` from `results` as `ORIGIN_GROUP_ID`:</p>
+
+    ```json
+    {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 80,
+          "name": "Resource origin group"
+        }
+      ]
+    }
+    ```
+
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"originGroup\": $ORIGIN_GROUP_ID}"
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 101,
+      "originProtocol": "HTTP",
+      "originGroup": 80
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
