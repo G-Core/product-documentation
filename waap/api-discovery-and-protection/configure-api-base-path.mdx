@@ -1,31 +1,31 @@
 ---
-title: "Manually add endpoints to the API base path"
-sidebarTitle: "Manually add endpoints to API base path"
+title: "API base path configuration"
+sidebarTitle: "API base path configuration"
 ai-navigation: Configure the WAAP API base path to mark domain endpoints as API traffic via the Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
-<MethodSection id="portal" label="Customer Portal">
+  <MethodSection id="portal" label="Customer Portal">
 
-<p>When a domain uses APIs hosted on the same domain without [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) enabled, endpoints can be added manually to the API base path. This defines a communication path for WAAP to expect API requests and protect those endpoints.</p>
+<p>When a domain uses APIs hosted on the same domain without [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) enabled, endpoints can be added manually to the API base path. This tells WAAP which request paths contain API traffic so that it can apply API-specific protection.</p>
 
 <Info>
-  This setting doesn't add API endpoints to the allowlist.
+  This setting does not add API endpoints to the allowlist.
 </Info>
 
 <p>The following rules apply when entering a path:</p>
 
-- Paths are recursively allowed — `api/` allows `api/v1/*` and `api/v2/*`.
-- Regex/wildcard input is not accepted. Use `api/` instead of `api/*`.
-- Don't enter the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`. The domain is automatically added.
+- Paths are matched recursively — `api/` covers `api/v1/*` and `api/v2/*`.
+- Wildcard and regex patterns are accepted — for example `api/v1/.*` or `v2/.*`.
+- Do not enter the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`. The domain is automatically added.
 - Paths are not case-sensitive. `API/` and `api/` are interchangeable.
-- Adding multiple APIs requires a separate entry for each one.
+- Adding multiple API paths requires a separate entry for each path.
 
-## Add endpoints to the base path
+## API endpoint addition
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **WAAP** \> **Domains**.
+1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** \> **Domains**.
 
 <Frame>
   ![Domains page in the Customer Portal](/images/docs/waap/api-discovery-and-protection/domains-page.png)
@@ -41,30 +41,30 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 4. Either enable the **Set as API Domain** checkbox to treat the whole domain as an API or enter a specific API endpoint path into the **Host** input field.
 5. Click the **Add** button, and the endpoint will appear in the **Endpoint** table below.
 
-## Remove endpoints from the base path
+## API endpoint removal
 
 1. Find the relevant endpoint and click the three-dot icon next to it.
 2. Select **Delete**.
 3. Confirm the action by clicking **Delete** again.
 
-<p>After the API base path is configured, CAPTCHA and JavaScript validation is disabled for added endpoints.</p>
+<p>After the API base path is configured, CAPTCHA and JavaScript validation are disabled for added endpoints.</p>
 
 <p>The [DDoS&nbsp;protection](/waap/ddos-protection), [IP&nbsp;reputation](/waap/waap-policies/ip-reputation), and rate limitation features continue to protect those endpoints. Custom [WAAP&nbsp;rules](/waap/waap-rules/custom-rules) and [firewall&nbsp;rules](/waap/firewall/access-control#managing-allowed-and-blocked-ips) can also impact content delivery via API and potentially block users.</p>
 
 </MethodSection>
-<MethodSection id="api" label="REST API">
+  <MethodSection id="api" label="REST API">
 
-<p>If a domain uses APIs hosted on the same domain and [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) is not enabled, manually configure the API base path via the [Domains](/api-reference/waap#domains) settings endpoints to tell WAAP which paths to treat as API traffic. WAAP then disables CAPTCHA and JavaScript validation for those paths while keeping DDoS, IP reputation, and rate limiting active. Response examples include only the fields used in each step.</p>
+<p>If a domain uses APIs hosted on the same domain and [API&nbsp;Discovery](/waap/api-discovery-and-protection/api-discovery) is not enabled, manually configure the API base path via the [Retrieve domain settings](/api-reference/waap/domains/retrieve-domain-settings) and [Set domain settings](/api-reference/waap/domains/set-domain-settings) endpoints to tell WAAP which paths to treat as API traffic. WAAP then disables CAPTCHA and JavaScript validation for those paths while keeping DDoS, IP reputation, and rate limiting active. Response examples include only the fields used in each step.</p>
 
 <Info>
-  This setting doesn't add API paths to the allowlist.
+  This setting does not add API paths to the allowlist.
 </Info>
 
 <p>The following rules apply when configuring API paths:</p>
 
-- Paths are recursively allowed — `api/` covers `api/v1/*` and `api/v2/*`.
-- Regex/wildcard input is not accepted. Use `api/` instead of `api/*`.
-- Don't include the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`.
+- Paths are matched recursively — `api/` covers `api/v1/*` and `api/v2/*`.
+- Wildcard and regex patterns are accepted — for example `api/v1/.*` or `v2/.*`.
+- Do not include the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`.
 - API paths are not case-sensitive. `API/` and `api/` are interchangeable.
 
 <Warning>
@@ -80,7 +80,7 @@ export GCORE_API_KEY=your_api_key
 export DOMAIN_ID=your_domain_id
 ```
 
-## View current configuration
+## Current configuration
 
 <p>Returns the current API base path settings, including the `is_api` flag and the configured `api_urls` list.</p>
 
@@ -89,9 +89,7 @@ export DOMAIN_ID=your_domain_id
     ```python
     import os
     from gcore import Gcore
-    from dotenv import load_dotenv
 
-    load_dotenv()
     client = Gcore()
     domain_id = int(os.environ["DOMAIN_ID"])
 
@@ -116,7 +114,10 @@ export DOMAIN_ID=your_domain_id
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
-        domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        domainID, err := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic(fmt.Errorf("invalid DOMAIN_ID: %w", err))
+        }
 
         settings, err := client.Waap.Domains.Settings.Get(ctx, domainID)
         if err != nil {
@@ -129,8 +130,8 @@ export DOMAIN_ID=your_domain_id
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X GET "https://api.gcore.com/waap/v1/domains/${DOMAIN_ID}/settings" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    curl -X GET "https://api.gcore.com/waap/v2/domains/${DOMAIN_ID}/settings" \
+      -H "Authorization: apikey ${GCORE_API_KEY}"
     ```
 
     <Accordion title="Response">
@@ -140,25 +141,22 @@ export DOMAIN_ID=your_domain_id
           "is_api": false,
           "api_urls": ["api/v1/", "api/v2/"]
         }
-        // ...
       }
       ```
     </Accordion>
   </Tab>
 </Tabs>
 
-## Configure API paths
+## API path configuration
 
-<p>Add or remove API paths by sending the complete updated list. Always read the current list first, then modify it and send the result. Both operations use the same `PATCH /waap/v1/domains/{id}/settings` call. Returns HTTP 204 with no response body.</p>
+<p>Add or remove API paths by sending the complete updated list. Always read the current list first, then modify it and send the result. Both operations use the same `PATCH /waap/v2/domains/{domain_id}/settings` call. Returns HTTP 200 with the updated domain settings.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
     import os
     from gcore import Gcore
-    from dotenv import load_dotenv
 
-    load_dotenv()
     client = Gcore()
     domain_id = int(os.environ["DOMAIN_ID"])
 
@@ -195,7 +193,10 @@ export DOMAIN_ID=your_domain_id
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
-        domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        domainID, err := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic(fmt.Errorf("invalid DOMAIN_ID: %w", err))
+        }
 
         settings, err := client.Waap.Domains.Settings.Get(ctx, domainID)
         if err != nil {
@@ -203,7 +204,7 @@ export DOMAIN_ID=your_domain_id
         }
 
         // Add a path
-        err = client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
+        _, err = client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
             API: waap.DomainSettingUpdateParamsAPI{
                 APIURLs: append(settings.API.APIURLs, "api/v3/"),
             },
@@ -221,7 +222,7 @@ export DOMAIN_ID=your_domain_id
         //         updated = append(updated, u)
         //     }
         // }
-        // client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
+        // _, err = client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
         //     API: waap.DomainSettingUpdateParamsAPI{APIURLs: updated},
         // })
     }
@@ -231,29 +232,38 @@ export DOMAIN_ID=your_domain_id
     ```bash
     # Retrieve current paths first, then send the full updated list.
     # This example adds api/v3/ to an existing [api/v1/, api/v2/] list.
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${DOMAIN_ID}/settings" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+    curl -X PATCH "https://api.gcore.com/waap/v2/domains/${DOMAIN_ID}/settings" \
+      -H "Authorization: apikey ${GCORE_API_KEY}" \
       -H "Content-Type: application/json" \
       -d '{"api": {"api_urls": ["api/v1/", "api/v2/", "api/v3/"]}}'
 
     # To remove api/v2/, send the list without it:
     # -d '{"api": {"api_urls": ["api/v1/", "api/v3/"]}}'
     ```
+
+    <Accordion title="Response">
+      ```json
+      {
+        "api": {
+          "is_api": false,
+          "api_urls": ["api/v1/", "api/v2/", "api/v3/"]
+        }
+      }
+      ```
+    </Accordion>
   </Tab>
 </Tabs>
 
-## Set domain as API
+## Domain-wide API configuration
 
-<p>When `is_api` is enabled, WAAP treats all domain traffic as API requests and disables browser challenges globally — individual `api_urls` entries are ignored but remain stored and take effect again when `is_api` is set back to `false`. Returns HTTP 204 with no response body.</p>
+<p>When `is_api` is enabled, WAAP treats all domain traffic as API requests and disables browser challenges globally — individual `api_urls` entries are ignored but remain stored and take effect again when `is_api` is set back to `false`. Returns HTTP 200 with the updated domain settings.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
     import os
     from gcore import Gcore
-    from dotenv import load_dotenv
 
-    load_dotenv()
     client = Gcore()
     domain_id = int(os.environ["DOMAIN_ID"])
 
@@ -280,9 +290,12 @@ export DOMAIN_ID=your_domain_id
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
-        domainID, _ := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        domainID, err := strconv.ParseInt(os.Getenv("DOMAIN_ID"), 10, 64)
+        if err != nil {
+            panic(fmt.Errorf("invalid DOMAIN_ID: %w", err))
+        }
 
-        err := client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
+        _, err = client.Waap.Domains.Settings.Update(ctx, domainID, waap.DomainSettingUpdateParams{
             API: waap.DomainSettingUpdateParamsAPI{
                 IsAPI: gcore.Bool(true),
             },
@@ -296,11 +309,22 @@ export DOMAIN_ID=your_domain_id
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${DOMAIN_ID}/settings" \
-      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+    curl -X PATCH "https://api.gcore.com/waap/v2/domains/${DOMAIN_ID}/settings" \
+      -H "Authorization: apikey ${GCORE_API_KEY}" \
       -H "Content-Type: application/json" \
       -d '{"api": {"is_api": true}}'
     ```
+
+    <Accordion title="Response">
+      ```json
+      {
+        "api": {
+          "is_api": true,
+          "api_urls": ["api/v1/", "api/v2/"]
+        }
+      }
+      ```
+    </Accordion>
   </Tab>
 </Tabs>
 
