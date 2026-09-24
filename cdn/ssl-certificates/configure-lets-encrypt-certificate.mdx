@@ -1,22 +1,33 @@
 ---
 title: "Configure Let's Encrypt certificate"
 sidebarTitle: "Let's Encrypt certificate"
-ai-navigation: "Enable HTTPS with free Let's Encrypt certificates on CDN resources using HTTP-01 or DNS-01 challenge validation, with optional Gcore Managed DNS delegation to ns1.gcorelabs.net and ns2.gcdn.services for domain ownership verification."
+ai-navigation: "Issue a free Let's Encrypt certificate for a CDN resource in the Customer Portal or via REST API."
 ---
 
-If you do not have your own SSL certificate, you can activate the free Let's Encrypt certificate in your account. Let's Encrypt certificates can only be issued for resources with a [custom domain name](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>If you do not have your own SSL certificate, you can activate the free Let's Encrypt certificate in your account. Let's Encrypt certificates can only be issued for resources with a [custom domain name](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).</p>
 
 ## Attach a Let's Encrypt certificate
 
+<p>A wildcard domain cannot be issued a certificate. You can only issue a Let's Encrypt certificate for an existing resource, and only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.</p>
+
+<Frame>
+  ![Warning](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/warning.png)
+</Frame>
+
 ### During resource creation
 
-On the **Set up initial configuration** step, navigate to the **SSL** section, and turn on the toggle for **Enable HTTPS**. Then, select **Get free Let's Encrypt certificate**.
+<p>On the **Set up initial configuration** step, navigate to the **SSL** section, and turn on the toggle for **Enable HTTPS**. Then, select **Get free Let's Encrypt certificate**.</p>
 
 <Frame>
   ![During resource creation](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-enable-https.png)
 </Frame>
 
-The certificate issuance may take up to 30 minutes after the resource is created. During this time, please do not:
+<p>The certificate issuance may take up to 30 minutes after the resource is created. During this time, please do not:</p>
 
 - disable the HTTPS option,
 - select another certificate,
@@ -36,37 +47,98 @@ The certificate issuance may take up to 30 minutes after the resource is created
   ![General section](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-menu.png)
 </Frame>
 
-3. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**.
+3. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**. That button saves the SSL section. Issuing and revoking a Let's Encrypt certificate does not require a separate save of the rest of the resource settings.
 
 <Frame>
   ![SSL section](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-enable-https.png)
 </Frame>
 
-### Issuance with the DNS-01 challenge
+<p>The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.</p>
 
-We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail.
+## Check issuance status
 
-To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official Let's Encrypt documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).
+<p>After selecting the **Get free Let's Encrypt certificate** option, if your CDN resource configurations are correct, the **Processing** status will be displayed in your customer portal while the certificate is being issued.</p>
 
-Before you begin, make sure you have the following:
+<Frame>
+  ![Processing status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-processing.png)
+</Frame>
+
+<p>However, if some issues get in the way of the ACME challenge, you will see the following description of the error of issuing. Such an error can occur if a CDN resource is still in the process of creation, for example. The next attempt will occur in fifteen minutes. If you want to accelerate the reattempt, click **force retry**.</p>
+
+<Frame>
+  ![Processing with issue status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-force-retry.png)
+</Frame>
+
+<p>If the challenge verification is successful, the certificate will be issued, and you will see the status **Success**. The certificate is only visible in the settings of the resource for which it is issued. A Let's Encrypt certificate will not be displayed on the SSL Certificates page, and the certificate selector will not be displayed in the resource settings.</p>
+
+<Frame>
+  ![Success status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-revoke.png)
+</Frame>
+
+<Frame>
+  ![Restrictions and features of the option](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-certificates.png)
+</Frame>
+
+<p>During initial issuance, the status changes to **Failed** after five unsuccessful attempts. If an error occurs during certificate issuance, the Enable HTTPS toggle will be disabled and a notification will be sent to your email. Click **Retry issue** to attempt issuance again. If your CDN resource domain cannot be ACME challenged, you will see a message informing you of the issue and the release button will be inactive.</p>
+
+<Frame>
+  ![Pre-validation failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-error.png)
+</Frame>
+
+<Frame>
+  ![Failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failure-retry.png)
+</Frame>
+
+## Troubleshoot an HTTP-01 failure
+
+<Warning>
+**Warning**
+
+Certificate issuance fails if either of these conditions is not met:
+- The CNAME record for the resource must point to the value shown in the [setup guide](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
+- No CDN rule must block requests to `/.well-known/acme-challenge/`. Catch-all rules such as `/**` or broad regex patterns will prevent Let's Encrypt from completing HTTP-01 validation.
+</Warning>
+
+<p>Let's Encrypt requires placing a temporary file at the URL `http://<CNAME>/.well-known/acme-challenge/<TOKEN>` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:</p>
+
+- **A rule with /**\*. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
+- **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*\$**. This rule will catch all non-static files.
+
+<p>You can check your resource rules using the service [regex](https://regex101.com/r/6BCT9Z/1). If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful. Issuance also fails when the origin source is not available. The same failure is covered in the [dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate).</p>
+
+<p>If you are using DNS Cloudflare, be sure not to set the **CNAME Flattening** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattening option to **Flatten CNAME at root**.</p>
+
+<Frame>
+  ![Status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/lets-encrypt-8.png)
+</Frame>
+
+<p>When the hostname CNAME cannot point only to Gcore, such as with a multi-CDN balancer, use DNS-01 instead of repeating the HTTP-01 checks.</p>
+
+## Use DNS-01 when HTTP-01 cannot validate the domain
+
+<p>We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail.</p>
+
+<p>To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official Let's Encrypt documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).</p>
+
+<p>Before you begin, make sure you have the following:</p>
 
 - A CDN resource with the custom domain(s) already configured.
 - [Gcore Managed DNS](https://gcore.com/dns) active on your account.
 - Access to the authoritative DNS provider hosting your domain zone.
 - A Gcore API token with permission to modify the CDN resource.
 
-#### Step 1. Activate Gcore Managed DNS
+### Step 1. Activate Gcore Managed DNS
 
-Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.
+<p>Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.</p>
 
-#### Step 2. Delegate your domain to Gcore nameservers
+### Step 2. Delegate your domain to Gcore nameservers
 
-You have two options depending on how much control you want to transfer to Gcore:
+<p>You have two options depending on how much control you want to transfer to Gcore:</p>
 
 - **Full zone delegation**: delegate your entire DNS zone to Gcore nameservers (_ns1.gcorelabs.net_ and _ns2.gcdn.services_). Choose this if you already manage your zone in Gcore DNS or don't mind moving it.
 - **Partial delegation**: delegate only the `_acme-challenge.*` subdomains to Gcore. Choose this if you can't or don't want to move your full DNS zone — this is the minimum-privilege approach and is fully compliant with [RFC 8555 §8.4](https://www.rfc-editor.org/rfc/rfc8555#section-8.4).
 
-**To set up partial delegation:**
+<p>**To set up partial delegation:**</p>
 
 1. In your DNS provider, add NS records pointing `_acme-challenge.<hostname>` to Gcore's nameservers:
 
@@ -75,7 +147,7 @@ You have two options depending on how much control you want to transfer to Gcore
 | `_acme-challenge.www.example.com` | 300 | NS | `ns1.gcorelabs.net.` |
 | `_acme-challenge.www.example.com` | 300 | NS | `ns2.gcdn.services.` |
 
-Add a pair of NS records for each custom domain on your CDN resource. For example, for a resource serving three hostnames (www, app, api):
+<p>Add a pair of NS records for each custom domain on your CDN resource. For example, for a resource serving three hostnames (www, app, api):</p>
 
 ```text
 _acme-challenge.www.example.com. IN NS ns1.gcorelabs.net.
@@ -102,9 +174,9 @@ dig +short NS example.com
 dig @ns.example-dns.com NS _acme-challenge.www.example.com
 ```
 
-A correct delegation returns `status: NOERROR` with both `ns1.gcorelabs.net.` and `ns2.gcdn.services.` in the ANSWER or AUTHORITY section. If you get `NXDOMAIN` or `NOERROR` with no NS records, go back and confirm the records were saved correctly in your DNS provider.
+<p>A correct delegation returns `status: NOERROR` with both `ns1.gcorelabs.net.` and `ns2.gcdn.services.` in the ANSWER or AUTHORITY section. If you get `NXDOMAIN` or `NOERROR` with no NS records, go back and confirm the records were saved correctly in your DNS provider.</p>
 
-To trace the full delegation chain from the root:
+<p>To trace the full delegation chain from the root:</p>
 
 ```text
 dig +trace _acme-challenge.www.example.com NS
@@ -116,15 +188,15 @@ dig +trace _acme-challenge.www.example.com NS
 dig CAA example.com
 ```
 
-If no CAA record exists, any CA is allowed and no action is needed. If a CAA record is present, make sure it includes `letsencrypt.org`:
+<p>If no CAA record exists, any CA is allowed and no action is needed. If a CAA record is present, make sure it includes `letsencrypt.org`:</p>
 
 ```text
 example.com. IN CAA 0 issue "letsencrypt.org"
 ```
 
-#### Step 3. Enable the DNS-01 challenge
+### Step 3. Enable the DNS-01 challenge
 
-Enable the `use_dns01_le_challenge` option on your CDN resource via the [API](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate). Replace `{resource_id}` with your CDN resource ID and `<api-key>` with your Gcore API token:
+<p>Enable the `use_dns01_le_challenge` option on your CDN resource via the [API](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate). Replace `{resource_id}` with your CDN resource ID and `<api-key>` with your Gcore API token:</p>
 
 ```bash
 curl --request PATCH \
@@ -141,7 +213,7 @@ curl --request PATCH \
   }'
 ```
 
-To confirm the option was saved:
+<p>To confirm the option was saved:</p>
 
 ```bash
 curl --request GET \
@@ -150,7 +222,7 @@ curl --request GET \
   | jq '.options.use_dns01_le_challenge'
 ```
 
-The expected response:
+<p>The expected response:</p>
 
 ```json
 {
@@ -159,9 +231,9 @@ The expected response:
 }
 ```
 
-After this call, trigger or retry Let's Encrypt issuance from the **SSL** section of your CDN resource in the Gcore portal. Gcore will validate via DNS-01 through the delegated `_acme-challenge.*` subdomains — no production traffic needs to flow through Gcore.
+<p>After this call, trigger or retry Let's Encrypt issuance from the **SSL** section of your CDN resource in the Gcore portal. Gcore will validate via DNS-01 through the delegated `_acme-challenge.*` subdomains — no production traffic needs to flow through Gcore.</p>
 
-#### Troubleshoot the DNS-01 challenge
+### Troubleshoot the DNS-01 challenge
 
 | Symptom | Cause and fix |
 | --- | --- |
@@ -171,108 +243,794 @@ After this call, trigger or retry Let's Encrypt issuance from the **SSL** sectio
 | Cloudflare proxying the zone | Set **CNAME Flattening** to **Flatten CNAME at root**, not **Flatten all CNAMEs**. |
 | DNSSEC enabled at the parent zone | The delegation point must not carry a DS record unless Gcore also signs the child zone. Remove it or contact your DNS provider. |
 
-### Notes regarding issuing
+## Renew the certificate
 
-<Warning>
-**Warning**
+<p>While the resource is active, the certificate is renewed automatically. Gcore makes one automatic renewal attempt 30 days before the expiration of the current certificate. That single attempt is separate from initial issuance, which changes to **Failed** only after five unsuccessful attempts. If the certificate is not reissued, a notification will be sent to your email.</p>
 
-Certificate issuance fails if either of these conditions is not met:
-- The CNAME record for the resource must point to the value shown in the [setup guide](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
-- No CDN rule must block requests to `/.well-known/acme-challenge/`. Catch-all rules such as `/**` or broad regex patterns will prevent Let's Encrypt from completing HTTP-01 validation.
-</Warning>
+<p>In the event of an unsuccessful attempt to reissue a certificate, the current certificate will remain active for another 30 days. After the certificate's end date, the content will become unavailable via HTTPS.</p>
 
-- The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.
-- Let's Encrypt requires placing a temporary file at the URL `http://<CNAME>/.well-known/acme-challenge/<TOKEN>` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:
-  - **A rule with /**\*. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
-  - **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*\$**. This rule will catch all non-static files.
-
-You can check your resource rules using the service [regex](https://regex101.com/r/6BCT9Z/1). If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful.
-
-If an error occurs during certificate issuance, the Enable HTTPS toggle will be disabled and a notification will be sent to your email.
-
-- You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the [value specified in the setup guide](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), or the source is not available, the certificate will not be issued.
-- Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.
+<p>The **Failed** status can also occur when the Let's Encrypt certificate isn't renewed automatically. Correct the error (for example, change the domain's DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.</p>
 
 <Frame>
-  ![Warning](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/warning.png)
+  ![Failed status (reissuing)](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failed-renew.png)
 </Frame>
-
-While the resource is active, the certificate is renewed automatically. An attempt to reissue the certificate will be made 30 days before the expiration of the current certificate. There is only one attempt to reissue the certificate. If the certificate is not reissued, a notification will be sent to your email.
-
-In the event of an unsuccessful attempt to reissue a certificate, the current certificate will remain active for another 30 days. After the certificate's end date, the content will become unavailable via HTTPS.
-
-To avoid interruption of content delivery, please reissue the certificate yourself. To do this, [revoke](/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-let’s-encrypt-certificate) the Let's Encrypt certificate in your account and then reissue it.
 
 ## Revoke a Let's Encrypt certificate
 
-To revoke a certificate, go to the Resource Settings and click **Revoke Let's Encrypt certificate** in the SSL section.
+<p>To revoke a certificate, go to the Resource Settings and click **Revoke Let's Encrypt certificate** in the SSL section. Personal certificates will become available for selection after revoking Let's Encrypt.</p>
 
 <Frame>
   ![Revoke a Let's Encrypt certificate](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-revoke.png)
 </Frame>
 
-**Note** : You can also use an [API request](/api-reference/cdn/ssl-certificates/change-ssl-certificate) to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
+<p>**Note** : You can also use an [API request](/api-reference/cdn/ssl-certificates/change-ssl-certificate) to replace the Let's Encrypt certificate with your own certificate without having to revoke it.</p>
 
-## Restrictions and features of the option
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-- A wildcard domain cannot be issued a certificate
-- If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking Let's Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-let’s-encrypt-certificate)
-- A Let's Encrypt certificate will not be displayed on the SSL Certificates page
+<p>Issue a free Let's Encrypt certificate for a CDN resource that already uses a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), then read issuance status, retry a failed attempt, renew, or revoke the certificate. A wildcard hostname cannot receive a Let's Encrypt certificate, and one certificate object attaches to only one CDN resource.</p>
 
-<Frame>
-  ![Restrictions and features of the option](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-certificates.png)
-</Frame>
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
 
-- A certificate is only visible in the settings of the resource for which it is issued.
-- Issuing and revoking a Let's Encrypt certificate does not require saving the Resource Settings.
-- If you are using DNS Cloudflare, be sure not to set the **CNAME Flattening** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattening option to **Flatten CNAME at root**.
+<p>The hostname CNAME must point at the CDN edge hostname from the custom domain setup, and no CDN rule may block `/.well-known/acme-challenge/`. HTTP-01 is the default challenge. A newly created resource can take up to 30 minutes before the first attempt succeeds. A resource that is already propagated usually finishes in a few minutes. Gcore schedules the next attempt about 15 minutes after a failure. Leave HTTPS enabled and keep the same certificate attached while issuance is active.</p>
 
-<Frame>
-  ![Status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/lets-encrypt-8.png)
-</Frame>
+<p>Open a terminal and export the required variables. `CDN_SSL_CERTIFICATE_ID` is the `id` returned when the certificate object is created:</p>
 
-## Let's Encrypt issuing statuses
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+export CDN_SSL_CERTIFICATE_ID="{YOUR_SSL_CERTIFICATE_ID}"
+```
 
-### Pre-validation failed
+## Issue a Let's Encrypt certificate
 
-If your CDN resource domain cannot be ACME challenged, you will see a message informing you of the issue and the release button will be inactive. To avoid this problem, follow [our dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate).
+<p>Issuance is four calls in order: create the certificate object, pre-validate the resource, attach the certificate, then read the status until issuance finishes.</p>
 
-<Frame>
-  ![Pre-validation failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-error.png)
-</Frame>
+### 1. Create the certificate object
 
-### Processing
+<p>Create the certificate object before attaching it. `automated` must be `true`. The PEM fields stay null until issuance finishes. The Python and Go calls return no body, so the new ID comes from the certificate list filtered by name. The curl call returns the object, including `id`.</p>
 
-After selecting the **Get free Let's Encrypt certificate** option, if your CDN resource configurations are correct, the **Processing** status will be displayed in your customer portal while the certificate is being issued.
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Unique label for the certificate object |
+| `automated` | Yes | `true` to issue the certificate through Let's Encrypt |
 
-<Frame>
-  ![Processing status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-processing.png)
-</Frame>
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
 
-However, if some issues get in the way of the ACME challenge, you will see the following description of the error of issuing. Such an error can occur if a CDN resource is still in the process of creation, for example. The next attempt will occur in fifteen minutes. If you want to accelerate the reattempt, click **force retry**.
+    client = Gcore()
 
-<Frame>
-  ![Processing with issue status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-force-retry.png)
-</Frame>
+    client.cdn.certificates.create(
+        name="cdn-le-certificate",
+        automated=True,
+    )
 
-### Success
+    created = next(
+        item
+        for item in client.cdn.certificates.list(automated=True)
+        if item.name == "cdn-le-certificate"
+    )
+    print(created.id, created.automated, created.has_related_resources)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
 
-If the challenge verification is successful, the certificate will be issued, and you will see the status **Success**. The certificate will also be renewed automatically after three months.
+    import (
+        "context"
+        "fmt"
 
-<Frame>
-  ![Success status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-revoke.png)
-</Frame>
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
 
-### Failed
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
 
-After five unsuccessful attempts, the certificate status will be **Failed**. You can fix the error(s) causing failure using [our dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate). Click **Retry issue** to attempt issuance again.
+        err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
+            OfLetSEncryptCertificate: &cdn.CertificateNewParamsBodyLetSEncryptCertificate{
+                Name:      "cdn-le-certificate",
+                Automated: true,
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
 
-<Frame>
-  ![Failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failure-retry.png)
-</Frame>
+        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{
+            Automated: gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            if item.Name == "cdn-le-certificate" {
+                fmt.Println(item.ID, item.Automated, item.HasRelatedResources)
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/sslData" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "cdn-le-certificate",
+        "automated": true
+      }'
+    ```
 
-The **Failed** status can also occur when the Let's Encrypt certificate isn't renewed automatically. Correct the error (for example, change the domain's DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.
+    <p>The API returns HTTP 201:</p>
 
-<Frame>
-  ![Failed status (reissuing)](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failed-renew.png)
-</Frame>
+    ```json
+    {
+      "id": 192,
+      "name": "cdn-le-certificate",
+      "automated": true,
+      "hasRelatedResources": false,
+      "cert_issuer": null,
+      "cert_subject_cn": null,
+      "validity_not_before": null,
+      "validity_not_after": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### 2. Pre-validate the resource
+
+<p>Check whether the hostname can be challenged before attaching the certificate. HTTP 201 with an empty object means the check passed. HTTP 400 returns an `errors` array describing the problem, such as a hostname that does not resolve or an HTTP timeout on port 80. A failed check does not block the issue call. The status call then reports `ValidationIssue`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    client.cdn.cdn_resources.prevalidate_ssl_le_certificate(resource_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.CDNResources.PrevalidateSslLeCertificate(ctx, resourceID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/ssl/le/pre-validate" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+### 3. Attach the certificate and start issuance
+
+<p>Set `sslEnabled` to `true` and `sslData` to the certificate ID. That PATCH starts issuance for every hostname on the resource. `hasRelatedResources` becomes `true` on the certificate object immediately, while `cert_issuer` and `cert_subject_cn` stay empty until the attempt reaches `DONE`. The default key type is ECDSA.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        ssl_enabled=True,
+        ssl_data=certificate_id,
+    )
+    print(updated.id, updated.ssl_enabled, updated.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(true),
+            SslData:    gcore.Int(certificateID),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.ID, updated.SslEnabled, updated.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": true,
+        "sslData": '"$CDN_SSL_CERTIFICATE_ID"'
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The resource includes:</p>
+
+    ```json
+    {
+      "id": 101,
+      "sslEnabled": true,
+      "sslData": 192
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### 4. Check issuance status
+
+<p>Poll the certificate status until `active` is `false`. The first read can return `latest_status` as `null` and `statuses` as an empty array. After the attempt is recorded, `latest_status.status` is `FAILED` or `DONE`. `finished` stays `null` while retries remain scheduled. `next_attempt_time` is the next automatic attempt.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    issuing = client.cdn.certificates.get_status(certificate_id)
+    print(issuing.active, issuing.attempts_count, issuing.finished)
+    if issuing.latest_status is not None:
+        print(issuing.latest_status.status, issuing.latest_status.error)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        issuing, err := client.CDN.Certificates.GetStatus(ctx, certificateID, cdn.CertificateGetStatusParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(issuing.Active, issuing.AttemptsCount, issuing.Finished)
+        if issuing.JSON.LatestStatus.Valid() {
+            fmt.Println(issuing.LatestStatus.Status, issuing.LatestStatus.Error)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID/status" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 200 after the attempt is recorded:</p>
+
+    ```json
+    {
+      "id": 479318,
+      "active": true,
+      "attempts_count": 1,
+      "started": "2026-09-24T10:01:40.804396Z",
+      "finished": null,
+      "next_attempt_time": "2026-09-24T10:16:41.146402Z",
+      "resource": 101,
+      "latest_status": {
+        "status": "FAILED",
+        "error": "ValidationIssue",
+        "details": "Problem detected: Unable to resolve the domain name."
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>A certificate that is not attached returns HTTP 400: `Certificate is not attached to a resource.`</p>
+
+## Retry a failed attempt
+
+<p>Force the next attempt immediately instead of waiting for `next_attempt_time`. The call is valid while the latest attempt is `FAILED` and another attempt is already scheduled. The API returns HTTP 201 and an empty object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    client.cdn.certificates.force_retry(certificate_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.Certificates.ForceRetry(ctx, certificateID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID/force-retry" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+## Renew the certificate
+
+<p>Renew a certificate whose latest status is `DONE` and whose issuance is not active. Gcore also tries one automatic renewal 30 days before `validity_not_after`. While `active` is `true`, renewal returns HTTP 400: `Certificate issuing process has already been launched.`</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    client.cdn.certificates.renew(certificate_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.Certificates.Renew(ctx, certificateID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID/renew" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>When renewal starts, the API returns HTTP 201:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+## Use the DNS-01 challenge
+
+<p>Enable DNS-01 before the issue or renew call when HTTP-01 cannot see the hostname, such as traffic split by a multi-CDN balancer. Delegate `_acme-challenge` for each hostname with NS records to `ns1.gcorelabs.net` and `ns2.gcdn.services` at the authoritative DNS provider. The PATCH only stores the option. It does not create those NS records.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "use_dns01_le_challenge": {"enabled": True, "value": True},
+        },
+    )
+    print(
+        updated.options.use_dns01_le_challenge.enabled,
+        updated.options.use_dns01_le_challenge.value,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                UseDns01LeChallenge: cdn.CDNResourceUpdateParamsOptionsUseDns01LeChallenge{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.UseDns01LeChallenge.Enabled, updated.Options.UseDns01LeChallenge.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "use_dns01_le_challenge": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Request an RSA certificate
+
+<p>The next issuance or renewal uses ECDSA unless `use_rsa_le_cert` is enabled first. Set the option before the issue or renew call.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "use_rsa_le_cert": {"enabled": True, "value": True},
+        },
+    )
+    print(updated.options.use_rsa_le_cert.enabled, updated.options.use_rsa_le_cert.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                UseRsaLeCert: cdn.CDNResourceUpdateParamsOptionsUseRsaLeCert{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.UseRsaLeCert.Enabled, updated.Options.UseRsaLeCert.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "use_rsa_le_cert": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Revoke the certificate
+
+<p>Revoke turns HTTPS off and clears `sslData`. The certificate object remains. In the Go response a null `sslData` prints as `0`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    revoked = client.cdn.cdn_resources.update(
+        resource_id,
+        ssl_enabled=False,
+        ssl_data=None,
+    )
+    print(revoked.ssl_enabled, revoked.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        revoked, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(false),
+            SslData:    param.Null[int64](),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(revoked.SslEnabled, revoked.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": false,
+        "sslData": null
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 101,
+      "sslEnabled": false,
+      "sslData": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete the certificate object
+
+<p>Delete the certificate object only after the resource shows `sslData` as `null`. DELETE returns HTTP 204 and an empty body.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    client.cdn.certificates.delete(certificate_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.Certificates.Delete(ctx, certificateID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 204 and an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
