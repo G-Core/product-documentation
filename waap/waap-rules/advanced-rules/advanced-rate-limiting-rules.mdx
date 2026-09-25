@@ -99,13 +99,13 @@ request.limit_rate(
 | --- | --------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | `ip_list`             | False                                                                                                   | List of IP addresses that the rule applies to. If there are no IPs in the list, counting will be done for all IPs.                                                                                                                                                                                                                                                                                                                                    |
 | 2 | `url`                 | True                                                                                                    | A regex pattern used to match the request's URI (URL + query_params).                                                                                                                                                                                                                                                                                                                                                                                      |
-| 3 | `interval`            | True                                                                                                    | The time limit, in seconds, within which we only allow **n** number of requests to URI matching the pattern.                                                                                                                                                                                                                                                                                                                                               |
-| 4 | `requests`            | True                                                                                                    | The maximum number of requests **accepted** within the given period before an action is taken (minimum value is 20 requests).                                                                                                                                                                                                                                                                                                                              |
+| 3 | `interval`            | True                                                                                                    | The time window, in seconds, during which the configured number of requests is allowed.                                                                                                                                                                                                                                                                                                                                               |
+| 4 | `requests`            | True                                                                                                    | The maximum number of requests accepted within the given period before an action is taken (minimum value is 20 requests).                                                                                                                                                                                                                                                                                                                              |
 | 5 | `method_list`         | False                                                                                                   | List of method types the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           |
 | 6 | `status_list`         | False                                                                                                   | List of status codes the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           |
 | 7 | `content_type`        | False                                                                                                   | Regex pattern to match request content_type against.                                                                                                                                                                                                                                                                                                                                                                                                       |
 | 8 | `scope` (granularity) | Optional. If omitted, the scope defaults to `cluster`. | When protecting the origin, rate limit rules can apply to either IPs or all requests that come through the cluster. If set to `ip`, the rule is triggered when one IP exceeds the threshold — this helps against individual attackers. If set to `cluster`, the rule is triggered when the total requests from any IP in that cluster exceed the threshold — this helps protect the origin from getting too many requests. |
-| 9 | `tag`                 | False                                                                                                   | Aggregation of tagged ([user-defined tags](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules)) requests will be applied for each IP.                                                                                                                                                                                                                                                                                                            |
+| 9 | `tag`                 | False                                                                                                   | Limits requests with the specified [user-defined tag](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules). Requests are aggregated separately for each IP.                                                                                                                                                                                                                                                                                                            |
 
 ## Implementation
 
@@ -116,7 +116,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 ```
 
-<p>To list, update, enable, disable, or delete rules, see [Advanced Rules](/waap/waap-rules/advanced-rules).</p>
+<p>The examples create disabled rules (`enabled=false`). Enable a rule after review when it is ready to take effect. To list, update, enable, disable, or delete rules, see [Advanced Rules](/waap/waap-rules/advanced-rules).</p>
 
 ### Rate limiting with exclusions
 
@@ -236,11 +236,11 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ## Rate-limiting examples
 
-<p>The following examples show common `request.limit_rate` patterns. Adapt paths, IPs, and cookies to the environment.</p>
+<p>The following examples show common `request.limit_rate` patterns. Each example creates a disabled rule. Enable it after review. Adapt paths, IPs, and cookies to the environment.</p>
 
 ### Per-IP rate limit for any URL
 
-<p>Each request is counted individually per IP. If `203.0.113.10` sends more than 200 requests within 5 seconds, it is blocked. Another IP, `203.0.113.11`, is only blocked when it independently exceeds the same threshold.</p>
+<p>Each request is counted individually per IP. When the rule is enabled, if `203.0.113.10` sends more than 200 requests within 5 seconds, it is blocked. Another IP, `203.0.113.11`, is only blocked when it independently exceeds the same threshold.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -324,7 +324,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ### Additional conditions
 
-<p>Combine rate limiting with other request attributes. In this example, the block action is applied only to `Firefox` user-agent requests from specific IPs that exceed the rate limit. The rate limit itself still aggregates across all configured IPs regardless of user-agent.</p>
+<p>Combine rate limiting with other request attributes. When the rule is enabled, the block action is applied only to `Firefox` user-agent requests from specific IPs that exceed the rate limit. The rate limit itself still aggregates across all configured IPs regardless of user-agent.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -411,7 +411,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 ### Complex URL regex
 
-<p>Block requests to any URL that does not end in a known static asset extension — images, fonts, scripts, archives. Requests to dynamic paths are rate-limited at 20 per 120 seconds per IP.</p>
+<p>Block requests to any URL that does not end in a known static asset extension — images, fonts, scripts, archives. When the rule is enabled, requests to dynamic paths are rate-limited at 20 per 120 seconds per IP.</p>
 
 <Tabs>
   <Tab title="Python SDK">
