@@ -1,0 +1,305 @@
+---
+title: Download and deliver MP4 files
+sidebarTitle: Download MP4 files
+ai-navigation: Download and deliver per-quality MP4 files, set custom filenames, limit transfer speed, protect files with secure tokens, and request byte ranges.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Each transcoded rendition is also a single MP4 file. Use that file to play or download one quality instead of an adaptive manifest. Playback manifests are covered in [HLS&nbsp;and&nbsp;DASH](/streaming/video-hosting/hls-and-mp4).</p>
+
+## Per-quality MP4 files
+
+<p>The filename records the rendition:</p>
+
+```
+<quality_version>_<codec>_<bitrate>_<height>.mp4
+```
+
+<p><code>quality_version</code> is the internal quality identifier and file version. <code>codec</code> is the video codec, or the audio codec for an audio-only file. <code>bitrate</code> is the encoding bitrate in Kbps. <code>height</code> is the video height, or the word audio for an audio-only file.</p>
+
+<p>A 720p file from the public demo is https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4</p>
+
+<Info>
+Avoid storing or relying on direct MP4 file links. These URLs are internal and dynamically generated, and their structure may change at any time without prior notice.
+</Info>
+
+## MP4 download
+
+<p>Three download endpoints are available for each converted file:</p>
+
+1. <code>/videos/{"{client_id}"}_{"{slug}"}/{"{filename}"}.mp4</code> returns the file for inline playback.
+2. <code>/videos/{"{client_id}"}_{"{slug}"}/{"{filename}"}.mp4/download</code> adds <code>Content-Disposition: attachment</code> so the browser saves the file.
+3. <code>/videos/{"{client_id}"}_{"{slug}"}/{"{filename}"}.mp4/download={"{custom_filename}"}</code> sets the saved name. Omit the <code>.mp4</code> extension. It is added automatically.
+
+<p>A custom filename is 1 to 255 characters. Allowed characters are letters, digits, underscore, dash, and dot. The first character cannot be a dot. Valid names include <code>holiday2025</code>, <code>_backup.final</code>, and <code>clip-v1.2</code>.</p>
+
+<p>The public demo download URLs are:</p>
+
+- `https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download`
+- `https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30`
+
+<p>In the [Gcore Customer Portal](https://portal.gcore.com/streaming/video/list), open the video and use **Download video** to save one quality. **Video quality** lists the available renditions.</p>
+
+## Limit MP4 download speed
+
+<p><code>speed</code> sets the maximum download speed. <code>buffer</code> sets how much data is sent before that limit applies. <code>buffer</code> is optional.</p>
+
+<p>This request limits the download to 500 KB/s after the first 10 MB:</p>
+
+```
+curl -L -o /dev/null -w "%{speed_download}\n" \
+"https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3576v1_h264_450_360.mp4?speed=500K&buffer=10M"
+```
+
+<p>The [MP4&nbsp;token](/streaming/interaction-with-cdn/generate-mp4-token) setup on the CDN resource enables <code>speed</code> and <code>buffer</code>.</p>
+
+## MP4 secure token
+
+<p>A video secure token covers the whole video, including HLS and MPEG-DASH. An advanced secure token is a separate query parameter for one MP4 rendition, so that rendition can be shared without opening the adaptive manifests. It can be combined with <code>speed</code> and <code>buffer</code>.</p>
+
+<p>The token format is documented in [MP4&nbsp;secure&nbsp;token](/streaming/interaction-with-cdn/video-secure-token).</p>
+
+## MP4 byte range
+
+<p>Send an HTTP <code>Range</code> header to fetch part of the file. A request for bytes from offset 4000000 returns HTTP 206:</p>
+
+```bash
+curl -I \
+  -H "Range: bytes=4000000-" \
+  "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4"
+```
+
+```
+HTTP/2 206
+content-type: video/mp4
+content-length: 38878900
+content-range: bytes 4000000-42878899/42878900
+```
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Each quality in <code>converted_videos</code> has an <code>mp4_url</code>. Append <code>/download</code>, a <code>speed</code> query, a secure-token query, or a <code>Range</code> header to that URL. The video object itself is returned by <code>GET /streaming/videos/{id}</code>, described in [HLS&nbsp;and&nbsp;DASH](/streaming/video-hosting/hls-and-mp4).</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export VIDEO_ID="{YOUR_VIDEO_ID}"
+```
+
+## Download an MP4 file
+
+<p>Append <code>/download</code> to trigger a browser download, or <code>/download={"{filename}"}</code> to set a custom filename.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    video_id = int(os.environ["VIDEO_ID"])
+    video = client.streaming.videos.get(video_id)
+
+    quality = next((q for q in video.converted_videos if "720" in q.name), None)
+    if quality:
+        download_url = quality.mp4_url + "/download=my-video-720p"
+        print(download_url)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+        "strings"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+        video, err := client.Streaming.Videos.Get(ctx, videoID)
+        if err != nil {
+            panic(err)
+        }
+
+        for _, quality := range video.ConvertedVideos {
+            if strings.Contains(quality.Name, "720") {
+                fmt.Println(quality.MP4URL + "/download=my-video-720p")
+                break
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -L -o my-video-720p.mp4 \
+      "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4/download=my-video-720p"
+    ```
+
+    <p>The endpoint returns <code>Content-Disposition: attachment; filename="my-video-720p.mp4"</code>. Browsers use this header as the download filename. The curl command above saves the response with <code>-o</code>.</p>
+  </Tab>
+</Tabs>
+
+## Limit MP4 download speed
+
+<p>Append <code>?speed=N</code> to an <code>mp4_url</code> to cap the transfer rate. Add <code>&amp;buffer=M</code> to allow a burst before the limit applies. Use <code>K</code> for kilobytes and <code>M</code> for megabytes.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    video_id = int(os.environ["VIDEO_ID"])
+    video = client.streaming.videos.get(video_id)
+
+    quality = video.converted_videos[0] if video.converted_videos else None
+    if quality:
+        print(quality.mp4_url + "?speed=500K&buffer=10M")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+        video, err := client.Streaming.Videos.Get(ctx, videoID)
+        if err != nil {
+            panic(err)
+        }
+
+        if len(video.ConvertedVideos) > 0 {
+            fmt.Println(video.ConvertedVideos[0].MP4URL + "?speed=500K&buffer=10M")
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -L -o /dev/null -w "%{speed_download}\n" \
+      "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4?speed=500K&buffer=10M"
+    ```
+  </Tab>
+</Tabs>
+
+## MP4 secure token
+
+<p>An advanced secure token can be added as a query parameter to protect one MP4 rendition independently of the HLS and MPEG-DASH manifests. It can be combined with <code>speed</code> and <code>buffer</code>. The token format is in [MP4&nbsp;secure&nbsp;token](/streaming/interaction-with-cdn/video-secure-token).</p>
+
+## Request an MP4 byte range
+
+<p>Use the HTTP <code>Range</code> header to fetch a specific byte range of an MP4 file.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    import urllib.request
+    from gcore import Gcore
+
+    client = Gcore()
+
+    video_id = int(os.environ["VIDEO_ID"])
+    video = client.streaming.videos.get(video_id)
+
+    quality = video.converted_videos[0] if video.converted_videos else None
+    if quality:
+        req = urllib.request.Request(quality.mp4_url)
+        req.add_header("Range", "bytes=0-1023")
+        with urllib.request.urlopen(req) as resp:
+            print(resp.status, resp.headers["Content-Range"])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "net/http"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
+        video, err := client.Streaming.Videos.Get(ctx, videoID)
+        if err != nil {
+            panic(err)
+        }
+
+        if len(video.ConvertedVideos) == 0 {
+            return
+        }
+        req, _ := http.NewRequest("GET", video.ConvertedVideos[0].MP4URL, nil)
+        req.Header.Set("Range", "bytes=0-1023")
+        resp, err := http.DefaultClient.Do(req)
+        if err != nil {
+            panic(err)
+        }
+        defer resp.Body.Close()
+        fmt.Println(resp.Status, resp.Header.Get("Content-Range"))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -I \
+      -H "Range: bytes=4000000-" \
+      "https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4"
+    ```
+
+    <p>The server responds with HTTP 206 Partial Content:</p>
+
+    ```
+    HTTP/2 206
+    content-type: video/mp4
+    content-length: 38878900
+    content-range: bytes 4000000-42878899/42878900
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
