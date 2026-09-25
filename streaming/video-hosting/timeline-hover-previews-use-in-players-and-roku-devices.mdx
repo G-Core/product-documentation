@@ -1,114 +1,105 @@
 ---
 title: "Timeline hover previews: use with players and Roku devices"
 sidebarTitle: Timeline previews
-ai-navigation: Enable timeline hover previews (trick play) in Gcore Streaming Platform using WebVTT format via Get video API with storyboard tiles and VTT coordinates, or embed tiles in HLS .m3u8 manifests for Roku trick play specification compliance.
+ai-navigation: Manage timeline hover previews for the Gcore Player and for Roku trick play.
 ---
 
-## What are timeline hover previews?
+Timeline hover previews, also called trick play, show a frame when the pointer rests on a point of the video timeline. The Gcore Player draws that frame from a storyboard tile.
 
-Timeline hover previews, or trick play, is an option that makes it easier to rewind and find a specific moment in a video. It shows users previews when they point their cursor to any specific point on the video's timeline. For example:
-
-
-<Frame>![Timeline hover previews](/images/docs/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/coffeerun8-optimized.gif)</Frame>
+<Frame>![Timeline hover preview on the Coffee Run player](/images/docs/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/timeline-hover-preview.gif)</Frame>
 
 
 
-## What do the previews consist of?
+## Storyboard tiles
 
-In the [Gcore Streaming Platform](https://gcore.com/streaming-platform), we use time-based preview. During the transcoding process, the video is divided into equal segments, and screenshots are taken. These screenshots are called _tiles_.
+During transcoding, Gcore takes one screenshot from each video segment and combines the screenshots into a JPEG storyboard. Each screenshot is a tile used for a specific interval on the timeline.
 
-All tiles are collected in a single array— _storyboard_. A storyboard is a large JPEG image of tiles chronologically arranged one after another. Here is an example of the storyboard for Blender Studio's cartoon "Coffee Run":
-
-
-<Frame>![storyboard](/images/docs/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/image3538.png)</Frame>
+Storyboards are created automatically for all videos. This is the storyboard for the Blender Studio film Coffee Run:
 
 
+<Frame>![Coffee Run storyboard](/images/docs/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/image3538.png)</Frame>
 
-**Note** : We create storyboards for all videos automatically. 
+
 
 ## Adding timeline hover previews to players
 
-### Gcore player
+The Gcore Player shows the tiles on its own. External players read the same tiles in one of two ways:
 
-Timeline hover previews are embedded into Gcore's Player by default, so previews are displayed automatically. For example:
-
-For external players, previews are available in two ways: 
-
-  * [WebVTT format](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#webvtt-format-in-api)
-  * [Roku trick play](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play)
+  * [WebVTT&nbsp;via&nbsp;API](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#webvtt-via-api)
+  * [Roku&nbsp;via&nbsp;HLS](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play-via-hls)
 
 
 
-### WebVTT format in API
+### WebVTT via API
 
-The [Get video API request](/api-reference/streaming/videos/get-video) returns information about the video, including two additional fields:
+The [Get&nbsp;video](/api-reference/streaming/videos/get-video) response includes two fields for the storyboard:
 
-  * `sprite`: link to the storyboard, which contains the tiles
-  * `sprite_vtt`: description of tiles in VTT format
+  * `sprite`: URL of the JPEG storyboard that contains the tiles
+  * `sprite_vtt`: WebVTT data that maps video time ranges to tile coordinates in the storyboard
 
 
 
-Example:
+The response includes:
 
 `GET https://api.gcore.com/streaming/videos/{video_id}/`
 
 ```
-"sprite": "https://demo-public.gvideo.io/static/videoplatform/sprites/2675/2474723_FnlHXwA16ZMxmUr.mp4_sprite.jpg", 
+"sprite": "https://static.gvideo.co/videoplatform/sprites/2675/10507272_sNOwd4luk5mGGf9M.mp4_sprite.jpg", 
 
 "sprite_vtt": "1 
 00:00:00,000 --> 00:00:05,000 
-FnlHXwA16ZMxmUr_sprite.jpg#xywh=0,0,100,42
+sNOwd4luk5mGGf9M_sprite.jpg#xywh=0,0,100,42
 
 ...
 
 16
 00:01:15,000 --> 00:01:20,000
-FnlHXwA16ZMxmUr_sprite.jpg#xywh=100,84,100,42
+sNOwd4luk5mGGf9M_sprite.jpg#xywh=100,84,100,42
 17
 00:01:20,000 --> 00:01:25,000
-FnlHXwA16ZMxmUr_sprite.jpg#xywh=200,84,100,42
+sNOwd4luk5mGGf9M_sprite.jpg#xywh=200,84,100,42
 18
 00:01:25,000 --> 00:01:30,000
-FnlHXwA16ZMxmUr_sprite.jpg#xywh=300,84,100,42
+sNOwd4luk5mGGf9M_sprite.jpg#xywh=300,84,100,42
 ...
 ```
 
 The VTT field structure is:
 
-  * Tile number, e.g., `17`
-  * Timing when a tile is displayed, e.g., `00:01:20,000 --> 00:01:25,000`
-  * The coordinates of the upper left corner and the size of the tile from a storyboard (format is "xywh"): `xywh=200,84,100,42`
+  * Tile number: `17`
+  * Time range represented by the tile: `00:01:20,000 --> 00:01:25,000`
+  * Tile coordinates and size in the storyboard, in `xywh` format: `xywh=200,84,100,42`
 
 
 
-**Note** : Tiles are read from left to right, top to bottom.
+Tiles are read from left to right, top to bottom.
 
-In the picture below, the 17th tile (third one from left, third from top) is highlighted in VTT format:
+The image below highlights the 17th tile, which is the third tile from the left and the third from the top:
 
 
 <Frame>![WebVTT format in API](/images/docs/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/Group190992.png)</Frame>
 
 
 
-### Roku trick play
+### Roku trick play via HLS
 
-According to the [Roku specification](https://developer.roku.com/en-gb/docs/developer-program/media-playback/trick-mode/hls-and-dash.md), we can embed tiles directly in .m3u8 files. Here's the format for requesting a video master manifest with embedded tiles:
+The [Roku&nbsp;specification](https://developer.roku.com/dev/docs/hls-and-dash) describes tiles embedded in an HLS manifest. Add the `-img` suffix to the master manifest URL to include tile information:
 
 ```sh
-https://domain.com/videos/{client_id}_{video_id}/master[-img].m3u8 
+https://domain.com/videos/{client_id}_{video_id}/master-img.m3u8
 ```
 
 Where:
 
-  * `{client_id}`: your account ID
+  * `{client_id}`: the account ID
   * `{video_id}`: identifier of the video or live stream
-  * `[-img]`: variable suffix, when specified, information about tiles is added to the manifest
+  * `-img`: optional suffix that adds tile information to the manifest
 
 
 
-You can use the result by adding the `[-img]` suffix. It will add a special preview tag to the master manifest `#EXT-X-IMAGE-STREAM-INF`, which points to an additional tiles manifest containing a link to a storyboard file, tile size, how often tiles should replace each other, and other information.
+The `-img` suffix adds `#EXT-X-IMAGE-STREAM-INF` to the master manifest. That tag points to a tiles manifest that contains the storyboard URL, tile dimensions, layout, and the duration represented by each tile.
 
-Example of a master manifest with the suffix for tiles:
+A master manifest with the tile suffix:
 
 ```sh
 curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-img.m3u8
@@ -116,13 +107,13 @@ curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-img.m3u8
 
 ```sh
 #EXTM3U
-#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1928000,RESOLUTION=1720x720,FRAME-RATE=24.000,CODECS="avc1.640020,mp4a.40.2",VIDEO-RANGE=SDR
-index-svod720n-v1-a1.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1694000,RESOLUTION=1718x720,FRAME-RATE=24.000,CODECS="avc1.640020,mp4a.40.2",VIDEO-RANGE=SDR
+index-s0q3570v3-v1-a1.m3u8
 ... 
 #EXT-X-IMAGE-STREAM-INF:BANDWIDTH=4200,RESOLUTION=100x42,CODECS=jpeg,URI=tiles.m3u8
 ```
 
-Example of a tiles manifest:
+The tiles manifest:
 
 ```sh
 curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/tiles.m3u8 
@@ -136,6 +127,6 @@ curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/tiles.m3u8
 #EXT-X-PLAYLIST-TYPE:VOD 
 #EXT-X-IMAGES-ONLY 
 #EXTINF:245, 
-#EXT-X-TILES:RESOLUTION=100x42,LAYOUT=7x7,DURATION=5 https://demo-public.gvideo.io/static/videoplatform/sprites/2675/2474723_FnlHXwA16ZMxmUr.mp4_sprite.jpg
+#EXT-X-TILES:RESOLUTION=100x42,LAYOUT=7x7,DURATION=5 https://static.gvideo.co/videoplatform/sprites/2675/10507272_sNOwd4luk5mGGf9M.mp4_sprite.jpg
 #EXT-X-ENDLIST
 ```
