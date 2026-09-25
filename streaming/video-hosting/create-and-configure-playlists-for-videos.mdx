@@ -91,7 +91,7 @@ export VIDEO_ID="{YOUR_VIDEO_ID}"
 
 ## Quickstart
 
-<p>Find two existing videos in the account, create a playlist from them, and print its embed code and HLS URL.</p>
+<p>Find two existing videos in the account, create a playlist from them, and print its embed code and HLS URL. The playlist plays as a live stream starting at <code>start_time</code>. It holds up to 128 videos, and the order of IDs in <code>video_ids</code> determines the playback order.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -219,102 +219,6 @@ curl "https://api.gcore.com/streaming/playlists" \
 ```
 
 <p>The API returns an array of playlist objects. Each entry includes the playlist name, <code>video_ids</code>, <code>hls_url</code>, and <code>iframe_embed_code</code>.</p>
-  </Tab>
-</Tabs>
-
-## Create a playlist
-
-<p>Create a playlist with an ordered list of video IDs. The playlist plays as a live stream starting at <code>start_time</code>. A playlist can hold up to 128 videos; the order of IDs in <code>video_ids</code> determines the playback order.</p>
-
-<Tabs>
-  <Tab title="Python SDK">
-```python
-import os
-from datetime import datetime, timezone
-from gcore import Gcore
-
-client = Gcore()
-now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-playlist = client.streaming.playlists.create(
-    name="Season 1 — Episodes 1–3",
-    start_time=now,
-    video_ids=[int(os.environ["VIDEO_ID"])],
-    loop=False,
-)
-print(f"Created playlist ID: {playlist.id}")
-print(f"HLS URL: {playlist.hls_url}")
-print(f"Embed code: {playlist.iframe_embed_code}")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
-package main
-
-import (
-	"context"
-	"fmt"
-	"os"
-	"strconv"
-	"time"
-
-	gcore "github.com/G-Core/gcore-go"
-	"github.com/G-Core/gcore-go/packages/param"
-	"github.com/G-Core/gcore-go/streaming"
-)
-
-func main() {
-	client := gcore.NewClient()
-	ctx := context.Background()
-	now := time.Now().UTC().Format(time.RFC3339)
-
-	videoID, _ := strconv.ParseInt(os.Getenv("VIDEO_ID"), 10, 64)
-	playlist, err := client.Streaming.Playlists.New(ctx, streaming.PlaylistNewParams{
-		Playlist: streaming.PlaylistParam{
-			Name:      param.NewOpt("Season 1 — Episodes 1–3"),
-			StartTime: param.NewOpt(now),
-			VideoIDs:  []int64{videoID},
-			Loop:      param.NewOpt(false),
-		},
-	})
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Created playlist ID: %d\n", playlist.ID)
-	fmt.Printf("HLS URL: %s\n", playlist.HlsURL)
-	fmt.Printf("Embed URL: %s\n", playlist.IframeURL)
-}
-```
-  </Tab>
-  <Tab title="curl">
-```bash
-curl -X POST "https://api.gcore.com/streaming/playlists" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"name\": \"Season 1 — Episodes 1–3\",
-    \"start_time\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\",
-    \"video_ids\": [$VIDEO_ID],
-    \"loop\": false
-  }"
-```
-
-<p>The API returns the created playlist object:</p>
-
-```json
-{
-  "id": 25568,
-  "name": "Season 1 — Episodes 1–3",
-  "start_time": "2026-09-07T10:00:00.000Z",
-  "loop": false,
-  "video_ids": [14753315],
-  "hls_url": "https://1000503.gvideo.io/playlists/1000503_25568/master.m3u8",
-  "iframe_url": "https://player.gvideo.co/playlists/1000503_25568",
-  "iframe_embed_code": "<iframe width=\"560\" height=\"315\" src=\"https://player.gvideo.co/playlists/1000503_25568\" frameborder=\"0\" allowfullscreen></iframe>"
-}
-```
-
-<p>Use <code>hls_url</code> to stream the playlist, or copy <code>iframe_embed_code</code> to embed it on a website.</p>
   </Tab>
 </Tabs>
 
