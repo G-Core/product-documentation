@@ -541,6 +541,31 @@ def test_bold_heading_without_p_is_a_violation() -> None:
     assert found[0].rule == "prose-without-p-tag"
 
 
+def test_unescaped_numbered_item_without_p_is_a_violation() -> None:
+    """Bare ``1. text`` inside MethodSection must be flagged, not only ``1\\. text``."""
+    from api_check_style import check_prose_without_p_tags
+
+    article = """import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+1. Go to the creation page.
+
+  2. Click Add origin.
+
+<p>3. Save the changes.</p>
+
+- A bullet stays unwrapped.
+
+  </MethodSection>
+</MethodSwitch>
+"""
+    found = check_prose_without_p_tags(article.splitlines())
+    assert len(found) == 2
+    assert all(v.rule == "prose-without-p-tag" for v in found)
+
+
 def test_numbered_item_without_p_is_a_violation() -> None:
     # Per MDX rules, numbered items inside <MethodSection> must be wrapped in <p>.
     # Without <p>, they merge into a single line in the Mintlify runtime.
