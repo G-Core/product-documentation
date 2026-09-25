@@ -63,7 +63,8 @@ _JSX_BLOCK_CLOSE = re.compile(
 _P_OPEN = re.compile(r"<p\b")
 _P_CLOSE = re.compile(r"</p>")
 _NUMBERED_ITEM = re.compile(r"^\d+[.\\]")
-_BULLET_ITEM = re.compile(r"^[-*+]\s|^\d+\\?\.\s")
+_BULLET_ITEM = re.compile(r"^[-*+]\s")
+_NUMBERED_ITEM = re.compile(r"^\d+\\?\.\s")
 
 _SKIP_DIR_NAMES = frozenset(
     {
@@ -490,8 +491,10 @@ def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
     """Flag prose paragraphs inside <MethodSection> not wrapped in <p> tags.
 
     Every standalone prose paragraph inside <MethodSection> must be wrapped in <p>.
-    Skips: code fences, JSX block containers (Info/Tabs/Frame/etc.), numbered and
-    bullet list items, headings, empty lines, and lines starting with a JSX tag.
+    Numbered steps (``1. text`` and ``1\\. text``) are prose here: without ``<p>``
+    they merge into one line. Bullet items stay unwrapped.
+    Skips: code fences, JSX block containers (Info/Tabs/Frame/etc.), bullet list
+    items, headings, empty lines, and lines starting with a JSX tag.
     """
     violations: list[Violation] = []
     in_method_section = False
@@ -550,6 +553,19 @@ def check_prose_without_p_tags(lines: Sequence[str]) -> list[Violation]:
         if stripped.startswith("#"):
             continue
         if _BULLET_ITEM.match(stripped):
+            continue
+        if _NUMBERED_ITEM.match(stripped):
+            violations.append(
+                Violation(
+                    line=lineno,
+                    rule="prose-without-p-tag",
+                    detail=(
+                        "Numbered step inside <MethodSection> must be wrapped in <p> tags. "
+                        "Use <p>1. text</p>. Bare 1. text and 1\\. text merge into one line."
+                    ),
+                    text=stripped[:120],
+                )
+            )
             continue
         if stripped.startswith("import "):
             continue
@@ -870,8 +886,8 @@ def check_escaped_numbered_items(lines: Sequence[str]) -> list[Violation]:
 
     Inside <MethodSection>, `1\. text` is treated as plain text by the MDX
     compiler -- blank lines between items are stripped, so all items merge into
-    one block. Use `1. text` (no backslash) instead, which compiles to a proper
-    <ol><li> element.
+    one block. Wrap the step in <p>1. text</p>. Bare `1. text` is also a
+    prose-without-p-tag violation.
 
     Skips code fences.
     """
@@ -905,7 +921,7 @@ def check_escaped_numbered_items(lines: Sequence[str]) -> list[Violation]:
                     rule="escaped-numbered-item",
                     detail=(
                         r"Backslash-escaped `N\. text` inside <MethodSection> renders as plain text "
-                        "and merges with adjacent content. Use `N. text` (no backslash) instead."
+                        "and merges with adjacent content. Wrap the step: <p>N. text</p>."
                     ),
                     text=stripped[:80],
                 )
