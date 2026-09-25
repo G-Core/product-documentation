@@ -1,20 +1,81 @@
 ---
 title: "Rate-Limiting"
 sidebarTitle: "Rate-Limiting"
-ai-navigation: Configure rate-limiting rules in WAAP using the request.limit_rate method to control request counts by time window, IP origin, URL patterns, request methods, response status codes, aggregation scope, and tags via REST API or Python and Go SDKs.
+ai-navigation: Create WAAP advanced rate-limiting rules in the Customer Portal or via REST API and Python and Go SDKs.
 ---
 
-Advanced rate limiting rules allow you to control the number of specific requests accepted by your domain within a defined time window. This functionality is part of [WAAP advanced rules](/waap/waap-rules/advanced-rules).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Advanced rate limiting rules are fully defined and managed through the [Gcore WAAP API](https://api.gcore.com/docs/waap). Rate limiting conditions are evaluated as part of a rule's condition logic and can be combined with other request attributes to precisely control when an action is triggered.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-In addition to request thresholds and time intervals, advanced rate limiting conditions support multiple parameters, including request origin, URL patterns, request methods, response status codes, aggregation scope, and tags, enabling flexible and targeted traffic control.
+<p>Create a rate-limiting [Advanced Rule](/waap/waap-rules/advanced-rules) on **Custom Rules** to cap how many matching requests a domain accepts in a time window. Start from a Quick Template, configure `request.limit_rate` in the visual builder, or write a CEL expression.</p>
+
+<p>A **Rate Limit** rule type sets a single per-IP threshold without CEL. Use **Advanced Rule** to apply a template, combine conditions, or edit `request.limit_rate` parameters.</p>
+
+## Create an Advanced Rule
+
+<Steps>
+  <Step title="Open Custom Rules">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Custom Rules**. Click **Add custom rule**.
+  </Step>
+  <Step title="Select Advanced Rule">
+    Enter a **Rule name**. Under **Rule type**, select **Advanced Rule**.
+
+    <Frame>![Rule name Rate limit 1 with Advanced Rule selected](/images/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules/advanced-rule-type.png)</Frame>
+  </Step>
+</Steps>
+
+## Use a Quick Template
+
+<p>Under **Quick Templates**, click **Captcha Rate Limit 100 req/5s** or **Block Rate Limit 200 req/5s**.</p>
+
+<p>**Captcha Rate Limit 100 req/5s** sets the action to **Captcha** and generates:</p>
+
+```text
+request.limit_rate(url='.*', interval=5, requests=100, scope='ip')
+```
+
+<p>**Block Rate Limit 200 req/5s** sets the action to **Block** and generates:</p>
+
+```text
+request.limit_rate(url='.*', interval=5, requests=200, scope='ip')
+```
+
+<Frame>![Advanced Rule builder with Captcha action, limit_rate condition, and Quick Templates](/images/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules/captcha-rate-limit-builder.png)</Frame>
+
+<p>Both templates match every URL (`.*`) and count requests per IP. Click **Save** to keep the template values, or adjust the function first.</p>
+
+## Configure the rate-limit function
+
+<p>In the visual builder, the condition uses object **request** and attribute **limit_rate**. Click **Edit Config** to change the threshold, time window, URL pattern, scope, and optional filters.</p>
+
+<Frame>![request.limit_rate configuration panel with url, interval, requests, and scope](/images/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules/limit-rate-config.png)</Frame>
+
+<p>The dialog requires a URL pattern, interval, request count (minimum 20), and scope (`ip` or `cluster`). Optional lists narrow the count to specific IPs, methods, status codes, a content type, or a tag.</p>
+
+<p>Click **Apply Configuration**. The **Expression** field updates to the generated CEL. Add more **And** rows to combine the rate limit with other attributes. Click **Save**.</p>
+
+## Write a CEL expression
+
+<p>Click **Edit manually** to replace the visual builder with a CEL editor. The generated `request.limit_rate(...)` expression stays in the field and can be combined with other conditions.</p>
+
+<Frame>![CEL expression editor showing request.limit_rate with Visual builder toggle](/images/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules/edit-manually-expression.png)</Frame>
+
+<p>Click **Visual builder** to return to the condition rows. Additional conditions in the same rule control when the action runs — they do not change how requests are counted. Click **Save**.</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Rate-limiting rules use the `request.limit_rate` method in a CEL `source` expression. This is part of [WAAP advanced rules](/waap/waap-rules/advanced-rules).</p>
+
+<p>Rate-limiting conditions are evaluated as part of a rule's condition logic and can be combined with other request attributes to control when an action is triggered.</p>
 
 ## Rate limiting method
 
-Use the `request.limit_rate` method to implement rate limiting:
+<p>Use the `request.limit_rate` method to implement rate limiting:</p>
 
-**limit_rate fixed method signature**
+<p>**limit_rate fixed method signature**</p>
 
 ```js
 request.limit_rate(
@@ -30,9 +91,9 @@ request.limit_rate(
 )
 ```
 
-Specify the `tag` parameter when configuring tag-based rate limiting rules.
+<p>Specify the `tag` parameter when configuring tag-based rate limiting rules.</p>
 
-The method returns `true`, and the enclosing rule condition is satisfied when the request count (4), under the granularity (8), exceeds the configured threshold within the specified time window (3), using the configured filters (1, 2, 5, 6, 7, 9).
+<p>The method returns `true`, and the enclosing rule condition is satisfied when the request count (4), under the granularity (8), exceeds the configured threshold within the specified time window (3), using the configured filters (1, 2, 5, 6, 7, 9).</p>
 
 | # | Parameter name        | Required                                                                                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | --- | --------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -48,18 +109,18 @@ The method returns `true`, and the enclosing rule condition is satisfied when th
 
 ## Implementation
 
-An [API token](/account-settings/api-tokens) is required along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). For SDK examples, install the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK. Set these as environment variables before running any of the examples:
+<p>An [API token](/account-settings/api-tokens) is required along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain). For SDK examples, install the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK. Set these as environment variables before running any of the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 ```
 
-To list, update, enable, disable, or delete rules, see [Advanced Rules](/waap/waap-rules/advanced-rules).
+<p>To list, update, enable, disable, or delete rules, see [Advanced Rules](/waap/waap-rules/advanced-rules).</p>
 
 ### Rate limiting with exclusions
 
-Rate-limit IPs that exceed 200 requests in 5 seconds on any `/events` path, while excluding requests from known mobile and web clients that carry session cookies.
+<p>Rate-limit IPs that exceed 200 requests in 5 seconds on any `/events` path, while excluding requests from known mobile and web clients that carry session cookies.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -152,7 +213,7 @@ Rate-limit IPs that exceed 200 requests in 5 seconds on any `/events` path, whil
       }'
     ```
 
-    The API returns the created rule with its assigned ID:
+    <p>The API returns the created rule with its assigned ID:</p>
 
     ```json
     {
@@ -169,9 +230,9 @@ Rate-limit IPs that exceed 200 requests in 5 seconds on any `/events` path, whil
 
 ### Best practices
 
-#### Block IPs that exceed request limit for any URL
+### Block IPs that exceed request limit for any URL
 
-Each request is counted individually per IP. If `1.2.3.4` sends more than 200 requests within 5 seconds, it is blocked. Another IP, `1.2.3.5`, is only blocked when it independently exceeds the same threshold.
+<p>Each request is counted individually per IP. If `1.2.3.4` sends more than 200 requests within 5 seconds, it is blocked. Another IP, `1.2.3.5`, is only blocked when it independently exceeds the same threshold.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -243,13 +304,13 @@ Each request is counted individually per IP. If `1.2.3.4` sends more than 200 re
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
-#### Embed additional conditions
+### Embed additional conditions
 
-Combine rate limiting with other request attributes. In this example, the block action is applied only to `Firefox` user-agent requests from specific IPs that exceed the rate limit. The rate limit itself still aggregates across all configured IPs regardless of user-agent.
+<p>Combine rate limiting with other request attributes. In this example, the block action is applied only to `Firefox` user-agent requests from specific IPs that exceed the rate limit. The rate limit itself still aggregates across all configured IPs regardless of user-agent.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -324,13 +385,13 @@ Combine rate limiting with other request attributes. In this example, the block 
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
-#### Rate limit complex URL regex
+### Rate limit complex URL regex
 
-Block requests to any URL that does not end in a known static asset extension — images, fonts, scripts, archives. Requests to dynamic paths are rate-limited at 20 per 120 seconds per IP.
+<p>Block requests to any URL that does not end in a known static asset extension — images, fonts, scripts, archives. Requests to dynamic paths are rate-limited at 20 per 120 seconds per IP.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -412,13 +473,13 @@ Block requests to any URL that does not end in a known static asset extension �
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
-#### Embed IP range to the condition
+### Embed IP range to the condition
 
-Rate-limit JPEG requests from a specific private IP range. The `request.ip_in_range` condition acts as a filter — the rate limit aggregation still counts per IP within the range.
+<p>Rate-limit JPEG requests from a specific private IP range. The `request.ip_in_range` condition acts as a filter — the rate limit aggregation still counts per IP within the range.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -490,13 +551,13 @@ Rate-limit JPEG requests from a specific private IP range. The `request.ip_in_ra
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
-#### Cluster (PoP) granularity
+### Cluster (PoP) granularity
 
-Rate-limit all `GET` or `HEAD` requests that return a `302` redirect with a specific content type. The `cluster` scope counts requests globally across all IPs rather than per individual IP — useful for protecting origin from aggregate traffic spikes.
+<p>Rate-limit all `GET` or `HEAD` requests that return a `302` redirect with a specific content type. The `cluster` scope counts requests globally across all IPs rather than per individual IP — useful for protecting origin from aggregate traffic spikes.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -568,13 +629,13 @@ Rate-limit all `GET` or `HEAD` requests that return a `302` redirect with a spec
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
-#### Rate limit by tag filter
+### Rate limit by tag filter
 
-Apply rate limiting only to requests that carry a specific [user-defined tag](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules). The tag must be assigned by a separate tag rule that runs before this one. This allows targeting specific sessions or clients identified by earlier rules.
+<p>Apply rate limiting only to requests that carry a specific [user-defined tag](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules). The tag must be assigned by a separate tag rule that runs before this one. This allows targeting specific sessions or clients identified by earlier rules.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -646,16 +707,19 @@ Apply rate limiting only to requests that carry a specific [user-defined tag](/w
       }'
     ```
 
-    The API returns 201 with the created rule object.
+    <p>The API returns 201 with the created rule object.</p>
   </Tab>
 </Tabs>
 
 ### Clarification: rate limit aggregation and rule triggering
 
-Rate limit aggregation is defined exclusively by the parameters of the `request.limit_rate(...)` condition, such as the aggregation scope, IP list, or tags.
+<p>Rate limit aggregation is defined exclusively by the parameters of the `request.limit_rate(...)` condition, such as the aggregation scope, IP list, or tags.</p>
 
-When `request.limit_rate(...)` is combined with additional conditions in the same rule, those additional conditions control when the rule action is applied, not how requests are aggregated.
+<p>When `request.limit_rate(...)` is combined with additional conditions in the same rule, those additional conditions control when the rule action is applied, not how requests are aggregated.</p>
 
-For example, if a rate limit condition is configured without an IP list and combined with a condition such as `request.ip == '1.2.3.4'`, request aggregation will still occur according to the rate limit definition. However, the rule action will only be triggered when the full rule condition evaluates to true — in this case, only for requests originating from `1.2.3.4`.
+<p>For example, if a rate limit condition is configured without an IP list and combined with a condition such as `request.ip == '1.2.3.4'`, request aggregation will still occur according to the rate limit definition. However, the rule action will only be triggered when the full rule condition evaluates to true — in this case, only for requests originating from `1.2.3.4`.</p>
 
-This distinction is important when combining rate limiting with other conditions to help ensure the rule behaves as expected.
+<p>This distinction is important when combining rate limiting with other conditions so the rule behaves as expected.</p>
+
+  </MethodSection>
+</MethodSwitch>
