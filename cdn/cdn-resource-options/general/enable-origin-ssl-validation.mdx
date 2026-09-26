@@ -1,56 +1,308 @@
 ---
 title: Enable origin SSL validation
 sidebarTitle: Enable SSL validation
-ai-navigation: Enable origin SSL validation for CDN resources via the REST API using trusted CA and client certificates.
+ai-navigation: Enable origin SSL validation on a CDN resource via REST API with a trusted CA and an SSL certificate.
 ---
 
-Origin SSL validation makes CDN edge servers verify the origin TLS certificate before completing an HTTPS pull. Without it, CDN-to-origin HTTPS traffic can still be exposed to a [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attack because edge servers do not check that the origin certificate is valid and issued for the expected host.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Configure the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) to HTTPS to secure all origin pulls with TLS. With HTTP and HTTPS, origin SSL validation applies only when the CDN uses HTTPS for the origin request.
+<MethodSwitch>
+  <MethodSection id="api" label="REST API">
+
+<p>Origin SSL validation makes CDN edge servers verify the origin TLS certificate before completing an HTTPS pull. Without it, CDN-to-origin HTTPS traffic can still be exposed to a [man-in-the-middle](https://en.wikipedia.org/wiki/Man-in-the-middle_attack) attack because edge servers do not check that the origin certificate is valid and issued for the expected host.</p>
+
+<p>Set the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) to HTTPS before enabling validation.</p>
 
 <Info>
-Configure origin SSL validation through the [CDN&nbsp;API](/api-reference/cdn/ca-certificates/get-trusted-ca-certificates-list). An [API&nbsp;token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with an existing CDN resource and an uploaded [SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate).
 </Info>
 
-## Compatible certificates
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
 
-Upload the public CA certificate that issued the origin certificate. For a self-signed origin certificate, upload that certificate as the trusted certificate.
+## Add a trusted CA certificate
 
-Gcore automated Let's Encrypt certificates used for client HTTPS delivery cannot be used for origin SSL validation. The client certificate referenced by `proxy_ssl_data` must be a manually uploaded SSL certificate.
+<p>A [trusted&nbsp;CA](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate) request stores the public certificate and returns its id, so use that id as `proxy_ssl_ca`.</p>
 
-The API requires `proxy_ssl_data` when origin SSL validation is enabled, but the origin determines whether client authentication is optional or mandatory. To require mutual TLS, configure the origin to request a client certificate, trust the CA that issued the uploaded client certificate, and reject connections that do not present a valid certificate.
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
 
-## Connection flow
+    client = Gcore()  # Reads GCORE_API_KEY from env
 
-The certificate validation process works as follows.
+    ca = client.cdn.trusted_ca_certificates.create(
+        name="origin.mywebsite.com",
+        ssl_certificate=open("ca.pem", encoding="ascii").read(),
+    )
+    print(ca.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
 
-1. On a cache miss, a CDN edge server connects to the origin over HTTPS.
-2. The origin presents its X.509 certificate. The edge server validates the certificate chain using the trusted CA (`proxy_ssl_ca`) and presents the client certificate (`proxy_ssl_data`) when the origin requires it.
-3. If validation succeeds, the edge server pulls the content and serves it to the client.
+    import (
+        "context"
+        "fmt"
+        "os"
 
-## API configuration
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
 
-Use the CDN API to configure the required certificates and resource fields.
+    func main() {
+        client := gcore.NewClient() // Reads GCORE_API_KEY from env
+        ctx := context.Background()
 
-1. Create a trusted CA certificate with [Add&nbsp;CA&nbsp;certificate](/api-reference/cdn/ca-certificates/add-trusted-ca-certificate). Note the returned certificate ID.
-2. Create a manually uploaded (non-automated) SSL certificate with [Add&nbsp;SSL&nbsp;certificate](/api-reference/cdn/ssl-certificates/add-ssl-certificate). Note the returned certificate ID.
-3. Update the CDN resource with [Change&nbsp;CDN&nbsp;resource](/api-reference/cdn/cdn-resources/change-cdn-resource):
-   - Set `originGroup` to the ID of the existing origin group attached to the CDN resource.
-   - Set `proxy_ssl_ca` to the trusted CA certificate ID.
-   - Set `proxy_ssl_data` to the client SSL certificate ID.
-   - Set `proxy_ssl_enabled` to `true`.
+        pem, err := os.ReadFile("ca.pem")
+        if err != nil {
+            panic(err)
+        }
+        ca, err := client.CDN.TrustedCaCertificates.New(ctx, cdn.TrustedCaCertificateNewParams{
+            Name:           "origin.mywebsite.com",
+            SslCertificate: string(pem),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(ca.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/sslCertificates" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "origin.mywebsite.com",
+        "sslCertificate": "-----BEGIN CERTIFICATE-----\n-----END CERTIFICATE-----\n"
+      }'
+    ```
 
-   The minimal request body includes the existing origin-group ID and the three SSL validation fields:
+    <p>The API returns:</p>
 
-   ```json
-   {
-     "originGroup": 12345,
-     "proxy_ssl_ca": 67890,
-     "proxy_ssl_data": 67891,
-     "proxy_ssl_enabled": true
-   }
-   ```
+    ```json
+    {
+      "id": 1004,
+      "name": "origin.mywebsite.com"
+    }
+    ```
+  </Tab>
+</Tabs>
 
-   Replace the numeric values with the existing origin-group ID and the certificate IDs returned in the previous steps.
+## Select the uploaded SSL certificate
 
-Both `proxy_ssl_ca` and `proxy_ssl_data` are required when `proxy_ssl_enabled` is `true`, even when the origin does not require client authentication.
+<p>The [certificate&nbsp;list](/api-reference/cdn/ssl-certificates/get-ssl-certificates-list) returns each SSL certificate id, so select the certificate by name and use that id as `proxy_ssl_data`. Sending that id as `proxy_ssl_ca`, or a trusted CA id as `proxy_ssl_data`, returns HTTP 400 with the message `Invalid pk "1003" - object does not exist.`</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    certificates = client.cdn.certificates.list()
+    cert_id = next(item.id for item in certificates if item.name == "client.mywebsite.com")
+    print(cert_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{})
+        if err != nil {
+            panic(err)
+        }
+        var certID int64
+        for _, item := range page.Results {
+            if item.Name == "client.mywebsite.com" {
+                certID = item.ID
+                break
+            }
+        }
+        fmt.Println(certID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData?limit=1000" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "results": [
+        {
+          "id": 1003,
+          "name": "client.mywebsite.com"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Enable validation on the resource
+
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `proxy_ssl_enabled` to `true` together with `proxy_ssl_ca` and `proxy_ssl_data`. A request that sets `proxy_ssl_enabled` to `true` without both ids returns HTTP 400 with the message `Can not enable proxy_ssl feature while both proxy CA certificate and proxy ssl data not specified.`</p>
+
+<p>A full replace uses PUT and requires `originGroup`, so a replace that omits `originGroup` returns HTTP 400 with the message `This field is required.`</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `proxy_ssl_enabled` | No | Optional in the API. Set to `true` to enable origin SSL validation |
+| `proxy_ssl_ca` | No | Optional in the API. Required with `proxy_ssl_data` the first time validation is enabled. Trusted CA certificate id |
+| `proxy_ssl_data` | No | Optional in the API. Required with `proxy_ssl_ca` the first time validation is enabled. SSL certificate id |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        1001,
+        proxy_ssl_enabled=True,
+        proxy_ssl_ca=1004,
+        proxy_ssl_data=1003,
+    )
+    print(resource.proxy_ssl_enabled, resource.proxy_ssl_ca, resource.proxy_ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            ProxySslEnabled: gcore.Bool(true),
+            ProxySslCa:      gcore.Int(1004),
+            ProxySslData:    gcore.Int(1003),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ProxySslEnabled, resource.ProxySslCa, resource.ProxySslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "proxy_ssl_enabled": true,
+        "proxy_ssl_ca": 1004,
+        "proxy_ssl_data": 1003
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "proxy_ssl_enabled": true,
+      "proxy_ssl_ca": 1004,
+      "proxy_ssl_data": 1003
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Disable validation on the resource
+
+<p>The same update turns validation off when `proxy_ssl_enabled` is `false` and keeps both certificate ids. A later update can set `proxy_ssl_enabled` to `true` alone, because those ids are already stored.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(1001, proxy_ssl_enabled=False)
+    print(resource.proxy_ssl_enabled, resource.proxy_ssl_ca, resource.proxy_ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            ProxySslEnabled: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ProxySslEnabled, resource.ProxySslCa, resource.ProxySslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"proxy_ssl_enabled": false}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "proxy_ssl_enabled": false,
+      "proxy_ssl_ca": 1004,
+      "proxy_ssl_data": 1003
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
