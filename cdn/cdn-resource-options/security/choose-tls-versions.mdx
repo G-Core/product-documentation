@@ -1,27 +1,154 @@
 ---
 title: Specify TLS versions allowed for content requests from the CDN
 sidebarTitle: Specify allowed TLS versions
-ai-navigation: Configure allowed TLS versions for a CDN resource to restrict which protocol versions end users can use for HTTPS connections to the domain.
+ai-navigation: Configure allowed TLS versions for a CDN resource in the Customer Portal or with the REST API.
 ---
 
-The **Change TLS versions** option controls which TLS protocol versions end users can use when connecting to a CDN resource over HTTPS. By default, the option is disabled and all protocol versions are allowed: SSLv3, TLSv1, TLSv1.1, TLSv1.2, TLSv1.3.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-When the option is enabled, only the versions listed in the configuration are accepted. Requests from clients using any other version are rejected. TLSv1.2 and TLSv1.3 are the recommended versions — older versions (SSLv3, TLSv1, TLSv1.1) are deprecated and considered insecure.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-To configure allowed TLS versions:
+<p>The **Change TLS versions** option controls which TLS protocol versions end users can use when connecting to a CDN resource over HTTPS. By default, it is disabled, so SSLv3, TLSv1, TLSv1.1, TLSv1.2, and TLSv1.3 are all allowed.</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN**. The **CDN resources** page opens.
+<p>When it is enabled, only the listed versions are accepted, so clients that use any other version are rejected.</p>
 
-2. Click the CNAME of the resource to open its settings.
+<p>TLSv1.2 and TLSv1.3 are the recommended versions, while SSLv3, TLSv1, and TLSv1.1 are deprecated and insecure.</p>
 
-<Frame>![CDN resources page with a resource CNAME highlighted](/images/docs/cdn/cdn-resource-options/security/choose-tls-versions/choose-tls-versions-image1.png)</Frame>
+## Allowed TLS versions
 
-3. Open the **OPTIONS** tab and scroll to the **Access** section. Click **TLS versions** in the left sidebar.
+<p>Set the allowed versions on the CDN resource.</p>
 
-4. Turn on the **Change TLS versions** toggle. The **Choose TLS versions** field appears, pre-populated with TLSv1.2 and TLSv1.3.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN**. The **CDN resources** page opens.
+  </Step>
+  <Step title="Open resource settings">
+    Click the CNAME of the resource to open its settings.
 
-5. Add or remove protocol versions as needed. To add a version, click the field and select from the dropdown. To remove a version, click **×** next to it.
+    <Frame>![CDN resources page with a resource CNAME highlighted](/images/docs/cdn/cdn-resource-options/security/choose-tls-versions/choose-tls-versions-image1.png)</Frame>
+  </Step>
+  <Step title="Open TLS versions">
+    Open the **OPTIONS** tab and scroll to the **Access** section. Click **TLS versions** in the left sidebar.
+  </Step>
+  <Step title="Enable TLS versions">
+    Turn on the **Change TLS versions** toggle. The **Choose TLS versions** field appears, pre-populated with TLSv1.2 and TLSv1.3.
+  </Step>
+  <Step title="Select protocol versions">
+    Add or remove protocol versions. To add a version, click the field and select it from the dropdown. To remove a version, click **×** next to it.
 
-<Frame>![TLS versions section with toggle enabled, showing TLSv1.2 and TLSv1.3 selected and available versions in dropdown](/images/docs/cdn/cdn-resource-options/security/choose-tls-versions/choose-tls-versions-image2.png)</Frame>
+    <Frame>![TLS versions section with toggle enabled, showing TLSv1.2 and TLSv1.3 selected and available versions in dropdown](/images/docs/cdn/cdn-resource-options/security/choose-tls-versions/choose-tls-versions-image2.png)</Frame>
+  </Step>
+  <Step title="Save the resource">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
-6. Click **Save changes**.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>When `tls_versions` is enabled, HTTPS clients can use only the versions in `value`, so any other version is rejected.</p>
+
+<p>When `enabled` is false, clients can use any of the five versions.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## TLS versions
+
+<p>`value` accepts the case-sensitive names `SSLv3`, `TLSv1`, `TLSv1.1`, `TLSv1.2`, and `TLSv1.3`.</p>
+
+<p>`TLSv1.2` and `TLSv1.3` are the recommended versions, while `SSLv3`, `TLSv1`, and `TLSv1.1` are older versions.</p>
+
+<p>Both `enabled` and `value` are required, so an empty `value` while `enabled` is true returns HTTP 400.</p>
+
+<p>Send `tls_versions` with `enabled` true and `value` set to `TLSv1.2` and `TLSv1.3`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "tls_versions": {"enabled": True, "value": ["TLSv1.2", "TLSv1.3"]},
+        },
+    )
+    print(resource.options.tls_versions.enabled, resource.options.tls_versions.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                TlsVersions: cdn.CDNResourceUpdateParamsOptionsTlsVersions{
+                    Enabled: true,
+                    Value:   []string{"TLSv1.2", "TLSv1.3"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.TlsVersions.Enabled, resource.Options.TlsVersions.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "tls_versions": {
+            "enabled": true,
+            "value": ["TLSv1.2", "TLSv1.3"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "tls_versions": {
+          "enabled": true,
+          "value": ["TLSv1.2", "TLSv1.3"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
