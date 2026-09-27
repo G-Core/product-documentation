@@ -1,18 +1,18 @@
 ---
 title: Proxy WebSocket connections to the origin
 sidebarTitle: WebSockets
-ai-navigation: Connect a WebSocket from the CDN hostname to the origin, turn the option on for CNAME resources, and keep an idle connection open with a client heartbeat.
+ai-navigation: Connect a WebSocket from the CDN hostname to the origin, turn the option on for CNAME resources, and keep an idle connection open with a heartbeat.
 ---
 
-A WebSocket stays open so either side can send data at any time, while ordinary HTTP closes after one response. A CDN resource proxies that connection to the origin that already runs the application.
+A WebSocket stays open so either side can send data at any time, while ordinary HTTP closes after one response. A CDN resource proxies that connection to the origin that already runs the WebSocket server.
 
-Clients open the socket on the resource hostname, and the CDN forwards the opening request to the origin. The connection stays up while data keeps moving. After a period with no data, the CDN or the network in between closes it.
+Browsers and applications open the socket on the resource hostname, and the CDN forwards the opening request to the origin. The connection stays up while data keeps moving. After a period with no data, the CDN or the network in between closes it.
 
 ## Connection path
 
-The WebSocket server stays on the origin. Clients open `wss://` on the CDN resource hostname and keep the path the application already serves, `/socket`. The origin group points at the host and port that accept this traffic.
+The WebSocket server stays on the origin. An end-user application opens `wss://` on the CDN resource hostname and keeps the path the origin already serves, `/socket`. The origin group points at the host and port that accept this traffic.
 
-The client request carries an `Upgrade` header, so the CDN passes that request through and proxies each client connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls stay on HTTP.
+The opening request carries an `Upgrade` header, so the CDN passes that request through and proxies each WebSocket connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls stay on HTTP.
 
 ## Default setting
 
@@ -42,9 +42,9 @@ Turn the option on for a CNAME resource, or turn it off when the resource should
   </Step>
 </Steps>
 
-## Client hostname
+## End-user hostname
 
-Point the application client at the CDN resource hostname. Keep the path and query string the origin already expects, and leave the origin hostname in the origin group:
+Point the browser or application at the CDN resource hostname. Keep the path and query string the origin already expects, and leave the origin hostname in the origin group:
 
 ```text
 wss://cdn.example.com/socket
@@ -54,7 +54,7 @@ A socket opened on the origin hostname never reaches the CDN.
 
 ## Accepted connection
 
-When the origin accepts the `Upgrade` request, the client receives `101 Switching Protocols` and the connection stays open. Further data from the client arrives on that same origin connection as WebSocket frames.
+When the origin accepts the `Upgrade` request, the end-user application receives `101 Switching Protocols` and the connection stays open. Further data from the application arrives on that same origin connection as WebSocket frames.
 
 WAAP (Web Application and API Protection) applies blocking policies to that opening request. It rejects a matching `Upgrade` request with `403 Forbidden`, so the connection is not established. A frame sent after `101 Switching Protocols` still reaches the origin.
 
