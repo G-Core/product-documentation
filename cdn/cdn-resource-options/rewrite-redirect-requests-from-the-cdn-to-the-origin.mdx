@@ -1,35 +1,429 @@
 ---
 title: "Rewrite: redirect requests from the CDN to the origin"
 sidebarTitle: Rewrite
-ai-navigation: Configure CDN Rewrite to rewrite request paths using nginx regular expressions, capture groups, and rewrite flags - break, last, redirect, permanent.
+ai-navigation: Configure request path rewrites and redirects for a CDN resource in the Customer Portal or the REST API.
 ---
 
-The Rewrite option changes or redirects request paths before the CDN fetches content from the origin. It operates according to [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same setting is available in the **Rules** section.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The Rewrite option changes or redirects request paths before the CDN fetches content from the origin. It operates according to [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.</p>
+
+<p>To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same setting is available in the **Rules** section.</p>
 
 <Frame>![CDN resource Options tab with Rewrite enabled, showing the Rewrite body field and Rewrite flag dropdown](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image1.png)</Frame>
 
-The **Rewrite body** field pre-fills with `/(.*) /$1` as an example. Replace it with two space-separated directives using regular expressions:
+## Rewrite body
 
-1. The path the Rewrite applies to.
-2. The replacement path.
+<p>The **Rewrite body** field pre-fills with `/(.*) /$1` as an example. Replace it with two space-separated parts:</p>
 
-To rewrite all request paths to the `/media/` directory, use:
+<p>1. A regular expression that matches the request path.</p>
+
+<p>2. The replacement path.</p>
+
+<p>To rewrite all request paths to the `/media/` directory, use:</p>
 
 ```
 /(.*) /media/$1
 ```
 
-where:
+<p>where:</p>
 
 - **`/(.*)`** — matches all paths after `/`. The `(.*)` group captures everything that follows the slash.
 - **`/media/`** — the directory on the origin where CDN servers look for content.
 - **`$1`** — references the first capture group. Use `$2` and `$3` for the second and third groups.
 
-In the **Rewrite flag** dropdown, select the nginx flag that controls how the rewrite is applied:
+<p>In the **Rewrite flag** dropdown, select the nginx flag that controls how the rewrite is applied:</p>
 
 - **break** (default) — stops processing further rewrite rules after this one.
 - **last** — stops processing rewrite rules and starts a new location search.
 - **redirect** — returns a 302 temporary redirect to the client.
 - **permanent** — returns a 301 permanent redirect to the client.
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A path on the CDN hostname is not always the path stored on the origin. The `rewrite` option changes that path before Gcore CDN fetches the file, or returns a redirect to the viewer. The value follows [nginx&nbsp;rewrite](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rules: a regular expression, a replacement, and a flag.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Set a rewrite
+
+<p>`enabled` and `body` are required. `body` is the regular expression and the replacement, separated by a space. `/(.*) /media/$1` matches every path and asks the origin for that path under `/media/`. `$1` inserts the first capture group, and `$2` inserts the second.</p>
+
+<p>When `flag` is omitted, the API stores `break`. The accepted values are `break`, `last`, `redirect`, and `permanent`. `break` stops further rewrite processing. `last` stops rewrite processing and starts a new location search. `redirect` returns 302 to the viewer. `permanent` returns 301 to the viewer. Any other value returns HTTP 400.</p>
+
+<p>A body that contains only the regular expression returns HTTP 400, because the expression and the replacement must be split by a space. A replacement that names a capture group the expression does not contain returns HTTP 400. The replacement may use `$` plus a digit, and `$scheme` returns HTTP 400. The replacement can be a path, or an absolute URL that starts with `http://` or `https://`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "rewrite": {
+                "enabled": True,
+                "body": "/(.*) /media/$1",
+                "flag": "break",
+            }
+        },
+    )
+    print(updated.options.rewrite.enabled, updated.options.rewrite.body, updated.options.rewrite.flag)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Rewrite: cdn.CDNResourceUpdateParamsOptionsRewrite{
+                    Enabled: true,
+                    Body:    "/(.*) /media/$1",
+                    Flag:    "break",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Rewrite.Enabled, updated.Options.Rewrite.Body, updated.Options.Rewrite.Flag)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "rewrite": {
+            "enabled": true,
+            "body": "/(.*) /media/$1",
+            "flag": "break"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "body": "/(.*) /media/$1",
+      "flag": "break"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn the rewrite off
+
+<p>Set `enabled` to `false` to keep the saved body and flag while Gcore CDN stops applying the rewrite.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "rewrite": {
+                "enabled": False,
+                "body": "/(.*) /media/$1",
+                "flag": "break",
+            }
+        },
+    )
+    print(updated.options.rewrite.enabled, updated.options.rewrite.body, updated.options.rewrite.flag)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Rewrite: cdn.CDNResourceUpdateParamsOptionsRewrite{
+                    Enabled: false,
+                    Body:    "/(.*) /media/$1",
+                    Flag:    "break",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Rewrite.Enabled, updated.Options.Rewrite.Body, updated.Options.Rewrite.Flag)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "rewrite": {
+            "enabled": false,
+            "body": "/(.*) /media/$1",
+            "flag": "break"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "body": "/(.*) /media/$1",
+      "flag": "break"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove the rewrite
+
+<p>Send `rewrite` as JSON `null` to remove the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"rewrite": None},
+    )
+    print(updated.options.rewrite)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "rewrite": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Rewrite.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "rewrite": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+## Rewrite one path
+
+<p>The same option can be stored on a resource rule, so requests that match the rule are rewritten. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="rewrite-media",
+        rule="^/assets/.*",
+        rule_type=0,
+        options={
+            "rewrite": {
+                "enabled": True,
+                "body": "/assets/(.*) /media/$1",
+                "flag": "break",
+            }
+        },
+    )
+    print(rule.id, rule.options.rewrite.body, rule.options.rewrite.flag)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "rewrite-media",
+            Rule:     "^/assets/.*",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                Rewrite: cdn.CDNResourceRuleNewParamsOptionsRewrite{
+                    Enabled: true,
+                    Body:    "/assets/(.*) /media/$1",
+                    Flag:    "break",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.Rewrite.Body, rule.Options.Rewrite.Flag)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "rewrite-media",
+        "rule": "^/assets/.*",
+        "ruleType": 0,
+        "options": {
+          "rewrite": {
+            "enabled": true,
+            "body": "/assets/(.*) /media/$1",
+            "flag": "break"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "body": "/assets/(.*) /media/$1",
+      "flag": "break"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
