@@ -1,36 +1,263 @@
 ---
 title: Specify HTTP headers that CDN adds to requests to the origin
 sidebarTitle: Add request headers
-ai-navigation: Configure HTTP request headers that Gcore CDN adds to origin requests via the Request Headers option, specifying header names and values with supported characters (letters, numbers, dashes, underscores, slashes, colons, equals, dots, spaces).
+ai-navigation: Add HTTP headers to CDN origin requests in the Customer Portal or with the REST API.
 ---
 
-Use the Request Headers option to add custom HTTP headers to CDN requests before they reach the origin.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To configure request headers via the Gcore Customer Portal:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-1. Navigate to **CDN** > **CDN resources** and click the CDN resource you want to configure.
+<p>Some origins expect an HTTP header that the incoming request does not include. The **Request headers** option stores that name and value on the CDN resource. Gcore CDN adds the stored headers to each request it sends to the origin.</p>
 
-<Frame>![CDN resources list showing active resources](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image1.png)</Frame>
+## Add request headers
 
-2. In the resource settings panel, click **HTTP headers** to expand the section, then click **Request headers**.
+<p>To configure request headers via the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com):</p>
 
-<Frame>![HTTP headers section expanded in the left panel with Request headers active](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image2.png)</Frame>
+<Steps>
+  <Step title="Open the resource">
+    Navigate to **CDN** → **CDN resources** and click the CDN resource to configure.
 
-3. Enable the **Add request headers** toggle.
+    <Frame>![CDN resources list showing active resources](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image1.png)</Frame>
+  </Step>
+  <Step title="Open request headers">
+    In the resource settings panel, click **HTTP headers** to expand the section, then click **Request headers**.
 
-<Frame>![Resource settings OPTIONS tab showing the HTTP headers section with the Add request headers toggle](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image3.png)</Frame>
+    <Frame>![HTTP headers section expanded in the left panel with Request headers active](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image2.png)</Frame>
+  </Step>
+  <Step title="Enable the option">
+    Enable the **Add request headers** toggle.
 
-4. In the form that appears, enter the name and value for the request header.
+    <Frame>![Resource settings OPTIONS tab showing the HTTP headers section with the Add request headers toggle](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image3.png)</Frame>
+  </Step>
+  <Step title="Enter the header">
+    In the form that appears, enter the name and value for the request header.
 
-   * **Header name**: Accepts letters (A-Z, a-z), numbers (0-9), dashes (-), and underscores (_).
-   * **Value**: Accepts letters (A-Z, a-z), numbers (0-9), dashes (-), underscores (_), slashes (/), colons (:), equals (=), dots (.), and spaces.
+    - **Header name**: Accepts letters (A-Z, a-z), numbers (0-9), dashes (-), and underscores (_).
+    - **Value**: Accepts letters (A-Z, a-z), numbers (0-9), dashes (-), underscores (_), slashes (/), colons (:), equals (=), dots (.), and spaces.
 
-<Info>The Value field accepts spaces between words but cannot begin or end with a space.</Info>
+    <Info>The Value field accepts spaces between words but cannot begin or end with a space.</Info>
 
-<Frame>![Request headers form with Header name and Value fields and the + Add header button](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image4.png)</Frame>
+    <Frame>![Request headers form with Header name and Value fields and the + Add header button](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image4.png)</Frame>
+  </Step>
+  <Step title="Add another header">
+    To add more headers, click **+ Add header** and repeat step 4.
 
-5. To add more headers, click **+ Add header** and repeat step 4.
+    <Frame>![Multiple request header rows with filled Header name and Value fields](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image5.png)</Frame>
+  </Step>
+  <Step title="Save changes">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
-<Frame>![Multiple request header rows with filled Header name and Value fields](/images/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/specify-http-headers-that-cdn-adds-to-requests-to-the-origin-image5.png)</Frame>
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-6. Click **Save changes**.
+<p>Some origins expect an HTTP header that the incoming request does not include. `staticRequestHeaders` stores each header name and value on the CDN resource. Gcore CDN adds those headers to each request it sends to the origin.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Add request headers
+
+<p>Set `options.staticRequestHeaders`. Both `enabled` and `value` are required. A request that omits either field returns HTTP 400. A resource accepts up to 50 headers.</p>
+
+<p>Each header name can contain up to 255 characters: letters, numbers, dashes, and underscores. Each value can contain up to 512 characters. It must start with a letter, number, asterisk (`*`), or an opening brace. After the first character, the API accepts letters, numbers, spaces, and `` `~!@#%^&*()-_=+/|\";:?.,><{}[] ``. The API removes leading and trailing spaces.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "static_request_headers": {
+                "enabled": True,
+                "value": {
+                    "X-Custom-Header": "cdn-origin",
+                    "X-Request-Source": "gcore cdn",
+                },
+            }
+        },
+    )
+    headers = updated.options.static_request_headers
+    print(headers.enabled, headers.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                StaticRequestHeaders: cdn.CDNResourceUpdateParamsOptionsStaticRequestHeaders{
+                    Enabled: true,
+                    Value: map[string]string{
+                        "X-Custom-Header":  "cdn-origin",
+                        "X-Request-Source": "gcore cdn",
+                    },
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.StaticRequestHeaders.Enabled, updated.Options.StaticRequestHeaders.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "staticRequestHeaders": {
+            "enabled": true,
+            "value": {
+              "X-Custom-Header": "cdn-origin",
+              "X-Request-Source": "gcore cdn"
+            }
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": {
+        "X-Custom-Header": "cdn-origin",
+        "X-Request-Source": "gcore cdn"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn off request headers
+
+<p>Set `enabled` to `false` to stop adding headers to origin requests. `value` is still required. An empty `value` stores no headers.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "static_request_headers": {
+                "enabled": False,
+                "value": {},
+            }
+        },
+    )
+    headers = updated.options.static_request_headers
+    print(headers.enabled, headers.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                StaticRequestHeaders: cdn.CDNResourceUpdateParamsOptionsStaticRequestHeaders{
+                    Enabled: false,
+                    Value:   map[string]string{},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.StaticRequestHeaders.Enabled, updated.Options.StaticRequestHeaders.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "staticRequestHeaders": {
+            "enabled": false,
+            "value": {}
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": {}
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
