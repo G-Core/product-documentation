@@ -1,44 +1,61 @@
 ---
-title: Allow permanent connections with the origin
+title: Proxy WebSocket connections to the origin
 sidebarTitle: WebSockets
-ai-navigation: Enable or disable WebSocket support on CDN resources via the Gcore Customer Portal for persistent bidirectional connections between clients and origin servers.
+ai-navigation: Connect a WebSocket from the CDN hostname to the origin, turn the option on for CNAME resources, and keep an idle connection open with a client heartbeat.
 ---
 
-WebSockets is a CDN resource option that proxies WebSocket connections to the origin server, maintaining them for the full duration of a session. It is suitable for real-time applications — chat, gaming, live data feeds, and collaborative tools — that require a continuous data channel.
+A WebSocket stays open so either side can send data at any time, while ordinary HTTP closes after one response. A CDN resource proxies that connection to the origin that already runs the application.
 
-## WebSocket overview
+Clients open the socket on the resource hostname, and the CDN forwards the opening request to the origin. The connection stays up while data keeps moving. After a period with no data, the CDN or the network in between closes it.
 
-WebSocket is a TCP-based protocol that establishes a persistent, bidirectional connection between client and server. Unlike HTTP, which opens a new connection for every request and closes it after the server responds, a WebSocket connection stays open until either party terminates it — allowing data to flow in both directions at any time.
+## Connection path
 
-<Frame>
-![Side-by-side comparison of HTTP polling and WebSocket persistent connection](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image3.png)
-</Frame>
+The WebSocket server stays on the origin. Clients open `wss://` on the CDN resource hostname and keep the path the application already serves, `/socket`. The origin group points at the host and port that accept this traffic.
 
-## Default behavior
+The client request carries an `Upgrade` header, so the CDN passes that request through and proxies each client connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls stay on HTTP.
 
-By default:
+## Default setting
 
-- WebSocket is enabled for CDN resources using DNS delegation.
-- WebSocket is disabled for CNAME-based CDN resources.
+DNS delegation enables WebSocket, while a CNAME resource leaves the option off. The opening request on a CNAME resource cannot complete until the option is turned on. Create either resource from the [CDN&nbsp;resource&nbsp;guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
 
-Both setup types are described in the [CDN&nbsp;resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
+## WebSocket option
 
-## Enable or disable WebSockets
+Turn the option on for a CNAME resource, or turn it off when the resource should serve only ordinary HTTP.
 
-1. Navigate to **CDN** in the [Gcore Customer Portal](https://portal.gcore.com) and click the custom domain of the target resource.
+<Steps>
+  <Step title="Open the resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** and click the custom domain of the target resource.
 
-<Frame>
-![CDN resources list with custom domain names highlighted](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image1.png)
-</Frame>
+    <Frame>
+    ![CDN resources list with custom domain names highlighted](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image1.png)
+    </Frame>
+  </Step>
+  <Step title="Set WebSockets">
+    In the **Content** section, find **WebSockets** and enable or disable the toggle.
 
-2. In the **Content** section, find **WebSockets** and enable or disable the toggle.
+    <Frame>
+    ![WebSockets toggle inside the Content section of CDN resource settings](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image2.png)
+    </Frame>
+  </Step>
+  <Step title="Save changes">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
-<Frame>
-![WebSockets toggle inside the Content section of CDN resource settings](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image2.png)
-</Frame>
+## Client hostname
 
-3. Click **Save changes**.
+Point the application client at the CDN resource hostname. Keep the path and query string the origin already expects, and leave the origin hostname in the origin group:
 
-## Keep connections alive
+```text
+wss://cdn.example.com/socket
+```
 
-WebSocket connections may be closed after a period of inactivity by the CDN or by intermediate network components. To prevent unexpected disconnections during idle periods, implement a client-side heartbeat — have the client send a ping frame at a regular interval and confirm receipt of the server's pong response.
+A socket opened on the origin hostname never reaches the CDN.
+
+## Accepted connection
+
+When the origin accepts the `Upgrade` request, the client receives `101 Switching Protocols` and the connection stays open. Further data from the client arrives on that same origin connection as WebSocket frames.
+
+WAAP (Web Application and API Protection) applies blocking policies to that opening request. It rejects a matching `Upgrade` request with `403 Forbidden`, so the connection is not established. A frame sent after `101 Switching Protocols` still reaches the origin.
+
+An idle connection with no data closes after the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts), which defaults to 30 seconds. Send a ping frame more often than that timeout, and treat a missing pong as a closed connection.
