@@ -1,38 +1,41 @@
 ---
 title: Ignore the set cookie or query string parameters when caching content on CDN servers
 sidebarTitle: Ignore Set Cookie or Query string
-ai-navigation: Configure query string caching modes (Ignore all, Ignore all except, Ignore only) and Set-Cookie caching behavior for CDN resources in the Customer Portal.
+ai-navigation: Configure query string and Set-Cookie cache behavior on a CDN resource via the Customer Portal or REST API.
 ---
 
-The **Ignore query string** and **Ignore Set-Cookie** options control how query parameters and `Set-Cookie` response headers affect CDN caching. Both are available in the **Cache** section of CDN resource settings.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The **Ignore query string** and **Ignore Set-Cookie** options control how query parameters and `Set-Cookie` response headers affect CDN caching. Both are available in the **Cache** section of CDN resource settings.</p>
 
 ## Query string setting
 
-The **Ignore query string** option determines how the CDN caches URLs that have query parameters. Query parameters are optional key-value pairs separated by `=` and joined by `&`, appearing at the end of a URL after a `?`:
+<p>The **Ignore query string** option determines how the CDN caches URLs that have query parameters. Query parameters are optional key-value pairs separated by `=` and joined by `&`, appearing at the end of a URL after a `?`:</p>
 
 ```
 http://cdn.example.com/photo.jpeg?id=6&color=blue
 ```
 
-When disabled, the full query string is included in the cache key, so URLs with different query parameter values are cached as separate objects.
+<p>When disabled, the full query string is included in the cache key, so URLs with different query parameter values are cached as separate objects.</p>
 
-To enable it in the [Gcore Customer Portal](https://portal.gcore.com):
+<p>To enable it in the [Gcore Customer Portal](https://portal.gcore.com):</p>
 
-1. In the left sidebar, select **CDN**, then click the CDN resource to configure.
+<p>1. In the left sidebar, select **CDN**, then click the CDN resource to configure.</p>
 
 <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image1.png)</Frame>
 
-2. In the sidebar, under **Cache**, click **Query string**.
+<p>2. In the sidebar, under **Cache**, click **Query string**.</p>
 
 <Frame>![Resource settings — Query string section in the Cache group](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image2.png)</Frame>
 
-3. Enable the **Ignore query string** toggle.
+<p>3. Enable the **Ignore query string** toggle.</p>
 
-<Warning>Enabling or changing this option may invalidate cached content for URLs with query strings. CDN servers will request those files from the origin again, which can increase origin load.</Warning>
+<p>4. Select a mode and set its parameters.</p>
 
-4. Click **Save changes**.
-
-The enabled option has three modes:
+<p>The enabled option has three modes:</p>
 
 | Mode | Parameters in the list | Other parameters |
 |------|------------------------|-----------------|
@@ -91,12 +94,375 @@ The enabled option has three modes:
   http://cdn.example.com/photo.jpeg?id=1&color=blue
   ```
 
+<Warning>Enabling or changing this option may invalidate cached content for URLs with query strings. CDN servers will request those files from the origin again, which can increase origin load.</Warning>
+
+<p>5. Click **Save changes**.</p>
+
 ## Set-Cookie setting
 
-By default, the CDN caches files with different `Set-Cookie` header values as separate objects. This means multiple cached copies of the same content can accumulate for different cookie values, reducing the cache hit ratio.
+<p>When **Ignore Set-Cookie** is disabled, the CDN takes the `Set-Cookie` response header into account when storing the response in cache. Files with different `Set-Cookie` header values are cached as separate objects, so multiple cached copies of the same content can accumulate and the cache hit ratio drops.</p>
 
-The **Ignore Set-Cookie** option changes this behavior: files are cached as a single object regardless of the `Set-Cookie` header value. Gcore recommends enabling this option for the best cache hit ratio.
+<p>The **Ignore Set-Cookie** option changes this behavior: files are cached as a single object regardless of the `Set-Cookie` header value. Gcore recommends enabling this option for the best cache hit ratio.</p>
 
-To enable it, open the CDN resource settings (same page as the **Query string** option), enable the **Ignore Set-Cookie** toggle in the **Cache** section, then click **Save changes**.
+<p>To enable it, open the CDN resource settings (same page as the **Query string** option), enable the **Ignore Set-Cookie** toggle in the **Cache** section, then click **Save changes**.</p>
 
 <Frame>![Set-Cookie section with Ignore Set-Cookie toggle](/images/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/ignore-query-string-image6.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Update the resource options to control how query parameters and `Set-Cookie` headers affect the CDN cache key. Find the resource ID in [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Query string
+
+<p>Only one of these three options can be enabled. Enabling a second one returns HTTP 400, so set `enabled` to false on the active option in the same request.</p>
+
+<p>`value` is required. An empty parameter list returns HTTP 400 while that option is enabled.</p>
+
+### Ignore all
+
+<p>Send `ignoreQueryString` with `enabled` true and `value` true. URLs that differ only by query parameters are cached as one object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "ignore_query_string": {"enabled": True, "value": True},
+        },
+    )
+    print(resource.options.ignore_query_string.enabled, resource.options.ignore_query_string.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                IgnoreQueryString: cdn.CDNResourceUpdateParamsOptionsIgnoreQueryString{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.IgnoreQueryString.Enabled, resource.Options.IgnoreQueryString.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "ignoreQueryString": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "ignoreQueryString": {
+          "enabled": true,
+          "value": true
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Ignore all except
+
+<p>Send `query_params_whitelist` with the parameter names that must stay in the cache key. Other parameters are ignored, so URLs that differ only in an unlisted parameter are cached as one object.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "query_params_whitelist": {"enabled": True, "value": ["id"]},
+        },
+    )
+    print(resource.options.query_params_whitelist.enabled, resource.options.query_params_whitelist.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                QueryParamsWhitelist: cdn.CDNResourceUpdateParamsOptionsQueryParamsWhitelist{
+                    Enabled: true,
+                    Value:   []string{"id"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.QueryParamsWhitelist.Enabled, resource.Options.QueryParamsWhitelist.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "query_params_whitelist": {
+            "enabled": true,
+            "value": ["id"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "query_params_whitelist": {
+          "enabled": true,
+          "value": ["id"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Ignore only
+
+<p>Send `query_params_blacklist` with the parameter names to leave out of the cache key. Listed parameters are ignored, and every other parameter stays in the cache key.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "query_params_blacklist": {"enabled": True, "value": ["color"]},
+        },
+    )
+    print(resource.options.query_params_blacklist.enabled, resource.options.query_params_blacklist.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                QueryParamsBlacklist: cdn.CDNResourceUpdateParamsOptionsQueryParamsBlacklist{
+                    Enabled: true,
+                    Value:   []string{"color"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.QueryParamsBlacklist.Enabled, resource.Options.QueryParamsBlacklist.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "query_params_blacklist": {
+            "enabled": true,
+            "value": ["color"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "query_params_blacklist": {
+          "enabled": true,
+          "value": ["color"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Set `enabled` to false on the active option to include the full query string in the cache key again. The previous `value` remains stored.</p>
+
+<Note>
+In the Go SDK, set `Value` to true when `Enabled` is false for `ignoreQueryString` and `ignore_cookie`. Both fields set to false are omitted, and the stored option stays unchanged.
+</Note>
+
+## Set-Cookie
+
+<p>Send `ignore_cookie` with `enabled` true and `value` true so files with different `Set-Cookie` header values are cached as one object. This option can stay enabled together with one query-string option.</p>
+
+<p>Set `enabled` to false to turn Ignore Set-Cookie off. The previous `value` remains stored.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "ignore_cookie": {"enabled": True, "value": True},
+        },
+    )
+    print(resource.options.ignore_cookie.enabled, resource.options.ignore_cookie.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                IgnoreCookie: cdn.CDNResourceUpdateParamsOptionsIgnoreCookie{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.IgnoreCookie.Enabled, resource.Options.IgnoreCookie.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "ignore_cookie": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "ignore_cookie": {
+          "enabled": true,
+          "value": true
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
