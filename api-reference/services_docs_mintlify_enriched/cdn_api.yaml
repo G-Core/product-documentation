@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: deb3774a25ce
+  version: 2b6f5356b058
 servers:
 - url: https://api.gcore.com
 tags:
@@ -4800,6 +4800,29 @@ paths:
         description: Comma-separated list of alias statuses.
         example: pending,active
       - in: query
+        name: ssl_status
+        schema:
+          $ref: '#/components/schemas/AliasSslStatus'
+        description: Certificate outcome.
+      - in: query
+        name: ssl_status__in
+        schema:
+          type: string
+        description: Comma-separated list of certificate outcomes.
+        example: pending,issued
+      - in: query
+        name: ssl_validity_not_after_lte
+        schema:
+          type: string
+        description: Only aliases whose served certificate expires at or before this date and time (ISO 8601/RFC 3339 format, UTC).
+        example: '2027-01-01T00:00:00Z'
+      - in: query
+        name: ssl_validity_not_after_gte
+        schema:
+          type: string
+        description: Only aliases whose served certificate expires at or after this date and time (ISO 8601/RFC 3339 format, UTC).
+        example: '2027-01-01T00:00:00Z'
+      - in: query
         name: automated
         schema:
           type: boolean
@@ -6204,6 +6227,34 @@ paths:
           	}
           	fmt.Printf("%+v\n", logsAggregatedStats.Number1Example)
           }
+  /cdn/statistics/aliases_usage/aggregated:
+    get:
+      operationId: aggregated-aliases-usage-statistics
+      tags:
+      - Statistics
+      summary: Aggregated alias usage statistics
+      description: |-
+        Get the number of aliases in use.
+
+        Request URL parameters should be added as a query string after the endpoint.
+
+        The requested period is always expanded to whole calendar months, so a request for part of a
+        month returns the count for its entire containing month.
+      parameters:
+      - $ref: '#/components/parameters/from-2'
+      - $ref: '#/components/parameters/to-2'
+      - $ref: '#/components/parameters/group_by_aggregated'
+      - $ref: '#/components/parameters/resource'
+      - $ref: '#/components/parameters/flat'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAliasUsageAggregatedStat'
+        '204':
+          description: There is no data for the requested time period.
   /cdn/advanced/v1/capacity:
     get:
       operationId: get-network-capacity
@@ -8230,7 +8281,8 @@ components:
           example: true
         ssl_id:
           type: integer
-          description: ID of the SSL certificate served for the alias.
+          nullable: true
+          description: ID of the SSL certificate served for the alias. Null until a certificate is issued.
           example: 890
         active:
           type: boolean
@@ -8253,6 +8305,15 @@ components:
           example: true
         status:
           $ref: '#/components/schemas/AliasStatus'
+        ssl_status:
+          $ref: '#/components/schemas/AliasSslStatus'
+        ssl_validity_not_after:
+          type: string
+          nullable: true
+          description: |-
+            Date and time when the served certificate expires (ISO 8601/RFC 3339 format, UTC). Null while no
+            certificate is served yet.
+          example: '2027-01-01T10:00:00Z'
         created:
           type: string
           description: Date and time when the alias was created (ISO 8601/RFC 3339 format, UTC.)
@@ -8296,6 +8357,8 @@ components:
           example: shop.customer.com
         status:
           $ref: '#/components/schemas/AliasStatus'
+        ssl_status:
+          $ref: '#/components/schemas/AliasSslStatus'
     AliasCertificateStatus:
       allOf:
       - $ref: '#/components/schemas/LERequestStatusV2'
@@ -8379,6 +8442,8 @@ components:
           active: true
           enabled: true
           status: pending
+          ssl_status: pending
+          ssl_validity_not_after: null
           created: '2026-09-01T10:00:00Z'
           updated: '2026-09-01T10:00:00Z'
     AliasRemoved:
@@ -8390,6 +8455,23 @@ components:
         cname:
           type: string
           example: a.customer.com
+    AliasSslStatus:
+      type: string
+      nullable: true
+      description: |-
+        Outcome of the certificate we manage for the alias.
+
+        Possible values:
+        - **pending** – A certificate attempt is in progress.
+        - **issued** – The latest attempt succeeded.
+        - **failed** – The latest attempt ended without a certificate.
+        - **null** – No certificate is managed for the alias: the alias uses a certificate you provided, or
+          is automated and has never opened an attempt.
+      enum:
+      - pending
+      - issued
+      - failed
+      example: issued
     AliasStatus:
       type: string
       description: |-
@@ -8471,10 +8553,12 @@ components:
         - id: 1
           cname: a.customer.com
           status: pending
+          ssl_status: pending
         exists:
         - id: 7
           cname: b.customer.com
           status: active
+          ssl_status: issued
     AliasesLimitError:
       title: Aliases limit exceeded
       type: object
@@ -10280,6 +10364,33 @@ components:
                     image/jpeg: 1975
                     image/png: 7131343
                     image/webp: 643574
+    GetAliasUsageAggregatedStat:
+      type: object
+      properties:
+        resource:
+          type: object
+          description: Resources IDs by which statistics data is grouped.
+        1 (example):
+          type: object
+          description: CDN resource ID for which statistics data is shown.
+        client:
+          type: object
+          description: Client IDs by which statistics data is grouped.
+        12 (example):
+          type: object
+          description: Client ID for which statistics data is shown.
+        metrics:
+          type: object
+          properties:
+            alias_usage:
+              type: integer
+              description: Number of aliases in use.
+          description: Statistics parameters.
+      example:
+        resource:
+          '1':
+            metrics:
+              alias_usage: 1
     GetAlibabaRegionsResponse:
       oneOf:
       - title: Plain list
