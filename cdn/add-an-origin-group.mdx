@@ -1,7 +1,7 @@
 ---
 title: "Origin groups for CDN resources"
 sidebarTitle: "Origin group"
-ai-navigation: Create, attach, update, and delete CDN origin groups via the Customer Portal or REST API.
+ai-navigation: Create, attach, update, and delete CDN origin groups via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -623,6 +623,132 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     <p>A successful request returns HTTP 204 with an empty body.</p>
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>An origin group defines where the CDN fetches content. Declare the group and attach it to a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create an origin group
+
+<p>One enabled origin is enough to create the group. Set `use_next` with `proxy_next_upstream` so the CDN retries another origin after a connection error or a timeout. Set `origin_group` on the CDN resource so the CDN pulls content from this group.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name     = "my-origin-group"
+  use_next = true
+
+  # Retries the next origin after connection errors or timeouts.
+  proxy_next_upstream = ["error", "timeout"]
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+
+  # terraform import gcore_cdn_origin_group.example '<origin_group_id>'
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname        = "cdn.example.com"
+  origin_group = gcore_cdn_origin_group.example.id
+}
+```
+
+## Update an origin group
+
+<p>Edit fields in the resource block and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name     = "my-origin-group"
+  use_next = true
+
+  proxy_next_upstream = ["error", "timeout"]
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+      backup  = false
+    },
+    {
+      # Stays out of regular balancing until the active origin fails.
+      source  = "www.example.com"
+      enabled = true
+      backup  = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname        = "cdn.example.com"
+  origin_group = gcore_cdn_origin_group.example.id
+}
+```
+
+## List and get origin groups
+
+<p>Reads a group by ID or by name. `has_related_resources` is true when a CDN resource already uses the group.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name     = "my-origin-group"
+  use_next = true
+
+  proxy_next_upstream = ["error", "timeout"]
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname        = "cdn.example.com"
+  origin_group = gcore_cdn_origin_group.example.id
+}
+
+data "gcore_cdn_origin_group" "example" {
+  origin_group_id = gcore_cdn_origin_group.example.id
+}
+
+data "gcore_cdn_origin_groups" "example" {
+  name = gcore_cdn_origin_group.example.name
+}
+```
+
+## Delete an origin group
+
+<p>Remove both resource blocks — Terraform deletes the CDN resource before the origin group on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out these blocks:
+# resource "gcore_cdn_origin_group" "example" {
+#   name     = "my-origin-group"
+#   use_next = true
+#   proxy_next_upstream = ["error", "timeout"]
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname        = "cdn.example.com"
+#   origin_group = gcore_cdn_origin_group.example.id
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
