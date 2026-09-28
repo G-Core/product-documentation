@@ -1,7 +1,7 @@
 ---
 title: DNS Healthchecks
 sidebarTitle: Healthchecks
-ai-navigation: Configure DNS Healthchecks in Gcore Managed DNS to monitor server availability, exclude failing records from DNS responses, and set up backup records via Customer Portal or REST API.
+ai-navigation: Configure DNS Healthchecks to monitor server availability, exclude failing records from DNS responses, and set up backup records via Portal, API, or Terraform.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
@@ -195,7 +195,7 @@ export ZONE_NAME="{YOUR_ZONE_NAME}"
 export RECORD_NAME="{RECORD_FQDN}"
 ```
 
-<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it matches `ZONE_NAME`; for a subdomain it is the full FQDN, such as `www.company.com`.</p>
+<p>`RECORD_NAME` is the fully qualified domain name (FQDN) of the record. For an apex record it equals `ZONE_NAME`; for a subdomain it is the full FQDN — `www.yourdomain.com`.</p>
 
 ## Configure healthchecks
 
@@ -422,6 +422,72 @@ curl "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A/failover/
 ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure healthcheck probe settings and backup records using the `gcore_dns_zone_rrset` resource from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `meta.failover` object (rrset-level) defines what to check; `meta.backup = "true"` (per-record) marks fallback records.</p>
+
+<Warning>
+The `healthcheck` picker type is not available in Gcore Terraform provider v2. To activate health monitoring — so that failing records are excluded from DNS responses — add the `healthcheck` picker via the Customer Portal or REST API after applying this configuration.
+</Warning>
+
+## Configure healthchecks
+
+<p>Declare the zone, the RRset with the failover probe parameters, and mark backup records. The `meta.failover` value must be JSON-encoded because the provider stores all rrset-level metadata as a map of strings.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+resource "gcore_dns_zone_rrset" "app" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 300
+
+  # Probe settings — applied to all records in this RRset
+  meta = {
+    failover = jsonencode({
+      protocol         = "HTTP"
+      port             = 80
+      frequency        = 300   # seconds between checks
+      timeout          = 10
+      method           = "GET"
+      url              = "/health"
+      tls              = false
+      http_status_code = 200
+    })
+  }
+
+  resource_records = [
+    {
+      content = ["1.2.3.4"]   # primary record
+    },
+    {
+      content = ["5.6.7.8"]
+      meta    = { backup = "true" }  # used only when all primary records fail
+    },
+  ]
+  # terraform import gcore_dns_zone_rrset.app yourdomain.com/yourdomain.com/A
+}
+```
+
+<p>For ICMP probes, replace `meta.failover` with `{ protocol = "ICMP", port = 0, frequency = 60, timeout = 10 }`. For TCP/UDP, set `protocol = "TCP"` or `"UDP"` and specify a port.</p>
+
+## Delete a record
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "app" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

@@ -1,44 +1,173 @@
 ---
-title: Allow permanent connections with the origin
+title: Proxy WebSocket connections to the origin
 sidebarTitle: WebSockets
-ai-navigation: Enable or disable WebSocket support on CDN resources via the Gcore Customer Portal for persistent bidirectional connections between clients and origin servers.
+ai-navigation: Configure WebSocket proxying for a CDN resource in the Customer Portal or with the REST API.
 ---
 
-WebSockets is a CDN resource option that proxies WebSocket connections to the origin server, maintaining them for the full duration of a session. It is suitable for real-time applications — chat, gaming, live data feeds, and collaborative tools — that require a continuous data channel.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-## WebSocket overview
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-WebSocket is a TCP-based protocol that establishes a persistent, bidirectional connection between client and server. Unlike HTTP, which opens a new connection for every request and closes it after the server responds, a WebSocket connection stays open until either party terminates it — allowing data to flow in both directions at any time.
+<p>Some applications need the server to send updates immediately without waiting for the browser or application to make another request. Chat, live dashboards, notifications, and collaborative tools use WebSockets for this.</p>
 
-<Frame>
-![Side-by-side comparison of HTTP polling and WebSocket persistent connection](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image3.png)
-</Frame>
+<p>A WebSocket keeps one two-way connection open between the application and the server, so either side can send data at any time. Ordinary HTTP uses a request-response model.</p>
 
-## Default behavior
+<Frame>![Side-by-side comparison of HTTP polling and a WebSocket connection](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image3.png)</Frame>
 
-By default:
+<p>With Gcore CDN, browsers and applications connect to the CDN resource hostname, and the CDN proxies that WebSocket connection to the origin that runs the WebSocket server.</p>
 
-- WebSocket is enabled for CDN resources using DNS delegation.
-- WebSocket is disabled for CNAME-based CDN resources.
+## Connection path
 
-Both setup types are described in the [CDN&nbsp;resource guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).
+<p>The WebSocket server stays on the origin. An end-user application opens `wss://` on the CDN resource hostname and keeps the path the origin already serves, `/socket`. The origin group points at the host and port that accept this traffic.</p>
 
-## Enable or disable WebSockets
+<p>The opening request carries an `Upgrade` header, so the CDN passes that request through and proxies each WebSocket connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls stay on HTTP.</p>
 
-1. Navigate to **CDN** in the [Gcore Customer Portal](https://portal.gcore.com) and click the custom domain of the target resource.
+## Default setting
 
-<Frame>
-![CDN resources list with custom domain names highlighted](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image1.png)
-</Frame>
+<p>DNS delegation enables WebSocket, while a CNAME resource leaves the option off. The opening request on a CNAME resource cannot complete until the option is turned on. Create either resource from the [CDN&nbsp;resource&nbsp;guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).</p>
 
-2. In the **Content** section, find **WebSockets** and enable or disable the toggle.
+## WebSocket option
 
-<Frame>
-![WebSockets toggle inside the Content section of CDN resource settings](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image2.png)
-</Frame>
+<p>Turn the option on for a CNAME resource, or turn it off when the resource should serve only ordinary HTTP.</p>
 
-3. Click **Save changes**.
+<Steps>
+  <Step title="Open the resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** and click the custom domain of the target resource.
 
-## Keep connections alive
+    <Frame>
+    ![CDN resources list with custom domain names highlighted](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image1.png)
+    </Frame>
+  </Step>
+  <Step title="Set WebSockets">
+    In the **Content** section, find **WebSockets** and enable or disable the toggle.
 
-WebSocket connections may be closed after a period of inactivity by the CDN or by intermediate network components. To prevent unexpected disconnections during idle periods, implement a client-side heartbeat — have the client send a ping frame at a regular interval and confirm receipt of the server's pong response.
+    <Frame>
+    ![WebSockets toggle inside the Content section of CDN resource settings](/images/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/websockets-allow-permanent-connections-with-the-origin-image2.png)
+    </Frame>
+  </Step>
+  <Step title="Save changes">
+    Click **Save changes**.
+  </Step>
+</Steps>
+
+## End-user hostname
+
+<p>Point the browser or application at the CDN resource hostname. Keep the path and query string the origin already expects, and leave the origin hostname in the origin group:</p>
+
+```text
+wss://cdn.example.com/socket
+```
+
+<p>A socket opened on the origin hostname never reaches the CDN.</p>
+
+## Accepted connection
+
+<p>When the origin accepts the `Upgrade` request, the end-user application receives `101 Switching Protocols` and the connection stays open. Further data from the application arrives on that same origin connection as WebSocket frames.</p>
+
+<p>WAAP (Web Application and API Protection) applies blocking policies to that opening request. It rejects a matching `Upgrade` request with `403 Forbidden`, so the connection is not established. A frame sent after `101 Switching Protocols` still reaches the origin.</p>
+
+<p>An idle connection with no data closes after the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts), which defaults to 30 seconds. Send a ping frame more often than that timeout, and treat a missing pong as a closed connection.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Allow WebSocket connections from the CDN resource hostname through to an origin that already runs a WebSocket server. Applications connect with `wss://` and the path expected by the origin, and each connection is proxied as a separate connection to the origin. The origin accepts the opening request with `101 Switching Protocols`.</p>
+
+<p>Idle connections follow the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts).</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## WebSockets
+
+<p>Send `options.websockets` with `enabled` and `value`. Both fields are required. Set both to `true` to allow WebSocket connections to the origin. Set both to `false` to turn the option off. A request that omits either field returns HTTP 400. Sending `null` removes `options.websockets`.</p>
+
+<p>The request sets both fields to `true`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={"websockets": {"enabled": True, "value": True}},
+    )
+    print(resource.options.websockets.enabled, resource.options.websockets.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Websockets: cdn.CDNResourceUpdateParamsOptionsWebsockets{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.Websockets.Enabled, resource.Options.Websockets.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "websockets": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "websockets": {
+          "enabled": true,
+          "value": true
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

@@ -1,42 +1,49 @@
 ---
 title: Integrate a CDN resource with Google Cloud Storage
 sidebarTitle: Google Cloud Storage
-ai-navigation: Configure Google Cloud Storage as a Gcore CDN origin by publishing bucket objects, mapping paths, setting DNS, and verifying delivery.
+ai-navigation: Deliver public Google Cloud Storage objects through Gcore CDN via Customer Portal or via REST API.
 ---
 
-Google Cloud Storage can store public assets while Gcore CDN caches and delivers them through a custom domain. This setup uses the public path-style endpoint, so origin requests follow `storage.googleapis.com/bucket-name/object-name`.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Access to a Google Cloud project with permission to create buckets and edit bucket IAM policies, an active CDN subscription, and control of the DNS zone for the CDN domain are required.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Google Cloud Storage can store public assets while Gcore CDN caches and delivers them through a custom domain. This setup uses the public path-style endpoint, so origin requests follow `storage.googleapis.com/bucket-name/object-name`.</p>
+
+<p>Access to a Google Cloud project with permission to create buckets and edit bucket IAM policies, an active CDN subscription, and control of the DNS zone for the CDN domain are required.</p>
+
+## Google Cloud Storage origin
 
 <Steps>
   <Step title="Create a Google Cloud Storage bucket">
-    In the [Google&nbsp;Cloud&nbsp;console](https://console.cloud.google.com/storage/browser), navigate to **Cloud Storage** > **Buckets** and click **Create**. Configure the bucket:
+    <p>In the [Google&nbsp;Cloud&nbsp;console](https://console.cloud.google.com/storage/browser), navigate to **Cloud Storage** > **Buckets** and click **Create**. Configure the bucket:</p>
 
-    1. Enter a globally unique bucket name.
+    <p>1. Enter a globally unique bucket name.</p>
 
-    2. Select the location and storage class for the content.
+    <p>2. Select the location and storage class for the content.</p>
 
-    3. Select uniform bucket-level access.
+    <p>3. Select uniform bucket-level access.</p>
 
-    4. Configure public access prevention so it is not enforced for this bucket.
+    <p>4. Configure public access prevention so it is not enforced for this bucket.</p>
 
-    5. Configure the required data protection settings and click **Create**.
+    <p>5. Configure the required data protection settings and click **Create**.</p>
 
-    If an organization policy enforces public access prevention, use a different project or ask a Google Cloud administrator to allow public access for the project.
+    <p>If an organization policy enforces public access prevention, use a different project or ask a Google Cloud administrator to allow public access for the project.</p>
   </Step>
 
   <Step title="Upload the content">
-    Open the bucket, click **Upload files** or **Upload folder**, and upload the assets to deliver through the CDN.
+    <p>Open the bucket, click **Upload files** or **Upload folder**, and upload the assets to deliver through the CDN.</p>
   </Step>
 
   <Step title="Allow public object access">
-    On the bucket page, open **Permissions** and click **Grant access**:
+    <p>On the bucket page, open **Permissions** and click **Grant access**:</p>
 
-    1. In **New principals**, enter `allUsers`.
+    <p>1. In **New principals**, enter `allUsers`.</p>
 
-    2. In **Select a role**, select **Storage Object Viewer**.
+    <p>2. In **Select a role**, select **Storage Object Viewer**.</p>
 
-    3. Click **Save**, then click **Allow public access**.
+    <p>3. Click **Save**, then click **Allow public access**.</p>
 
     <Warning>
       This IAM binding makes every object in the bucket anonymously readable. Store only content intended for public delivery in the bucket.
@@ -44,80 +51,300 @@ Access to a Google Cloud project with permission to create buckets and edit buck
   </Step>
 
   <Step title="Verify the Google Cloud Storage URL">
-    Open a public object through the path-style endpoint:
+    <p>Open a public object through the path-style endpoint:</p>
 
     ```text
     https://storage.googleapis.com/my-bucket-1/images/image.png
     ```
 
-    Replace `my-bucket-1/images/image.png` with the bucket name and object path. The request must return the object without requiring Google authentication.
+    <p>Replace `my-bucket-1/images/image.png` with the bucket name and object path. The request must return the object without requiring Google authentication.</p>
   </Step>
 
   <Step title="Create the CDN resource">
-    In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), click **Create CDN resource** and configure the resource:
+    <p>In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), click **Create CDN resource** and configure the resource:</p>
 
-    1. In **Add domain**, enter the CDN domain — `cdn.example.com`.
+    <p>1. In **Add domain**, enter the CDN domain — `cdn.example.com`.</p>
 
-    2. Select **Do not delegate** to keep DNS at the current provider.
+    <p>2. Select **Do not delegate** to keep DNS at the current provider.</p>
 
-    3. Under **Origin**, select **Specify content origin** and **URL**.
+    <p>3. Under **Origin**, select **Specify content origin** and **URL**.</p>
 
-    4. In **Origin source**, enter `storage.googleapis.com`.
+    <p>4. In **Origin source**, enter `storage.googleapis.com`.</p>
 
-    5. Keep **Use default port** enabled.
+    <p>5. Keep **Use default port** enabled.</p>
 
-    6. In **Host header override**, enter `storage.googleapis.com`.
+    <p>6. In **Host header override**, enter `storage.googleapis.com`.</p>
 
-    7. Under **SSL**, enable **Enable HTTPS**.
+    <p>7. Under **SSL**, enable **Enable HTTPS**.</p>
 
-    8. Select **Get free Let's Encrypt certificate** or **Custom SSL certificate**. A [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) is issued after the custom domain CNAME is in place.
+    <p>8. Select **Get free Let's Encrypt certificate** or **Custom SSL certificate**. A [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) is issued after the custom domain CNAME is in place.</p>
 
-    9. Click **Create**.
+    <p>9. Click **Create**.</p>
 
     <Frame>
       ![URL origin configured with storage.googleapis.com as the source and host header](/images/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-cloud-storage-origin.png)
     </Frame>
 
-    After creation, open the resource settings. Under **General** > **Origin pull protocol**, select **HTTPS**, then click **Save changes**.
+    <p>After creation, open the resource settings. Under **General** > **Origin pull protocol**, select **HTTPS**, then click **Save changes**.</p>
   </Step>
 
   <Step title="Configure DNS">
-    At the DNS provider, create a CNAME record for `cdn.example.com` that points to the generated `*.gcdn.co` hostname shown by the Customer Portal.
+    <p>At the DNS provider, create a CNAME record for `cdn.example.com` that points to the generated `*.gcdn.co` hostname shown by the Customer Portal.</p>
 
-    Follow the [custom&nbsp;domain&nbsp;setup](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) to verify the DNS record and resource activation.
+    <p>Follow the [custom&nbsp;domain&nbsp;setup](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) to verify the DNS record and resource activation.</p>
   </Step>
 
   <Step title="Verify the CDN object path">
-    Keep the bucket name in the CDN URL when Rewrite is not configured:
+    <p>Keep the bucket name in the CDN URL when Rewrite is not configured:</p>
 
     ```text
     https://cdn.example.com/my-bucket-1/images/image.png
     ```
 
-    The path after the CDN domain is forwarded to `storage.googleapis.com`, so it must match the bucket name and object path.
+    <p>The path after the CDN domain is forwarded to `storage.googleapis.com`, so it must match the bucket name and object path.</p>
   </Step>
 
   <Step title="(Optional) Hide the bucket name">
-    To expose `/images/image.png` instead of `/my-bucket-1/images/image.png`, open the resource settings and navigate to **Content**. Add the **Rewrite** option and enter:
+    <p>To expose `/images/image.png` instead of `/my-bucket-1/images/image.png`, open the resource settings and navigate to **Content**. Add the **Rewrite** option and enter:</p>
 
     ```nginx
     /(.*) /my-bucket-1/$1
     ```
 
-    Replace `my-bucket-1` with the bucket name. Click **Save changes**. The public URL becomes `https://cdn.example.com/images/image.png`, while the origin request uses `/my-bucket-1/images/image.png`.
+    <p>Replace `my-bucket-1` with the bucket name. Click **Save changes**. The public URL becomes `https://cdn.example.com/images/image.png`, while the origin request uses `/my-bucket-1/images/image.png`.</p>
   </Step>
 
   <Step title="Update asset URLs and verify delivery">
-    Update the website or application to use the CDN URLs. In the browser developer tools:
+    <p>Update the website or application to use the CDN URLs. In the browser developer tools:</p>
 
-    1. Open the **Network** panel.
+    <p>1. Open the **Network** panel.</p>
 
-    2. Reload the page.
+    <p>2. Reload the page.</p>
 
-    3. Select an asset request.
+    <p>3. Select an asset request.</p>
 
-    4. Confirm that the request uses `cdn.example.com` and returns a successful response.
+    <p>4. Confirm that the request uses `cdn.example.com` and returns a successful response.</p>
 
-    If the request returns 403, verify the bucket IAM policy and public access prevention. For a 404 response, compare the CDN request path with the bucket name and object path.
+    <p>If the request returns 403, verify the bucket IAM policy and public access prevention. For a 404 response, compare the CDN request path with the bucket name and object path.</p>
   </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a CDN resource that pulls public objects from `storage.googleapis.com` over HTTPS and serves them on a custom domain.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The bucket objects must already be readable at the public path-style URL.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create the CDN resource
+
+<p>Set `origin` to `storage.googleapis.com` and `originProtocol` to `HTTPS`. Enable `options.hostHeader` with the same hostname, because path-style requests must send that Host header. The [create&nbsp;endpoint](/api-reference/cdn/cdn-resources/create-cdn-resource) stores the hostname as the source of a new origin group.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cname` | Yes | CDN domain that viewers request |
+| `origin` | Yes | `storage.googleapis.com`, without a scheme or an object path |
+| `originProtocol` | No | Optional in the API. Set to `HTTPS` for this origin; otherwise it defaults to `HTTP` |
+| `options.hostHeader.enabled` | No | Optional in the API. Set to `true` for this origin |
+| `options.hostHeader.value` | No | `storage.googleapis.com` when the override is enabled |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()  # Reads GCORE_API_KEY from env
+
+    resource = client.cdn.cdn_resources.create(
+        cname="cdn.site.com",
+        origin="storage.googleapis.com",
+        origin_protocol="HTTPS",
+        options={
+            "host_header": {"enabled": True, "value": "storage.googleapis.com"},
+        },
+    )
+    print(resource.id, resource.origin_protocol, resource.options.host_header.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient() // Reads GCORE_API_KEY from env
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.New(ctx, cdn.CDNResourceNewParams{
+            Cname:          "cdn.site.com",
+            Origin:         gcore.String("storage.googleapis.com"),
+            OriginProtocol: cdn.CDNResourceNewParamsOriginProtocolHTTPS,
+            Options: cdn.CDNResourceNewParamsOptions{
+                HostHeader: cdn.CDNResourceNewParamsOptionsHostHeader{
+                    Enabled: true,
+                    Value:   "storage.googleapis.com",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.OriginProtocol, resource.Options.HostHeader.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "cname": "cdn.site.com",
+        "origin": "storage.googleapis.com",
+        "originProtocol": "HTTPS",
+        "options": {
+          "hostHeader": {"enabled": true, "value": "storage.googleapis.com"}
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "cname": "cdn.site.com",
+      "active": true,
+      "originProtocol": "HTTPS",
+      "originGroup": 1002,
+      "options": {
+        "hostHeader": {
+          "enabled": true,
+          "value": "storage.googleapis.com"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Point the CDN domain CNAME at the `*.gcdn.co` hostname shown for the resource. Viewer HTTPS uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) after that CNAME is in place.</p>
+
+<p>Keep the bucket name in the request path. Open the object at `https://cdn.site.com/my-bucket-1/images/image.png`.</p>
+
+## Hide the bucket name
+
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.rewrite` and prepends the bucket name to the path sent to `storage.googleapis.com`. Updating `options.rewrite` does not replace the other resource options, so the existing Host header stays `storage.googleapis.com`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `options.rewrite.enabled` | Yes | Enables the Rewrite option |
+| `options.rewrite.body` | Yes | `/(.*) /my-bucket-1/$1`. Replace `my-bucket-1` with the bucket name |
+| `options.rewrite.flag` | No | `break` stops further rewrite processing |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        1001,
+        options={
+            "rewrite": {
+                "enabled": True,
+                "body": "/(.*) /my-bucket-1/$1",
+                "flag": "break",
+            },
+        },
+    )
+    print(resource.options.rewrite.body, resource.options.host_header.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Rewrite: cdn.CDNResourceUpdateParamsOptionsRewrite{
+                    Enabled: true,
+                    Body:    "/(.*) /my-bucket-1/$1",
+                    Flag:    "break",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.Rewrite.Body, resource.Options.HostHeader.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "rewrite": {
+            "enabled": true,
+            "body": "/(.*) /my-bucket-1/$1",
+            "flag": "break"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "options": {
+        "hostHeader": {
+          "enabled": true,
+          "value": "storage.googleapis.com"
+        },
+        "rewrite": {
+          "enabled": true,
+          "body": "/(.*) /my-bucket-1/$1",
+          "flag": "break"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>After the rule is saved, viewers request `https://cdn.site.com/images/image.png`. The origin request path is `/my-bucket-1/images/image.png`.</p>
+
+</MethodSection>
+</MethodSwitch>

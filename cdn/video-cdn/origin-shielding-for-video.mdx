@@ -1,66 +1,339 @@
 ---
 title: Origin shielding for video delivery
 sidebarTitle: Origin shielding
-description: Protect your video origin during Live broadcast events and high-demand VOD releases by routing CDN edge requests through a shield server
-ai-navigation: Enable origin shielding for video CDN delivery to add a precache shield server between origin and edge locations, reducing concurrent origin requests, origin egress costs, and improving reliability during live events and VOD cache misses.
+ai-navigation: Use origin shielding for video delivery and enable it via REST API by setting a shield location.
 ---
 
-## Activate origin shielding for video
-
-Origin shielding adds a shield, also called a precache server, between your video origin and Gcore CDN edge servers. Viewers still receive video from nearby CDN edges, but edge cache misses go to the shield first, not directly to your origin.
-
-| Benefit | Why it matters |
-|---------|----------------|
-| Protects the origin | Repeated CDN edge misses are absorbed by the shield instead of hitting the origin from many locations. |
-| Minimizes origin requests | The shield requests the origin only when the object isn't already cached there. |
-| Reduces egress costs | Less traffic is pulled from your origin, which matters when origin egress is costly. |
-| Improves reliability | A less overloaded origin reduces the risk of slow segments, timeouts, and playback errors. |
+Origin Shielding places a shield, also called a precache server, between the video origin and CDN edge servers. Viewers receive video from nearby edges, while an edge cache miss reaches the shield before the origin.
 
 ## Origin shielding request flow
 
-Without shielding, every CDN edge location that misses cache can request the same manifest, segment, or video file from your origin. During a live event or a popular VOD release, this can create a large number of concurrent origin requests.
+Without shielding, every CDN edge that misses cache can request the same manifest, segment, or video file from the origin. A live event or a popular VOD release can create a large number of concurrent origin requests.
 
-With shielding, edge servers pull missed objects through one shield location. If the shield has the object, it serves the edge from cache. If not, it makes one origin request, caches the response, and shares it with other CDN edges.
+With Origin Shielding, edge servers pull missed objects through one shield location. The shield serves a cached copy when it has the object, and otherwise makes one origin request that other edges reuse.
 
-```
+```text
 Without shielding: Viewer -> CDN edge -> Origin
 With shielding:    Viewer -> CDN edge -> Shield -> Origin
 ```
 
 <Info>
-Origin shielding doesn't replace origin capacity planning. Your origin still serves the first request for uncached or expired content.
+The origin still serves the first request for uncached or expired content.
 </Info>
 
-## Use cases
+## Live events
 
-### Sports broadcasting
+A live event with a large concurrent audience requests the same playlists and segments at the same time from different regions. Origin Shielding concentrates those repeated edge misses on the shield, so the origin receives one pull instead of a pull from every edge.
 
-A national TV broadcaster used origin shielding for live sports events with a very large concurrent audience. During match peaks, many viewers requested the same live playlists and segments at the same time from different regions.
+## VOD libraries
 
-Shielding helped concentrate repeated CDN edge misses through the shield server instead of sending them all to the broadcaster's origin. This reduced bandwidth pressure on the origin and helped keep the live stream available during the highest-traffic moments of the event.
+Hot titles are usually served from edge cache. A cold title, or a title evicted after it stops being hot, can miss on edges in different regions.
 
-### VOD libraries
+One miss warms the shield cache, so other edges reuse that copy.
 
-A large VOD platform used origin shielding for a several PB-sized video library. Hot content was usually served from CDN edge cache, but cold or previously hot titles could be evicted from edge caches and then requested again from different regions. Shielding let one missed request warm the shield cache, so other CDN edges reused that copy instead of repeatedly pulling the same files from origin.
+Repeated misses from several regions show up as a low [cache&nbsp;hit&nbsp;ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue). That is a reason to enable Origin Shielding for a live event or a VOD library.
 
-## When to enable shielding
+## Cache lifetime for video
 
-Enable origin shielding when you expect a large live audience, release VOD content that may become hot, have limited origin bandwidth, pay significant origin egress costs, or see [low cache hit ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue) across multiple CDN edge locations.
+For live streaming, use a short cacheable TTL for manifests and a longer TTL for segments when the workflow allows it. VOD files and segments need a TTL long enough for later requests to hit the shield.
 
-Choose a shield location close to your origin server. For live streaming, use short but cacheable TTLs for manifests and longer TTLs for segments where your workflow allows it. For VOD, make sure video files and segments can stay cached long enough to serve repeated requests.
+## REST API
 
-To enable and configure the feature, see [Enable and configure origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
+Set a shield location on the CDN resource that delivers the video. The sequence lists locations, saves one, reads the resource, and clears the setting.
 
-## Related pages
+In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), the same location is set from [origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
 
-<CardGroup cols={2}>
-  <Card title="Enable origin shielding" icon="shield" href="/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding">
-    Configure the shield server for your CDN resource
-  </Card>
-  <Card title="Low cache hit ratio" icon="chart-bar" href="/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue">
-    Diagnose cache misses and improve CDN cache efficiency
-  </Card>
-  <Card title="Improve video delivery speed" icon="gauge" href="/cdn/video-cdn/improve-video-delivery-speed">
-    Learn how cache hits and misses affect video playback
-  </Card>
-</CardGroup>
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of the CDN resource that delivers the video.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+export SHIELDING_POP="{YOUR_SHIELDING_LOCATION_ID}"
+```
+
+### Shield locations
+
+Select the shield location closest to the video origin. A [locations&nbsp;list](/api-reference/cdn/origin-shielding/get-origin-shielding-locations) returns its id, datacenter, city, and country, and that id is the value for `SHIELDING_POP`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    locations = client.cdn.shielding_location.list()
+    for item in locations:
+        print(item.id, item.datacenter, item.city, item.country)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.ShieldingLocation.List(ctx, cdn.ShieldingLocationListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, item := range page.Results {
+            fmt.Println(item.ID, item.Datacenter, item.City, item.Country)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/shieldingpop_v2" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    [
+      {
+        "id": 171,
+        "datacenter": "SG1",
+        "city": "Singapore",
+        "country": "Singapore"
+      }
+    ]
+    ```
+  </Tab>
+</Tabs>
+
+### Location update
+
+A [shielding&nbsp;update](/api-reference/cdn/origin-shielding/change-origin-shielding) sets `shielding_pop` to a location id and returns that id. The id has to be one returned by the locations list.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+    shielding_pop = int(os.environ["SHIELDING_POP"])
+
+    updated = client.cdn.cdn_resources.shield.replace(
+        resource_id,
+        shielding_pop=shielding_pop,
+    )
+    print(updated["shielding_pop"])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+        shieldingPop, err := strconv.ParseInt(os.Getenv("SHIELDING_POP"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Shield.Replace(ctx, resourceID, cdn.CDNResourceShieldReplaceParams{
+            OriginShielding: cdn.OriginShieldingParam{
+                ShieldingPop: gcore.Int(shieldingPop),
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println((*updated).(map[string]any)["shielding_pop"])
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/shielding_v2" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"shielding_pop\": $SHIELDING_POP}"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "shielding_pop": 171
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+An unknown location id returns HTTP 400 with the message `Invalid pk "999999999" - object does not exist.`
+</Note>
+
+### Resource fields
+
+Read the CDN resource after the update. `shielded` is true when Origin Shielding is enabled, and `shield_dc` is the datacenter name of the location that was saved.
+
+`shield_enabled` is read-only and reports whether the shield is active and working. The update does not write that field, so confirm the saved setting with `shielded` and `shield_dc`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    resource = client.cdn.cdn_resources.get(resource_id)
+    print(resource.shielded, resource.shield_dc, resource.shield_enabled)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Get(ctx, resourceID)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Shielded, resource.ShieldDc, resource.ShieldEnabled)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The resource includes:</p>
+
+    ```json
+    {
+      "shielded": true,
+      "shield_dc": "SG1",
+      "shield_enabled": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Cleared location
+
+The same update sets `shielding_pop` to null. The resource then reports `shielded` as false and `shield_dc` as null.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.shield.replace(
+        resource_id,
+        shielding_pop=None,
+    )
+    print(updated["shielding_pop"])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Shield.Replace(ctx, resourceID, cdn.CDNResourceShieldReplaceParams{
+            OriginShielding: cdn.OriginShieldingParam{
+                ShieldingPop: param.Null[int64](),
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println((*updated).(map[string]any)["shielding_pop"])
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/shielding_v2" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"shielding_pop": null}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "shielding_pop": null
+    }
+    ```
+  </Tab>
+</Tabs>

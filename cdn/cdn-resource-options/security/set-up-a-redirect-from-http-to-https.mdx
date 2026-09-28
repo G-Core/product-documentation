@@ -1,12 +1,17 @@
 ---
 title: Set up a redirect from HTTP to HTTPS
 sidebarTitle: Redirect from HTTP to HTTPS
-ai-navigation: Enable HTTP to HTTPS redirect on a CDN resource in the Customer Portal after HTTPS and an SSL certificate are active.
+ai-navigation: Enable an HTTP to HTTPS redirect in the Customer Portal or via REST API after HTTPS and a certificate are active.
 ---
 
-HTTP to HTTPS redirect sends all HTTP requests for a CDN resource to HTTPS. The redirect can be turned on only after HTTPS is enabled and an SSL certificate is issued.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-The same option can be set through the [CDN&nbsp;resource&nbsp;API](/api-reference/cdn/cdn-resources/change-cdn-resource-1).
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>HTTP to HTTPS redirect sends all HTTP requests for a CDN resource to HTTPS. The redirect can be turned on only after HTTPS is enabled and an SSL certificate is issued.</p>
+
+## Enable the redirect
 
 1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**. Open the resource.
 
@@ -31,9 +36,205 @@ The same option can be set through the [CDN&nbsp;resource&nbsp;API](/api-referen
    </Frame>
 
 <Info>
-The **Enable redirect HTTP to HTTPS** toggle stays disabled until HTTPS is on and a certificate is present. Saving the option while HTTPS is off returns:
-
-```
-You cannot enable redirect HTTP to HTTPS when HTTPS is disabled. Please enable HTTPS and add SSL certificate first.
-```
+The **Enable redirect HTTP to HTTPS** toggle stays disabled until HTTPS and a certificate are active.
 </Info>
+
+6. Confirm the redirect:
+
+   ```bash
+   curl -I http://cdn.example.com/path/file.css
+   ```
+
+   <p>The response includes a `Location` header with the same path on HTTPS.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Send HTTP requests for a CDN resource to HTTPS. HTTPS must already be enabled and an SSL certificate must already be attached. With either missing, the API returns HTTP 400 and the message `You cannot enable redirect HTTP to HTTPS when HTTPS is disabled. Please enable HTTPS and add SSL certificate first`.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+<p>A [resource update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.redirect_http_to_https`. That option and `redirect_https_to_http` cannot be enabled at the same time.</p>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Enable the redirect
+
+<p>Set `enabled` and `value` to `true`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"redirect_http_to_https": {"enabled": True, "value": True}},
+    )
+    redirect = updated.options.redirect_http_to_https
+    print(redirect.enabled, redirect.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                RedirectHTTPToHTTPS: cdn.CDNResourceUpdateParamsOptionsRedirectHTTPToHTTPS{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.RedirectHTTPToHTTPS.Enabled, updated.Options.RedirectHTTPToHTTPS.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "redirect_http_to_https": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn the redirect off
+
+<p>Set `enabled` and `value` to `false`. The Go SDK omits a `false` boolean, so that call sends the JSON object explicitly.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"redirect_http_to_https": {"enabled": False, "value": False}},
+    )
+    redirect = updated.options.redirect_http_to_https
+    print(redirect.enabled, redirect.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "encoding/json"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                RedirectHTTPToHTTPS: param.Override[cdn.CDNResourceUpdateParamsOptionsRedirectHTTPToHTTPS](
+                    json.RawMessage(`{"enabled":false,"value":false}`),
+                ),
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.RedirectHTTPToHTTPS.Enabled, updated.Options.RedirectHTTPToHTTPS.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "redirect_http_to_https": {
+            "enabled": false,
+            "value": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

@@ -1,67 +1,53 @@
 ---
 title: "VOD issues"
 sidebarTitle: "VOD issues"
-ai-navigation: Troubleshoot VOD upload failures, transcoding errors, and playback issues including 503 errors, interrupted uploads, session timeouts, processing queue delays, inconsistent video parameters causing Error status, HTTP 404 responses, and high segment latency or TTFB.
+ai-navigation: Troubleshoot VOD upload failures, transcoding errors, 503 and 404 responses, Error status from inconsistent sources, and high TTFB.
 ---
 
-Here are some common issues you may encounter when working with VOD and steps you can take to troubleshoot them.
+These are common VOD upload, transcoding, and playback failures, with the check that isolates each one.
 
-## 503 error after transcoding
+## HTTP 503 on a video request
 
-_Possible cause_: Upload has been interrupted by closing or reloading the window.\
-_Suggested solution_: Try uploading again and be careful not to interrupt the process. If the video is more than 500 MB, the upload will resume where it left off.
+_Possible cause_: The origin or transcoder is temporarily unable to serve the asset.  
+_Suggested solution_: Retry the request after a short delay. If the error persists for one video, the processing status is visible in the [Gcore Customer Portal](https://portal.gcore.com). If multiple videos are affected, current outages appear on the [Gcore&nbsp;status&nbsp;page](https://status.gcore.com/). The [HTTP&nbsp;status&nbsp;codes](/streaming/faq/http-status-codes) article lists the difference between 500, 502, and 503.
 
+## Upload interrupted after closing the browser
 
-## Video is not uploaded
+_Possible cause_: The browser window was closed or reloaded during the upload.  
+_Suggested solution_: Start the upload again. For files larger than 500 MB, Gcore resumes the upload from the last completed chunk instead of uploading the entire file again.
 
-_Possible cause_: Upload has been interrupted by closing or reloading the window.\
-_Suggested solution_: Try uploading again and be careful not to interrupt the process. If the video is more than 500 MB, the upload will resume where it left off.
+## Upload fails because storage quota is exhausted
 
-_Possible cause_: Not enough storage space to complete the upload.\
-_Suggested solution_: Confirm in the Storage statistics that you have used up your storage. Contact our [support team](mailto:support@gcore.com) to increase the storage space.
+_Possible cause_: The account has no remaining storage quota.  
+_Suggested solution_: Open **Reports / Billing** in the Customer Portal and review the Video Hosting volume in GB report. The [usage&nbsp;reports](/streaming/billing/usage-and-billing-reports) article shows how the storage limit is calculated. [Gcore&nbsp;support](mailto:support@gcore.com) can increase the quota.
 
+## Upload interrupted by session timeout
 
-## Upload to the Gcore Customer Portal is interrupted by a session timeout (force logout)
+_Possible cause_: Too many large files are being uploaded within one Customer Portal session.  
+_Suggested solution_: Upload in smaller batches — about 10 files at a time — or send the file through [API&nbsp;upload](/streaming/video-hosting/upload-video-via-api).
 
-_Possible cause_: Video is too large to upload through UI.\
-_Suggested solution_:
+## Video stuck in Pending status
 
-- Upload during late night or early morning hours when there is less load on the queue.
-- Upload a small batch of videos (e.g., 10 at a time).
-- [Upload via API](/streaming/video-hosting/upload-video-via-api).
+_Possible cause_: The transcoding queue is long or already processing large files.  
+_Suggested solution_: Wait and return to the video. Playback becomes available at `Viewable`; `Ready` means all renditions are complete. The [VOD&nbsp;status](/streaming/video-hosting/vod-status) article lists the complete status lifecycle.
 
+## Error status with inconsistent source parameters
 
-## Upload is stuck in the Processed state for a long time
-
-_Possible cause_: Processing queue is too long or loaded with large videos.\
-_Suggested solution_: Wait a while and then try uploading again.
-
-## Video is stuck in Error status
-
-_Possible cause_: The original source file is internally inconsistent. Some videos change technical parameters in the middle of the file, for example pixel format, color range, codec parameters, or stream structure. A known example is a transition from `yuv420p` to `yuvj420p` near the end of the source. In such cases, reprocessing the same file usually does not help because the problem is already inside the uploaded source.
+_Possible cause_: The source file changes technical parameters mid-file — pixel format, color range, codec parameters, or stream structure. A known case is a switch from `yuv420p` to `yuvj420p` near the end. Reprocessing the same file usually fails again because the defect is already in the uploaded source.
 
 _Suggested solution_:
-- Inspect the original file with a media analyzer such as `ffprobe`.
-- Verify that video parameters stay stable for the full duration of the file.
+- Inspect the file with `ffprobe`.
+- Confirm that video parameters stay stable for the full duration.
 - Re-export the file with consistent parameters from start to finish.
-- If the issue happens only at the end of the file, trim the broken segment and upload the corrected file again.
-- If the source was created from a live recording, check whether the source stream changed parameters during the broadcast.
+- If the defect is only at the end, trim the broken segment and upload the corrected file.
+- If the source came from a live recording, check whether the encoder changed parameters during the broadcast.
 
-## Video returns an HTTP 404 error
+## HTTP 404 on a video request
 
-A 404 error typically indicates that the transcoding process is still in progress (initial segments haven't been generated yet), or the requested video asset does not exist.
+_Possible cause_: The video entity does not exist, or transcoding has not produced the first segments yet (`Empty` or `Pending`).  
+_Suggested solution_: Confirm the request URL and the video status in the Customer Portal. Response meanings for 404 and the other codes are in the [HTTP&nbsp;status&nbsp;codes](/streaming/faq/http-status-codes) article.
 
-For a complete list of 404 error descriptions and other responses, please refer to our [HTTP status codes](/streaming/faq/http-status-codes) guide.
+## High segment latency or slow TTFB
 
-## Video segments have high latency or slow time-to-first-byte (TTFB)
-
-_Possible cause_: Your account has low viewer traffic, so CDN edge servers rarely cache your video segments. Each request results in a cache miss and the edge must pull the segment from the origin server, which adds latency.\
-_Suggested solution_: This is expected behavior for accounts with low traffic. See [Improve video delivery speed for low-traffic accounts](/cdn/video-cdn/improve-video-delivery-speed) for a full explanation and actionable steps, including enabling origin shielding and verifying cache TTL settings.
-
-
-## Source video issues
-
-If your video is blurry, stuttering, or has no audio, first check the original file.  
-_Suggested solution_: Play the original source file on your local machine. If the issue is present there, you must correct the source file and re-upload it. Gcore Streaming preserves the quality of the input, so any defects in the source will be visible in the transcoded renditions.
-
-Also check that the source file keeps the same technical parameters for the whole duration. Mid-file changes of pixel format, color range, or codec parameters may cause transcoding to fail and place the video into `Error` status.
+_Possible cause_: Slow requests may be cache misses. On low-traffic streams, edge caches can remain cold, so segments are fetched from the origin again and TTFB increases.  
+_Suggested solution_: Confirm whether the slow requests are cache misses. [Improve&nbsp;delivery&nbsp;speed](/cdn/video-cdn/improve-video-delivery-speed) covers origin shielding and cache TTL.

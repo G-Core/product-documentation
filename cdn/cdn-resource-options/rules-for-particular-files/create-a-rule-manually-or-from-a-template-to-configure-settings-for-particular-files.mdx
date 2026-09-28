@@ -1,155 +1,448 @@
 ---
 title: Create a rule manually or from a template to configure settings for particular files
 sidebarTitle: Create a rule
-ai-navigation: Create and manage CDN rules to override resource settings for specific file paths using URI patterns or regex, with up to five rules per CDN resource.
+ai-navigation: Create, suspend, and delete CDN rules via the Customer Portal or REST API to override resource settings for specific file paths.
 ---
 
-The **Rules** section overrides CDN options for specific files — independently of the Resource Settings that apply to all files by default. Each rule matches files by URI pattern or regular expression and applies its own option set to those files only, with a maximum of five rules per CDN resource.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-As an example: [CDN&nbsp;caching&nbsp;settings](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) are enabled for a resource with the CDN-controlled option, which applies to all files. To apply Origin-Controlled to specific files instead, create a rule for those paths and add the Origin-Controlled option — CDN-Controlled then applies everywhere except the paths covered by the rule.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-The **Rules** tab shows how many rules have been created for the resource.
+<p>The **Rules** section overrides CDN options for specific files — independently of the Resource Settings that apply to all files by default. Each rule matches files by URI pattern or regular expression and applies its own option set to those files only, with a maximum of five rules per CDN resource.</p>
 
+<p>As an example: [CDN&nbsp;caching&nbsp;settings](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) are enabled for a resource with the CDN-controlled option, which applies to all files. To apply Origin-Controlled to specific files instead, create a rule for those paths and add the Origin-Controlled option — CDN-Controlled then applies everywhere except the paths covered by the rule.</p>
+
+<p>The **Rules** tab shows how many rules have been created for the resource.</p>
 
 <Frame>![Rules section with rule count and Create rule button](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-1.png)</Frame>
 
-
-
 ## Add rules in the customer portal
 
-Rules are added from the **Rules** tab of any CDN resource. Each rule can be built from scratch or created from a template.
+<p>Rules are added from the **Rules** tab of any CDN resource. Each rule can be built from scratch or created from a template.</p>
 
 ### Create a rule manually
 
-1\. In the Resource settings, navigate to the **Rules** tab. Click **Create rule** and select **Create blank rule** from the drop-down list.
-
+1. In the Resource settings, navigate to the **Rules** tab. Click **Create rule** and select **Create blank rule** from the drop-down list.
 
 <Frame>![Create a rule manually](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-2.png)</Frame>
 
-
-
-A new page will open. Follow the remaining steps on that page.
-
+<p>A new page will open. Follow the remaining steps on that page.</p>
 
 <Frame>![Create a rule manually](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-3.png)</Frame>
 
+2. Enter the rule name.
 
-
-2\. Enter the rule name.
-
-3\. Specify the path to the file or folder to which the rule applies. The path must start with `^/` or `/` and cannot contain the origin domain name. Specify a URI or use [regular&nbsp;expressions&nbsp;(regex)](https://en.wikipedia.org/wiki/Regular_expression).
+3. Specify the path to the file or folder to which the rule applies. The path must start with `^/` or `/` and cannot contain the origin domain name. Specify a URI or use [regular&nbsp;expressions&nbsp;(regex)](https://en.wikipedia.org/wiki/Regular_expression).
 
 <Note>
 If a URI matches multiple rules, the rule that appears first in the order is applied. For instance, if the resource has two rules — `/folder/.*` (first) and `/folder/image.jpg` (second) — the first rule applies to `/folder/image.jpg`.
 </Note>
 
-4\. If the CDN resource has multiple origin groups, select the required group from the **Origins Group** list.
+4. If the CDN resource has multiple origin groups, select the required group from the **Origins Group** list.
 
-5\. Select the protocol that the CDN resource will use to pull the files specified in step three. If files are accessible over the same protocol as the origin, select **Inherit from resource**. If not, select the appropriate option: HTTP, HTTPS, or both protocols at once.
+5. Select the protocol that the CDN resource will use to pull the files specified in step three. If files are accessible over the same protocol as the origin, select **Inherit from resource**. If not, select the appropriate option: HTTP, HTTPS, or both protocols at once.
 
-6\. Click the **Add option** button to configure options if necessary. A panel opens with the list of available options — click an option name to add it to the rule. When done, close the panel.
-
+6. Click the **Add option** button to configure options if necessary. A panel opens with the list of available options — click an option name to add it to the rule. When done, close the panel.
 
 <Frame>![Add option panel with available CDN options](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-4.png)</Frame>
 
+<p>There are three variants for how the options in the Rules sections interact with the options in the Resource Settings:</p>
 
+| Variant | Interaction method | Example |
+|---|---|---|
+| Options are not added to the rule | Option parameters are inherited from the Resource settings | CDN caching is enabled in the Resource settings and the rule contains no CDN caching option — caching parameters for the files in the rule are inherited from the Resource settings. |
+| An option is added to the rule, but is disabled | Option parameters from the Resource Settings are disabled | The [Country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) option is enabled with Allow by default and DE in the Resource settings, blocking access to content in Germany. A rule with the disabled Country access policy option means that files in the rule remain accessible in Germany. |
+| An option is added to the rule and enabled | Option parameters from the Resource Settings are overridden | [Browser&nbsp;caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers) is set to CDN-Controlled, 4 days in the Resource settings. A rule with Browser caching set to 30 minutes overrides that for the files in the rule — they are cached in the browser for 30 minutes while other files are cached for 4 days. |
 
-There are three variants for how the options in the Rules sections interact with the options in the Resource Settings:
-
-Variant | Interaction method | Example  
----|---|---  
-Options are not added to the rule | Option parameters are inherited from the Resource settings | CDN caching is enabled in the Resource settings and the rule contains no CDN caching option — caching parameters for the files in the rule are inherited from the Resource settings.  
-An option is added to the rule, but is disabled | Option parameters from the Resource Settings are disabled | The [Country&nbsp;access&nbsp;policy](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) option is enabled with Allow by default and DE in the Resource settings, blocking access to content in Germany. A rule with the disabled Country access policy option means that files in the rule remain accessible in Germany.  
-An option is added to the rule and enabled | Option parameters from the Resource Settings are overridden | [Browser&nbsp;caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers) is set to CDN-Controlled, 4 days in the Resource settings. A rule with Browser caching set to 30 minutes overrides that for the files in the rule — they are cached in the browser for 30 minutes while other files are cached for 4 days.  
-  
-7\. Click **Create rule**.
+7. Click **Create rule**.
 
 ### Create a rule from a template
 
-Templates allow a fixed set of options to be reused across multiple CDN resources. Five system templates are available — Video segments (.ts), Playlists (.m3u8), Let's Encrypt HTTP-01 challenge, Static content, and Image optimization — and custom templates can be created from any saved rule. Full details are in the [templates&nbsp;guide](/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one).
+<p>Templates allow a fixed set of options to be reused across multiple CDN resources. Five system templates are available — Video segments (.ts), Playlists (.m3u8), Let's Encrypt HTTP-01 challenge, Static content, and Image optimization — and custom templates can be created from any saved rule. Full details are in the [templates&nbsp;guide](/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one).</p>
 
-To create a rule from a template:
+<p>To create a rule from a template:</p>
 
-1\. In the Resource settings, navigate to the **Rules** tab. Click **Create rule**. In the dropdown, select **Create blank rule** to build a rule from scratch, or select a template name under **Create from system templates** to use a system template, or select a custom template created earlier.
-
+1. In the Resource settings, navigate to the **Rules** tab. Click **Create rule**. In the dropdown, select **Create blank rule** to build a rule from scratch, or select a template name under **Create from system templates** to use a system template, or select a custom template created earlier.
 
 <Frame>![Create rule dropdown showing system templates and custom templates](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-2.png)</Frame>
 
+2. A form opens with pre-filled settings from the template. Review the settings and edit them if needed — the steps in [Create&nbsp;a&nbsp;rule](#create-a-rule-manually) apply.
 
-
-2\. A form opens with pre-filled settings from the template. Review the settings and edit them if needed — the steps in [Create&nbsp;a&nbsp;rule](#create-a-rule-manually) apply.
-
-3\. Click **Create rule**.
-
+3. Click **Create rule**.
 
 <Frame>![Create rule from template form with pre-filled settings](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-5.png)</Frame>
 
-
-
 ## Examples of rules
 
-The following examples show how rules can be used to override specific CDN options for a subset of files.
+<p>The following examples show how rules can be used to override specific CDN options for a subset of files.</p>
 
 ### Prohibit caching for static files
 
-To prohibit CDN caching for JPG, CSS, and JS files:
+<p>To prohibit CDN caching for JPG, CSS, and JS files:</p>
 
-  * Enter **`^/.*\.(jpg|css|js)$`** to the Rule pattern field.
-  * Add the CDN caching option with the "CDN Controlled" and "Do not cache" values.
-
+* Enter **`^/.*\.(jpg|css|js)$`** to the Rule pattern field.
+* Add the CDN caching option with the "CDN Controlled" and "Do not cache" values.
 
 <Frame>![CDN caching disabled for static files matching the pattern](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-6.png)</Frame>
 
-
-
 ### Set Access-Control-Allow-Origin for .ttf files
 
-To set up the Access-Control-Allow-Origin HTTP header only for files with the .ttf extension:
+<p>To set up the Access-Control-Allow-Origin HTTP header only for files with the .ttf extension:</p>
 
-  * Enter **`/.*\.ttf$`** to the Rule pattern field.
-  * Add the CORS header support option.
-  * Configure which domains the header applies to — [CORS&nbsp;header&nbsp;support](/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response) explains the available options.
-
+* Enter **`/.*\.ttf$`** to the Rule pattern field.
+* Add the CORS header support option.
+* Configure which domains the header applies to — [CORS&nbsp;header&nbsp;support](/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response) explains the available options.
 
 <Frame>![Set Access-Control-Allow-Origin for .ttf files](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-7.png)</Frame>
 
-
-
 ## Suspend, activate, or delete a rule
 
-Rules can be suspended when not needed — for testing purposes or before deletion. Suspended rules do not apply to the specified files but still count toward the rule limit.
+<p>Rules can be suspended when not needed — for testing purposes or before deletion. Suspended rules do not apply to the specified files but still count toward the rule limit.</p>
 
-To suspend a rule:
+<p>To suspend a rule:</p>
 
-1\. Navigate to the **Rules** tab and click the rule name to open its settings.
-
+1. Navigate to the **Rules** tab and click the rule name to open its settings.
 
 <Frame>![Rules section with rule name link](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-1.png)</Frame>
 
-
-
-2\. In the **Rule availability** section, uncheck **Enable rule**. A confirmation dialog appears — click **Yes, suspend**.
-
+2. In the **Rule availability** section, uncheck **Enable rule**. A confirmation dialog appears — click **Yes, suspend**.
 
 <Frame>![Rule availability section with Enable rule checkbox unchecked](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-8.png)</Frame>
 
+<p>To activate a suspended rule, click the rule name, check **Enable rule**, and click **Save changes**.</p>
 
-
-To activate a suspended rule, click the rule name, check **Enable rule**, and click **Save changes**.
-
-Suspended rules have a **Suspended** status and active rules have an **Active** status in the rules list.
-
+<p>Suspended rules have a **Suspended** status and active rules have an **Active** status in the rules list.</p>
 
 <Frame>![Suspended status and Active status in the rules list](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/create-a-rule-manually-or-from-a-template-to-9.png)</Frame>
 
-Alternatively, use the three-dot menu next to any rule in the list. For active rules, the menu provides **Suspend rule** — clicking it opens the same confirmation dialog. For suspended rules, the menu provides **Activate rule** — clicking it activates the rule immediately, without a confirmation dialog.
+<p>Alternatively, use the three-dot menu next to any rule in the list. For active rules, the menu provides **Suspend rule** — clicking it opens the same confirmation dialog. For suspended rules, the menu provides **Activate rule** — clicking it activates the rule immediately, without a confirmation dialog.</p>
 
-The three-dot menu also provides **Edit** to open the rule settings, **Save as template** to create a template from the current rule configuration, and **Delete rule** to delete the rule. Only suspended rules can be deleted.
+<p>The three-dot menu also provides **Edit** to open the rule settings, **Save as template** to create a template from the current rule configuration, and **Delete rule** to delete the rule. Only suspended rules can be deleted.</p>
 
-To delete a rule:
+<p>To delete a rule:</p>
 
-1\. Suspend the rule (see above).
+1. Suspend the rule (see above).
 
-2\. Click the three-dot menu next to the suspended rule and select **Delete rule**.
+2. Click the three-dot menu next to the suspended rule and select **Delete rule**.
 
-3\. Click **Yes, delete** to confirm.
+3. Click **Yes, delete** to confirm.
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a rule that overrides CDN resource settings for matching file paths. A CDN resource can have up to five rules. The CDN resource ID is visible in the Customer Portal under **CDN** → **CDN Resources**, or from the [List CDN resources](/api-reference/cdn/cdn-resources/list-cdn-resources) API call.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Create a rule
+
+<p>Match files with a regular expression. `ruleType` `0` requires a pattern that starts with `^/` or `/`. If a URI matches more than one rule, the rule with the lower `weight` is applied first. Options omitted from the rule stay inherited from the CDN resource. A Customer Portal template pre-fills these fields — send the same values in the create request.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Rule label |
+| `rule` | Yes | URI pattern or regular expression, without a domain |
+| `ruleType` | Yes | `0` for a regular expression that starts with `^/` or `/` |
+| `active` | No | `true` applies the rule. Defaults to `true` |
+| `weight` | No | Execution order, lowest first. Defaults to `1` |
+| `originGroup` | No | Origin group ID. When omitted, the resource origin group is used |
+| `options` | No | Option overrides for matching files |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rule = client.cdn.cdn_resources.rules.create(
+        12345,  # CDN resource ID
+        name="no-cache-static",
+        rule=r"^/.*\.(jpg|css|js)$",
+        rule_type=0,
+        active=True,
+        options={
+            "edge_cache_settings": {"enabled": True, "value": "0s"},
+        },
+    )
+    print(rule.id, rule.name, rule.rule, rule.active)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, 12345, cdn.CDNResourceRuleNewParams{
+            Name:     "no-cache-static",
+            Rule:     `^/.*\.(jpg|css|js)$`,
+            RuleType: 0,
+            Active:   gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Name, rule.Rule, rule.Active)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "no-cache-static",
+        "rule": "^/.*\\.(jpg|css|js)$",
+        "ruleType": 0,
+        "active": true
+      }'
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "no-cache-static",
+      "rule": "^/.*\\.(jpg|css|js)$",
+      "ruleType": 0,
+      "active": true,
+      "weight": 1
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List and get rules
+
+<p>List every rule on a CDN resource, or retrieve one rule by ID.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for rule in client.cdn.cdn_resources.rules.list(12345, limit=10):
+        print(rule.id, rule.name, rule.active, rule.rule)
+
+    rule = client.cdn.cdn_resources.rules.get(10001, resource_id=12345)
+    print(rule.id, rule.rule, rule.weight)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.CDNResources.Rules.List(ctx, 12345, cdn.CDNResourceRuleListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, rule := range page.Results {
+            fmt.Println(rule.ID, rule.Name, rule.Active)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.Get(ctx, 10001, cdn.CDNResourceRuleGetParams{
+            ResourceID: 12345,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Rule)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules?limit=10" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X GET "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A list request returns a paginated object:</p>
+
+    ```json
+    {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 10001,
+          "name": "no-cache-static",
+          "active": true,
+          "rule": "^/.*\\.(jpg|css|js)$"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Suspend or activate a rule
+
+<p>Set `active` to `false` to suspend a rule. A suspended rule does not apply to matching files, but still counts toward the five-rule limit. Set `active` to `true` to apply the rule again.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rule = client.cdn.cdn_resources.rules.update(
+        10001,
+        resource_id=12345,
+        active=False,
+    )
+    print(rule.id, rule.active)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rule, err := client.CDN.CDNResources.Rules.Update(ctx, 10001, cdn.CDNResourceRuleUpdateParams{
+            ResourceID: 12345,
+            Active:     gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Active)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"active": false}'
+    ```
+
+    <p>The API returns HTTP 200. `active` is `false` when the rule is suspended:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "no-cache-static",
+      "active": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete a rule
+
+<p>Deactivate the rule first. A delete request against an active rule returns HTTP 400. After the rule is suspended, delete it. A successful delete returns HTTP 204.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.cdn_resources.rules.update(
+        10001,
+        resource_id=12345,
+        active=False,
+    )
+    client.cdn.cdn_resources.rules.delete(10001, resource_id=12345)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        _, err := client.CDN.CDNResources.Rules.Update(ctx, 10001, cdn.CDNResourceRuleUpdateParams{
+            ResourceID: 12345,
+            Active:     gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        if err := client.CDN.CDNResources.Rules.Delete(ctx, 10001, cdn.CDNResourceRuleDeleteParams{
+            ResourceID: 12345,
+        }); err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"active": false}'
+
+    curl -X DELETE "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful delete returns HTTP 204 with an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

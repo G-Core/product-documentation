@@ -1,24 +1,29 @@
 ---
 title: "Origin groups for CDN resources"
 sidebarTitle: "Origin group"
-ai-navigation: Create and attach origin groups with URL, S3 storage, or FastEdge HTTP application origins and configure load balancing and failover.
+ai-navigation: Create, attach, update, and delete CDN origin groups via the Customer Portal or REST API.
 ---
 
-Origin groups define where the CDN fetches content from for a CDN resource. Origin groups support load balancing and failover across multiple origins.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Origin groups define where the CDN fetches content from for a CDN resource. Origin groups support load balancing and failover across multiple origins.</p>
 
 ## Origin group overview
 
-One origin group can contain a single website, private bucket, or FastEdge HTTP application, or multiple origins.
+<p>One origin group can contain a single website, private bucket, or FastEdge HTTP application, or multiple origins.</p>
 
-With multiple active origins, the CDN distributes requests using a round-robin algorithm. Failover and retry behavior — including when to activate backup origins and which failure conditions trigger a retry — depend on origin roles and the **Use next upstream** option. See [Available options](#available-options) for details.
+<p>With multiple active origins, the CDN distributes requests using a round-robin algorithm. Failover and retry behavior — including when to activate backup origins and which failure conditions trigger a retry — depend on origin roles and the **Use next upstream** option. See [Available options](#available-options) for details.</p>
 
 ## Origin group configuration
 
-Add one or more origins to the group. For URL and S3 origins, **Host header override** is optional; when left empty, the CDN uses the **Host header** value from the CDN resource settings.
+<p>Add one or more origins to the group. For URL and S3 origins, **Host header override** is optional; when left empty, the CDN uses the **Host header** value from the CDN resource settings.</p>
 
 ### S3 storage
 
-Select **Amazon** for Amazon S3 or **Other** for another S3-compatible storage service.
+<p>Select **Amazon** for Amazon S3 or **Other** for another S3-compatible storage service.</p>
 
 <Warning>
 Without Origin Shielding, each cache miss on a CDN node sends a request directly to the S3 bucket. At scale, this can overload the storage cluster — enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) to consolidate edge cache misses through a shared shield cache and reduce requests to the S3 origin.
@@ -26,7 +31,7 @@ Without Origin Shielding, each cache miss on a CDN node sends a request directly
 
 #### Amazon S3 storage
 
-Amazon S3 requires an access key ID and secret access key; the [AWS&nbsp;guide](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html) explains where to find both values.
+<p>Amazon S3 requires an access key ID and secret access key; the [AWS&nbsp;guide](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html) explains where to find both values.</p>
 
 <Steps>
   <Step title="Select Amazon S3">
@@ -47,7 +52,7 @@ Amazon S3 requires an access key ID and secret access key; the [AWS&nbsp;guide](
 
 #### Other S3 storage
 
-For Gcore Object Storage, select **Other**, copy the storage hostname from **Details**, and create the required credentials under [Access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys).
+<p>For Gcore Object Storage, select **Other**, copy the storage hostname from **Details**, and create the required credentials under [Access&nbsp;keys](/storage/manage-object-storage/manage-s3-access-keys).</p>
 
 <Steps>
   <Step title="Select another S3 service">
@@ -69,7 +74,7 @@ For Gcore Object Storage, select **Other**, copy the storage hostname from **Det
 
 ### URL origin
 
-Use a URL origin for a website or IP address that does not require S3 authentication.
+<p>Use a URL origin for a website or IP address that does not require S3 authentication.</p>
 
 <Steps>
   <Step title="Select the origin type">
@@ -91,7 +96,7 @@ Use a URL origin for a website or IP address that does not require S3 authentica
 
 ### FastEdge HTTP application
 
-A FastEdge HTTP application can serve as a native CDN origin. Requests reach the application directly on the same edge node, which avoids duplicate response headers, preserves client GeoIP data, and reduces latency.
+<p>A FastEdge HTTP application can serve as a native CDN origin. Requests reach the application directly on the same edge node, which avoids duplicate response headers, preserves client GeoIP data, and reduces latency.</p>
 
 <Info>
 Because the FastEdge application runs on the same edge node as the CDN, the upstream address in CDN logs and metrics can appear as that node's IP rather than a remote origin address. This applies only when the origin type is a FastEdge HTTP application, not when a FastEdge hook is attached to a regular CDN origin.
@@ -112,7 +117,7 @@ Because the FastEdge application runs on the same edge node as the CDN, the upst
 
 #### Multiple-origin configuration
 
-For groups with multiple origins, configure their availability, roles, and failover behavior:
+<p>For groups with multiple origins, configure their availability, roles, and failover behavior:</p>
 
 - Enable or disable each origin.
 - Assign active and backup origins.
@@ -122,7 +127,7 @@ For groups with multiple origins, configure their availability, roles, and failo
 
 #### Origin availability
 
-Each origin has the **On** toggle enabled by default, so the CDN can pull content from it. Disable the toggle to remove the origin from this group's load balancing; requests stop reaching it within 15 minutes.
+<p>Each origin has the **On** toggle enabled by default, so the CDN can pull content from it. Disable the toggle to remove the origin from this group's load balancing; requests stop reaching it within 15 minutes.</p>
 
 <Info>
 At least one active origin must remain enabled.
@@ -130,13 +135,13 @@ At least one active origin must remain enabled.
 
 #### Active and backup origins
 
-New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when the active origins meet the applicable failover conditions.
+<p>New origins receive the **Active** status by default and participate in round-robin load balancing. Select **Use origin as a backup** to remove an origin from regular balancing and use it when the active origins meet the applicable failover conditions.</p>
 
 #### Use next upstream
 
-Enable **Use next upstream** only when every origin contains the exact same content. When enabled via the Customer Portal, the CDN retries the request on the next available origin after connection errors or timeouts. Additional retry conditions — such as specific HTTP response codes — can be configured through the [Create origin group API](https://docs.gcore.com/api-reference/cdn/origins/create-origin-group) using the `proxy_next_upstream` array. If no origin is available, the CDN serves the last origin's response.
+<p>Enable **Use next upstream** only when every origin contains the exact same content. When enabled via the Customer Portal, the CDN retries the request on the next available origin after connection errors or timeouts. Additional retry conditions — such as specific HTTP response codes — can be configured through the [Create origin group API](https://docs.gcore.com/api-reference/cdn/origins/create-origin-group) using the `proxy_next_upstream` array. If no origin is available, the CDN serves the last origin's response.</p>
 
-The resulting request behavior depends on the origin roles and option state:
+<p>The resulting request behavior depends on the origin roles and option state:</p>
 
 | Case | CDN request behavior |
 | --- | --- |
@@ -147,7 +152,7 @@ The resulting request behavior depends on the origin roles and option state:
 
 ## Origin group creation
 
-Origin groups can be created directly from CDN resource settings or from the **Origin groups** page.
+<p>Origin groups can be created directly from CDN resource settings or from the **Origin groups** page.</p>
 
 ### From resource settings
 
@@ -180,7 +185,7 @@ Origin groups can be created directly from CDN resource settings or from the **O
 
 ### From the Origin groups page
 
-Groups created on the **Origin groups** page must be attached to a CDN resource after creation. See [Origin group attachment](#origin-group-attachment).
+<p>Groups created on the **Origin groups** page must be attached to a CDN resource after creation. See [Origin group attachment](#origin-group-attachment).</p>
 
 <Steps>
   <Step title="Open the origin groups page">
@@ -208,7 +213,7 @@ Groups created on the **Origin groups** page must be attached to a CDN resource 
 Changing a resource's origin group does not update its Host header. Update the [Host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header#how-to-manage-the-host-header) separately.
 </Info>
 
-Attach a group created from the **Origin groups** page to its CDN resource.
+<p>Attach a group created from the **Origin groups** page to its CDN resource.</p>
 
 <Steps>
   <Step title="Open the resource settings">
@@ -223,3 +228,401 @@ Attach a group created from the **Origin groups** page to its CDN resource.
     Click **Save changes**.
   </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a URL origin group, attach it to a CDN resource, then update or delete the group. The origin domain must resolve in public DNS.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create an origin group
+
+<p>Create a group with one or more URL origins. The CDN pulls content from enabled origins and can fail over to a backup origin when `backup` is `true`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Unique group label |
+| `sources[].source` | Yes | Origin domain or IP without `http://` or `https://` |
+| `sources[].enabled` | No | Whether the CDN can pull from this origin. Defaults to `true` |
+| `sources[].backup` | No | `true` keeps the origin out of regular balancing until active origins fail |
+| `use_next` | No | Retry on the next origin after errors listed in `proxy_next_upstream` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    og = client.cdn.origin_groups.create(
+        name="my-origin-group",
+        sources=[{"source": "origin.example.com", "enabled": True}],
+        use_next=True,
+        proxy_next_upstream=["error", "timeout"],
+    )
+    print(og.id, og.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        og, err := client.CDN.OriginGroups.New(ctx, cdn.OriginGroupNewParams{
+            OfNoneAuth: &cdn.OriginGroupNewParamsBodyNoneAuth{
+                Name: "my-origin-group",
+                Sources: []cdn.OriginGroupNewParamsBodyNoneAuthSourceUnion{
+                    {OfHostSource: &cdn.OriginGroupNewParamsBodyNoneAuthSourceHostSource{
+                        Source:  "origin.example.com",
+                        Enabled: gcore.Bool(true),
+                    }},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(og.ID, og.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/origin_groups" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "sources": [
+          {"source": "origin.example.com", "enabled": true}
+        ],
+        "use_next": true,
+        "proxy_next_upstream": ["error", "timeout"]
+      }'
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "my-origin-group",
+      "sources": [
+        {
+          "source": "origin.example.com",
+          "backup": false,
+          "enabled": true
+        }
+      ],
+      "use_next": true,
+      "proxy_next_upstream": ["error", "timeout"],
+      "auth_type": "none",
+      "has_related_resources": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List and get origin groups
+
+<p>List groups by name, or retrieve one group by ID. A group with `has_related_resources` set to `true` is already attached to at least one CDN resource.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for og in client.cdn.origin_groups.list(name="my-origin-group", limit=10):
+        print(og.id, og.name, og.has_related_resources)
+
+    og = client.cdn.origin_groups.get(10001)
+    print(og.id, [(s.source, s.enabled, s.backup) for s in og.sources])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.OriginGroups.List(ctx, cdn.OriginGroupListParams{
+            Name: gcore.String("my-origin-group"),
+        })
+        if err != nil {
+            panic(err)
+        }
+        for _, og := range page.Results {
+            fmt.Println(og.ID, og.Name, og.HasRelatedResources)
+        }
+
+        og, err := client.CDN.OriginGroups.Get(ctx, 10001)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(og.ID, og.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cdn/origin_groups?name=my-origin-group&limit=10" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X GET "https://api.gcore.com/cdn/origin_groups/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A list request returns a paginated object:</p>
+
+    ```json
+    {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 10001,
+          "name": "my-origin-group",
+          "has_related_resources": false
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update an origin group
+
+<p>Change the group name, origin list, backup roles, or retry behavior. The update replaces the `sources` array sent in the request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    og = client.cdn.origin_groups.update(
+        10001,
+        name="my-origin-group",
+        sources=[
+            {"source": "origin.example.com", "enabled": True, "backup": False},
+            {"source": "backup.example.com", "enabled": True, "backup": True},
+        ],
+        use_next=True,
+    )
+    print([(s.source, s.backup) for s in og.sources])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        og, err := client.CDN.OriginGroups.Update(ctx, 10001, cdn.OriginGroupUpdateParams{
+            OfNoneAuth: &cdn.OriginGroupUpdateParamsBodyNoneAuth{
+                Name:    "my-origin-group",
+                UseNext: gcore.Bool(true),
+                Sources: []cdn.OriginGroupUpdateParamsBodyNoneAuthSourceUnion{
+                    {OfHostSource: &cdn.OriginGroupUpdateParamsBodyNoneAuthSourceHostSource{
+                        Source:  "origin.example.com",
+                        Enabled: gcore.Bool(true),
+                        Backup:  gcore.Bool(false),
+                    }},
+                    {OfHostSource: &cdn.OriginGroupUpdateParamsBodyNoneAuthSourceHostSource{
+                        Source:  "backup.example.com",
+                        Enabled: gcore.Bool(true),
+                        Backup:  gcore.Bool(true),
+                    }},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(og.ID, len(og.Sources), og.UseNext)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/origin_groups/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-origin-group",
+        "use_next": true,
+        "sources": [
+          {"source": "origin.example.com", "enabled": true, "backup": false},
+          {"source": "backup.example.com", "enabled": true, "backup": true}
+        ]
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with the updated group:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "my-origin-group",
+      "sources": [
+        {"source": "origin.example.com", "backup": false, "enabled": true},
+        {"source": "backup.example.com", "backup": true, "enabled": true}
+      ],
+      "use_next": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Attach an origin group
+
+<p>Point a CDN resource at the group. Changing `originGroup` does not change the resource Host header.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        resource_id=12345,
+        origin_group=10001,
+    )
+    print(resource.id, resource.origin_group)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            OriginGroup: gcore.Int(10001),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.OriginGroup)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/12345" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"originGroup": 10001}'
+    ```
+
+    <p>The API returns HTTP 200. The `originGroup` field is the attached group ID:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "cname": "cdn.example.com",
+      "originGroup": 10001
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete an origin group
+
+<p>Delete a group that is not attached to a CDN resource. Detach it first, or delete the related resource, then delete the group. A successful delete returns HTTP 204.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.origin_groups.delete(10001)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        if err := client.CDN.OriginGroups.Delete(ctx, 10001); err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cdn/origin_groups/10001" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>A successful request returns HTTP 204 with an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

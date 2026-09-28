@@ -1,16 +1,23 @@
 ---
 title: CDN content prefetching
 sidebarTitle: Prefetch
-ai-navigation: Upload files to CDN cache from the Customer Portal by entering paths without a domain.
+ai-navigation: Prefetch files into CDN cache via the Customer Portal or REST API so edge locations can serve them before the first visitor request.
 ---
 
-Prefetch requests files from the origin and stores them in CDN cache before visitors request them, so edge locations can serve the content without fetching it from the origin on the first request. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is required.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Prefetch requests files from the origin and stores them in CDN cache before visitors request them, so edge locations can serve the content without fetching it from the origin on the first request. A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is required.</p>
 
 <Warning>
 Prefetch causes CDN servers to request the listed files from the origin, which increases origin load and traffic.
 </Warning>
 
-Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each request is limited to 100 paths, and one prefetch request is allowed per CDN resource per minute. To prefetch more than 100 files, divide the paths into batches of up to 100 and wait at least 1 minute between batches for the same CDN resource.
+<p>Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each request is limited to 100 paths, and one prefetch request is allowed per CDN resource per minute. To prefetch more than 100 files, divide the paths into batches of up to 100 and wait at least 1 minute between batches for the same CDN resource.</p>
+
+## Prefetch request
 
 <Steps>
   <Step title="Open Prefetch">
@@ -43,6 +50,103 @@ Prefetch is recommended for files larger than 200 MB and smaller than 5 GB. Each
   </Step>
 </Steps>
 
-To replace files that are already in cache, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) those files, then prefetch.
+<p>To replace files that are already in cache, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) those files, then prefetch.</p>
 
-Prefetch requests are not retained in a history log and do not appear in [purge history](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all#purge-history), which contains only cache-purge operations.
+<p>Prefetch requests are not retained in a history log and do not appear in [purge history](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all#purge-history), which contains only cache-purge operations.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Prefetch pulls listed files from the origin into CDN cache before visitors request them. A CDN resource ID is required — it is visible in the Customer Portal under **CDN** → **CDN Resources**, or from the [List CDN resources](/api-reference/cdn/cdn-resources/list-cdn-resources) API call.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+<Warning>
+Prefetch causes CDN servers to request the listed files from the origin, which increases origin load and traffic. One prefetch request is allowed per CDN resource per minute. One request is limited to 100 paths.
+</Warning>
+
+## Prefetch files
+
+<p>Send paths without a protocol or domain. Each path must start with `/`. Prefetch has no history endpoint — only purge operations appear in purge history. To replace content that is already cached, [purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) those paths first, then prefetch.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cdn.cdn_resources.prefetch(
+        12345,  # CDN resource ID
+        paths=["/video/intro.mp4", "/images/hero.jpg"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        err := client.CDN.CDNResources.Prefetch(ctx, 12345, cdn.CDNResourcePrefetchParams{
+            Paths: []string{"/video/intro.mp4", "/images/hero.jpg"},
+        })
+        if err != nil {
+            fmt.Printf("error: %v\n", err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/prefetch" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "paths": [
+          "/video/intro.mp4",
+          "/images/hero.jpg"
+        ]
+      }'
+    ```
+
+    <p>A successful request returns HTTP 201 with the accepted paths:</p>
+
+    ```json
+    {
+      "paths": ["/video/intro.mp4", "/images/hero.jpg"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Confirm the files are cached
+
+<p>Prefetch processing time depends on file size and count. After the request completes, send a GET to a listed path and inspect the `Cache` response header.</p>
+
+```bash
+curl -sS -D - -o /dev/null https://cdn.example.com/video/intro.mp4
+```
+
+- `Cache: HIT` means the file was already cached at that edge location. To attribute the hit to prefetch, test a new URL or purge the file before prefetching.
+- `Cache: MISS` on the first request followed by `Cache: HIT` on the next means that edge filled the cache from this GET, not from prefetch.
+
+</MethodSection>
+</MethodSwitch>

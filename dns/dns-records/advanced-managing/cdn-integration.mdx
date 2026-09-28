@@ -1,7 +1,7 @@
 ---
 title: Configure CDN integration
 sidebarTitle: CDN integration
-ai-navigation: Configure A or AAAA DNS records in Gcore Managed DNS to route directly to Gcore CDN by linking a record to a CDN resource via the Customer Portal or REST API.
+ai-navigation: Configure A or AAAA DNS records in Gcore Managed DNS to route directly to Gcore CDN by linking a record to a CDN resource via the Portal, API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -154,7 +154,7 @@ curl -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
 
 ## Disable CDN integration
 
-<p>Remove `geodns_link` from the RRset metadata. If the RRset has other metadata fields (such as `failover` configuration), include them in the request body while omitting only `geodns_link`. The record reverts to standard DNS resolution.</p>
+<p>Remove `geodns_link` from the RRset metadata. If the RRset has other metadata fields — `failover`, `notes`, or similar — include them in the request body while omitting only `geodns_link`. The record reverts to standard DNS resolution.</p>
 
 <Warning>
 `replace` (PUT) overwrites the entire RRset. Preserve the existing resource records and TTL — retrieve them first with `GET /dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A`.
@@ -236,6 +236,69 @@ curl -X PUT "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" \
 ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Link A or AAAA records to a Gcore CDN resource using the `gcore_dns_zone_rrset` resource from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The link is set via `meta.geodns_link` at the RRset level — its value is the CNAME of the target CDN resource. CDN integration applies to A and AAAA records only.</p>
+
+## Enable CDN integration
+
+<p>Set `meta.geodns_link` to the delivery domain of the CDN resource. Find it in **CDN** → **Resources** in the portal.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+resource "gcore_dns_zone_rrset" "app" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 600
+
+  meta = {
+    geodns_link = "cdn-cname.gcdn.co"  # delivery domain of the CDN resource
+  }
+
+  resource_records = [
+    { content = ["1.2.3.4"] },  # keep the existing record IP(s)
+  ]
+  # terraform import gcore_dns_zone_rrset.app yourdomain.com/yourdomain.com/A
+}
+```
+
+## Disable CDN integration
+
+<p>Remove `geodns_link` by setting `meta` to an empty map. Terraform applies the change in place — the record reverts to standard DNS resolution.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "app" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 600
+
+  meta = {}  # clears geodns_link; include other metadata fields if present
+
+  resource_records = [
+    { content = ["1.2.3.4"] },
+  ]
+}
+```
+
+## Delete a record
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "app" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

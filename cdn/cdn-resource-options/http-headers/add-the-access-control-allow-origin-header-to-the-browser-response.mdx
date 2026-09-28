@@ -1,52 +1,59 @@
 ---
 title: Add the Access-Control-Allow-Origin header to the browser response
 sidebarTitle: Activate CORS
-ai-navigation: Configure CORS headers in Gcore CDN via resource settings, rules, or origin server to allow cross-origin requests from specific domains or all origins.
+ai-navigation: Add Access-Control-Allow-Origin in the Customer Portal or with the REST API.
 ---
 
-CORS (Cross-Origin Resource Sharing) is a browser security mechanism. When a browser makes a cross-origin request, it checks the `Access-Control-Allow-Origin` response header to decide whether the calling page is permitted to read the response. Without this header, the browser blocks cross-origin access — even if the server returned a `200 OK` with the full content.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Consider a user visiting `http://site-a.com` who requests an image hosted at `http://cdn.site-b.com/image.jpg`. The browser sends a request to `http://cdn.site-b.com/`:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>CORS (Cross-Origin Resource Sharing) is a browser security mechanism. When a browser makes a cross-origin request, it checks `Access-Control-Allow-Origin` to decide whether the calling page can read the response, and blocks access without a permitting header even if the server returned `200 OK` with the full content.</p>
+
+<p>Consider a user visiting `http://site-a.com` who requests an image hosted at `http://cdn.site-b.com/image.jpg`. The browser sends a request to `http://cdn.site-b.com/`:</p>
 
 ```
 GET /image.jpg HTTP/1.1
 Host: cdn.site-b.com
-User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.1b3pre) Gecko/20081130 Minefield/3.1b3pre
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-Accept-Language: en-us,en;q=0.5
-Accept-Encoding: gzip,deflate
-Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
-Connection: keep-alive
-Referer: http://site-a.com/examples/access-control/test.html
 Origin: http://site-a.com
 ```
 
-The `Origin` header tells the server which site sent the request. The `http://cdn.site-b.com` server uses this value to decide whether to include `Access-Control-Allow-Origin` in the response.
+<p>The `Origin` header tells the server which site sent the request. The `http://cdn.site-b.com` server uses this value to decide whether to include `Access-Control-Allow-Origin` in the response.</p>
 
 - If the header is present and permits `http://site-a.com`, the browser allows the page to read the response and the image is displayed.
 - If the header is absent or does not permit `http://site-a.com`, the browser blocks access to the response — even though the server returned a `200 OK` with the image.
 
-The Gcore CDN CORS header support feature adds the `Access-Control-Allow-Origin` header to browser responses. Use it to protect content from use on third-party sites or to prevent errors — _XMLHttpRequest cannot load http://domain.com_ and _No `Access-Control-Allow-Origin` header is present on the requested resource_ — that appear when web fonts load in Firefox or Internet Explorer from CDN servers.
+<p>Gcore CDN adds the `Access-Control-Allow-Origin` header to browser responses, which controls which origins can read the response. Without the header, the browser reports _XMLHttpRequest cannot load http://domain.com_ and _No `Access-Control-Allow-Origin` header is present on the requested resource_.</p>
 
 ## Configure CORS header support
 
-There are three methods to configure CORS header support: in the resource settings, via rule creation, and on the origin server.
+<p>Add the header in one of three places:</p>
+
+- Resource settings apply it to all files delivered over the CDN.
+- A rule applies it only to particular files.
+- The origin server sends `Access-Control-Allow-Origin` on its own response.
 
 ### Configure CORS in the resource settings
 
-Use this method to apply the configuration to all files delivered over the CDN.
+<p>Resource settings add the header to every file on the CDN resource.</p>
 
-1. Navigate to **CDN** > **CDN resources** and click the CDN resource to configure.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CDN resource to configure.
 
-<Frame>![CDN resources list showing active CDN resources](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image1.png)</Frame>
+    <Frame>![CDN resources list showing active CDN resources](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image1.png)</Frame>
+  </Step>
+  <Step title="Open CORS header support">
+    In the resource settings panel, click **HTTP headers** to expand the section, then click **CORS header support**.
 
-2. In the resource settings panel, click **HTTP headers** to expand the section, then click **CORS header support**.
-
-<Frame>![CDN resource Options tab with the HTTP headers section expanded in the left panel](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image2.png)</Frame>
-
-3. Enable the **CORS header support** toggle.
-
-4. Configure one of the three available options:
+    <Frame>![CDN resource Options tab with the HTTP headers section expanded in the left panel](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image2.png)</Frame>
+  </Step>
+  <Step title="Enable the toggle">
+    Enable the **CORS header support** toggle.
+  </Step>
+  <Step title="Select an origin mode">
+    Select one of three options:
 
 <AccordionGroup>
   <Accordion title="*, for all domains">
@@ -64,7 +71,7 @@ Use this method to apply the configuration to all files delivered over the CDN.
     ```
   </Accordion>
   <Accordion title="'$http_origin' if an origin is listed below">
-    Enter the domain name from which cross-origin requests are permitted — `site-a.com` is an example. Up to 20 domains are supported. When CDN servers receive a request, they check the value of the `Origin` header to determine which site the request came from.
+    Enter a permitted domain name — `site-a.com`. A resource accepts up to 20 domain names. When CDN servers receive a request, they check the value of the `Origin` header to determine which site the request came from.
 
     - If it matches any of the listed domains, the CDN includes `Access-Control-Allow-Origin` in the response set to the matched origin, and the browser allows the page to read the response:
 
@@ -83,7 +90,7 @@ Use this method to apply the configuration to all files delivered over the CDN.
 
   </Accordion>
   <Accordion title="'$http_origin', for all domains">
-    Similar to the first option, but use it when the `*` value is unsuitable — for example, when requests include credentials. The CDN echoes the request's `Origin` value in the `Access-Control-Allow-Origin` header, allowing browsers from any origin to read the response. If a request comes from `http://site-b.com`, the response looks as follows:
+    Similar to the first option, but use it when the `*` value is unsuitable — when a request includes credentials. The CDN echoes the request `Origin` value in `Access-Control-Allow-Origin`, so a browser on any origin can read the response. A request from `http://site-b.com` produces this response:
 
     ```
     HTTP/1.1 200 OK
@@ -97,62 +104,59 @@ Use this method to apply the configuration to all files delivered over the CDN.
     ```
   </Accordion>
 </AccordionGroup>
-
-5. (Optional) Enable **Always add the header to response from CDN regardless of response code** to add the `Access-Control-Allow-Origin` header to responses with any status code, including those when content is unavailable. When left disabled, the header is added only to responses with specific status codes.
-
-6. Click **Save changes**.
+  </Step>
+  <Step title="Set the status-code behavior">
+    (Optional) Enable **Always add the header to response from CDN regardless of response code** to add `Access-Control-Allow-Origin` on every status code, including a response for unavailable content. With the toggle off, the header is added only on status 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308.
+  </Step>
+  <Step title="Save the resource">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 ### Configure CORS via rule creation
 
-Use this method to apply the configuration only to particular files.
+<p>A rule limits the header to particular files.</p>
 
-1. Navigate to **CDN** > **CDN resources** and click the CDN resource to configure.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the Customer Portal, navigate to **CDN** > **CDN resources** and click the CDN resource to configure.
 
-<Frame>![CDN resources list showing active CDN resources](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image1.png)</Frame>
+    <Frame>![CDN resources list showing active CDN resources](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image1.png)</Frame>
+  </Step>
+  <Step title="Create a blank rule">
+    Open the **RULES** tab, click **Create rule**, and select **Create blank rule**.
 
-2. Open the **RULES** tab, click **Create rule**, and select **Create blank rule** from the list.
+    <Frame>![RULES tab showing the Create rule button and an empty rules list](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image3.png)</Frame>
+  </Step>
+  <Step title="Set the rule path">
+    Set the rule name and the file path in [create&nbsp;a&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files).
+  </Step>
+  <Step title="Add CORS header support">
+    Click **Add option**, select **CORS header support**, and click **Close**.
 
-<Frame>![RULES tab showing the Create rule button and an empty rules list](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image3.png)</Frame>
-
-3. Specify the settings (rule name and path to files) according to the [create&nbsp;a&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) guide.
-
-4. Click **Add option**, select **CORS header support**, and click **Close**.
-
-<Frame>![Create rule form with CORS header support added under Options](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image4.png)</Frame>
-
-5. Configure the option. When the option is enabled, the `Access-Control-Allow-Origin` header is added. When the option is added but left disabled, the header is not added.
-
-6. Click **Create rule** to save the changes.
+    <Frame>![Create rule form with CORS header support added under Options](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image4.png)</Frame>
+  </Step>
+  <Step title="Set the header behavior">
+    Configure the option. An enabled option adds `Access-Control-Allow-Origin`. An option that is added and left disabled does not add the header.
+  </Step>
+  <Step title="Save the rule">
+    Click **Create rule**.
+  </Step>
+</Steps>
 
 ### Configure CORS on the origin server
 
-The following examples show how to set up CORS for Apache and Nginx web servers.
-
-**Apache:**
+<p>Apache sets `*` on images only when the request includes `Origin`, and sets `*` on fonts, CSS, and JavaScript for every request.</p>
 
 ```
-# ----------------------------------------------------------------------
-# CORS-enabled images (@crossorigin)
-# ----------------------------------------------------------------------
-# Send CORS headers if browsers request them; enabled by default for images.
-# developer.mozilla.org/en/CORS_Enabled_Image
-# blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
-# hacks.mozilla.org/2011/11/using-cors-to-load-webgl-textures-from-cross-domain-images/
-# wiki.mozilla.org/Security/Reviews/crossoriginAttribute
 <IfModule mod_setenvif.c>
 <IfModule mod_headers.c>
-# mod_headers, y u no match by Content-Type?!
 <FilesMatch "\.(gif|png|jpe?g|svg|svgz|ico|webp)$">
 SetEnvIf Origin ":" IS_CORS
 Header set Access-Control-Allow-Origin "*" env=IS_CORS
 </FilesMatch>
 </IfModule>
 </IfModule>
-# ----------------------------------------------------------------------
-# Webfont access
-# ----------------------------------------------------------------------
-# Allow access from all domains for webfonts.
-# Alternatively you could only whitelist your # subdomains like "subdomain.example.com".
 <IfModule mod_headers.c>
 <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font.css|css|js)$">
 Header set Access-Control-Allow-Origin "*"
@@ -160,7 +164,7 @@ Header set Access-Control-Allow-Origin "*"
 </IfModule>
 ```
 
-**Nginx:**
+<p>Nginx sets `*` on fonts, CSS, and JavaScript:</p>
 
 ```
 location ~ \.(ttf|ttc|otf|eot|woff|woff2|font.css|css|js)$ {
@@ -170,56 +174,664 @@ add_header Access-Control-Allow-Origin "*";
 
 ## Check CORS
 
-Clear the CDN resource or file cache according to the [clear&nbsp;CDN&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) guide, then use one of the methods below.
+<p>Clear the CDN resource or file cache in [clear&nbsp;CDN&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all), then confirm the header with cURL or browser DevTools.</p>
 
 ### Check CORS through cURL
 
-1. Open a terminal on macOS or Command Prompt on Windows.
+<p>Send the file URL with an `Origin` header. That header is required for the `$http_origin` modes, because without it the CDN omits `Access-Control-Allow-Origin` even when the option is set, while the `*` mode returns the header whether or not `Origin` is present.</p>
 
-2. Run the following command, substituting the file URL and the origin of your website:
+<Steps>
+  <Step title="Request the file">
+    Run this command with the file URL and the site origin:
 
-```sh
-curl -I -H "Origin: https://site-a.com" https://cdn.testdomain.com/assets/image.jpg
-```
+    ```sh
+    curl -I -H "Origin: https://site-a.com" https://cdn.testdomain.com/assets/image.jpg
+    ```
+  </Step>
+  <Step title="Confirm the header value">
+    In the output, confirm that `Access-Control-Allow-Origin` is present and the value is `*` or the origin of the request.
 
-The `-H "Origin: ..."` flag simulates a browser cross-origin request. It is required for the `$http_origin`-based modes — without it, the CDN omits the `Access-Control-Allow-Origin` header even when the configuration is correct. For the `*` mode the header is returned regardless of whether `Origin` is present.
-
-3. In the output, confirm the `Access-Control-Allow-Origin` header appears. If it is present, the configuration was successful.
-
-```
-HTTP/1.1 200 OK
-Server: nginx/1.13.1
-Date: Fri, 24 Feb 2023 12:54:24 GMT
-Content-Type: image/jpeg
-Content-Length: 124024
-Connection: keep-alive
-X-Image-Generated: 29
-X-Image-Meta: 1024x768
-X-Image-Read: 71
-Expires: Fr, 10 March 2023 12:51:43 GMT
-Cache-Control: max-age=15552000
-Access-Control-Allow-Origin: *
-Last-Modified: Sun, 29 Jan 2023 12:00:00 GMT
-Cache-Control: max-age=315360000, public
-Cache: HIT
-X-Cached-Since: 2022-12-09T12:51:43+00:00
-X-ID: m9-up-e245
-```
+    ```
+    HTTP/1.1 200 OK
+    Server: nginx/1.13.1
+    Date: Fri, 24 Feb 2023 12:54:24 GMT
+    Content-Type: image/jpeg
+    Content-Length: 124024
+    Connection: keep-alive
+    X-Image-Generated: 29
+    X-Image-Meta: 1024x768
+    X-Image-Read: 71
+    Expires: Fr, 10 March 2023 12:51:43 GMT
+    Cache-Control: max-age=15552000
+    Access-Control-Allow-Origin: *
+    Last-Modified: Sun, 29 Jan 2023 12:00:00 GMT
+    Cache-Control: max-age=315360000, public
+    Cache: HIT
+    X-Cached-Since: 2022-12-09T12:51:43+00:00
+    X-ID: m9-up-e245
+    ```
+  </Step>
+</Steps>
 
 ### Check CORS with DevTools in a browser
 
-1. Open a browser — Google Chrome is recommended.
+<p>Browser DevTools shows the same header on a CDN file in the Network panel.</p>
 
-2. Navigate to the website.
+<Steps>
+  <Step title="Open the Network panel">
+    1. Open the site in Google Chrome.
+    2. Right-click the page and select **Inspect**.
+    3. Select the **Network** tab.
+    4. Refresh the page.
+  </Step>
+  <Step title="Confirm the header value">
+    Select a CDN-delivered JPEG, PNG, or CSS file. In the **Headers** tab, confirm that `Access-Control-Allow-Origin` is present and the value is `*` or the origin of the request.
 
-3. Right-click and select **Inspect** to open DevTools.
+    <Frame>![DevTools Network tab showing response headers with Access-Control-Allow-Origin header](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image5.png)</Frame>
+  </Step>
+</Steps>
 
-4. Select the **Network** tab.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-5. Refresh the page.
+<p>For a page to read a file from another site, the response must include an `Access-Control-Allow-Origin` header that permits the requesting origin. The `cors` option stores those origins on the CDN resource, and Gcore CDN adds the header to the response the browser receives.</p>
 
-6. Select any CDN-delivered file — a JPEG, PNG, or CSS file.
+<p>An origin web server can send the same header on its own response. A resource rule stores `cors` for one path, while the resource option applies it to every file.</p>
 
-7. In the **Headers** tab on the right, check whether the `Access-Control-Allow-Origin` header is present. If the header appears, the configuration was successful.
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
 
-<Frame>![DevTools Network tab showing response headers with Access-Control-Allow-Origin header](/images/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/add-the-access-control-allow-origin-header-to-the-browser-response-image5.png)</Frame>
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Allow every origin
+
+<p>Set `value` to `["*"]`. The response header is `Access-Control-Allow-Origin: *`, so a browser on any site can read it.</p>
+
+<p>`enabled` and `value` are both required, and a request that omits either field returns HTTP 400. With `always` set to `false`, the header is added only on status 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "cors": {
+                "enabled": True,
+                "value": ["*"],
+                "always": False,
+            }
+        },
+    )
+    cors = updated.options.cors
+    print(cors.enabled, cors.value, cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Cors: cdn.CDNResourceUpdateParamsOptionsCors{
+                    Enabled: true,
+                    Value:   []string{"*"},
+                    Always:  gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Cors.Enabled, updated.Options.Cors.Value, updated.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "cors": {
+            "enabled": true,
+            "value": ["*"],
+            "always": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with this option:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": ["*"],
+      "always": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Allow listed domains
+
+<p>Set `value` to hostnames, with no scheme and no path. A resource accepts up to 20 names.</p>
+
+<p>A request whose `Origin` matches one name receives that origin in `Access-Control-Allow-Origin`, and any other origin receives no header. A value that includes `https://`, or that mixes `*` or `$http_origin` with a hostname, returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "cors": {
+                "enabled": True,
+                "value": ["site-a.com", "site-b.com"],
+                "always": False,
+            }
+        },
+    )
+    cors = updated.options.cors
+    print(cors.enabled, cors.value, cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Cors: cdn.CDNResourceUpdateParamsOptionsCors{
+                    Enabled: true,
+                    Value:   []string{"site-a.com", "site-b.com"},
+                    Always:  gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Cors.Enabled, updated.Options.Cors.Value, updated.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "cors": {
+            "enabled": true,
+            "value": ["site-a.com", "site-b.com"],
+            "always": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with this option:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": ["site-a.com", "site-b.com"],
+      "always": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Echo the request origin
+
+<p>Set `value` to `["$http_origin"]`. Gcore CDN copies the request `Origin` into `Access-Control-Allow-Origin`.</p>
+
+<p>Use `$http_origin` when `*` is unsuitable, including a request that sends credentials.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "cors": {
+                "enabled": True,
+                "value": ["$http_origin"],
+                "always": False,
+            }
+        },
+    )
+    cors = updated.options.cors
+    print(cors.enabled, cors.value, cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Cors: cdn.CDNResourceUpdateParamsOptionsCors{
+                    Enabled: true,
+                    Value:   []string{"$http_origin"},
+                    Always:  gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Cors.Enabled, updated.Options.Cors.Value, updated.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "cors": {
+            "enabled": true,
+            "value": ["$http_origin"],
+            "always": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with this option:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": ["$http_origin"],
+      "always": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add the header on every status code
+
+<p>Set `always` to `true` on the same `cors` object. The header is then added on every status code, including a response for a missing file.</p>
+
+<p>`value` is still required. The call keeps `*` and sets `always` to `true`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "cors": {
+                "enabled": True,
+                "value": ["*"],
+                "always": True,
+            }
+        },
+    )
+    cors = updated.options.cors
+    print(cors.enabled, cors.value, cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Cors: cdn.CDNResourceUpdateParamsOptionsCors{
+                    Enabled: true,
+                    Value:   []string{"*"},
+                    Always:  gcore.Bool(true),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Cors.Enabled, updated.Options.Cors.Value, updated.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "cors": {
+            "enabled": true,
+            "value": ["*"],
+            "always": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with this option:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": ["*"],
+      "always": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn CORS off
+
+<p>Set `enabled` to `false`. `value` is still required, and an empty list stores no origins.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "cors": {
+                "enabled": False,
+                "value": [],
+            }
+        },
+    )
+    cors = updated.options.cors
+    print(cors.enabled, cors.value, cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Cors: cdn.CDNResourceUpdateParamsOptionsCors{
+                    Enabled: false,
+                    Value:   []string{},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Cors.Enabled, updated.Options.Cors.Value, updated.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "cors": {
+            "enabled": false,
+            "value": []
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200 with this option:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": [],
+      "always": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Add CORS on a file rule
+
+<p>A resource rule applies `cors` only where `rule` matches. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
+
+<p>The call adds `Access-Control-Allow-Origin: *` for paths under `/assets/`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="cors-assets",
+        rule="^/assets/.*",
+        rule_type=0,
+        options={
+            "cors": {
+                "enabled": True,
+                "value": ["*"],
+                "always": False,
+            }
+        },
+    )
+    print(rule.id, rule.rule, rule.options.cors.value, rule.options.cors.always)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "cors-assets",
+            Rule:     "^/assets/.*",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                Cors: cdn.CDNResourceRuleNewParamsOptionsCors{
+                    Enabled: true,
+                    Value:   []string{"*"},
+                    Always:  gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Rule, rule.Options.Cors.Value, rule.Options.Cors.Always)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "cors-assets",
+        "rule": "^/assets/.*",
+        "ruleType": 0,
+        "options": {
+          "cors": {
+            "enabled": true,
+            "value": ["*"],
+            "always": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved rule includes these fields:</p>
+
+    ```json
+    {
+      "id": 703999,
+      "rule": "^/assets/.*",
+      "ruleType": 0,
+      "options": {
+        "cors": {
+          "enabled": true,
+          "value": ["*"],
+          "always": false
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

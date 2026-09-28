@@ -1,31 +1,149 @@
 ---
 title: Specify HTTP methods allowed for content requests from the CDN
 sidebarTitle: Specify HTTP methods
-ai-navigation: Configure allowed HTTP methods for a CDN resource via the Enable HTTP methods toggle to restrict accepted request types and return 405 for blocked methods.
+ai-navigation: Configure allowed HTTP methods for a CDN resource in the Customer Portal or with the REST API.
 ---
 
-By default, a CDN resource accepts all standard HTTP methods. The **Enable HTTP methods** option restricts which methods the CDN accepts, returning `405 Method Not Allowed` for all others before the request reaches the origin.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To configure allowed HTTP methods:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**.
+<p>By default, a CDN resource accepts all standard HTTP methods. The **Enable HTTP methods** option restricts which methods the CDN accepts, returning `405 Method Not Allowed` for all others before the request reaches the origin.</p>
 
-2. Click the CNAME of the resource to open its settings.
+## Allowed HTTP methods
+
+<p>To configure allowed HTTP methods:</p>
+
+<p>1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**.</p>
+
+<p>2. Click the CNAME of the resource to open its settings.</p>
 
 <Frame>
   <img src="/images/docs/cdn/cdn-resource-options/security/specify-http-methods-allowed-for-content-requests-from-the-cdn/specify-http-methods-image1.png" alt="CDN resources list with CNAME links" width="70%" />
 </Frame>
 
-3. On the **OPTIONS** tab, scroll to **HTTP methods** and click the **Enable HTTP methods** toggle.
+<p>3. On the **OPTIONS** tab, scroll to **HTTP methods** and click the **Enable HTTP methods** toggle.</p>
 
-4. In the **Choose HTTP methods** field, add the methods the CDN should accept. Remove any method tag to block that method.
+<p>4. In the **Choose HTTP methods** field, add the methods the CDN should accept. Remove any method tag to block that method.</p>
 
 <Frame>
   <img src="/images/docs/cdn/cdn-resource-options/security/specify-http-methods-allowed-for-content-requests-from-the-cdn/specify-http-methods-image2.png" alt="HTTP methods section with Enable HTTP methods toggle on and selected methods shown" width="70%" />
 </Frame>
 
-5. Click **Save changes**.
+<p>5. Click **Save changes**.</p>
 
-For most static content delivery, GET and HEAD are sufficient. Allow POST as well if the resource serves dynamic requests, form submissions, or API calls.
+<p>For most static content delivery, GET and HEAD are sufficient. Allow POST as well if the resource serves dynamic requests, form submissions, or API calls.</p>
 
-When a client sends a method that isn't allowed, the CDN returns `405 Method Not Allowed` without forwarding the request to the origin.
+<p>When a client sends a method that isn't allowed, the CDN returns `405 Method Not Allowed` without forwarding the request to the origin.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>When `allowedHttpMethods` is enabled, the CDN accepts only the methods in `value`, so any other method returns HTTP 405.</p>
+
+<p>When the field is absent, the CDN does not apply this limit.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## HTTP methods
+
+<p>`value` accepts `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`. The names are case sensitive.</p>
+
+<p>`GET` and `HEAD` cover static delivery. Add `POST` when the resource serves dynamic requests, form submissions, or API calls.</p>
+
+<p>Both `enabled` and `value` are required. When `enabled` is true, an empty `value` returns HTTP 400.</p>
+
+<p>The JSON field is `allowedHttpMethods`. The Python SDK attribute is `allowed_http_methods`.</p>
+
+<p>Send `allowedHttpMethods` with `enabled` true and `value` set to `GET` and `HEAD`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "allowed_http_methods": {"enabled": True, "value": ["GET", "HEAD"]},
+        },
+    )
+    print(resource.options.allowed_http_methods.enabled, resource.options.allowed_http_methods.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                AllowedHTTPMethods: cdn.CDNResourceUpdateParamsOptionsAllowedHTTPMethods{
+                    Enabled: true,
+                    Value:   []string{"GET", "HEAD"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.AllowedHTTPMethods.Enabled, resource.Options.AllowedHTTPMethods.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "allowedHttpMethods": {
+            "enabled": true,
+            "value": ["GET", "HEAD"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "allowedHttpMethods": {
+          "enabled": true,
+          "value": ["GET", "HEAD"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

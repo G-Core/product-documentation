@@ -1,7 +1,7 @@
 ---
 title: Create records in zone apex (CNAME flattening)
 sidebarTitle: CNAME flattening
-ai-navigation: Configure CNAME flattening at the zone apex in Gcore Managed DNS, remove conflicting records and create a CNAME record at the apex, via Customer Portal or REST API.
+ai-navigation: Configure CNAME flattening at the zone apex in Gcore Managed DNS via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -52,7 +52,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Step>
 </Steps>
 
-<p>Gcore Managed DNS supports CNAME flattening only when the zone apex contains a single CNAME record. Use the [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool to verify the resolved value of the apex domain.</p>
+<p>Gcore Managed DNS supports CNAME flattening only when the zone apex contains a single CNAME record. The [Gcore&nbsp;DNS&nbsp;Lookup](https://gcore.com/dev-tools/dns-lookup) tool verifies the resolved value of the apex domain.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -64,7 +64,7 @@ All conflicting RRsets must be deleted before the CNAME is created. NS and SOA r
 </Note>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required.
+An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
 <p>Open a terminal and export the required variables:</p>
@@ -79,7 +79,7 @@ export CNAME_TARGET="{YOUR_CNAME_TARGET}"   # e.g. cdn.example.com
 
 <Accordion title="Show all steps">
 
-### Step 1. Delete conflicting records at the zone apex
+### Step 1. Delete conflicting apex records
 
 <p>The zone apex record name equals the zone name. Delete each conflicting RRset type separately — for a zone that has only an A record at the apex, run the call below once with `rrsetType=A`.</p>
 
@@ -143,7 +143,7 @@ export CNAME_TARGET="{YOUR_CNAME_TARGET}"   # e.g. cdn.example.com
   </Tab>
 </Tabs>
 
-### Step 2. Create the CNAME record at the zone apex
+### Step 2. Create the CNAME at the apex
 
 <p>The record name must equal the zone name. The `content` field holds the target domain that the CNAME points to — typically a CDN delivery domain or another service endpoint.</p>
 
@@ -233,6 +233,72 @@ export CNAME_TARGET="{YOUR_CNAME_TARGET}"   # e.g. cdn.example.com
 </Tabs>
 
 </Accordion>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a CNAME at the zone apex using `gcore_dns_zone_rrset` from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `rrset_name` must equal the zone name. Gcore DNS resolves the CNAME chain to A or AAAA records and serves the flattened result to clients.</p>
+
+<Note>
+A CNAME cannot coexist with any other record type at the apex (except the mandatory NS and SOA). Declaring both `gcore_dns_zone_rrset` resources with `rrset_type = "CNAME"` and `rrset_type = "A"` for the same apex in one configuration fails with `409 Conflict`. Remove or comment out other apex records before adding the CNAME.
+</Note>
+
+## Configure CNAME flattening
+
+<p>On a fresh zone (or after removing conflicting apex records), declare the CNAME resource. The `rrset_name` equals the zone name — that is the apex.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+resource "gcore_dns_zone_rrset" "apex_cname" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name   # apex — same as zone name
+  rrset_type = "CNAME"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["cdn.yourdomain.com"] },   # CDN delivery domain or other target
+  ]
+  # terraform import gcore_dns_zone_rrset.apex_cname yourdomain.com/yourdomain.com/CNAME
+}
+```
+
+<p>The provider returns an RFC 1034 advisory warning about CNAME coexisting with NS and SOA records. The warning is expected — Gcore Managed DNS handles the flattening transparently and the record is created successfully.</p>
+
+<p>To update the CNAME target, change `content` and run `terraform apply`. Terraform updates the record in place.</p>
+
+## Revert to a standard record
+
+<p>To replace the CNAME with an A or AAAA record, remove the `apex_cname` resource block and declare a new resource with the desired type. Terraform deletes the CNAME first, then creates the A record — the order is handled automatically, so the 409 conflict does not occur.</p>
+
+```hcl
+# Remove the apex_cname block and replace with:
+resource "gcore_dns_zone_rrset" "apex_a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+  ]
+}
+```
+
+## Delete the apex record
+
+<p>Remove the resource block — Terraform deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_dns_zone_rrset" "apex_cname" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

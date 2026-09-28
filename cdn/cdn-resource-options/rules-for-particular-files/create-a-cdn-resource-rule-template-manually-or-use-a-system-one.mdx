@@ -1,76 +1,432 @@
 ---
-title: Create a CDN resource rule template manually or use a system one
-sidebarTitle: Create a template for rules
-ai-navigation: Create CDN resource rule templates or apply system templates for video streaming, Let's Encrypt, static content, and image optimization via the Customer Portal.
+title: Create and use CDN rule templates
+sidebarTitle: Rule templates
+ai-navigation: Create and use CDN rule templates via the Customer Portal or REST API.
 ---
 
-A template is a preset rule for CDN resources — it contains all necessary settings: file paths, an origin pull protocol, and enabled and disabled options. Adding a rule from a template takes three clicks: open the **Rules** tab, select a template, and click **Create rule**.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Gcore provides built-in templates called **System**. Custom templates can also be created.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-## Create a template
+<p>A template is a preset rule for CDN resources — it contains all necessary settings: file paths, an origin pull protocol, and enabled and disabled options. A template pre-fills those settings when a rule is created.</p>
 
-Configure the file paths, origin pull protocol, and any additional options to define a reusable rule template.
+<p>Gcore provides built-in templates called **System**, while custom templates store a path and options for one account.</p>
 
-1\. In the CDN resource settings, open the **Rules** tab, navigate to the **Templates** section and click **Create template**. 
+## Custom template
 
+<p>Set the file path, origin pull protocol, and any option overrides that the template should store.</p>
 
-<Frame>![Templates page showing system templates list and Create template button](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/templates-list.png)</Frame>
+<Steps>
+  <Step title="Open the template form">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), open the CDN resource settings. On the **Rules** tab, open the **Templates** section and click **Create template**.
 
+    <Frame>![Templates page showing system templates list and Create template button](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/templates-list.png)</Frame>
+  </Step>
+  <Step title="Set the template fields">
+    Complete the form:
 
+    1. Specify the template name. Templates can be searched by name after creation.
+    2. Specify the path to the file or folder. The path must start with `^/` or `/` and can be a [regular&nbsp;expression](https://en.wikipedia.org/wiki/Regular_expression).
+    3. Select the protocol the CDN uses to pull those files. If the files are available over the same protocol configured for the origin, select **Inherit from resource**. Otherwise select HTTP, HTTPS, or both protocols.
+    4. (Optional) Set any option overrides the template should store.
 
-Complete the remaining steps on the **Create template** page.
+    <Frame>![Create template form with Template name, Match criteria, Origin pull protocol, and Options fields](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-template-form.png)</Frame>
+  </Step>
+  <Step title="Create the template">
+    Click **Create template**.
+  </Step>
+</Steps>
 
+## System templates
 
-<Frame>![Create template form with Template name, Match criteria, Origin pull protocol, and Options fields](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-template-form.png)</Frame>
-
-
-
-2\. Specify the template name. Templates can be searched by name after creation.
-
-3\. Specify the path to the file or folder for which the rule will be applied. The path must start with `^/` or `/`. URLs and [regular&nbsp;expressions](https://en.wikipedia.org/wiki/Regular_expression) are both supported.
-
-4\. Select the protocol that the CDN resource will use to pull the files specified at Step 3. If files are accessible over the same protocol as an origin, select **Inherit from resource**. If not, select the appropriate option: HTTP, HTTPS or both protocols at once.
-
-5\. (Optional) View the list of additional options and configure the necessary ones.
-
-6\. Click **Create template**.
-
-## Use a system template
-
-System templates are built-in presets covering common CDN use cases. They are labeled **System** in the Templates section. 
-
+<p>System templates are built-in presets covering common CDN use cases. They are labeled **System** in the Templates section.</p>
 
 <Frame>![Templates page with five system templates each labeled System](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/templates-list.png)</Frame>
 
+<p>**Video segments template (.ts)** is a rule template for caching chunks ([streaming&nbsp;via&nbsp;CDN](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#create-a-cdn-resource-for-video-streaming)).</p>
 
+<p>**Playlists template (.m3u8)** is a rule template for caching playlists.</p>
 
-**Video segments template (.ts)** is a rule template for caching chunks ([streaming&nbsp;via&nbsp;CDN](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#create-a-cdn-resource-for-video-streaming)).
+<p>**Let's Encrypt HTTP-01 challenge** validates a certificate issued with the [HTTP-01&nbsp;challenge](https://letsencrypt.org/docs/challenge-types) outside the Customer Portal. Create the CDN resource and a rule from this template before requesting the certificate, because the resource settings block validation until that rule exists.</p>
 
-**Playlists template (.m3u8)** is a rule template for caching playlists ([streaming&nbsp;via&nbsp;CDN](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#create-a-cdn-resource-for-video-streaming)).
+<p>**Static content** is a rule template for caching static files of the resources integrated with the DNS.</p>
 
-**Let's Encrypt HTTP-01 challenge** is a rule template for validating a Let's Encrypt certificate that is issued with the [HTTP-01&nbsp;challenge](https://letsencrypt.org/docs/challenge-types) method and not via the Gcore UI. For the certificate to be validated, create a CDN resource, create a rule from the template, and only then request a certificate. Without this rule, the resource settings will block certificate validation.
+<p>**Image optimization** applies [Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack), a paid add-on, to matching image files. Turn it on from the [resource&nbsp;options](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) before adding the template, and narrow the file path when only some files should match.</p>
 
-**Static content** is a rule template for caching static files of the resources integrated with the DNS.
+## Rule from a template
 
-**Image optimization** is a rule template for optimizing images using [Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack) (paid add-on; [enable&nbsp;Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) in the resource options before using this template). Add a rule from the Image optimization template to the resource, and image optimization will be applied to matching files. To optimize only specific files, edit the file path when creating the rule.
+<p>A template pre-fills the rule form, so only the final adjustments remain before saving.</p>
 
-## Create a rule from a template
+<Steps>
+  <Step title="Select a template">
+    Open the CDN resource settings. On the **Rules** tab, click **Create rule** and select a template.
 
-Applying a template pre-fills the rule form with saved settings, so only final adjustments are needed before saving.
+    <Frame>![Create rule dropdown showing Create blank rule option and system templates list](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-rule-dropdown.png)</Frame>
+  </Step>
+  <Step title="Confirm the pre-filled settings">
+    The form opens with settings from the template. Review them and edit them when the saved path or options should differ.
 
-1\. Open the settings of the required CDN resource. In the **Rules** tab, click **Create rule** and select a template from the list. 
+    <Frame>![Create rule form pre-filled with settings from the selected template](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-rule-from-template.png)</Frame>
+  </Step>
+  <Step title="Create the rule">
+    Click **Create rule**.
+  </Step>
+</Steps>
 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-<Frame>![Create rule dropdown showing Create blank rule option and system templates list](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-rule-dropdown.png)</Frame>
+<p>Store a path and option overrides as a custom template, or create a CDN resource rule from the settings of a system template. Find the resource ID in [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
 
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of the CDN resource that receives the rule.
+</Info>
 
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
 
-2\. The form opens with pre-filled settings from the template. Review the settings and edit them if needed. 
+## Custom template
 
+<p>Match files with `rule`, as a path or a regular expression. For `ruleType` `0`, start that pattern with `^/` or `/`.</p>
 
-<Frame>![Create rule form pre-filled with settings from the selected template](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/create-rule-from-template.png)</Frame>
+<p>Set `overrideOriginProtocol` to `HTTP` or `HTTPS` to pull over that protocol, or to `MATCH` when the origin serves the files over both. Leave the field out to keep the protocol already set on the resource.</p>
 
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
 
+    client = Gcore()
 
-3\. Click **Create rule**.
+    template = client.cdn.rule_templates.create(
+        name="static-images",
+        rule="/images/*.png",
+        rule_type=0,
+        override_origin_protocol="HTTPS",
+        options={"edge_cache_settings": {"enabled": True, "value": "4d"}},
+    )
+    print(template.id, template.name, template.default, template.override_origin_protocol)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        template, err := client.CDN.RuleTemplates.New(ctx, cdn.RuleTemplateNewParams{
+            Name:                   param.NewOpt("static-images"),
+            Rule:                   "/images/*.png",
+            RuleType:               0,
+            OverrideOriginProtocol: cdn.RuleTemplateNewParamsOverrideOriginProtocolHTTPS,
+            Options: cdn.RuleTemplateNewParamsOptions{
+                EdgeCacheSettings: cdn.RuleTemplateNewParamsOptionsEdgeCacheSettings{
+                    Enabled: true,
+                    Value:   param.NewOpt("4d"),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(template.ID, template.Name, template.Default, template.OverrideOriginProtocol)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/rule_templates" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "static-images",
+        "rule": "/images/*.png",
+        "ruleType": 0,
+        "overrideOriginProtocol": "HTTPS",
+        "options": {
+          "edge_cache_settings": {"enabled": true, "value": "4d"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 1005,
+      "name": "static-images",
+      "default": false,
+      "template": true,
+      "rule": "/images/*.png",
+      "ruleType": 0,
+      "weight": 1,
+      "overrideOriginProtocol": "HTTPS",
+      "options": {
+        "edge_cache_settings": {"enabled": true, "value": "4d"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## System templates
+
+<p>A custom template belongs to one account, while a system template is shared. `default` is true on a system template, and changing or deleting it fails with HTTP 403.</p>
+
+```json
+{"message": "You do not have permission to perform this action."}
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for template in client.cdn.rule_templates.list(limit=100):
+        print(template.id, template.name, template.default, template.rule, template.weight)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.RuleTemplates.List(ctx, cdn.RuleTemplateListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, template := range page.Results {
+            fmt.Println(template.ID, template.Name, template.Default, template.Rule, template.Weight)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cdn/resources/rule_templates?limit=100" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "count": 5,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 35462,
+          "name": "Playlists template (.m3u8)",
+          "default": true,
+          "rule": "/.*\\.m3u8$",
+          "ruleType": 0,
+          "weight": 0
+        },
+        {
+          "id": 35463,
+          "name": "Video segments template (.ts)",
+          "default": true,
+          "rule": "/.*\\.ts$",
+          "ruleType": 0,
+          "weight": 0
+        },
+        {
+          "id": 92195,
+          "name": "Let's Encrypt HTTP-01 challenge",
+          "default": true,
+          "rule": "/.well-known/acme-challenge/",
+          "ruleType": 0,
+          "weight": 1
+        },
+        {
+          "id": 74028,
+          "name": "Static content",
+          "default": true,
+          "rule": "/.*\\.(js|css|bmp|jpg|jpeg|gif|png|svg|ico|json|ttf|ttc|otf|eot|woff|woff2|webp|zip|tgz|gz|rar|bz2|doc|docx|rtf|xls|xlsx|exe|pdf|ppt|pptx|txt|tar|mid|midi|wav|swf|flv|mp3|mp4)",
+          "ruleType": 0,
+          "weight": 1
+        },
+        {
+          "id": 89562,
+          "name": "Image optimization",
+          "default": true,
+          "rule": "/.*\\.(jpg|jpeg|png)",
+          "ruleType": 0,
+          "weight": 1
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Rule from a template
+
+<p>Read the template, then use its `rule`, `ruleType`, and configured options to create the rule. If `overrideOriginProtocol` is empty, leave it out and the rule keeps the resource protocol.</p>
+
+<p>Skip `weight`. Playlist and video templates store `0`, but a rule needs `1` or higher, so leaving the field out gives the rule weight `1`.</p>
+
+```json
+{"errors": {"weight": ["Ensure this value is greater than or equal to 1."]}}
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    template = next(
+        item
+        for item in client.cdn.rule_templates.list(limit=100)
+        if item.name == "Playlists template (.m3u8)"
+    )
+    options = template.options
+    rule = client.cdn.cdn_resources.rules.create(
+        12345,
+        name=template.name,
+        rule=template.rule,
+        rule_type=template.rule_type,
+        options={
+            "browser_cache_settings": {
+                "enabled": options.browser_cache_settings.enabled,
+                "value": options.browser_cache_settings.value,
+            },
+            "edge_cache_settings": {
+                "enabled": options.edge_cache_settings.enabled,
+                "value": options.edge_cache_settings.value,
+            },
+        },
+    )
+    print(rule.id, rule.rule, rule.weight, rule.active)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.RuleTemplates.List(ctx, cdn.RuleTemplateListParams{})
+        if err != nil {
+            panic(err)
+        }
+        var selected *cdn.RuleTemplate
+        for i := range page.Results {
+            if page.Results[i].Name == "Playlists template (.m3u8)" {
+                selected = &page.Results[i]
+                break
+            }
+        }
+        if selected == nil {
+            panic("playlist template not found")
+        }
+        browser := selected.Options.BrowserCacheSettings
+        edge := selected.Options.EdgeCacheSettings
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, 12345, cdn.CDNResourceRuleNewParams{
+            Name:     selected.Name,
+            Rule:     selected.Rule,
+            RuleType: selected.RuleType,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                BrowserCacheSettings: cdn.CDNResourceRuleNewParamsOptionsBrowserCacheSettings{
+                    Enabled: browser.Enabled,
+                    Value:   browser.Value,
+                },
+                EdgeCacheSettings: cdn.CDNResourceRuleNewParamsOptionsEdgeCacheSettings{
+                    Enabled: edge.Enabled,
+                    Value:   param.NewOpt(edge.Value),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Rule, rule.Weight, rule.Active)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cdn/resources/rule_templates/35462" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>Use the playlist path and cache options from that response to create the rule.</p>
+
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Playlists template (.m3u8)",
+        "rule": "/.*\\.m3u8$",
+        "ruleType": 0,
+        "options": {
+          "browser_cache_settings": {"enabled": true, "value": "0"},
+          "edge_cache_settings": {"enabled": true, "value": "2s"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "Playlists template (.m3u8)",
+      "rule": "/.*\\.m3u8$",
+      "ruleType": 0,
+      "weight": 1,
+      "active": true,
+      "overrideOriginProtocol": null,
+      "options": {
+        "browser_cache_settings": {"enabled": true, "value": "0"},
+        "edge_cache_settings": {"enabled": true, "value": "2s"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

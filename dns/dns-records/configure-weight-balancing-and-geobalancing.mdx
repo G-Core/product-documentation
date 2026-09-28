@@ -1,7 +1,7 @@
 ---
 title: Dynamic response
 sidebarTitle: Dynamic response
-ai-navigation: Configure dynamic DNS responses in Gcore Managed DNS to route queries by weight, geolocation, country, ASN, or proximity via Customer Portal or REST API.
+ai-navigation: Configure dynamic DNS responses in Gcore Managed DNS to route queries by weight, geolocation, country, ASN, or proximity via the Portal, API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -493,6 +493,128 @@ curl -X POST "https://api.gcore.com/dns/v2/zones/${ZONE_NAME}/${RECORD_NAME}/A" 
 ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure dynamic DNS responses using the `gcore_dns_zone_rrset` resource from the [Gcore&nbsp;Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Pickers are declared in the `pickers` block; per-record routing criteria go in `resource_records[].meta`. The `meta` field is a map of strings — array-type values (`countries`, `continents`, `latlong`) must be JSON-encoded with `jsonencode()`.</p>
+
+## Weighted shuffle
+
+<p>Weighted shuffle distributes queries across records based on the `weight` metadata value. Higher weight means higher probability. Pair it with `first_n` to limit the number of records returned per response.</p>
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "yourdomain.com"
+}
+
+resource "gcore_dns_zone_rrset" "weighted" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 300
+
+  pickers = [
+    { type = "weighted_shuffle" },
+    { type = "first_n", limit = 1 },
+  ]
+
+  resource_records = [
+    {
+      content = ["1.2.3.4"]
+      meta    = { weight = "90" }
+    },
+    {
+      content = ["4.5.6.7"]
+      meta    = { weight = "10" }
+    },
+    {
+      content = ["7.8.9.0"]
+      meta    = { weight = "50" }
+    },
+  ]
+  # terraform import gcore_dns_zone_rrset.weighted yourdomain.com/yourdomain.com/A
+}
+```
+
+## Geo DNS
+
+<p>Geo DNS routes queries based on the client's location. The resolver matches IP, ASN, country, continent, and region metadata in that order and uses the first match. Add a record with `fallback = "true"` to handle queries that match no other criteria.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "geodns" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "geo.${gcore_dns_zone.example.name}"
+  rrset_type = "A"
+  ttl        = 300
+
+  pickers = [
+    { type = "geodns" },
+    { type = "first_n", limit = 1 },
+  ]
+
+  resource_records = [
+    {
+      content = ["10.0.0.1"]
+      meta    = { countries = jsonencode(["de", "at"]) }
+    },
+    {
+      content = ["10.0.0.2"]
+      meta    = { countries = jsonencode(["fr", "be"]) }
+    },
+    {
+      content = ["10.0.0.3"]
+      meta    = { fallback = "true" }
+    },
+  ]
+  # terraform import gcore_dns_zone_rrset.geodns yourdomain.com/geo.yourdomain.com/A
+}
+```
+
+<p>Set `meta.countries` to two-letter ISO 3166-1 alpha-2 country codes. Country codes are listed in the [dynamic&nbsp;response](/dns/dns-records/configure-weight-balancing-and-geobalancing) article.</p>
+
+## Geo distance
+
+<p>Geo distance routes queries to the record with coordinates nearest to the client. Set `meta.latlong` to a JSON-encoded two-element array `[latitude, longitude]` in decimal degrees.</p>
+
+```hcl
+resource "gcore_dns_zone_rrset" "geodistance" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "cdn.${gcore_dns_zone.example.name}"
+  rrset_type = "A"
+  ttl        = 300
+
+  pickers = [
+    { type = "geodistance" },
+    { type = "first_n", limit = 1 },
+  ]
+
+  resource_records = [
+    {
+      content = ["10.0.0.1"]
+      meta    = { latlong = jsonencode([51.52, -0.13]) }  # London
+    },
+    {
+      content = ["10.0.0.2"]
+      meta    = { latlong = jsonencode([48.86, 2.34]) }   # Paris
+    },
+  ]
+  # terraform import gcore_dns_zone_rrset.geodistance yourdomain.com/cdn.yourdomain.com/A
+}
+```
+
+## Delete a dynamic record
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the RRset on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out the resource block:
+# resource "gcore_dns_zone_rrset" "weighted" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

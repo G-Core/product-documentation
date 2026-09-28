@@ -1,115 +1,68 @@
 ---
 title: Configure Single Sign-On (SSO) via SAML
 sidebarTitle: Configure SSO
+ai-navigation: Describe how resellers configure SAML SSO authentication for customers and Admin Portal users.
 ---
 
-You can give customers the ability to authorize using SSO (Single Sign-On) — a single sign-on technology with which a user can log in to a personal account using a corporate account.
+Single sign-on (SSO) lets customers and Admin Portal users log in with their corporate identity provider credentials instead of a separate Gcore username and password. Gcore implements SSO through SAML 2.0 (Security Assertion Markup Language), an open XML standard for exchanging authentication data between a corporate identity provider (IdP) and Gcore as the service provider (SP).
 
-To implement the technology, our systems use the SAML 2.0 XML protocol which is an open standard for the secure exchange of authentication and authorization data between the corporate identity provider (IdP) and the service provider (SP) of Gcore.
+## Configure SSO in the Admin Portal
 
-## Configuring SSO in the Admin Portal
+Connecting an identity provider requires enabling SSO login, then filling in the provider's connection details.
 
-<Frame>
-![SSO in the Admin Portal](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/security-authorization-page.png)
-</Frame>
+<Steps>
+  <Step title="Enable SSO login">
+  1. Navigate to the **Security** settings.
+  2. Click **Authorization**.
+  3. Enable the **SSO login** toggle.
+  </Step>
+  <Step title="Configure the provider">
+  In the **Provider** section that appears:
 
-To allow your users to log in using SSO, in the Admin Portal:
+  1. In the **Name** field, enter any identifier for the identity provider; this value only appears in the Admin Portal and doesn't affect the SSO connection.
+  2. In the **Entity ID** field, enter the globally unique identifier for the identity provider, provided by the IdP.
+  3. In the **Domains** field, enter the corporate domains that redirect to the identity provider for SSO authorization.
+  4. Under **SAML metadata**, click **Attach file** and upload the identity provider's metadata XML file, provided by the IdP.
+  5. Select **For the customer portal**, **For the admin portal**, or both, depending on which accounts can use SSO.
+  6. Click **Save**.
 
-1\. Go to the "Authorization" tab.
+  <Frame>
+  <img src="/images/docs/reseller-support/manuals/configure-sso-via-saml/configure-sso-via-saml-image1.png" alt="Authorization settings with SSO login enabled and the Provider configuration form" width="70%"/>
+  </Frame>
+  </Step>
+</Steps>
 
-2\. In the "Login options" section, activate the "SSO Login" authorization method.
+Enabling **Force redirect to the Identity provider** skips the corporate domain entry step during sign-in and redirects users straight to the identity provider, but this only works when the **Base customer portal domain** field is filled in on the [Branding settings](/reseller-support/manuals/vendor-settings) page.
 
-3\. In the "Provider" section, enter your provider information.
+## Add Gcore metadata to the identity provider
 
-<table>
-<thead>
-<tr>
-<td><b>Field</b></td>
-<td><b>Description</b></td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><b>Name</b></td>
-<td>Your identity provider name. You can specify any name, the data from this field will be displayed only in the Admin Portal and do not affect the SSO settings.</td>
-</tr>
-<tr>
-<td><b>Entity ID</b></td>
-<td>Unique URL for the connection to the identity provider. Provided by the IdP.</td>
-</tr>
-<tr>
-<td><b>Domains</b></td>
-<td>The list of domain names will be used to redirect to the identity provider page for authorization via SSO.</td>
-</tr>
-<tr>
-<td><b>SAML metadata</b></td>
-<td>XML file with the identity provider metadata. Provided by the IdP.</td>
-</tr>
-</tbody>
-</table>
+Configuring the Admin Portal side is only half the connection, since the identity provider also needs the Gcore side's metadata. All the necessary metadata is available at `https://api.gcore.com/iam/auth/saml2/metadata`. Identity providers using a self-signed SSL certificate need this option enabled in their own settings.
 
-Activate "Force redirect to the Identity provider" if desired. If this option is enabled the user only has to enter a username and password to log in. If it is disabled the user has to enter the corporate domain additionally.
+## Sign in with SSO
 
-4\. Using the checkboxes at the bottom, select the type of account for entering using the SSO — customer's one, administrator’s one, or both.
-
-## Data for the identity provider
-
-After entering the identity provider information on the Gcore side, enter the Gcore information in the identity provider settings. All necessary metadata is available by link: https://api.gcore.com/iam/auth/saml2/metadata.
-
-If you use a self-signed SSL certificate, you must enable the use of such certificates in the settings of the identity provider.
-
-## Authorization via SSO in the customer's Customer Portal
-
-1\. Click "Sign in with SAML SSO".
+Once SSO is configured, a **Sign in with SAML SSO** link appears on the sign-in page for both the Customer Portal and the Admin Portal.
 
 <Frame>
-![Sign in with SAML SSO](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-with-sso-20.png)
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/reseller-sso-20.png" alt="Admin Portal sign-in page with the Sign in with SAML SSO link" width="40%"/>
 </Frame>
 
-2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
-
-Enter the corporate domain for which SSO authorization is connected and click "Sign in with SAML SSO".
+Clicking the link prompts for the corporate domain, unless **Force redirect to the Identity provider** is enabled, in which case this step is skipped.
 
 <Frame>
-![SSO authorization ](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/welcome-sso-page-30.png)
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/reseller-sso-30.png" alt="Admin Portal SSO domain entry page" width="40%"/>
 </Frame>
 
-3\. Enter your username and password and log in.
+After entering the domain, the identity provider handles authentication and returns the user signed in.
 
-<Frame>
-![ log in](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/login-pass-40.png)
-</Frame>
+## Support IdP-initiated login
 
-## Authorization via SSO in the Admin Portal 
+Gcore's SAML implementation primarily supports service provider (SP)-initiated login, but identity provider (IdP)-initiated login also works with the right configuration:
 
-1\. Click "Sign in with SAML SSO".
-
-<Frame>
-![Sign in with SAML SSO](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/reseller-sso-20.png)
-</Frame>
-
-2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
-
-Enter the corporate domain for which SSO authorization is connected and click "Sign in".
-
-<Frame>
-![ SSO authorization](https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/reseller-sso-30.png)
-</Frame>
-
-3\. Enter your username and password and log in.
-
-## Supporting IDP-Initiated Login
-
-In cases where the identity provider (IdP) initiates the login, specific configurations are necessary to ensure the redirection flow functions correctly. While our implementation primarily supports service provider (SP)-initiated login, IdP-initiated login can also be accommodated with the following adjustments:
-
-1\. Redirect to SP login endpoint: Configure the IdP to redirect login requests to the Gcore Service Provider endpoint: `auth.gcore.com`. If you have a custom domain, use the custom domain URL: `auth.example.com`.
-
-2\. Update Gcore Customer Portal settings: Ensure the "SSO Login" authorization method is active and properly configured to process incoming requests from the identity provider (IdP). If desired, you can enable the option to force redirects to the IdP for seamless authentication.
-
-3\. Modify IdP settings: Configure the IdP to require SP-initiated login. This ensures that when users attempt to log in from the IdP, they are redirected to the Gcore portal login URL (e.g., auth.gcore.com or auth.example.com) before the IdP completes authentication.
-
-4\. Verify redirect flow: Confirm that the login process follows these steps:
-- The user clicks "Login to Gcore Customer Customer Portal" on the IdP.
-- The request is redirected to auth.gcore.com or auth.example.com.
-- The user is then redirected back to the IdP for authentication.
-- After successful authentication, the user is logged into the Gcore Customer Portal with the appropriate domain settings applied.
+1. Configure the identity provider to redirect login requests to the Gcore service provider endpoint `auth.gcore.com`, or the reseller's custom domain if one is set, like `auth.example.com`.
+2. Verify **SSO login** is active with a provider configured, as covered above, and enable **Force redirect to the Identity provider** for automatic redirection.
+3. Configure the identity provider to require SP-initiated login, so a user starting from the IdP is redirected to the Gcore sign-in URL first.
+4. Confirm the flow end to end:
+   a. The user starts at the identity provider.
+   b. The identity provider redirects the request to `auth.gcore.com` or the custom domain.
+   c. The user is redirected back to the identity provider for authentication.
+   d. After successful authentication, the user lands in the Customer Portal with the correct domain settings applied.

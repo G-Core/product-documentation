@@ -1,23 +1,27 @@
 ---
 title: Suspend a CDN resource automatically or manually
 sidebarTitle: Suspend a CDN resource
-ai-navigation: Manage CDN resource suspension - disable manually via the Content availability toggle or let the system auto-suspend after 90 days of inactivity.
+ai-navigation: Suspend or enable a CDN resource in the Customer Portal or via REST API.
 ---
 
-CDN resources can be suspended automatically by the system after 90 days of inactivity, or manually at any time from the resource settings.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>CDN resources can be suspended automatically by the system after 90 days of inactivity, or manually at any time from the resource settings.</p>
 
 ## Automatic CDN resource suspension
 
-If a resource is active, but there has not been traffic in 90 days, it will be automatically suspended by the system.
+<p>If a resource is active, but there has not been traffic in 90 days, it will be automatically suspended by the system.</p>
 
-All users with administrator and engineer roles will receive an email seven days before resource suspension, listing the resources scheduled for suspension.
+<p>All users with administrator and engineer roles will receive an email seven days before resource suspension, listing the resources scheduled for suspension.</p>
 
-The resource settings display the scheduled suspension date and time:
+<p>The resource settings display the scheduled suspension date and time:</p>
 
 <Frame>![Resource settings showing the scheduled automatic suspension date and time](/images/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/cdn-resource-suspended.png)</Frame>
 
-
-After the resource suspension, all users with the administrator and engineer roles will receive an email with a list of stopped resources.
+<p>After the resource suspension, all users with the administrator and engineer roles will receive an email with a list of stopped resources.</p>
 
 <Note>
 If traffic resumes on the resource after receiving the first email:
@@ -26,36 +30,191 @@ If traffic resumes on the resource after receiving the first email:
   * The resource will not be suspended.
 </Note>
 
+<p>After re-enabling an automatically suspended resource, a notice appears explaining that it was suspended due to 90 days without traffic. Re-enabling a resource that was automatically suspended starts a seven-day grace period instead of a new 90-day inactivity period. If traffic does not resume during those seven days, the resource is suspended again.</p>
 
-After re-enabling an automatically suspended resource, a notice appears explaining that it was suspended due to 90 days without traffic.
-
-If there is still no traffic after enabling the resource, it will be suspended again in seven days.
-
-To disable automatic suspension for specific resources, contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).
+<p>To disable automatic suspension for specific resources, contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).</p>
 
 ## Manual CDN resource suspension
 
-In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **CDN** > **CDN resources**. Click the resource name to open its settings.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **CDN** > **CDN resources**. Click the resource name to open its settings.</p>
 
-Disable the **Content availability** toggle.
+<p>Disable the **Content availability** toggle.</p>
 
 <Frame>![CDN resource settings showing the Content availability toggle in the enabled state](/images/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/cdn-content-availability-enabled.png)</Frame>
 
-
-Then select **Yes, suspend**.
-
+<p>Then select **Yes, suspend**.</p>
 
 <Frame>![Confirmation dialog for suspending a CDN resource](/images/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/cdn-resource-yes-suspend.png)</Frame>
 
-It will display that the content is not available to customers.
+<p>The **Content availability** toggle changes to the disabled state.</p>
 
 <Frame>![CDN resource settings showing the Content availability toggle in the disabled state](/images/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/cdn-content-availability-disabled.png)</Frame>
 
-
-Click **Save changes**.
-
+<p>Click **Save changes**. The resource stops delivering content after the changes propagate, which takes about 15 minutes.</p>
 
 <Frame>![CDN resource settings with the Save changes button](/images/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/cdn-save-changes.png)</Frame>
 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-The settings will be applied within about 15 minutes.
+<p>Suspend a CDN resource so it stops delivering content, or enable it again. A resource with no traffic for 90 days is suspended by the system. That automatic stop is not started by this call.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+<p>The API response reflects the configuration change immediately, while delivery on the edge can take about 15 minutes to catch up. Automatic inactivity suspension is managed by the system and cannot be disabled through this call. To exclude specific resources from automatic suspension, contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).</p>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Suspend the resource
+
+<p>Set `active` to `false`. Do not confuse `status` with `suspended`. `status` describes whether the resource is currently delivering content. `suspended` indicates whether the system automatically stopped it because of inactivity. A manual suspend sets `status` to `suspended` and leaves `suspended` as `false`. `suspend_date` is read-only and is `null` for a manual suspend. If the resource was already stopped by the system, `suspended` stays `true` until it is enabled.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(resource_id, active=False)
+    print(updated.active, updated.status, updated.suspended)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Active: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Active, updated.Status, updated.Suspended)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"active": false}'
+    ```
+
+    <p>The API returns HTTP 200. A manual suspend looks like this:</p>
+
+    ```json
+    {
+      "id": 101,
+      "active": false,
+      "status": "suspended",
+      "suspended": false,
+      "suspend_date": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Enable the resource
+
+<p>Set `active` to `true`. `status` becomes `active` and `suspended` becomes `false`, including when the resource had been stopped for lack of traffic. Re-enabling a resource that was automatically suspended starts a seven-day grace period instead of a new 90-day inactivity period. If traffic does not resume during those seven days, the resource is suspended again.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(resource_id, active=True)
+    print(updated.active, updated.status, updated.suspended)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Active: gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Active, updated.Status, updated.Suspended)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"active": true}'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 101,
+      "active": true,
+      "status": "active",
+      "suspended": false,
+      "suspend_date": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

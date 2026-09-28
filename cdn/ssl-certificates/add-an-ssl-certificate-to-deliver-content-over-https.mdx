@@ -1,20 +1,25 @@
 ---
 title: Add an SSL certificate to deliver content over HTTPS
 sidebarTitle: SSL overview
-ai-navigation: Attach SSL certificates to CDN resources for HTTPS delivery with custom domains using custom or free Let's Encrypt certificates in the Customer Portal.
+ai-navigation: Attach an SSL certificate to a CDN resource via Customer Portal or via REST API.
 ---
 
-An SSL certificate associates a domain with a public key and allows clients to verify the server's identity. HTTPS protects sensitive data in transit, including financial information. The [SSL&nbsp;certificate](https://gcore.com/learning/what-are-ssl-certificates) overview explains how certificates establish encrypted connections.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To deliver content over HTTPS through Gcore CDN, attach an SSL certificate to a CDN resource that uses a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>An SSL certificate associates a domain with a public key and allows clients to verify the server's identity. HTTPS protects sensitive data in transit, including financial information. The [SSL&nbsp;certificate](https://gcore.com/learning/what-are-ssl-certificates) overview explains how certificates establish encrypted connections.</p>
+
+<p>To deliver content over HTTPS through Gcore CDN, attach an SSL certificate to a CDN resource that uses a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).</p>
 
 <Note>
-Only one certificate can be attached per CDN resource.
+<p>Only one certificate can be attached per CDN resource.</p>
 </Note>
 
 ## SSL certificate types in Gcore
 
-Two SSL certificate types are available:
+<p>Two SSL certificate types are available:</p>
 
 - Custom SSL certificate. A third-party certificate authority issues the certificate for a custom domain such as `cdn.example.com`. Upload the certificate in the Customer Portal and attach it to the CDN resource.
 
@@ -22,25 +27,244 @@ Two SSL certificate types are available:
 
 ## SSL configuration
 
-Configure HTTPS on a CDN resource or upload a custom certificate for later use.
+<p>Configure HTTPS on a CDN resource or upload a custom certificate for later use.</p>
 
 ### CDN resource HTTPS
 
-Attach a certificate from the CDN resource settings:
+<p>Attach a certificate from the CDN resource settings:</p>
 
 <Steps>
   <Step title="Open the CDN resource">
-    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.
+    <p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open the resource.</p>
   </Step>
   <Step title="Enable HTTPS">
-    Open **SSL** and turn on **Enable HTTPS**.
+    <p>Open **SSL** and turn on **Enable HTTPS**.</p>
   </Step>
   <Step title="Select a certificate">
-    Select **Free Let's Encrypt certificate** or **Custom SSL certificate**. For a custom certificate, select the uploaded certificate from the list of available certificates.
+    <p>Select **Free Let's Encrypt certificate** or **Custom SSL certificate**. For a custom certificate, select the uploaded certificate from the list of available certificates.</p>
   </Step>
   <Step title="Apply the configuration">
-    Click **Save changes**.
+    <p>Click **Save changes**.</p>
   </Step>
 </Steps>
 
-For custom uploads, the [custom&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-upload-an-ssl-certificate-to-your-account) procedure covers entering the certificate name, certificate chain, and private key, configuring the certificate-authority option, and submitting the form.
+<p>For custom uploads, the [custom&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-upload-an-ssl-certificate-to-your-account) procedure covers entering the certificate name, certificate chain, and private key, configuring the certificate-authority option, and submitting the form.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Attach an existing SSL certificate to a CDN resource so viewers can request the content over HTTPS, while Let's Encrypt issuance stays in the [Let's&nbsp;Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate) article.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with an existing CDN resource and an uploaded [SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate).
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## List the account SSL certificates
+
+<p>The [certificate&nbsp;list](/api-reference/cdn/ssl-certificates/get-ssl-certificates-list) returns each certificate id, so select the certificate by name and use that id as `sslData`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()  # Reads GCORE_API_KEY from env
+
+    certificates = client.cdn.certificates.list()
+    cert_id = next(item.id for item in certificates if item.name == "cdn.mywebsite.com")
+    print(cert_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient() // Reads GCORE_API_KEY from env
+        ctx := context.Background()
+
+        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{})
+        if err != nil {
+            panic(err)
+        }
+        var certID int64
+        for _, item := range page.Results {
+            if item.Name == "cdn.mywebsite.com" {
+                certID = item.ID
+                break
+            }
+        }
+        fmt.Println(certID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/sslData?limit=1000" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "results": [
+        {
+          "id": 1003,
+          "name": "cdn.mywebsite.com"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Attach the certificate to the resource
+
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `sslEnabled` to `true` and `sslData` to the certificate id, while a request that sets `sslEnabled` to `true` without `sslData` returns HTTP 400 with the message `Invalid certificate.`</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `sslEnabled` | No | Optional in the API. Set to `true` to enable HTTPS |
+| `sslData` | No | Optional in the API. Required when `sslEnabled` is `true`; use the certificate id from the list request |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        1001,
+        ssl_enabled=True,
+        ssl_data=1003,
+    )
+    print(resource.ssl_enabled, resource.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(true),
+            SslData:    gcore.Int(1003),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.SslEnabled, resource.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": true,
+        "sslData": 1003
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "sslEnabled": true,
+      "sslData": 1003
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Disable HTTPS on the resource
+
+<p>The same update turns HTTPS off when `sslEnabled` is `false`, so the response `sslData` is `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(1001, ssl_enabled=False)
+    print(resource.ssl_enabled, resource.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(false),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.SslEnabled, resource.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"sslEnabled": false}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "sslEnabled": false,
+      "sslData": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
