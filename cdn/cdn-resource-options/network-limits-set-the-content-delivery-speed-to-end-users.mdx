@@ -1,56 +1,52 @@
 ---
 title: "Network limits: set the content delivery speed to end users"
 sidebarTitle: Network limits
-ai-navigation: Configure CDN download speed limit per connection using Static mode with a fixed rate and Limit after threshold, or Dynamic mode with query string arguments.
+ai-navigation: Configure a CDN download speed limit per connection in the Customer Portal or the REST API.
 ---
 
-The **Download speed limit** option controls the content delivery speed to end users.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To configure the download speed limit:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-1\. Navigate to CDN and select the CDN resource to configure.
+<p>A large file can take the whole connection while it downloads. **Download speed limit** holds each connection to a lower rate, either the same rate for every file or a different rate for each request.</p>
 
+<p>To configure the download speed limit:</p>
+
+<p>1. Navigate to CDN and select the CDN resource to configure.</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/network-limits-image1.png" alt="CDN resources list" width="70%"/></Frame>
 
+<p>2. In the sidebar, under **Network limits**, click **Download speed limit**.</p>
 
+<p>3. Enable the **Download speed limit** toggle.</p>
 
-2\. In the sidebar, under **Network limits**, click **Download speed limit**.
-
-3\. Enable the **Download speed limit** toggle.
-
-The option has two modes: **Static** and **Dynamic**.
-
-
+<p>The option has two modes: **Static** and **Dynamic**.</p>
 
 ## Static
 
-This mode sets a limit on all content transmitted through the CDN. When this mode is selected, configure the **Connection speed** and **Limit after** parameters.
+<p>This mode sets a limit on all content transmitted through the CDN. When this mode is selected, configure the **Connection speed** and **Limit after** parameters.</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/network-limits-image3.png" alt="Static mode with Connection speed and Limit after fields" width="70%"/></Frame>
 
 ### Connection speed
 
-This setting defines the maximum download speed per connection in kilobytes per second (kB/s). The minimum accepted value is 1 kB/s.
+<p>This setting defines the maximum download speed per connection in kilobytes per second (kB/s). The minimum accepted value is 1 kB/s.</p>
 
 ### Limit after
 
-This setting defines the amount of data that downloads without a speed limit before the **Connection speed** setting takes effect. If set to 0, the download speed is limited immediately from the first byte.
+<p>This setting defines the amount of data that downloads without a speed limit before the **Connection speed** setting takes effect. If set to 0, the download speed is limited immediately from the first byte.</p>
 
 ## Dynamic
 
-This mode sets different limits for different users or content types. The speed is adjusted based on the `speed` and `buffer` query string arguments.
-
+<p>This mode sets different limits for different users or content types. The speed is adjusted based on the `speed` and `buffer` query string arguments.</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/network-limits-image4.png" alt="Dynamic mode description with speed and buffer query argument example" width="70%"/></Frame>
 
+<p>The `speed` argument sets the maximum download speed, while `buffer` sets how much data transfers without the speed limit. The `buffer` argument is optional.</p>
 
+<p>Pass the arguments as query string parameters. The following URL limits download speed to 50 kB/s after downloading 500 kB:</p>
 
-The `speed` argument sets the maximum download speed, while `buffer` sets how much data transfers without the speed limit. The `buffer` argument is optional.
-
-Pass the arguments as query string parameters. The following URL limits download speed to 50 kB/s after downloading 500 kB:
-    
-    
 ```
 http://cdn.example.com/video.mp4?speed=50k&buffer=500k
 ```
@@ -59,3 +55,465 @@ http://cdn.example.com/video.mp4?speed=50k&buffer=500k
 
 - For both modes, the limit is set per connection, so if a client opens two connections at the same time, the total speed is twice the specified limit.
 - [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting) does not affect the **Download speed limit** option. They can be used together.
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A viewer downloading a large file keeps the full speed of that connection until the file ends. Gcore CDN can hold the connection to one rate for every request, or read a different rate from the request URL.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Set a static limit
+
+<p>Gcore CDN sends the file at 100 kB/s after the first 200 kB.</p>
+
+<p>`enabled`, `limit_type`, and `speed` are required. The JSON field is `limit_bandwidth`. `speed` is at least 1 kB/s and at most 1,000,000,000 kB/s. `buffer` is how many kB download before that speed applies: `0` starts the limit at the first byte, and omitting `buffer` stores `0`. A value outside that range returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "limit_bandwidth": {
+                "enabled": True,
+                "limit_type": "static",
+                "speed": 100,
+                "buffer": 200,
+            }
+        },
+    )
+    saved = updated.options.limit_bandwidth
+    print(saved.enabled, saved.limit_type, saved.speed, saved.buffer)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                LimitBandwidth: cdn.CDNResourceUpdateParamsOptionsLimitBandwidth{
+                    Enabled:   true,
+                    LimitType: "static",
+                    Speed:     gcore.Int(100),
+                    Buffer:    gcore.Int(200),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.LimitBandwidth.Enabled, updated.Options.LimitBandwidth.LimitType, updated.Options.LimitBandwidth.Speed, updated.Options.LimitBandwidth.Buffer)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "limit_bandwidth": {
+            "enabled": true,
+            "limit_type": "static",
+            "speed": 100,
+            "buffer": 200
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "limit_type": "static",
+      "speed": 100,
+      "buffer": 200
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Set a dynamic limit
+
+<p>The request URL sets the speed for that download. `http://cdn.example.com/video.mp4?speed=50k&buffer=500k` is delivered at 50 kB/s after 500 kB, and `buffer` can be left off the URL.</p>
+
+<p>The API stores only the mode. `speed` and `buffer` sent in the request body are not saved. `enabled` and `limit_type` are required.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"limit_bandwidth": {"enabled": True, "limit_type": "dynamic"}},
+    )
+    saved = updated.options.limit_bandwidth
+    print(saved.enabled, saved.limit_type)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                LimitBandwidth: cdn.CDNResourceUpdateParamsOptionsLimitBandwidth{
+                    Enabled:   true,
+                    LimitType: "dynamic",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.LimitBandwidth.Enabled, updated.Options.LimitBandwidth.LimitType)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "limit_bandwidth": {"enabled": true, "limit_type": "dynamic"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "limit_type": "dynamic"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn a static limit off
+
+<p>Gcore CDN keeps the saved speed and buffer and stops limiting downloads.</p>
+
+<p>Send `enabled` as `false` with the same `limit_type`, `speed`, and `buffer`. `enabled` alone returns HTTP 400, and a static limit without `speed` also returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "limit_bandwidth": {
+                "enabled": False,
+                "limit_type": "static",
+                "speed": 100,
+                "buffer": 200,
+            }
+        },
+    )
+    saved = updated.options.limit_bandwidth
+    print(saved.enabled, saved.limit_type, saved.speed, saved.buffer)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                LimitBandwidth: cdn.CDNResourceUpdateParamsOptionsLimitBandwidth{
+                    Enabled:   false,
+                    LimitType: "static",
+                    Speed:     gcore.Int(100),
+                    Buffer:    gcore.Int(200),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.LimitBandwidth.Enabled, updated.Options.LimitBandwidth.LimitType, updated.Options.LimitBandwidth.Speed, updated.Options.LimitBandwidth.Buffer)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "limit_bandwidth": {
+            "enabled": false,
+            "limit_type": "static",
+            "speed": 100,
+            "buffer": 200
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "limit_type": "static",
+      "speed": 100,
+      "buffer": 200
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn a dynamic limit off
+
+<p>Gcore CDN keeps the dynamic mode and stops applying the URL limit.</p>
+
+<p>Send `enabled` as `false` and `limit_type` as `dynamic`. `speed` and `buffer` are not part of this request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"limit_bandwidth": {"enabled": False, "limit_type": "dynamic"}},
+    )
+    saved = updated.options.limit_bandwidth
+    print(saved.enabled, saved.limit_type)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                LimitBandwidth: cdn.CDNResourceUpdateParamsOptionsLimitBandwidth{
+                    Enabled:   false,
+                    LimitType: "dynamic",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.LimitBandwidth.Enabled, updated.Options.LimitBandwidth.LimitType)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "limit_bandwidth": {"enabled": false, "limit_type": "dynamic"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "limit_type": "dynamic"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove the limit
+
+<p>Send `limit_bandwidth` as JSON `null` to remove the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"limit_bandwidth": None},
+    )
+    print(updated.options.limit_bandwidth)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "limit_bandwidth": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.LimitBandwidth.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "limit_bandwidth": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
