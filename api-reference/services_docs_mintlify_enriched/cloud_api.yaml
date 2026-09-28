@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: d129031272fb
+  version: 0fbee2fb9aa5
 servers:
 - url: https://api.gcore.com
 paths:
@@ -32913,13 +32913,37 @@ paths:
       operationId: PortDetailView.patch
       summary: Update port
       description: |-
-        Update port security settings, allowed address pairs, and/or security groups.
+        Updates port security, security groups, allowed address pairs, tags and IP assignments.
 
-        Supported for:
-        - Virtual machine instance ports
-        - Bare metal instance ports with software-defined networking (SmartNIC/DPU)
+        **Behavior:**
+        - Undefined fields remain unchanged; list fields replace the whole set, so send the full desired list
+          (`[]` to clear, `ip_assignments` must keep at least one entry)
+        - Tags are merged per key; a `null` value removes the key, and `tags: null` removes all user tags
+        - If no changes are detected, no task is created and an empty task list is returned
 
-        Not supported for standard bare metal ports.
+        **Supported ports:** all compute types (instances, basic VMs, bare metal servers, GPU virtual servers,
+        GPU bare metal servers), as long as the port `capabilities` report `true` for the field being changed.
+        System-managed ports (DHCP, router, load balancer) and unattached ports are rejected.
+
+        **Typical uses:**
+        - Per-port firewall: `security_group_ids` applies to this port only, so ports on the same server can
+          differ. While port security is enabled, an empty list permits no traffic
+        - VIP failover (VRRP/keepalived): add the VIP address to `allowed_address_pairs` of every port allowed
+          to claim it, all on the VIP's network
+        - Routing and NAT appliances: `port_security_enabled: false` permits forwarding traffic with foreign
+          source addresses; clear security groups and allowed address pairs in the same request
+        - Additional addresses: `ip_assignments` adds or releases IPs (dual-stack, extra service IPs) without
+          detaching the port; the guest OS must be configured for the extra ones. Send an entry with only
+          `subnet_id` to get any free address of that subnet, which is the only option on a shared subnet
+          whose free addresses the caller does not know. Such an entry keeps an address the port already has
+          in that subnet, in the order the port reports them, so a shorter list releases the addresses at the
+          end of that order. A request can replace all current addresses. A port an instance holds takes its
+          addresses from one subnet per IP version, because the guest reaches one address range per version
+
+        **Public network:** port security and allowed address pairs cannot be changed on ports in the
+        region's public network. IP assignments can. Each IPv4 address there counts against the external IP
+        quota, so a request that allocates one fails when the limit is full, and a request that releases one
+        gives the quota back. IPv6 addresses in that network are not counted.
       parameters:
       - in: path
         name: project_id
@@ -66229,16 +66253,20 @@ components:
             type: string
           - format: ipv6
             type: string
-          description: IP address to assign
+          description: IP address to assign. Omit it to get any free address of the subnet, which is the only option when the subnet's free addresses are not known to the caller.
+          examples:
+          - 192.168.123.20
           title: Ip Address
         subnet_id:
           description: ID of the subnet
+          example: b39792c3-3160-4356-912e-ba396c95cdcf
+          examples:
+          - b39792c3-3160-4356-912e-ba396c95cdcf
           format: uuid4
           title: Subnet Id
           type: string
       required:
       - subnet_id
-      - ip_address
       title: IpAssignmentRequestSerializer
       type: object
     IpAssignmentSerializer:
@@ -75038,7 +75066,7 @@ components:
           title: Allowed Address Pairs
           type: array
         ip_assignments:
-          description: IP assignments on the port. Replaces the full set; subnets must belong to the port's network and at least one assignment must remain. The IP address is required (server-picked allocation is reserved for port creation).
+          description: IP assignments on the port. Replaces the full set. Subnets must belong to the port's network, and a port an instance holds supports one subnet per IP version. An entry without `ip_address` keeps an address the port already has in that subnet, in the order the port reports them, or takes a free one when the port has none. Addresses that no entry keeps are released.
           items:
             $ref: '#/components/schemas/IpAssignmentRequestSerializer'
           maxItems: 64
@@ -75061,7 +75089,9 @@ components:
           title: Security Group Ids
           type: array
         tags:
-          $ref: '#/components/schemas/UpdateTagsSerializer'
+          anyOf:
+          - $ref: '#/components/schemas/UpdateTagsSerializer'
+          - type: 'null'
           description: |-
             Update key-value tags using JSON Merge Patch semantics (RFC 7386). Provide key-value pairs to add or update tags. Set tag values to `null` to remove tags. Unspecified tags remain unchanged. Read-only tags are always preserved and cannot be modified.
 
@@ -80839,7 +80869,7 @@ components:
           title: Project Id
         role:
           $ref: '#/components/schemas/CustomerAssignableRole'
-          description: User role
+          description: User role. The InternalNetworkOnlyUser value is deprecated. Use User instead.
           examples:
           - ClientAdministrator
         user_id:
