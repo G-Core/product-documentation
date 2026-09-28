@@ -1,10 +1,15 @@
 ---
 title: Allow Gcore CDN access to an origin
 sidebarTitle: Allow CDN origin access
-ai-navigation: Allow Gcore CDN edge servers to pull content from a restricted origin using request headers, public IP addresses, or public network ranges.
+ai-navigation: Allow CDN edge servers to reach a restricted origin in the Customer Portal or the REST API.
 ---
 
-If the origin restricts incoming requests, grant Gcore CDN edge servers access in one of these ways:
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>If the origin restricts incoming requests, grant Gcore CDN edge servers access in one of these ways:</p>
 
 - Authenticate requests with an HTTP header name-value pair (recommended)
 - Allow CDN server host CIDRs
@@ -16,23 +21,23 @@ The list of CDN edge host CIDRs and networks changes as the network expands. New
 
 ## HTTP header access
 
-Authenticate CDN requests with an unpredictable header name-value pair because a header name alone can be copied by any client. Generate a 32-byte value with a cryptographically secure generator:
+<p>Authenticate CDN requests with an unpredictable header name-value pair because a header name alone can be copied by any client. Generate a 32-byte value with a cryptographically secure generator:</p>
 
 ```bash
 openssl rand -hex 32
 ```
 
-Configure [request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) so Gcore sends the exact pair with every origin request.
+<p>Configure [request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) so Gcore sends the exact pair with every origin request.</p>
 
-Configure the CDN resource to pull content from the origin over HTTPS and validate the origin certificate so the header value remains encrypted in transit. Configure the origin to accept requests only when both the header name and value match, and reject requests with a missing or incorrect pair.
+<p>Configure the CDN resource to pull content from the origin over HTTPS and validate the origin certificate so the header value remains encrypted in transit. Configure the origin to accept requests only when both the header name and value match, and reject requests with a missing or incorrect pair.</p>
 
-Protect the value as a secret, avoid exposing it in logs or client-side code, and rotate it in both Gcore and the origin configuration if it is exposed.
+<p>Protect the value as a secret, avoid exposing it in logs or client-side code, and rotate it in both Gcore and the origin configuration if it is exposed.</p>
 
-This method does not need updates when CDN edge addresses change.
+<p>This method does not need updates when CDN edge addresses change.</p>
 
 ## IP address access
 
-The public IP endpoint returns IPv4 `/32` and IPv6 `/128` host CIDRs. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist exactly as returned:
+<p>The public IP endpoint returns IPv4 `/32` and IPv6 `/128` host CIDRs. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist exactly as returned:</p>
 
 <Info>
 The IP and network commands require `jq` to extract both arrays from each JSON response. Install it before running either command.
@@ -43,28 +48,246 @@ curl --fail --silent --show-error https://api.gcore.com/cdn/public-ip-list \
   | jq -r '.addresses[], .addresses_v6[]'
 ```
 
-The request requires no authorization. The JSON response stores IPv4 host CIDRs in `addresses` and IPv6 host CIDRs in `addresses_v6`.
+<p>The request requires no authorization. The JSON response stores IPv4 host CIDRs in `addresses` and IPv6 host CIDRs in `addresses_v6`.</p>
 
 ## Network range access
 
-The public network endpoint returns broader IPv4 and IPv6 CIDR ranges. Poll it every 10 minutes, apply additions immediately, and add each range to the origin allowlist exactly as returned:
+<p>The public network endpoint returns broader IPv4 and IPv6 CIDR ranges. Poll it every 10 minutes, apply additions immediately, and add each range to the origin allowlist exactly as returned:</p>
 
 ```bash
 curl --fail --silent --show-error https://api.gcore.com/cdn/public-net-list \
   | jq -r '.addresses[], .addresses_v6[]'
 ```
 
-The request requires no authorization. The JSON response stores IPv4 networks in `addresses` and IPv6 networks in `addresses_v6`.
+<p>The request requires no authorization. The JSON response stores IPv4 networks in `addresses` and IPv6 networks in `addresses_v6`.</p>
 
 ## Access verification
 
-Test an allowed CDN request and a blocked direct request after changing the origin rules.
+<p>Test an allowed CDN request and a blocked direct request after changing the origin rules.</p>
 
 <Steps>
   <Step title="Test access through the CDN">
-    Request a known file through the CDN custom domain and confirm that the response contains the expected file.
+    <p>Request a known file through the CDN custom domain and confirm that the response contains the expected file.</p>
   </Step>
   <Step title="Test blocked direct access">
-    Request the same file directly from the origin. For HTTP header access, omit the required name-value pair or send an incorrect value. For IP or network access, send the request from a source outside the allowlist. Confirm that the origin rejects the request.
+    <p>Request the same file directly from the origin. For HTTP header access, omit the required name-value pair or send an incorrect value. For IP or network access, send the request from a source outside the allowlist. Confirm that the origin rejects the request.</p>
   </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>An origin that accepts requests only from known clients can allow Gcore CDN in two ways. A request header identifies the CDN, or the origin allowlist uses the public CDN address lists.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required for the header call. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call. The address list calls do not require a token.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Send an origin auth header
+
+<p>This call adds `X-Origin-Auth` to every request Gcore CDN sends to the origin. `enabled` and `value` are both required.</p>
+
+<p>The JSON field is `staticRequestHeaders`. The Python SDK argument is `static_request_headers`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "static_request_headers": {
+                "enabled": True,
+                "value": {"X-Origin-Auth": "origin-allow-value"},
+            }
+        },
+    )
+    saved = updated.options.static_request_headers
+    print(saved.enabled, saved.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                StaticRequestHeaders: cdn.CDNResourceUpdateParamsOptionsStaticRequestHeaders{
+                    Enabled: true,
+                    Value:   map[string]string{"X-Origin-Auth": "origin-allow-value"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := updated.Options.StaticRequestHeaders
+        fmt.Println(saved.Enabled, saved.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "staticRequestHeaders": {
+            "enabled": true,
+            "value": {
+              "X-Origin-Auth": "origin-allow-value"
+            }
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": {
+        "X-Origin-Auth": "origin-allow-value"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Use a value the origin can check. A header name alone can be copied. Pull from the origin over HTTPS so the value stays encrypted in transit. This header does not need updates when CDN edge addresses change.</p>
+
+## Allow host CIDRs
+
+<p>This call returns the current CDN edge host CIDRs. It does not require an API token.</p>
+
+<p>`addresses` contains IPv4 `/32` values. `addresses_v6` contains IPv6 `/128` values. Add each value to the origin allowlist as returned.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    ips = client.cdn.ips.list()
+    print(len(ips.addresses), ips.addresses[0])
+    print(len(ips.addresses_v6), ips.addresses_v6[0])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        ips, err := client.CDN.IPs.List(ctx, cdn.IPListParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(len(ips.Addresses), ips.Addresses[0])
+        fmt.Println(len(ips.AddressesV6), ips.AddressesV6[0])
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl --fail --silent --show-error "https://api.gcore.com/cdn/public-ip-list"
+    ```
+
+    <p>The API returns HTTP 200. `addresses` lists the IPv4 host CIDRs and `addresses_v6` lists the IPv6 host CIDRs.</p>
+  </Tab>
+</Tabs>
+
+<p>New entries appear in this list 30–60 minutes before a server starts serving traffic. Read the list every 10 minutes and apply additions immediately. A missing entry blocks content for users served by that edge.</p>
+
+## Allow network ranges
+
+<p>This call returns broader CDN networks. It does not require an API token. Add each value as returned. Prefix lengths differ across entries.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+    networks = client.cdn.ip_ranges.list()
+    print(len(networks.addresses), networks.addresses[0])
+    print(len(networks.addresses_v6), networks.addresses_v6[0])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        networks, err := client.CDN.IPRanges.List(ctx, cdn.IPRangeListParams{})
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(len(networks.Addresses), networks.Addresses[0])
+        fmt.Println(len(networks.AddressesV6), networks.AddressesV6[0])
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl --fail --silent --show-error "https://api.gcore.com/cdn/public-net-list"
+    ```
+
+    <p>The API returns HTTP 200. `addresses` lists the IPv4 networks and `addresses_v6` lists the IPv6 networks.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
