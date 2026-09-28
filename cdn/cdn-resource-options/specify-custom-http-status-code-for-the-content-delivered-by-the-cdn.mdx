@@ -1,101 +1,580 @@
 ---
 title: Configuring HTTP status codes for CDN-hosted content
 sidebarTitle: Status code
-ai-navigation: Configure custom HTTP status codes for Gcore CDN resources via Resource settings or Rules, with optional redirect URLs, status text, and time-based scheduling.
+ai-navigation: Configure a custom HTTP status code for CDN content in the Customer Portal or the REST API.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-The **Set status code** option defines a custom HTTP status code for content hosted on a CDN resource. The code can be applied globally to all resource content or selectively to specific files via Rules. A schedule with an **Apply from** and **Until** time range lets the code activate only during certain hours.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-A common use case is age-restricted content compliance — return a 403 error code or redirect users to a different page after 22:00, and configure the schedule to activate the code only during the restricted hours.
+<p>The **Set status code** option returns a custom HTTP status for content on a CDN resource instead of the file from the origin. The response can be a short text or a redirect, and an **Apply from** and **Until** range limits the status to certain hours.</p>
 
-The option is available in two places:
+<p>After 22:00, Gcore CDN can return 403 or redirect to another page, and deliver the original file during the rest of the day.</p>
 
-* Via **Resource settings** — applies the custom code to all content on the CDN resource.
-* Via **Rules** — applies the custom code only to files matching the rule pattern.
+## Status code
 
-Select the appropriate tab below.
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), **Resource settings** applies the code to every file on the CDN resource, and **Rules** applies it only to files that match the rule pattern.</p>
 
 <Tabs>
   <Tab title="Resource settings">
-    1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources**.
+    <Steps>
+      <Step title="Open the CDN resource">
+        In the Customer Portal, navigate to **CDN** > **CDN resources** and click the CNAME of the CDN resource.
 
-    2. Click the CNAME of the required CDN resource to open **Resource settings**.
+        <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png)</Frame>
+      </Step>
+      <Step title="Open Content">
+        Navigate to the **OPTIONS** tab. In the left menu, click **Content**.
+      </Step>
+      <Step title="Enable Set status code">
+        Enable the **Set status code** toggle.
 
-    <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png)</Frame>
+        <Frame>![Enable the Set status code option](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-20.png)</Frame>
+      </Step>
+      <Step title="Enter the status code">
+        In the **Status code** field, enter the HTTP status code. The field defaults to 200.
 
-    3. Navigate to the **OPTIONS** tab.
+        <Caution>
+        **Caution**
 
-    4. In the left menu, click **Content** to scroll to the Content section.
+        Codes 408, 444, 477, 494, 495, 496, 497, and 499 are not accepted.
+        </Caution>
 
-    5. Enable the **Set status code** toggle.
+        - (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
+        - (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone**.
+      </Step>
+      <Step title="Save the resource">
+        Click **Save changes**.
 
-    <Frame>![Enable the Set status code option](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-20.png)</Frame>
+        <Frame>![Configure the Set status code option](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-30.png)</Frame>
 
-    6. In the **Status code** field, enter the desired HTTP status code. The field defaults to **200**.
-
-    <Caution>
-    **Caution**
-
-    Codes 408, 444, 494, 495, 496, 497, and 499 are not accepted.
-    </Caution>
-
-    7. (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
-
-    8. (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone** to define the time range when the custom status code is active.
-
-    9. Click **Save changes**.
-
-    <Frame>![Configure the Set status code option](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-30.png)</Frame>
-
-    The custom code is now applied to all files delivered via the CDN resource.
+        The custom code applies to all files delivered by the CDN resource.
+      </Step>
+    </Steps>
   </Tab>
   <Tab title="Rules">
-    1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources**.
+    <Steps>
+      <Step title="Open the CDN resource">
+        In the Customer Portal, navigate to **CDN** > **CDN resources** and click the CNAME of the CDN resource.
 
-    2. Click the CNAME of the required CDN resource to open **Resource settings**.
+        <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png)</Frame>
+      </Step>
+      <Step title="Create a blank rule">
+        1. Navigate to the **RULES** tab.
+        2. Click **Create rule**.
+        3. Click **Create blank rule**.
 
-    <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png)</Frame>
+        <Frame>![Open rules to set a custom code for specific files](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-50.png)</Frame>
 
-    3. Navigate to the **RULES** tab.
+        Set the [rule&nbsp;pattern](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files#create-a-rule-manually) so the status code applies only to the matching files.
+      </Step>
+      <Step title="Add the status code option">
+        1. At the end of the page, click **Add option**.
 
-    4. Click **Create rule**.
+        <Frame>![Add an option in the rule](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-60.png)</Frame>
 
-    5. In the menu that opens, click **Create blank rule**.
+        2. Click **Status code**.
+        3. Click **Close**.
 
-    <Frame>![Open rules to set a custom code for specific files](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-50.png)</Frame>
+        <Frame>![Status code option in the list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-70.png)</Frame>
+      </Step>
+      <Step title="Enter the status code">
+        Enable the **Set status code** toggle. In the **Status code** field, enter the HTTP status code. The field defaults to 200.
 
-    On the page that opens, specify to which files the rule applies. Configure the other settings on the page. The guide on [creating&nbsp;rules](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files#create-a-rule-manually) explains the configuration options in depth.
+        <Caution>
+        **Caution**
 
-    6. At the end of the page, click **Add option**.
+        Codes 408, 444, 477, 494, 495, 496, 497, and 499 are not accepted.
+        </Caution>
 
-    <Frame>![Add an option in the rule](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-60.png)</Frame>
+        - (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
+        - (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone**.
+      </Step>
+      <Step title="Create the rule">
+        Click **Create rule**.
 
-    7. Click **Status code** in the list to add the option to the rule.
+        <Frame>![Configure the Set status code option in the rule](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-80.png)</Frame>
 
-    8. Click **Close**.
-
-    <Frame>![Status code option in the list](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-70.png)</Frame>
-
-    9. Enable the **Set status code** toggle.
-
-    10. In the **Status code** field, enter the desired HTTP status code. The field defaults to **200**.
-
-    <Caution>
-    **Caution**
-
-    Codes 408, 444, 494, 495, 496, 497, and 499 are not accepted.
-    </Caution>
-
-    11. (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
-
-    12. (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone** to define the time range when the custom status code is active.
-
-    13. Click **Create rule**.
-
-    <Frame>![Configure the Set status code option in the rule](/images/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-80.png)</Frame>
-
-    The rule with the custom status code is now applied to the specified files delivered via the CDN.
+        The rule applies the custom status code to the specified files.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Gcore CDN can answer a request with a chosen HTTP status instead of the file from the origin. The response can include a short text or send the viewer to another URL.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Return a status code
+
+<p>Answer every request with status 403 and the text Forbidden.</p>
+
+<p>`enabled`, `code`, and `body` are required. `body` is text or a redirect URL, and a value longer than 255 characters returns HTTP 400. A code below 100, above 599, or one of 408, 444, 477, 494, 495, 496, 497, and 499 returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"force_return": {"enabled": True, "code": 403, "body": "Forbidden"}},
+    )
+    saved = updated.options.force_return
+    print(saved.enabled, saved.code, saved.body)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ForceReturn: cdn.CDNResourceUpdateParamsOptionsForceReturn{
+                    Enabled: true,
+                    Code:    403,
+                    Body:    "Forbidden",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.ForceReturn.Enabled, updated.Options.ForceReturn.Code, updated.Options.ForceReturn.Body)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "force_return": {"enabled": true, "code": 403, "body": "Forbidden"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "code": 403,
+      "body": "Forbidden"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Limit the status to certain hours
+
+<p>Return 403 with the text Forbidden only from 22:00 to 06:00 in Europe/Luxembourg. Times use `hh:mm`. When `time_zone` is omitted, the API stores `UTC`. Omitting `time_interval`, or sending it as `null`, stores no schedule.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "force_return": {
+                "enabled": True,
+                "code": 403,
+                "body": "Forbidden",
+                "time_interval": {
+                    "start_time": "22:00",
+                    "end_time": "06:00",
+                    "time_zone": "Europe/Luxembourg",
+                },
+            }
+        },
+    )
+    saved = updated.options.force_return
+    print(saved.code, saved.time_interval.start_time, saved.time_interval.end_time, saved.time_interval.time_zone)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ForceReturn: cdn.CDNResourceUpdateParamsOptionsForceReturn{
+                    Enabled: true,
+                    Code:    403,
+                    Body:    "Forbidden",
+                    TimeInterval: cdn.CDNResourceUpdateParamsOptionsForceReturnTimeInterval{
+                        StartTime: "22:00",
+                        EndTime:   "06:00",
+                        TimeZone:  gcore.String("Europe/Luxembourg"),
+                    },
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(
+            updated.Options.ForceReturn.Code,
+            updated.Options.ForceReturn.TimeInterval.StartTime,
+            updated.Options.ForceReturn.TimeInterval.EndTime,
+            updated.Options.ForceReturn.TimeInterval.TimeZone,
+        )
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "force_return": {
+            "enabled": true,
+            "code": 403,
+            "body": "Forbidden",
+            "time_interval": {
+              "start_time": "22:00",
+              "end_time": "06:00",
+              "time_zone": "Europe/Luxembourg"
+            }
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "code": 403,
+      "body": "Forbidden",
+      "time_interval": {
+        "start_time": "22:00",
+        "end_time": "06:00",
+        "time_zone": "Europe/Luxembourg"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn the status code off
+
+<p>Set `enabled` to `false` and send the same `code` and `body`. Gcore CDN keeps those values and stops answering with the custom status. `enabled` alone returns HTTP 400. A request that does not include `time_interval` clears the schedule.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"force_return": {"enabled": False, "code": 403, "body": "Forbidden"}},
+    )
+    saved = updated.options.force_return
+    print(saved.enabled, saved.code, saved.body)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ForceReturn: cdn.CDNResourceUpdateParamsOptionsForceReturn{
+                    Enabled: false,
+                    Code:    403,
+                    Body:    "Forbidden",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.ForceReturn.Enabled, updated.Options.ForceReturn.Code, updated.Options.ForceReturn.Body)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "force_return": {"enabled": false, "code": 403, "body": "Forbidden"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "code": 403,
+      "body": "Forbidden"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove the status code
+
+<p>Send `force_return` as JSON `null` to remove the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"force_return": None},
+    )
+    print(updated.options.force_return)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "force_return": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.ForceReturn.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "force_return": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+## Return the status for one path
+
+<p>A resource rule returns 403 for requests under `/restricted/`. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="status-restricted",
+        rule="^/restricted/.*",
+        rule_type=0,
+        options={"force_return": {"enabled": True, "code": 403, "body": "Forbidden"}},
+    )
+    print(rule.id, rule.options.force_return.code, rule.options.force_return.body)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "status-restricted",
+            Rule:     "^/restricted/.*",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                ForceReturn: cdn.CDNResourceRuleNewParamsOptionsForceReturn{
+                    Enabled: true,
+                    Code:    403,
+                    Body:    "Forbidden",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.ForceReturn.Code, rule.Options.ForceReturn.Body)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "status-restricted",
+        "rule": "^/restricted/.*",
+        "ruleType": 0,
+        "options": {
+          "force_return": {"enabled": true, "code": 403, "body": "Forbidden"}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "code": 403,
+      "body": "Forbidden"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
