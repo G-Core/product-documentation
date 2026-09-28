@@ -1,7 +1,7 @@
 ---
 title: "Events"
 sidebarTitle: Events
-ai-navigation: Investigate HTTP requests and security events in WAAP via Customer Portal using filters for time range, event type, decision, optional action, country, IP address, path, HTTP method, and request identifiers, or via REST API using the analytics requests endpoint.
+ai-navigation: Investigate WAAP HTTP requests and security events in the Customer Portal with filters and event details, or via the REST API analytics endpoints.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -29,25 +29,21 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 - **Time range** — isolate the exact period when suspicious activity occurred.  
 - **Domain** — focus the investigation on traffic targeting all domains, or a specific domain.  
-- **Event** — focus on specific security signals or detections.  
-- **Decision** — filter requests based on the mitigation decision applied by WAAP. Available values include:
-
-  - **Blocked** — malicious traffic that was denied and did not reach the origin, according to the active security rules.
-  - **Monitored** — malicious traffic that was detected but intentionally allowed to pass according to the current security policy (for example when rules operate in monitoring mode).
-  - **Allowed** — traffic explicitly permitted by user-defined policies or allow rules.
-  - **Passed** — legitimate traffic that was inspected and forwarded to the origin because it did not trigger blocking policies.
-
-- **Optional Action** — filter requests by a challenge applied in addition to the primary decision. Available values include:
-
-  - **CAPTCHA** — a CAPTCHA challenge was issued to the client request.
-  - **JS Challenge** — a JavaScript or browser validation challenge was issued.
-
-  **Optional Action** filters can be combined with **Decision** filters. For example, selecting **Decision**: **Blocked** and **Optional Action**: **CAPTCHA** returns requests that were blocked after failing a CAPTCHA challenge.
-
-<p>Additional filters can be added dynamically using the **Add filter** button.</p>
+- **Event** — focus on a security signal or detection, including **DDoS**. Type a rule name and add it, for example `SQL Injection` or `DDoS`.  
+- **Actions** — combine the mitigation decision and any extra challenge in one filter. Each dropdown has an **Include** / **Exclude** switch. Values are **Blocked**, **Monitored**, **Allowed**, **Passed**, **Captcha**, and **JS Challenge**. For example, **Include** + **Blocked** + **Captcha** returns requests blocked after a failed Captcha.
 
 <Frame>
-  ![Add filter button in Events](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-add-filter.png)
+  ![Actions filter with Include and Exclude](/images/docs/waap/analytics/events/actions-include-exclude.png)
+</Frame>
+
+<p>Open **Add filter** to add more dimensions. Every added dropdown also has **Include** / **Exclude**.</p>
+
+<Frame>
+  ![Add filter menu with Organizations, Devices, and Clients](/images/docs/waap/analytics/events/add-filter-menu.png)
+</Frame>
+
+<Frame>
+  ![Events filter bar with Event, Actions, Organizations, Devices, and Clients](/images/docs/waap/analytics/events/events-filter-bar.png)
 </Frame>
 
 <p>Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.</p>
@@ -60,6 +56,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - **Request ID** — inspect one or more specific requests. Multiple request IDs can be provided as a comma-separated list.  
 - **Reference IDs** — group repeated requests that triggered the same security rule. Multiple reference IDs can be provided as a comma-separated list.  
 - **Session IDs** — analyze sequences of requests generated within one client session. Multiple session IDs can be provided as a comma-separated list.
+- **Organizations** — filter by the WHOIS organization on the client IP. Values are those seen in the selected time range.
+- **Devices** and **Clients** — filter by the parsed user-agent device and client family. Values are those seen in the selected time range.
 - **JA3** — filter by the [JA3 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. Useful for identifying botnets that share a common network stack regardless of IP address.
 - **JA4** — filter by the [JA4 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. JA4 normalizes handshake fields that browsers may reorder between sessions, producing more stable fingerprints for modern TLS clients.
 
@@ -89,9 +87,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 - **Organization** — the name of the organization that owns the client IP address, sourced from WHOIS data. This helps analysts attribute traffic to a hosting provider, cloud platform, ISP, or corporate network, which is often a strong signal when distinguishing legitimate users from automated or malicious infrastructure.
 - **Tags** — threat category labels assigned by WAAP, such as *Injection Attack* or *SQL Injection*. Tags reflect the high-level threat classification detected for the request, giving analysts an immediate understanding of the type of threat behind a security event without inspecting the raw payload.
+- **Detector** and **Payload** — appear only when a [WAF and OWASP Top Threats](/waap/waap-policies/waf-and-owasp-top-threats) signature matched (for example SQL injection or XSS). They stay hidden for bot, IP reputation, CSRF, custom-rule, and DDoS events. **Detector** shows the signature ID and the request part that matched, for example `ID862 in query_params`. **Payload** shows the matched fragment (`matched_content`): URL-encoded, limited to 200 characters, and sometimes empty. The portal shows the first detector; the API returns the full `detector` list. The top-level rule name on the event is the policy that made the decision; `detector` lists the signatures inside that policy.
 - **JA3** and **JA4** — [TLS fingerprints](/waap/threat-intelligence/tls-fingerprinting) computed from the client's TLS handshake. Both values appear as dedicated fields in the event details panel for HTTPS requests. Use them to identify clients by network stack rather than IP address, or to pivot from an event directly into a fingerprint-based filter.
 
-<p>Organization indicates *who* the request came from, Tags explain *why* WAAP considered it suspicious, and JA3/JA4 fingerprints identify *what* client library or network stack originated it.</p>
+<p>Organization indicates *who* the request came from. Tags classify the threat. Detector and Payload show which signature matched and on which fragment. JA3/JA4 fingerprints identify the client network stack.</p>
 
 ## Exporting events
 
@@ -310,10 +309,14 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 | `request_ids` | No | One or more request IDs. |
 | `reference_ids` | No | One or more reference IDs. |
 | `session_ids` | No | One or more session IDs. |
+| `user_agent_clients` | No | Parsed user-agent client families. Values come from `GET /waap/v1/analytics/filters/user-agent-clients` for the selected period. |
+| `user_agent_devices` | No | Parsed user-agent device types. Values come from `GET /waap/v1/analytics/filters/user-agent-devices` for the selected period. |
+| `organizations` | No | WHOIS organizations on client IPs. Values come from `GET /waap/v1/analytics/filters/organizations` for the selected period. |
+| `exclude_decision` | No | Exclude one or more decisions. The same `exclude_` prefix applies to `exclude_optional_action`, `exclude_status_codes`, `exclude_http_methods`, and `exclude_path`. |
 
 ## Event details
 
-<p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, and the threat category tags that explain why the request was flagged.</p>
+<p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, the threat category tags that explain why the request was flagged, and the `detector` array for WAF and OWASP signature matches.</p>
 
 <p>The `request_id` value comes from the `id` field in the events list response. The `domain_id` is also present in each list result.</p>
 
@@ -359,9 +362,20 @@ curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST
   "request_headers": {
     "Host": "example.com",
     "Content-Type": "application/json"
-  }
+  },
+  "detector": [
+    {
+      "rule_id": "ID862",
+      "rule_name": "SQL Injection Prevention",
+      "subject_type": "query_params",
+      "subject_field": "q",
+      "matched_content": "select%20user%20from%20master.."
+    }
+  ]
 }
 ```
+
+<p>Top-level `rule_name` is the policy that made the decision. `detector` lists the signatures inside that policy. The array is populated only for WAF and OWASP Top Threats signature events; otherwise it is empty. `matched_content` is the matched fragment, URL-encoded and limited to 200 characters.</p>
 
   </MethodSection>
 </MethodSwitch>
