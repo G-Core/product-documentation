@@ -1,18 +1,23 @@
 ---
 title: Optimize large file delivery
 sidebarTitle: Large files delivery
-ai-navigation: Enable Large File Delivery Optimization in Gcore CDN via Resource settings for files larger than 10 MB, using HTTP Range requests and 10 MB chunks.
+ai-navigation: Enable large file delivery optimization for CDN content in the Customer Portal or the REST API.
 ---
 
-Large File Delivery Optimization is designed for CDN resources that serve files larger than 10 MB. When enabled, Gcore CDN requests content from the origin in 10 MB chunks using HTTP range requests, caches each chunk independently, and assembles the response from the cached portions.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-A range request includes the `Range` HTTP header to indicate the byte or part of the content to be returned. If the request has a `Range: bytes=123537047-123545047` header, the CDN requests a 10 MB chunk from the origin (byte range 115343360-125829119), caches this chunk, and serves the requested range (123537047-123545047) to the end user.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-For this option to work, the origin server must support range requests.
+<p>Large File Delivery Optimization is designed for CDN resources that serve files larger than 10 MB. When enabled, Gcore CDN requests content from the origin in 10 MB chunks using HTTP range requests, caches each chunk independently, and assembles the response from the cached portions.</p>
+
+<p>A range request includes the `Range` HTTP header to indicate the byte or part of the content to be returned. If the request has a `Range: bytes=123537047-123545047` header, the CDN requests a 10 MB chunk (10,485,760 bytes, range 115343360-125829119) from the origin, caches this chunk, and serves the requested range (123537047-123545047) to the end user.</p>
+
+<p>For this option to work, the origin server must support range requests.</p>
 
 ## Configuration guidelines
 
-Large File Delivery Optimization can be configured in the Resource Settings and Rules. Review the following requirements and recommendations before configuring the option:
+<p>Large File Delivery Optimization can be configured in the Resource Settings and Rules. Review the following requirements and recommendations before configuring the option:</p>
 
   * The origin server must support HTTP Range Requests.
   * The `Content-Length` and `Etag` headers must be consistent across the origin.
@@ -23,26 +28,378 @@ Large File Delivery Optimization can be configured in the Resource Settings and 
 
 ## Configuration steps
 
-To enable Large File Delivery Optimization via the Gcore Customer Portal:
+<p>To enable Large File Delivery Optimization via the Gcore Customer Portal:</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources**.
+<p>1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources**.</p>
 
-2. Click the CNAME of the required CDN resource to open **Resource settings**.
+<p>2. Click the CNAME of the required CDN resource to open **Resource settings**.</p>
 
 <Frame>![CDN resources list](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-image1.png)</Frame>
 
-3. Navigate to the **OPTIONS** tab.
+<p>3. Navigate to the **OPTIONS** tab.</p>
 
-4. In the left menu, click **Content** to scroll to the Content section.
+<p>4. In the left menu, click **Content** to scroll to the Content section.</p>
 
 <Frame>![Resource settings with Content section](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-image2.png)</Frame>
 
-5. Enable the **Large files delivery optimization** toggle.
+<p>5. Enable the **Large files delivery optimization** toggle.</p>
 
 <Frame>![Large files delivery optimization toggle](/images/docs/cdn/cdn-resource-options/optimize-large-file-delivery/optimize-large-file-image3.png)</Frame>
 
-6. Click **Save changes**.
+<p>6. Click **Save changes**.</p>
 
 <Warning>
 When Large files delivery optimization is enabled, the HTTP `Etag` header is concealed in responses.
 </Warning>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A file larger than 10 MB keeps the origin busy when Gcore CDN fetches it in one piece. Slice fetches that file in parts no larger than 10 MB, caches each part, and sends the viewer the first bytes without waiting for the whole file.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Turn slice on
+
+<p>Gcore CDN requests each large file from the origin in parts of up to 10 MB. The origin must accept HTTP range requests.</p>
+
+<p>`enabled` and `value` are required. Both `true` turns slice on. The JSON field is `slice`; the key `Slice` is ignored. A request that also enables `gzipOn`, `brotli_compression`, or `fetch_compressed` returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"slice": {"enabled": True, "value": True}},
+    )
+    saved = updated.options.slice
+    print(saved.enabled, saved.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Slice: cdn.CDNResourceUpdateParamsOptionsSlice{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Slice.Enabled, updated.Options.Slice.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "slice": {"enabled": true, "value": true}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn slice off
+
+<p>Gcore CDN keeps `value` and stops fetching the file in parts.</p>
+
+<p>Send `enabled` as `false` and the same `value`. `enabled` alone, or `value` alone, returns HTTP 400.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"slice": {"enabled": False, "value": True}},
+    )
+    saved = updated.options.slice
+    print(saved.enabled, saved.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Slice: cdn.CDNResourceUpdateParamsOptionsSlice{
+                    Enabled: false,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Slice.Enabled, updated.Options.Slice.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "slice": {"enabled": false, "value": true}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove slice
+
+<p>Send `slice` as JSON `null` to remove the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"slice": None},
+    )
+    print(updated.options.slice)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "slice": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Slice.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "slice": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+## Slice one path
+
+<p>A resource rule fetches files under `/video/` in parts. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="slice-large",
+        rule="^/video/.*",
+        rule_type=0,
+        options={"slice": {"enabled": True, "value": True}},
+    )
+    print(rule.id, rule.options.slice.enabled, rule.options.slice.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "slice-large",
+            Rule:     "^/video/.*",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                Slice: cdn.CDNResourceRuleNewParamsOptionsSlice{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.Slice.Enabled, rule.Options.Slice.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "slice-large",
+        "rule": "^/video/.*",
+        "ruleType": 0,
+        "options": {
+          "slice": {"enabled": true, "value": true}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
