@@ -159,7 +159,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Query security events and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs cover the list endpoint. Response examples include only the fields used in each step.</p>
+<p>Query security events and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The current [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs do not include a method for `GET /waap/v2/analytics/events`, so the examples use HTTP. Response examples include only the fields used in each step.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required. To retrieve details for a specific event, the domain ID is also needed — use [List Domains](/api-reference/waap/domains/list-domains) (`GET /waap/v2/domains`) to list available domains and their IDs.
@@ -175,104 +175,38 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <p>The [Get security events](/api-reference/waap/analytics/get-security-events) endpoint (`GET /waap/v2/analytics/events`) returns security events across all domains in the account. Each record includes the client IP address, triggered rule, decision, and request metadata. Results older than 30 days are not available. Pages use cursor pagination: pass the `next` value from a response as the `next` query parameter to fetch the following page.</p>
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    from datetime import datetime, timedelta, timezone
+```bash
+curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=2026-06-24T00:00:00Z&decision=blocked&limit=50" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
 
-    import gcore
+<p>Response:</p>
 
-    client = gcore.Gcore()
-
-    end = datetime.now(timezone.utc)
-    start = end - timedelta(hours=24)
-
-    events = client.waap.analytics.get_events(
-        start=start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        end=end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        decision=["blocked"],
-        limit=50,
-    )
-
-    for event in events.results:
-        print(f"id={event.id} path={event.path!r} rule={event.rule_name!r} ip={event.client_ip}")
-    if events.next:
-        print(f"next={events.next}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"time"
-
-    	"github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/waap"
-    )
-
-    func main() {
-    	client := gcore.NewClient()
-
-    	end := time.Now().UTC()
-    	start := end.Add(-24 * time.Hour)
-
-    	page, err := client.Waap.Analytics.GetEvents(context.Background(), waap.AnalyticsGetEventsParams{
-    		Start:    start.Format(time.RFC3339),
-    		End:      gcore.String(end.Format(time.RFC3339)),
-    		Decision: []string{"blocked"},
-    		Limit:    gcore.Int(50),
-    	})
-    	if err != nil {
-    		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-    		os.Exit(1)
-    	}
-
-    	for _, event := range page.Results {
-    		fmt.Printf("id=%s path=%q rule=%q ip=%s\n", event.ID, event.Path, event.RuleName, event.ClientIP)
-    	}
-    	if page.Next != "" {
-    		fmt.Printf("next=%s\n", page.Next)
-    	}
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=2026-06-24T00:00:00Z&decision=blocked&limit=50" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response:
-
-    ```json
+```json
+{
+  "results": [
     {
-      "results": [
-        {
-          "id": "96763b8fb655e9f18a2e04097b704e39-458959",
-          "decision": "blocked",
-          "optional_action": "",
-          "action": "block",
-          "client_ip": "203.0.113.45",
-          "country": "US",
-          "domain": "example.com",
-          "domain_id": 12345,
-          "method": "POST",
-          "path": "/api/login",
-          "rule_name": "SQL Injection",
-          "status_code": 403,
-          "result": "blocked",
-          "request_time": 1782297000000
-        }
-      ],
-      "next": "eyJyZXF1ZXN0X3RpbWUiOjE3ODIyOTcwMDAwMDB9"
+      "id": "96763b8fb655e9f18a2e04097b704e39-458959",
+      "decision": "blocked",
+      "optional_action": "",
+      "action": "block",
+      "client_ip": "203.0.113.45",
+      "country": "US",
+      "domain": "example.com",
+      "domain_id": 12345,
+      "method": "POST",
+      "path": "/api/login",
+      "rule_name": "SQL Injection",
+      "status_code": 403,
+      "result": "blocked",
+      "request_time": 1782297000000
     }
-    ```
-  </Tab>
-</Tabs>
+  ],
+  "next": "eyJyZXF1ZXN0X3RpbWUiOjE3ODIyOTcwMDAwMDB9"
+}
+```
+
+<p>The table lists commonly used query parameters. It is not the complete API. Parameters discussed on the Events page, including `ja3` and `ja4`, are included. For the full set — including `tags`, `user_agent`, `has_policy_override`, `order_by`, and every `exclude_*` filter — see [Get security events](https://docs.gcore.com/api-reference/waap/analytics/get-security-events).</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -291,10 +225,12 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 | `request_ids` | No | One or more request IDs. |
 | `reference_ids` | No | One or more reference IDs. |
 | `session_ids` | No | One or more session IDs. |
+| `ja3` | No | One or more JA3 TLS fingerprints. Each value is 32 hexadecimal characters. |
+| `ja4` | No | One or more JA4 TLS fingerprints, for example `t13d3113h2_e8f1e7e78f70_ce5650b735ce`. |
 | `user_agent_clients` | No | Parsed user-agent client families. Values come from `GET /waap/v1/analytics/filters/user-agent-clients` for the selected period. |
 | `user_agent_devices` | No | Parsed user-agent device types. Values come from `GET /waap/v1/analytics/filters/user-agent-devices` for the selected period. |
 | `organizations` | No | WHOIS organizations on client IPs. Values come from `GET /waap/v1/analytics/filters/organizations` for the selected period. |
-| `exclude_decision` | No | Exclude one or more decisions. The same `exclude_` prefix applies to `exclude_optional_action`, `exclude_status_codes`, `exclude_http_methods`, and `exclude_path`. |
+| `exclude_decision` | No | Exclude one or more decisions. Additional `exclude_*` filters are listed in the [API reference](https://docs.gcore.com/api-reference/waap/analytics/get-security-events). |
 
 ## Event details
 
