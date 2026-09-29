@@ -42,7 +42,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>Open **Add filter** to add more dimensions. Every added dropdown also has **Include** / **Exclude**.</p>
 
 <Frame>
-  ![Add filter menu with Organizations, Devices, and Clients](/images/docs/waap/analytics/events/add-filter-menu.png)
+  ![Add filter menu with Organizations, Devices, Clients, Tags, and User-Agent](/images/docs/waap/analytics/events/add-filter-menu.png)
 </Frame>
 
 <Frame>
@@ -59,6 +59,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - **Session IDs** — analyze sequences of requests generated within one client session. Multiple session IDs can be provided as a comma-separated list.
 - **Organizations** — filter by the WHOIS organization on the client IP. Values are those seen in the selected time range.
 - **Devices** and **Clients** — filter by the parsed user-agent device and client family. Values are those seen in the selected time range.
+- **Tags** — filter by tags WAAP assigned to the request, for example `Injection Attack`.
+- **User-Agent** — case-insensitive partial match on the user-agent string.
 - **JA3** — filter by the [JA3 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. Useful for identifying botnets that share a common network stack regardless of IP address.
 - **JA4** — filter by the [JA4 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. JA4 normalizes handshake fields that browsers may reorder between sessions, producing more stable fingerprints for modern TLS clients.
 
@@ -72,22 +74,22 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 - **Organization** — the name of the organization that owns the client IP address, sourced from WHOIS data. This helps analysts attribute traffic to a hosting provider, cloud platform, ISP, or corporate network, which is often a strong signal when distinguishing legitimate users from automated or malicious infrastructure.
 - **Tags** — threat category labels assigned by WAAP, such as *Injection Attack* or *SQL Injection*. Tags reflect the high-level threat classification detected for the request, giving analysts an immediate understanding of the type of threat behind a security event without inspecting the raw payload.
-- **Detector** and **Payload** — appear only when a [WAF and OWASP Top Threats](/waap/waap-policies/waf-and-owasp-top-threats) signature matched (for example SQL injection or XSS). They stay hidden for bot, IP reputation, CSRF, custom-rule, and DDoS events. **Detector** shows the signature ID and the request part that matched, for example `ID862 in query_params`. **Payload** shows the matched fragment (`matched_content`): URL-encoded, limited to 200 characters, and sometimes empty. The portal shows the first detector; the API returns the full `detector` list. The top-level rule name on the event is the policy that made the decision; `detector` lists the signatures inside that policy.
+- **Detector** and **Payload** — shown together in the portal only when a [WAF and OWASP Top Threats](/waap/waap-policies/waf-and-owasp-top-threats) signature matched (for example SQL injection or XSS) and the first detector has a non-empty `matched_content`. If there is no matched fragment, the section is not shown. They stay hidden for bot, IP reputation, CSRF, custom-rule, and DDoS events. **Detector** shows the signature ID and the request part that matched, for example `ID862 in query_params`. **Payload** shows the matched fragment (`matched_content`): URL-encoded and limited to 200 characters. The portal shows the first detector; the API returns the full `detector` list. The top-level rule name on the event is the policy that made the decision; `detector` lists the signatures inside that policy.
 - **JA3** and **JA4** — [TLS fingerprints](/waap/threat-intelligence/tls-fingerprinting) computed from the client's TLS handshake. Both values appear as dedicated fields in the event details panel for HTTPS requests. Use them to identify clients by network stack rather than IP address, or to pivot from an event directly into a fingerprint-based filter.
 
 <p>Organization indicates *who* the request came from. Tags classify the threat. Detector and Payload show which signature matched and on which fragment. JA3/JA4 fingerprints identify the client network stack.</p>
 
 ## Exporting events
 
-<p>WAAP provides two export paths: a one-off CSV download from the Events page, and continuous delivery of CDN request logs that include WAAP fields.</p>
+<p>WAAP provides two export paths: a CSV download of the events currently loaded in the table, and continuous delivery of CDN request logs that include WAAP fields.</p>
 
 ### Export from the Events page
 
-<p>The Events page downloads the currently filtered result set as a CSV file for investigations, incident records, or sharing with other teams.</p>
+<p>The Events page downloads the events currently loaded in the table as a CSV file. That file is not the full filtered result set. For a complete extract, use the [Get security events](/api-reference/waap/analytics/get-security-events) endpoint and page through results with the `next` cursor.</p>
 
 <Steps>
   <Step title="Apply the investigation filters">
-    Set the time range and any other filters first. The export contains only the events that match those filters.
+    Set the time range and any other filters first. The CSV contains the events currently loaded in the table after those filters are applied.
   </Step>
   <Step title="Download the CSV">
     Click the download icon in the toolbar. The control is labeled **Export CSV**. The browser downloads a CSV file.
@@ -100,7 +102,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ### Continuous export via Logs Uploader
 
-<p>For automated pipelines and long-term retention, configure [Logs Uploader](https://gcore-doc-2113.mintlify.site/cdn/logs/logs-uploader). When WAAP is enabled on a CDN resource, WAAP fields are appended to each CDN request-log entry. Logs Uploader does not deliver a separate WAAP event stream.</p>
+<p>For automated pipelines and long-term retention, configure [Logs Uploader](/cdn/logs/logs-uploader). When WAAP is enabled on a CDN resource, WAAP fields are appended to each CDN request-log entry. Logs Uploader does not deliver a separate WAAP event stream.</p>
 
 ## Real-world investigation scenarios
 
@@ -130,7 +132,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ### Exporting evidence for incident response
 
-<p>Once relevant traffic is isolated, analysts can export the filtered dataset as a CSV file.</p>
+<p>Once relevant traffic is isolated, analysts can download the events loaded in the table as a CSV file, or use the API with pagination for a complete extract.</p>
 
 <p>This allows teams to:</p>
 
@@ -209,7 +211,7 @@ curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&decis
 }
 ```
 
-<p>The table lists commonly used query parameters. It is not the complete API. Parameters discussed on the Events page, including `ja3` and `ja4`, are included. For the full set — including `tags`, `user_agent`, `has_policy_override`, `order_by`, and every `exclude_*` filter — see [Get security events](https://docs.gcore.com/api-reference/waap/analytics/get-security-events).</p>
+<p>The table lists commonly used query parameters. It is not the complete API. Parameters discussed on the Events page, including `ja3` and `ja4`, are included. For the full set — including `tags`, `user_agent`, `has_policy_override`, `order_by`, and every `exclude_*` filter — see [Get security events](/api-reference/waap/analytics/get-security-events).</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -233,7 +235,7 @@ curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&decis
 | `user_agent_clients` | No | Parsed user-agent client families. Values come from `GET /waap/v1/analytics/filters/user-agent-clients` for the selected period. |
 | `user_agent_devices` | No | Parsed user-agent device types. Values come from `GET /waap/v1/analytics/filters/user-agent-devices` for the selected period. |
 | `organizations` | No | WHOIS organizations on client IPs. Values come from `GET /waap/v1/analytics/filters/organizations` for the selected period. |
-| `exclude_decision` | No | Exclude one or more decisions. Additional `exclude_*` filters are listed in the [API reference](https://docs.gcore.com/api-reference/waap/analytics/get-security-events). |
+| `exclude_decision` | No | Exclude one or more decisions. Additional `exclude_*` filters are listed in the [API reference](/api-reference/waap/analytics/get-security-events). |
 
 ## Event details
 
@@ -276,7 +278,7 @@ curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST
       "description": "Multiple injection attempts were detected."
     }
   ],
-  "traffic_types": ["malicious"],
+  "traffic_types": ["policy_blocked"],
   "user_agent": {
     "full_string": "python-requests/2.31.0",
     "device": "Other",
@@ -293,7 +295,7 @@ curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST
   "request_time": "2026-09-27T10:30:00",
   "reference_id": "ad07c06f19054e484974fa22e9fb6bb1",
   "session_id": "0c74d14951b22dc3f22cbba9668ecea1",
-  "query_string": "user=admin&pass=1%27+OR+1%3D1",
+  "query_string": "q=select%20user%20from%20master..",
   "http_status_code": 403,
   "http_version": "1.1",
   "scheme": "https",
