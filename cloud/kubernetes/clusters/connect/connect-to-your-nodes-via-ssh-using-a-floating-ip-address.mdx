@@ -1,10 +1,10 @@
 ---
 title: Connect to your nodes via SSH
 sidebarTitle: SSH connection
-ai-navigation: Assign floating IP addresses to Kubernetes cluster nodes and connect via SSH using the floating IP address and private key authentication.
+ai-navigation: Assign a floating IP to a Kubernetes worker node, allow inbound SSH on the node security group, and connect with the cluster SSH key.
 ---
 
-To connect to a Kubernetes worker node over SSH, first attach a floating IP address to the node, then connect using the SSH key configured for the cluster.
+To connect to a Kubernetes worker node over SSH, attach a floating IP address to the node, allow inbound SSH on the node security group, then connect with the SSH key configured for the cluster.
 
 ## Assign a floating IP address
 
@@ -32,11 +32,13 @@ Floating IPs are not recommended for high-traffic workloads. Sustained traffic m
 
 Find the address in the list below the form and click **Attach to instance**, then select the node and the interface.
 
-The floating IP is now attached to the node.
-
-Once the node has a reachable public address, connect to it over SSH.
+The floating IP is now attached to the node. SSH still requires an inbound rule on the node security group.
 
 ## Connect to a node via SSH
+
+Managed Kubernetes attaches a security group to each worker node. The group name joins the cluster name, the region ID, and the project ID with hyphens and ends in `-worker`. Inbound rules on this group do not include SSH, so a floating IP alone does not make the node reachable.
+
+In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Cloud** > **Networking** > **Security Groups** and open that group. Click **Add rule** and select **SSH**.
 
 Run the following command, replacing `[floating IP address]` with the node's floating IP and `[path to the private SSH key]` with the path to the private key:
 
