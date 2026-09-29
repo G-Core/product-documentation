@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 1f2edf4a6301
+  version: 80d4a03cdf8c
 servers:
 - url: https://api.gcore.com
 tags:
@@ -4813,15 +4813,16 @@ paths:
         Create an alias: a hostname you own that is served with the settings of one of your CDN resources and
         with its own SSL certificate.
 
-        By default, a Let's Encrypt certificate is issued for the alias automatically.
+        By default, a Let's Encrypt certificate is issued for the alias automatically. Choose how its domain
+        is validated with `challenge_type`.
 
         To use your own certificate instead, pass its ID in `ssl_id`. The certificate must cover the alias
         hostname; a Let's Encrypt certificate issued for one of your CDN resources cannot be used.
 
         The hostname must be unique across all CDN resources, additional CNAMEs and aliases.
 
-        If Let's Encrypt validation for the hostname requires a delegation record, it is reported as
-        `ssl_provisioning` when you get the alias.
+        The DNS record Let's Encrypt validation of the hostname needs is reported as `ssl_provisioning` when you
+        get the alias.
       requestBody:
         required: true
         content:
@@ -5135,6 +5136,12 @@ paths:
         starts serving the new certificate once it is issued; if the attempt fails, `ssl_status` becomes
         **failed** and your certificate keeps being served. The certificate mode cannot be changed while the
         alias is paused — resume it first.
+
+        Pass `challenge_type` to change how the Let's Encrypt certificate's domain is validated. It cannot be
+        changed while the alias is paused, or together with `active`. While no valid certificate is served, the
+        change cancels the running issuance attempt and starts a new one; this is rate-limited like resuming,
+        and is refused while that attempt is being processed. Otherwise the new method is used from the next
+        attempt.
       parameters:
       - $ref: '#/components/parameters/alias_id_parameter'
       requestBody:
@@ -5349,7 +5356,8 @@ paths:
           </Info>
       description: |-
         Get details about the latest Let's Encrypt certificate issuing attempt for an alias, including the CNAME
-        records to create for domain validation. Returns attempts in all statuses.
+        records to create for domain validation and the state of each domain validation challenge. Returns
+        attempts in all statuses.
 
         While the alias is switching to a Let's Encrypt certificate, the attempt for the new certificate is
         returned.
@@ -8567,6 +8575,14 @@ components:
             - **true** – A Let's Encrypt certificate is issued and renewed automatically.
             - **false** – The certificate referenced by `ssl_id`, if any, was added by you.
           example: true
+        challenge_type:
+          type: string
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/AliasChallengeType'
+          description: |-
+            Domain validation method used to issue the Let's Encrypt certificate for the alias. `null` when
+            `automated` is **false**.
         ssl_id:
           type: integer
           nullable: true
@@ -8631,6 +8647,12 @@ components:
             How the alias certificate is managed. Defaults to **true** when `ssl_id` is omitted and to **false**
             when `ssl_id` is passed.
           example: false
+        challenge_type:
+          allOf:
+          - $ref: '#/components/schemas/AliasChallengeType'
+          description: |-
+            Domain validation method used to issue the Let's Encrypt certificate. Defaults to **`dns_01`**. Can be
+            passed only when `automated` is **true**.
     AliasBulkItemResult:
       type: object
       properties:
@@ -8666,18 +8688,37 @@ components:
             example: AWAITING_CNAME
           cname_records:
             type: array
-            description: CNAME records to create so Let's Encrypt domain validation can complete for the alias hostname.
+            description: |-
+              CNAME records to create so Let's Encrypt domain validation can complete for the alias hostname.
+              Empty when the attempt uses `challenge_type` **`http_01`**.
             items:
-              type: object
-              properties:
-                cname_name:
-                  type: string
-                  description: Hostname to create the CNAME record for.
-                  example: _acme-challenge.shop.customer.com
-                cname_target:
-                  type: string
-                  description: Value the CNAME record must point to.
-                  example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
+              $ref: '#/components/schemas/AliasCnameRecord'
+    AliasChallengeType:
+      type: string
+      description: |-
+        Domain validation method used to issue the Let's Encrypt certificate for the alias.
+
+        Possible values:
+        - **`dns_01`** – Validation via a CNAME record for `_acme-challenge.<alias hostname>`, shown in
+          `ssl_provisioning.acme_delegation`.
+        - **`http_01`** – Validation via an HTTP request to the alias hostname. The alias hostname must point to your
+          CDN CNAME, shown in `ssl_provisioning.http_validation`. The request is served with the settings of the
+          alias's CDN resource, so they must not block or redirect `/.well-known/acme-challenge/`.
+      enum:
+      - dns_01
+      - http_01
+      example: http_01
+    AliasCnameRecord:
+      type: object
+      properties:
+        cname_name:
+          type: string
+          description: Hostname to create the CNAME record for.
+          example: _acme-challenge.shop.customer.com
+        cname_target:
+          type: string
+          description: Value the CNAME record must point to.
+          example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
     AliasDetail:
       allOf:
       - $ref: '#/components/schemas/Alias'
@@ -8687,22 +8728,27 @@ components:
             type: object
             nullable: true
             description: |-
-              DNS record delegating Let's Encrypt domain validation for the alias hostname. It is `null` for an
-              alias serving a certificate you added yourself, and until a delegation record has been prepared
-              for the hostname.
+              DNS record needed for Let's Encrypt domain validation of the alias hostname. It is `null` when
+              `automated` is **false**, and with `challenge_type` **`dns_01`** until a delegation record has been
+              prepared for the hostname.
             properties:
               acme_delegation:
+                allOf:
+                - $ref: '#/components/schemas/AliasCnameRecord'
+                description: |-
+                  CNAME record to create so validation can be completed for the hostname. Returned with
+                  `challenge_type` **`dns_01`**.
+              http_validation:
                 type: object
-                description: CNAME record to create so validation can be completed for the hostname.
-                properties:
-                  cname_name:
-                    type: string
-                    description: Hostname to create the CNAME record for.
-                    example: _acme-challenge.shop.customer.com
-                  cname_target:
-                    type: string
-                    description: Value the CNAME record must point to.
-                    example: 0a1b2c3d4e5f6789.le-challenges.gcorelabs.com
+                nullable: true
+                allOf:
+                - $ref: '#/components/schemas/AliasCnameRecord'
+                description: |-
+                  CNAME record pointing the alias hostname to your CDN CNAME. Returned with `challenge_type`
+                  **`http_01`**; `null` until a CDN CNAME is assigned to your account.
+                example:
+                  cname_name: shop.customer.com
+                  cname_target: cl-1a2b3c.gcdn.co
     AliasIdentifier:
       oneOf:
       - type: integer
@@ -8725,6 +8771,7 @@ components:
           cname: shop.customer.com
           resource_id: 4567
           automated: true
+          challenge_type: http_01
           ssl_id: null
           active: true
           enabled: true
@@ -9549,6 +9596,16 @@ components:
               keeps being served until the new one is issued.
             - **false** – Switch to your own certificate. `ssl_id` is required and is served immediately.
           example: true
+        challenge_type:
+          allOf:
+          - $ref: '#/components/schemas/AliasChallengeType'
+          description: |-
+            Domain validation method used to issue the Let's Encrypt certificate. Available for an alias with
+            `automated` set to **true**, and together with `automated` set to **true** to switch to a Let's Encrypt
+            certificate. Cannot be changed while the alias is paused, or together with `active`.
+
+            While no valid certificate is served, the running issuance attempt is cancelled and a new one is started
+            with the new method. Otherwise the new method is used from the next attempt.
         ssl_id:
           type: integer
           description: |-
@@ -10014,6 +10071,12 @@ components:
             - **true** – A Let's Encrypt certificate is issued and renewed automatically. `ssl_id` must be omitted.
             - **false** – Your own certificate referenced by `ssl_id`, if any, is served.
           example: true
+        challenge_type:
+          allOf:
+          - $ref: '#/components/schemas/AliasChallengeType'
+          description: |-
+            Domain validation method used to issue the Let's Encrypt certificate. Defaults to **`dns_01`**. Can be
+            passed only when `automated` is **true**.
         active:
           type: boolean
           description: Whether the alias is enabled. Defaults to **true**.
@@ -11656,6 +11719,37 @@ components:
           description: Errors occurred during resource pre-validation. Check the response to get more details.
           example:
           - An error occurred when connecting to the validation URL. Please ensure that DNS records are pointed to our services, and check whether the rules you created overlap the path "/.well-known/acme-challenge/". If you have just created a CDN resource, it may take up to 15 minutes to activate it. In this case, please wait until the CDN resource is activated and try to issue the certificate again.
+    LEChallengeStatus:
+      type: object
+      properties:
+        domain:
+          type: string
+          description: Domain the challenge validates.
+          example: shop.customer.com
+        challenge_type:
+          type: string
+          description: |-
+            Domain validation method of the challenge.
+
+            Possible values:
+            - **`dns_01`** - Validation via a DNS record.
+            - **`http_01`** - Validation via an HTTP request.
+          example: http_01
+        state:
+          type: string
+          description: |-
+            State of the challenge.
+
+            Possible values:
+            - **pending** - The challenge has not been checked yet.
+            - **processing** - Let's Encrypt is validating the challenge.
+            - **valid** - The challenge passed.
+            - **invalid** - The challenge failed; see `error`.
+          example: invalid
+        error:
+          type: string
+          description: Why the challenge failed. Empty unless `state` is **invalid**.
+          example: A 404 error occurred when attempting to connect to the validation URL.
     LERequestAttemptStatus:
       type: object
       properties:
@@ -14700,6 +14794,11 @@ components:
             type: string
           example:
           - shop.customer.com
+        challenges:
+          type: array
+          description: Domain validation challenges of the latest order placed with Let's Encrypt, one per domain.
+          items:
+            $ref: '#/components/schemas/LEChallengeStatus'
     StateAfterRequest:
       type: object
       description: JSON representation of object after the request.
