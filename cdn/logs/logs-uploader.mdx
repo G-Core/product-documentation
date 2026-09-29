@@ -8,11 +8,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Logs Uploader exports CDN request and cache logs to a storage destination as they arrive. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes those logs, the export also contains requests processed by mid-tier cache servers.</p>
+<p>Logs Uploader exports CDN request and cache logs to a configured destination in batches at regular intervals. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes those logs, the export also contains requests processed by mid-tier cache servers.</p>
 
 <p>To export logs, create a policy that defines what to export, connect a target that receives the logs, then create a configuration that links them to CDN resources.</p>
 
-<p>Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
+<p>Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. A new Amazon S3 destination uses the **S3 Amazon** target. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
 
 <Note>
 Logs Uploader must be enabled for the account before the configuration UI is available. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use **Contact support** on the Logs Uploader page in the [Gcore Customer Portal](https://portal.gcore.com).
@@ -75,6 +75,13 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
     <Info>
       Alibaba documents [SLS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation and project setup in the [SLS&nbsp;quick&nbsp;start](https://www.alibabacloud.com/help/en/sls/getting-started/getting-started-with-simple-log-service).
     </Info>
+  </Tab>
+  <Tab title="S3 Amazon">
+    [Amazon&nbsp;S3](https://aws.amazon.com/s3/)
+
+    1. Enter the **Access Key ID** and **Secret Access Key**.
+    2. Enter the **region** and an existing **bucket**.
+    3. Optionally, specify an existing folder inside the bucket.
   </Tab>
   <Tab title="S3 Other">
     Generic S3-compatible object storage
@@ -309,7 +316,7 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
 
 ## WAAP log fields
 
-<p>When a CDN resource has [WAAP](/waap) enabled, Logs Uploader appends WAAP security event fields to each request log line. CDN access data and the matching WAAP verdict share one entry — no separate file and no extra Logs Uploader setup.</p>
+<p>When a CDN resource has [WAAP](/waap) enabled, Logs Uploader appends WAAP security event fields to each request log line. CDN access data and the matching WAAP verdict share one entry — no separate file and no extra Logs Uploader setup. When a policy override suppresses a finding, the entry includes `policy_override` with the override ID, target type, and target references. The field is omitted when no override matched.</p>
 
 <p>WAAP fields appear only when **WAAP Status** is Active on **CDN** → **CDN resources**. The toggle is in that resource's **Security** settings. After WAAP is enabled, the next exported batch includes the new fields at the end of the line, so positional parsers keep working. Parsers that reject unknown columns must accept the WAAP fields first. The `v` field in HTTP(S) payloads increments when the schema changes.</p>
 
@@ -417,7 +424,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     # Step 1. Create a policy
     policy = client.cdn.logs_uploader.policies.create(
         name="cdn-json-export",
-        fields=["cname", "code", "host"],
+        fields=["cname", "status", "host"],
         include_empty_logs=False,
         rotate_interval_minutes=5,
         format_type="json",
@@ -475,7 +482,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
         // Step 1. Create a policy
         policy, err := client.CDN.LogsUploader.Policies.New(ctx, cdn.LogsUploaderPolicyNewParams{
             Name:                  gcore.String("cdn-json-export"),
-            Fields:                []string{"cname", "code", "host"},
+            Fields:                []string{"cname", "status", "host"},
             IncludeEmptyLogs:      gcore.Bool(false),
             RotateIntervalMinutes: gcore.Int(5),
             FormatType:            cdn.LogsUploaderPolicyNewParamsFormatTypeJson,
@@ -527,7 +534,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
       -H "Content-Type: application/json" \
       -d '{
         "name": "cdn-json-export",
-        "fields": ["cname", "code", "host"],
+        "fields": ["cname", "status", "host"],
         "include_empty_logs": false,
         "rotate_interval_minutes": 5,
         "format_type": "json"
