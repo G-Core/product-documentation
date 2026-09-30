@@ -1,7 +1,7 @@
 ---
 title: Integrate a CDN resource with Google Cloud Storage
 sidebarTitle: Google Cloud Storage
-ai-navigation: Deliver public Google Cloud Storage objects through Gcore CDN via Customer Portal or via REST API.
+ai-navigation: Create a CDN resource for public Google Cloud Storage via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -345,6 +345,120 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 </Tabs>
 
 <p>After the rule is saved, viewers request `https://cdn.site.com/images/image.png`. The origin request path is `/my-bucket-1/images/image.png`.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a CDN resource that pulls public objects from `storage.googleapis.com` over HTTPS with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create the CDN resource
+
+<p>Path-style requests need the Host header `storage.googleapis.com` on the origin and on the CDN resource. Set `origin_protocol` to `HTTPS`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source               = "storage.googleapis.com"
+      enabled              = true
+      host_header_override = "storage.googleapis.com"
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    host_header = {
+      enabled = true
+      value   = "storage.googleapis.com"
+    }
+  }
+}
+```
+
+<p>Point the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) CNAME record at the `*.gcdn.co` hostname in the CDN resource setup guide. Viewer HTTPS uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) after that CNAME is in place.</p>
+
+<p>Keep the bucket name in the request path. Open the object at `https://cdn.example.com/my-bucket-1/images/image.png`.</p>
+
+## Hide the bucket name
+
+<p>Add `rewrite` in the same `options` block and keep `host_header`. The next `terraform apply` prepends the bucket name to the path sent to `storage.googleapis.com`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source               = "storage.googleapis.com"
+      enabled              = true
+      host_header_override = "storage.googleapis.com"
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    host_header = {
+      enabled = true
+      value   = "storage.googleapis.com"
+    }
+    rewrite = {
+      enabled = true
+      body    = "/(.*) /my-bucket-1/$1"
+      flag    = "break"
+    }
+  }
+}
+```
+
+<p>Viewers request `https://cdn.example.com/images/image.png`. The origin request path is `/my-bucket-1/images/image.png`.</p>
+
+## Delete the CDN resource
+
+<p>Remove both resource blocks. The next `terraform apply` deletes the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the CDN resource and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source               = "storage.googleapis.com"
+#       enabled              = true
+#       host_header_override = "storage.googleapis.com"
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "cdn.example.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+#
+#   options = {
+#     host_header = {
+#       enabled = true
+#       value   = "storage.googleapis.com"
+#     }
+#   }
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
