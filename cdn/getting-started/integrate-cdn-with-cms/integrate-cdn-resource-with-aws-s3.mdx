@@ -1,7 +1,7 @@
 ---
 title: Use an AWS S3 static website as a CDN origin
 sidebarTitle: AWS S3 static website
-ai-navigation: Deliver a public Amazon S3 static website through Gcore CDN via Customer Portal or via REST API using an HTTP origin.
+ai-navigation: Create a CDN resource for a public Amazon S3 static website via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -124,8 +124,6 @@ The public-read policy in this procedure allows anyone to retrieve matching buck
   </Step>
 </Steps>
 
-<p>Creating a CDN resource does not rewrite asset URLs in HTML or application code. Update those URLs to the CDN domain, then confirm in the browser **Network** panel that the requests use that domain.</p>
-
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
@@ -231,4 +229,74 @@ https://cdn.site.com/logo.png
 ```
 
 </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a CDN resource that pulls a public Amazon S3 website endpoint over HTTP with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Private objects use a [private&nbsp;origin](/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin).</p>
+
+## Create the CDN resource
+
+<p>The website endpoint does not accept HTTPS, so `origin_protocol` is `HTTP`. Set `source` to the endpoint hostname without a scheme or an object path.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "my-bucket.s3-website-eu-west-1.amazonaws.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.site.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTP"
+}
+```
+
+## Configure the custom domain
+
+<p>Point the [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) CNAME record at the `*.gcdn.co` hostname in the CDN resource setup guide. Delivery over HTTPS on that domain uses an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https).</p>
+
+## Test delivery through the CDN
+
+<p>Open the verification object on the custom domain. The same file already loaded from the S3 website endpoint:</p>
+
+```text
+https://cdn.site.com/logo.png
+```
+
+## Delete the CDN resource
+
+<p>Remove both resource blocks. The next `terraform apply` deletes the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the CDN resource and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "my-bucket.s3-website-eu-west-1.amazonaws.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "cdn.site.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTP"
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
 </MethodSwitch>
+
+Creating a CDN resource does not rewrite absolute asset URLs in HTML or application code. If they still point to the S3 website endpoint or another origin domain, update them to the CDN domain. Then confirm in the browser **Network** panel that the requests use the CDN domain.
