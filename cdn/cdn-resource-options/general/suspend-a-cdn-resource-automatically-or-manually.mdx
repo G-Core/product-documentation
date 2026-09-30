@@ -1,7 +1,7 @@
 ---
 title: Suspend a CDN resource automatically or manually
 sidebarTitle: Suspend a CDN resource
-ai-navigation: Suspend or enable a CDN resource in the Customer Portal or via REST API.
+ai-navigation: Configure CDN resource suspension via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -215,6 +215,90 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Suspend or enable a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>A resource with no traffic for 90 days is suspended by the system. Setting `active` suspends or enables the resource manually. To exclude specific resources from automatic suspension, contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).</p>
+
+## Suspend the resource
+
+<p>Set `active` to `false` and run `terraform apply`. The update is in place, while `suspended` stays `false` and `suspend_date` stays empty, because those attributes record an automatic stop. The configuration changes immediately, while delivery on the edge can take about 15 minutes.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "hold.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  active          = false
+}
+```
+
+## Enable the resource
+
+<p>Set `active` to `true` and run `terraform apply`. After the resource is enabled, `suspended` is `false`, including when the system had stopped it for inactivity. Re-enabling that resource starts a seven-day grace period. If traffic does not resume during those seven days, the resource is suspended again.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "hold.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  active          = true
+}
+```
+
+## Delete the CDN resource
+
+<p>Remove the resource blocks. The next `terraform apply` deletes the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the CDN resource and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "hold.example.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+#   active          = false
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
