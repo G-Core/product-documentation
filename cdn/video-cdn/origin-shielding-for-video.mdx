@@ -1,7 +1,7 @@
 ---
 title: Origin shielding for video delivery
 sidebarTitle: Origin shielding
-ai-navigation: Use origin shielding for video delivery and enable it via REST API by setting a shield location.
+ai-navigation: Use origin shielding for video delivery via REST API or Terraform.
 ---
 
 Origin Shielding places a shield, also called a precache server, between the video origin and CDN edge servers. Viewers receive video from nearby edges, while an edge cache miss reaches the shield before the origin.
@@ -337,3 +337,87 @@ The same update sets `shielding_pop` to null. The resource then reports `shielde
     ```
   </Tab>
 </Tabs>
+
+## Terraform
+
+Route video edge misses through a shield location with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Select the location closest to the video origin.
+
+### Shield location
+
+Select the location by city and set `shielding_pop` on the CDN resource. An unknown location id returns HTTP 400 with the message `Invalid pk "999999999" - object does not exist.` The apply leaves `shielded` false until the next `terraform plan`, which records `shielded` as true and `shield_dc` as the datacenter name. `shield_enabled` stays false, so confirm the saved setting with `shielded` and `shield_dc`.
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video-shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_origin_shielding" "example" {
+  resource_id   = gcore_cdn_resource.example.id
+  shielding_pop = local.shielding_pop
+}
+```
+
+### Cleared location
+
+Remove the `gcore_cdn_origin_shielding` block and run `terraform apply`, so `shielding_pop` becomes null. The next `terraform plan` records `shielded` as false and `shield_dc` as null.
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video-shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+# Remove or comment out this block:
+# resource "gcore_cdn_origin_shielding" "example" {
+#   resource_id   = gcore_cdn_resource.example.id
+#   shielding_pop = local.shielding_pop
+# }
+```
+
+```bash
+terraform apply
+```
+
