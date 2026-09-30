@@ -1,7 +1,7 @@
 ---
 title: Set a custom domain for CDN
 sidebarTitle: Create a custom domain (CNAME)
-ai-navigation: Configure a custom CDN domain and additional domains via Customer Portal or via REST API.
+ai-navigation: Configure a custom CDN domain and additional domains via Customer Portal, REST API, or Terraform.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
@@ -93,6 +93,8 @@ cdn.mywebsite.com. cl-XXXX.gcdn.co
   <MethodSection id="api" label="REST API">
 
 <p>Set the custom domain when creating a CDN resource, read the account CNAME target, and replace additional domains on the existing resource.</p>
+
+<p>Additional domains apply to a CDN resource for static content. A resource integrated with an entire site keeps one custom domain.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The origin hostname must resolve in DNS.
@@ -317,6 +319,129 @@ img.mywebsite.com. cl-glb1d1a539.gcdn.co
     ```
   </Tab>
 </Tabs>
+
+<p>Create a CNAME record for each hostname in the new list and point it at the account `cname` from the earlier response. `static.mywebsite.com` uses the same target as `cdn.mywebsite.com`.</p>
+
+```text
+static.mywebsite.com. cl-glb1d1a539.gcdn.co
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set the primary custom domain and additional domains on a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>Additional domains apply to a CDN resource for static content. A resource integrated with an entire site keeps one custom domain.</p>
+
+## Create the CDN resource
+
+<p>The origin hostname must resolve in DNS. `cname` is the primary custom domain. `secondary_hostnames` lists additional domains. Editing `cname` later destroys the CDN resource and creates a new one. The origin group remains. Put an extra domain in `secondary_hostnames` to keep the same resource.</p>
+
+```hcl
+data "gcore_cdn_client_config" "example" {}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  secondary_hostnames = ["img.mywebsite.com"]
+}
+
+output "cdn_cname_target" {
+  value = data.gcore_cdn_client_config.example.cname
+}
+```
+
+## Point the custom domains at the CDN
+
+<p>Apply prints `cdn_cname_target`. Create a CNAME record for `cname` and for each additional domain. The target is that printed value.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The custom domain — `cdn.mywebsite.com` or `img.mywebsite.com` |
+| **Value / Points to** | The printed `cdn_cname_target` value |
+
+## Replace additional domains
+
+<p>Edit `secondary_hostnames` and run `terraform apply`. The list in the block replaces the current additional domains. A hostname omitted from the list is removed. `cname` stays unchanged.</p>
+
+```hcl
+data "gcore_cdn_client_config" "example" {}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  secondary_hostnames = ["static.mywebsite.com"]
+}
+
+output "cdn_cname_target" {
+  value = data.gcore_cdn_client_config.example.cname
+}
+```
+
+<p>Create a CNAME record for `static.mywebsite.com`. The target is the printed `cdn_cname_target` value, the same target as `cdn.mywebsite.com`.</p>
+
+## Delete the CDN resource
+
+<p>Remove the resource blocks and the `cdn_cname_target` output. The next `terraform apply` deletes the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the CDN resource and the origin group:
+# data "gcore_cdn_client_config" "example" {}
+#
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "cdn.mywebsite.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+#
+#   secondary_hostnames = ["static.mywebsite.com"]
+# }
+#
+# output "cdn_cname_target" {
+#   value = data.gcore_cdn_client_config.example.cname
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
