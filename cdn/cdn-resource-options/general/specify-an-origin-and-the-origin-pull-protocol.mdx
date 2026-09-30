@@ -1,7 +1,7 @@
 ---
 title: Specify an origin and the origin pull protocol
 sidebarTitle: Specify an origin
-ai-navigation: Set the CDN origin pull protocol and origin group in the Customer Portal or via REST API.
+ai-navigation: Set the CDN origin pull protocol and origin group via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -77,7 +77,6 @@ An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
-export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
 ```
 
 ## Set the origin pull protocol
@@ -153,9 +152,80 @@ export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
   </Tab>
 </Tabs>
 
-## Assign an origin group
+## List origin groups
 
-<p>List origin groups, then set `originGroup` to the group ID. `ORIGIN_GROUP_ID` is an `id` from this list. A new [origin&nbsp;group](/cdn/add-an-origin-group) is not assigned until this call sets `originGroup`.</p>
+<p>Return each origin group id and name. A new [origin&nbsp;group](/cdn/add-an-origin-group) stays unused until the update below sets `originGroup` to that id.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for group in client.cdn.origin_groups.list():
+        print(group.id, group.name)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.OriginGroups.List(ctx, cdn.OriginGroupListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, group := range page.Results {
+            fmt.Println(group.ID, group.Name)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/origin_groups" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "count": 1,
+      "next": null,
+      "previous": null,
+      "results": [
+        {
+          "id": 80,
+          "name": "Resource origin group"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Set `ORIGIN_GROUP_ID` to an `id` from that list.</p>
+
+```bash
+export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
+```
+
+## Assign the origin group
+
+<p>Set `originGroup` to `ORIGIN_GROUP_ID`. `originProtocol` remains the value from the protocol update above.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -168,14 +238,11 @@ export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
     resource_id = int(os.environ["CDN_RESOURCE_ID"])
     origin_group_id = int(os.environ["ORIGIN_GROUP_ID"])
 
-    for group in client.cdn.origin_groups.list():
-        print(group.id, group.name)
-
     updated = client.cdn.cdn_resources.update(
         resource_id,
         origin_group=origin_group_id,
     )
-    print(updated.origin_group)
+    print(updated.origin_group, updated.origin_protocol)
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -204,46 +271,17 @@ export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
             panic(err)
         }
 
-        page, err := client.CDN.OriginGroups.List(ctx, cdn.OriginGroupListParams{})
-        if err != nil {
-            panic(err)
-        }
-        for _, group := range page.Results {
-            fmt.Println(group.ID, group.Name)
-        }
-
         updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
             OriginGroup: gcore.Int(originGroupID),
         })
         if err != nil {
             panic(err)
         }
-        fmt.Println(updated.OriginGroup)
+        fmt.Println(updated.OriginGroup, updated.OriginProtocol)
     }
     ```
   </Tab>
   <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cdn/origin_groups" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    <p>The API returns HTTP 200. Use an `id` from `results` as `ORIGIN_GROUP_ID`:</p>
-
-    ```json
-    {
-      "count": 1,
-      "next": null,
-      "previous": null,
-      "results": [
-        {
-          "id": 80,
-          "name": "Resource origin group"
-        }
-      ]
-    }
-    ```
-
     ```bash
     curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
@@ -256,12 +294,136 @@ export ORIGIN_GROUP_ID="{YOUR_ORIGIN_GROUP_ID}"
     ```json
     {
       "id": 101,
-      "originProtocol": "HTTP",
+      "originProtocol": "HTTPS",
       "originGroup": 80
     }
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set the origin pull protocol and the origin group on a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Set the origin pull protocol
+
+<p>The origin hostname must resolve in DNS. `origin_protocol` accepts `HTTP`, `HTTPS`, and `MATCH`. `MATCH` is the **HTTP and HTTPS** option: the CDN pulls with the protocol of the client request, and HTTP and HTTPS responses are cached separately. Set `origin_protocol` to `HTTP` when the origin accepts only HTTP. Edit the value and run `terraform apply` to change the protocol in place.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "pull.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+```
+
+## Use the client request protocol
+
+<p>Set `origin_protocol` to `MATCH` when the origin accepts both HTTP and HTTPS. The next `terraform apply` changes the protocol in place.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "pull.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "MATCH"
+}
+```
+
+## Assign an origin group
+
+<p>The CDN resource uses the origin group referenced by `origin_group`. Adding another origin group leaves the resource on its current group. Point `origin_group` at the group that should serve content and run `terraform apply`. That apply prints an error that `origin_group_name` changed. The next `terraform plan` shows no differences, and the resource uses the referenced group.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_origin_group" "alternate" {
+  name = "my-origin-group-2"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "pull.example.com"
+  origin_group    = gcore_cdn_origin_group.alternate.id
+  origin_protocol = "HTTPS"
+}
+```
+
+## Delete the CDN resource
+
+<p>Remove the resource blocks. The next `terraform apply` deletes the CDN resource and every origin group the resource does not reference, then the origin group referenced by `origin_group`.</p>
+
+```hcl
+# Remove the CDN resource and the origin groups:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_origin_group" "alternate" {
+#   name = "my-origin-group-2"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "pull.example.com"
+#   origin_group    = gcore_cdn_origin_group.alternate.id
+#   origin_protocol = "HTTPS"
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
