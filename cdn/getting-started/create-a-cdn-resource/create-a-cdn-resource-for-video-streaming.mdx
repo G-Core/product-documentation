@@ -1,7 +1,7 @@
 ---
 title: Create a CDN resource for video streaming
 sidebarTitle: For video streaming
-ai-navigation: Create a Video CDN resource for prepared streams via Customer Portal or via REST API.
+ai-navigation: Create a Video CDN resource for prepared streams via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -467,6 +467,12 @@ https://123456.gcdn.co/playlist.m3u8
 
 <p>Create a CDN resource for prepared HLS, MPEG-DASH, HTTP-FLV, or MP4 content, then apply only the cache updates that match the delivery type.</p>
 
+<p>Activation requirements differ by delivery format:</p>
+
+- HLS and MPEG-DASH — require video-delivery approval from Gcore Support and a paid CDN plan.
+- HTTP-FLV Live — requires a sales agreement and a dedicated service profile. Contact the account manager or [sales@gcore.com](mailto:sales@gcore.com).
+- HTTP-FLV VOD and MP4 VOD — self-service; only a paid CDN plan is required.
+
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The origin hostname must resolve in DNS.
 </Info>
@@ -559,8 +565,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 <p>The create call is the same for every format. Continue with the calls that match the content:</p>
 
 - HLS live: set the HLS live cache, cache `.m3u8` playlists, and apply the LIVE STREAMING preset.
-- MPEG-DASH live: set Always online and the 60-second CDN cache from the next section, then apply the LIVE STREAMING preset. The `.m3u8` rule and the LL-HLS query parameters apply to HLS.
-- HLS VOD, MPEG-DASH VOD, HTTP-FLV VOD, and MP4: leave the live cache, the playlist rule, and the LIVE STREAMING preset unset, because no further updates are required after resource creation.
+- MPEG-DASH live: set Always online and the 60-second CDN cache, cache `.mpd` manifests, and apply the LIVE STREAMING preset. The `.m3u8` rule and the LL-HLS query parameters apply to HLS.
+- HLS VOD, MPEG-DASH VOD, HTTP-FLV VOD, and MP4: leave the live cache, the `.m3u8` and `.mpd` rules, and the LIVE STREAMING preset unset, because no further updates are required after resource creation.
 - HTTP-FLV Live: Support configures the cache during service activation.
 
 ## Set the HLS live cache
@@ -754,6 +760,107 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
 </Tabs>
 
+## Cache MPEG-DASH manifests
+
+<p>For MPEG-DASH live, a rule with `ruleType` 0 matches manifest paths and caches them for 2 seconds. Browser cache is `0s`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `rule` | Yes | `^/.+\.mpd$` |
+| `ruleType` | Yes | `0` for a regular expression |
+| `options.edge_cache_settings.value` | No | `2s` on the manifest rule |
+| `options.browser_cache_settings.value` | No | `0s` on the manifest rule |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rule = client.cdn.cdn_resources.rules.create(
+        1001,
+        name="DASH manifests",
+        rule="^/.+\\.mpd$",
+        rule_type=0,
+        options={
+            "edge_cache_settings": {"enabled": True, "value": "2s"},
+            "browser_cache_settings": {"enabled": True, "value": "0s"},
+        },
+    )
+    print(rule.id, rule.options.edge_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, 1001, cdn.CDNResourceRuleNewParams{
+            Name:     "DASH manifests",
+            Rule:     "^/.+\\.mpd$",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                EdgeCacheSettings: cdn.CDNResourceRuleNewParamsOptionsEdgeCacheSettings{
+                    Enabled: true,
+                    Value:   gcore.String("2s"),
+                },
+                BrowserCacheSettings: cdn.CDNResourceRuleNewParamsOptionsBrowserCacheSettings{
+                    Enabled: true,
+                    Value:   "0s",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.EdgeCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/1001/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "DASH manifests",
+        "rule": "^/.+\\.mpd$",
+        "ruleType": 0,
+        "options": {
+          "edge_cache_settings": {"enabled": true, "value": "2s"},
+          "browser_cache_settings": {"enabled": true, "value": "0s"}
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1004,
+      "rule": "^/.+\\.mpd$",
+      "ruleType": 0,
+      "options": {
+        "edge_cache_settings": {"enabled": true, "value": "2s"},
+        "browser_cache_settings": {"enabled": true, "value": "0s"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
 ## Enable the LIVE STREAMING preset
 
 <p>List presets, select the one named `LIVE STREAMING`, and apply that id to the resource. After the apply call, `preset_applied` is `true`. The list returned id `52` for that name. Use this call for live delivery. VOD leaves the preset unset.</p>
@@ -848,9 +955,203 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
 </Tabs>
 
+## Point the custom domain at the CDN
+
+<p>Add a CNAME record for `video.site.com` before requesting that domain over HTTPS. The target is the `id` from the create call with `.gcdn.co` appended. Viewer HTTPS uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) or an [own&nbsp;SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) after that CNAME is in place.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `video.site.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co`. Replace `{resource_id}` with the `id` from the create call |
+
 ## Confirm playback through the CDN
 
-<p>Open the media through the CDN domain and confirm that playback succeeds. For HLS or MPEG-DASH, confirm that segment requests use the CDN hostname. Request a cached segment twice and confirm that the second response contains `Cache: HIT`.</p>
+<p>Open the media through `video.site.com` after the CNAME and certificate are in place, or through the hostname formed from the create-call id and `.gcdn.co`. For HLS or MPEG-DASH, confirm that segment requests use the CDN hostname. Request a cached segment twice and confirm that the second response contains `Cache: HIT`.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare an origin group, an HTTPS CDN resource for prepared video, and live manifest rules with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>Activation requirements differ by delivery format:</p>
+
+- HLS and MPEG-DASH — require video-delivery approval from Gcore Support and a paid CDN plan.
+- HTTP-FLV Live — requires a sales agreement and a dedicated service profile. Contact the account manager or [sales@gcore.com](mailto:sales@gcore.com).
+- HTTP-FLV VOD and MP4 VOD — self-service; only a paid CDN plan is required.
+
+## Create the CDN resource
+
+<p>The origin hostname must resolve in DNS. HLS live and MPEG-DASH live set CDN cache to 60 seconds. The `.m3u8` rule caches HLS playlists for 2 seconds. The `.mpd` rule caches MPEG-DASH manifests for 2 seconds. Browser cache on both rules is 0 seconds. Keep the rule that matches the live format. Low-Latency HLS keeps `_HLS_msn`, `_HLS_part`, and `_HLS_skip` in the cache key. VOD declares the origin group and the CDN resource without these options and without the manifest rules. HTTP-FLV Live cache is configured by Gcore Support during service activation.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "video-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "60s"
+    }
+    query_params_whitelist = {
+      enabled = true
+      value   = ["_HLS_msn", "_HLS_part", "_HLS_skip"]
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "playlists" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "HLS playlists"
+  rule        = "^/.+\\.m3u8$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "2s"
+    }
+    browser_cache_settings = {
+      enabled = true
+      value   = "0s"
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "manifests" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "DASH manifests"
+  rule        = "^/.+\\.mpd$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "2s"
+    }
+    browser_cache_settings = {
+      enabled = true
+      value   = "0s"
+    }
+  }
+}
+
+output "cdn_resource_id" {
+  value = gcore_cdn_resource.example.id
+}
+```
+
+## Enable the LIVE STREAMING preset
+
+<p>For live streams, turn on the LIVE STREAMING preset from the Customer Portal resource menu after `terraform apply`. The preset includes Always online. Leave `stale` unset in `options`, because an apply that changes `stale` while the preset is on returns HTTP 400. VOD leaves the preset off.</p>
+
+## DNS setup
+
+<p>Apply prints `cdn_resource_id`. Add a CNAME record at the DNS provider. The target is that id with `.gcdn.co` appended.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `video.example.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co`. Replace `{resource_id}` with the printed `cdn_resource_id` value |
+
+<p>Viewer HTTPS on `video.example.com` uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate) or an [own&nbsp;SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) after that CNAME is in place.</p>
+
+## Delete the CDN resource
+
+<p>Remove the manifest rules, the CDN resource, the origin group, and the `cdn_resource_id` output. The next `terraform apply` deletes the rules, then the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the manifest rules, the CDN resource, and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "video-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "video.example.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "60s"
+#     }
+#     query_params_whitelist = {
+#       enabled = true
+#       value   = ["_HLS_msn", "_HLS_part", "_HLS_skip"]
+#     }
+#   }
+# }
+#
+# resource "gcore_cdn_resource_rule" "playlists" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "HLS playlists"
+#   rule        = "^/.+\\.m3u8$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "2s"
+#     }
+#     browser_cache_settings = {
+#       enabled = true
+#       value   = "0s"
+#     }
+#   }
+# }
+#
+# resource "gcore_cdn_resource_rule" "manifests" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "DASH manifests"
+#   rule        = "^/.+\\.mpd$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "2s"
+#     }
+#     browser_cache_settings = {
+#       enabled = true
+#       value   = "0s"
+#     }
+#   }
+# }
+#
+# output "cdn_resource_id" {
+#   value = gcore_cdn_resource.example.id
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
