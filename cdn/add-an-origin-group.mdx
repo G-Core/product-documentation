@@ -232,7 +232,7 @@ Changing a resource's origin group does not update its Host header. Update the [
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Create a URL origin group, attach it to a CDN resource, then update or delete the group. The origin domain must resolve in public DNS.</p>
+<p>Create a URL origin group, attach it to a CDN resource, then update, replace, or delete the group. The origin domain must resolve in public DNS.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -252,7 +252,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 | `sources[].source` | Yes | Origin domain or IP without `http://` or `https://` |
 | `sources[].enabled` | No | Whether the CDN can pull from this origin. Defaults to `true` |
 | `sources[].backup` | No | `true` keeps the origin out of regular balancing until active origins fail |
-| `use_next` | No | Retry on the next origin after errors listed in `proxy_next_upstream` |
+| `use_next` | No | Retry on the next origin after the errors listed in `proxy_next_upstream` |
+| `proxy_next_upstream` | No | Conditions that send the request to the next origin when `use_next` is true. `error` and `timeout` cover connection failures and timeouts |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -264,8 +265,6 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
     og = client.cdn.origin_groups.create(
         name="my-origin-group",
         sources=[{"source": "origin.example.com", "enabled": True}],
-        use_next=True,
-        proxy_next_upstream=["error", "timeout"],
     )
     print(og.id, og.name)
     ```
@@ -313,9 +312,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
         "name": "my-origin-group",
         "sources": [
           {"source": "origin.example.com", "enabled": true}
-        ],
-        "use_next": true,
-        "proxy_next_upstream": ["error", "timeout"]
+        ]
       }'
     ```
 
@@ -332,8 +329,6 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
           "enabled": true
         }
       ],
-      "use_next": true,
-      "proxy_next_upstream": ["error", "timeout"],
       "auth_type": "none",
       "has_related_resources": false
     }
@@ -440,6 +435,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
             {"source": "backup.example.com", "enabled": True, "backup": True},
         ],
         use_next=True,
+        proxy_next_upstream=["error", "timeout"],
     )
     print([(s.source, s.backup) for s in og.sources])
     ```
@@ -463,7 +459,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
         og, err := client.CDN.OriginGroups.Update(ctx, 10001, cdn.OriginGroupUpdateParams{
             OfNoneAuth: &cdn.OriginGroupUpdateParamsBodyNoneAuth{
                 Name:    "my-origin-group",
-                UseNext: gcore.Bool(true),
+                UseNext:            gcore.Bool(true),
+                ProxyNextUpstream:  []string{"error", "timeout"},
                 Sources: []cdn.OriginGroupUpdateParamsBodyNoneAuthSourceUnion{
                     {OfHostSource: &cdn.OriginGroupUpdateParamsBodyNoneAuthSourceHostSource{
                         Source:  "origin.example.com",
@@ -493,6 +490,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
       -d '{
         "name": "my-origin-group",
         "use_next": true,
+        "proxy_next_upstream": ["error", "timeout"],
         "sources": [
           {"source": "origin.example.com", "enabled": true, "backup": false},
           {"source": "backup.example.com", "enabled": true, "backup": true}
@@ -510,7 +508,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
         {"source": "origin.example.com", "backup": false, "enabled": true},
         {"source": "backup.example.com", "backup": true, "enabled": true}
       ],
-      "use_next": true
+      "use_next": true,
+      "proxy_next_upstream": ["error", "timeout"]
     }
     ```
   </Tab>
@@ -580,9 +579,73 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
 </Tabs>
 
+## Replace an origin group
+
+<p>Point the CDN resource at another origin group. The CDN resource stays, and the previous group can be deleted after this call.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        resource_id=12345,
+        origin_group=10002,
+    )
+    print(resource.id, resource.origin_group)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            OriginGroup: gcore.Int(10002),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.OriginGroup)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/12345" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"originGroup": 10002}'
+    ```
+
+    <p>The API returns HTTP 200. The `originGroup` field is the replacement group ID:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "cname": "cdn.example.com",
+      "originGroup": 10002
+    }
+    ```
+  </Tab>
+</Tabs>
+
 ## Delete an origin group
 
-<p>Delete a group that is not attached to a CDN resource. Detach it first, or delete the related resource, then delete the group. A successful delete returns HTTP 204.</p>
+<p>Delete a group after the CDN resource points at another group. A successful delete returns HTTP 204.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -631,15 +694,11 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Create an origin group
 
-<p>One enabled origin is enough to create the group. Set `use_next` with `proxy_next_upstream` so the CDN retries another origin after a connection error or a timeout. Set `origin_group` on the CDN resource so the CDN pulls content from this group.</p>
+<p>One enabled origin is enough to create the group. Set `origin_group` on the CDN resource so the CDN pulls content from this group.</p>
 
 ```hcl
 resource "gcore_cdn_origin_group" "example" {
-  name     = "my-origin-group"
-  use_next = true
-
-  # Retries the next origin after connection errors or timeouts.
-  proxy_next_upstream = ["error", "timeout"]
+  name = "my-origin-group"
 
   sources = [
     {
@@ -647,8 +706,6 @@ resource "gcore_cdn_origin_group" "example" {
       enabled = true
     }
   ]
-
-  # terraform import gcore_cdn_origin_group.example '<origin_group_id>'
 }
 
 resource "gcore_cdn_resource" "example" {
@@ -659,7 +716,7 @@ resource "gcore_cdn_resource" "example" {
 
 ## Update an origin group
 
-<p>Edit fields in the resource block and run `terraform apply`.</p>
+<p>Edit fields in the resource block and run `terraform apply`. With two origins, `use_next` and `proxy_next_upstream` make the CDN retry the next origin after a connection error or a timeout.</p>
 
 ```hcl
 resource "gcore_cdn_origin_group" "example" {
@@ -689,16 +746,24 @@ resource "gcore_cdn_resource" "example" {
 }
 ```
 
-## List and get origin groups
+## Replace an origin group
 
-<p>Reads a group by ID or by name. `has_related_resources` is true when a CDN resource already uses the group.</p>
+<p>Point the CDN resource at another origin group and run `terraform apply`. The CDN resource stays. If apply reports an inconsistent `origin_group_name`, run `terraform apply` again.</p>
 
 ```hcl
 resource "gcore_cdn_origin_group" "example" {
-  name     = "my-origin-group"
-  use_next = true
+  name = "my-origin-group"
 
-  proxy_next_upstream = ["error", "timeout"]
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_origin_group" "replacement" {
+  name = "replacement-origin-group"
 
   sources = [
     {
@@ -710,39 +775,54 @@ resource "gcore_cdn_origin_group" "example" {
 
 resource "gcore_cdn_resource" "example" {
   cname        = "cdn.example.com"
-  origin_group = gcore_cdn_origin_group.example.id
+  origin_group = gcore_cdn_origin_group.replacement.id
 }
+```
 
+## List and get origin groups
+
+<p>Reads an existing group by ID or by name. `has_related_resources` is true when a CDN resource already uses the group.</p>
+
+```hcl
 data "gcore_cdn_origin_group" "example" {
-  origin_group_id = gcore_cdn_origin_group.example.id
+  origin_group_id = 10001
 }
 
 data "gcore_cdn_origin_groups" "example" {
-  name = gcore_cdn_origin_group.example.name
+  name = "my-origin-group"
 }
 ```
 
 ## Delete an origin group
 
-<p>Remove both resource blocks — Terraform deletes the CDN resource before the origin group on the next `terraform apply`.</p>
+<p>Remove the origin group block after the CDN resource points at another group. Terraform deletes that group and leaves the CDN resource.</p>
 
 ```hcl
-# Remove or comment out these blocks:
+resource "gcore_cdn_origin_group" "replacement" {
+  name = "replacement-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname        = "cdn.example.com"
+  origin_group = gcore_cdn_origin_group.replacement.id
+}
+
+# Remove the group the CDN resource no longer uses:
 # resource "gcore_cdn_origin_group" "example" {
-#   name     = "my-origin-group"
-#   use_next = true
-#   proxy_next_upstream = ["error", "timeout"]
+#   name = "my-origin-group"
 #   sources = [
 #     {
 #       source  = "example.com"
 #       enabled = true
 #     }
 #   ]
-# }
-#
-# resource "gcore_cdn_resource" "example" {
-#   cname        = "cdn.example.com"
-#   origin_group = gcore_cdn_origin_group.example.id
 # }
 ```
 
