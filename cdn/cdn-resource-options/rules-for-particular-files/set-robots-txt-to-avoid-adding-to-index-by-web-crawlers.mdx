@@ -1,7 +1,7 @@
 ---
-title: Avoid CDN resource indexing by web crawlers
-sidebarTitle: Avoid indexing
-ai-navigation: Create a CDN rule for the robots.txt path via the Customer Portal or REST API.
+title: Block crawling of a CDN domain
+sidebarTitle: Block crawling
+ai-navigation: Create a CDN rule for the robots.txt path via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>When the same website content is available through both the origin domain and a [CDN&nbsp;custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), web crawlers can discover and index both URLs. Block crawling on the CDN domain with a dedicated robots.txt response so that domain stays out of search results.</p>
+<p>When the same website content is available through both the origin domain and a [CDN&nbsp;custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), web crawlers can discover and index both URLs. Block crawling on the CDN domain with a dedicated robots.txt response so that compliant crawlers do not crawl that domain.</p>
 
 <p>Create a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) that matches `/robots.txt` and returns a `Disallow: /` directive. The rule changes only that response, so other CDN URLs keep serving their configured content while compliant crawlers do not crawl them.</p>
 
@@ -51,6 +51,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>The origin website keeps serving its own files and its own robots.txt. Crawlers that request the origin domain follow that file, while the CDN rule applies only when the request uses the CDN custom domain.</p>
 
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
+```
+
+```text
+User-agent: *
+Disallow: /
+```
+
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
@@ -72,12 +85,15 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+
     from gcore import Gcore
 
     client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
 
     rule = client.cdn.cdn_resources.rules.create(
-        12345,  # CDN resource ID
+        resource_id,
         name="Block CDN crawling",
         rule=r"^/robots\.txt$",
         rule_type=0,
@@ -99,6 +115,8 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     import (
         "context"
         "fmt"
+        "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cdn"
@@ -107,8 +125,12 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
 
-        rule, err := client.CDN.CDNResources.Rules.New(ctx, 12345, cdn.CDNResourceRuleNewParams{
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
             Name:     "Block CDN crawling",
             Rule:     `^/robots\.txt$`,
             RuleType: 0,
@@ -167,6 +189,86 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
+```
+
+```text
+User-agent: *
+Disallow: /
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a CDN rule for `/robots.txt` with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. A request for that path on the CDN domain returns status 200 and `Disallow: /`, so compliant crawlers skip the CDN domain while the origin keeps its own robots.txt.</p>
+
+## Block CDN crawling
+
+<p>The pattern `^/robots\.txt$` matches only `/robots.txt` on the CDN resource already declared in the configuration, so other CDN URLs keep the resource configuration.</p>
+
+```hcl
+resource "gcore_cdn_resource_rule" "robots" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "Block CDN crawling"
+  rule        = "^/robots\\.txt$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    force_return = {
+      enabled = true
+      code    = 200
+      body    = "User-agent: *\\nDisallow: /\\n"
+    }
+  }
+}
+```
+
+## Delete the rule
+
+<p>Remove the rule block so the next `terraform apply` deletes the rule and leaves the CDN resource in place. `/robots.txt` then follows the resource configuration.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cdn_resource_rule" "robots" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "Block CDN crawling"
+#   rule        = "^/robots\\.txt$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     force_return = {
+#       enabled = true
+#       code    = 200
+#       body    = "User-agent: *\\nDisallow: /\\n"
+#     }
+#   }
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
+```
+
+```text
+User-agent: *
+Disallow: /
+```
 
 </MethodSection>
 </MethodSwitch>
