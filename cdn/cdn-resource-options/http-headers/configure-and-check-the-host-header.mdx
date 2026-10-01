@@ -1,7 +1,7 @@
 ---
 title: Configure and check the host header
 sidebarTitle: Manage the host header
-ai-navigation: Configure the Host header in the Customer Portal or with the REST API.
+ai-navigation: Configure the Host header via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,12 +9,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The Host header is a mandatory HTTP request header. CDN servers include it in every request sent to the origin. The origin uses the Host header to identify which website or application to serve — this matters when multiple sites share the same server.</p>
+<p>The Host header identifies the target site in the request CDN servers send to the origin. The origin uses that value to select which website or application to serve. This matters when multiple sites share the same server.</p>
 
 <p>The **Change Host header** option in CDN resource settings controls the value CDN servers send. When enabled, it offers two modes:</p>
 
 - **Custom Host header** — CDN servers send a fixed domain or IP address as the Host header on every origin request.
-- **Forward Host header** — CDN servers forward the Host header received in the end-user request to the origin unchanged.
+- **Forward Host header** — CDN servers send the host value from the end-user request to the origin.
 
 ## Configure the host header
 
@@ -34,33 +34,33 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>5. Select one of the two modes:</p>
 
-- **Custom Host header** — enter the domain or IP address CDN servers will send as the Host header. Use this when the origin serves a single site with a fixed host name.
-- **Forward Host header** — CDN servers forward the Host header from the end-user request. Use this when the origin validates the incoming Host header against the request domain.
+- **Custom Host header** — enter the domain or IP address CDN servers will send as the Host header. Use this when the origin serves a single site with a fixed hostname.
+- **Forward Host header** — CDN servers send the host value from the end-user request. Use this when the origin validates the incoming Host header against the request domain.
 
 <Frame>![Host header section with Custom Host header selected, showing an input field for the host header value](/images/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/configure-and-check-the-host-header-image2.png)</Frame>
 
 <p>6. Click **Save changes**.</p>
 
-<p>After saving, [clear&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) to apply the change to cached content.</p>
+<p>After saving, cached responses continue to be served until they expire or are purged. The next request sent to the origin uses the saved Host header.</p>
 
 ## Disable the host header
 
-<p>Disabling **Change Host header** causes CDN servers to send the CDN resource's CNAME as the Host header. Most origin servers cannot process this value and return 4xx or 5xx errors to end users. The option must remain enabled in all standard configurations.</p>
+<p>Disabling **Change Host header** causes CDN servers to send the CDN resource's CNAME as the Host header. Some origins reject that value and return 4xx or 5xx responses to end users. Keep the option enabled unless the origin expects the CDN resource CNAME as the Host header value.</p>
 
 <p>When using a `*.gvideo.io` CDN resource for [streaming](/streaming/interaction-with-cdn/get-started-streaming-cdn), disabling the option sets the Host header to the CDN resource's CNAME — this is the expected behavior for that use case.</p>
 
 ## Check whether the origin accepts the Host header
 
-<p>To check whether the origin accepts the Host header configured for the CDN resource, send a request directly to the origin with that value:</p>
+<p>To check whether the origin accepts the Host header configured for the CDN resource, send a request to the origin IP while keeping the configured hostname in the TLS server name and the Host header. For HTTPS, `--resolve` does that:</p>
 
 ```sh
-curl -H "Host: example.com" -I https://10.0.0.1/file.txt
+curl -I --resolve example.com:443:10.0.0.1 https://example.com/file.txt
 ```
 
 <p>Where:</p>
 
-- **`example.com`** — the expected Host header value
-- **`https`** — the protocol used by the origin; replace with `http` if the origin does not use TLS
+- **Resolve hostname** — the expected Host header value
+- **`https`** — the protocol used by the origin. For an origin without TLS, use `http` and port `80` in `--resolve`.
 - **`10.0.0.1`** — the IP address of the origin server
 - **`file.txt`** — any static file delivered via CDN
 
@@ -69,7 +69,7 @@ curl -H "Host: example.com" -I https://10.0.0.1/file.txt
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>The origin uses the Host header to select which site to serve, so `hostHeader` stores a fixed hostname and `forward_host_header` copies the Host header from the viewer request. Gcore CDN puts that value on the request it sends to the origin. Only one of the two options can be enabled.</p>
+<p>The origin uses the Host header to select which site to serve, so `hostHeader` stores a fixed host value and `forward_host_header` copies the host value from the viewer request. Gcore CDN puts that value on the request it sends to the origin. Only one of the two options can be enabled.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -82,7 +82,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ## Set a custom host
 
-<p>Set `hostHeader` to the hostname Gcore CDN should send, and set `forward_host_header` to `null` in the same request. A request that enables both options returns HTTP 400.</p>
+<p>Set `hostHeader` to the host value Gcore CDN should send, and set `forward_host_header` to `null` in the same request. A request that enables both options returns HTTP 400.</p>
 
 <p>In the JSON body the field name is `hostHeader`. A body that sends `host_header` does not change the saved value. `enabled` and `value` are both required, and the API stores `value` in lowercase.</p>
 
@@ -549,6 +549,46 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Send a Host header to the origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `host_header` is enabled, CDN servers send `value` on every origin request. Run `terraform apply` after editing `options`.</p>
+
+## Host header
+
+<p>Set `host_header` `enabled` to `true` and `value` to the host value in the resource block. CDN servers send that value as the Host header. To copy the Host header from the viewer request, set `forward_host_header` `enabled` to `true` and `value` to `true`, and set `host_header` `enabled` to `false` in the same configuration. The saved custom value stays unchanged while `host_header` is disabled. Enabling both options returns HTTP 400:</p>
+
+```text
+You should enable only one option from [hostHeader, forward_host_header] list
+```
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    host_header = {
+      enabled = true
+      value   = "origin.example.com"
+    }
+    forward_host_header = null
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
