@@ -1,7 +1,7 @@
 ---
 title: Specify HTTP methods allowed for content requests from the CDN
 sidebarTitle: Specify HTTP methods
-ai-navigation: Configure allowed HTTP methods for a CDN resource in the Customer Portal or with the REST API.
+ai-navigation: Configure allowed HTTP methods for a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -35,7 +35,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>For most static content delivery, GET and HEAD are sufficient. Allow POST as well if the resource serves dynamic requests, form submissions, or API calls.</p>
 
-<p>When a client sends a method that isn't allowed, the CDN returns `405 Method Not Allowed` without forwarding the request to the origin.</p>
+<p>6. Confirm a method that is not in the list:</p>
+
+```bash
+curl -I -X POST https://cdn.example.com/file.css
+```
+
+<p>The CDN returns `405 Method Not Allowed` and does not forward the request to the origin. A GET request is accepted, and its status is the origin response.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -70,12 +76,15 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+
     from gcore import Gcore
 
     client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
 
     resource = client.cdn.cdn_resources.update(
-        12345,  # CDN resource ID
+        resource_id,
         options={
             "allowed_http_methods": {"enabled": True, "value": ["GET", "HEAD"]},
         },
@@ -90,6 +99,8 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     import (
         "context"
         "fmt"
+        "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cdn"
@@ -98,8 +109,12 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
 
-        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
             Options: cdn.CDNResourceUpdateParamsOptions{
                 AllowedHTTPMethods: cdn.CDNResourceUpdateParamsOptionsAllowedHTTPMethods{
                     Enabled: true,
@@ -144,6 +159,43 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Restrict the HTTP methods a CDN resource accepts with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `allowed_http_methods` is enabled, the CDN accepts only the methods in `value`, so any other method returns `405 Method Not Allowed` before the request reaches the origin.</p>
+
+<p>`value` accepts `GET`, `HEAD`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS`. The names are case sensitive. `GET` and `HEAD` cover static delivery. Add `POST` when the resource serves dynamic requests, form submissions, or API calls. An empty `value` while `enabled` is true returns HTTP 400 and the message `This list should not be empty while option is enabled.` Run `terraform apply` after editing `options`.</p>
+
+## Allow GET and HEAD
+
+<p>Set `enabled` to `true` and `value` to `GET` and `HEAD`. A client that sends another method receives `405 Method Not Allowed`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    allowed_http_methods = {
+      enabled = true
+      value   = ["GET", "HEAD"]
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
