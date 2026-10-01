@@ -1,7 +1,7 @@
 ---
 title: Add an SSL certificate to deliver content over HTTPS
 sidebarTitle: SSL overview
-ai-navigation: Attach an SSL certificate to a CDN resource via Customer Portal or via REST API.
+ai-navigation: Attach an SSL certificate to a CDN resource via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -21,7 +21,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Two SSL certificate types are available:</p>
 
-- Custom SSL certificate. A third-party certificate authority issues the certificate for a custom domain such as `cdn.example.com`. Upload the certificate in the Customer Portal and attach it to the CDN resource.
+- Custom SSL certificate. A third-party certificate authority issues the certificate for the custom domain. Upload the certificate in the Customer Portal and attach it to the CDN resource.
 
 - Free Let's Encrypt certificate. Select a free [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-lets-encrypt-certificate#for-created-resource) for the custom domain. Gcore issues and attaches it automatically.
 
@@ -267,4 +267,79 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 </Tabs>
 
 </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Attach an existing SSL certificate to a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The resource uses a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), while Let's Encrypt issuance stays in the [Let's&nbsp;Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate) article.</p>
+
+<Note>
+<p>Only one certificate can be attached per CDN resource.</p>
+</Note>
+
+<Info>
+An [uploaded&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) is required, because the data source reads it when Terraform plans.
+</Info>
+
+## Attach the certificate
+
+<p>Select the certificate by name from the account list and set `ssl_enabled` and `ssl_data` on the CDN resource, because creating the resource with `ssl_enabled` set to `true` and no `ssl_data` returns HTTP 400 with the message `Invalid certificate.`</p>
+
+```hcl
+data "gcore_cdn_certificates" "account" {}
+
+locals {
+  ssl_certificate_id = one([
+    for certificate in data.gcore_cdn_certificates.account.items :
+    certificate.id if certificate.name == "cdn.mywebsite.com"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "https.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = local.ssl_certificate_id
+}
+```
+
+## Disable HTTPS
+
+<p>Set `ssl_enabled` to `false` and remove `ssl_data`, then run `terraform apply`, so the API clears the certificate id, while Terraform state can still show the previous id until the next plan, which records `ssl_data` as null and does not attach the certificate again.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "https.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = false
+}
+```
+
+</MethodSection>
 </MethodSwitch>
+
+## Content delivery over HTTPS
+
+Wait at least 15 minutes after the certificate is attached, then request the custom domain over HTTPS, so a successful connection confirms that the CDN delivers the content.

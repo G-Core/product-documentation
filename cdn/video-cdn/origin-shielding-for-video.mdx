@@ -1,16 +1,21 @@
 ---
 title: Origin shielding for video delivery
 sidebarTitle: Origin shielding
-ai-navigation: Use origin shielding for video delivery and enable it via REST API by setting a shield location.
+ai-navigation: Use origin shielding for video delivery via REST API or Terraform.
 ---
 
-Origin Shielding places a shield, also called a precache server, between the video origin and CDN edge servers. Viewers receive video from nearby edges, while an edge cache miss reaches the shield before the origin.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="api" label="REST API">
+
+<p>Origin Shielding places a shield, also called a precache server, between the video origin and CDN edge servers. Viewers receive video from nearby edges, while an edge cache miss reaches the shield before the origin.</p>
 
 ## Origin shielding request flow
 
-Without shielding, every CDN edge that misses cache can request the same manifest, segment, or video file from the origin. A live event or a popular VOD release can create a large number of concurrent origin requests.
+<p>Without shielding, every CDN edge that misses cache can request the same manifest, segment, or video file from the origin. A live event or a popular VOD release can create a large number of concurrent origin requests.</p>
 
-With Origin Shielding, edge servers pull missed objects through one shield location. The shield serves a cached copy when it has the object, and otherwise makes one origin request that other edges reuse.
+<p>With Origin Shielding, edge servers pull missed objects through one shield location. The shield serves a cached copy when it has the object, and otherwise makes one origin request that other edges reuse.</p>
 
 ```text
 Without shielding: Viewer -> CDN edge -> Origin
@@ -23,25 +28,23 @@ The origin still serves the first request for uncached or expired content.
 
 ## Live events
 
-A live event with a large concurrent audience requests the same playlists and segments at the same time from different regions. Origin Shielding concentrates those repeated edge misses on the shield, so the origin receives one pull instead of a pull from every edge.
+<p>A live event with a large concurrent audience requests the same playlists and segments at the same time from different regions. Origin Shielding concentrates those repeated edge misses on the shield, so the origin receives one pull instead of a pull from every edge.</p>
 
 ## VOD libraries
 
-Hot titles are usually served from edge cache. A cold title, or a title evicted after it stops being hot, can miss on edges in different regions.
+<p>Hot titles are usually served from edge cache. A cold title, or a title evicted after it stops being hot, can miss on edges in different regions.</p>
 
-One miss warms the shield cache, so other edges reuse that copy.
+<p>One miss warms the shield cache, so other edges reuse that copy.</p>
 
-Repeated misses from several regions show up as a low [cache&nbsp;hit&nbsp;ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue). That is a reason to enable Origin Shielding for a live event or a VOD library.
+<p>Repeated misses from several regions show up as a low [cache&nbsp;hit&nbsp;ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue). That is a reason to enable Origin Shielding for a live event or a VOD library.</p>
 
 ## Cache lifetime for video
 
-For live streaming, use a short cacheable TTL for manifests and a longer TTL for segments when the workflow allows it. VOD files and segments need a TTL long enough for later requests to hit the shield.
+<p>For live streaming, use a short cacheable TTL for manifests and a longer TTL for segments when the workflow allows it. VOD files and segments need a TTL long enough for later requests to hit the shield.</p>
 
-## REST API
+<p>Set a shield location on the CDN resource that delivers the video. The sequence lists locations, saves one, reads the resource, and clears the setting.</p>
 
-Set a shield location on the CDN resource that delivers the video. The sequence lists locations, saves one, reads the resource, and clears the setting.
-
-In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), the same location is set from [origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
+<p>In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), the same location is set from [origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of the CDN resource that delivers the video.
@@ -55,7 +58,7 @@ export SHIELDING_POP="{YOUR_SHIELDING_LOCATION_ID}"
 
 ### Shield locations
 
-Select the shield location closest to the video origin. A [locations&nbsp;list](/api-reference/cdn/origin-shielding/get-origin-shielding-locations) returns its id, datacenter, city, and country, and that id is the value for `SHIELDING_POP`.
+<p>Select the shield location closest to the video origin. A [locations&nbsp;list](/api-reference/cdn/origin-shielding/get-origin-shielding-locations) returns its id, datacenter, city, and country, and that id is the value for `SHIELDING_POP`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -117,7 +120,7 @@ Select the shield location closest to the video origin. A [locations&nbsp;list](
 
 ### Location update
 
-A [shielding&nbsp;update](/api-reference/cdn/origin-shielding/change-origin-shielding) sets `shielding_pop` to a location id and returns that id. The id has to be one returned by the locations list.
+<p>A [shielding&nbsp;update](/api-reference/cdn/origin-shielding/change-origin-shielding) sets `shielding_pop` to a location id and returns that id. The id has to be one returned by the locations list.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -194,14 +197,14 @@ A [shielding&nbsp;update](/api-reference/cdn/origin-shielding/change-origin-shie
 </Tabs>
 
 <Note>
-An unknown location id returns HTTP 400 with the message `Invalid pk "999999999" - object does not exist.`
+<p>An unknown location id returns HTTP 400 with the message `Invalid pk "999999999" - object does not exist.`</p>
 </Note>
 
 ### Resource fields
 
-Read the CDN resource after the update. `shielded` is true when Origin Shielding is enabled, and `shield_dc` is the datacenter name of the location that was saved.
+<p>Read the CDN resource after the update. `shielded` is true and `shield_dc` is the datacenter name when the location is saved. `shield_enabled` is read-only and stays false until the shield is active.</p>
 
-`shield_enabled` is read-only and reports whether the shield is active and working. The update does not write that field, so confirm the saved setting with `shielded` and `shield_dc`.
+<p>Activation completes in under 15 minutes. Read the resource again, so `shield_enabled` true confirms that the shield is active and working.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -252,7 +255,7 @@ Read the CDN resource after the update. `shielded` is true when Origin Shielding
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
-    <p>The resource includes:</p>
+    <p>The first read includes:</p>
 
     ```json
     {
@@ -266,7 +269,7 @@ Read the CDN resource after the update. `shielded` is true when Origin Shielding
 
 ### Cleared location
 
-The same update sets `shielding_pop` to null. The resource then reports `shielded` as false and `shield_dc` as null.
+<p>The same update sets `shielding_pop` to null. The resource then reports `shielded` as false and `shield_dc` as null. `shield_enabled` can stay true until the shield stops, and a later read reports it as false.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -337,3 +340,91 @@ The same update sets `shielding_pop` to null. The resource then reports `shielde
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Route video edge misses through a shield location with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2, so a live event or a cold VOD title misses on one shield instead of on the origin from every edge. Select the location closest to the video origin. For live streaming, use a short cacheable TTL for manifests and a longer TTL for segments, while VOD files need a TTL long enough for later requests to hit the shield.</p>
+
+### Shield location
+
+<p>Select the location by city and set `shielding_pop` on the CDN resource. An unknown location id returns HTTP 400 with the message `Invalid pk "999999999" - object does not exist.` The apply leaves `shielded` false until the next `terraform plan`, which records `shielded` as true and `shield_dc` as the datacenter name. `shield_enabled` stays false until the shield is active. Activation completes in under 15 minutes, and a later plan records `shield_enabled` as true.</p>
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video-shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_origin_shielding" "example" {
+  resource_id   = gcore_cdn_resource.example.id
+  shielding_pop = local.shielding_pop
+}
+```
+
+### Cleared location
+
+<p>Remove the `gcore_cdn_origin_shielding` block and run `terraform apply`, so `shielding_pop` becomes null. The next `terraform plan` records `shielded` as false and `shield_dc` as null. `shield_enabled` can stay true on that plan, and a later plan records it as false.</p>
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video-shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+# Remove or comment out this block:
+# resource "gcore_cdn_origin_shielding" "example" {
+#   resource_id   = gcore_cdn_resource.example.id
+#   shielding_pop = local.shielding_pop
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>
+

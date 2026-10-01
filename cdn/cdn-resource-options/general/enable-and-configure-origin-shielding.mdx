@@ -1,7 +1,7 @@
 ---
 title: Enable and configure origin shielding
 sidebarTitle: Enable shielding (paid)
-ai-navigation: Enable origin shielding for a CDN resource in the Customer Portal or via REST API by selecting a shield location.
+ai-navigation: Enable origin shielding for a CDN resource via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -41,7 +41,7 @@ Origin Shielding is a paid option. To make it available for a CDN resource, cont
   </Step>
 </Steps>
 
-<p>Activation begins immediately and completes in under 15 minutes. The following notification appears:</p>
+<p>Activation begins immediately and completes in under 15 minutes. This notification appears:</p>
 
 <Frame>![Activation notification indicating Origin Shielding is being activated](/images/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Activation.png)</Frame>
 
@@ -56,7 +56,7 @@ An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource 
 
 <p>Origin shielding is a paid option. To make it available for a CDN resource, contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).</p>
 
-<p>Choose the shield location closest to the origin. The shield uses the HTTP or HTTPS pull protocol already configured on the CDN resource.</p>
+<p>Select the shield location closest to the origin. The shield uses the HTTP or HTTPS pull protocol already configured on the CDN resource.</p>
 
 <p>Open a terminal and export the required variables:</p>
 
@@ -283,4 +283,130 @@ export SHIELDING_POP="{YOUR_SHIELDING_LOCATION_ID}"
 </Tabs>
 
 </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Route CDN edge requests through a shield location with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2, so the origin is contacted only on a cache miss. Select the location closest to the origin, while the shield uses the HTTP or HTTPS pull protocol already configured on the CDN resource.</p>
+
+<Info>
+Origin shielding is a paid option. To make it available for a CDN resource, contact [Gcore&nbsp;support](https://support.gcore.com/hc/en-us/requests/new).
+</Info>
+
+## Enable origin shielding
+
+<p>Select the shield location by city and set `shielding_pop` on the CDN resource. Activation completes in under 15 minutes.</p>
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Ashburn"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_origin_shielding" "example" {
+  resource_id   = gcore_cdn_resource.example.id
+  shielding_pop = local.shielding_pop
+}
+```
+
+## Change the shield location
+
+<p>Edit the city and run `terraform apply`, so the shield uses the new location.</p>
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_origin_shielding" "example" {
+  resource_id   = gcore_cdn_resource.example.id
+  shielding_pop = local.shielding_pop
+}
+```
+
+## Disable origin shielding
+
+<p>Remove the `gcore_cdn_origin_shielding` block and run `terraform apply`, so the resource stops sending edge requests through a shield and `shielding_pop` becomes null.</p>
+
+```hcl
+data "gcore_cdn_shielding_locations" "available" {}
+
+locals {
+  shielding_pop = one([
+    for location in data.gcore_cdn_shielding_locations.available.items :
+    location.id if location.city == "Singapore"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "shield.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+# Remove or comment out this block:
+# resource "gcore_cdn_origin_shielding" "example" {
+#   resource_id   = gcore_cdn_resource.example.id
+#   shielding_pop = local.shielding_pop
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
 </MethodSwitch>
+

@@ -1,7 +1,7 @@
 ---
 title: Use a private bucket as an origin
 sidebarTitle: Private origin
-ai-navigation: Create private S3 CDN origins via Customer Portal or via REST API, including Gcore Object Storage and credential rotation.
+ai-navigation: Create private S3 CDN origins via Customer Portal, REST API, or Terraform, including Gcore Object Storage and credential rotation.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
@@ -10,7 +10,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Private S3-compatible buckets — from Amazon or Gcore — can be used as a [CDN resource origin](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource#origin). For Gcore Object Storage, select a **Storage** and **Bucket**; access keys are not entered, and egress to the CDN is not billed. For Amazon and other S3-compatible storage, CDN servers authenticate with AWS Signature V4, which requires an Access Key ID, Secret Access Key, Hostname, and Region. Origin groups support multiple origins with individual authentication settings per origin, and an optional Host header override per origin.</p>
+<p>Private S3-compatible buckets — from Amazon or Gcore — can be used as a [CDN&nbsp;resource&nbsp;origin](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource#origin). For Gcore Object Storage, select a **Storage** and **Bucket**; access keys are not entered, and egress to the CDN is not billed. For Amazon and other S3-compatible storage, CDN servers authenticate with AWS Signature V4, which requires an Access Key ID, Secret Access Key, Hostname, and Region. Origin groups support multiple origins with individual authentication settings per origin, and an optional Host header override per origin.</p>
 
 ## Authentication data
 
@@ -34,7 +34,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Configure a private bucket as an origin
 
-<p>An origin group can be configured either during CDN resource creation or in advance from the **Origin groups** tab. The steps cover CDN resource creation. Creating a group from the **Origin groups** tab starts at **Add origin**.</p>
+<p>These steps add the private origin during CDN resource creation. To create the group first, open **CDN** > **Origin groups** and click **Add origin group**. Fill in the same S3 form, from storage type through Host header, and click **Add group**. Attach the saved group on the CDN resource as described in [Origin&nbsp;group&nbsp;attachment](/cdn/add-an-origin-group#origin-group-attachment). The last two steps below apply only during CDN resource creation.</p>
 
 <Steps>
   <Step title="Add an origin">
@@ -61,7 +61,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
     <p>If the origin requires the bucket name in the request URL, check the S3 or storage provider documentation to determine whether the bucket must be included in the origin hostname or the request path.</p>
 
-    - **Origin hostname:** Include the bucket in the hostname, such as `my-bucket.s3.amazonaws.com` or `my-bucket.luxembourg-2.storage.gcore.dev`. No additional CDN configuration is required.
+    - **Origin hostname:** Include the bucket in the hostname: `my-bucket.s3.amazonaws.com` or `my-bucket.luxembourg-2.storage.gcore.dev`. No rewrite rule is required.
     - **Path:** To keep the bucket name out of end-user URLs, such as `https://my.domain.com/content.png`, add a [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) rule that prepends it to requests sent to the origin. The rule `/(.*) /my-bucket/$1` transforms the end-user request into an origin request for `/my-bucket/content.png`.
   </Step>
   <Step title="Configure the Host header">
@@ -84,9 +84,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     <p>To add more origins to the group, click **+ Add origin** again and repeat the S3 storage, authentication, bucket addressing, and Host header steps. Each origin can have different credentials and a separate Host header override.</p>
   </Step>
   <Step title="Set the resource Host header">
-    <p>If the per-origin **Host header override** is not used, open **Host header** in the resource **HTTP headers** settings and enter the storage hostname, such as `my-bucket.luxembourg-2.storage.gcore.dev`. Click **Save changes**.</p>
+    <p>During CDN resource creation, if the per-origin **Host header override** is not used, open **Host header** in the resource **HTTP headers** settings and enter the storage hostname for the selected provider: `my-bucket.luxembourg-2.storage.gcore.dev` for Gcore Object Storage, or `my-bucket.s3.us-east-1.amazonaws.com` for Amazon S3. Click **Save changes**.</p>
 
-    <Frame>![Save changes](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png)</Frame>
+    <Frame>![Host header and Save changes](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png)</Frame>
   </Step>
   <Step title="Continue resource creation">
     <p>Continue the CDN resource creation according to the [Create CDN resource for static assets only](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) guide.</p>
@@ -95,7 +95,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Key replacement in private origins
 
-<p>Origin credentials can be rotated without recreating the origin group. Create a replacement storage key first, then update the origin with the new Access Key ID and Secret Access Key, and delete the old key after the origin uses the new credentials.</p>
+<p>Origin credentials can be rotated without recreating the origin group. Create a replacement storage key, update the origin, confirm the CDN can read a private object with the new key, and then delete the old key.</p>
 
 <p>1. Go to **CDN** > **Origin groups**.</p>
 
@@ -107,19 +107,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>5. Click **Save changes**.</p>
 
-## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
+<p>6. Request an object that exists only in the private bucket through the CDN resource. A successful response shows that the new key works.</p>
 
-<p>If an Amazon S3 origin serves GET requests successfully but returns `403 Forbidden` for HEAD requests, check the permissions and request configuration in this section. The mismatch typically has one of four causes:</p>
-
-<p>1. **Restricted object-level permissions:** The bucket or IAM policy permits public read access, but the object's Access Control List (ACL) denies access to the IAM user or role — AWS S3 returns 403 for HEAD in this case.</p>
-
-<p>2. **Different policies in effect:** The IAM identity making the HEAD request lacks `s3:GetObjectAttributes` or equivalent metadata-read permissions, causing AWS S3 to return 403 for HEAD while GET succeeds under a broader policy.</p>
-
-<p>3. **Incorrect parameters in presigned URLs:** A [presigned URL](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd) generated with mismatched parameters (access key, secret access key, bucket name, or object key) causes AWS to return 403. The parameters must be consistent for both HEAD and GET requests.</p>
-
-<p>4. **Different owners for bucket and object:** When the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS returns 403 for HEAD and 200 for GET.</p>
-
-<p>To resolve the issue, modify the bucket policy, IAM permissions, or the object's ACL as required.</p>
+<p>7. Delete the old storage key. For Gcore Object Storage, delete it in [Key&nbsp;deletion](/storage/manage-object-storage/manage-s3-access-keys#key-deletion). For Amazon, delete the previous key in [Managing&nbsp;access&nbsp;keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -155,6 +145,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 | `s3_storage_hostname` | Yes | Storage hostname, such as `luxembourg-2.storage.gcore.dev` |
 | `s3_region` | No | Storage region, such as `s-ed1` |
 | `s3_bucket_name` | Yes | Bucket name used in the signature |
+| `s3_access_key_id` | Yes | Access key ID for the private bucket |
+| `s3_secret_access_key` | Yes | Secret access key for the private bucket |
 | `host_header_override` | No | Host header for this source, such as `my-bucket.luxembourg-2.storage.gcore.dev` |
 
 <Tabs>
@@ -304,6 +296,8 @@ curl -X POST https://api.gcore.com/cdn/origin_groups \
 | `s3_type` | Yes | `amazon` |
 | `s3_region` | Yes | AWS region, such as `eu-west-1` |
 | `s3_bucket_name` | Yes | Bucket name used in the signature |
+| `s3_access_key_id` | Yes | Access key ID for the private bucket |
+| `s3_secret_access_key` | Yes | Secret access key for the private bucket |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -576,5 +570,150 @@ curl -X PATCH https://api.gcore.com/cdn/origin_groups/1001 \
   </Tab>
 </Tabs>
 
+<p>A masked key in the response shows that the new values were stored. Request an object that exists only in the private bucket through the CDN resource. A successful response shows that the new key works.</p>
+
+<p>Delete the old storage key after that request succeeds. For Gcore Object Storage, delete it in [Key&nbsp;deletion](/storage/manage-object-storage/manage-s3-access-keys#key-deletion). For Amazon, delete the previous key in [Managing&nbsp;access&nbsp;keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a private S3 origin on an origin group with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Access keys are write-only: Terraform sends them on apply and leaves them out of state.</p>
+
+## Create an origin group
+
+<p>One S3 source creates the group. Set `s3_credentials_version` before the first apply so Terraform sends the access keys.</p>
+
+<Tabs>
+  <Tab title="Gcore Object Storage">
+
+<p>`s3_type` is `other`. `s3_storage_hostname` is the storage address, and `host_header_override` sets the Host header for this source.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name                   = "my-origin-group"
+  s3_credentials_version = 1
+
+  sources = [
+    {
+      enabled              = true
+      origin_type          = "s3"
+      host_header_override = "my-bucket.s-ed1.cloud.gcore.lu"
+      config = {
+        s3_type              = "other"
+        s3_storage_hostname  = "s-ed1.cloud.gcore.lu"
+        s3_region            = "s-ed1"
+        s3_bucket_name       = "my-bucket"
+        s3_access_key_id     = var.s3_access_key_id
+        s3_secret_access_key = var.s3_secret_access_key
+      }
+    }
+  ]
+}
+```
+
+  </Tab>
+  <Tab title="Amazon S3">
+
+<p>`s3_type` is `amazon`. `s3_region` is the AWS region.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name                   = "my-origin-group"
+  s3_credentials_version = 1
+
+  sources = [
+    {
+      enabled     = true
+      origin_type = "s3"
+      config = {
+        s3_type              = "amazon"
+        s3_region            = "eu-west-1"
+        s3_bucket_name       = "my-bucket"
+        s3_access_key_id     = var.s3_access_key_id
+        s3_secret_access_key = var.s3_secret_access_key
+      }
+    }
+  ]
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Rotate origin credentials
+
+<p>Terraform sends new access keys only when `s3_credentials_version` changes. Update the key variables, increment the version, and run `terraform apply`. Keep `host_header_override` on the source so the Host header stays.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name                   = "my-origin-group"
+  s3_credentials_version = 2
+
+  sources = [
+    {
+      enabled              = true
+      origin_type          = "s3"
+      host_header_override = "my-bucket.s-ed1.cloud.gcore.lu"
+      config = {
+        s3_type              = "other"
+        s3_storage_hostname  = "s-ed1.cloud.gcore.lu"
+        s3_region            = "s-ed1"
+        s3_bucket_name       = "my-bucket"
+        s3_access_key_id     = var.s3_access_key_id
+        s3_secret_access_key = var.s3_secret_access_key
+      }
+    }
+  ]
+}
+```
+
+<p>After apply, request an object that exists only in the private bucket through the CDN resource. A successful response shows that the new key works. Delete the old storage key after that request succeeds. For Gcore Object Storage, delete it in [Key&nbsp;deletion](/storage/manage-object-storage/manage-s3-access-keys#key-deletion). For Amazon, delete the previous key in [Managing&nbsp;access&nbsp;keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html).</p>
+
+## Delete the origin group
+
+<p>Remove the resource block. The next `terraform apply` deletes the origin group. Delete the group after the CDN resource no longer uses it.</p>
+
+```hcl
+# Remove the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name                   = "my-origin-group"
+#   s3_credentials_version = 2
+#
+#   sources = [
+#     {
+#       enabled              = true
+#       origin_type          = "s3"
+#       host_header_override = "my-bucket.s-ed1.cloud.gcore.lu"
+#       config = {
+#         s3_type              = "other"
+#         s3_storage_hostname  = "s-ed1.cloud.gcore.lu"
+#         s3_region            = "s-ed1"
+#         s3_bucket_name       = "my-bucket"
+#         s3_access_key_id     = var.s3_access_key_id
+#         s3_secret_access_key = var.s3_secret_access_key
+#       }
+#     }
+#   ]
+# }
+```
+
+```bash
+terraform apply
+```
+
 </MethodSection>
 </MethodSwitch>
+
+## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
+
+If an Amazon S3 origin serves GET requests successfully but returns `403 Forbidden` for HEAD requests, check the permissions and request configuration. The mismatch typically has one of four causes:
+
+1. **Restricted object-level permissions:** The bucket or IAM policy permits public read access, but the object's Access Control List (ACL) denies access to the IAM user or role — AWS S3 returns 403 for HEAD in this case.
+
+2. **Different policies in effect:** The IAM identity making the HEAD request lacks `s3:GetObjectAttributes` or equivalent metadata-read permissions, causing AWS S3 to return 403 for HEAD while GET succeeds under a broader policy.
+
+3. **Incorrect parameters in presigned URLs:** A [presigned&nbsp;URL](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd) generated with mismatched parameters (access key, secret access key, bucket name, or object key) causes AWS to return 403. The parameters must be consistent for both HEAD and GET requests.
+
+4. **Different owners for bucket and object:** When the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS returns 403 for HEAD and 200 for GET.
+
+To resolve the issue, modify the bucket policy, IAM permissions, or the object's ACL as required.

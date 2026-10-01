@@ -1,7 +1,7 @@
 ---
 title: "Events"
 sidebarTitle: Events
-ai-navigation: Investigate HTTP requests and security events in WAAP via Customer Portal using filters for time range, event type, decision, optional action, country, IP address, path, HTTP method, and request identifiers, or via REST API using the analytics requests endpoint.
+ai-navigation: Investigate WAAP HTTP requests and security events in the Customer Portal with filters and event details, or via the REST API analytics endpoints.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,48 +9,45 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-## Purpose
+<p>The **Events** page is the workspace for investigating HTTP requests and security events processed by WAAP. Use it to move from high-level attack patterns to individual requests, sessions, and security signals. Request history is retained for 30 days.</p>
 
-<p>The **Events** section provides detailed visibility into HTTP requests and security events processed by WAAP. It serves as the primary workspace for traffic investigation, security analysis, and policy validation.</p>
-
-<p>Events allow teams to move from high-level attack patterns to individual requests, sessions, and security signals.</p>
-
-<p>Request history is retained for 30 days.</p>
+<Steps>
+  <Step title="Open the Customer Portal">
+    Sign in to the [Gcore Customer Portal](https://portal.gcore.com/).
+  </Step>
+  <Step title="Open Events">
+    Navigate to **WAAP** > **Analytics** > **Events**.
+  </Step>
+</Steps>
 
 <Frame>
   ![Events page in the Customer Portal](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events.png)
 </Frame>
 
-## Why filtering matters
+## Event filtering
 
-<p>In production environments, raw request logs are too large to analyze manually. The Events interface is designed around flexible, filter-driven investigation, allowing analysts to quickly reduce large traffic volumes to a meaningful investigative scope.</p>
+<p>Raw request logs are too large to review by hand. Combine filters to isolate the traffic for an investigation — for example POST requests to `/login` from a specific country that were blocked during a five-minute window. Applied filters also update the Events charts: request volume over time, the mix of decisions (**Blocked**, **Monitored**, **Allowed**, **Passed**) and optional actions (**CAPTCHA**, **JS Challenge**), and the split between suspicious and legitimate traffic.</p>
 
-<p>By default, only the most commonly used filters are displayed in the toolbar, including:</p>
+<p>By default, the toolbar shows:</p>
 
 - **Time range** — isolate the exact period when suspicious activity occurred.  
 - **Domain** — focus the investigation on traffic targeting all domains, or a specific domain.  
-- **Event** — focus on specific security signals or detections.  
-- **Decision** — filter requests based on the mitigation decision applied by WAAP. Available values include:
-
-  - **Blocked** — malicious traffic that was denied and did not reach the origin, according to the active security rules.
-  - **Monitored** — malicious traffic that was detected but intentionally allowed to pass according to the current security policy (for example when rules operate in monitoring mode).
-  - **Allowed** — traffic explicitly permitted by user-defined policies or allow rules.
-  - **Passed** — legitimate traffic that was inspected and forwarded to the origin because it did not trigger blocking policies.
-
-- **Optional Action** — filter requests by a challenge applied in addition to the primary decision. Available values include:
-
-  - **CAPTCHA** — a CAPTCHA challenge was issued to the client request.
-  - **JS Challenge** — a JavaScript or browser validation challenge was issued.
-
-  **Optional Action** filters can be combined with **Decision** filters. For example, selecting **Decision**: **Blocked** and **Optional Action**: **CAPTCHA** returns requests that were blocked after failing a CAPTCHA challenge.
-
-<p>Additional filters can be added dynamically using the **Add filter** button.</p>
+- **Event** — focus on a security signal or detection, including **DDoS**. Type a rule name and add it, for example `SQL Injection` or `DDoS`.  
+- **Actions** — combine the mitigation decision and any extra challenge in one filter. Each dropdown has an **Include** / **Exclude** switch. Values are **Blocked**, **Monitored**, **Allowed**, **Passed**, **Captcha**, and **JS Challenge**. For example, **Include** + **Blocked** + **Captcha** returns requests blocked after a failed Captcha.
 
 <Frame>
-  ![Add filter button in Events](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-add-filter.png)
+  ![Actions filter with Include and Exclude](/images/docs/waap/analytics/events/actions-include-exclude.png)
 </Frame>
 
-<p>Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.</p>
+<p>Open **Add filter** to add more dimensions. Every added dropdown also has **Include** / **Exclude**.</p>
+
+<Frame>
+  ![Add filter menu with Organizations, Devices, Clients, Tags, and User-Agent](/images/docs/waap/analytics/events/add-filter-menu.png)
+</Frame>
+
+<Frame>
+  ![Events filter bar with Event, Actions, Organizations, Devices, and Clients](/images/docs/waap/analytics/events/events-filter-bar.png)
+</Frame>
 
 - **Countries** — analyze traffic based on geographic origin.  
 - **IP address** — investigate activity from a specific client.  
@@ -60,72 +57,52 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - **Request ID** — inspect one or more specific requests. Multiple request IDs can be provided as a comma-separated list.  
 - **Reference IDs** — group repeated requests that triggered the same security rule. Multiple reference IDs can be provided as a comma-separated list.  
 - **Session IDs** — analyze sequences of requests generated within one client session. Multiple session IDs can be provided as a comma-separated list.
+- **Organizations** — filter by the WHOIS organization on the client IP. Values are those seen in the selected time range.
+- **Devices** and **Clients** — filter by the parsed user-agent device and client family. Values are those seen in the selected time range.
+- **Tags** — filter by tags WAAP assigned to the request, for example `Injection Attack`.
+- **User-Agent** — case-insensitive partial match on the user-agent string.
 - **JA3** — filter by the [JA3 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. Useful for identifying botnets that share a common network stack regardless of IP address.
 - **JA4** — filter by the [JA4 TLS fingerprint](/waap/threat-intelligence/tls-fingerprinting) of the originating client. JA4 normalizes handshake fields that browsers may reorder between sessions, producing more stable fingerprints for modern TLS clients.
 
-<p>Because filters can be combined, analysts can move from broad analysis to highly precise investigations — for example isolating POST requests to `/login` from a specific country that were blocked during a five-minute attack window.</p>
-
-<p>Filtered datasets are immediately reflected in the Events analytics view. Graphs dynamically update to display:</p>
-
-- the volume of requests over time within the selected scope.  
-- the distribution of decisions (Blocked, Monitored, Allowed, Passed) and optional actions (CAPTCHA, JS Challenge).  
-- the relationship between suspicious and legitimate traffic for the selected filters.  
-
-<p>This dynamic filtering makes Events a practical investigation workspace rather than a static log viewer. Analysts can quickly test hypotheses, validate rule behavior, and understand how attacks evolve over time.</p>
-
-<p>Security analysts, SREs, and DevSecOps engineers typically use Events to:</p>
-
-- investigate suspicious traffic.  
-- validate enforcement actions.  
-- detect recurring attack patterns.  
-- confirm whether rules behave as expected.  
-- export evidence for incident response.    
+<p>Security analysts, SREs, and DevSecOps engineers use Events to investigate suspicious traffic, validate enforcement actions, detect recurring attack patterns, confirm whether rules behave as expected, and export evidence for incident response.</p>
 
 ## Inspecting an individual event
 
-<p>Filtering narrows the dataset, but the deepest context lives inside each request. Clicking an event in the list expands the event row to reveal additional detail beyond the columns shown in the table, helping analysts understand why a request was flagged and where it originated.</p>
+<p>Click an event in the list to expand the row and reveal fields that are not shown as table columns. Those fields explain why a request was flagged and where it originated.</p>
 
 <p>Key fields in the expanded view include:</p>
 
 - **Organization** — the name of the organization that owns the client IP address, sourced from WHOIS data. This helps analysts attribute traffic to a hosting provider, cloud platform, ISP, or corporate network, which is often a strong signal when distinguishing legitimate users from automated or malicious infrastructure.
 - **Tags** — threat category labels assigned by WAAP, such as *Injection Attack* or *SQL Injection*. Tags reflect the high-level threat classification detected for the request, giving analysts an immediate understanding of the type of threat behind a security event without inspecting the raw payload.
+- **Detector** and **Payload** — shown together in the portal only when a [WAF and OWASP Top Threats](/waap/waap-policies/waf-and-owasp-top-threats) signature matched (for example SQL injection or XSS) and the first detector has a non-empty `matched_content`. If there is no matched fragment, the section is not shown. They stay hidden for bot, IP reputation, CSRF, custom-rule, and DDoS events. **Detector** shows the signature ID and the request part that matched, for example `ID862 in query_params`. **Payload** shows the matched fragment (`matched_content`): URL-encoded and limited to 200 characters. The portal shows the first detector; the API returns the full `detector` list. The top-level rule name on the event is the policy that made the decision; `detector` lists the signatures inside that policy.
 - **JA3** and **JA4** — [TLS fingerprints](/waap/threat-intelligence/tls-fingerprinting) computed from the client's TLS handshake. Both values appear as dedicated fields in the event details panel for HTTPS requests. Use them to identify clients by network stack rather than IP address, or to pivot from an event directly into a fingerprint-based filter.
 
-<p>Organization indicates *who* the request came from, Tags explain *why* WAAP considered it suspicious, and JA3/JA4 fingerprints identify *what* client library or network stack originated it.</p>
+<p>Organization indicates *who* the request came from. Tags classify the threat. Detector and Payload show which signature matched and on which fragment. JA3/JA4 fingerprints identify the client network stack.</p>
 
 ## Exporting events
 
-<p>WAAP provides multiple ways to export security events for reporting, long-term storage, or integration with external security systems.</p>
+<p>WAAP provides two export paths: a CSV download of the events currently loaded in the table, and continuous delivery of CDN request logs that include WAAP fields.</p>
 
 ### Export from the Events page
 
-<p>Events visible in the Events interface can be exported directly as a report. When filters are applied, the exported dataset contains only the filtered results, allowing analysts to generate focused reports for investigations or incident documentation.</p>
+<p>The Events page downloads the events currently loaded in the table as a CSV file. That file is not the full filtered result set. For a complete extract, use the [Get security events](/api-reference/waap/analytics/get-security-events) endpoint and page through results with the `next` cursor.</p>
 
-<p>Typical use cases include:</p>
+<Steps>
+  <Step title="Apply the investigation filters">
+    Set the time range and any other filters first. The CSV contains the events currently loaded in the table after those filters are applied.
+  </Step>
+  <Step title="Download the CSV">
+    Click the download icon in the toolbar. The control is labeled **Export CSV**. The browser downloads a CSV file.
 
-- sharing traffic samples with SOC or incident response teams.  
-- attaching evidence to security incident records.  
-- providing filtered datasets to engineering teams for troubleshooting.  
-- preparing customer-facing security reports. 
+    <Frame>
+      ![WAAP Events export](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-export-csv.png)
+    </Frame>
+  </Step>
+</Steps>
 
-<Frame>
-  ![WAAP Events export](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-export-csv.png)
-</Frame>
+### Continuous export via Logs Uploader
 
-<p>Exports from the Events page are typically provided in CSV format, making them easy to process in spreadsheets, SIEM platforms, or analytical tools.</p>
-
-### Continuous export via Log Uploader
-
-<p>For automated pipelines and long-term retention, WAAP supports continuous event delivery using Log Uploader.</p>
-
-<p>Log Uploader allows teams to stream WAAP events to external storage or processing systems. Supported destinations include:</p>
-
-- Amazon S3 — for centralized log storage and integration with data lakes or analytics pipelines.  
-- FTP — for compatibility with legacy log ingestion systems.  
-- SFTP — for secure file transfer to security or compliance infrastructure.  
-- HTTP endpoints — for integration with SIEM platforms, log collectors, or custom processing services.   
-
-<p>This capability allows organizations to integrate WAAP telemetry into broader security monitoring, DevSecOps, and observability pipelines, enabling correlation with application logs, infrastructure metrics, and threat intelligence systems.</p>
+<p>For automated pipelines and long-term retention, configure [Logs Uploader](/cdn/logs/logs-uploader). When WAAP is enabled on a CDN resource, WAAP fields are appended to each CDN request-log entry. Logs Uploader does not deliver a separate WAAP event stream.</p>
 
 ## Real-world investigation scenarios
 
@@ -155,7 +132,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ### Exporting evidence for incident response
 
-<p>Once relevant traffic is isolated, analysts can export the filtered dataset in CSV format.</p>
+<p>Once relevant traffic is isolated, analysts can download the events loaded in the table as a CSV file, or use the API with pagination for a complete extract.</p>
 
 <p>This allows teams to:</p>
 
@@ -166,23 +143,28 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Recommended investigation workflow
 
-<p>A typical investigation process in Events includes:</p>
+<p>Work through Events in this order:</p>
 
-1. Narrow the timeframe of the incident.  
-2. Identify the affected endpoint or domain.  
-3. Review mitigation decisions taken by WAAP.  
-4. Pivot to source indicators such as IP address or session ID.  
-5. Export relevant events for documentation or response.
-
-<p>This structured approach allows teams to transform raw request telemetry into actionable security insight.</p>
+<Steps>
+  <Step title="Narrow the timeframe of the incident">
+  </Step>
+  <Step title="Identify the affected endpoint or domain">
+  </Step>
+  <Step title="Review mitigation decisions taken by WAAP">
+  </Step>
+  <Step title="Pivot to source indicators such as IP address or session ID">
+  </Step>
+  <Step title="Export relevant events for documentation or response">
+  </Step>
+</Steps>
 
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Query the request log and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs cover the list endpoint. Response examples include only the fields used in each step.</p>
+<p>Query security events and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The current [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs do not include a method for `GET /waap/v2/analytics/events`, so the examples use HTTP. Response examples include only the fields used in each step.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required. To retrieve details for a specific event, the domain ID is also needed — use `GET /waap/v1/domains` to list available domains and their IDs.
+An [API token](/account-settings/api-tokens) is required. To retrieve details for a specific event, the domain ID is also needed — use [List Domains](/api-reference/waap/domains/list-domains) (`GET /waap/v2/domains`) to list available domains and their IDs.
 </Info>
 
 <p>Set the API token before running the examples:</p>
@@ -193,127 +175,71 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## List events
 
-<p>The `GET /waap/v1/analytics/requests` endpoint returns the request log across all domains in the account. Each record includes the client IP address, triggered rule, decision, and request metadata. Results older than 30 days are not available.</p>
+<p>The [Get security events](/api-reference/waap/analytics/get-security-events) endpoint (`GET /waap/v2/analytics/events`) returns security events across all domains in the account. Each record includes the client IP address, triggered rule, decision, and request metadata. Results older than 30 days are not available. Pages use cursor pagination: pass the `next` value from a response as the `next` query parameter to fetch the following page.</p>
 
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    from datetime import datetime, timedelta, timezone
+```bash
+START=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+        date -u -v-24H '+%Y-%m-%dT%H:%M:%SZ')
 
-    import gcore
-    from dotenv import load_dotenv
+curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&decision=blocked&limit=50" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
 
-    load_dotenv()
-    client = gcore.Gcore()
+<p>Response:</p>
 
-    end = datetime.now(timezone.utc)
-    start = end - timedelta(hours=24)
-
-    events = client.waap.analytics.get_requests(
-        start=start.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        end=end.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        decision=["blocked"],
-        limit=50,
-    )
-
-    print(f"Total: {events.count}")
-    for event in events.results:
-        print(f"id={event.id} path={event.path!r} rule={event.rule_name!r} ip={event.client_ip}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-    	"context"
-    	"fmt"
-    	"os"
-    	"time"
-
-    	"github.com/G-Core/gcore-go"
-    	"github.com/G-Core/gcore-go/waap"
-    )
-
-    func main() {
-    	client := gcore.NewClient()
-
-    	end := time.Now().UTC()
-    	start := end.Add(-24 * time.Hour)
-
-    	page, err := client.Waap.Analytics.GetRequests(context.Background(), waap.AnalyticsGetRequestsParams{
-    		Start:    start.Format(time.RFC3339),
-    		End:      gcore.String(end.Format(time.RFC3339)),
-    		Decision: []string{"blocked"},
-    		Limit:    gcore.Int(50),
-    	})
-    	if err != nil {
-    		fmt.Fprintf(os.Stderr, "error: %v\n", err)
-    		os.Exit(1)
-    	}
-
-    	fmt.Printf("Total: %d\n", page.Count)
-    	for _, event := range page.Results {
-    		fmt.Printf("id=%s path=%q rule=%q ip=%s\n", event.ID, event.Path, event.RuleName, event.ClientIP)
-    	}
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X GET "https://api.gcore.com/waap/v1/analytics/requests?start=2026-06-24T00:00:00Z&decision=blocked&limit=50" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response:
-
-    ```json
+```json
+{
+  "results": [
     {
-      "count": 127,
-      "limit": 50,
-      "offset": 0,
-      "results": [
-        {
-          "id": "01jfad3x...",
-          "decision": "blocked",
-          "action": "block",
-          "client_ip": "203.0.113.45",
-          "country": "US",
-          "domain": "example.com",
-          "domain_id": 12345,
-          "method": "POST",
-          "path": "/api/login",
-          "rule_name": "SQL Injection",
-          "status_code": 403,
-          "request_time": 1750726800000
-          // ...
-        }
-        // ...
-      ]
+      "id": "96763b8fb655e9f18a2e04097b704e39-458959",
+      "decision": "blocked",
+      "optional_action": "",
+      "action": "block",
+      "client_ip": "203.0.113.45",
+      "country": "US",
+      "domain": "example.com",
+      "domain_id": 12345,
+      "method": "POST",
+      "path": "/api/login",
+      "rule_name": "SQL Injection",
+      "status_code": 403,
+      "result": "blocked",
+      "request_time": 1790505000000
     }
-    ```
-  </Tab>
-</Tabs>
+  ],
+  "next": "eyJyZXF1ZXN0X3RpbWUiOjE3OTA1MDUwMDAwMDB9"
+}
+```
+
+<p>The table lists commonly used query parameters. It is not the complete API. Parameters discussed on the Events page, including `ja3` and `ja4`, are included. For the full set — including `tags`, `user_agent`, `has_policy_override`, `order_by`, and every `exclude_*` filter — see [Get security events](/api-reference/waap/analytics/get-security-events).</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `start` | Yes | Start of the time range in ISO 8601 format. |
 | `end` | No | End of the time range. Defaults to the current time when omitted. |
+| `next` | No | Cursor from a previous response. Repeat the original filters and attach `next` to fetch the following page. |
+| `limit` | No | Number of items to return. Maximum 100. Defaults to 100. |
 | `domains` | No | Filter by domain IDs. Omit to query all domains. |
 | `decision` | No | One or more of: `blocked`, `monitored`, `allowed`, `passed`. |
 | `optional_action` | No | One or more of: `captcha`, `challenge`. The value `challenge` corresponds to JS Challenge in the Customer Portal. |
 | `ips` | No | One or more client IP addresses. |
 | `countries` | No | Country codes in ISO 3166-1 alpha-2 format. |
-| `path` | No | URL path with glob-like pattern matching. |
+| `path` | No | One or more URL paths. `*` is a wildcard. |
 | `http_methods` | No | One or more HTTP methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`. |
 | `status_codes` | No | One or more HTTP response status codes. |
 | `request_ids` | No | One or more request IDs. |
 | `reference_ids` | No | One or more reference IDs. |
 | `session_ids` | No | One or more session IDs. |
+| `ja3` | No | One or more JA3 TLS fingerprints. Each value is 32 hexadecimal characters. |
+| `ja4` | No | One or more JA4 TLS fingerprints, for example `t13d3113h2_e8f1e7e78f70_ce5650b735ce`. |
+| `user_agent_clients` | No | Parsed user-agent client families. Values come from `GET /waap/v1/analytics/filters/user-agent-clients` for the selected period. |
+| `user_agent_devices` | No | Parsed user-agent device types. Values come from `GET /waap/v1/analytics/filters/user-agent-devices` for the selected period. |
+| `organizations` | No | WHOIS organizations on client IPs. Values come from `GET /waap/v1/analytics/filters/organizations` for the selected period. |
+| `exclude_decision` | No | Exclude one or more decisions. Additional `exclude_*` filters are listed in the [API reference](/api-reference/waap/analytics/get-security-events). |
 
 ## Event details
 
-<p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, and the threat category tags that explain why the request was flagged.</p>
+<p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, the threat category tags that explain why the request was flagged, and the `detector` array for WAF and OWASP signature matches.</p>
 
 <p>The `request_id` value comes from the `id` field in the events list response. The `domain_id` is also present in each list result.</p>
 
@@ -326,42 +252,73 @@ curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST
 
 ```json
 {
-  "id": "01jfad3x...",
+  "id": "96763b8fb655e9f18a2e04097b704e39-458959",
   "path": "/api/login",
   "method": "POST",
   "action": "block",
   "decision": "blocked",
   "optional_action": "",
-  "rule_id": "rule-4821",
+  "rule_id": "86",
   "rule_name": "SQL Injection",
-  "pattern_matched_tags": ["Injection Attack", "SQL Injection"],
-  "common_tags": [],
-  "traffic_types": ["malicious"],
+  "pattern_matched_tags": [
+    {
+      "tag": "sql",
+      "display_name": "SQL Injection",
+      "description": "This client attempted insertion or injection of a SQL query via the input data from the client to the application.",
+      "field": "query_params",
+      "field_name": "q",
+      "pattern_name": "SQL Injection Prevention",
+      "pattern_value": "select user from master.."
+    }
+  ],
+  "common_tags": [
+    {
+      "tag": "injectionattack",
+      "display_name": "Injection Attack",
+      "description": "Multiple injection attempts were detected."
+    }
+  ],
+  "traffic_types": ["policy_blocked"],
   "user_agent": {
-    "raw": "python-requests/2.31.0",
+    "full_string": "python-requests/2.31.0",
     "device": "Other",
     "client": "Python Requests"
   },
   "network": {
-    "ip": "203.0.113.45",
-    "organization": "Example Hosting LLC"
+    "client_ip": "203.0.113.45",
+    "country": "US",
+    "organization": {
+      "name": "Example Hosting LLC",
+      "subnet": "203.0.113.0-203.0.113.255"
+    }
   },
-  "request_time": "2026-06-24T10:30:00Z",
-  "reference_id": "ref-abc123",
-  "session_id": "sess-xyz789",
-  "query_string": "user=admin&pass=1%27+OR+1%3D1",
+  "request_time": "2026-09-27T10:30:00",
+  "reference_id": "ad07c06f19054e484974fa22e9fb6bb1",
+  "session_id": "0c74d14951b22dc3f22cbba9668ecea1",
+  "query_string": "q=select%20user%20from%20master..",
   "http_status_code": 403,
-  "http_version": "HTTP/1.1",
+  "http_version": "1.1",
   "scheme": "https",
   "content_type": "application/json",
-  "response_time": "12ms",
+  "response_time": "12",
   "incident_id": "",
   "request_headers": {
-    "Host": "example.com",
-    "Content-Type": "application/json"
-  }
+    "HOST": "example.com",
+    "CONTENT-TYPE": "application/json"
+  },
+  "detector": [
+    {
+      "rule_id": "ID862",
+      "rule_name": "SQL Injection Prevention",
+      "subject_type": "query_params",
+      "subject_field": "q",
+      "matched_content": "select%20user%20from%20master.."
+    }
+  ]
 }
 ```
+
+<p>Top-level `rule_name` is the policy that made the decision. `detector` lists the signatures inside that policy. The array is populated only for WAF and OWASP Top Threats signature events; otherwise it is empty. `matched_content` is the matched fragment, URL-encoded and limited to 200 characters.</p>
 
   </MethodSection>
 </MethodSwitch>

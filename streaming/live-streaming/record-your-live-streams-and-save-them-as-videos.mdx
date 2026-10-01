@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Record saves live streams as videos in Video Hosting. Recording can start automatically when a stream goes live, or be triggered manually to capture only a specific time window within the broadcast.</p>
+<p>Record saves live streams as videos in Video Hosting. Recording can start automatically when a stream goes live, or be triggered manually to capture only a specific time window within the broadcast. Recording does not start until stream metadata is available.</p>
 
 ## Record a live stream manually
 
@@ -84,63 +84,11 @@ Transcoded renditions are not affected and remain available indefinitely.
 
 ## Troubleshoot differences between live playback and recordings
 
-<p>Recording and live transcoding operate as separate, independent processes. Recording saves the incoming stream as received; the live transcoder builds the playback session from source metadata read once when the encoder first connects.</p>
+<p>Recording and live transcoding operate as separate, independent processes. Original recording saves the incoming stream as received. The live transcoder builds the playback session from source metadata read once when the encoder first connects.</p>
 
 ### Recording fails during later VOD processing
 
-<p>If the source stream changes pixel format, color range, codec parameters, or similar properties during the broadcast, the recording saves the changed segment too. The resulting file contains inconsistent source parameters, and later VOD processing may fail.</p>
-
-<p>The cause is a structural property of the MP4 container: the file begins with metadata (`ftyp`, `moov`) that describes how to interpret all later samples. If source parameters change mid-stream, the later samples in `mdat` no longer match that initial description. The container format does not support mid-file sample-description changes, so decoders and transcoders reject the tail of the file or fail during export.</p>
-
-```text
-Simplified MP4 timeline:
-
-time ------------------------------------------------------------------------------>
-
-| MP4 headers + metadata | stable video samples | parameter change | later samples |
-| ftyp | moov            | mdat: yuv420p        | yuv420p->yuvj420p| mdat: changed |
-
-                        OK for decoder/transcoder
-                                              ^
-                                              |
-                         from this point, later video data may decode incorrectly,
-                         show artifacts, fail validation, or stop transcoding
-```
-
-```text
-LIVE ENCODER
-  first part of stream: stable parameters
-  example: yuv420p
-            |
-            +----------------------> LIVE TRANSCODER
-            |                         uses live session rules
-            |
-            +----------------------> RECORDING WORKFLOW
-                                      stores source as received
-
-... later during the same broadcast ...
-
-LIVE ENCODER
-  source parameters change mid-stream
-  example: yuv420p -> yuvj420p
-            |
-            +----------------------> LIVE TRANSCODER
-            |                         may continue, degrade, or fail
-            |                         depending on the type of change
-            |
-            +----------------------> RECORDING WORKFLOW
-                                      stores the changed segment too
-
-RECORDED FILE RESULT
-  beginning: yuv420p
-  ending:    yuvj420p
-            |
-            v
-LATER VOD PROCESSING / EXPORT OF RECORDING
-  sees mixed source parameters inside one file
-  may fail, enter Error status, or require trimming
-  of the broken segment before reprocessing
-```
+<p>If the source stream changes pixel format, color range, codec parameters, or similar properties during the broadcast, an original recording saves the changed segment too. The resulting file contains inconsistent source parameters, and later VOD processing may fail.</p>
 
 <Info>
 If a recording fails VOD processing due to mid-stream parameter changes, contact [Gcore support](mailto:support@gcore.com) for assistance.
@@ -166,12 +114,12 @@ export STREAM_ID="{YOUR_STREAM_ID}"
 
 ## Configure recording settings
 
-<p>Set `auto_record` and `record_type` on an existing stream. When `auto_record` is `true`, recording starts automatically whenever the encoder connects. When `false`, recording must be started manually. `record_type` controls whether the raw ingest (`origin`) or the transcoded output (`transcoded`) is saved.</p>
+<p>Set `auto_record` and `record_type` on an existing stream. When `auto_record` is `true`, recording starts automatically once stream metadata is available. When `false`, recording must be started manually. `record_type` controls whether the raw ingest (`origin`) or the transcoded output (`transcoded`) is saved.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `auto_record` | No | `true` to record automatically when the stream goes live |
-| `record_type` | No | `transcoded` (default) — saves the processed output with applied overlays and encoding; `origin` — saves the raw RTMP/SRT source without transcoding |
+| `record_type` | No | `transcoded` (default) — saves the processed output with applied overlays and encoding; `origin` — saves the raw RTMP/SRT source without transcoding. Original recording is a premium feature and must be enabled on the account. Original files are stored for 7 days, then deleted. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -277,7 +225,9 @@ client = Gcore()
 stream_id = int(os.environ["STREAM_ID"])
 
 client.streaming.streams.start_recording(stream_id)
-print(f"Recording started for stream {stream_id}")
+
+stream = client.streaming.streams.get(stream_id)
+print(f"recording={stream.recording}, recording_duration={stream.recording_duration}")
 ```
   </Tab>
   <Tab title="Go SDK">
@@ -285,11 +235,14 @@ print(f"Recording started for stream {stream_id}")
 package main
 
 import (
+    "context"
     "fmt"
     "io"
     "net/http"
     "os"
     "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
 )
 
 // startRecording uses raw HTTP because the Go SDK does not handle
@@ -318,7 +271,13 @@ func main() {
     if err := startRecording(streamID); err != nil {
         panic(err)
     }
-    fmt.Printf("Recording started for stream %d\n", streamID)
+
+    client := gcore.NewClient()
+    stream, err := client.Streaming.Streams.Get(context.Background(), streamID)
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("recording=%v, recording_duration=%v\n", stream.Recording, stream.RecordingDuration)
 }
 ```
   </Tab>
@@ -327,9 +286,12 @@ func main() {
 curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/start_recording" \
      -H "Authorization: APIKey $GCORE_API_KEY" \
      -H "Content-Type: application/json"
+
+curl "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-<p>Returns `204 No Content` whether the stream is live or offline. Recording only starts if the stream is actively receiving an ingest signal at the time of the call.</p>
+<p>The start request returns `204 No Content` whether the stream is live or offline. Confirm that recording started from the following GET: `recording` is `true`, and `recording_duration` counts up in seconds.</p>
   </Tab>
 </Tabs>
 
