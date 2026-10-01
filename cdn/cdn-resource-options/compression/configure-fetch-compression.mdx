@@ -1,7 +1,7 @@
 ---
 title: Configure fetch compression
 sidebarTitle: Fetch
-ai-navigation: Configure Fetch compressed on a CDN resource in the Customer Portal or with the REST API.
+ai-navigation: Configure Fetch compressed on a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The **Fetch compressed** option tells CDN servers to pull already-compressed content from the origin instead of requesting uncompressed files. The origin must support GZip compression.</p>
+<p>The **Fetch compressed** option tells CDN servers to pull already-compressed content from the origin instead of requesting uncompressed files. The origin must return GZip-encoded responses.</p>
 
 ## Fetch compressed
 
@@ -50,7 +50,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>When `fetch_compressed` is on, the CDN requests a GZip-encoded response from the origin and serves it without decompressing it. The origin must support GZip compression.</p>
+<p>When `fetch_compressed` is on, the CDN requests a GZip-encoded response from the origin and serves it without decompressing it. The origin must return GZip-encoded responses.</p>
 
 <p>An origin that compresses only with Brotli returns uncompressed content, so configure it to return a Brotli file when the CDN requests GZip encoding.</p>
 
@@ -80,12 +80,14 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+
     from gcore import Gcore
 
     client = Gcore()
 
     resource = client.cdn.cdn_resources.update(
-        12345,  # CDN resource ID
+        int(os.environ["CDN_RESOURCE_ID"]),
         options={
             "fetch_compressed": {"enabled": True, "value": True},
         },
@@ -100,6 +102,8 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     import (
         "context"
         "fmt"
+        "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cdn"
@@ -108,8 +112,12 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
 
-        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
             Options: cdn.CDNResourceUpdateParamsOptions{
                 FetchCompressed: cdn.CDNResourceUpdateParamsOptionsFetchCompressed{
                     Enabled: true,
@@ -154,6 +162,43 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set `fetch_compressed` so the CDN requests a GZip-encoded response from the origin and serves it without decompressing it, using the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The origin must return GZip-encoded responses. Clients receive that compressed response even when the browser does not accept the encoding.</p>
+
+<p>An origin that compresses only with Brotli returns uncompressed content, so configure it to return a Brotli file when the CDN requests GZip encoding. Enabling `gzip_on` while `fetch_compressed` is enabled returns HTTP 400. Clear `gzip_on`, `brotli_compression`, or `slice` before setting `fetch_compressed`. Leave `fetch_compressed` off when each viewer needs a response that matches Accept-Encoding. Set `Vary: Accept-Encoding` on the origin, because without that header the CDN can cache the first version and serve it to a client that needed the other version. Run `terraform apply` after editing `options`.</p>
+
+## Fetch compressed
+
+<p>Set `enabled` and `value` to true. The CDN stores the encoded origin response and serves it without decompressing it.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    fetch_compressed = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
