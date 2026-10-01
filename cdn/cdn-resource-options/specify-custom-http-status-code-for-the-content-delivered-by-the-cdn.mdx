@@ -1,7 +1,7 @@
 ---
 title: Configuring HTTP status codes for CDN-hosted content
 sidebarTitle: Status code
-ai-navigation: Configure a custom HTTP status code for CDN content in the Customer Portal or the REST API.
+ai-navigation: Configure a custom HTTP status code for CDN content via the Customer Portal, REST API, or Terraform.
 ---
 
 import { Caution } from "/snippets/caution.mdx";
@@ -10,13 +10,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The **Set status code** option returns a custom HTTP status for content on a CDN resource instead of the file from the origin. The response can be a short text or a redirect, and an **Apply from** and **Until** range limits the status to certain hours.</p>
+<p>The **Set status code** option returns a custom HTTP response for a CDN resource instead of the file from the origin. The response can be a short text or a redirect, and an **Apply from** and **Until** range limits the status to certain hours.</p>
 
-<p>After 22:00, Gcore CDN can return 403 or redirect to another page, and deliver the original file during the rest of the day.</p>
+<p>From 22:00 to 06:00, Gcore CDN can return 403 or redirect to another page, and deliver the original file outside that interval.</p>
 
 ## Status code
 
-<p>In the [Gcore Customer Portal](https://portal.gcore.com), **Resource settings** applies the code to every file on the CDN resource, and **Rules** applies it only to files that match the rule pattern.</p>
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), **Resource settings** return the status for every request on the CDN resource, and **Rules** return it only for requests that match the rule pattern.</p>
 
 <Tabs>
   <Tab title="Resource settings">
@@ -43,7 +43,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
         Codes 408, 444, 477, 494, 495, 496, 497, and 499 are not accepted.
         </Caution>
 
-        - (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
+        - (Optional) In the **URL or code text** field, enter a redirect URL or the response text.
         - (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone**.
       </Step>
       <Step title="Save the resource">
@@ -90,7 +90,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
         Codes 408, 444, 477, 494, 495, 496, 497, and 499 are not accepted.
         </Caution>
 
-        - (Optional) In the **URL or code text** field, enter a redirect URL or an HTTP status code text.
+        - (Optional) In the **URL or code text** field, enter a redirect URL or the response text.
         - (Optional) Select **Apply on schedule**. In the expanded block, set **Apply from**, **Until**, and **Timezone**.
       </Step>
       <Step title="Create the rule">
@@ -107,7 +107,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Gcore CDN can answer a request with a chosen HTTP status instead of the file from the origin. The response can include a short text or send the viewer to another URL.</p>
+<p>Gcore CDN can answer a request with a chosen HTTP status instead of the file from the origin. The option is `force_return`. The response can include a short text or send the viewer to another URL.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -206,7 +206,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ## Limit the status to certain hours
 
-<p>Return 403 with the text Forbidden only from 22:00 to 06:00 in Europe/Luxembourg. Times use `hh:mm`. When `time_zone` is omitted, the API stores `UTC`. Omitting `time_interval`, or sending it as `null`, stores no schedule.</p>
+<p>Return 403 with the text Forbidden only from 22:00 to 06:00 in Europe/Luxembourg. Times use `HH:MM`. When `time_zone` is omitted, the API stores `UTC`. Omitting `time_interval`, or sending it as `null`, stores no schedule.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -575,6 +575,147 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>The [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2 returns a chosen HTTP status instead of the file from the origin. `body` holds the response text or a URL. Run `terraform apply` after editing `options`.</p>
+
+## Return a status code
+
+<p>Gcore CDN answers every request with status 403 and the text Forbidden. Set `enabled` to `true`. `code` and `body` are required. Codes 408, 444, 477, 494, 495, 496, 497, and 499 are not accepted.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    force_return = {
+      enabled = true
+      code    = 403
+      body    = "Forbidden"
+    }
+  }
+}
+```
+
+## Limit the status to certain hours
+
+<p>Return 403 with the text Forbidden from 22:00 to 06:00 in Europe/Luxembourg. Times use `HH:MM`. When `time_zone` is omitted, the saved schedule uses `UTC`. An apply that omits `time_interval` keeps a schedule that is already saved. An API request that omits `time_interval` clears the schedule.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    force_return = {
+      enabled = true
+      code    = 403
+      body    = "Forbidden"
+      time_interval = {
+        start_time = "22:00"
+        end_time   = "06:00"
+        time_zone  = "Europe/Luxembourg"
+      }
+    }
+  }
+}
+```
+
+## Turn the status code off
+
+<p>Set `enabled` to `false` and keep the same `code` and `body`. Gcore CDN keeps those values and a saved schedule, and stops answering with the custom status. A resource created without this block leaves the status code unset.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    force_return = {
+      enabled = false
+      code    = 403
+      body    = "Forbidden"
+    }
+  }
+}
+```
+
+## Return the status for one path
+
+<p>A resource rule returns 403 for requests under `/restricted/`. The resource block is the CDN resource the rule belongs to. `rule_type` `0` is a regular expression.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "example" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "status-restricted"
+  rule        = "^/restricted/.*"
+  rule_type   = 0
+
+  options = {
+    force_return = {
+      enabled = true
+      code    = 403
+      body    = "Forbidden"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
