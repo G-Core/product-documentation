@@ -1,7 +1,7 @@
 ---
 title: "Query String Forwarding: forward parameters to sub-requests"
 sidebarTitle: Query String Forwarding
-ai-navigation: Configure query string forwarding for nested playlist files in the Customer Portal or the REST API.
+ai-navigation: Configure query string forwarding for nested playlist files via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Query String Forwarding copies selected query string parameters from a parent file request to nested file requests. It is mainly used for HLS and MPEG-DASH video, where a viewer requests a master manifest first, and that manifest references rendition manifests, media segments, subtitles, or other related files.</p>
+<p>Query String Forwarding adds selected query string parameters to nested file addresses in a playlist before Gcore CDN returns the file. It is mainly used for HLS and MPEG-DASH video, where a viewer requests a master manifest first, and that manifest references rendition manifests, media segments, subtitles, or other related files.</p>
 
 <p>A viewer requests a protected HLS master manifest with a secure token:</p>
 
@@ -17,7 +17,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
 ```
 
-<p>Without this option, nested manifests and segments in the manifest body are transferred as is, meaning they don't have query string parameters:</p>
+<p>Without this option, URLs for nested manifests and segments in the playlist stay unchanged, so they have no query string parameters:</p>
 
 ```text
 manifest.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
@@ -58,7 +58,7 @@ chunk720-1.ts?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
 
     - **Forward from file types**: add `m3u8`, `mpd`, or any others.
     - **Forward to file types**: add `ts`, `mp4`, `m3u8`, `m4s`, `vtt`, or any others.
-    - **Forward only keys**: add `md5`, `expires`, or any others.
+    - **Forward only keys**: add the query string parameter names to copy: `md5`, `expires`, or any others.
   </Step>
   <Step title="Save the resource">
     Save the CDN resource.
@@ -366,6 +366,77 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>The [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2 adds `md5` and `expires` from a playlist request to the nested file addresses before Gcore CDN returns the playlist. A master manifest requested with those parameters is returned with the same parameters on the rendition and segment links. Run `terraform apply` after editing `options`.</p>
+
+## Forward selected parameters
+
+<p>Gcore CDN rewrites links inside `m3u8` and `mpd` files so nested `ts`, `mp4`, `m3u8`, `m4s`, and `vtt` files receive `md5` and `expires` from the parent request. Set `enabled` to `true`. `forward_from_file_types` and `forward_to_file_types` are required. Write each extension without a leading dot.</p>
+
+<p>`forward_only_keys` lists the parameters to copy. `forward_except_keys` lists parameters to leave out. Sending both returns HTTP 400.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    query_string_forwarding = {
+      enabled                  = true
+      forward_from_file_types = ["m3u8", "mpd"]
+      forward_to_file_types   = ["ts", "mp4", "m3u8", "m4s", "vtt"]
+      forward_only_keys       = ["md5", "expires"]
+    }
+  }
+}
+```
+
+## Turn forwarding off
+
+<p>Set `enabled` to `false` and keep the same file types and keys. Gcore CDN keeps the saved lists and stops copying the parameters. A resource created without this block leaves query string forwarding unset.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    query_string_forwarding = {
+      enabled                  = false
+      forward_from_file_types = ["m3u8", "mpd"]
+      forward_to_file_types   = ["ts", "mp4", "m3u8", "m4s", "vtt"]
+      forward_only_keys       = ["md5", "expires"]
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
