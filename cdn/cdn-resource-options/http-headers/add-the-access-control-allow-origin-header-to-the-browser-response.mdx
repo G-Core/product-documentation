@@ -1,7 +1,7 @@
 ---
 title: Add the Access-Control-Allow-Origin header to the browser response
 sidebarTitle: Activate CORS
-ai-navigation: Add Access-Control-Allow-Origin in the Customer Portal or with the REST API.
+ai-navigation: Add Access-Control-Allow-Origin via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -90,7 +90,7 @@ Origin: http://site-a.com
 
   </Accordion>
   <Accordion title="'$http_origin', for all domains">
-    Similar to the first option, but use it when the `*` value is unsuitable — when a request includes credentials. The CDN echoes the request `Origin` value in `Access-Control-Allow-Origin`, so a browser on any origin can read the response. A request from `http://site-b.com` produces this response:
+    Use this option when the `*` value is unsuitable, including a request that sends credentials. The CDN copies the request `Origin` into `Access-Control-Allow-Origin`. The browser allows the page to read the response because the returned value matches that origin. A browser that sends credentials accepts the response only when it also includes `Access-Control-Allow-Credentials: true`. A request from `http://site-b.com` produces this response:
 
     ```
     HTTP/1.1 200 OK
@@ -443,7 +443,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>Set `value` to `["$http_origin"]`. Gcore CDN copies the request `Origin` into `Access-Control-Allow-Origin`.</p>
 
-<p>Use `$http_origin` when `*` is unsuitable, including a request that sends credentials.</p>
+<p>Use `$http_origin` when `*` is unsuitable, including a request that sends credentials. A browser that sends credentials accepts the response only when it also includes `Access-Control-Allow-Credentials: true`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -832,6 +832,44 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Add `Access-Control-Allow-Origin` to the response the browser receives with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `cors` is enabled and `value` is `["*"]`, Gcore CDN adds `Access-Control-Allow-Origin: *`, so a browser on any site can read the response. Run `terraform apply` after editing `options`.</p>
+
+## CORS header
+
+<p>Set `enabled` to `true` and `value` to `["*"]`. With `always` set to `false`, the header is added only on status 200, 201, 204, 206, 301, 302, 303, 304, 307, and 308. Set `always` to `true` to add the header on every status code, including a response for a missing file.</p>
+
+<p>Set `value` to `["site-a.com", "site-b.com"]` to name the permitted hostnames, with no scheme and no path. A request whose `Origin` matches one name receives that origin in `Access-Control-Allow-Origin`, and any other origin receives no header. Set `value` to `["$http_origin"]` to copy the request `Origin` into the header. Set `enabled` to `false` and `value` to an empty list to stop adding the header. The empty list stores no origins.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    cors = {
+      enabled = true
+      value   = ["*"]
+      always  = false
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
