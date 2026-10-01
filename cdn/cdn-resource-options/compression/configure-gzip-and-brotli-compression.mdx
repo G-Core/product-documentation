@@ -1,7 +1,7 @@
 ---
 title: Configure Gzip and Brotli compression
 sidebarTitle: Gzip, Brotli
-ai-navigation: Configure Gzip and Brotli compression in the Customer Portal or via REST API on a CDN resource.
+ai-navigation: Configure Gzip and Brotli compression via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,10 +9,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Gcore CDN supports Gzip and Brotli edge compression. When enabled, content is requested in uncompressed format from the origin, compressed and cached at the edge, and served to browsers that support compression — even when the origin server does not.</p>
+<p>Gcore CDN supports Gzip and Brotli edge compression. When Fetch Compressed does not apply to the request, the CDN requests uncompressed content from the origin, compresses it at the edge, and caches the compressed response. Browsers that support compression receive that response even when the origin does not compress it.</p>
 
 <Note>
-Image formats (e.g., image/jpeg, image/png), video formats (e.g., video/mpeg), PDF, and other binary formats are already compressed. These formats provide little or no size reduction from Gzip or Brotli and may increase file size.
+JPEG, PNG, video formats, and PDF are already compressed. These formats provide little or no size reduction from Gzip or Brotli and may increase file size.
 </Note>
 
 <p>Gzip and Brotli can be enabled together. When both are available, Brotli takes precedence for a client that sends `Accept-Encoding: br`. If the client does not support Brotli, CDN uses Gzip. A request without `Accept-Encoding`, or without `gzip` or `br` in that header, is delivered uncompressed.</p>
@@ -31,17 +31,17 @@ The reverse combination is not supported. When Fetch Compressed is enabled in th
 
 ## Configure Gzip and Brotli
 
-1. Navigate to the [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) list and click the CDN resource to configure.
+<p>1. Navigate to the [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) list and click the CDN resource to configure.</p>
 
 <Frame>![CDN resources list with a CDN resource row selected](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/configure-gzip-and-brotli-compression-image1.png)</Frame>
 
-2. In the sidebar, under the **Content** section, click **GZip compression** or **Brotli compression**.
+<p>2. In the sidebar, under the **Content** section, click **GZip compression**. **Brotli compression** is on the same page.</p>
 
-<Frame>![Resource settings sidebar with Content section expanded showing GZip compression and Brotli compression items](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/configure-gzip-and-brotli-compression-image2.png)</Frame>
+<Frame>![Compression settings with the Enable GZip compression and Enable Brotli compression toggles on one page](/images/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/configure-gzip-and-brotli-compression-image2.png)</Frame>
 
-3. Turn on the toggle for **Enable GZip compression** to enable the option.
+<p>3. Turn on the toggle for **Enable GZip compression** to enable the option.</p>
 
-4. Turn on the toggle for **Enable Brotli compression** to enable the option. In the **Content types** area, select the MIME types to compress. `text/html` stays selected.
+<p>4. Turn on the toggle for **Enable Brotli compression** to enable the option. In the **Content types** area, select the MIME types to compress. `text/html` stays selected.</p>
 
    * **application/javascript**. Selected by default.
    * **application/json**. Selected by default.
@@ -59,11 +59,11 @@ The reverse combination is not supported. When Fetch Compressed is enabled in th
    * **image/svg+xml**. Not added by default.
    * **application/wasm**. Not added by default.
 
-5. Click **Save changes**.
+<p>5. Click **Save changes**.</p>
 
-6. [Purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the CDN resource cache. Content cached before compression was enabled is not recompressed automatically.
+<p>6. [Purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the CDN resource cache. Content cached before compression was enabled is not recompressed automatically.</p>
 
-7. Request a file with `Accept-Encoding` and read `Content-Encoding` in the response.
+<p>7. Request a file with `Accept-Encoding` and read `Content-Encoding` in the response.</p>
 
 ```sh
 curl -I -H "Accept-Encoding: br, gzip" https://cdn.example.com/file.css
@@ -92,13 +92,13 @@ curl -I -H "Accept-Encoding: br, gzip" https://cdn.example.com/file.css
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Enable Gzip or Brotli compression for a CDN resource. Gzip is a boolean. Brotli takes the MIME types to compress, and that list must include `text/html`. Brotli compression requires [origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).</p>
+<p>Enable Gzip or Brotli compression for a CDN resource. Gzip is a boolean. Brotli takes the MIME types to compress, and that list must include `text/html`. Brotli compression requires [origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
 </Info>
 
-<p>A [resource update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.gzipOn`, `options.brotli_compression`, or both in one request. Do not enable either option while `fetch_compressed` is enabled. The API returns HTTP 400.</p>
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.gzipOn`, `options.brotli_compression`, or both in one request. Do not enable either option in the same scope as `fetch_compressed` or [large&nbsp;files optimization](/cdn/cdn-resource-options/optimize-large-file-delivery). That scope is the resource settings or one rule. Enabling either option while `fetch_compressed` is enabled in that scope returns HTTP 400. Gzip and Brotli on the resource can be combined with [Fetch&nbsp;Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression) in a rule. When `fetch_compressed` is enabled on the resource, Gzip and Brotli cannot be enabled in a rule.</p>
 
 <p>Open a terminal and export the required variables:</p>
 
@@ -368,7 +368,120 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
   </Tab>
 </Tabs>
 
-<p>Content cached before compression was enabled is not recompressed. [Purge the cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after the update.</p>
+<p>Content cached before compression was enabled is not recompressed. [Purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after the update.</p>
+
+<p>Request a file with `Accept-Encoding` and read `Content-Encoding` in the response.</p>
+
+```sh
+curl -I -H "Accept-Encoding: br, gzip" https://cdn.example.com/file.css
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set `gzip_on` and `brotli_compression` so the CDN compresses a response at the edge, using the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. A client that sends `Accept-Encoding: br` receives Brotli. A client that supports only Gzip receives Gzip. A request without `gzip` or `br` in `Accept-Encoding` is delivered uncompressed.</p>
+
+<p>Brotli requires [origin&nbsp;shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding). `brotli_compression.value` must include `text/html`. A list without `text/html` returns HTTP 400. The saved list can come back in a different order. Do not set `gzip_on` or `brotli_compression` in the same scope as `fetch_compressed` or [large&nbsp;files optimization](/cdn/cdn-resource-options/optimize-large-file-delivery). That scope is the resource settings or one rule. Those options on the resource can be combined with [Fetch&nbsp;Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression) in a rule. When `fetch_compressed` is enabled on the resource, do not enable Gzip or Brotli in a rule. Run `terraform apply` after editing `options`. Content cached before compression was enabled is not recompressed. [Purge](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) the cache after the update.</p>
+
+## Enable Gzip
+
+<p>Set `enabled` and `value` to true. When Fetch Compressed does not apply to the request, the CDN requests uncompressed content from the origin and serves a Gzip response when the client accepts `gzip`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    gzip_on = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+## Enable Brotli
+
+<p>Keep `gzip_on` enabled and set `brotli_compression` to the MIME types to compress. With `text/html` and `text/css`, a client that sends `Accept-Encoding: br` receives Brotli for those types.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    gzip_on = {
+      enabled = true
+      value   = true
+    }
+
+    brotli_compression = {
+      enabled = true
+      value   = ["text/html", "text/css"]
+    }
+  }
+}
+```
+
+## Turn Gzip off
+
+<p>Set `gzip_on.enabled` and `gzip_on.value` to false. Leave `brotli_compression` enabled, so a client that sends `Accept-Encoding: br` still receives Brotli.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    gzip_on = {
+      enabled = false
+      value   = false
+    }
+
+    brotli_compression = {
+      enabled = true
+      value   = ["text/html", "text/css"]
+    }
+  }
+}
+```
 
 <p>Request a file with `Accept-Encoding` and read `Content-Encoding` in the response.</p>
 
