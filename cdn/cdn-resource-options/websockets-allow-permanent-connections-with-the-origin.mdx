@@ -1,7 +1,7 @@
 ---
 title: Proxy WebSocket connections to the origin
 sidebarTitle: WebSockets
-ai-navigation: Configure WebSocket proxying for a CDN resource in the Customer Portal or with the REST API.
+ai-navigation: Configure WebSocket proxying for a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -21,11 +21,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>The WebSocket server stays on the origin. An end-user application opens `wss://` on the CDN resource hostname and keeps the path the origin already serves, `/socket`. The origin group points at the host and port that accept this traffic.</p>
 
-<p>The opening request carries an `Upgrade` header, so the CDN passes that request through and proxies each WebSocket connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls stay on HTTP.</p>
+<p>The opening request carries an `Upgrade` header, so the CDN passes that request through and proxies each WebSocket connection as its own connection to the origin. Either side can then send data without opening a new HTTP request. Page loads and ordinary API calls continue as request-response exchanges.</p>
 
 ## Default setting
 
-<p>DNS delegation enables WebSocket, while a CNAME resource leaves the option off. The opening request on a CNAME resource cannot complete until the option is turned on. Create either resource from the [CDN&nbsp;resource&nbsp;guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).</p>
+<p>For a resource created with DNS delegation, WebSocket proxying is on by default. A CNAME resource leaves the option off, and the opening request cannot complete until the option is turned on. Create either resource from the [CDN&nbsp;resource&nbsp;guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).</p>
 
 ## WebSocket option
 
@@ -67,14 +67,14 @@ wss://cdn.example.com/socket
 
 <p>WAAP (Web Application and API Protection) applies blocking policies to that opening request. It rejects a matching `Upgrade` request with `403 Forbidden`, so the connection is not established. A frame sent after `101 Switching Protocols` still reaches the origin.</p>
 
-<p>An idle connection with no data closes after the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts), which defaults to 30 seconds. Send a ping frame more often than that timeout, and treat a missing pong as a closed connection.</p>
+<p>A WebSocket connection closes when no data is received from the origin within the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts), which defaults to 30 seconds. Send a ping frame more often than that timeout, and treat a missing pong as a closed connection.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
 <p>Allow WebSocket connections from the CDN resource hostname through to an origin that already runs a WebSocket server. Applications connect with `wss://` and the path expected by the origin, and each connection is proxied as a separate connection to the origin. The origin accepts the opening request with `101 Switching Protocols`.</p>
 
-<p>Idle connections follow the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts).</p>
+<p>A connection closes when no data is received from the origin within the resource [read&nbsp;timeout](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts).</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -168,6 +168,41 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Proxy WebSocket connections to the origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. With `websockets` enabled, an application opens `wss://` on the CDN resource hostname, and CDN servers proxy that connection to the origin. The origin accepts the opening request with `101 Switching Protocols`. A connection closes when no data is received from the origin within the resource read timeout. Run `terraform apply` after editing `options`.</p>
+
+## WebSockets
+
+<p>Set `websockets` `enabled` to `true` and `value` to `true`. A resource created without this block leaves WebSocket proxying unset. Set both fields to `false` to stop WebSocket proxying. The saved option then stays `enabled` `false` and `value` `false`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    websockets = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
