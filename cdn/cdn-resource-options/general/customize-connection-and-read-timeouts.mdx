@@ -1,7 +1,7 @@
 ---
 title: Customize connection and read timeouts
 sidebarTitle: Connection and read timeouts
-ai-navigation: Configure CDN connection and read timeouts in the Customer Portal or with the REST API.
+ai-navigation: Configure CDN connection and read timeouts via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -13,9 +13,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 - A custom connection timeout sets the maximum duration allowed for establishing a connection.
 
-- A custom read timeout sets the maximum duration for receiving a response from the origin server. This timeout applies between two successive read operations, not to the entire response transmission.
+- A custom read timeout sets the maximum time Gcore edge nodes wait for the next data from the origin after a read. It does not limit the total response transmission time.
 
-<p>When designated timeouts are exceeded, users receive a "504 Gateway Timeout" error.</p>
+<p>When a configured timeout is exceeded, the viewer receives a 504 Gateway Timeout response.</p>
 
 ## Configure custom timeouts
 
@@ -46,7 +46,7 @@ For Enterprise plans, the upper limits can be raised beyond 5 seconds (connectio
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>A slow origin holds the viewer request while Gcore CDN waits to connect or to receive the next part of the response. `proxy_connect_timeout` limits the wait to open the connection, and `proxy_read_timeout` limits the wait between successive reads, not the time for the whole response. Past either limit, the viewer receives 504 Gateway Timeout.</p>
+<p>A slow origin holds the viewer request while Gcore CDN waits to connect or to receive the next part of the response. `proxy_connect_timeout` limits the wait to open the connection, and `proxy_read_timeout` limits the wait between successive reads, not the time for the whole response. After either limit is reached, the viewer receives a 504 Gateway Timeout response.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -142,7 +142,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ## Set the read timeout
 
-<p>Set `value` to a duration from 1 second through 30 seconds. A value below 1 second or above 30 seconds returns HTTP 400.</p>
+<p>Set `value` to a duration from 1 second through 30 seconds. `enabled` and `value` are both required. The API accepts `10s` and `10`. `0s`, `31s`, `10S`, `10sec`, and `10000ms` return HTTP 400.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -400,6 +400,47 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Limit how long CDN servers wait on the origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. `proxy_connect_timeout` is the wait to open the connection, and `proxy_read_timeout` is the wait between successive reads. After either limit is reached, the viewer receives a 504 Gateway Timeout response. Run `terraform apply` after editing `options`.</p>
+
+## Connection and read timeouts
+
+<p>Set both options `enabled` to `true`, `proxy_connect_timeout` `value` to `4s`, and `proxy_read_timeout` `value` to `10s`. CDN servers then wait 4 seconds to open the origin connection and 10 seconds between successive reads. Connection durations of `1s`, `4s`, and `5s`, and read durations of `1s`, `10s`, and `30s`, are stored in the same format.</p>
+
+<p>`0s` returns HTTP 400: `Value must be more 1.` A connection value of `6s` returns HTTP 400: `Value must be less or equal 5s.` A read value of `31s` returns HTTP 400: `Value must be less or equal 30s.` Set `enabled` to `false` to disable a timeout while keeping the saved duration.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    proxy_connect_timeout = {
+      enabled = true
+      value   = "4s"
+    }
+    proxy_read_timeout = {
+      enabled = true
+      value   = "10s"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
