@@ -1,7 +1,7 @@
 ---
 title: "Rewrite: redirect requests from the CDN to the origin"
 sidebarTitle: Rewrite
-ai-navigation: Configure request path rewrites and redirects for a CDN resource in the Customer Portal or the REST API.
+ai-navigation: Configure request path rewrites and redirects for a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,15 +9,15 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The Rewrite option changes or redirects request paths before the CDN fetches content from the origin. It operates according to [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.</p>
+<p>The Rewrite option changes the request path before the CDN fetches content from the origin. With the `redirect` or `permanent` flag, the CDN returns a redirect to the viewer. The option follows [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.</p>
 
-<p>To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same setting is available in the **Rules** section.</p>
+<p>To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same option can be set on a rule in the **Rules** section.</p>
 
 <Frame>![CDN resource Options tab with Rewrite enabled, showing the Rewrite body field and Rewrite flag dropdown](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image1.png)</Frame>
 
 ## Rewrite body
 
-<p>The **Rewrite body** field pre-fills with `/(.*) /$1` as an example. Replace it with two space-separated parts:</p>
+<p>The **Rewrite body** field pre-fills with `/(.*) /$1`. Replace it with two parts separated by a space:</p>
 
 <p>1. A regular expression that matches the request path.</p>
 
@@ -31,7 +31,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>where:</p>
 
-- **`/(.*)`** — matches all paths after `/`. The `(.*)` group captures everything that follows the slash.
+- **`/(.*)`** — matches a request path that starts with `/`. The `(.*)` group captures everything that follows the slash.
 - **`/media/`** — the directory on the origin where CDN servers look for content.
 - **`$1`** — references the first capture group. Use `$2` and `$3` for the second and third groups.
 
@@ -45,7 +45,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>A path on the CDN hostname is not always the path stored on the origin. The `rewrite` option changes that path before Gcore CDN fetches the file, or returns a redirect to the viewer. The value follows [nginx&nbsp;rewrite](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rules: a regular expression, a replacement, and a flag.</p>
+<p>A path on the CDN hostname is not always the path stored on the origin. The `rewrite` option changes the path used to fetch the file from the origin, or returns a redirect to the viewer. The value follows [nginx&nbsp;rewrite](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rules: a regular expression, a replacement, and a flag.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -424,6 +424,90 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>The [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2 rewrites a request path before the CDN fetches the file from the origin, or returns a redirect to the viewer. A request for `/photo.jpg` rewritten with `/(.*) /media/$1` is fetched as `/media/photo.jpg`. Run `terraform apply` after editing `options`.</p>
+
+## Rewrite
+
+<p>The CDN fetches the file from the replacement path on the origin. Set `enabled` to `true` and `body` to a regular expression and a replacement, separated by a space. `$1` inserts the first capture group. `flag` is `break`, `last`, `redirect`, or `permanent`. When `flag` is omitted, the saved option uses `break`.</p>
+
+<p>`break` stops further rewrite rules, `last` starts a new location search, `redirect` returns 302, and `permanent` returns 301. Set `enabled` to `false` to keep the saved body and flag while Gcore CDN stops applying the rewrite. A resource created without this block leaves the rewrite unset.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    rewrite = {
+      enabled = true
+      body    = "/(.*) /media/$1"
+      flag    = "break"
+    }
+  }
+}
+```
+
+## Rewrite one path
+
+<p>Store `rewrite` on a resource rule so only requests that match the rule are rewritten. The resource block is the CDN resource the rule belongs to. `rule_type` `0` is a regular expression and must start with `^/` or `/`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    rewrite = {
+      enabled = true
+      body    = "/(.*) /media/$1"
+      flag    = "break"
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "example" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "rewrite-media"
+  rule        = "^/assets/.*"
+  rule_type   = 0
+
+  options = {
+    rewrite = {
+      enabled = true
+      body    = "/assets/(.*) /media/$1"
+      flag    = "break"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
