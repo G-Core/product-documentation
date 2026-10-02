@@ -1,7 +1,7 @@
 ---
 title: "Extend CDN functionality with FastEdge"
 sidebarTitle: "CDN applications"
-ai-navigation: Integrate FastEdge CDN applications with a Gcore CDN resource to add custom request and response processing via Customer Portal or REST API.
+ai-navigation: Integrate FastEdge CDN applications with a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -15,7 +15,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Request lifecycle
 
-The CDN runtime invokes a CDN application at five stages:
+<p>The CDN runtime invokes a CDN application at five stages:</p>
 
 - **On request headers (before cache):** when the CDN receives request headers, before the cache is checked.
 - **On request headers (after cache):** when the CDN receives request headers, after the cache is checked.
@@ -25,7 +25,7 @@ The CDN runtime invokes a CDN application at five stages:
 
 <Info>CDN applications are built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions.</Info>
 
-Each stage has an independent application slot.
+<p>Each stage has an independent application slot.</p>
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
@@ -65,7 +65,7 @@ Each stage has an independent application slot.
   </Tab>
   <Tab title="Deploy custom binary">
 
-<p>Custom implementations are available in the [FastEdge-sdk-rust&nbsp;examples](https://github.com/G-Core/FastEdge-sdk-rust/examples) and [proxy-wasm-sdk-as&nbsp;examples](https://github.com/G-Core/proxy-wasm-sdk-as/examples) repositories.</p>
+<p>Custom implementations are available in the [FastEdge&nbsp;SDK](https://github.com/G-Core/FastEdge-sdk-rust) and [proxy-wasm&nbsp;SDK](https://github.com/G-Core/proxy-wasm-sdk-as) repositories.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge**.
 2. Open the **CDN Applications** page and click **Create new application**.
@@ -120,7 +120,7 @@ Each stage has an independent application slot.
    - **Invoke FastEdge app on edges** — enabled by default. Runs the application on CDN edge nodes.
    - **Invoke FastEdge app on shield** — disabled by default. Runs the application on CDN shield (precache) nodes in addition to edge nodes.
 
-7. Click **Save**.
+7. Click **Save changes**.
 
   </Tab>
   <Tab title="For specific URL paths">
@@ -155,16 +155,16 @@ Each stage has an independent application slot.
 
 ## Disconnect FastEdge from CDN
 
-<p>To stop FastEdge processing on a CDN resource, disable the FastEdge checkbox and save.</p>
+<p>To stop FastEdge processing, clear the **FastEdge** checkbox on the CDN resource, or disable the rule that attaches the application.</p>
 
-1. In the Customer Portal, navigate to **CDN**.
-2. Find the resource and open its settings.
+<p>1. In the Customer Portal, navigate to **CDN**.</p>
+<p>2. Find the resource and open its settings.</p>
 
 <Frame>![CDN resources list with resource settings button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
 
-3. To disable FastEdge for the **whole CDN resource**, scroll to the **FastEdge apps** section and clear the **FastEdge** checkbox.
-4. To disable FastEdge for **specific URL paths**, open the **Rules** page and disable the relevant rule.
-5. Click **Save changes**.
+<p>3. To disable FastEdge for the **whole CDN resource**, scroll to the **FastEdge apps** section and clear the **FastEdge** checkbox.</p>
+<p>4. To disable FastEdge for **specific URL paths**, open the **Rules** page and disable the relevant rule.</p>
+<p>5. Click **Save changes**.</p>
 
 ## Delete a CDN application
 
@@ -172,13 +172,13 @@ Each stage has an independent application slot.
 An enabled FastEdge application linked to a CDN resource cannot be deleted. Disconnect it from the CDN resource first.
 </Info>
 
-1. In the Customer Portal, navigate to **FastEdge**.
-2. Open the **CDN Applications** page and click the three-dot icon next to the application.
+<p>1. In the Customer Portal, navigate to **FastEdge**.</p>
+<p>2. Open the **CDN Applications** page and click the three-dot icon next to the application.</p>
 
 <Frame>![CDN Applications list with three-dot menu open showing Delete option](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/remove-app-fstedge.png)</Frame>
 
-3. Click **Delete**.
-4. Confirm by clicking **Yes, delete**.
+<p>3. Click **Delete**.</p>
+<p>4. Confirm by clicking **Yes, delete**.</p>
 
 <Frame>![Delete app confirmation dialog](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/confirm-deletion.png)</Frame>
 
@@ -205,13 +205,13 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-<p>The following steps configure FastEdge using the FastEdge API and the CDN API.</p>
+<p>These steps configure FastEdge with the FastEdge API and the CDN API.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of an existing [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview).
 </Info>
 
-<p>Open a terminal and set these environment variables before running the examples:</p>
+<p>Open a terminal and export these environment variables:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -555,6 +555,12 @@ curl -X POST https://api.gcore.com/fastedge/v1/apps \
   </Tab>
 </Tabs>
 
+<p>Set `FASTEDGE_APP_ID` to the `id` returned by the create call. Later calls read that variable.</p>
+
+```bash
+export FASTEDGE_APP_ID="{YOUR_FASTEDGE_APP_ID}"
+```
+
 ### Step 2. Enable FastEdge for a CDN resource
 
 <p>Update the CDN resource to route traffic through the FastEdge application. The `fastedge` option accepts five processing stages — configure the stages the application handles.</p>
@@ -618,7 +624,7 @@ curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
       "fastedge": {
         "enabled": true,
         "on_request_headers": {
-          "app_id": "67890",
+          "app_id": "'"$FASTEDGE_APP_ID"'",
           "enabled": true,
           "interrupt_on_error": true
         }
@@ -632,13 +638,40 @@ curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
 
 <p>The five supported stages are `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage accepts the same `app_id`, `interrupt_on_error`, `execute_on_edge`, and `execute_on_shield` parameters.</p>
 
-<p>To apply FastEdge only to specific URL paths, create a CDN rule with <code>POST&nbsp;https://api.gcore.com/cdn/resources/RESOURCE_ID/rules</code> and include the `fastedge` option in the rule's `options` object.</p>
+<p>A rule stores FastEdge for paths that match `/api/.*`. `ruleType` 0 is a regular expression and must start with `^/` or `/`. Keep `fastedge.enabled` false on the CDN resource so the application runs only for those paths. If the resource option is already on, turn that stage off before relying on the rule.</p>
+
+```bash
+curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "fastedge-api",
+    "rule": "/api/.*",
+    "ruleType": 0,
+    "options": {
+      "fastedge": {
+        "enabled": true,
+        "on_request_headers": {
+          "app_id": "'"$FASTEDGE_APP_ID"'",
+          "enabled": true
+        }
+      }
+    }
+  }'
+```
+
+<p>The saved stage is `on_request_headers`. Fields left out of the stage are stored as `interrupt_on_error` true, `execute_on_edge` true, and `execute_on_shield` false. The rule ID in the response is used to turn the rule off later.</p>
 
 </Accordion>
 
 ## Disable FastEdge integration
 
-<p>Setting `fastedge.enabled` to `false` stops FastEdge processing on a CDN resource.</p>
+<p>Set `fastedge.enabled` to false. On the CDN resource, leaving the stage out of the request keeps the stored stage, so set that stage's `enabled` to false as well. On a rule, `fastedge.enabled` set to false removes the stage. Set `FASTEDGE_APP_ID` to the application `id` from the create call, and `CDN_RULE_ID` to the rule `id` from the create response. The calls below read those variables.</p>
+
+```bash
+export FASTEDGE_APP_ID="{YOUR_FASTEDGE_APP_ID}"
+export CDN_RULE_ID="{YOUR_CDN_RULE_ID}"
+```
 
 <Tabs>
   <Tab title="Python SDK">
@@ -652,7 +685,13 @@ resource_id = int(os.environ["CDN_RESOURCE_ID"])
 client.cdn.cdn_resources.update(
     resource_id,
     options=cdn_params.Options(
-        fastedge=cdn_params.OptionsFastedge(enabled=False),
+        fastedge=cdn_params.OptionsFastedge(
+            enabled=False,
+            on_request_headers=cdn_params.OptionsFastedgeOnRequestHeaders(
+                app_id=os.environ["FASTEDGE_APP_ID"],
+                enabled=False,
+            ),
+        )
     ),
 )
 ```
@@ -665,6 +704,10 @@ _, err = client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdatePa
     Options: cdn.CDNResourceUpdateParamsOptions{
         Fastedge: cdn.CDNResourceUpdateParamsOptionsFastedge{
             Enabled: false,
+            OnRequestHeaders: cdn.CDNResourceUpdateParamsOptionsFastedgeOnRequestHeaders{
+                AppID:   os.Getenv("FASTEDGE_APP_ID"),
+                Enabled: gcore.Bool(false),
+            },
         },
     },
 })
@@ -680,7 +723,11 @@ curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   -d '{
     "options": {
       "fastedge": {
-        "enabled": false
+        "enabled": false,
+        "on_request_headers": {
+          "app_id": "'"$FASTEDGE_APP_ID"'",
+          "enabled": false
+        }
       }
     }
   }'
@@ -689,16 +736,34 @@ curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
   </Tab>
 </Tabs>
 
+<p>On the rule, `fastedge.enabled` set to false removes the stored stage.</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/$CDN_RULE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "options": {
+      "fastedge": {
+        "enabled": false
+      }
+    }
+  }'
+```
+
 ## Delete a CDN application
 
 <Info>
-An enabled FastEdge application linked to a CDN resource cannot be deleted. Disable the FastEdge integration on the CDN resource before deleting the application.
+An enabled FastEdge application linked to a CDN resource or rule cannot be deleted. Set `fastedge.enabled` to false on the resource and on every rule that references the application. On the resource, also set the stage `enabled` to false, because leaving the stage out keeps the stored stage.
 </Info>
 
 <Tabs>
   <Tab title="Python SDK">
 
 ```python
+import os
+
+app_id = int(os.environ["FASTEDGE_APP_ID"])
 client.fastedge.apps.delete(app_id)
 ```
 
@@ -706,6 +771,10 @@ client.fastedge.apps.delete(app_id)
   <Tab title="Go SDK">
 
 ```go
+appID, err := strconv.ParseInt(os.Getenv("FASTEDGE_APP_ID"), 10, 64)
+if err != nil {
+    panic(err)
+}
 err = client.Fastedge.Apps.Delete(ctx, appID)
 ```
 
@@ -713,7 +782,7 @@ err = client.Fastedge.Apps.Delete(ctx, appID)
   <Tab title="curl">
 
 ```bash
-curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$APP_ID \
+curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$FASTEDGE_APP_ID \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -721,6 +790,231 @@ curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$APP_ID \
 </Tabs>
 
 <p>A `204 No Content` response confirms the application was deleted.</p>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users. A CDN application is built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification. Declare the application and the CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>The CDN option has five stage attributes: `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage holds one application. Set `on_request_headers` to run the application when the CDN receives request headers, before the cache is checked.</p>
+
+<Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
+
+## Deploy the application on a CDN resource
+
+<p>The JWT template checks the token in the `Authorization` header before the request reaches the origin. `status` set to `1` deploys the application, and the template reads the signing key from `secret`. Attach that application to the CDN resource, then run `terraform apply`. A stage created without `interrupt_on_error`, `execute_on_edge`, or `execute_on_shield` stores those fields as true, true, and false.</p>
+
+```hcl
+data "gcore_fastedge_templates" "cdn" {
+  api_type = "proxy-wasm"
+}
+
+resource "gcore_fastedge_app" "jwt" {
+  name = "my-cdn-app"
+  template = one([
+    for item in data.gcore_fastedge_templates.cdn.items : item.id
+    if item.name == "Validate JWT in Authorization header"
+  ])
+  status = 1
+  env = {
+    secret = "your-signing-key"
+  }
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    fastedge = {
+      enabled = true
+      on_request_headers = {
+        enabled            = true
+        app_id             = tostring(gcore_fastedge_app.jwt.id)
+        interrupt_on_error = true
+        execute_on_edge    = true
+        execute_on_shield  = false
+      }
+    }
+  }
+}
+```
+
+## Limit the application to URL paths
+
+<p>A rule stores the stage for paths that match `/api/.*`. `rule_type` 0 is a regular expression and must start with `^/` or `/`. The CDN resource has no FastEdge option, so the application runs only for those paths. Run `terraform apply`.</p>
+
+```hcl
+data "gcore_fastedge_templates" "cdn" {
+  api_type = "proxy-wasm"
+}
+
+resource "gcore_fastedge_app" "jwt" {
+  name = "my-cdn-app"
+  template = one([
+    for item in data.gcore_fastedge_templates.cdn.items : item.id
+    if item.name == "Validate JWT in Authorization header"
+  ])
+  status = 1
+  env = {
+    secret = "your-signing-key"
+  }
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "api" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "fastedge-api"
+  rule        = "/api/.*"
+  rule_type   = 0
+
+  options = {
+    fastedge = {
+      enabled = true
+      on_request_headers = {
+        enabled = true
+        app_id  = tostring(gcore_fastedge_app.jwt.id)
+      }
+    }
+  }
+}
+```
+
+## Turn FastEdge off
+
+<p>Set `fastedge.enabled` to false and run `terraform apply`. On a CDN resource, leaving the stage out of the configuration keeps the stored stage, so set that stage's `enabled` to false as well. On a rule, `fastedge.enabled` set to false removes the stage.</p>
+
+```hcl
+data "gcore_fastedge_templates" "cdn" {
+  api_type = "proxy-wasm"
+}
+
+resource "gcore_fastedge_app" "jwt" {
+  name = "my-cdn-app"
+  template = one([
+    for item in data.gcore_fastedge_templates.cdn.items : item.id
+    if item.name == "Validate JWT in Authorization header"
+  ])
+  status = 1
+  env = {
+    secret = "your-signing-key"
+  }
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    fastedge = {
+      enabled = false
+      on_request_headers = {
+        enabled = false
+        app_id  = tostring(gcore_fastedge_app.jwt.id)
+      }
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "api" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "fastedge-api"
+  rule        = "/api/.*"
+  rule_type   = 0
+
+  options = {
+    fastedge = {
+      enabled = false
+    }
+  }
+}
+```
+
+## Delete the application
+
+<p>Remove every `app_id` that reads `gcore_fastedge_app.jwt.id`, including the stage block on the CDN resource, and remove the `gcore_fastedge_app` resource. The stage `enabled` is already false from the previous apply. Then run `terraform apply`. Deleting the application while a stage is still enabled fails because the application is used by the CDN. A CDN resource update that still sends the deleted application id is rejected.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    fastedge = {
+      enabled = false
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "api" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "fastedge-api"
+  rule        = "/api/.*"
+  rule_type   = 0
+
+  options = {
+    fastedge = {
+      enabled = false
+    }
+  }
+}
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
