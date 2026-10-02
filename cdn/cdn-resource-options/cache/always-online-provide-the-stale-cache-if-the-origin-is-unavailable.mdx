@@ -1,7 +1,7 @@
 ---
-title: "Always online: provide the stale cache if the origin is unavailable"
-sidebarTitle: Use stale cache if origin is unavailable
-ai-navigation: Configure Always Online to serve stale cache when the origin cannot provide a fresh response, in the Customer Portal or with the REST API.
+title: "Always online: serve stale cache when the origin cannot provide a fresh response"
+sidebarTitle: Serve stale cache from CDN
+ai-navigation: Configure Always Online via the Customer Portal, REST API, or Terraform to serve stale cache when the origin cannot provide a fresh response.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The Always Online option serves stale cached content when the origin cannot provide a usable fresh response, and those responses include the `X-Cache: Stale` header. When the origin becomes available again, the CDN resumes serving fresh responses.</p>
+<p>The Always Online option serves stale cached content when the origin cannot provide a usable fresh response, and those responses include the `X-Cache: Stale` header. When none of the selected stale conditions applies, the CDN resumes serving fresh responses.</p>
 
 <p>The option serves stale content for these conditions:</p>
 
@@ -21,7 +21,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 | Invalid Header | Origin returned an invalid header |
 | 403, 404, 429, 500, 502, 503, 504 | Origin returned that HTTP status |
 
-<p>The CDN can serve only objects that are already present in cache. If some page assets were not cached before the origin became unavailable, those images, stylesheets, or other files can still fail to load.</p>
+<p>The CDN can serve only objects that are already present in cache. If some page assets are not already cached when a stale condition occurs, those images, stylesheets, or other files can still fail to load.</p>
 
 ## Always online
 
@@ -50,9 +50,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>When `stale` is enabled for a selected condition, the CDN serves the cached response and marks it with `X-Cache: Stale`. When the origin becomes available again, the CDN resumes serving fresh responses.</p>
+<p>When `stale` is enabled for a selected condition, the CDN serves the cached response and marks it with `X-Cache: Stale`. When none of the selected stale conditions applies, the CDN resumes serving fresh responses.</p>
 
-<p>The CDN can serve only objects that are already present in cache. If some page assets were not cached before the origin became unavailable, those images, stylesheets, or other files can still fail to load.</p>
+<p>The CDN can serve only objects that are already present in cache. If some page assets are not already cached when a stale condition occurs, those images, stylesheets, or other files can still fail to load.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required.
@@ -76,12 +76,13 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
     from gcore import Gcore
 
     client = Gcore()
 
     resource = client.cdn.cdn_resources.update(
-        12345,  # CDN resource ID
+        int(os.environ["CDN_RESOURCE_ID"]),
         options={
             "stale": {"enabled": True, "value": ["http_404", "http_500"]},
         },
@@ -96,6 +97,8 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     import (
         "context"
         "fmt"
+        "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cdn"
@@ -104,8 +107,12 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
 
-        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
             Options: cdn.CDNResourceUpdateParamsOptions{
                 Stale: cdn.CDNResourceUpdateParamsOptionsStale{
                     Enabled: true,
@@ -150,6 +157,43 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set `stale` so the CDN serves a cached response when the origin cannot provide a usable fresh response, using the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The served response includes `X-Cache: Stale`. When none of the selected stale conditions applies, the CDN resumes serving fresh responses. The CDN can serve only objects that are already present in cache.</p>
+
+<p>`value` accepts `error` (network or connectivity failure), `updating` (cache refresh), `timeout` (origin response timed out), `invalid_header` (origin returned an invalid header), `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, and `http_504`. `enabled` and `value` are both required. When `enabled` is true, an empty `value` list returns HTTP 400. Leaving `stale` out of `options` leaves the stored option unchanged. Run `terraform apply` after editing `options`.</p>
+
+## Serve stale content
+
+<p>Set `enabled` to true. With `http_404` and `http_500`, a 404 or 500 from the origin is served from cache and marked with `X-Cache: Stale`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    stale = {
+      enabled = true
+      value   = ["http_404", "http_500"]
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
