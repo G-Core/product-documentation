@@ -1,7 +1,7 @@
 ---
 title: Specify HTTP headers that CDN adds to requests to the origin
 sidebarTitle: Add request headers
-ai-navigation: Add HTTP headers to CDN origin requests in the Customer Portal or with the REST API.
+ai-navigation: Add HTTP headers to CDN origin requests via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -50,6 +50,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     Click **Save changes**.
   </Step>
 </Steps>
+
+<p>Confirm the header on the origin. Check the origin request logs, or configure the origin to return the received header value. The request from CDN servers includes each saved header name and value.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -258,6 +260,44 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Add headers to the request CDN servers send to the origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `static_request_headers` is enabled, CDN servers add each name and value on every origin request. A resource accepts up to 50 headers. Run `terraform apply` after editing `options`.</p>
+
+## Request headers
+
+<p>Set `enabled` to `true`. `value` maps each header name to one header value. `X-Request-Source` is `gcore cdn`, with a space between the words. Set `enabled` to `false` and `value` to an empty map to stop adding headers. The empty map stores no headers.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    static_request_headers = {
+      enabled = true
+      value = {
+        "X-Custom-Header"  = "cdn-origin"
+        "X-Request-Source" = "gcore cdn"
+      }
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
