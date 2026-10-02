@@ -1,7 +1,7 @@
 ---
 title: "Protect CDN resources with Gcore WAAP"
 sidebarTitle: "Gcore WAAP"
-ai-navigation: Configure WAAP for a CDN resource in the Customer Portal or the REST API.
+ai-navigation: Configure WAAP for a CDN resource in the Customer Portal, the REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -265,6 +265,85 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>WAAP checks requests that pass through a CDN resource and can block attacks before they reach the origin. Declare the check with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `waap` option requires `enabled` and `value`, and HTTP traffic can take up to 20 minutes to start passing through WAAP after the option is stored.</p>
+
+## Turn WAAP on
+
+<p>Set `enabled` and `value` to true so WAAP checks every request on the CDN resource, then run `terraform apply`. A resource that uses Gcore Object Storage as the origin needs this option. The resource stores `waap_domain_id`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    waap = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+## Turn WAAP off for one path
+
+<p>A rule turns WAAP off for paths that match `^/public/.*` while the CDN resource stays on. `rule_type` 0 is a regular expression and must start with `^/` or `/`. `enabled` true and `value` false store the exception. Run `terraform apply`. WAAP is disabled for requests that match the rule pattern.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    waap = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "public" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "waap-exception"
+  rule        = "^/public/.*"
+  rule_type   = 0
+
+  options = {
+    waap = {
+      enabled = true
+      value   = false
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
