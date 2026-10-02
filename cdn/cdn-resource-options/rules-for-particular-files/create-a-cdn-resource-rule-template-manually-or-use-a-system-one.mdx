@@ -1,7 +1,7 @@
 ---
 title: Create and use CDN rule templates
 sidebarTitle: Rule templates
-ai-navigation: Create and use CDN rule templates via the Customer Portal or REST API.
+ai-navigation: Create and use CDN rule templates via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -427,6 +427,96 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>A custom rule template stores a path and cache options. A CDN rule created from the playlist system template applies that template to `.m3u8` files with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create a custom template
+
+<p>Store the path, the origin pull protocol, and the CDN cache lifetime on the template. Set `weight` to `1`. Leaving `weight` unset makes the next plan clear the value the API stored.</p>
+
+```hcl
+resource "gcore_cdn_rule_template" "static_images" {
+  name                     = "static-images"
+  rule                     = "/images/*.png"
+  rule_type                = 0
+  override_origin_protocol = "HTTPS"
+  weight                   = 1
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "4d"
+    }
+  }
+}
+```
+
+<p>After `terraform apply`, the account has a custom template named `static-images`. `default` is false. The template stores the path `/images/*.png`, origin pull over HTTPS, and a CDN cache lifetime of `4d`.</p>
+
+## Create a rule from a system template
+
+<p>Read the templates and select `Playlists template (.m3u8)`. Copy its path and cache options onto the rule. The template stores weight `0`. Set the rule `weight` to `1` and `active` to `true`. Leaving `weight` or `active` unset makes the next plan change the rule. Plan can warn that deprecated option fields on other templates in the list were read. The playlist rule is still created.</p>
+
+```hcl
+data "gcore_cdn_rule_templates" "account" {}
+
+locals {
+  playlists = one([
+    for template in data.gcore_cdn_rule_templates.account.items :
+    template if template.name == "Playlists template (.m3u8)"
+  ])
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "playlists" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = local.playlists.name
+  rule        = local.playlists.rule
+  rule_type   = local.playlists.rule_type
+  weight      = 1
+  active      = true
+
+  options = {
+    browser_cache_settings = {
+      enabled = local.playlists.options.browser_cache_settings.enabled
+      value   = local.playlists.options.browser_cache_settings.value
+    }
+    edge_cache_settings = {
+      enabled = local.playlists.options.edge_cache_settings.enabled
+      value   = local.playlists.options.edge_cache_settings.value
+    }
+  }
+}
+```
+
+<p>After `terraform apply`, requests for `.m3u8` files match `/.*\.m3u8$`. Browser caching uses the value `0`, and CDN caching uses `2s`.</p>
+
+## Delete the template and the rule
+
+<p>Run `terraform destroy` to delete the resources that configuration declares. With only the custom template block, destroy deletes that template. With the playlist rule block, destroy also deletes the CDN resource and the origin group.</p>
+
+```bash
+terraform destroy
+```
 
 </MethodSection>
 </MethodSwitch>
