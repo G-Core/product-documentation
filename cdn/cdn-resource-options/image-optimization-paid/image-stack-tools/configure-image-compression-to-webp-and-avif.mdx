@@ -1,7 +1,7 @@
 ---
 title: Configure image compression to WebP and AVIF
 sidebarTitle: Convert to WebP or AVIF
-ai-navigation: Configure WebP and AVIF image compression in the Customer Portal or the REST API.
+ai-navigation: Configure WebP and AVIF image compression via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -46,7 +46,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif/configure-image-compression-image2.png" alt="Image Stack settings with Enable WebP compression and Enable AVIF compression checkboxes" width="70%"/></Frame>
 
-<p>3. Click **Save changes** at the top right of the page.</p>
+<p>3. Click **Save changes** at the top right of the page. Saving the Image Stack rule clears the resource cache, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or save the change during low-traffic hours.</p>
 
 <p>Images are served in WebP or AVIF format to supported browsers.</p>
 
@@ -80,14 +80,14 @@ image.jpg?fmt=value
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif/11028965537425.png" alt="X-Img-Operations and Content-Type headers in a CDN response showing successful WebP conversion" width="70%"/></Frame>
 
-<p>If the `X-Img-Operations` header contains no convert value and the CDN returns the image with original quality, inspect the `Img-Skip-Reason` HTTP header for the skip reason. The value `converted image bigger than origin value` means the configured quality exceeds the source image quality — lower the quality setting in [Change&nbsp;image&nbsp;quality](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality).</p>
+<p>If the `X-Img-Operations` header contains no convert value and the CDN returns the original image, inspect the `Img-Skip-Reason` HTTP header for the skip reason. The value `converted image bigger than origin value` means the configured quality exceeds the source image quality — lower the quality setting in [Change&nbsp;image&nbsp;quality](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality).</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif/11028973043857.png" alt="Img-Skip-Reason header showing why the image conversion was skipped" width="70%"/></Frame>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Compression converts the pictures Gcore CDN delivers to WebP or AVIF. The choice is `webp_enabled` and `avif_enabled` on Image Stack, for images that match a rule, or an `fmt` query parameter on one image URL.</p>
+<p>Compression converts the pictures Gcore CDN delivers to WebP or AVIF. The choice is `webp_enabled` and `avif_enabled` on Image Stack, for images that match a rule, or an `fmt` query parameter on one image URL. Saving the rule clears the resource cache, including a later change to WebP or AVIF, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or make the change during low-traffic hours.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -455,6 +455,157 @@ image.jpg?fmt=avif,webp
 ```
 
 <p>`webp` converts the image to WebP. `avif` converts it to AVIF. `avif,webp` follows browser support, and a browser that accepts both receives AVIF.</p>
+
+## Check the delivered image
+
+<p>After converting, the image URL and file extension stay the same. The `X-Img-Operations` header lists the conversions. If the value includes `convert`, the image format changed. `Content-Type` is `image/webp` or `image/avif` for the new format.</p>
+
+<p>If `X-Img-Operations` does not contain `convert` and the CDN returns the original image, the `Img-Skip-Reason` header explains the skip. The value `converted image bigger than origin value` means the configured quality is higher than the original image quality.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Compression converts the pictures Gcore CDN delivers to WebP or AVIF. The choice is `webp_enabled` and `avif_enabled` on Image Stack for paths that match a rule, or an `fmt` query parameter on one image URL. Saving the rule clears the resource cache, including a later change to WebP or AVIF, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or apply the change during low-traffic hours. Declare the rule with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>`image_stack` has no `fmt` argument. An `fmt` key in that object is left out of the saved option. Add `fmt` to the image URL. When both formats are on, a browser that accepts both receives AVIF.</p>
+
+## Set WebP and AVIF for image paths
+
+<p>A rule stores the compression choice for paths that match `/.*\.(jpg|jpeg|png)`. `rule_type` 0 is a regular expression and must start with `^/` or `/`. Set `enabled`, `quality` to 80, WebP on, AVIF on, and `png_lossless` off, then run `terraform apply`. A field left out of the object is stored as its default, so an omitted `quality` becomes 95 and omitted flags become false.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-compression"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Use WebP only
+
+<p>Edit the same object and run `terraform apply`. This configuration keeps WebP on and turns AVIF off. Keep every field that should stay set, because a field left out is stored as its default.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-compression"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = false
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Use AVIF only
+
+<p>Edit the same object and run `terraform apply`. This configuration turns WebP off and turns AVIF on.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-compression"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = false
+      avif_enabled = true
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Set the format on one image URL
+
+<p>`fmt` is not a Terraform field. Add it to the image URL:</p>
+
+```
+image.jpg?fmt=webp
+image.jpg?fmt=avif
+image.jpg?fmt=avif,webp
+```
+
+<p>`webp` converts the image to WebP. `avif` converts it to AVIF. `avif,webp` follows browser support, and a browser that accepts both receives AVIF.</p>
+
+## Check the delivered image
+
+<p>After converting, the image URL and file extension stay the same. The `X-Img-Operations` header lists the conversions. If the value includes `convert`, the image format changed. `Content-Type` is `image/webp` or `image/avif` for the new format.</p>
+
+<p>If `X-Img-Operations` does not contain `convert` and the CDN returns the original image, the `Img-Skip-Reason` header explains the skip. The value `converted image bigger than origin value` means the configured quality is higher than the original image quality.</p>
 
 </MethodSection>
 </MethodSwitch>
