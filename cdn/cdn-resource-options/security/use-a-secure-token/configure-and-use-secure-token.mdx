@@ -1,7 +1,7 @@
 ---
 title: Configure and use secure token
 sidebarTitle: Configure and use
-ai-navigation: Configure secure token access for a CDN resource in the Customer Portal or with the REST API.
+ai-navigation: Configure secure token access for a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -41,6 +41,14 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Step>
 </Steps>
 
+<p>Confirm that a request without a token is rejected:</p>
+
+```bash
+curl -I "https://cdn.example.com/photo.jpeg"
+```
+
+<p>The CDN returns `403 Forbidden` and does not forward the request to the origin.</p>
+
 <Warning>
 Enabling secure token may decrease the cache hit ratio. To improve it, enable [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting), which treats objects with different query parameters as one cacheable object.
 </Warning>
@@ -71,7 +79,7 @@ http://cdn.example.com/photo.jpeg?md5=DMF1ucDxtHCxwYQ&expires=2147483647
 - `expires`: the Unix timestamp until which the URL is valid
 - Path: the file path or directory path used when the token was generated
 
-<p>The CDN recomputes the hash with the path used to generate the token, which can be shorter than the requested path.</p>
+<p>The CDN recomputes the hash with the path used when generating the token. For a directory token, the CDN uses the directory of the requested path, which can be shorter than the full requested path.</p>
 
 - When the token was generated for the exact file `/images/poster.jpeg`, the CDN uses that same path on every request, so only that file passes.
 - When the token was generated for the directory `/videos/video-1/`, the CDN uses the directory of the requested path. A request for `/videos/video-1/segment-001.ts` uses `/videos/video-1/` and passes, while a request for `/videos/video-1/360p/segment.ts` uses `/videos/video-1/360p/` and returns `403 Forbidden`.
@@ -442,6 +450,42 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Restrict content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `secure_key` is enabled, a missing, expired, or incorrect hash returns `403 Forbidden`. A blank `key` returns HTTP 400 and the message `This field may not be blank.` Run `terraform apply` after editing `options`.</p>
+
+## Type 2 signing
+
+<p>`type` `2` signs the expiration, the path, and the key. `type` `0` also includes the client IP, with a space before the key. Set `enabled` to `true` and `key` to `secretkey`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    secure_key = {
+      enabled = true
+      key     = "secretkey"
+      type    = 2
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
