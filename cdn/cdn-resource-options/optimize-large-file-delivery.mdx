@@ -1,7 +1,7 @@
 ---
 title: Optimize large file delivery
 sidebarTitle: Large files delivery
-ai-navigation: Enable large file delivery optimization for CDN content in the Customer Portal or the REST API.
+ai-navigation: Enable large file delivery optimization for CDN content via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -17,11 +17,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Configuration guidelines
 
-<p>Large File Delivery Optimization can be configured in the Resource Settings and Rules. Review the following requirements and recommendations before configuring the option:</p>
+<p>Large File Delivery Optimization is set in Resource settings in the steps below. A rule can apply it to one path. Review these requirements and recommendations before configuring the option:</p>
 
   * The origin server must support HTTP Range Requests.
   * The `Content-Length` and `Etag` headers must be consistent across the origin.
-  * When enabled, the option applies to all content in the CDN resource, which can increase the load on the origin. Consider activating [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) before enabling this feature, or enable it during off-peak hours.
+  * When enabled in Resource settings, the option applies to all content in the CDN resource, which can increase the load on the origin. Consider activating [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) before enabling this feature, or enable it during off-peak hours.
   * Remember to [purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after enabling Large File Delivery Optimization.
   * Large File Delivery Optimization cannot be used in conjunction with [Fetch&nbsp;Compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression), [Gzip&nbsp;Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip), and [Brotli&nbsp;Compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli) within the Resource Settings or within the same rule.
   * Large File Delivery Optimization is generally unnecessary for HLS and MPEG-DASH because these formats already split media into small segments that are cached independently.
@@ -55,7 +55,7 @@ When Large files delivery optimization is enabled, the HTTP `Etag` header is con
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>A file larger than 10 MB keeps the origin busy when Gcore CDN fetches it in one piece. Slice fetches that file in parts no larger than 10 MB, caches each part, and sends the viewer the first bytes without waiting for the whole file.</p>
+<p>A file larger than 10 MB keeps the origin busy when Gcore CDN fetches it in one piece. Slice fetches that file in parts no larger than 10 MB, caches each part, and sends the viewer the first bytes without waiting for the whole file. The origin must support HTTP range requests and send a consistent `Content-Length` and `Etag`. Responses conceal the HTTP `Etag` header. Purge the cache after turning slice on.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
@@ -70,7 +70,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>Gcore CDN requests each large file from the origin in parts of up to 10 MB. The origin must accept HTTP range requests.</p>
 
-<p>`enabled` and `value` are required. Both `true` turns slice on. The JSON field is `slice`; the key `Slice` is ignored. A request that also enables `gzipOn`, `brotli_compression`, or `fetch_compressed` returns HTTP 400.</p>
+<p>`enabled` and `value` are required. Setting both to `true` turns slice on. The JSON field is `slice`; the key `Slice` is ignored. A request that also enables `gzipOn`, `brotli_compression`, or `fetch_compressed` returns HTTP 400.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -400,6 +400,119 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>**Large files delivery optimization** fetches a file larger than 10 MB from the origin in parts no larger than 10 MB, caches each part, and returns the requested bytes without waiting for the whole file. The origin must support HTTP range requests and send a consistent `Content-Length` and `Etag`. Responses conceal the HTTP `Etag` header. Purge the cache after turning slice on. Declare the option with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>A new resource without `slice` leaves the option unset. After the option is saved, keep the object in the configuration. Setting `slice` to `null`, or removing the `options` block, leaves the saved `enabled` and `value` in place. A REST API call removes the option by sending JSON `null`.</p>
+
+<p>Slice cannot be enabled in the same configuration as gzip, Brotli, or fetch compressed. Each pairing returns HTTP 400, and the error names those two options.</p>
+
+## Turn slice on
+
+<p>Set `enabled` and `value` to `true`. Both fields are required. After `terraform apply`, Gcore CDN fetches files larger than 10 MB in parts no larger than 10 MB and caches each part. On the resource, the option applies to every file.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    slice = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+## Turn slice off
+
+<p>The CDN keeps `value` and stops fetching files in parts. Set `enabled` to `false`, keep `value` as `true`, and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    slice = {
+      enabled = false
+      value   = true
+    }
+  }
+}
+```
+
+## Slice one path
+
+<p>A rule fetches files under `/video/` in parts while the resource keeps slicing turned off. `rule_type` `0` matches a regular expression.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    slice = {
+      enabled = false
+      value   = true
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "example" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "slice-large"
+  rule        = "^/video/.*"
+  rule_type   = 0
+
+  options = {
+    slice = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
