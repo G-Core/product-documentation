@@ -1,7 +1,7 @@
 ---
 title: Reduce image size
 sidebarTitle: Resize
-ai-navigation: Configure image resizing in the Customer Portal or the REST API.
+ai-navigation: Configure image resizing via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -56,7 +56,7 @@ image.jpg?parameter1=value1&parameter2=value2
 
 <AccordionGroup>
   <Accordion title="Width">
-    <p>Width compresses an image while preserving the aspect ratio of the original image. This parameter sets the target width of the new image in pixels. The height is automatically adjusted to maintain the original aspect ratio. Example. An origin server hosts a 900×600 image (W×H). With `width=300`: the width is reduced by three, and the height is also reduced by three. Result: 300×200.</p>
+    <p>Width compresses an image while preserving the aspect ratio of the original image. This parameter sets the target width of the new image in pixels. The height is automatically adjusted to maintain the original aspect ratio. An origin server hosts a 900×600 image (W×H). With `width=300`: the width is reduced by three, and the height is also reduced by three. Result: 300×200. The pictures below are a separate 500×333 image.</p>
 
     <Tabs>
       <Tab title="Before: image.jpg">
@@ -70,7 +70,7 @@ image.jpg?parameter1=value1&parameter2=value2
     </Tabs>
   </Accordion>
   <Accordion title="Height">
-    <p>Height compresses an image while preserving the aspect ratio of the original image. This parameter specifies the target height of the new image in pixels. The width is automatically adjusted to maintain the original aspect ratio. Example. An origin server hosts a 900×600 image (W×H). With `height=300`: the height is reduced by two, and the width is also reduced by two. Result: 450×300.</p>
+    <p>Height compresses an image while preserving the aspect ratio of the original image. This parameter specifies the target height of the new image in pixels. The width is automatically adjusted to maintain the original aspect ratio. An origin server hosts a 900×600 image (W×H). With `height=300`: the height is reduced by two, and the width is also reduced by two. Result: 450×300. The pictures below are a separate 500×333 image.</p>
 
     <Tabs>
       <Tab title="Before: image.jpg">
@@ -94,22 +94,22 @@ image.jpg?parameter1=value1&parameter2=value2
 
         <AccordionGroup>
           <Accordion title="1. fit=fit">
-            <p>The image is scaled proportionally and then cropped centrally to exactly fit the specified dimensions. This is the default value — `fit=fit` can be omitted. Example. An image is 500×333 pixels. With `width=200, height=100, fit=fit`: the image is first scaled to 200×133 (factor 0.4, keeping proportions), then 33 pixels are cropped centrally from the height (17 px from the top, 16 px from the bottom). Result: 200×100. | After: `image.jpg?width=200&height=100&fit=fit` or `image.jpg?width=200&height=100`</p>
+            <p>The image is scaled proportionally and then cropped centrally to exactly fit the specified dimensions. This is the default value — `fit=fit` can be omitted. An image is 500×333 pixels. With `width=200, height=100, fit=fit`: the image is first scaled to 200×133 (factor 0.4, keeping proportions), then 33 pixels are cropped centrally from the height (17 px from the top, 16 px from the bottom). Result: 200×100. | After: `image.jpg?width=200&height=100&fit=fit` or `image.jpg?width=200&height=100`</p>
 
             <Frame>![fit=fit](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size/11031151666193.png)</Frame>
             <p>200×100</p>
           </Accordion>
           <Accordion title="2. fit=bounds">
-            <p>The image is compressed proportionally. Resize selects the greater of the two target dimensions and uses it to resize, ignoring the other dimension value. The final image fits entirely within the specified region — one dimension matches the target exactly, and the other is adjusted to maintain the original aspect ratio. Example. An origin server hosts a 1000×500 image. With `width=500, height=300, fit=bounds`: the width value is greater (500 pixels), so the height value is ignored. The original aspect ratio is 2:1, so the height is calculated as 500 ÷ 2 = 250. Result: 500×250. | After: `image.jpg?width=200&height=100&fit=bounds`</p>
+            <p>The image is compressed proportionally. Resize selects the greater of the two target dimensions and uses it to resize, ignoring the other dimension value. That dimension matches the target exactly, and the other dimension keeps the original aspect ratio. An origin server hosts a 1000×500 image. With `width=500, height=300, fit=bounds`: the width value is greater (500 pixels), so the height value is ignored. The original aspect ratio is 2:1, so the height is calculated as 500 ÷ 2 = 250. Result: 500×250. The picture below is a separate case, the 500×333 image with `width=200` and `height=100`. | After: `image.jpg?width=200&height=100&fit=bounds`</p>
 
             <Frame>![fit=bounds](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size/11031151470993.png)</Frame>
             <p>200×133</p>
           </Accordion>
           <Accordion title="3. fit=cover">
-            <p>The image is compressed proportionally. Resize selects the dimension that results in the larger scale factor and uses it to resize, ensuring the image covers the entire specified region. The final image fully covers the specified region — one dimension matches the target exactly, and the other is proportionally larger and gets cropped centrally. Example. An origin server hosts a 1000×500 image. With `width=500, height=300, fit=cover`: the height scale factor (300 ÷ 500 = 0.6) is larger than the width scale factor (500 ÷ 1000 = 0.5), so the image is scaled by height. The original aspect ratio is 2:1, so the width is calculated as 300 × 2 = 600. Result: 600×300. | After: `image.jpg?width=200&height=100&fit=cover`</p>
+            <p>The image is compressed proportionally. Resize selects the dimension that results in the larger scale factor and uses it to resize, so the image covers the specified region. The other dimension is proportionally larger and is cropped from the center. An origin server hosts a 1000×500 image. With `width=500, height=300, fit=cover`: the height scale factor (300 ÷ 500 = 0.6) is larger than the width scale factor (500 ÷ 1000 = 0.5), so the image is scaled by height to 600×300. The center crop then removes the extra width and leaves 500×300. The picture below is a separate case. | After: `image.jpg?width=200&height=100&fit=cover`</p>
 
             <Frame>![fit=cover](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size/11031151470993.png)</Frame>
-            <p>150×100</p>
+            <p>200×100</p>
           </Accordion>
           <Accordion title="4. fit=force">
             <p>The final image matches the specified width and height exactly. The image is compressed in both dimensions, and the original aspect ratio is ignored. | After: `image.jpg?width=200&height=50&fit=force`</p>
@@ -270,7 +270,75 @@ image.jpg?width=200&height=100&fit=cover
 image.jpg?width=200&height=50&fit=force
 ```
 
-<p>`width` alone sets the width in pixels and keeps the aspect ratio. `height` alone does the same for the height. With both dimensions, `fit` decides the reduction. `fit=fit` is the default: the image is scaled, then cropped at the center to the exact size. `fit=bounds` keeps the whole image inside the box. `fit=cover` covers the box and crops the center. `fit=force` uses the exact width and height and ignores the aspect ratio.</p>
+<p>`width` alone sets the width in pixels and keeps the aspect ratio. `height` alone does the same for the height. With both dimensions, `fit` decides the reduction. `fit=fit` is the default: the image is scaled, then cropped at the center to the exact size. `fit=bounds` uses the greater target dimension and keeps the aspect ratio on the other. `fit=cover` covers the box and crops the center. `fit=force` uses the exact width and height and ignores the aspect ratio.</p>
+
+## Check the delivered image
+
+<p>The `X-Img-Operations` header lists the conversions. If the value includes `resize`, the image size changed.</p>
+
+<p>If `X-Img-Operations` does not contain `resize` and the CDN returns the origin image, the `Img-skip-reason` header explains the skip.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Resize makes the picture Gcore CDN delivers smaller in width and height. The new size is `width`, `height`, and `fit` on the image URL, and Image Stack has to be on before those parameters are applied. Declare Image Stack with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>`image_stack` has no `width`, `height`, or `fit` argument. A `width`, `height`, or `fit` key in that object is left out of the saved option. Add those parameters to the image URL.</p>
+
+## Turn Image Stack on
+
+<p>Gcore CDN reads `width`, `height`, and `fit` from the image URL only when Image Stack is enabled. Set `enabled`, `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`. A field left out of the object is stored as its default, so an omitted `quality` becomes 95 and omitted flags become false. Keep every field that should stay set, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = false
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Resize the image URL
+
+<p>`width`, `height`, and `fit` are not Terraform fields. Add them to the image URL:</p>
+
+```
+image.jpg?width=300
+image.jpg?height=300
+image.jpg?width=200&height=100
+image.jpg?width=200&height=100&fit=fit
+image.jpg?width=200&height=100&fit=bounds
+image.jpg?width=200&height=100&fit=cover
+image.jpg?width=200&height=50&fit=force
+```
+
+<p>`width` alone sets the width in pixels and keeps the aspect ratio. `height` alone does the same for the height. With both dimensions, `fit` decides the reduction. `fit=fit` is the default: the image is scaled, then cropped at the center to the exact size. `fit=bounds` uses the greater target dimension and keeps the aspect ratio on the other. `fit=cover` covers the box and crops the center. `fit=force` uses the exact width and height and ignores the aspect ratio.</p>
+
+## Check the delivered image
+
+<p>The `X-Img-Operations` header lists the conversions. If the value includes `resize`, the image size changed.</p>
+
+<p>If `X-Img-Operations` does not contain `resize` and the CDN returns the origin image, the `Img-skip-reason` header explains the skip.</p>
 
 </MethodSection>
 </MethodSwitch>
