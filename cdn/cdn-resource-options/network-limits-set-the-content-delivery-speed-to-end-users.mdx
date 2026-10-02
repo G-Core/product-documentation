@@ -1,7 +1,7 @@
 ---
 title: "Network limits: set the content delivery speed to end users"
 sidebarTitle: Network limits
-ai-navigation: Configure a CDN download speed limit per connection in the Customer Portal or the REST API.
+ai-navigation: Configure a CDN download speed limit per connection via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>A large file can take the whole connection while it downloads. **Download speed limit** holds each connection to a lower rate, either the same rate for every file or a different rate for each request.</p>
+<p>A large file can take the whole connection while it downloads. **Download speed limit** holds each connection to a lower rate. Static mode uses the same rate for every connection, and dynamic mode reads a different rate from each request.</p>
 
 <p>To configure the download speed limit:</p>
 
@@ -25,7 +25,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Static
 
-<p>This mode sets a limit on all content transmitted through the CDN. When this mode is selected, configure the **Connection speed** and **Limit after** parameters.</p>
+<p>This mode applies the same limit to every connection on the CDN resource. When this mode is selected, configure the **Connection speed** and **Limit after** parameters.</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/network-limits-image3.png" alt="Static mode with Connection speed and Limit after fields" width="70%"/></Frame>
 
@@ -39,17 +39,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Dynamic
 
-<p>This mode sets different limits for different users or content types. The speed is adjusted based on the `speed` and `buffer` query string arguments.</p>
+<p>This mode sets a different download speed on each request. The speed is adjusted based on the `speed` and `buffer` query string arguments.</p>
 
 <Frame><img src="/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/network-limits-image4.png" alt="Dynamic mode description with speed and buffer query argument example" width="70%"/></Frame>
 
 <p>The `speed` argument sets the maximum download speed, while `buffer` sets how much data transfers without the speed limit. The `buffer` argument is optional.</p>
 
-<p>Pass the arguments as query string parameters. The following URL limits download speed to 50 kB/s after downloading 500 kB:</p>
+<p>Pass the arguments as query string parameters. This URL limits download speed to 50 kB/s after downloading 500 kB:</p>
 
 ```
 http://cdn.example.com/video.mp4?speed=50k&buffer=500k
 ```
+
+<p>Click **Save changes**.</p>
 
 ## Option features
 
@@ -74,7 +76,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>Gcore CDN sends the file at 100 kB/s after the first 200 kB.</p>
 
-<p>`enabled`, `limit_type`, and `speed` are required. The JSON field is `limit_bandwidth`. `speed` is at least 1 kB/s and at most 1,000,000,000 kB/s. `buffer` is how many kB download before that speed applies: `0` starts the limit at the first byte, and omitting `buffer` stores `0`. A value outside that range returns HTTP 400.</p>
+<p>`enabled`, `limit_type`, and `speed` are required. The JSON field is `limit_bandwidth`. `speed` is at least 1 kB/s and at most 1,000,000,000 kB/s. `buffer` is the amount of data, in kB, downloaded before that speed applies: `0` starts the limit at the first byte, and omitting `buffer` stores `0`. A value outside that range returns HTTP 400.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -172,7 +174,11 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ## Set a dynamic limit
 
-<p>The request URL sets the speed for that download. `http://cdn.example.com/video.mp4?speed=50k&buffer=500k` is delivered at 50 kB/s after 500 kB, and `buffer` can be left off the URL.</p>
+<p>The request URL sets the speed for that download, and `buffer` can be left off the URL. This URL delivers the file at 50 kB/s after 500 kB:</p>
+
+```text
+http://cdn.example.com/video.mp4?speed=50k&buffer=500k
+```
 
 <p>The API stores only the mode. `speed` and `buffer` sent in the request body are not saved. `enabled` and `limit_type` are required.</p>
 
@@ -514,6 +520,145 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>**Download speed limit** holds each connection to a lower rate, so a large file cannot occupy the whole connection. Static mode uses the same rate for every connection, and dynamic mode reads a different rate from each request. Two open connections deliver twice that rate. The limit works together with [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting).</p>
+
+<p>Declare the option with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. A new resource without `limit_bandwidth` has no download speed limit. After the option is saved, keep the object in the configuration. Setting `limit_bandwidth` to `null`, or removing the `options` block, leaves the saved speed, buffer, and mode in place. A REST API call removes the option by sending JSON `null`.</p>
+
+## Set a static limit
+
+<p>Static mode uses one rate for every connection. `speed` is required and sets that rate in kB/s, from 1 to 1,000,000,000. `buffer` is the amount of data, in kB, downloaded before the rate applies, and `0` starts the limit at the first byte. An omitted `buffer` stays unset, so set `0` when the limit should start immediately.</p>
+
+<p>This configuration holds each connection to 100 kB/s after the first 200 kB. Run `terraform apply` to save it.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    limit_bandwidth = {
+      enabled    = true
+      limit_type = "static"
+      speed      = 100
+      buffer     = 200
+    }
+  }
+}
+```
+
+## Set a dynamic limit
+
+<p>Dynamic mode reads a different rate from each request. The URL carries `speed` and `buffer` as query arguments, and `buffer` can be absent from the URL. This URL delivers the file at 50 kB/s after 500 kB:</p>
+
+```text
+http://cdn.example.com/video.mp4?speed=50k&buffer=500k
+```
+
+<p>Each request takes its rate from the `speed` and `buffer` query arguments on the URL. The configuration below sets `enabled` and `limit_type` only. The Terraform provider stores `speed` and `buffer` when a dynamic object includes them, so those fields stay out of this object. A REST API dynamic limit stores only the mode.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    limit_bandwidth = {
+      enabled    = true
+      limit_type = "dynamic"
+    }
+  }
+}
+```
+
+## Turn a static limit off
+
+<p>The CDN stops limiting downloads, and the saved speed and buffer stay on the resource. Set `enabled` to `false`, keep the same `limit_type`, `speed`, and `buffer`, and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    limit_bandwidth = {
+      enabled    = false
+      limit_type = "static"
+      speed      = 100
+      buffer     = 200
+    }
+  }
+}
+```
+
+## Turn a dynamic limit off
+
+<p>The URL limit stops, and the resource stays in dynamic mode. Set `enabled` to `false` and `limit_type` to `dynamic`, and leave `speed` and `buffer` out of the object.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    limit_bandwidth = {
+      enabled    = false
+      limit_type = "dynamic"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
