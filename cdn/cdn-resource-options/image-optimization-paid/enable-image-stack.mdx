@@ -1,7 +1,7 @@
 ---
 title: Enable Image Stack
 sidebarTitle: Enable Image Stack
-ai-navigation: Enable Image Stack for JPG and PNG in the Customer Portal or via the REST API.
+ai-navigation: Enable Image Stack for JPG and PNG via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,9 +9,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>**Resource settings** applies Image Stack to every request on a CDN resource. Use it when the origin serves static images alone, because a mixed-content origin conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option).</p>
+<p>**Resource settings** apply Image Stack to every request on a CDN resource. Use it when the origin serves static images alone, because a resource-wide Image Stack conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) when the origin also serves other files.</p>
 
-<p>**Rules** applies Image Stack to URLs that match a pattern, and that is the usual choice.</p>
+<p>**Rules** apply Image Stack to URLs that match a pattern, and that is the usual choice.</p>
 
 ## Image optimization rule
 
@@ -57,7 +57,11 @@ After enabling, configure the parameters:
 **Enable lossless for PNG** delivers PNG images without quality loss. When it is on, the quality setting has no effect on PNG files.
 
 <Note>
-Enable Compression, Resize, or Crop alongside Image quality, because quality does not change an image on its own. To set quality for one image, add `quality` to the image URL: `https://image.example.com/image.jpg?fmt=avif&quality=50`
+Use Image quality together with Compression, Resize, or Crop, because quality does not change an image on its own. To set quality for one image, add `quality` to the image URL:
+
+```
+https://image.example.com/image.jpg?fmt=avif&quality=50
+```
 </Note>
 
 **Compression** converts JPG and PNG images to WebP or AVIF. Enable **Enable WebP compression**, **Enable AVIF compression**, or both. When both formats are enabled and the browser accepts both, images are delivered in AVIF.
@@ -103,7 +107,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>`enabled` is required. The call sets `quality` to 80, turns on WebP and AVIF, and sets `png_lossless` to true.</p>
 
-<p>A field left out of the request is stored as its default, so send every field that should stay set. `quality` outside 1-100 returns HTTP 400, and `quality` alone does not change the image. The JSON field is `image_stack`; the key `imageStack` is ignored.</p>
+<p>A field left out of the request is stored as its default, so send every field that should stay set. `quality` outside 1-100 returns HTTP 400, and `quality` alone does not change the image. The JSON field is `image_stack`; the key `imageStack` is ignored. When the rule is created, the resource cache clears and CDN servers request the images from the origin. Enable Origin Shielding first, or make the change during low-traffic hours.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -219,7 +223,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>Unlike a URL rule, these fields apply Image Stack to every request on the CDN resource. Use them when the origin serves only static images.</p>
 
-<p>The API stores `rewrite` in the same request. A resource-wide Image Stack conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) when the origin also serves other files.</p>
+<p>A resource-wide Image Stack conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) when the origin also serves other files.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -501,6 +505,131 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Image Stack converts JPG and PNG images to WebP or AVIF and sets how much detail to keep. A rule limits conversion to JPG and PNG requests. On the resource, the same fields apply to every request, which fits an origin that serves static images only. A resource-wide Image Stack conflicts with Rewrite when the origin also serves other files. Declare the option with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>A new resource without `image_stack` leaves the option unset. After the option is saved, keep the object in the configuration. Setting `image_stack` to `null`, or removing the `options` block, leaves the saved `enabled`, `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless` in place. A REST API call removes the option by sending JSON `null`.</p>
+
+<p>`quality` is an integer from 1 to 100. 95, 80, and 65 are the high, medium, and low settings. 0 and 101 are rejected before `terraform apply`: the provider reports that `quality` must be between 1 and 100. Setting `enabled` to `false` and leaving out `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless` stores `quality` 95 and sets those three flags to false. With `png_lossless` true, `quality` has no effect on PNG. When WebP and AVIF are both on and the browser accepts both, the image is delivered as AVIF. Quality changes an image only together with compression, resize, or crop. Resize, crop, and a per-image `quality` or `fmt` value are query parameters, not fields of `image_stack`.</p>
+
+## Enable Image Stack for image URLs
+
+<p>The rule converts JPG and PNG requests. `rule_type` `0` matches a regular expression, and the pattern is `/.*\.(jpg|jpeg|png)`. The resource keeps Image Stack turned off, with `quality` 80 and WebP, AVIF, and lossless PNG still stored. Saving the rule clears the resource cache, and CDN servers request the images from the origin. Enable Origin Shielding first, or apply the change during low-traffic hours.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = false
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "example" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-stack"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
+
+## Enable Image Stack on the resource
+
+<p>These fields apply Image Stack to every request on the CDN resource. Use them when the origin serves only static images. Set `enabled`, `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
+
+## Turn Image Stack off
+
+<p>Conversion stops, while the saved quality and compression flags stay in place. Set `enabled` to `false` and keep `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = false
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
