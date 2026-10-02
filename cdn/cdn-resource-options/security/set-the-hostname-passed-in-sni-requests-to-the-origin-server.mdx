@@ -1,7 +1,7 @@
 ---
 title: Set the hostname passed in SNI requests to the origin
 sidebarTitle: Set SNI hostname
-ai-navigation: Configure the SNI hostname for a CDN resource in the Customer Portal or with the REST API.
+ai-navigation: Configure the SNI hostname for a CDN resource via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -35,6 +35,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </Frame>
 
 <p>4. Click **Save changes**.</p>
+
+<p>5. Confirm the hostname on the origin.</p>
+
+<p>Inspect the TLS logs for connections from CDN servers. The SNI extension contains the selected hostname. **Dynamic SNI hostname** uses the hostname from **Change Host Header**. **Custom SNI hostname** uses the value in **Specify SNI hostname**.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -154,6 +158,42 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set the hostname CDN servers send in SNI requests to an HTTPS origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. `sni_type` `custom` sends `custom_hostname` during the TLS handshake. `sni_type` `dynamic` takes the hostname from the Host header options: an enabled Host header, a forwarded Host header, or the primary CNAME when both are disabled. An IP address in `custom_hostname` returns HTTP 400 and the message `Incorrect field value. Must be a valid domain name`. Run `terraform apply` after editing `options`.</p>
+
+## Custom SNI hostname
+
+<p>Set `enabled` to `true`, `sni_type` to `custom`, and `custom_hostname` to the origin hostname. For `dynamic`, set `sni_type` to `dynamic` and `custom_hostname` to an empty string.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    sni = {
+      enabled         = true
+      sni_type        = "custom"
+      custom_hostname = "origin.example.com"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>
