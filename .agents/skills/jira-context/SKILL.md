@@ -257,3 +257,12 @@ Produce this brief — always, regardless of next action:
 - Blocked — needs more context → ask user for [specific missing info]
 - Cancel → no documentation work needed
 ```
+
+## Article `description`
+
+If the brief tells a later skill to write or replace frontmatter `description`, the sentence must follow `.agents/references/mdx-rules.md`:
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about, using the words a person would type into search.
+- Do not write Portal, API, or Terraform.
+- Do not rewrite existing descriptions unless the task is a description pass.

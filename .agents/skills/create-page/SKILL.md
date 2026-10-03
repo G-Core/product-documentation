@@ -105,8 +105,7 @@ Do NOT run this from the `product-documentation` directory — there is no `node
 
 - [ ] `title` present
 - [ ] `sidebarTitle` present (if different from title)
-- [ ] `ai-navigation` present — one sentence, starts with action verb, no colons or special chars
-- [ ] No `description` field
+- [ ] `description` present — one sentence, 140 characters maximum, search summary of the article, no Portal, API, or Terraform, no colons or special chars
 
 ## Step 7. Update docs.json
 

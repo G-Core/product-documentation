@@ -407,16 +407,6 @@ def check_callout_prefix(raw_lines: list[str]) -> list[Violation]:
 
 def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
     violations: list[Violation] = []
-    action_verbs = {
-        "create", "configure", "manage", "enable", "disable", "deploy", "set", "add",
-        "update", "remove", "connect", "install", "mount", "view", "monitor", "generate",
-        "integrate", "use", "run", "build", "upload", "download", "test", "verify",
-        "access", "allow", "block", "migrate", "restore", "delete", "list", "get", "send",
-        "receive", "assign", "attach", "detach", "scale", "resize", "start", "stop",
-        "restart", "reinstall", "resolve", "troubleshoot", "convert", "import", "export",
-        "protect", "apply", "validate", "audit", "review", "check", "change", "edit",
-        "move", "copy", "share", "publish", "back", "allocate", "order", "buy",
-    }
     in_fm = False
     for i, raw in enumerate(raw_lines, start=1):
         stripped = raw.strip()
@@ -428,22 +418,22 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
         if not in_fm:
             continue
 
-        if re.match(r"^description\s*:", stripped, re.IGNORECASE):
+        if re.match(r"^ai-navigation\s*:", stripped):
             violations.append(Violation(
                 line=i,
                 rule="Frontmatter",
-                detail="'description:' is forbidden — use 'ai-navigation:' instead",
+                detail="'ai-navigation:' was renamed to 'description:'",
                 text=raw.strip(),
             ))
 
-        if re.match(r"^ai-navigation\s*:", stripped):
+        if re.match(r"^description\s*:", stripped):
             value = stripped.split(":", 1)[1].strip()
 
             if value.startswith('"') or value.startswith("'"):
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation quotes",
-                    detail="ai-navigation value must not be wrapped in YAML quotes",
+                    rule="description quotes",
+                    detail="description value must not be wrapped in YAML quotes",
                     text=raw.strip(),
                 ))
 
@@ -452,48 +442,47 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
             if ":" in val:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation syntax",
-                    detail="ai-navigation must not contain ':' — YAML treats it as a key separator",
+                    rule="description syntax",
+                    detail="description must not contain ':' — YAML treats it as a key separator",
                     text=raw.strip(),
                 ))
             if "#" in val:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation syntax",
-                    detail="ai-navigation must not contain '#' — YAML treats it as a comment start",
+                    rule="description syntax",
+                    detail="description must not contain '#' — YAML treats it as a comment start",
                     text=raw.strip(),
                 ))
             for ch in ["/", "{", "}"]:
                 if ch in val:
                     violations.append(Violation(
                         line=i,
-                        rule="ai-navigation syntax",
-                        detail=f"ai-navigation must not contain '{ch}' — use descriptive text without URL paths or template variables",
+                        rule="description syntax",
+                        detail=f"description must not contain '{ch}' — use descriptive text without URL paths or template variables",
                         text=raw.strip(),
                     ))
 
             if "\u2014" in val:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation em-dash",
-                    detail="ai-navigation must not contain em-dash '\u2014' — llms.txt generator encodes it as garbage; use a comma or semicolon instead",
+                    rule="description em-dash",
+                    detail="description must not contain em-dash '\u2014' — llms.txt generator encodes it as garbage; use a comma or semicolon instead",
                     text=raw.strip(),
                 ))
 
-            if len(val) > 160:
+            if len(val) > 140:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation length",
-                    detail=f"ai-navigation is {len(val)} chars — max 160 chars",
+                    rule="description length",
+                    detail=f"description is {len(val)} chars — maximum 140",
                     text=raw.strip(),
                 ))
 
-            first_word = val.split()[0].lower().rstrip(".,;") if val.split() else ""
-            if first_word and first_word not in action_verbs:
+            if re.search(r"\b(portal|api|terraform)\b", val, re.IGNORECASE):
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation verb",
-                    detail=f"ai-navigation must start with an action verb — '{first_word}' is not in the approved list",
+                    rule="description search summary",
+                    detail="description must summarize the article for search and must not name Portal, API, or Terraform",
                     text=raw.strip(),
                 ))
 

@@ -251,8 +251,7 @@ If anything is not working as described, check:
 ## Phase 6 — Validate
 
 **MDX:**
-- [ ] Frontmatter complete: `title`, `sidebarTitle`, `ai-navigation`
-- [ ] No `description` field
+- [ ] Frontmatter complete: `title`, `sidebarTitle`, `description`
 - [ ] No `{identifier}` in inline backtick spans
 
 **Structure:**
@@ -267,12 +266,12 @@ If anything is not working as described, check:
 - [ ] `## Expected outcome` section present
 - [ ] All `{TODO:}` items listed
 
-**`ai-navigation`:**
-One sentence, action verb, all products mentioned, max 160 chars,
-no curly braces, no URL paths:
+**`description`:**
+One sentence, 140 characters maximum. Summarize the scenario and name the
+products involved. Do not write Portal, API, or Terraform. No curly braces,
+no URL paths:
 ```yaml
-ai-navigation: Stream live video through Gcore CDN with DDoS protection by
-configuring a live stream origin, a CDN resource, and a DDoS protection profile.
+description: Stream live video through Gcore CDN with DDoS protection, from the origin to the protected resource.
 ```
 
 ---
