@@ -364,12 +364,10 @@ Do not modify Portal or REST API sections.
 
 ## Phase 5 — Update frontmatter
 
-Add "or Terraform" to `ai-navigation`:
-
-Before: `"Create a VM via Customer Portal or REST API."`
-After:  `"Create a VM via Customer Portal, REST API, or Terraform."`
-
-Rules: one sentence, max 160 chars, no colons after labels, no `{...}`, no URL paths.
+Do not add Portal, API, or Terraform to `description`. Adding a Terraform tab
+does not change the search summary. Rewrite it only when the article's subject
+changed: one sentence, 140 characters maximum, what the article is about.
+No colons, no `{...}`, no URL paths.
 
 ---
 

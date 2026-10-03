@@ -1397,3 +1397,12 @@ Run without `--dry-run` immediately after — do not wait for separate confirmat
 
 After running, reset the three constants back to placeholder values so the
 script is ready for the next article.
+
+## Article `description`
+
+If a fix requires writing or replacing frontmatter `description`, follow `.agents/references/mdx-rules.md`:
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about, using the words a person would type into search.
+- Do not write Portal, API, or Terraform.
+- Do not rewrite existing descriptions unless the task is a description pass.

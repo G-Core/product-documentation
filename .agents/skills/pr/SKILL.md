@@ -235,7 +235,7 @@ git push -u origin {branch-name}
 ```
 
 **After pushing**, two CI workflows may auto-commit to your branch:
-- `sanitize-ai-navigation` — fixes `:` or `#` in `ai-navigation` frontmatter
+- `sanitize-ai-navigation` — fixes `:` or `#` in `description` frontmatter
 - `normalize-images` — renames images and updates MDX paths
 
 Wait ~30 seconds, then run `git pull` before any follow-up commits.
@@ -319,3 +319,12 @@ If the `gh` CLI is not installed or not authenticated, provide:
    ```
    https://github.com/G-Core/product-documentation/compare/main...{branch-name}
    ```
+
+## Article `description`
+
+If the PR includes a new or replaced frontmatter `description`, it must follow `.agents/references/mdx-rules.md`:
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about, using the words a person would type into search.
+- Do not write Portal, API, or Terraform.
+- Do not rewrite existing descriptions unless the task is a description pass.

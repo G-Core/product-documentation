@@ -77,3 +77,12 @@ For Terraform tabs specifically:
 3. Are both provider v2 and registry links genuinely useful here, or only one?
 4. Does each sentence add information, or is it filler?
 5. Read the Portal or API intro for the same article — match the level of detail.
+
+## Article `description`
+
+If you write or replace frontmatter `description`, follow `.agents/references/mdx-rules.md`:
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about, using the words a person would type into search.
+- Do not write Portal, API, or Terraform.
+- Do not rewrite existing descriptions unless the task is a description pass.

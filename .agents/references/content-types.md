@@ -44,7 +44,7 @@ All methods live in one MDX file — never create separate files per method.
 ---
 title: Create a Virtual Machine
 sidebarTitle: Create an instance
-ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Customer Portal by configuring image, flavor, volumes, network, and firewall, or via REST API using the Instances API.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, network, and firewall.
 ---
 ```
 
@@ -54,7 +54,7 @@ ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Custo
 ---
 title: ...
 sidebarTitle: ...
-ai-navigation: ...
+description: ...
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -229,7 +229,7 @@ No Customer Portal steps — no MethodSwitch component.
 ---
 title: Deploy a Linux VM via API
 sidebarTitle: Deploy a VM
-ai-navigation: Deploy a Linux Virtual Machine using the Gcore Cloud REST API — create SSH keys, select a flavor and image, create the instance, and assign a floating IP address.
+description: Deploy a Linux Virtual Machine in Gcore Cloud with an image, flavor, SSH key, and floating IP.
 ---
 ```
 
@@ -361,7 +361,7 @@ links to the main articles. Usually the `index.mdx` or `overview.mdx` of a folde
 ---
 title: Virtual Machines
 sidebarTitle: Overview
-ai-navigation: Overview of Gcore Cloud Virtual Machines — create, manage, connect, and configure VM instances using the Customer Portal or REST API.
+description: Gcore Cloud Virtual Machines, from creating an instance to connecting and configuring it.
 ---
 
 {One paragraph: what this product is and what it enables. Value before mechanics.}
@@ -398,7 +398,7 @@ Not a step-by-step guide. No MethodSwitch.
 ---
 title: Load Balancer overview
 sidebarTitle: Overview
-ai-navigation: ...
+description: ...
 ---
 
 {One paragraph: what this thing is and what problem it solves.}
@@ -447,7 +447,7 @@ or
 ---
 title: {Scenario title — what the reader will have when done}
 sidebarTitle: {Short label}
-ai-navigation: {All products involved, the outcome.}
+description: {What the scenario produces, 140 characters maximum. No Portal, API, or Terraform.}
 ---
 
 {One paragraph: who this guide is for and what they will achieve.

@@ -252,7 +252,7 @@ that the reader cannot tell which sentences were changed.
 **If a flow changed (steps reordered, step added, step removed):**
 - Rewrite the affected section — do not patch individual sentences
 - Ensure the intro sentence for the section still matches what follows
-- Check if `ai-navigation` frontmatter still accurately describes the article
+- Check if `description` still summarizes the article. If the subject changed, rewrite it: one sentence, 140 characters maximum, no Portal, API, or Terraform.
 
 **If restructuring a section:**
 - Read the full section before and after in your head — does it flow?
@@ -292,14 +292,13 @@ After making changes, check:
 - [ ] No `####` headings inside `<MethodSection>`
 
 **Frontmatter:**
-- [ ] `ai-navigation` still accurately describes the article after changes
-  (update it if the article's scope changed)
-- [ ] `ai-navigation` is a **high-level summary of the article** — what tasks it covers,
-  what products/methods it involves. Never list individual parameters, filter syntax,
-  field names, or implementation details. Those belong in the article body, not here.
+- [ ] `description` still summarizes what the article is about
+  (update it only if the article's subject changed)
+- [ ] One sentence, 140 characters maximum. Use the feature name and the words
+  a person would type into search. Do not write Portal, API, or Terraform.
+- [ ] Do not list parameters, filter syntax, field names, or implementation details.
   Example of wrong: "filter by tag key and value using tags[key]=value (supports OR logic)"
-  Example of right: "filter resources by tag key and value"
-- [ ] No `description` field present
+  Example of right: "Filter CDN resources by tag key and value."
 
 **Style:**
 - [ ] New prose follows sentence case headings

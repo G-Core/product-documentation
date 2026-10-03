@@ -3,6 +3,18 @@
 Canonical writing and formatting rules for all documentation work.
 Load this file when a skill tells you to. Do not load it proactively.
 
+## Page description
+
+Frontmatter `description` is the search summary. Mintlify copies it into the meta description. `custom.css` hides the paragraph under the title. `llms.txt` reads the same sentence.
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about. Use the feature name and the words a person would type into search.
+- Do not write Portal, API, or Terraform. Naming the interface does not help search.
+- No "you", "your", "this article", or "learn how to".
+- No curly braces, slashes, colons, `#`, backticks, square brackets, or pipes.
+
+Do not rewrite existing descriptions to this rule unless the task is a description pass.
+
 ---
 
 ## Target audience

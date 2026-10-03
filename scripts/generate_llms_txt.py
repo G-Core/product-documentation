@@ -8,7 +8,7 @@ root llms.txt product index.
 
 Root llms.txt is a curated meta-index (one entry per product) kept under
 50,000 characters so it is not truncated by agent platforms. Per-product
-llms.txt files contain the full article list with ai-navigation descriptions.
+llms.txt files contain the full article list with description descriptions.
 
 Usage:
     python scripts/generate_llms_txt.py \\
@@ -90,10 +90,10 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
     """
     Read YAML frontmatter from an MDX file.
 
-    Returns a dict with keys: title, sidebarTitle, ai-navigation.
+    Returns a dict with keys: title, sidebarTitle, description.
     Missing keys are returned as empty strings.
     """
-    result: dict[str, str] = {"title": "", "sidebarTitle": "", "ai-navigation": ""}
+    result: dict[str, str] = {"title": "", "sidebarTitle": "", "description": ""}
     if not mdx_path.exists():
         return result
     try:
@@ -113,7 +113,7 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
         return result
     fm_block = content[3:end]
     for line in fm_block.splitlines():
-        for key in ("title", "sidebarTitle", "ai-navigation"):
+        for key in ("title", "sidebarTitle", "description"):
             pattern = rf"^{key}:\s*['\"]?(.+?)['\"]?\s*$"
             m = re.match(pattern, line.strip())
             if m:
@@ -149,7 +149,7 @@ def derive_product_summary(group: dict, repo_root: Path) -> str:
     Derive a one-line product summary for use in the root index and blockquote.
 
     Tries, in order:
-    1. ai-navigation of the product's root overview page (first string page in group).
+    1. description of the product's root overview page (first string page in group).
     2. Comma-separated list of sub-group names from docs.json.
 
     Args:
@@ -165,7 +165,7 @@ def derive_product_summary(group: dict, repo_root: Path) -> str:
         if isinstance(item, str):
             mdx_path = repo_root / (item + ".mdx")
             fm = read_frontmatter(mdx_path)
-            nav = fm.get("ai-navigation", "")
+            nav = fm.get("description", "")
             if nav:
                 return nav
             break
@@ -195,7 +195,7 @@ def build_section_lines(
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
         depth: Current nesting depth (0 = top-level product group).
-        missing_nav: Optional list to collect paths missing ai-navigation.
+        missing_nav: Optional list to collect paths missing description.
 
     Returns:
         List of formatted text lines.
@@ -209,7 +209,7 @@ def build_section_lines(
             return lines
         fm = read_frontmatter(mdx_file)
         title = fm.get("title") or fm.get("sidebarTitle") or node.split("/")[-1]
-        description = fm.get("ai-navigation", "")
+        description = fm.get("description", "")
         url = page_to_url(node, base_url)
         if not url.endswith(".md"):
             log.warning("URL does not end with .md, check page_to_url: %s", url)
@@ -254,7 +254,7 @@ def build_product_llms(
         group: The top-level group dict from docs.json.
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
-        missing_nav: Accumulator for pages missing ai-navigation.
+        missing_nav: Accumulator for pages missing description.
 
     Returns:
         Tuple of (file_content, product_prefix, product_summary).
@@ -519,15 +519,15 @@ def main() -> int:
     missing_count = len(missing_nav)
     if missing_count:
         log.warning(
-            "ai-navigation missing: %d/%d pages. Files: %s",
+            "description missing: %d/%d pages. Files: %s",
             missing_count, total_pages,
             ", ".join(missing_nav[:10]) + ("..." if missing_count > 10 else ""),
         )
     else:
-        log.info("ai-navigation coverage: %d/%d pages (100%%).", total_pages, total_pages)
+        log.info("description coverage: %d/%d pages (100%%).", total_pages, total_pages)
 
     log.info(
-        "Done. %d products, %d total pages, %d missing ai-navigation.",
+        "Done. %d products, %d total pages, %d missing description.",
         len(product_entries), total_pages, missing_count,
     )
     return 0

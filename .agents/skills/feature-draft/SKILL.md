@@ -186,12 +186,13 @@ Collect all TODOs — they become the PR description checklist.
 ---
 title: [Full descriptive title]
 sidebarTitle: [Short sidebar label]
-ai-navigation: [One sentence, action verb, max 160 chars, no {braces} or /slashes/]
+description: [One sentence, 140 characters maximum, what the article is about. No Portal, API, or Terraform.]
 ---
 ```
 
-Write `ai-navigation` last. Rules: one sentence, starts with action verb,
-describes all methods covered, no curly braces, no URL paths, no colons followed by space.
+Write `description` last. One sentence, 140 characters maximum. Summarize what
+the article is about, using the words a person would type into search. Do not
+name Portal, API, or Terraform. No curly braces, no URL paths, no colons.
 
 ---
 
@@ -248,8 +249,7 @@ Quick validation before creating the PR:
 - [ ] Prose inside `<MethodSection>` wrapped in `<p>` tags
 
 **Frontmatter:**
-- [ ] `title` and `ai-navigation` present
-- [ ] No `description` field
+- [ ] `title` and `description` present. `description` is one sentence, 140 characters maximum, and does not name Portal, API, or Terraform
 
 **Style:**
 - [ ] No forbidden openers: "This guide...", "This article..."
