@@ -1,7 +1,7 @@
 ---
 title: 'Setup and configuration'
 sidebarTitle: 'Setup and configuration'
-description: Set up Gcore Edge Proxy protected servers with origin addresses, DDoS filtering profiles, ports, proxy protocol, and deployment steps.
+description: Set up Gcore Edge Proxy protected servers with origin addresses, DDoS filtering profiles, ports, proxy protocol, deployment steps, and the origin IP allowlist.
 ---
 
 Edge Proxy routes incoming traffic through Gcore's DDoS mitigation infrastructure and assigns a protected IP address that clients connect to instead of the origin server.
@@ -60,3 +60,41 @@ If the application is unreachable after activation, most [activation&nbsp;issues
 
 </Step>
 </Steps>
+
+## Restrict access to the origin
+
+Edge Proxy connects to the origin from Gcore edge servers. These are the same servers that Gcore CDN uses, so the origin allowlist uses the public CDN address lists. Allow these addresses on the origin and block all other sources. Otherwise, attackers can reach the origin directly and bypass Edge Proxy.
+
+<Info>
+The list of Gcore edge addresses changes as the network expands. New entries appear in the public lists 30–60 minutes before a server starts to forward traffic. An address that is missing from the origin allowlist blocks all clients that Gcore routes through that server. Automate allowlist updates from the public endpoints.
+</Info>
+
+### Host addresses
+
+The public IP endpoint returns IPv4 `/32` and IPv6 `/128` host CIDRs. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist exactly as returned:
+
+```bash
+curl --fail --silent --show-error https://api.gcore.com/cdn/public-ip-list \
+  | jq -r '.addresses[], .addresses_v6[]'
+```
+
+The request requires no authorization. The JSON response stores IPv4 host CIDRs in `addresses` and IPv6 host CIDRs in `addresses_v6`.
+
+### Network ranges
+
+The public network endpoint returns broader IPv4 and IPv6 CIDR ranges. Use it when the firewall has a limit on the number of rules:
+
+```bash
+curl --fail --silent --show-error https://api.gcore.com/cdn/public-net-list \
+  | jq -r '.addresses[], .addresses_v6[]'
+```
+
+<Info>
+Both commands require `jq` to extract the arrays from the JSON response.
+</Info>
+
+### Rate limits and auto-ban tools
+
+All client sessions reach the origin from a small set of Gcore addresses, so one edge server can carry thousands of clients. Exclude the Gcore addresses from per-IP connection limits, rate limits, and auto-ban tools on the origin host and at the hosting provider. Otherwise, these tools can block a busy edge server, and clients routed through it get connection timeouts.
+
+To see the real client IP on the origin, enable **Proxy protocol** on the port instead of relying on the source address.
