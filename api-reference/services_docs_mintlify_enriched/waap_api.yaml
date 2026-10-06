@@ -100,8 +100,8 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.get_account_overview()
-          print(response.id)
+          waap_account_overview = client.waap.get_account_overview()
+          print(waap_account_overview.id)
       - lang: Go
         source: |
           package main
@@ -118,11 +118,11 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.GetAccountOverview(context.TODO())
+          	waapAccountOverview, err := client.Waap.GetAccountOverview(context.TODO())
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.ID)
+          	fmt.Printf("%+v\n", waapAccountOverview.ID)
           }
   /waap/v1/statistics/series:
     get:
@@ -439,6 +439,54 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from datetime import date
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.prebilling.get_total(
+              metric="domains",
+              from_=date.fromisoformat("2019-12-27"),
+              to=date.fromisoformat("2019-12-27"),
+          )
+          page = page.results[0]
+          print(page.amount)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+          	"time"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Prebilling.GetTotal(
+          		context.TODO(),
+          		waap.PrebillingGetTotalParamsMetricDomains,
+          		waap.PrebillingGetTotalParams{
+          			From: time.Now(),
+          			To:   time.Now(),
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v1/prebilling/breakdown/{metric}:
     get:
       tags:
@@ -1297,41 +1345,6 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
-      x-codeSamples:
-      - lang: Python
-        source: |-
-          import os
-          from gcore import Gcore
-
-          client = Gcore(
-              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
-          )
-          waap_rule_sets = client.waap.domains.list_rule_sets(
-              1,
-          )
-          print(waap_rule_sets)
-      - lang: Go
-        source: |
-          package main
-
-          import (
-          	"context"
-          	"fmt"
-
-          	"github.com/G-Core/gcore-go"
-          	"github.com/G-Core/gcore-go/option"
-          )
-
-          func main() {
-          	client := gcore.NewClient(
-          		option.WithAPIKey("My API Key"),
-          	)
-          	waapRuleSets, err := client.Waap.Domains.ListRuleSets(context.TODO(), 1)
-          	if err != nil {
-          		panic(err.Error())
-          	}
-          	fmt.Printf("%+v\n", waapRuleSets)
-          }
   /waap/v1/domains/{domain_id}/policies/{policy_id}/toggle:
     patch:
       tags:
@@ -4354,6 +4367,52 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_filter_template = client.waap.filter_templates.create(
+              filter_config={
+                  "domains": "bar",
+                  "event": "bar",
+              },
+              name="name",
+          )
+          print(waap_filter_template.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapFilterTemplate, err := client.Waap.FilterTemplates.New(context.TODO(), waap.FilterTemplateNewParams{
+          		FilterConfig: map[string]any{
+          			"domains": "bar",
+          			"event":   "bar",
+          		},
+          		Name: "name",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapFilterTemplate.ID)
+          }
     get:
       tags:
       - Filter Templates
@@ -4467,6 +4526,41 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.filter_templates.list()
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.FilterTemplates.List(context.TODO(), waap.FilterTemplateListParams{})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v1/filter-templates/{template_id}:
     get:
       tags:
@@ -4558,6 +4652,41 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_filter_template = client.waap.filter_templates.get(
+              0,
+          )
+          print(waap_filter_template.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapFilterTemplate, err := client.Waap.FilterTemplates.Get(context.TODO(), 0)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapFilterTemplate.ID)
+          }
     patch:
       tags:
       - Filter Templates
@@ -4654,6 +4783,46 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_filter_template = client.waap.filter_templates.update(
+              template_id=0,
+          )
+          print(waap_filter_template.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapFilterTemplate, err := client.Waap.FilterTemplates.Update(
+          		context.TODO(),
+          		0,
+          		waap.FilterTemplateUpdateParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapFilterTemplate.ID)
+          }
     delete:
       tags:
       - Filter Templates
@@ -4740,6 +4909,38 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          client.waap.filter_templates.delete(
+              0,
+          )
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	err := client.Waap.FilterTemplates.Delete(context.TODO(), 0)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          }
   /waap/v1/domains/{domain_id}/firewall-rules:
     get:
       tags:
@@ -6852,6 +7053,47 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.domains.policy_overrides.list(
+              domain_id=1,
+          )
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Domains.PolicyOverrides.List(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideListParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
     post:
       tags:
       - Policy Overrides
@@ -6950,6 +7192,55 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_policy_override = client.waap.domains.policy_overrides.create(
+              domain_id=1,
+              enabled=True,
+              name="x",
+              target_ids=[1],
+              target_type="detector",
+          )
+          print(waap_policy_override.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapPolicyOverride, err := client.Waap.Domains.PolicyOverrides.New(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideNewParams{
+          			Enabled:    true,
+          			Name:       "x",
+          			TargetIDs:  []int64{1},
+          			TargetType: waap.DomainPolicyOverrideNewParamsTargetTypeDetector,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapPolicyOverride.ID)
+          }
   /waap/v1/domains/{domain_id}/default-rule-overrides/{policy_override_id}:
     get:
       tags:
@@ -7051,6 +7342,49 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_policy_override = client.waap.domains.policy_overrides.get(
+              policy_override_id=1,
+              domain_id=1,
+          )
+          print(waap_policy_override.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapPolicyOverride, err := client.Waap.Domains.PolicyOverrides.Get(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideGetParams{
+          			DomainID: 1,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapPolicyOverride.ID)
+          }
     patch:
       tags:
       - Policy Overrides
@@ -7156,6 +7490,49 @@ paths:
                 type: internal-server-error
                 status: 500
                 detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_policy_override = client.waap.domains.policy_overrides.update(
+              policy_override_id=1,
+              domain_id=1,
+          )
+          print(waap_policy_override.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapPolicyOverride, err := client.Waap.Domains.PolicyOverrides.Update(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideUpdateParams{
+          			DomainID: 1,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapPolicyOverride.ID)
+          }
     delete:
       tags:
       - Policy Overrides
@@ -7248,6 +7625,46 @@ paths:
                 type: internal-server-error
                 status: 500
                 detail: Something went wrong. Cannot enable WAAP for this domain. Please try again later or reach out to our support team.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          client.waap.domains.policy_overrides.delete(
+              policy_override_id=1,
+              domain_id=1,
+          )
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	err := client.Waap.Domains.PolicyOverrides.Delete(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideDeleteParams{
+          			DomainID: 1,
+          		},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          }
   /waap/v1/domains/{domain_id}/policy-override-targets/owasp-top-threats:
     get:
       tags:
@@ -7362,6 +7779,47 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.domains.policy_overrides.list_owasp_top_threats_targets(
+              domain_id=1,
+          )
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Domains.PolicyOverrides.ListOwaspTopThreatsTargets(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyOverrideListOwaspTopThreatsTargetsParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v1/tags:
     get:
       tags:
@@ -10056,6 +10514,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_top_attacks = client.waap.ip_info.get_top_attacks(
+              ip="192.168.1.1",
+          )
+          print(waap_top_attacks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapTopAttacks, err := client.Waap.IPInfo.GetTopAttacks(context.TODO(), waap.IPInfoGetTopAttacksParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapTopAttacks)
+          }
   /waap/v1/ip-info/top-urls:
     get:
       tags:
@@ -10454,6 +10950,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_top_domain_details = client.waap.ip_info.get_top_domains(
+              ip="192.168.1.1",
+          )
+          print(waap_top_domain_details)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapTopDomainDetails, err := client.Waap.IPInfo.GetTopDomains(context.TODO(), waap.IPInfoGetTopDomainsParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapTopDomainDetails)
+          }
   /waap/v1/ip-info/top-sessions:
     get:
       tags:
@@ -12270,6 +12804,45 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.ip_reputation.list(
+              ip="ip",
+          )
+          page = page.results[0]
+          print(page.date)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.IPReputation.List(context.TODO(), waap.IPReputationListParams{
+          		IP: "ip",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v1/ip-reputation/clear-local-tags:
     post:
       tags:
@@ -14764,6 +15337,41 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.firewall_rules.list()
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.FirewallRules.List(context.TODO(), waap.FirewallRuleListParams{})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v2/domains/{domain_id}/firewall-rules/{rule_id}/{action}:
     patch:
       tags:
@@ -14880,12 +15488,12 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.domains.firewall_rules.toggle(
+          waap_rule_toggle_response = client.waap.domains.firewall_rules.toggle(
               action="enable",
               domain_id=1,
               rule_id=0,
           )
-          print(response.enabled)
+          print(waap_rule_toggle_response.enabled)
       - lang: Go
         source: |
           package main
@@ -14903,7 +15511,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.Domains.FirewallRules.Toggle(
+          	waapRuleToggleResponse, err := client.Waap.Domains.FirewallRules.Toggle(
           		context.TODO(),
           		waap.DomainFirewallRuleToggleParamsActionEnable,
           		waap.DomainFirewallRuleToggleParams{
@@ -14914,7 +15522,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.Enabled)
+          	fmt.Printf("%+v\n", waapRuleToggleResponse.Enabled)
           }
   /waap/v2/domains/{domain_id}/firewall-rules/{rule_id}:
     patch:
@@ -15169,11 +15777,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.domains.firewall_rules.delete_multiple(
+          waap_rules_bulk_delete_response = client.waap.domains.firewall_rules.delete_multiple(
               domain_id=1,
               rule_ids=[0],
           )
-          print(response.deleted_ids)
+          print(waap_rules_bulk_delete_response.deleted_ids)
       - lang: Go
         source: |
           package main
@@ -15191,7 +15799,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.Domains.FirewallRules.DeleteMultiple(
+          	waapRulesBulkDeleteResponse, err := client.Waap.Domains.FirewallRules.DeleteMultiple(
           		context.TODO(),
           		1,
           		waap.DomainFirewallRuleDeleteMultipleParams{
@@ -15201,7 +15809,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.DeletedIDs)
+          	fmt.Printf("%+v\n", waapRulesBulkDeleteResponse.DeletedIDs)
           }
   /waap/v2/custom-page-sets/{set_id}:
     patch:
@@ -15606,12 +16214,12 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.domains.custom_rules.toggle(
+          waap_rule_toggle_response = client.waap.domains.custom_rules.toggle(
               action="enable",
               domain_id=1,
               rule_id=0,
           )
-          print(response.enabled)
+          print(waap_rule_toggle_response.enabled)
       - lang: Go
         source: |
           package main
@@ -15629,7 +16237,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.Domains.CustomRules.Toggle(
+          	waapRuleToggleResponse, err := client.Waap.Domains.CustomRules.Toggle(
           		context.TODO(),
           		waap.DomainCustomRuleToggleParamsActionEnable,
           		waap.DomainCustomRuleToggleParams{
@@ -15640,7 +16248,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.Enabled)
+          	fmt.Printf("%+v\n", waapRuleToggleResponse.Enabled)
           }
   /waap/v2/domains/{domain_id}/custom-rules/bulk_delete:
     post:
@@ -15745,11 +16353,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.domains.custom_rules.delete_multiple(
+          waap_rules_bulk_delete_response = client.waap.domains.custom_rules.delete_multiple(
               domain_id=1,
               rule_ids=[0],
           )
-          print(response.deleted_ids)
+          print(waap_rules_bulk_delete_response.deleted_ids)
       - lang: Go
         source: |
           package main
@@ -15767,7 +16375,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.Domains.CustomRules.DeleteMultiple(
+          	waapRulesBulkDeleteResponse, err := client.Waap.Domains.CustomRules.DeleteMultiple(
           		context.TODO(),
           		1,
           		waap.DomainCustomRuleDeleteMultipleParams{
@@ -15777,7 +16385,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.DeletedIDs)
+          	fmt.Printf("%+v\n", waapRulesBulkDeleteResponse.DeletedIDs)
           }
   /waap/v2/domains/{domain_id}/advanced-rules/{rule_id}/{action}:
     patch:
@@ -15895,12 +16503,12 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          response = client.waap.domains.advanced_rules.toggle(
+          waap_rule_toggle_response = client.waap.domains.advanced_rules.toggle(
               action="enable",
               domain_id=1,
               rule_id=0,
           )
-          print(response.enabled)
+          print(waap_rule_toggle_response.enabled)
       - lang: Go
         source: |
           package main
@@ -15918,7 +16526,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	response, err := client.Waap.Domains.AdvancedRules.Toggle(
+          	waapRuleToggleResponse, err := client.Waap.Domains.AdvancedRules.Toggle(
           		context.TODO(),
           		waap.DomainAdvancedRuleToggleParamsActionEnable,
           		waap.DomainAdvancedRuleToggleParams{
@@ -15929,7 +16537,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", response.Enabled)
+          	fmt.Printf("%+v\n", waapRuleToggleResponse.Enabled)
           }
   /waap/v2/domains/{domain_id}/advanced-rules/{rule_id}:
     patch:
@@ -17024,6 +17632,50 @@ paths:
                 title: Internal server error.
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_clear_local_tags_response = client.waap.ip_reputation.clear_local_tags(
+              items=[{
+                  "domain_id": 1,
+                  "ip": "ip",
+              }],
+          )
+          print(waap_clear_local_tags_response.num_cleared)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapClearLocalTagsResponse, err := client.Waap.IPReputation.ClearLocalTags(context.TODO(), waap.IPReputationClearLocalTagsParams{
+          		Items: []waap.IPReputationClearLocalTagsParamsItem{{
+          			DomainID: 1,
+          			IP:       "ip",
+          		}},
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapClearLocalTagsResponse.NumCleared)
+          }
   /waap/v2/ip-info/counts:
     get:
       tags:
@@ -17120,6 +17772,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_ip_info_counts_v2 = client.waap.ip_info.get_account_counts(
+              ip="192.168.1.1",
+          )
+          print(waap_ip_info_counts_v2.attack_types)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapIPInfoCountsV2, err := client.Waap.IPInfo.GetAccountCounts(context.TODO(), waap.IPInfoGetAccountCountsParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapIPInfoCountsV2.AttackTypes)
+          }
   /waap/v2/ip-info/attack-time-series:
     get:
       tags:
@@ -17230,6 +17920,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_time_series_attacks = client.waap.ip_info.get_account_attack_time_series(
+              ip="192.168.1.1",
+          )
+          print(waap_time_series_attacks)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapTimeSeriesAttacks, err := client.Waap.IPInfo.GetAccountAttackTimeSeries(context.TODO(), waap.IPInfoGetAccountAttackTimeSeriesParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapTimeSeriesAttacks)
+          }
   /waap/v2/ip-info/top-paths:
     get:
       tags:
@@ -17330,6 +18058,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_top_path_details = client.waap.ip_info.get_top_paths(
+              ip="192.168.1.1",
+          )
+          print(waap_top_path_details)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapTopPathDetails, err := client.Waap.IPInfo.GetTopPaths(context.TODO(), waap.IPInfoGetTopPathsParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapTopPathDetails)
+          }
   /waap/v2/ip-info/top-user-agents:
     get:
       tags:
@@ -17430,6 +18196,44 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          waap_top_user_agent_details = client.waap.ip_info.get_account_top_user_agents(
+              ip="192.168.1.1",
+          )
+          print(waap_top_user_agent_details)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	waapTopUserAgentDetails, err := client.Waap.IPInfo.GetAccountTopUserAgents(context.TODO(), waap.IPInfoGetAccountTopUserAgentsParams{
+          		IP: "192.168.1.1",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", waapTopUserAgentDetails)
+          }
   /waap/v2/analytics/events:
     get:
       tags:
@@ -18183,6 +18987,45 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.analytics.get_events(
+              start="2024-04-13T00:00:00+01:00",
+          )
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Analytics.GetEvents(context.TODO(), waap.AnalyticsGetEventsParams{
+          		Start: "2024-04-13T00:00:00+01:00",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v2/domains/{domain_id}/rule-sets:
     get:
       tags:
@@ -18298,6 +19141,47 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.domains.list_rule_sets(
+              domain_id=1,
+          )
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Domains.ListRuleSets(
+          		context.TODO(),
+          		1,
+          		waap.DomainListRuleSetsParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v2/domains/{domain_id}/policies:
     get:
       tags:
@@ -18423,6 +19307,47 @@ paths:
                 status: 500
                 detail: An unexpected condition was encountered which prevented the server from fulfilling the request.
           description: Internal Server Error
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          page = client.waap.domains.policies.list(
+              domain_id=1,
+          )
+          page = page.results[0]
+          print(page.id)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/waap"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	page, err := client.Waap.Domains.Policies.List(
+          		context.TODO(),
+          		1,
+          		waap.DomainPolicyListParams{},
+          	)
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", page)
+          }
   /waap/v2/domains/{domain_id}/policies/{policy_id}:
     patch:
       tags:
