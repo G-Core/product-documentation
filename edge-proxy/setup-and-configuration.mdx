@@ -63,7 +63,9 @@ If the application is unreachable after activation, most [activation&nbsp;issues
 
 ## Restrict access to the origin
 
-Edge Proxy connects to the origin from Gcore edge servers. These are the same servers that Gcore CDN uses, so the origin allowlist uses the public CDN address lists. Allow these addresses on the origin and block all other sources. Otherwise, attackers can reach the origin directly and bypass Edge Proxy.
+Edge Proxy connects to the origin over IPv4 from Gcore edge servers. These are the same servers that Gcore CDN uses, so the origin allowlist uses the public CDN address lists.
+
+Allow these addresses on the origin and block all other sources. Otherwise, attackers can reach the origin directly and bypass Edge Proxy.
 
 <Info>
 The list of Gcore edge addresses changes as the network expands. New entries appear in the public lists 30–60 minutes before a server starts to forward traffic. An address that is missing from the origin allowlist blocks all clients that Gcore routes through that server. Automate allowlist updates from the public endpoints.
@@ -71,22 +73,22 @@ The list of Gcore edge addresses changes as the network expands. New entries app
 
 ### Host addresses
 
-The public IP endpoint returns IPv4 `/32` and IPv6 `/128` host CIDRs. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist exactly as returned:
+The public IP endpoint returns IPv4 `/32` host CIDRs in `addresses`. Poll it every 10 minutes, apply additions immediately, and add each value to the origin allowlist:
 
 ```bash
 curl --fail --silent --show-error https://api.gcore.com/cdn/public-ip-list \
-  | jq -r '.addresses[], .addresses_v6[]'
+  | jq -r '.addresses[]'
 ```
 
-The request requires no authorization. The JSON response stores IPv4 host CIDRs in `addresses` and IPv6 host CIDRs in `addresses_v6`.
+The request requires no authorization. The same response includes IPv6 host CIDRs in `addresses_v6`. Edge Proxy does not use those addresses to reach the origin.
 
 ### Network ranges
 
-The public network endpoint returns broader IPv4 and IPv6 CIDR ranges. Use it when the firewall has a limit on the number of rules:
+The public network endpoint returns broader CIDR ranges in `addresses`. Use those ranges when the firewall has a limit on the number of rules:
 
 ```bash
 curl --fail --silent --show-error https://api.gcore.com/cdn/public-net-list \
-  | jq -r '.addresses[], .addresses_v6[]'
+  | jq -r '.addresses[]'
 ```
 
 <Info>
