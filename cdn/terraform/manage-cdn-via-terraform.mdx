@@ -99,15 +99,32 @@ resource "gcore_cdn_origingroup" "s3_example" {
 
 - Set `origin_type = "s3"` in the `origin` block.
 - In the nested `config` block:
-  - Set `s3_type`: `"amazon"` for Amazon S3, or `"other"` for S3-compatible storage.
-  - Specify `s3_bucket_name`.
-  - Specify `s3_region` — required when `s3_type` is `"amazon"`.
-  - Specify `s3_storage_hostname` — required when `s3_type` is `"other"`.
-  - Specify `s3_access_key_id` and `s3_secret_access_key`.
+  - Set `s3_type`: `"amazon"` for Amazon S3, `"other"` for other S3-compatible storage, or `"gcore"` for a bucket in Gcore Object Storage.
+  - Specify `s3_bucket_name`. The bucket must already exist.
+  - Specify `s3_region` when `s3_type` is `"amazon"`.
+  - Specify `s3_storage_hostname` when `s3_type` is `"other"`.
+  - Specify `s3_access_key_id` and `s3_secret_access_key` when `s3_type` is `"amazon"` or `"other"`.
+  - Specify `storage_id` when `s3_type` is `"gcore"`. That origin does not take access keys, `s3_region`, `s3_storage_hostname`, or `host_header_override`.
 
-<Tip>
-To use Gcore Object Storage as an S3 origin, set `s3_type = "other"` and provide the `s3_storage_hostname` for the storage endpoint.
-</Tip>
+A Gcore Object Storage origin takes the storage id and the name of a bucket that already exists in that storage. Replace `1234` with that storage id.
+
+```hcl
+resource "gcore_cdn_origingroup" "gcore_storage" {
+  name     = "gcore-storage-group"
+  use_next = false
+
+  origin {
+    enabled     = true
+    origin_type = "s3"
+
+    config {
+      s3_type        = "gcore"
+      storage_id     = 1234
+      s3_bucket_name = "cdn-content"
+    }
+  }
+}
+```
 
 ### Add S3 authentication at the group level
 
