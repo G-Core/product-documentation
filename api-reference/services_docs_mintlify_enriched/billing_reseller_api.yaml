@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: e6d779f1b42c
+  version: 6c1926a3ed51
 servers:
 - url: https://api.gcore.com
 tags:
@@ -17,6 +17,7 @@ tags:
 - name: expenses
   description: Operations on expenses
 - name: payment-bindings
+- name: payment-methods
 - name: plans
   description: Operations on tariff plans and their contents
 - name: products
@@ -574,7 +575,7 @@ paths:
           **Examples:**
 
           - `&currency_char_code=USD`
-          - `&currency_char_codeEUR&currency_char_codeUSD`
+          - `&currency_char_code=EUR&currency_char_code=USD`
 
 
 
@@ -1718,7 +1719,7 @@ paths:
           **Examples:**
 
           - `&currency_char_code=USD`
-          - `&currency_char_codeEUR&currency_char_codeUSD`
+          - `&currency_char_code=EUR&currency_char_code=USD`
 
 
 
@@ -2251,7 +2252,7 @@ paths:
           **Examples:**
 
           - `&currency_char_code=USD`
-          - `&currency_char_codeEUR&currency_char_codeUSD`
+          - `&currency_char_code=EUR&currency_char_code=USD`
 
 
 
@@ -2886,6 +2887,165 @@ paths:
           description: You do not have permission to perform this action.
         '404':
           description: The requested resource was not found.
+  /billing/org/v1/payment_methods:
+    get:
+      operationId: v1_payment_methods_list
+      description: |+
+        Retrieve a list of `PaymentMethod` objects.
+
+        You can use query parameters to filter, sort, and paginate the results.
+
+      summary: List PaymentMethods
+      parameters:
+      - in: query
+        name: currency_char_code
+        schema:
+          type: array
+          items:
+            type: string
+        description: |-
+          Filter by currency char code (e.g. USD, EUR). Can be multiple.
+
+
+          Returns currencies with the specified char code.
+
+
+          **Examples:**
+
+          - `&currency_char_code=USD`
+          - `&currency_char_code=EUR&currency_char_code=USD`
+
+
+
+          **Available values:**
+
+          - `EUR` - Euro
+          - `USD` - US Dollar
+        explode: true
+        style: form
+      - in: query
+        name: currency_id
+        schema:
+          type: array
+          items:
+            type: integer
+        description: |-
+          Filter by currency ID. Can be multiple.
+
+
+          Returns currencies with the specified ID.
+
+
+          **Examples:**
+
+          - `&currency_id=1`
+          - `&currency_id=1&currency_id=2`
+
+
+
+          **Available values:**
+
+          - `1` - US Dollar
+          - `2` - Euro
+        explode: true
+        style: form
+      - in: query
+        name: default
+        schema:
+          type: boolean
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page. Maximum is `100`. Default is `20`.
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+          x-spec-enum-id: 0f927652b0493447
+          enum:
+          - adyen
+          - bank
+        description: |-
+          Internal name of payment method
+
+          - `adyen` - adyen
+          - `bank` - bank
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      - in: query
+        name: payment_resource_creation
+        schema:
+          type: boolean
+      - in: query
+        name: type
+        schema:
+          type: string
+          x-spec-enum-id: 2575771a35f0651c
+          enum:
+          - adyen
+          - alipay
+          - applepay
+          - bank
+          - card
+          - googlepay
+          - paypal
+          - wallet
+        description: |-
+          Type of payment method
+
+          - `adyen` - adyen
+          - `bank` - bank
+          - `card` - card
+          - `paypal` - paypal
+          - `wallet` - wallet
+          - `alipay` - alipay
+          - `googlepay` - googlepay
+          - `applepay` - applepay
+      tags:
+      - payment-methods
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentMethodForOrgSerializerV1List'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+  /billing/org/v1/payment_methods/{paymethod_id}:
+    get:
+      operationId: v1_payment_methods_retrieve
+      description: Retrieve a single `PaymentMethod` by ID.
+      summary: Get a single PaymentMethod
+      parameters:
+      - in: path
+        name: paymethod_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - payment-methods
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodForOrgSerializerV1'
+          description: Request successful.
+        '401':
+          description: Authentication credentials were not provided or are invalid.
+        '403':
+          description: You do not have permission to perform this action.
+        '404':
+          description: The requested resource was not found.
   /billing/org/v1/plans/contents:
     get:
       operationId: v1_plans_contents_list
@@ -2955,7 +3115,7 @@ paths:
           **Examples:**
 
           - `&currency_char_code=USD`
-          - `&currency_char_codeEUR&currency_char_codeUSD`
+          - `&currency_char_code=EUR&currency_char_code=USD`
 
 
 
@@ -6030,6 +6190,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OperationForOrgSerializerV1'
+    PaginatedPaymentMethodForOrgSerializerV1List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethodForOrgSerializerV1'
     PaginatedPlanContentForOrgSerializerV1List:
       type: object
       required:
@@ -6284,6 +6467,57 @@ components:
           minimum: 0
           writeOnly: true
           description: Value for the trial option `WAAP_TRIAL_VOLUME_LIMIT`. If not provided, the trial option will not be updated.
+    PaymentMethodForOrgSerializerV1:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+          description: Human-readable name of payment method
+        name:
+          enum:
+          - adyen
+          - bank
+          type: string
+          x-spec-enum-id: 0f927652b0493447
+          readOnly: true
+          description: |-
+            Internal name of payment method
+
+            - `adyen` - adyen
+            - `bank` - bank
+        type:
+          enum:
+          - adyen
+          - bank
+          - card
+          - paypal
+          - wallet
+          - alipay
+          - googlepay
+          - applepay
+          type: string
+          x-spec-enum-id: 2575771a35f0651c
+          readOnly: true
+          description: |-
+            Type of payment method
+
+            - `adyen` - adyen
+            - `bank` - bank
+            - `card` - card
+            - `paypal` - paypal
+            - `wallet` - wallet
+            - `alipay` - alipay
+            - `googlepay` - googlepay
+            - `applepay` - applepay
+      required:
+      - id
+      - name
+      - title
+      - type
     PaymentResource:
       type: object
       description: Serializer for payment resources.
@@ -6919,6 +7153,7 @@ x-tagGroups:
   - erp-invoices
   - expenses
   - payment-bindings
+  - payment-methods
   - plans
   - products
   - regions
