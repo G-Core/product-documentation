@@ -54,7 +54,7 @@ Select-String -Path "path/to/article.mdx" -Pattern 'MethodSection id="api"'
 6. **Create the Jira ticket and feature branch now** (Phase 3b). Do not write on `main`.
 7. Add missing operations. Fix broken code. Fix checker violations (API tab only).
 8. Run the checker again — exit code must be 0.
-9. Update `ai-navigation` if the tab content changed significantly.
+9. Update `description` if the tab content changed significantly.
 10. Show the diff to the user. **Do not commit** until the user says commit / коммит / push / пуш.
 
 ## Scope — read exactly these files
@@ -664,15 +664,15 @@ If MethodSwitch already exists, add the `<MethodSection id="api">` after the por
 
 ## Phase 6 — Update frontmatter
 
-Update `ai-navigation` to mention both methods:
+Do not name Portal, API, or Terraform in `description`. If the article's subject
+changed, rewrite the sentence as a search summary of what the article is about:
 
 ```yaml
-ai-navigation: Create Linux Virtual Machines in Gcore Cloud via Customer Portal
-by configuring image, flavor, and network, or via REST API using the Instances API.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, and network.
 ```
 
-Rules: one sentence, starts with action verb, mentions both methods, max 160 chars,
-no curly braces, no URL paths, no colons followed by space.
+Rules: one sentence, 140 characters maximum, no curly braces, no URL paths,
+no colons. Do not rewrite an existing description only because a method tab was added.
 
 ---
 

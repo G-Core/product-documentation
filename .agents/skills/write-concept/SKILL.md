@@ -326,3 +326,4 @@ Before writing the options section, confirm the correct names from:
 - [ ] No portal navigation breadcrumbs (Streaming → AI → AI tasks) in prose
 - [ ] All multi-word link text uses `&nbsp;` between words
 - [ ] Link text is three words or fewer
+- [ ] `description` is one sentence, 140 characters maximum, a search summary of the article, and does not name Portal, API, or Terraform

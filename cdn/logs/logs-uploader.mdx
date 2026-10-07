@@ -1,6 +1,6 @@
 ---
 title: "Logs Uploader"
-ai-navigation: Export CDN request logs to HTTP or object storage via the Customer Portal or REST API using a policy, target, and configuration.
+description: Export CDN request and cache logs to S3, FTP, or SFTP destinations with Gcore Logs Uploader policies, targets, and configurations.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -8,11 +8,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Logs Uploader exports CDN request and cache logs to a storage destination as they arrive. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes those logs, the export also contains requests processed by mid-tier cache servers.</p>
+<p>Logs Uploader exports CDN request and cache logs to a configured destination in batches at regular intervals. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled and the policy includes those logs, the export also contains requests processed by mid-tier cache servers.</p>
 
 <p>To export logs, create a policy that defines what to export, connect a target that receives the logs, then create a configuration that links them to CDN resources.</p>
 
-<p>Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
+<p>Accounts that already use the hourly [Raw Logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) export to Amazon Simple Storage Service (S3), File Transfer Protocol (FTP), or SSH File Transfer Protocol (SFTP) can keep that configuration. Use Logs Uploader for new setups. A new Amazon S3 destination uses the **S3 Amazon** target. To migrate an existing Raw Logs export, contact [Gcore&nbsp;Support](mailto:support@gcore.com).</p>
 
 <Note>
 Logs Uploader must be enabled for the account before the configuration UI is available. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use **Contact support** on the Logs Uploader page in the [Gcore Customer Portal](https://portal.gcore.com).
@@ -20,22 +20,22 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
 
 ## Create a policy
 
-<p>A policy selects the log fields, the file name format, and how often files rotate. The **Time interval** is 5–60 minutes and defaults to 5. If no requests arrive during an interval and **Include empty logs** is selected, Logs Uploader sends an empty file of about 20 bytes.</p>
+<p>A policy selects the log fields, the file name format, and how often files rotate. The **Time interval** is 5–60 minutes and defaults to 5. If no requests arrive during an interval and **Include empty logs** is selected, Logs Uploader still sends an empty batch. For a file-based target, the resulting empty log file is about 20 bytes.</p>
 
 <p>In the [Customer&nbsp;Portal](https://portal.gcore.com), open **CDN** → **Logs** → **Logs Uploader**, then **Policies**, and click **Add policy**.</p>
 
-1. Enter a name.
-2. Leave **Include empty logs** cleared to skip empty intervals, or select it to confirm delivery when there is no traffic.
-3. Select **Include logs from origin shielding** when Origin Shielding is [enabled](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) and those mid-tier requests should appear in the export.
-4. Choose the log fields. The [field table](#log-schema-and-field-definitions) lists each field and its meaning.
-5. Set delimiter, separator, file name format, time interval, and file size limit. The size limit applies before compression — the delivered file can be up to 99% smaller.
-6. Click **Add policy**.
+<p>1. Enter a name.</p>
+<p>2. Leave **Include empty logs** cleared to skip empty intervals, or select it to confirm delivery when there is no traffic.</p>
+<p>3. Select **Include logs from origin shielding** when Origin Shielding is [enabled](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) and those mid-tier requests should appear in the export.</p>
+<p>4. Select the log fields. The [field table](#log-schema-and-field-definitions) lists each field and its meaning.</p>
+<p>5. Set delimiter, separator, file name format, time interval, and file size limit. The file size limit applies before compression — a compressed file can be up to 99% smaller.</p>
+<p>6. Click **Add policy**.</p>
 
 <p>To change an existing policy, open it by name. The same settings apply; click **Save changes** when done.</p>
 
 ## Create a target
 
-<p>A target is the destination. `Authentication complete` means Logs Uploader can reach and authenticate to that destination — it does not mean a log file has arrived.</p>
+<p>A target is the destination. `Authentication complete` means Logs Uploader can reach and authenticate to that destination — it does not mean a batch has arrived.</p>
 
 <p>On the **Targets** tab, click **Add target**, enter a name, and configure one destination:</p>
 
@@ -43,13 +43,13 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
   <Tab title="S3 Gcore">
     [Gcore&nbsp;Object&nbsp;Storage](https://gcore.com/storage)
 
-    1. Select **HTTP** or **HTTPS** and specify the **Endpoint**.
-    2. Enter the **Access key ID** and **Secret Access Key**.
-    3. Enter the storage **region** and an existing **bucket**.
-    4. Optionally, specify an existing **folder** inside the bucket.
+    1. Keep **S3 Gcore** selected in **Receive logs using**.
+    2. In **Storage**, select an existing Object Storage or create one from the list.
+    3. In **Bucket**, select a bucket or create one from the list.
+    4. Optionally, enter an existing **Folder** inside the bucket.
 
     <Info>
-      Connection details appear when the storage is [created](/storage/create-an-s3-or-sftp-storage#object-storage). Endpoint, region, and new keys are available from **⋯** on the Object Storages table.
+      Access keys are not entered for Gcore Object Storage. Only Standard storage is supported when creating storage from this form.
     </Info>
   </Tab>
   <Tab title="S3 OSS">
@@ -75,6 +75,13 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
     <Info>
       Alibaba documents [SLS&nbsp;AccessKey](https://www.alibabacloud.com/help/en/sls/developer-reference/access-key) pair creation and project setup in the [SLS&nbsp;quick&nbsp;start](https://www.alibabacloud.com/help/en/sls/getting-started/getting-started-with-simple-log-service).
     </Info>
+  </Tab>
+  <Tab title="S3 Amazon">
+    [Amazon&nbsp;S3](https://aws.amazon.com/s3/)
+
+    1. Enter the **Access Key ID** and **Secret Access Key**.
+    2. Enter the **region** and an existing **bucket**.
+    3. Optionally, specify an existing folder inside the bucket.
   </Tab>
   <Tab title="S3 Other">
     Generic S3-compatible object storage
@@ -118,273 +125,23 @@ Logs Uploader must be enabled for the account before the configuration UI is ava
 
 <p>On the **Configurations** tab, click **Add configuration**.</p>
 
-1. Enter a name.
-2. Cover **All Resources** (including resources created later) or select **Specific Resource(s)** from the list.
-3. Select the policy and the target.
-4. Leave **Enable configuration** on to start delivery, or turn it off to save the setup inactive.
-5. Click **Add configuration**.
+<p>1. Enter a name.</p>
+<p>2. Cover **All Resources** (including resources created later) or select **Specific Resource(s)** from the list.</p>
+<p>3. Select the policy and the target.</p>
+<p>4. Leave **Enable configuration** on to start delivery, or turn it off to save the setup inactive.</p>
+<p>5. Click **Add configuration**.</p>
 
 <p>The **Status** column repeats the linked target's authentication state. To change an existing configuration, open it by name — the same resource, policy, and target settings apply.</p>
 
 ## Verify delivery
 
-<p>Generate traffic to a CDN resource covered by the configuration. After one full time interval, check the destination for a new file or HTTP POST and confirm the expected fields. `Authentication complete` is not proof that a file arrived — see [Troubleshooting](#troubleshooting) if the destination stays empty.</p>
+<p>Generate traffic to a CDN resource covered by the configuration. After one full time interval, check the destination for a delivered batch and confirm the expected fields. For a file-based target, check for a new file. For HTTP(S), confirm the configured POST or PUT request. For SLS, check the configured logstore. `Authentication complete` is not proof that a batch arrived — see [Troubleshooting](#troubleshooting) if the destination stays empty.</p>
 
 ## Disable or delete a setup
 
 <p>Use **⋯** on a configuration to **Disable** delivery without deleting the setup, or **Enable** it again. The same switch is in the configuration form.</p>
 
 <p>Delete the configuration first. A policy or target that is still linked to a configuration cannot be deleted. Then delete the unused target or policy from **⋯** on its row.</p>
-
-## Log schema and field definitions
-
-<p>The exported log schema includes standard CDN request fields, internal status codes, and format examples.</p>
-
-<AccordionGroup>
-  <Accordion title="Log format example">
-    The format below is a non-exhaustive example. It does not include every available field — for instance, `$timestamp_request_start`, `$masked_remote_addr`, `$query_string`, and `$quic` are in the field table but not shown here. The actual log output depends on which fields are selected, their order, and the delimiter and separator configured in the policy. New fields may appear at the end of the line; when fields are added to logs, an email notification is sent about the update.
-
-    ```text
-    "$remote_addr" "-" "$remote_user" "[$time_local]" "$request" "$status"  
-    "$body_bytes_sent" "$http_referer" "$http_user_agent" "$bytes_sent"  
-    "$edgename" "$scheme" "$host" "$request_time"  
-    "$upstream_response_time" "$request_length" "$http_range" "[$responding_node]"  
-    "$upstream_cache_status" "$upstream_response_length" "$upstream_addr"  
-    "$gcdn_api_client_id" "$gcdn_api_resource_id" "$uid_got" "$uid_set"  
-    "$geoip_country_code" "$geoip_city" "$shield_type" "$server_addr" "$server_port"  
-    "$upstream_status" "-" "$upstream_connect_time" "$upstream_header_time"  
-    "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
-    "$http_traceparent" "$http_x_forwarded_proto" "$gcdn_internal_status_code" "$ssl_cipher"  
-    "$ssl_session_id" "$ssl_session_reused" "$sent_http_content_type" "$tcpinfo_rtt" 
-    "$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" "$gcdn_rule_id"
-    "$request_completion" "$gcdn_finalize_reason"
-    ```
-  </Accordion>
-  <Accordion title="Log fields">
-    The following table contains a complete list of available log fields. Fields labeled “internal system variable” relate to the internal CDN system and can be ignored for most analytics use cases; other fields help with traffic analysis or statistics.
-
-    <Note>
-      The `$timestamp` variable always produces an empty value. Use `[$time_local]` for a Common Log Format timestamp or `$timestamp_request_start` for request-start time in Unix epoch milliseconds. No client port field is available.
-    </Note>
-
-| Field                                                     | Log value example                                                                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `$remote_addr`                                                | `203.0.113.45`                                                                                                                                          | User’s IP address                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `$masked_remote_addr`                                         | `4.d18b5cafa3d1c016d8194583f593a87e89271e6dc8e2ba44f851fdd5a8be1ccb`                                                                               | Privacy-preserving alternative to `$remote_addr`. Replaces the client IP address with a deterministic SHA-256 hash. Output format: `<version>.<hash>` |
-| `$remote_user`<br />(internal system variable)                | `-`                                                                                                                                                | Username used in Basic authentication                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `[$time_local]`                                               | `[26/Apr/2019:09:47:40 +0000]`                                                                                                                     | Local time in Common Log Format                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `$timestamp_request_start`                                    | `1772707791454`                                                                                                                                    | Request start time as Unix epoch in milliseconds                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `$request`                                                    | `GET /ContentCommon/images/image.png HTTP/1.1`                                                                                                     | HTTP method, requested file path, and HTTP version                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `$status`                                                     | `200`                                                                                                                                              | Response status code from a CDN server                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `$body_bytes_sent`                                            | `1514283`                                                                                                                                          | Number of bytes sent to a user, excluding the response header size                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$http_referer`                                               | `https://example.com/videos/10`                                                                                                                    | Value of the Referer request header, which usually identifies the page that initiated the request                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$http_user_agent`                                            | `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.2309 Safari/537.36` | User agent that was used to send a request (browser or other application)                                                                                                                                                                                                                                                                                                                                                                                     |
-| `$bytes_sent`                                                 | `1514848`                                                                                                                                          | Number of bytes sent to a user                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$edgename`                                                   | `[dh-up-gc18]`                                                                                                                                     | CDN server that forwarded the requested file                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `$scheme`                                                     | `https`                                                                                                                                            | Protocol (HTTP or HTTPS) of a request                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `$host`                                                       | `cdn.example.com`                                                                                                                                  | Requested hostname of a CDN resource                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$cname`<br />(internal system variable)                      | `cdn.example.com`                                                                                                                                  | Similar to the `$host` field, but derived from internal systems rather than the incoming HTTP request |
-| `$gcdn_vhost`<br />(internal system variable)                 | `cdn.example.com[_cache_sharded]`                                                                                                                 | The vhost value as used internally in CDN                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `$request_time`                                               | `1.500`                                                                                                                                            | Request processing time in seconds (accurate to milliseconds); time elapsed between the first bytes of a request being processed and logging after the last bytes were sent to a user                                                                                                                                                                                                                                                                       |
-| `$first_byte_sent_mcs`                                        | `0.170103`                                                                                                                                         | Time from request start until the first byte of the response was sent to the user (time to first byte), in seconds with microsecond accuracy                                                                                                                                                                                                                                                                                                                |
-| `$request_time_mcs`                                           | `0.170660`                                                                                                                                         | Total request processing time from receiving the first bytes from the client until the last byte was sent, in seconds with microsecond accuracy                                                                                                                                                                                                                                                                                                             |
-| `$upstream_response_time`                                     | `0.445`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to receive a response from the upstream server. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is active, the upstream server may be an intermediate CDN cache rather than the origin. In case of multiple responses, commas and colons are used                                                                                                |
-| `$request_length`                                             | `157`                                                                                                                                              | Request length (including request line, header, and request body)                                                                                                                                                                                                                                                                                                                                                                                            |
-| `$http_range`                                                 | `bytes=0-1901653`                                                                                                                                  | File fragment size in a Range request                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| `[$responding_node]`                                          | `dh`                                                                                                                                               | Responding data center                                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `$upstream_cache_status`                                      | `MISS`                                                                                                                                             | Status of a requested file in CDN cache:<br /><br />`HIT`: response served from the CDN cache.<br />`STALE`: outdated response that failed to update (origin not responding or responding incorrectly).<br />`UPDATING`: outdated response still updating from a previous request.<br />`REVALIDATED`: response matching one on an origin (based on the `proxy_cache_revalidate` directive).<br />`EXPIRED`: response that has expired in cache but still matches one on an origin; a request was sent to re-cache it.<br />`MISS`: response served directly from an origin rather than from cache.<br />`BYPASS`: response served from the upstream server because configured cache bypass conditions were met — for example, a request with a matching cookie, query parameter, or authorization header. Cache bypass does not invalidate the cached copy; subsequent requests that do not match the bypass conditions continue to be served from cache. A request for content that is absent from cache after a purge results in `MISS`, not `BYPASS`. |
-| `$upstream_response_length`                                   | `10485760`                                                                                                                                         | Response length received from the upstream server in bytes. In case of multiple responses, commas and colons are used                                                                                                                                                                                                                                                                                                                                          |
-| `$upstream_addr`                                              | `192.0.2.1:80`                                                                                                                                       | IP address and port of the upstream server. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is active, this reflects the intermediate CDN cache node rather than the origin.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `$gcdn_api_client_id`<br />(internal system variable)         | `123`                                                                                                                                              | Account ID in the Gcore system                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$gcdn_api_resource_id`<br />(internal system variable)       | `01`                                                                                                                                               | CDN resource ID in the Gcore system                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `$uid_got`<br />(internal system variable)                    | `-`                                                                                                                                                | Cookie name and received user ID                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `$uid_set`<br />(internal system variable)                    | `-`                                                                                                                                                | Cookie name and provided user ID                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `$geoip_country_code`                                         | `KZ`                                                                                                                                               | User’s ISO 3166-1 alpha-2 country code                                                                                                                                                                                                                                                                                                                                                   |
-| `$geoip_city`                                                 | `-`                                                                                                                                                | User’s city code                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `$shield_type`<br />(internal system variable)                | `shield_no`                                                                                                                                        | Indicates whether [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled:<br />`shield_old` – enabled<br />`shield_no` – disabled                                                                                                                                                                                                                                                                         |
-| `$server_addr`<br />(internal system variable) / `real_server_addr` | `198.51.100.1`                                                                                                                                          | IP address of an Anycast zone or CDN server                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| `$server_port`<br />(internal system variable)                | `80`                                                                                                                                               | Requested port                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$upstream_status`                                            | `206`                                                                                                                                              | HTTP status code returned by the upstream server                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `$upstream_connect_time`                                      | `0.000`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to access an origin server                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `$upstream_header_time`                                       | `0.200`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to receive a response header from an origin server                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `$shard_addr`<br />(internal system variable)                 | `198.51.100.2`                                                                                                                                          | IP address of a CDN server that was first to accept a request if the Cache Sharding feature is enabled                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `$geoip2_data_asnumber`                                       | `asnumber`                                                                                                                                         | Number of an autonomous system that sent a request                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `$connection`<br />(internal system variable)                 | `2897494295`                                                                                                                                       | Connection serial number                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| `$connection_requests`<br />(internal system variable)        | `1`                                                                                                                                                | Current number of requests made through a connection                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$http_traceparent`<br />(internal system variable)           | `00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01`                                                                                          | Incoming client `traceparent` request header. If the client omits the header, the field contains `-`; if the value is invalid, the field preserves that value. The CDN-generated replacement is not stored here. See [Traceparent header for troubleshooting](/cdn/troubleshooting/traceparent-header-for-troubleshooting).                                                                                                                                                                                                                                                                                                                                |
-| `$http_x_forwarded_proto`                                     | `-`                                                                                                                                                | Initial protocol of an incoming request (HTTP or HTTPS)                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `$gcdn_internal_status_code`<br />(internal system variable)  | `-`                                                                                                                                                | Initial status code. Possible values are `-` or one of the internal codes listed below                                                                                                                                                                                                                                                                                                                                                                        |
-| `$ssl_cipher`<br />(internal system variable)                 | `ECDHE-RSA-AES256-GCM-SHA384`                                                                                                                      | Cipher name used for an established SSL connection                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `$ssl_session_id`<br />(internal system variable)             | `28a4184139cb43cdc79006cf2d1a4ac93bdc****`                                                                                                         | Session ID of an established SSL connection                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `$ssl_session_reused`<br />(internal system variable)         | `r`                                                                                                                                                | Shows whether a session was reused (`r`) or not (`.`)                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$sent_http_content_type`                                     | `application/json`                                                                                                                                 | Value of the `Content-Type` HTTP header, indicating the MIME type of a transmitted file                                                                                                                                                                                                                                                                                                                                                                        |
-| `$tcpinfo_rtt`                                                | `21`                                                                                                                                               | Average time (latency) it takes to transfer a packet to/from a server. The unit of time is microseconds                                                                                                                                                                                                                                                                                                                                                      |
-| `$server_country_code`                                        | `PL`                                                                                                                                               | Server’s ISO 3166-1 alpha-2 country code                                                                                                                                                                                                                                                                                                                                                 |
-| `$gcdn_tcpinfo_snd_cwnd`                                      | `45`                                                                                                                                               | Size of the TCP Congestion window, i.e., the maximum number of TCP segments that the connection can send before an acknowledgment is required |
-| `$gcdn_tcpinfo_total_retrans`                                  | `10`                                                                                                                                               | Total number of retransmitted packets over the life of the connection |
-| `$gcdn_rule_id`                                               | `100700`                                                                                                                                           | Initial rule ID (beta). Possible values are: `-`, or `100700`                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `$query_string`                                                | `id=123&sort=asc&filter=active`                                                                                                                   | Contains the raw query parameters from the request URI                                                                                                                                                                                                                                                                                                                                                                                                        |
-| `$timestamp`<br />(internal system variable)  | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `$ip`<br />(internal system variable)         | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `$country`<br />(internal system variable)    | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `$media_type`<br />(internal system variable) | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$size`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `$duration`<br />(internal system variable)   | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `$session_id`<br />(internal system variable) | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| `$domain`<br />(internal system variable)     | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `$name`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `$edge`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `$code`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$region`<br />(internal system variable)     | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| `$http_x_forwarded_for`                                       | `203.0.113.45, 198.51.100.17`                                                                                                                     | Contains the value of the X-Forwarded-For HTTP request header as sent by the client or added by upstream proxies/load balancers |
-| `$http_cookie`                                                | `session_id=abc123; theme=dark; csrftoken=9f8e7d`                                                                                                | Contains the raw value of the Cookie HTTP request header sent by the client |
-| `$request_method`                                              | `GET`                                                                                                                                              | Contains the HTTP method used by the client for the request |
-| `$request_uri_path`                                            | `/api/v1/users`                                                                                                                                     | Represents the path portion of the request URI, without any query string parameters |
-| `$sent_http_cache_control`                                     | `max-age=3600, public`                                                                                                                             | Contains the value of the Cache-Control HTTP response header as sent by NGINX to the client. It reflects the caching directives applied to the response, which control how browsers, proxies, and CDNs may cache and reuse the content |
-| `$sent_http_content_length`                                    | `53214`                                                                                                                                            | `Content-Length` sent to the client: the number of body bytes the CDN declared. Compare with `$body_bytes_sent` to measure truncation. `0` means the header was absent (chunked transfer, no `Content-Length`, or a row from before the field was added), not that zero bytes were sent. |
-| `$server_protocol`                                             | `HTTP/1.1`                                                                                                                                         | Contains the protocol version used by NGINX to communicate |
-| `$upstream_http_content_length`                               | `1048576`                                                                                                                                          | Contains the value of the Content-Length HTTP response header received from the upstream server |
-| `$request_uri`                                                | `/api/v1/users?id=42&sort=asc`                                                                                                                    | Contains the original request URI as sent by the client, including the path and the query string |
-| `$fastedge_field1`<br />(internal system variable)             | &nbsp;                                                                                                                                             | Used for passing additional context from FastEdge into raw logs                                                                                                                                                                                                                                                                                                                                                                                                |
-| `$http_last_modified`                                          | `Wed, 21 Oct 2015 07:28:00 GMT`                                                                                                                   | Value of the Last-Modified request header sent by the client |
-| `$http_accept`                                                 | `text/html,application/xhtml+xml`                                                                                                                 | Value of the Accept request header indicating acceptable response content types |
-| `$http_age`                                                   | `3600`                                                                                                                                             | Value of the Age request header, typically used by caches to indicate object age in seconds |
-| `$http_head_size`                                              | `512`                                                                                                                                              | Size (in bytes) of the HTTP request headers received from the client |
-| `$http_return_head_size`                                       | `430`                                                                                                                                              | Size (in bytes) of the HTTP response headers returned to the client |
-| `$sent_http_content_range`                                     | `bytes 0-1023/4096`                                                                                                                                | Value of the Content-Range response header sent to the client |
-| `$upstream_http_location`                                      | `/redirect/path`                                                                                                                                   | Value of the Location response header received from the upstream server (commonly for redirects) |
-| `$http_via`                                                   | `1.1 proxy.example.com`                                                                                                                            | Value of the Via request header, listing the proxies the request passed through                                                                                                                                                                                                                                                                                                                                              |
-| `$quic`                                                       | `H3`                                                                                                                                               | QUIC protocol version negotiated for the connection. Possible values: `-`, or `H3`                                                                                                                                                                                                                                                                                                                                                                              |
-| `$request_completion`                                          | `OK`                                                                                                                                               | Whether the CDN finished writing the response body. `OK` means the request completed. An empty value means it did not. Use with `$sent_http_content_length` and `$body_bytes_sent` to detect truncated `200` or `206` responses. |
-| `$gcdn_finalize_reason`                                        | `ok`                                                                                                                                               | Why the request stopped producing a body. `ok` means the body finished. Empty or `unset` means no reason was recorded. Other values identify the cause: client (`client_closed`, `client_timeout`, `client_error`); upstream (`upstream_connect_failed`, `upstream_connect_timeout`, `upstream_headers_null`, `upstream_header_timeout`, `upstream_body_null`, `upstream_body_partial`, `upstream_body_timeout`, `upstream_ssl_error`, `upstream_error`, `upstream_send_timeout`); this proxy (`internal_error`, `shutdown`); or slice (`slice_bad_status`, `slice_missing`, `slice_etag`, `slice_range`). |
-  </Accordion>
-  <Accordion title="Internal status codes">
-    Internal status codes identify the CDN rule or feature that generated a response.
-
-    | Reason | HTTP code | Internal code | Comment |
-    | :----- | :-------- | :------------ | :------ |
-    | Country ACL | 403 | 1001 | |
-    | Referer ACL | 403 | 1002 | |
-    | IP ACL | 403 | 1003 | |
-    | User-Agent ACL | 403 | 1004 | |
-    | Secure Token | 403 | 1005 | Returned when Secure Token validation fails and `$secure_link` is empty |
-    | Secure Token | 410 | 1006 | Returned when the link lifetime has expired and `$secure_link` is `"0"` |
-    | WAF | 403 | 1007 | Request blocked by WAF |
-    | Bot challenge / Testcookie | 307 | 1008 | Redirection sent by bot challenge (testcookie) |
-    | Blocklist | 403 | 1009 | Request blocked by bot protection blocklist |
-    | HTTP method | 405 | 1200 | Returned when `AllowedHttpMethods` is enabled and the request method is not in the allowed list |
-    | Streaming disabled (`.ts` or `.m3u8` files) | 402 | 1201 | Streaming feature disabled for the client |
-    | LE validation /.well-known/acme-challenge/ | 404 | 1202 | Returned when `http_user_agent` is not `cert-manager-challenges`, `acme.zerossl.com`, `Cpanel-HTTP-Client`, `Buypass validation client`, `Google-Certificates-Bridge`, `vercel-fetch`, `win-acme`, `Typhoeus`, or `Go-http-client` |
-    | Shield requestor header | 403 | 1203 | Unauthorized request to the shield |
-    | Force Return | ANY | 1204 | Response generated by the Force Return status code option |
-
-    When a Secure Token link passes the authenticity check, `$secure_link` is set to the link extracted from the request URI. That successful validation does not produce a `403` or `410`.
-  </Accordion>
-  <Accordion title="Log schema versioning">
-    For HTTP(S) targets, Logs Uploader sends a JSON request payload to the configured endpoint. The `v` field in the payload identifies the schema version — for example, `"v":"10"`. This metadata belongs to the JSON envelope rather than the selectable CDN log fields, so it does not appear in the log format example or field table.
-
-    The version increments when fields are added, renamed, or removed. New fields are added in a backward-compatible way where possible, so most schema changes do not require parser updates. Breaking changes are announced in advance through standard CDN update notifications. Check the `v` value in downstream parsers before processing a batch with an unsupported schema version.
-
-    **HTTP(S) payload structure**
-
-    Each request delivers one batch of log lines. The payload is a JSON object whose `logs` array contains the raw log lines selected and formatted by the policy (the same text that would appear in a file delivered to an S3 or FTP target). The `v` field identifies the schema version of the envelope itself, not the log line format.
-
-    ```json
-    {
-      "v": "10",
-      "logs": [
-        "\"203.0.113.45\" \"-\" \"-\" \"[14/Sep/2026:09:47:40 +0000]\" \"GET /image.png HTTP/1.1\" \"200\" \"1514848\"",
-        "\"198.51.100.7\" \"-\" \"-\" \"[14/Sep/2026:09:47:42 +0000]\" \"GET /style.css HTTP/1.1\" \"304\" \"0\""
-      ]
-    }
-    ```
-
-    The receiver must return a `2xx` HTTP status code. Any other status code is treated as a delivery failure; Logs Uploader retries the batch and records the error in delivery logs accessible through [Gcore&nbsp;Support](mailto:support@gcore.com).
-
-    <Note>
-      If **Use compression** is enabled on the HTTP(S) target, the request body is gzip-compressed and the `Content-Encoding: gzip` header is included. Decompress the body before parsing.
-    </Note>
-  </Accordion>
-</AccordionGroup>
-
-## WAAP log fields
-
-<p>When a CDN resource has [WAAP](/waap) enabled, Logs Uploader appends WAAP security event fields to each request log line. CDN access data and the matching WAAP verdict share one entry — no separate file and no extra Logs Uploader setup.</p>
-
-<p>WAAP fields appear only when **WAAP Status** is Active on **CDN** → **CDN resources**. The toggle is in that resource's **Security** settings. After WAAP is enabled, the next exported batch includes the new fields at the end of the line, so positional parsers keep working. Parsers that reject unknown columns must accept the WAAP fields first. The `v` field in HTTP(S) payloads increments when the schema changes.</p>
-
-<Note>
-DDoS protection logs are not exported through Logs Uploader. Only per-request WAAP security events are included. DDoS attack analytics remain available through the WAAP API and dashboard.
-</Note>
-
-<AccordionGroup>
-  <Accordion title="WAAP fields">
-    The following fields are appended to each request log line when WAAP is enabled on the resource.
-
-    | Field                          | Log value example           | Description                                                                                                                                          |
-    | :--------------------------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `$waap_id`                         | `7f3c1e92-...`                  | Unique WAAP request identifier. Correlate a log line with the [WAAP&nbsp;Request&nbsp;Details](/api-reference/waap/analytics/get-request-details) API |
-    | `$waap_decision`                   | `blocked`                       | Final security decision computed by WAAP at the edge. See **Decision and optional action values** below for the full value list and semantics |
-    | `$waap_optional_action`            | `captcha`                       | Additional action that was returned to the client alongside the decision (CAPTCHA or non-interactive challenge). See **Decision and optional action values** below |
-| `$waap_passed_incident_id`         | `9a8b4f70-...`                  | Identifier of a previous WAAP incident that the request passed — for instance after a successful CAPTCHA solve in an earlier request from the same session. Empty if not applicable |
-| `$waap_request_type`               | `regular`                       | WAAP request classification (`regular`, `injected`) |
-    | `$waap_country`                    | `DE`                            | ISO 3166-1 alpha-2 country code of the client IP, resolved by WAAP |
-    | `$waap_organization`               | `Deutsche Telekom AG`           | Network organization that owns the client IP, resolved by WAAP |
-    | `$waap_range`                      | `203.0.113.0/24`                | Network range associated with the client IP |
-    | `$waap_session_id`                 | `8c1f0d2a-...`                  | WAAP session identifier. Groups successive requests that WAAP attributes to the same client |
-    | `$waap_session_request_number`     | `42`                            | Sequence number of this request within the WAAP session |
-    | `$waap_conviction_action`          | `block`                         | Action prescribed by the matched rule. Possible values include `allow`, `block`, `monitor`, `captcha`, `handshake`. Empty if no rule matched |
-    | `$waap_conviction_rule_id`         | `100245`                        | ID of the WAAP rule that matched the request |
-    | `$waap_conviction_rule_name`       | `SQLi attempt`                  | Human-readable name of the matched WAAP rule |
-    | `$waap_conviction_scope`           | `policy`                        | Scope at which the rule was applied (`policy`, `global`, `custom`) |
-    | `$waap_conviction_reference_id`    | `signature:sqli-101`            | Reference identifier of the conviction (rule signature, tag, or template reference) |
-    | `$waap_conviction_incident_id`     | `4d2e8b1c-...`                  | Identifier of the WAAP incident raised for this request |
-    | `$waap_conviction_template`        | `OWASP CRS`                     | Template or ruleset family the matched rule belongs to |
-
-    <Tip>
-      All WAAP fields are best-effort: a field is empty (`""`) when WAAP did not compute a value for the request — no rule matched, or the request was served before WAAP analysis completed. Treat empty values as "not applicable", not "zero".
-    </Tip>
-  </Accordion>
-  <Accordion title="Decision and optional action values">
-    The `$waap_decision` field gives the final security verdict that WAAP applied at the edge:
-
-    | Value     | Meaning                                                                                                                                                |
-    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `passed`      | Request was allowed because it matched a previously cleared WAAP incident — the client had already solved a CAPTCHA for an earlier request in the same session. The original incident identifier is exported in `$waap_passed_incident_id` |
-    | `allowed`     | Request was explicitly allowed by a matched WAAP rule |
-    | `monitored`   | Request was logged in monitor mode without applying the rule action. Useful for shadow testing rules before enforcement |
-    | `blocked`     | Request was blocked at the edge, or a challenge was issued and is pending client resolution (see the note below) |
-    | empty (`""`)  | No WAAP verdict was produced for this request — traffic that did not go through WAAP analysis |
-
-    The `$waap_optional_action` field describes any additional action applied alongside the decision:
-
-    | Value     | Meaning                                                                                                                                                |
-    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | `captcha`     | A CAPTCHA challenge was served to the client |
-    | `challenge`   | A non-interactive challenge was issued — a JavaScript or cookie handshake |
-    | empty (`""`)  | No additional action was applied |
-
-    <Note>
-      Challenged requests are recorded as `blocked`. Logs are written at the edge as soon as the response is sent, before WAAP knows whether the client will solve the challenge. When the client passes the challenge, subsequent requests from the same session are exported with `$waap_decision="passed"` and `$waap_passed_incident_id` pointing back to the original incident. Trace the final outcome by joining the two log lines on the session identifier. The full per-incident result is also available through the [WAAP&nbsp;Request&nbsp;Details](/api-reference/waap/analytics/get-request-details) API.
-    </Note>
-  </Accordion>
-</AccordionGroup>
-
-## Troubleshooting
-
-<p>`Authentication complete` confirms that Logs Uploader can reach the destination. It does not mean a log file has arrived.</p>
-
-<p>Files are written at the end of the policy **Time interval** (minimum 5 minutes). Wait at least one full interval after generating CDN traffic.</p>
-
-<p>If the covered resources receive no requests during an interval and **Include empty logs** is off, no file is sent. Turn the option on in the policy to confirm delivery without traffic. An empty file is about 20 bytes.</p>
-
-<p>For S3, FTP, SFTP, and SLS, the bucket, directory, or logstore must already exist — Logs Uploader does not create missing paths. The credentials must allow writes: `s3:PutObject` (and often `s3:GetBucketLocation`) on S3, write access to the FTP/SFTP directory, or `Write` on an SLS logstore.</p>
-
-<p>An HTTP(S) receiver must return `2xx` before the request times out. Any other status is a delivery failure and is retried. If compression is on, the receiver must accept `Content-Encoding: gzip`.</p>
-
-<p>A configuration limited to **Specific Resources** only exports those resources. **All Resources** includes resources created later.</p>
-
-<p>Delivery error details are not shown in the portal. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) for delivery logs for a target or time range.</p>
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
@@ -417,7 +174,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
     # Step 1. Create a policy
     policy = client.cdn.logs_uploader.policies.create(
         name="cdn-json-export",
-        fields=["cname", "code", "host"],
+        fields=["cname", "status", "host"],
         include_empty_logs=False,
         rotate_interval_minutes=5,
         format_type="json",
@@ -475,7 +232,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
         // Step 1. Create a policy
         policy, err := client.CDN.LogsUploader.Policies.New(ctx, cdn.LogsUploaderPolicyNewParams{
             Name:                  gcore.String("cdn-json-export"),
-            Fields:                []string{"cname", "code", "host"},
+            Fields:                []string{"cname", "status", "host"},
             IncludeEmptyLogs:      gcore.Bool(false),
             RotateIntervalMinutes: gcore.Int(5),
             FormatType:            cdn.LogsUploaderPolicyNewParamsFormatTypeJson,
@@ -527,7 +284,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
       -H "Content-Type: application/json" \
       -d '{
         "name": "cdn-json-export",
-        "fields": ["cname", "code", "host"],
+        "fields": ["cname", "status", "host"],
         "include_empty_logs": false,
         "rotate_interval_minutes": 5,
         "format_type": "json"
@@ -577,7 +334,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
   </Tab>
 </Tabs>
 
-<p>Generate traffic to the CDN resource, then wait one `rotate_interval_minutes` period and check the destination. A target status of `in_progress` or `Authentication complete` means reachability, not that a file has arrived. Available policy field names come from `GET /cdn/logs_uploader/policies/fields`.</p>
+<p>Generate traffic to the CDN resource, then wait one `rotate_interval_minutes` period and check the destination. A target status of `in_progress` means destination validation is still running. `Authentication complete` confirms that the destination is reachable and authentication succeeded, but it does not mean that a batch has arrived. Available policy field names come from `GET /cdn/logs_uploader/policies/fields`.</p>
 
 ## List policies, targets, and configs
 
@@ -805,4 +562,378 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 </Tabs>
 
 </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Export CDN request logs for one CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview). Apply creates a policy, an HTTP target, and a configuration that posts JSON batches to that target on the policy interval. Logs Uploader must already be enabled for the account, or apply returns HTTP 403.</p>
+
+## Create the logs export
+
+<p>The policy selects the fields and the JSON format. The target posts each batch to an HTTP endpoint that returns a 2xx status, because any other status is retried. The configuration attaches both to the CDN resource already declared in the same file, so the export covers that resource.</p>
+
+```hcl
+resource "gcore_cdn_logs_uploader_policy" "json" {
+  name                    = "cdn-json-export"
+  fields                  = ["cname", "status", "host"]
+  include_empty_logs      = false
+  rotate_interval_minutes = 5
+  format_type             = "json"
+}
+
+resource "gcore_cdn_logs_uploader_target" "http" {
+  name         = "http-collector"
+  storage_type = "http"
+
+  config = {
+    content_type = "json"
+    upload = {
+      url    = "https://logs.example.com/cdn"
+      method = "POST"
+    }
+  }
+}
+
+resource "gcore_cdn_logs_uploader_config" "store" {
+  name              = "export-store"
+  policy            = gcore_cdn_logs_uploader_policy.json.id
+  target            = gcore_cdn_logs_uploader_target.http.id
+  enabled           = true
+  for_all_resources = false
+  resources         = [gcore_cdn_resource.main.id]
+}
+```
+
+## Check the destination
+
+<p>Generate traffic to the CDN resource. After one rotate interval, the HTTP endpoint receives a POST whose body contains the selected fields. A reachable target confirms contact with the endpoint, so check the destination for the batch itself.</p>
+
+## Stop delivery
+
+<p>Set `enabled` to `false` and run `terraform apply` to stop delivery while the policy and the target stay in place. Set `enabled` to `true` and run `terraform apply` to start delivery again.</p>
+
+```hcl
+resource "gcore_cdn_logs_uploader_policy" "json" {
+  name                    = "cdn-json-export"
+  fields                  = ["cname", "status", "host"]
+  include_empty_logs      = false
+  rotate_interval_minutes = 5
+  format_type             = "json"
+}
+
+resource "gcore_cdn_logs_uploader_target" "http" {
+  name         = "http-collector"
+  storage_type = "http"
+
+  config = {
+    content_type = "json"
+    upload = {
+      url    = "https://logs.example.com/cdn"
+      method = "POST"
+    }
+  }
+}
+
+resource "gcore_cdn_logs_uploader_config" "store" {
+  name              = "export-store"
+  policy            = gcore_cdn_logs_uploader_policy.json.id
+  target            = gcore_cdn_logs_uploader_target.http.id
+  enabled           = false
+  for_all_resources = false
+  resources         = [gcore_cdn_resource.main.id]
+}
+```
+
+## Remove the logs export
+
+<p>Remove the three resource blocks and run `terraform apply`. Terraform deletes the Logs Uploader configuration first, then the policy and the target, and leaves the CDN resource in place.</p>
+
+```hcl
+# Remove or comment out these blocks:
+# resource "gcore_cdn_logs_uploader_policy" "json" {
+#   name                    = "cdn-json-export"
+#   fields                  = ["cname", "status", "host"]
+#   include_empty_logs      = false
+#   rotate_interval_minutes = 5
+#   format_type             = "json"
+# }
+#
+# resource "gcore_cdn_logs_uploader_target" "http" {
+#   name         = "http-collector"
+#   storage_type = "http"
+#
+#   config = {
+#     content_type = "json"
+#     upload = {
+#       url    = "https://logs.example.com/cdn"
+#       method = "POST"
+#     }
+#   }
+# }
+#
+# resource "gcore_cdn_logs_uploader_config" "store" {
+#   name              = "export-store"
+#   policy            = gcore_cdn_logs_uploader_policy.json.id
+#   target            = gcore_cdn_logs_uploader_target.http.id
+#   enabled           = true
+#   for_all_resources = false
+#   resources         = [gcore_cdn_resource.main.id]
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
 </MethodSwitch>
+
+## Log schema and field definitions
+
+<p>The exported log schema includes standard CDN request fields, internal status codes, and a sample log line.</p>
+
+<AccordionGroup>
+  <Accordion title="Log format example">
+    The format below does not include every available field — for instance, `$timestamp_request_start`, `$masked_remote_addr`, `$query_string`, and `$quic` are in the field table but not shown here. The actual log output depends on which fields are selected, their order, and the delimiter and separator configured in the policy. When fields are added to the log schema, an email notification is sent about the update. WAAP fields are appended separately, as described in WAAP log fields.
+
+    ```text
+    "$remote_addr" "-" "$remote_user" "[$time_local]" "$request" "$status"  
+    "$body_bytes_sent" "$http_referer" "$http_user_agent" "$bytes_sent"  
+    "$edgename" "$scheme" "$host" "$request_time"  
+    "$upstream_response_time" "$request_length" "$http_range" "[$responding_node]"  
+    "$upstream_cache_status" "$upstream_response_length" "$upstream_addr"  
+    "$gcdn_api_client_id" "$gcdn_api_resource_id" "$uid_got" "$uid_set"  
+    "$geoip_country_code" "$geoip_city" "$shield_type" "$server_addr" "$server_port"  
+    "$upstream_status" "-" "$upstream_connect_time" "$upstream_header_time"  
+    "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
+    "$http_traceparent" "$http_x_forwarded_proto" "$gcdn_internal_status_code" "$ssl_cipher"  
+    "$ssl_session_id" "$ssl_session_reused" "$sent_http_content_type" "$tcpinfo_rtt" 
+    "$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" "$gcdn_rule_id"
+    "$request_completion" "$gcdn_finalize_reason"
+    ```
+  </Accordion>
+  <Accordion title="Log fields">
+    The table lists the standard CDN request fields. WAAP fields are documented separately. Fields labeled “internal system variable” relate to the internal CDN system and can be ignored for most analytics use cases; other fields help with traffic analysis or statistics.
+
+    <Note>
+      The `$timestamp` variable always produces an empty value. Use `[$time_local]` for a Common Log Format timestamp or `$timestamp_request_start` for request-start time in Unix epoch milliseconds. No client port field is available.
+    </Note>
+
+| Field                                                     | Sample value                                                                                                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$remote_addr`                                                | `203.0.113.45`                                                                                                                                          | User’s IP address                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `$masked_remote_addr`                                         | `4.d18b5cafa3d1c016d8194583f593a87e89271e6dc8e2ba44f851fdd5a8be1ccb`                                                                               | Privacy-preserving alternative to `$remote_addr`. Replaces the client IP address with a deterministic SHA-256 hash. Output format: `<version>.<hash>` |
+| `$remote_user`<br />(internal system variable)                | `-`                                                                                                                                                | Username used in Basic authentication                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `[$time_local]`                                               | `[26/Apr/2019:09:47:40 +0000]`                                                                                                                     | Local time in Common Log Format                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `$timestamp_request_start`                                    | `1772707791454`                                                                                                                                    | Request start time as Unix epoch in milliseconds                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `$request`                                                    | `GET /ContentCommon/images/image.png HTTP/1.1`                                                                                                     | HTTP method, requested file path, and HTTP version                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `$status`                                                     | `200`                                                                                                                                              | Response status code from a CDN server                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `$body_bytes_sent`                                            | `1514283`                                                                                                                                          | Number of bytes sent to a user, excluding the response header size                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$http_referer`                                               | `https://video.invalid/10`                                                                                                                    | Value of the Referer request header, which usually identifies the page that initiated the request                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$http_user_agent`                                            | `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.2309 Safari/537.36` | User agent that was used to send a request (browser or other application)                                                                                                                                                                                                                                                                                                                                                                                     |
+| `$bytes_sent`                                                 | `1514848`                                                                                                                                          | Number of bytes sent to a user                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$edgename`                                                   | `[dh-up-gc18]`                                                                                                                                     | CDN server that forwarded the requested file                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `$scheme`                                                     | `https`                                                                                                                                            | Protocol (HTTP or HTTPS) of a request                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `$host`                                                       | `cdn.invalid`                                                                                                                                  | Requested hostname of a CDN resource                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$cname`<br />(internal system variable)                      | `cdn.invalid`                                                                                                                                  | Similar to the `$host` field, but derived from internal systems rather than the incoming HTTP request |
+| `$gcdn_vhost`<br />(internal system variable)                 | `cdn.invalid[_cache_sharded]`                                                                                                                 | The vhost value as used internally in CDN                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `$request_time`                                               | `1.500`                                                                                                                                            | Request processing time in seconds (accurate to milliseconds); time elapsed between the first bytes of a request being processed and logging after the last bytes were sent to a user                                                                                                                                                                                                                                                                       |
+| `$first_byte_sent_mcs`                                        | `0.170103`                                                                                                                                         | Time from request start until the first byte of the response was sent to the user (time to first byte), in seconds with microsecond accuracy                                                                                                                                                                                                                                                                                                                |
+| `$request_time_mcs`                                           | `0.170660`                                                                                                                                         | Total request processing time from receiving the first bytes from the client until the last byte was sent, in seconds with microsecond accuracy                                                                                                                                                                                                                                                                                                             |
+| `$upstream_response_time`                                     | `0.445`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to receive a response from the upstream server. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is active, the upstream server may be an intermediate CDN cache rather than the origin. In case of multiple responses, commas and colons are used                                                                                                |
+| `$request_length`                                             | `157`                                                                                                                                              | Request length (including request line, header, and request body)                                                                                                                                                                                                                                                                                                                                                                                            |
+| `$http_range`                                                 | `bytes=0-1901653`                                                                                                                                  | File fragment size in a Range request                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `[$responding_node]`                                          | `dh`                                                                                                                                               | Responding data center                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `$upstream_cache_status`                                      | `MISS`                                                                                                                                             | Status of a requested file in CDN cache:<br /><br />`HIT`: response served from the CDN cache.<br />`STALE`: outdated response that failed to update (origin not responding or responding incorrectly).<br />`UPDATING`: outdated response still updating from a previous request.<br />`REVALIDATED`: response matching one on an origin (based on the `proxy_cache_revalidate` directive).<br />`EXPIRED`: response that has expired in cache but still matches one on an origin; a request was sent to re-cache it.<br />`MISS`: response served directly from an origin rather than from cache.<br />`BYPASS`: response served from the upstream server because configured cache bypass conditions were met, including a request with a matching cookie, query parameter, or authorization header. Cache bypass does not invalidate the cached copy; subsequent requests that do not match the bypass conditions continue to be served from cache. A request for content that is absent from cache after a purge results in `MISS`, not `BYPASS`. |
+| `$upstream_response_length`                                   | `10485760`                                                                                                                                         | Response length received from the upstream server in bytes. In case of multiple responses, commas and colons are used                                                                                                                                                                                                                                                                                                                                          |
+| `$upstream_addr`                                              | `192.0.2.1:80`                                                                                                                                       | IP address and port of the upstream server. When [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is active, this reflects the intermediate CDN cache node rather than the origin.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `$gcdn_api_client_id`<br />(internal system variable)         | `123`                                                                                                                                              | Account ID in the Gcore system                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$gcdn_api_resource_id`<br />(internal system variable)       | `01`                                                                                                                                               | CDN resource ID in the Gcore system                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `$uid_got`<br />(internal system variable)                    | `-`                                                                                                                                                | Cookie name and received user ID                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `$uid_set`<br />(internal system variable)                    | `-`                                                                                                                                                | Cookie name and provided user ID                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `$geoip_country_code`                                         | `KZ`                                                                                                                                               | User’s ISO 3166-1 alpha-2 country code                                                                                                                                                                                                                                                                                                                                                   |
+| `$geoip_city`                                                 | `-`                                                                                                                                                | User’s city code                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `$shield_type`<br />(internal system variable)                | `shield_no`                                                                                                                                        | Indicates whether [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) is enabled:<br />`shield_old` – enabled<br />`shield_no` – disabled                                                                                                                                                                                                                                                                         |
+| `$server_addr`<br />(internal system variable) / `real_server_addr` | `198.51.100.1`                                                                                                                                          | IP address of an Anycast zone or CDN server                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `$server_port`<br />(internal system variable)                | `80`                                                                                                                                               | Requested port                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$upstream_status`                                            | `206`                                                                                                                                              | HTTP status code returned by the upstream server                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `$upstream_connect_time`                                      | `0.000`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to access an origin server                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `$upstream_header_time`                                       | `0.200`                                                                                                                                            | Number of seconds (accurate to milliseconds) it took to receive a response header from an origin server                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `$shard_addr`<br />(internal system variable)                 | `198.51.100.2`                                                                                                                                          | IP address of a CDN server that was first to accept a request if the Cache Sharding feature is enabled                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$geoip2_data_asnumber`                                       | `asnumber`                                                                                                                                         | Number of an autonomous system that sent a request                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `$connection`<br />(internal system variable)                 | `2897494295`                                                                                                                                       | Connection serial number                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$connection_requests`<br />(internal system variable)        | `1`                                                                                                                                                | Current number of requests made through a connection                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$http_traceparent`<br />(internal system variable)           | `00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01`                                                                                          | Incoming client `traceparent` request header. If the client omits the header, the field contains `-`; if the value is invalid, the field preserves that value. The CDN-generated replacement is not stored here. See [Traceparent header for troubleshooting](/cdn/troubleshooting/traceparent-header-for-troubleshooting).                                                                                                                                                                                                                                                                                                                                |
+| `$http_x_forwarded_proto`                                     | `-`                                                                                                                                                | Initial protocol of an incoming request (HTTP or HTTPS)                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `$gcdn_internal_status_code`<br />(internal system variable)  | `-`                                                                                                                                                | Initial status code. Possible values are `-` or one of the internal codes listed below                                                                                                                                                                                                                                                                                                                                                                        |
+| `$ssl_cipher`<br />(internal system variable)                 | `ECDHE-RSA-AES256-GCM-SHA384`                                                                                                                      | Cipher name used for an established SSL connection                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `$ssl_session_id`<br />(internal system variable)             | `28a4184139cb43cdc79006cf2d1a4ac93bdc****`                                                                                                         | Session ID of an established SSL connection                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `$ssl_session_reused`<br />(internal system variable)         | `r`                                                                                                                                                | Shows whether a session was reused (`r`) or not (`.`)                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$sent_http_content_type`                                     | `application/json`                                                                                                                                 | Value of the `Content-Type` HTTP header, indicating the MIME type of a transmitted file                                                                                                                                                                                                                                                                                                                                                                        |
+| `$tcpinfo_rtt`                                                | `21`                                                                                                                                               | Average time (latency) it takes to transfer a packet to/from a server. The unit of time is microseconds                                                                                                                                                                                                                                                                                                                                                      |
+| `$server_country_code`                                        | `PL`                                                                                                                                               | Server’s ISO 3166-1 alpha-2 country code                                                                                                                                                                                                                                                                                                                                                 |
+| `$gcdn_tcpinfo_snd_cwnd`                                      | `45`                                                                                                                                               | Size of the TCP Congestion window, i.e., the maximum number of TCP segments that the connection can send before an acknowledgment is required |
+| `$gcdn_tcpinfo_total_retrans`                                  | `10`                                                                                                                                               | Total number of retransmitted packets over the life of the connection |
+| `$gcdn_rule_id`                                               | `100700`                                                                                                                                           | Initial rule ID (beta). Possible values are: `-`, or `100700`                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `$query_string`                                                | `id=123&sort=asc&filter=active`                                                                                                                   | Contains the raw query parameters from the request URI                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `$timestamp`<br />(internal system variable)  | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `$ip`<br />(internal system variable)         | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `$country`<br />(internal system variable)    | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `$media_type`<br />(internal system variable) | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$size`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `$duration`<br />(internal system variable)   | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `$session_id`<br />(internal system variable) | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `$domain`<br />(internal system variable)     | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `$name`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `$edge`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `$code`<br />(internal system variable)       | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$region`<br />(internal system variable)     | `-`                                                                                                                                               | Internal system variable; always produces an empty value                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `$http_x_forwarded_for`                                       | `203.0.113.45, 198.51.100.17`                                                                                                                     | Contains the value of the X-Forwarded-For HTTP request header as sent by the client or added by upstream proxies/load balancers |
+| `$http_cookie`                                                | `session_id=abc123; theme=dark; csrftoken=9f8e7d`                                                                                                | Contains the raw value of the Cookie HTTP request header sent by the client |
+| `$request_method`                                              | `GET`                                                                                                                                              | Contains the HTTP method used by the client for the request |
+| `$request_uri_path`                                            | `/api/v1/users`                                                                                                                                     | Represents the path portion of the request URI, without any query string parameters |
+| `$sent_http_cache_control`                                     | `max-age=3600, public`                                                                                                                             | Contains the value of the Cache-Control HTTP response header as sent by NGINX to the client. It reflects the caching directives applied to the response, which control how browsers, proxies, and CDNs may cache and reuse the content |
+| `$sent_http_content_length`                                    | `53214`                                                                                                                                            | `Content-Length` sent to the client: the number of body bytes the CDN declared. Compare with `$body_bytes_sent` to measure truncation. `0` means the header was absent (chunked transfer, no `Content-Length`, or a row from before the field was added), not that zero bytes were sent. |
+| `$server_protocol`                                             | `HTTP/1.1`                                                                                                                                         | Contains the protocol version used by NGINX to communicate |
+| `$upstream_http_content_length`                               | `1048576`                                                                                                                                          | Contains the value of the Content-Length HTTP response header received from the upstream server |
+| `$request_uri`                                                | `/api/v1/users?id=42&sort=asc`                                                                                                                    | Contains the original request URI as sent by the client, including the path and the query string |
+| `$fastedge_field1`<br />(internal system variable)             | &nbsp;                                                                                                                                             | Used for passing additional context from FastEdge into raw logs                                                                                                                                                                                                                                                                                                                                                                                                |
+| `$http_last_modified`                                          | `Wed, 21 Oct 2015 07:28:00 GMT`                                                                                                                   | Value of the Last-Modified request header sent by the client |
+| `$http_accept`                                                 | `text/html,application/xhtml+xml`                                                                                                                 | Value of the Accept request header indicating acceptable response content types |
+| `$http_age`                                                   | `3600`                                                                                                                                             | Value of the Age request header, typically used by caches to indicate object age in seconds |
+| `$http_head_size`                                              | `512`                                                                                                                                              | Size (in bytes) of the HTTP request headers received from the client |
+| `$http_return_head_size`                                       | `430`                                                                                                                                              | Size (in bytes) of the HTTP response headers returned to the client |
+| `$sent_http_content_range`                                     | `bytes 0-1023/4096`                                                                                                                                | Value of the Content-Range response header sent to the client |
+| `$upstream_http_location`                                      | `/redirect/path`                                                                                                                                   | Value of the Location response header received from the upstream server (commonly for redirects) |
+| `$http_via`                                                   | `1.1 proxy.invalid`                                                                                                                            | Value of the Via request header, listing the proxies the request passed through                                                                                                                                                                                                                                                                                                                                              |
+| `$quic`                                                       | `H3`                                                                                                                                               | QUIC protocol version negotiated for the connection. Possible values: `-`, or `H3`                                                                                                                                                                                                                                                                                                                                                                              |
+| `$request_completion`                                          | `OK`                                                                                                                                               | Whether the CDN finished writing the response body. `OK` means the request completed. An empty value means it did not. Use with `$sent_http_content_length` and `$body_bytes_sent` to detect truncated `200` or `206` responses. |
+| `$gcdn_finalize_reason`                                        | `ok`                                                                                                                                               | Why the request stopped producing a body. `ok` means the body finished. Empty or `unset` means no reason was recorded. Other values identify the cause: client (`client_closed`, `client_timeout`, `client_error`); upstream (`upstream_connect_failed`, `upstream_connect_timeout`, `upstream_headers_null`, `upstream_header_timeout`, `upstream_body_null`, `upstream_body_partial`, `upstream_body_timeout`, `upstream_ssl_error`, `upstream_error`, `upstream_send_timeout`); this proxy (`internal_error`, `shutdown`); or slice (`slice_bad_status`, `slice_missing`, `slice_etag`, `slice_range`). |
+  </Accordion>
+  <Accordion title="Internal status codes">
+    Internal status codes identify the CDN rule or feature that generated a response.
+
+    | Reason | HTTP code | Internal code | Comment |
+    | :----- | :-------- | :------------ | :------ |
+    | Country ACL | 403 | 1001 | |
+    | Referer ACL | 403 | 1002 | |
+    | IP ACL | 403 | 1003 | |
+    | User-Agent ACL | 403 | 1004 | |
+    | Secure Token | 403 | 1005 | Returned when Secure Token validation fails and `$secure_link` is empty |
+    | Secure Token | 410 | 1006 | Returned when the link lifetime has expired and `$secure_link` is `"0"` |
+    | WAF | 403 | 1007 | Request blocked by WAF |
+    | Bot challenge / Testcookie | 307 | 1008 | Redirection sent by bot challenge (testcookie) |
+    | Blocklist | 403 | 1009 | Request blocked by bot protection blocklist |
+    | HTTP method | 405 | 1200 | Returned when `AllowedHttpMethods` is enabled and the request method is not in the allowed list |
+    | Streaming disabled (`.ts` or `.m3u8` files) | 402 | 1201 | Streaming feature disabled for the client |
+    | LE validation /.well-known/acme-challenge/ | 404 | 1202 | Returned when `http_user_agent` is not `cert-manager-challenges`, `acme.zerossl.com`, `Cpanel-HTTP-Client`, `Buypass validation client`, `Google-Certificates-Bridge`, `vercel-fetch`, `win-acme`, `Typhoeus`, or `Go-http-client` |
+    | Shield requestor header | 403 | 1203 | Unauthorized request to the shield |
+    | Force Return | ANY | 1204 | Response generated by the Force Return status code option |
+
+    When a Secure Token link passes the authenticity check, `$secure_link` is set to the link extracted from the request URI. That successful validation does not produce a `403` or `410`.
+  </Accordion>
+  <Accordion title="Log schema versioning">
+    For HTTP(S) targets, Logs Uploader sends a JSON request payload to the configured endpoint. The `v` field in the payload identifies the schema version (`"v":"10"`). This metadata belongs to the JSON envelope rather than the selectable CDN log fields, so it does not appear in the sample log line or field table.
+
+    The version increments when fields are added, renamed, or removed. New fields are added in a backward-compatible way where possible, so most schema changes do not require parser updates. Breaking changes are announced in advance through standard CDN update notifications. Check the `v` value in downstream parsers before processing a batch with an unsupported schema version.
+
+    **HTTP(S) payload structure**
+
+    Each request delivers one batch of log lines. The payload is a JSON object whose `logs` array contains the raw log lines selected and formatted by the policy (the same text that would appear in a file delivered to an S3 or FTP target). The `v` field is metadata in that JSON envelope. It identifies the Logs Uploader schema version and can change when exported log fields are added, renamed, or removed. It is not one of the selectable CDN log fields.
+
+    ```json
+    {
+      "v": "10",
+      "logs": [
+        "\"203.0.113.45\" \"-\" \"-\" \"[14/Sep/2026:09:47:40 +0000]\" \"GET /image.png HTTP/1.1\" \"200\" \"1514848\"",
+        "\"198.51.100.7\" \"-\" \"-\" \"[14/Sep/2026:09:47:42 +0000]\" \"GET /style.css HTTP/1.1\" \"304\" \"0\""
+      ]
+    }
+    ```
+
+    The receiver must return a `2xx` HTTP status code. Any other status code is treated as a delivery failure; Logs Uploader retries the batch and records the error in delivery logs accessible through [Gcore&nbsp;Support](mailto:support@gcore.com).
+
+    <Note>
+      If **Use compression** is enabled on the HTTP(S) target, the request body is gzip-compressed and the `Content-Encoding: gzip` header is included. Decompress the body before parsing.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## WAAP log fields
+
+<p>When a CDN resource has [WAAP](/waap) enabled, Logs Uploader appends WAAP security event fields to each request log line. CDN access data and the matching WAAP verdict share one entry — no separate file and no extra Logs Uploader setup. When a policy override suppresses a finding, the entry includes `policy_override` with the override ID, target type, and target references. The field is omitted when no override matched.</p>
+
+<p>WAAP fields appear only when **WAAP Status** is Active on **CDN** → **CDN resources**. The toggle is in that resource's **Security** settings. After WAAP is enabled, the next exported batch includes the new fields at the end of the line, so positional parsers keep working. Parsers that reject unknown columns must accept the WAAP fields first. The `v` field in HTTP(S) payloads increments when the schema changes.</p>
+
+<Note>
+DDoS protection logs are not exported through Logs Uploader. Only per-request WAAP security events are included. DDoS attack analytics remain available through the WAAP API and dashboard.
+</Note>
+
+<AccordionGroup>
+  <Accordion title="WAAP fields">
+    These fields are appended to each request log line when WAAP is enabled on the resource.
+
+    | Field                          | Sample value           | Description                                                                                                                                          |
+    | :--------------------------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `$waap_id`                         | `7f3c1e92-...`                  | Unique WAAP request identifier. Correlate a log line with the [WAAP&nbsp;Request&nbsp;Details](/api-reference/waap/analytics/get-request-details) API |
+    | `$waap_decision`                   | `blocked`                       | Final security decision computed by WAAP at the edge. See **Decision and optional action values** below for the full value list and semantics |
+    | `$waap_optional_action`            | `captcha`                       | Additional action that was returned to the client alongside the decision (CAPTCHA or non-interactive challenge). See **Decision and optional action values** below |
+| `$waap_passed_incident_id`         | `9a8b4f70-...`                  | Identifier of a previous WAAP incident that the request passed — for instance after a successful CAPTCHA solve in an earlier request from the same session. Empty if not applicable |
+| `$waap_request_type`               | `regular`                       | WAAP request classification (`regular`, `injected`) |
+    | `$waap_country`                    | `DE`                            | ISO 3166-1 alpha-2 country code of the client IP, resolved by WAAP |
+    | `$waap_organization`               | `Deutsche Telekom AG`           | Network organization that owns the client IP, resolved by WAAP |
+    | `$waap_range`                      | `203.0.113.0/24`                | Network range associated with the client IP |
+    | `$waap_session_id`                 | `8c1f0d2a-...`                  | WAAP session identifier. Groups successive requests that WAAP attributes to the same client |
+    | `$waap_session_request_number`     | `42`                            | Sequence number of this request within the WAAP session |
+    | `$waap_conviction_action`          | `block`                         | Action prescribed by the matched rule. Possible values include `allow`, `block`, `monitor`, `captcha`, `handshake`. Empty if no rule matched |
+    | `$waap_conviction_rule_id`         | `100245`                        | ID of the WAAP rule that matched the request |
+    | `$waap_conviction_rule_name`       | `SQLi attempt`                  | Human-readable name of the matched WAAP rule |
+    | `$waap_conviction_scope`           | `policy`                        | Scope at which the rule was applied (`policy`, `global`, `custom`) |
+    | `$waap_conviction_reference_id`    | `signature:sqli-101`            | Reference identifier of the conviction (rule signature, tag, or template reference) |
+    | `$waap_conviction_incident_id`     | `4d2e8b1c-...`                  | Identifier of the WAAP incident raised for this request |
+    | `$waap_conviction_template`        | `OWASP CRS`                     | Template or ruleset family the matched rule belongs to |
+    | `policy_override`                  | omitted when no override matched | Present when a policy override suppresses a finding. Contains the override ID, the target type, and the target references. |
+
+    <Tip>
+      WAAP fields are best-effort: a field is empty (`""`) when WAAP did not compute a value for the request — no rule matched, or the request was served before WAAP analysis completed. Treat empty values as "not applicable", not "zero". `policy_override` is the exception: the field is omitted when no override matched.
+    </Tip>
+  </Accordion>
+  <Accordion title="Decision and optional action values">
+    The `$waap_decision` field gives the final security verdict that WAAP applied at the edge:
+
+    | Value     | Meaning                                                                                                                                                |
+    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `passed`      | Request was allowed because it matched a previously cleared WAAP incident — the client had already solved a CAPTCHA for an earlier request in the same session. The original incident identifier is exported in `$waap_passed_incident_id` |
+    | `allowed`     | Request was explicitly allowed by a matched WAAP rule |
+    | `monitored`   | Request was logged in monitor mode without applying the rule action. Useful for shadow testing rules before enforcement |
+    | `blocked`     | Request was blocked at the edge, or a challenge was issued and is pending client resolution (see the note below) |
+    | empty (`""`)  | No WAAP verdict was produced for this request — traffic that did not go through WAAP analysis |
+
+    The `$waap_optional_action` field describes any additional action applied alongside the decision:
+
+    | Value     | Meaning                                                                                                                                                |
+    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `captcha`     | A CAPTCHA challenge was served to the client |
+    | `challenge`   | A non-interactive challenge was issued — a JavaScript or cookie handshake |
+    | empty (`""`)  | No additional action was applied |
+
+    <Note>
+      Challenged requests are recorded as `blocked`. Logs are written at the edge as soon as the response is sent, before WAAP knows whether the client will solve the challenge. When the client passes the challenge, subsequent requests from the same session are exported with `$waap_decision="passed"` and `$waap_passed_incident_id` pointing back to the original incident. Trace the final outcome by joining the two log lines on the session identifier. The full per-incident result is also available through the [WAAP&nbsp;Request&nbsp;Details](/api-reference/waap/analytics/get-request-details) API.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<p>`Authentication complete` confirms that Logs Uploader can reach the destination. It does not mean a batch has arrived.</p>
+
+<p>Batches are delivered at the end of the policy **Time interval** (minimum 5 minutes). Wait at least one full interval after generating CDN traffic.</p>
+
+<p>If the covered resources receive no requests during an interval and **Include empty logs** is off, no batch is delivered. Turn the option on in the policy to confirm delivery without traffic. For a file-based target, an empty log file is about 20 bytes.</p>
+
+<p>For S3, FTP, SFTP, and SLS, the bucket, directory, or logstore must already exist — Logs Uploader does not create missing paths. The credentials must allow writes: `s3:PutObject` (and often `s3:GetBucketLocation`) on S3, write access to the FTP/SFTP directory, or `Write` on an SLS logstore.</p>
+
+<p>An HTTP(S) receiver must return `2xx` before the request times out. Any other status is a delivery failure and is retried. If compression is on, the receiver must accept `Content-Encoding: gzip`.</p>
+
+<p>A configuration limited to **Specific Resources** only exports those resources. **All Resources** includes resources created later.</p>
+
+<p>Delivery error details are not shown in the portal. Contact [Gcore&nbsp;Support](mailto:support@gcore.com) for delivery logs for a target or time range.</p>
+

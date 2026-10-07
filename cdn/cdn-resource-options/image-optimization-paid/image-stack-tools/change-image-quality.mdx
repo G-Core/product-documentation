@@ -1,12 +1,17 @@
 ---
 title: Change image quality
 sidebarTitle: Change quality
-ai-navigation: Configure image quality in CDN Image Stack via portal settings or the quality query parameter, applied alongside Compression, Resize, or Crop.
+description: Reduce CDN image quality with Gcore Image Stack presets or URL query parameters for JPG and PNG delivery.
 ---
 
-The Quality feature reduces the quality of images delivered through the CDN. It works in combination with at least one other Image Stack operation — such as Compression (WebP or AVIF), Resize, or Crop — and cannot run independently. The origin retains the original image; only the version delivered to end users is affected.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-The following example shows the same image at four different quality settings. The visual difference is subtle for detailed or non-contrasted images, and more noticeable for images with large solid areas against contrasting backgrounds.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The Quality feature reduces the quality of images delivered through the CDN. It works in combination with at least one other Image Stack operation — such as Compression (WebP or AVIF), Resize, or Crop — and cannot run independently. The origin retains the original image; only the version delivered to end users is affected.</p>
+
+<p>These four pictures show the same image at different quality settings. The visual difference is subtle for detailed or non-contrasted images, and more noticeable for images with large solid areas against contrasting backgrounds.</p>
 
 <Tabs>
   <Tab title="High (95%)">
@@ -25,27 +30,27 @@ The following example shows the same image at four different quality settings. T
 
 ## Enable quality
 
-Quality is included in the paid Image Stack option. To use it, enable Image Stack for the CDN resource following the [Enable Image stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) guide.
+<p>Quality is included in the paid Image Stack option. To use it, enable Image Stack for the CDN resource with the [Enable&nbsp;Image&nbsp;stack](/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack) guide.</p>
 
 ## Use quality
 
-Quality can be configured in two ways: via the Gcore Customer Portal to apply a default level to all images matching the rule, or via query parameters to set quality per individual image URL.
+<p>Quality can be configured in two ways: via the Gcore Customer Portal to apply a default level to all images matching the rule, or via query parameters to set quality per individual image URL.</p>
 
 ### Use quality in the customer portal
 
 <Steps>
 <Step title="Open the Image optimization rule">
 
-Navigate to the settings of the required CDN resource. Click the **Rules** tab, then open the **Image optimization** rule.
+<p>Navigate to the settings of the required CDN resource. Click the **Rules** tab, then open the **Image optimization** rule.</p>
 
 <Frame>![CDN resource settings showing OPTIONS and RULES tabs with Create rule button and Image optimization template in the dropdown](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png)</Frame>
 
 </Step>
 <Step title="Select the quality level">
 
-In the **Image Stack** section, select one of the built-in presets: **High (95%)**, **Medium (80%)**, **Low (65%)**, or **Custom value**. The default is **High (95%)**.
+<p>In the **Image Stack** section, select one of the built-in presets: **High (95%)**, **Medium (80%)**, **Low (65%)**, or **Custom value**. The default is **High (95%)**.</p>
 
-To prevent quality reduction for PNG images, enable **Enable lossless for PNG**. When enabled, the quality setting applies only to JPG images.
+<p>To prevent quality reduction for PNG images, enable **Enable lossless for PNG**. When enabled, the quality setting applies only to JPG images.</p>
 
 <Note>The quality value cannot exceed 100%.</Note>
 
@@ -54,37 +59,37 @@ To prevent quality reduction for PNG images, enable **Enable lossless for PNG**.
 </Step>
 <Step title="Save the rule">
 
-Click **Save changes** at the top right corner of the page.
+<p>Click **Save changes** at the top right corner of the page. Saving the Image Stack rule clears the resource cache, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or save the change during low-traffic hours.</p>
 
 </Step>
 </Steps>
 
 ### Use quality via query parameters
 
-Query parameters set quality for individual images by modifying the URL in the website source.
+<p>Query parameters set quality for individual images by modifying the URL in the website source.</p>
 
-1\. Open the website source code.
+<p>1. Open the website source code.</p>
 
-2\. Find the URLs of the images whose quality needs to change.
+<p>2. Find the URLs of the images whose quality needs to change.</p>
 
-3\. Add the `quality` query parameter to each URL alongside at least one other Image Stack parameter:
+<p>3. Add the `quality` query parameter to each URL alongside at least one other Image Stack parameter:</p>
 
 ```
 image.jpg?quality=value&tool2=value2…
 ```
 
-where:
+<p>where:</p>
 
 - `value` is a number between 1 and 100
 - `tool2=value2` represents query parameters for any other Image Stack function such as [Compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif), [Resize](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size), or [Crop](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images)
 
-For example, to reduce quality to 76%, convert to AVIF format, and crop a 200×200 px area from the center:
+<p>To reduce quality to 76%, convert to AVIF, and crop a 200×200 px area from the center:</p>
 
 ```
 image.jpg?quality=76&fmt=avif&crop=200,200
 ```
 
-The following example shows the same image processed with different `quality` and `fmt` parameter combinations:
+<p>The same image processed with different `quality` and `fmt` combinations:</p>
 
 <Tabs>
   <Tab title="Before">
@@ -117,16 +122,392 @@ The following example shows the same image processed with different `quality` an
   </Tab>
 </Tabs>
 
-4\. Save the changes in the website source code.
+<p>4. Save the changes in the website source code.</p>
 
 ## Check HTTP headers
 
-After processing, the image URL and file extension remain unchanged. Use the HTTP response headers to verify that quality conversion was applied.
+<p>After processing, the image URL and file extension remain unchanged. Use the HTTP response headers to verify that quality conversion was applied.</p>
 
-The `X-Img-Operations` header lists all conversions performed. If the value includes `convert`, the image quality was changed.
+<p>The `X-Img-Operations` header lists all conversions performed. If the value includes `convert`, the image quality was changed.</p>
 
 <Frame>![Browser DevTools Response Headers panel showing X-Img-Operations header with value convert highlighted](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503623825.png)</Frame>
 
-If `X-Img-Operations` does not contain `convert` and the CDN returns the original-quality image, check the `Img-Skip-Reason` header. It explains why the operation was skipped — for example, `converted image bigger than origin` appears when the configured quality value is higher than the original image quality. In this case, combine Quality with another Image Stack feature.
+<p>If `X-Img-Operations` does not contain `convert` and the CDN returns the original-quality image, check the `Img-Skip-Reason` header. It explains why the operation was skipped. The value `converted image bigger than origin` appears when the configured quality value is higher than the original image quality. In this case, combine Quality with another Image Stack feature.</p>
 
 <Frame>![Browser DevTools Response Headers panel showing Img-Skip-Reason header](/images/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503627153.png)</Frame>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Image quality sets how much detail Gcore CDN keeps in a delivered picture. A lower value makes the file smaller. The level is the `quality` field on Image Stack for images that match a rule, or a `quality` query parameter on one image URL. Saving the rule clears the resource cache, including a later change to `quality`, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or make the change during low-traffic hours.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Set quality for image paths
+
+<p>A rule stores the quality level for paths that match `/.*\.(jpg|jpeg|png)`. `ruleType` 0 is a regular expression and must start with `^/` or `/`.</p>
+
+<p>`enabled` is required. This call sets `quality` to 80 and turns WebP on. AVIF and `png_lossless` stay off.</p>
+
+<p>A field left out of the request is stored as its default, so send every field that should stay set. The JSON field is `image_stack`; `imageStack` is ignored.</p>
+
+<p>`quality` accepts integers from 1 to 100. Other values return HTTP 400. The API can store `quality` without WebP or AVIF, but quality changes the delivered image only when WebP, AVIF, resize, or crop is also enabled.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="image-quality",
+        rule="/.*\\.(jpg|jpeg|png)",
+        rule_type=0,
+        options={
+            "image_stack": {
+                "enabled": True,
+                "quality": 80,
+                "webp_enabled": True,
+                "avif_enabled": False,
+                "png_lossless": False,
+            }
+        },
+    )
+    saved = rule.options.image_stack
+    print(rule.id, saved.enabled, saved.quality, saved.webp_enabled, saved.avif_enabled, saved.png_lossless)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "image-quality",
+            Rule:     "/.*\\.(jpg|jpeg|png)",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                ImageStack: cdn.CDNResourceRuleNewParamsOptionsImageStack{
+                    Enabled:     true,
+                    Quality:     gcore.Int(80),
+                    WebpEnabled: gcore.Bool(true),
+                    AvifEnabled: gcore.Bool(false),
+                    PngLossless: gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := rule.Options.ImageStack
+        fmt.Println(rule.ID, saved.Enabled, saved.Quality, saved.WebpEnabled, saved.AvifEnabled, saved.PngLossless)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "image-quality",
+        "rule": "/.*\\.(jpg|jpeg|png)",
+        "ruleType": 0,
+        "options": {
+          "image_stack": {
+            "enabled": true,
+            "quality": 80,
+            "webp_enabled": true,
+            "avif_enabled": false,
+            "png_lossless": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "avif_enabled": false,
+      "webp_enabled": true,
+      "quality": 80,
+      "png_lossless": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>High is 95, medium is 80, and low is 65. Any integer from 1 to 100 is stored, including 50. Set `png_lossless` to true in the same object to keep PNG lossless. Quality then applies to JPG.</p>
+
+## Change the quality level
+
+<p>The rule ID is the `id` returned when the rule is created. Send the full `image_stack` object again. A field left out of this call is stored as its default, so an omitted `quality` becomes 95 and omitted flags become false. This call changes `quality` from 80 to 65 and keeps WebP on.</p>
+
+```bash
+export CDN_RULE_ID="{YOUR_CDN_RULE_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+    rule_id = int(os.environ["CDN_RULE_ID"])
+
+    updated = client.cdn.cdn_resources.rules.update(
+        rule_id,
+        resource_id=resource_id,
+        options={
+            "image_stack": {
+                "enabled": True,
+                "quality": 65,
+                "webp_enabled": True,
+                "avif_enabled": False,
+                "png_lossless": False,
+            }
+        },
+    )
+    saved = updated.options.image_stack
+    print(saved.enabled, saved.quality, saved.webp_enabled, saved.avif_enabled, saved.png_lossless)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+        ruleID, err := strconv.ParseInt(os.Getenv("CDN_RULE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Rules.Update(ctx, ruleID, cdn.CDNResourceRuleUpdateParams{
+            ResourceID: resourceID,
+            Options: cdn.CDNResourceRuleUpdateParamsOptions{
+                ImageStack: cdn.CDNResourceRuleUpdateParamsOptionsImageStack{
+                    Enabled:     true,
+                    Quality:     gcore.Int(65),
+                    WebpEnabled: gcore.Bool(true),
+                    AvifEnabled: gcore.Bool(false),
+                    PngLossless: gcore.Bool(false),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := updated.Options.ImageStack
+        fmt.Println(saved.Enabled, saved.Quality, saved.WebpEnabled, saved.AvifEnabled, saved.PngLossless)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules/$CDN_RULE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "image_stack": {
+            "enabled": true,
+            "quality": 65,
+            "webp_enabled": true,
+            "avif_enabled": false,
+            "png_lossless": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "avif_enabled": false,
+      "webp_enabled": true,
+      "quality": 65,
+      "png_lossless": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Set quality on one image URL
+
+<p>`quality` on the image URL is not an API field. Add it next to another Image Stack parameter. The value is an integer from 1 to 100.</p>
+
+```
+image.jpg?quality=76&fmt=avif&crop=200,200
+image.jpg?quality=95&fmt=webp
+image.jpg?quality=50&fmt=avif
+image.jpg?quality=10&fmt=avif&crop=300,600
+```
+
+<p>Resize, crop, and `fmt` are query parameters on the image URL. See [Crop&nbsp;images](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images), [image&nbsp;size](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size), and [WebP&nbsp;and&nbsp;AVIF](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif).</p>
+
+## Check the delivered image
+
+<p>After processing, the image URL and file extension stay the same. The `X-Img-Operations` response header lists the conversions. If the value includes `convert`, the image quality was changed.</p>
+
+<p>If `X-Img-Operations` does not contain `convert` and the CDN returns the original-quality image, the `Img-Skip-Reason` header explains the skip. The value `converted image bigger than origin` appears when the configured quality is higher than the original image quality. Combine Quality with another Image Stack feature.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Image quality sets how much detail the delivered picture keeps. A lower value makes the file smaller. The level is `quality` inside `image_stack` on a CDN resource rule, or a `quality` query parameter on one image URL. Saving the rule clears the resource cache, including a later change to `quality`, and CDN servers request the images from the origin. Enable [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first, or apply the change during low-traffic hours. Declare the rule with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>`quality` accepts integers from 1 to 100. Other values are rejected before `terraform apply`. A field left out of `image_stack` is stored as its default, so an omitted `quality` becomes 95 and omitted flags become false. Quality changes the delivered image only when WebP, AVIF, resize, or crop is also enabled. `quality` is still stored when WebP and AVIF are off.</p>
+
+## Set quality for image paths
+
+<p>A rule stores the quality level for paths that match `/.*\.(jpg|jpeg|png)`. `rule_type` 0 is a regular expression and must start with `^/` or `/`. Set `enabled`, `quality` to 80, WebP on, and AVIF and `png_lossless` off, then run `terraform apply`. High is 95, medium is 80, and low is 65. Any integer from 1 to 100 is stored, including 50. Set `png_lossless` to true in the same object to keep PNG lossless. Quality then applies to JPG.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-quality"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = false
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Change the quality level
+
+<p>Edit `quality` in the same object and run `terraform apply`. This configuration changes `quality` from 80 to 65 and keeps WebP on. Keep every field that should stay set, because a field left out is stored as its default.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-quality"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 65
+      webp_enabled = true
+      avif_enabled = false
+      png_lossless = false
+    }
+  }
+}
+```
+
+## Set quality on one image URL
+
+<p>The rule sets one quality level for every matching path. To set quality on one image, add `quality` to that image URL next to another Image Stack parameter. The value is an integer from 1 to 100.</p>
+
+```
+image.jpg?quality=76&fmt=avif&crop=200,200
+image.jpg?quality=95&fmt=webp
+image.jpg?quality=50&fmt=avif
+image.jpg?quality=10&fmt=avif&crop=300,600
+```
+
+<p>Resize, crop, and `fmt` are query parameters on the image URL.</p>
+
+## Check the delivered image
+
+<p>After processing, the image URL and file extension stay the same. The `X-Img-Operations` response header lists the conversions. If the value includes `convert`, the image quality was changed.</p>
+
+<p>If `X-Img-Operations` does not contain `convert` and the CDN returns the original-quality image, the `Img-Skip-Reason` header explains the skip. The value `converted image bigger than origin` appears when the configured quality is higher than the original image quality. Combine Quality with another Image Stack feature.</p>
+
+</MethodSection>
+</MethodSwitch>

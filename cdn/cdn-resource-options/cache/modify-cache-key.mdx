@@ -1,71 +1,267 @@
 ---
 title: Modify cache key
-ai-navigation: Configure cache key variables (URI, protocol, normalized URI) in Gcore CDN resources via portal or API to control cache object identification and improve cache hit ratio.
+description: Choose request variables that separate cached objects on a CDN resource and manage cache key modification settings.
 ---
 
-A cache key is a unique identifier for each object stored in the cache. It's generated based on specific request attributes like URL, query parameters, headers, or cookies. 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Web servers and proxies like Nginx combine these attributes in cache keys to ensure that the correct version of the content is served to users. Properly configured cache keys also improve your website's performance as they prevent unnecessary server load and speed up content delivery. 
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-<Tip>
-**Tip**
+<p>Select which request variables separate cached objects on a CDN resource. Requests that produce the same key share one cached object.</p>
 
-If you want to modify your cache key via API, refer to our [API documentation](/api-reference/cdn/cdn-resources/change-cdn-resource-1).
-</Tip>
+## Cache key modification
 
-## Update cache key in CDN resource settings
+<p>Save the selection as **Cache key modification** on the CDN resource.</p>
 
-You can modify the structure of your cache key by adjusting variables that capture essential request information, such as URI or the value of the Host header.
+<Warning>
+Enabling or changing cache key modification can invalidate cached objects and reduce the cache hit ratio. [Purge&nbsp;by&nbsp;pattern](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) is unavailable while this option is enabled.
+</Warning>
 
-<Info>
-**Info**
+<Steps>
+  <Step title="Reach the resource list">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN**. The **CDN resources** page opens.
+  </Step>
+  <Step title="Select the resource">
+    Click the resource CNAME.
 
-Consider that enabling and updating the **Cache key modification** feature can invalidate your current cache and affect the cache hit ratio. Furthermore, the [Purge by pattern](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) functionality won't work.
-</Info>
+    <Frame>![CDN resource CNAME in the resources list](/images/docs/cdn/cdn-resource-options/cache/modify-cache-key/cdn-resource-name.png)</Frame>
+  </Step>
+  <Step title="Find cache key modification">
+    In the **Cache** section, click **Cache key modification**.
+  </Step>
+  <Step title="Set the variables">
+    Turn on the **Enable cache key modification** toggle and add variables from [Supported&nbsp;variables](#supported-variables).
 
-To modify the cache key: 
-
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), navigate to CDN. You'll be directed to the **CDN resources** page. 
-
-2\. Find the resource where you want to modify the cache key and click the CNAME to open its settings.
-
-
-<Frame>![CDN resource](/images/docs/cdn/cdn-resource-options/cache/modify-cache-key/cdn-resource-name.png)</Frame>
-
-
-
-3\. In the **Cache** section, click **Cache key modification**.
-
-4\. Turn on the **Enable cache key modification** toggle and add the relevant [supported variables](/cdn/cdn-resource-options/cache/modify-cache-key#supported-variables), which are listed in the following section. 
-
-
-<Frame>![Cache key modification settings](/images/docs/cdn/cdn-resource-options/cache/modify-cache-key/cache-key-modification-section.png)</Frame>
-
-
-
-5\. Click **Save changes** to apply the updates. 
-
-You've successfully modified the cache key for your resource. 
+    <Frame>![Cache key modification settings](/images/docs/cdn/cdn-resource-options/cache/modify-cache-key/cache-key-modification-section.png)</Frame>
+  </Step>
+  <Step title="Save the cache key">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
 ## Supported variables
 
-You can use the following variable to modify your resource's cache key: 
+<p>Include a variable when its values must be cached as separate objects.</p>
 
-  * `$request_uri`: The full original request URI. If used with the [rewrite feature](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) in conjunction with this option, this variable retains the value of the original URI, not the rewritten one. 
-  * `$scheme`: The protocol used in the request. 
-  * `$uri`: The current normalized URI in the request. The value of this variable may change during request processing. For example, it'll change during internal redirects or when using index files.
-  * `$http_x_cdn_real_host`: The original host header passed through the CDN infrastructure. Use this variable to split cache among different aliases under a single resource.
+- `$request_uri`: Full original request URI, including the query string. With the [rewrite&nbsp;feature](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin), this variable keeps the original URI rather than the rewritten path.
+- `$scheme`: Request protocol.
+- `$uri`: Normalized request URI. The value can change during request processing, including internal redirects and index files.
+- `$http_x_cdn_real_host`: Original Host header passed through the CDN. It splits the cache across aliases on one resource.
 
+## Interactions and limitations
 
+<p>These combinations change which requests still share one object.</p>
 
-## Best practices and considerations
+- If the key includes both `$uri` and `$request_uri`, the query string remains part of the cache key because `$request_uri` includes it.
+- When **Redirect HTTP to HTTPS** is enabled, `$scheme` does not create separate HTTP and HTTPS cache variants, because HTTP requests are redirected to HTTPS.
+- `$uri` overrides [Ignore&nbsp;query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers).
+- Administrator-restricted cache keys stay as set by Gcore. [Contact&nbsp;support](mailto:support@gcore.com) to request a change.
 
-When configuring a cache key, take into account the following aspects to ensure optimal cache behavior: 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-  * Using both `$uri` and `$request_uri` cache keys simultaneously will result in the cache following the `$request_uri` key—query strings won't be ignored because `$request_uri` includes the query string. 
+<p>Set `proxy_cache_key` to select which request variables separate cached objects. Find the resource ID in [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
 
-  * The `$scheme` cache key does not work correctly when the Redirect HTTP to HTTPS option is enabled. All requests will be redirected to HTTPS, with no cache under the `$scheme` key. 
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
 
-  * Using the `$uri` cache key overrides the [Ignore query string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) option. 
+<p>Open a terminal and export the required variables:</p>
 
-  * Cache keys restricted or added by administrators can't be modified by the client. You can only select from the available options or [contact support](mailto:support@gcore.com) to request changes to such keys.
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Cache key
+
+<p>`value` joins the variables that should separate cached objects. Each variable appears at most once, with no separator between them.</p>
+
+| Variable | Description |
+|----------|-------------|
+| `$request_uri` | Full original request URI, including the query string. With the [rewrite&nbsp;feature](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin), this variable keeps the original URI |
+| `$scheme` | Request protocol, `http` or `https` |
+| `$uri` | Normalized request URI. The value can change during request processing. This variable overrides [Ignore&nbsp;query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) |
+| `$http_x_cdn_real_host` | Original Host header. It splits the cache across aliases on one resource |
+
+- If the key includes both `$uri` and `$request_uri`, the query string remains part of the cache key because `$request_uri` includes it.
+- When **Redirect HTTP to HTTPS** is enabled, `$scheme` does not create separate HTTP and HTTPS cache variants, because HTTP requests are redirected to HTTPS.
+- Administrator-restricted cache keys stay as set by Gcore. [Contact&nbsp;support](mailto:support@gcore.com) to request a change.
+
+<Warning>
+Enabling or changing cache key modification can invalidate cached objects and reduce the cache hit ratio. [Purge&nbsp;by&nbsp;pattern](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) is unavailable while this option is enabled.
+</Warning>
+
+<p>Unsupported variables, a repeated variable, or other text return HTTP 400.</p>
+
+<p>`enabled` and `value` are both required. A blank `value` returns HTTP 400.</p>
+
+<p>Send `proxy_cache_key` with `enabled` true. Variable order matters: `$scheme$uri` and `$uri$scheme` produce different cache key strings.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        int(os.environ["CDN_RESOURCE_ID"]),
+        options={
+            "proxy_cache_key": {"enabled": True, "value": "$scheme$uri"},
+        },
+    )
+    print(resource.options.proxy_cache_key.enabled, resource.options.proxy_cache_key.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ProxyCacheKey: cdn.CDNResourceUpdateParamsOptionsProxyCacheKey{
+                    Enabled: true,
+                    Value:   "$scheme$uri",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.ProxyCacheKey.Enabled, resource.Options.ProxyCacheKey.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "proxy_cache_key": {
+            "enabled": true,
+            "value": "$scheme$uri"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "proxy_cache_key": {
+          "enabled": true,
+          "value": "$scheme$uri"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Set `enabled` to false to turn cache key modification off. `value` remains required, and the stored string stays in place.</p>
+
+<Note>
+In the Go SDK, set `Value` to an allowed non-empty string when `Enabled` is false. An empty `Value` is omitted, and the stored option stays unchanged.
+</Note>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set `proxy_cache_key` so selected request variables separate cached objects, using the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. Requests that produce the same key share one cached object.</p>
+
+<p>`value` joins the allowed variables with no separator, and each variable appears at most once. The allowed variables are `$http_x_cdn_real_host` (original Host header), `$request_uri` (full original request URI, including the query string), `$scheme` (request protocol), and `$uri` (normalized request URI). A blank `value`, a repeated variable, or any other text returns HTTP 400. Leaving `proxy_cache_key` out of `options` leaves the stored option unchanged. Run `terraform apply` after editing `options`.</p>
+
+<p>With the [rewrite&nbsp;feature](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin), `$request_uri` keeps the original URI rather than the rewritten path. If the key includes both `$uri` and `$request_uri`, the query string stays in the key because `$request_uri` includes it. When **Redirect HTTP to HTTPS** is enabled, `$scheme` does not create separate HTTP and HTTPS variants, because HTTP requests are redirected to HTTPS. `$uri` overrides [Ignore&nbsp;query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers). Administrator-restricted cache keys stay as set by Gcore. [Contact&nbsp;support](mailto:support@gcore.com) to request a change.</p>
+
+<Warning>
+Enabling or changing cache key modification can invalidate cached objects and reduce the cache hit ratio. [Purge&nbsp;by&nbsp;pattern](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) is unavailable while this option is enabled.
+</Warning>
+
+## Cache key
+
+<p>Set `enabled` to true. `$scheme$uri` and `$uri$scheme` are stored as different keys.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    proxy_cache_key = {
+      enabled = true
+      value   = "$scheme$uri"
+    }
+  }
+}
+```
+
+### Turn cache key modification off
+
+<p>Set `enabled` to false and keep `value`. Cache key modification is off, and the stored string stays in place. This configuration keeps `$scheme$uri`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    proxy_cache_key = {
+      enabled = false
+      value   = "$scheme$uri"
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

@@ -1,7 +1,7 @@
 ---
 title: Custom SSL certificate configuration
 sidebarTitle: Custom SSL certificate
-ai-navigation: Upload a custom PEM SSL certificate via the Customer Portal or REST API, attach it to a CDN resource, then replace or delete it.
+description: Upload a custom SSL certificate, attach it to a CDN resource, and manage renewal, expiration, and deletion.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -747,5 +747,229 @@ Setting `sslEnabled` to `false` stops HTTPS delivery on that resource.
     ```
   </Tab>
 </Tabs>
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Upload a custom SSL certificate and attach it to a CDN resource with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>The certificate must cover the resource [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) in its Subject Alternative Name (SAN) extension. The PEM file contains the leaf certificate, then intermediate certificates, then the root, with a newline after the final `END` line. Set `automated` to `false`. A later edit that omits it replaces the certificate. Set `validate_root_ca` to `false` for a private or self-signed chain. The same chain with `true` returns HTTP 400, because a trusted CA cannot confirm it. Wait at least 15 minutes after the last attach before checking HTTPS in a browser.</p>
+
+## Upload the certificate
+
+<p>Create the certificate and set `ssl_enabled` and `ssl_data` on the CDN resource. One `terraform apply` uploads the certificate and attaches it. `ssl_certificate_wo` and `ssl_private_key_wo` are write-only: Terraform sends the PEM files and does not store them in state.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+}
+```
+
+## Rename the certificate
+
+<p>Edit `name` and run `terraform apply`. The label changes and the certificate subject stays the same. Keep `automated` set to `false`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate-renamed"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+}
+```
+
+## Replace the certificate files
+
+<p>Replace `fullchain.pem` and `privkey.pem`, increment `ssl_certificate_wo_version`, and run `terraform apply`. The same certificate object is updated. The apply prints an error that `cert_subject_cn`, `cert_issuer`, and `validity_not_after` changed. The next `terraform plan` shows no differences.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate-renamed"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 2
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+}
+```
+
+## Attach a different certificate
+
+<p>Add the replacement certificate with `ssl_data` pointing at it, and run `terraform apply` twice. The first apply creates the certificate and leaves the resource on the previous certificate. The second apply attaches the new certificate. Wait at least 15 minutes, then check HTTPS for each hostname.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate-renamed"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain2.pem")
+  ssl_private_key_wo         = file("privkey2.pem")
+  ssl_certificate_wo_version = 2
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_certificate" "replacement" {
+  name                       = "own-ssl-certificate"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.replacement.id
+}
+```
+
+## Delete the old certificate
+
+<p>Set `ssl_data` to the certificate that remains and run `terraform apply` while the old certificate block is still present. Then remove the old block and run `terraform apply` again. Removing the block in the same apply as the `ssl_data` change returns HTTP 400, because the resource still selects that certificate.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate-renamed"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 2
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+}
+```
+
+## Stop HTTPS and delete the resources
+
+<p>Set `ssl_enabled` to `false` and `ssl_data` to `null`, then run `terraform apply`, to stop HTTPS while the certificate object remains. `terraform destroy` deletes the CDN resource first, then the certificate and the origin group.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "own-ssl-certificate"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "own.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = false
+  ssl_data        = null
+}
+```
+
+```bash
+terraform destroy
+```
+
 </MethodSection>
 </MethodSwitch>

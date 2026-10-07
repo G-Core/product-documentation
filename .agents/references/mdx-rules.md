@@ -292,7 +292,7 @@ Every article must have these fields in the frontmatter block:
 ---
 title: Create a Virtual Machine
 sidebarTitle: Create an instance
-ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Customer Portal or via REST API.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, network, and firewall.
 ---
 ```
 
@@ -302,20 +302,19 @@ ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Custo
 |-------|----------|-------|
 | `title` | Always | Full title shown in browser tab and page heading |
 | `sidebarTitle` | Optional | Shorter label for the left sidebar navigation |
-| `ai-navigation` | Required for tabbed articles | See rules below |
-| `description` | **NEVER USE** | Mintlify renders it as visible text on the page |
+| `description` | Required | Search summary, 140 characters maximum. See rules below |
 
-### `ai-navigation` rules
+### `description` rules
 
-This field is read by AI agents scanning the sitemap. It must be a single plain English
-sentence describing what the article covers.
+This field is the search summary. Mintlify copies it into the meta description and also prints it under the title. `custom.css` hides that paragraph. `llms.txt` reads the same sentence.
 
 **Required:**
-- One sentence, ending with a period
-- Starts with an action verb: Create, Configure, Manage, Enable, etc.
-- Mentions all methods covered: "via Customer Portal or via REST API"
-- Max 160 characters
+- One sentence, 140 characters maximum
+- Summarize what the article is about. Use the feature name and the words a person would type into search
+- Do not write Portal, API, or Terraform. Naming the interface does not help search
 - No "you", "your", "this article", "learn how to"
+
+Do not rewrite existing descriptions to this rule unless the task is a description pass.
 
 **Strictly forbidden — these break the YAML parser and crash the Mintlify build:**
 - Curly braces: `{task_id}` or `{variable}` — even inside apparent text
@@ -332,14 +331,14 @@ descriptive terms without symbols ("task ID", "project ID")
 
 **Good examples:**
 ```yaml
-ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Customer Portal by configuring image, flavor, volumes, network, and firewall, or via REST API using the Instances API.
-ai-navigation: Create, use, or delete permanent API tokens with configurable expiration dates and role-based access control.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, network, and firewall.
+description: Issue a token with an expiration date and a limit on what the token can access.
 ```
 
 **Bad examples (will break build):**
 ```yaml
-ai-navigation: Poll GET /cloud/v1/tasks/{task_id} until state is FINISHED.
-ai-navigation: Configure the Authorization: APIKey header.
+description: Poll GET /cloud/v1/tasks/{task_id} until state is FINISHED.
+description: Configure the Authorization: APIKey header.
 ```
 
 ---

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 0dc63b0ed70a
+  version: 4a43d943b2e4
 servers:
 - url: https://api.gcore.com
 tags:
@@ -1295,6 +1295,71 @@ paths:
           	}
           	fmt.Printf("%+v\n", logsAggregatedStats.Number1Example)
           }
+  /cdn/statistics/aliases_usage/aggregated:
+    get:
+      operationId: aggregated-aliases-usage-statistics
+      tags:
+      - Statistics
+      summary: Aggregated alias usage statistics
+      description: |-
+        Get the number of aliases in use.
+
+        Request URL parameters should be added as a query string after the endpoint.
+
+        The requested period is always expanded to whole calendar months, so a request for part of
+        a month returns the count for its entire containing month.
+      parameters:
+      - $ref: '#/components/parameters/query_statistics_From'
+      - $ref: '#/components/parameters/query_statistics_To'
+      - $ref: '#/components/parameters/query_statistics_GroupByPaidFeatures'
+      - $ref: '#/components/parameters/query_statistics_Resource'
+      - $ref: '#/components/parameters/query_statistics_Client'
+      - $ref: '#/components/parameters/query_statistics_Flat'
+      responses:
+        '200':
+          $ref: '#/components/responses/StatisticsPaidFeaturesAggregatedAliasUsage'
+        '204':
+          description: There is no data for the requested time period.
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          import os
+          from gcore import Gcore
+
+          client = Gcore(
+              api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
+          )
+          alias_aggregated_stats = client.cdn.statistics.get_alias_usage_aggregated(
+              from_="from",
+              to="to",
+          )
+          print(alias_aggregated_stats._1_example)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/cdn"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	aliasAggregatedStats, err := client.CDN.Statistics.GetAliasUsageAggregated(context.TODO(), cdn.StatisticGetAliasUsageAggregatedParams{
+          		From: "from",
+          		To:   "to",
+          	})
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", aliasAggregatedStats.Number1Example)
+          }
   /cdn/clients/{client_id}/disabled_shield_locations_v2:
     get:
       operationId: get-information-about-disabled-origin-shielding-locations
@@ -1401,7 +1466,7 @@ components:
             client_id: 174
             requested_at: '2021-07-07T09:02:29.871030Z'
             path: /resources/1/purge
-            remote_ip_address: 1.2.3.4
+            remote_ip_address: 192.0.2.10
             host: api.gcore.com
             method: POST
             query_params: '{}'
@@ -1516,7 +1581,7 @@ components:
               client_id: 174
               requested_at: '2021-07-07T09:02:29.871030Z'
               path: /resources/1/purge
-              remote_ip_address: 1.2.3.4
+              remote_ip_address: 192.0.2.10
               host: api.gcore.com
               method: POST
               query_params: '{}'
@@ -1579,6 +1644,15 @@ components:
           examples:
             default:
               $ref: '#/components/examples/ServiceDetails'
+    StatisticsPaidFeaturesAggregatedAliasUsage:
+      description: Successful.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StatisticsPaidFeaturesAggregatedAliasUsage'
+          examples:
+            default:
+              $ref: '#/components/examples/StatisticsPaidFeaturesAggregatedAliasUsage'
     StatisticsPaidFeaturesAggregatedRawLogsUsage:
       description: Successful.
       content:
@@ -2348,6 +2422,21 @@ components:
     StateBeforeRequest:
       type: object
       description: JSON representation of object before the request.
+    StatisticsPaidFeaturesAggregatedAliasUsage:
+      type: object
+      properties:
+        resource:
+          allOf:
+          - $ref: '#/components/schemas/body_response_statistics_Resource'
+        client:
+          allOf:
+          - $ref: '#/components/schemas/body_response_statistics_Client'
+        metrics:
+          type: object
+          properties:
+            alias_usage:
+              allOf:
+              - $ref: '#/components/schemas/body_response_statistics_AliasUsage'
     StatisticsPaidFeaturesAggregatedRawLogsUsage:
       type: object
       properties:
@@ -2717,6 +2806,9 @@ components:
         Date and time when paid feature was disabled (ISO 8601/RFC 3339 format, UTC.)
 
         Returns **null** if the paid feature is enabled.
+    body_response_statistics_AliasUsage:
+      type: integer
+      description: Number of aliases in use.
     body_response_statistics_CacheHitTrafficRatio:
       type: integer
       description: 'Formula: 1 - `upstream_bytes` / `sent_bytes`. We deduct the non-cached traffic from the total traffic amount.'
@@ -3167,7 +3259,7 @@ components:
           status: active
           updated: '2017-06-10T10:30:04.954354Z'
         utilization_level: 500
-        cname: cli-1-hash.example.com
+        cname: cli-1-hash.example.net
         use_balancer: false
     AccountsList:
       value:
@@ -3178,7 +3270,7 @@ components:
           enabled: true
           status: active
           updated: '2021-06-11T10:30:04.954354Z'
-        cname: cli-12345.example.com
+        cname: cli-12345.example.net
         use_balancer: false
       - id: 2
         created: '2020-06-10T10:30:04.954354Z'
@@ -3187,7 +3279,7 @@ components:
           enabled: true
           status: trial
           updated: '2021-06-10T10:30:04.954354Z'
-        cname: cli-23456.example.com
+        cname: cli-23456.example.net
         use_balancer: true
     BillingRegionsList:
       value:
@@ -3337,6 +3429,12 @@ components:
         enabled: true
         status: active
         updated: '2021-06-10T10:30:04.954354Z'
+    StatisticsPaidFeaturesAggregatedAliasUsage:
+      value:
+        resource:
+          '1':
+            metrics:
+              alias_usage: 1
     StatisticsPaidFeaturesAggregatedRawLogsUsage:
       value:
         resource:
@@ -3355,12 +3453,12 @@ components:
         active_from: '2020-01-21T04:36:35.473Z'
         active_to: null
         client_id: 1
-        cname: resource-1.com
+        cname: cdn1.example.com
       - id: 2
         active_from: '2020-03-21T04:36:30.269Z'
         active_to: '2020-04-21T04:36:33.062Z'
         client_id: 1
-        cname: resource-2.com
+        cname: cdn2.example.com
     StatisticsTrafficAggregated:
       value:
         resource:

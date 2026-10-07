@@ -1,39 +1,199 @@
 ---
-title: "Always online: provide the stale cache if the origin is unavailable"
-sidebarTitle: Use stale cache if origin is unavailable
-ai-navigation: Configure Always Online to serve stale cached content when the origin is unavailable via the Gcore Customer Portal.
+title: "Always online: serve stale cache when the origin cannot provide a fresh response"
+sidebarTitle: Serve stale cache from CDN
+description: Always Online serves stale cached content when the origin cannot provide a fresh response.
 ---
 
-The Always Online option serves stale cached content when the origin is unreachable. CDN checks origin availability on each incoming request and switches back to fresh content as soon as the origin recovers. Stale responses include the `X-Cache: Stale` header.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-The following error conditions trigger stale content delivery:
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-  * **error** — network or connectivity issue
-  * **updating** — cache is being refreshed
-  * Timeout
-  * Invalid Header
-  * Error 500
-  * Error 502
-  * Error 503
-  * Error 504
-  * Error 403
-  * Error 404
-  * Error 429
+<p>The Always Online option serves stale cached content when the origin cannot provide a usable fresh response, and those responses include the `X-Cache: Stale` header. When none of the selected stale conditions applies, the CDN resumes serving fresh responses.</p>
 
-When the origin is unavailable, the CDN cache may not contain all assets required for a complete page. Some images, stylesheets, or other static content may be missing.
+<p>The option serves stale content for these conditions:</p>
 
-## Configure Always Online
+| Condition | Meaning |
+| --- | --- |
+| Error | Network or connectivity failure |
+| Updating | Cached object is being refreshed |
+| Timeout | Origin response timed out |
+| Invalid Header | Origin returned an invalid header |
+| 403, 404, 429, 500, 502, 503, 504 | Origin returned that HTTP status |
 
-To configure Always Online via the Gcore Customer Portal:
+<p>The CDN can serve only objects that are already present in cache. If some page assets are not already cached when a stale condition occurs, those images, stylesheets, or other files can still fail to load.</p>
 
-1\. Navigate to [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list) and click the CDN resource.
+## Always online
 
-2\. In the sidebar, click **Cache**. In the expanded menu, click **Always online**.
+<p>Turn it on for the conditions that should serve stale content.</p>
 
-<Frame>![Resource settings with Cache expanded in the sidebar and Always online selected, showing the Enable always online toggle](/images/docs/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable/always-online-provide-the-stale-cache-if-the-origin-is-unavailable-image1.png)</Frame>
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** and click the CDN resource.
+  </Step>
+  <Step title="Open Always online">
+    In the sidebar, click **Cache**. In the expanded menu, click **Always online**.
 
-3\. Enable the **Enable always online** toggle.
+    <Frame>![Resource settings with Cache expanded in the sidebar and Always online selected, showing the Enable always online toggle](/images/docs/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable/always-online-provide-the-stale-cache-if-the-origin-is-unavailable-image1.png)</Frame>
+  </Step>
+  <Step title="Enable Always online">
+    Enable the **Enable always online** toggle.
+  </Step>
+  <Step title="Select stale conditions">
+    In the **Serve stale cached content in case of the following errors** field, select the conditions.
+  </Step>
+  <Step title="Save the resource">
+    Click **Save changes**.
+  </Step>
+</Steps>
 
-4\. In the **Serve stale cached content in case of the following errors** field, select the error codes for which CDN serves stale content.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-5\. Click **Save changes**.
+<p>When `stale` is enabled for a selected condition, the CDN serves the cached response and marks it with `X-Cache: Stale`. When none of the selected stale conditions applies, the CDN resumes serving fresh responses.</p>
+
+<p>The CDN can serve only objects that are already present in cache. If some page assets are not already cached when a stale condition occurs, those images, stylesheets, or other files can still fail to load.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Stale values
+
+<p>`value` accepts `error`, `updating`, `timeout`, `invalid_header`, `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, and `http_504`. `error` is a network or connectivity failure, and `updating` is a cache refresh.</p>
+
+<p>Both `enabled` and `value` are required. When `enabled` is true, `value` must contain at least one condition; an empty list returns HTTP 400.</p>
+
+<p>The request below enables stale delivery for `http_404` and `http_500`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        int(os.environ["CDN_RESOURCE_ID"]),
+        options={
+            "stale": {"enabled": True, "value": ["http_404", "http_500"]},
+        },
+    )
+    print(resource.options.stale.enabled, resource.options.stale.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Stale: cdn.CDNResourceUpdateParamsOptionsStale{
+                    Enabled: true,
+                    Value:   []string{"http_404", "http_500"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.Stale.Enabled, resource.Options.Stale.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "stale": {
+            "enabled": true,
+            "value": ["http_404", "http_500"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "stale": {
+          "enabled": true,
+          "value": ["http_404", "http_500"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set `stale` so the CDN serves a cached response when the origin cannot provide a usable fresh response, using the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The served response includes `X-Cache: Stale`. When none of the selected stale conditions applies, the CDN resumes serving fresh responses. The CDN can serve only objects that are already present in cache.</p>
+
+<p>`value` accepts `error` (network or connectivity failure), `updating` (cache refresh), `timeout` (origin response timed out), `invalid_header` (origin returned an invalid header), `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, and `http_504`. `enabled` and `value` are both required. When `enabled` is true, an empty `value` list returns HTTP 400. Leaving `stale` out of `options` leaves the stored option unchanged. Run `terraform apply` after editing `options`.</p>
+
+## Serve stale content
+
+<p>Set `enabled` to true. With `http_404` and `http_500`, a 404 or 500 from the origin is served from cache and marked with `X-Cache: Stale`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    stale = {
+      enabled = true
+      value   = ["http_404", "http_500"]
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

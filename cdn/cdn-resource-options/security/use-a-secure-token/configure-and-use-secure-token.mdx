@@ -1,89 +1,106 @@
 ---
 title: Configure and use secure token
 sidebarTitle: Configure and use
-ai-navigation: Configure secure token on a Gcore CDN resource to protect content with signed MD5 URLs and Unix expiration timestamps, using PHP, Python, or OpenSSL scripts.
+description: Restrict CDN content access with a secure token using an MD5 hash and expiration timestamp, covering setup, signed URLs, and IP binding.
 ---
 
-Secure token restricts content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp. The CDN rejects requests with a missing, expired, or incorrect hash with a `403 Forbidden` response.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-## Configure secure token in the Customer Portal
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**. Open the resource.
+<p>Secure token restricts content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp. The CDN rejects requests with a missing, expired, or incorrect hash with a `403 Forbidden` response.</p>
 
-2. On the **OPTIONS** tab, navigate to **Access** > **Secure token**.
+## Customer Portal setup
 
-3. Turn on **Enable secure token**.
+<p>The signing key and the IP option are set on the resource. The Customer Portal accepts a key of 6–32 characters. The REST API accepts a key of up to 255 characters.</p>
 
-4. In the **Enter a key** field, enter a key of 6–32 characters. This key is used in the hash formula on the origin server.
+<Steps>
+  <Step title="Open Secure token">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN**:
 
-5. To allow access from any IP address, leave **Add a client's IP to the token** unchecked. To restrict access to a single IP address, check it — the allowlisted IP is added to the hash formula in the [generation&nbsp;scripts](#scripts-for-link-generation). Enterprise customers with mobile audiences have an [IP&nbsp;binding](#ip-binding-and-mobile-networks) mode that ties tokens to a subnet rather than a single IP.
+    1. Open the resource.
+    2. On the **OPTIONS** tab, select **Access** > **Secure token**.
+  </Step>
+  <Step title="Set the signing key">
+    Turn on **Enable secure token**.
 
-   <Frame>
-     <img src="/images/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/configure-and-use-secure-token-image1.png" alt="Secure token section with Enable secure token on and Enter a key field" width="70%" />
-   </Frame>
+    In the Customer Portal, enter a key of 6–32 characters in the **Enter a key** field. The origin server uses this key in the hash.
+  </Step>
+  <Step title="Set IP binding">
+    Leave **Add a client's IP to the token** unchecked to allow any client IP address. Check it to restrict access to one IP address — the client's IP address is added to the hash formula in the [generation&nbsp;scripts](#scripts-for-link-generation).
 
-6. Click **Save changes**.
+    Enterprise customers with mobile audiences can tie the token to a subnet rather than a single IP address. That mode is covered under [IP&nbsp;binding](#ip-binding-and-mobile-networks).
+
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/configure-and-use-secure-token-image1.png" alt="Secure token section with Enable secure token on and Enter a key field" width="70%" />
+    </Frame>
+  </Step>
+  <Step title="Save the resource">
+    Click **Save changes**.
+  </Step>
+</Steps>
+
+<p>Confirm that a request without a token is rejected:</p>
+
+```bash
+curl -I "https://cdn.example.com/photo.jpeg"
+```
+
+<p>The CDN returns `403 Forbidden` and does not forward the request to the origin.</p>
 
 <Warning>
 Enabling secure token may decrease the cache hit ratio. To improve it, enable [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting), which treats objects with different query parameters as one cacheable object.
 </Warning>
 
-## Set up token generation on the origin server
+## Signed URL format
 
-On the origin server, add a script that generates signed links for protected content. Each generated link must follow this format:
+<p>The origin generates a signed link for each protected file. The link has this form:</p>
 
 ```text
 http://cdn.example.com/photo.jpeg?md5=DMF1ucDxtHCxwYQ&expires=2147483647
 ```
 
-Where:
+<p>The link has three parts:</p>
 
-- `http://cdn.example.com/photo.jpeg` is the path to the file
-- `DMF1ucDxtHCxwYQ` is the MD5 hash of `{expires}{path}{ip} {key}` (base64-encoded, URL-safe)
+- The host and path identify the file
+- `DMF1ucDxtHCxwYQ` is the MD5 hash of `{expires}{path}{ip} {key}` when IP binding is enabled, or `{expires}{path} {key}` when it is disabled (base64-encoded, URL-safe)
 - `2147483647` is the expiration time in Unix timestamp format
 
-The [link&nbsp;generation&nbsp;scripts](#scripts-for-link-generation) below contain ready-to-use PHP, Python, and OpenSSL examples.
+<p>The PHP, Python, and OpenSSL generation scripts build this hash and append it to the file URL.</p>
 
-On the origin server, block direct client access to the origin — restricting inbound connections to CDN server IP ranges is one approach. The CDN validates the token at the edge before forwarding the request to the origin, so the origin does not need to perform token validation and must remain reachable by CDN servers without a token.
+<p>On the origin server, block direct client access to the origin — restricting inbound connections to CDN server IP ranges is one approach. The CDN validates the token at the edge before forwarding the request to the origin, so the origin does not need to perform token validation and must remain reachable by CDN servers without a token.</p>
 
 ## Secure token URL matching
 
-Secure token validates three things from the request URL:
+<p>Secure token validates three things from the request URL:</p>
 
 - `md5`: the token hash
 - `expires`: the Unix timestamp until which the URL is valid
 - Path: the file path or directory path used when the token was generated
 
-The path is important. The CDN recomputes the hash using the path that was used to generate the token, not necessarily the full requested path:
+<p>The CDN recomputes the hash with the path used when generating the token. For a directory token, the CDN uses the directory of the requested path, which can be shorter than the full requested path.</p>
 
-- If the token was generated for an exact file path (e.g. `/images/poster.jpeg`), the CDN computes the hash with that same path on every request. Only requests for that exact file pass.
-- If the token was generated for a directory path ending with `/` (e.g. `/videos/video-1/`), the CDN computes the hash using the **directory component** of the requested path. A request for `/videos/video-1/segment-001.ts` uses `/videos/video-1/` as the path in the hash and passes. A request for `/videos/video-1/360p/segment.ts` uses `/videos/video-1/360p/` as the directory component — that does not match the token generated for `/videos/video-1/`, so it returns `403 Forbidden`.
+- When the token was generated for the exact file `/images/poster.jpeg`, the CDN uses that same path on every request, so only that file passes.
+- When the token was generated for the directory `/videos/video-1/`, the CDN uses the directory of the requested path. A request for `/videos/video-1/segment-001.ts` uses `/videos/video-1/` and passes, while a request for `/videos/video-1/360p/segment.ts` uses `/videos/video-1/360p/` and returns `403 Forbidden`.
 
-[Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) is a separate mechanism that copies `md5` and `expires` from playlist body links to the actual media segment requests. It allows a player to receive the token with the master manifest and automatically propagate it to nested requests, each of which is still individually validated against the token path.
+<p>[Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) copies `md5` and `expires` from playlist links onto the media segment requests, so a player that receives the token with the master manifest sends it on each nested request. Each nested request is still checked against the token path.</p>
 
 ### Token for exact file
 
-Use an exact file token for standalone files — images, archives, MP4 files, or a single protected video manifest — when nested requests do not need to be authorized with the same token.
-
-Example protected file:
+<p>Use an exact file token when each file has its own signature: an image, an archive, an MP4 file, or one video manifest. Generate the token for `/images/poster.jpeg`:</p>
 
 ```text
 /images/poster.jpeg
 ```
 
-Generate the token with this path:
-
-```text
-/images/poster.jpeg
-```
-
-The user requests:
+<p>The client requests:</p>
 
 ```text
 https://cdn.example.com/images/poster.jpeg?md5=TOKEN&expires=1777545540
 ```
 
-This token is valid only for `/images/poster.jpeg`. It does not provide access to adjacent files:
+<p>This token matches only `/images/poster.jpeg`, so the adjacent paths return `403 Forbidden`:</p>
 
 ```text
 https://cdn.example.com/images/poster.webp      → 403 Forbidden
@@ -91,31 +108,29 @@ https://cdn.example.com/images/poster.png       → 403 Forbidden
 https://cdn.example.com/images/master.m3u8      → 403 Forbidden
 ```
 
-### Protect HLS and MPEG-DASH content
+### HLS and MPEG-DASH
 
-Use a token with Query String Forwarding enabled for HLS and MPEG-DASH when the player must request a master manifest, nested rendition manifests, media segments, and subtitles under the same path.
+<p>Use a token with Query String Forwarding enabled for HLS and MPEG-DASH when the master manifest, nested manifests, media segments, and subtitles are stored in the same directory.</p>
 
-In this mode, generate the token for the full directory path only — not for a filename. For the files in:
+<p>Generate the token for the directory path, including the trailing slash. For the files in `/videos/video-1/`, the script uses that directory:</p>
 
 ```text
 /videos/video-1/
 ```
 
-use this path in the token generation script:
-
-For PHP:
+<p>For PHP:</p>
 ```php
 $path = '/videos/video-1/';
 ```
 
-For Python:
+<p>For Python:</p>
 ```py
 path = "/videos/video-1/"
 ```
 
-This token works only for files directly inside `/videos/video-1/`. It does not work for files in subdirectories — `/videos/video-1/360p/` for instance. If HLS or MPEG-DASH files are split across subdirectories, generate tokens for those directories separately or place the related manifests and segments under one directory.
+<p>This token matches files directly inside `/videos/video-1/`. A file in `/videos/video-1/360p/` returns `403 Forbidden`, so split layouts need a separate token per directory, or the manifests and segments stay in one directory.</p>
 
-Example HLS files:
+<p>HLS files in that directory:</p>
 
 ```text
 /videos/video-1/master.m3u8
@@ -124,19 +139,13 @@ Example HLS files:
 /videos/video-1/segment-002.ts
 ```
 
-Generate the token with the directory path:
-
-```text
-/videos/video-1/
-```
-
-The user requests only the master manifest with the token:
+<p>The client requests only the master manifest with the token:</p>
 
 ```text
 https://cdn.example.com/videos/video-1/master.m3u8?md5=TOKEN&expires=1893456000
 ```
 
-With [Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) enabled, the CDN automatically inserts the same query parameters into related manifest body links. The video player then requests nested files with the forwarded token:
+<p>With Query String Forwarding enabled, the CDN inserts the same query parameters into related manifest body links, so the player requests the nested files with the forwarded token:</p>
 
 ```text
 https://cdn.example.com/videos/video-1/rendition-1080.m3u8?md5=TOKEN&expires=1893456000
@@ -144,7 +153,7 @@ https://cdn.example.com/videos/video-1/segment-001.ts?md5=TOKEN&expires=18934560
 https://cdn.example.com/videos/video-1/segment-002.ts?md5=TOKEN&expires=1893456000
 ```
 
-For HLS and MPEG-DASH, configure Query String Forwarding with:
+<p>For HLS and MPEG-DASH, configure Query String Forwarding with:</p>
 
 ```json
 {
@@ -166,12 +175,7 @@ For HLS and MPEG-DASH, configure Query String Forwarding with:
 }
 ```
 
-To check how Query String Forwarding works in real life, open this demo HLS manifest:
-
-- manifest URL: [master.m3u8](http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
-- hls.js player demo: [master.m3u8](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmasterm3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
-
-It will open the master file with nested files (note that `&other=parameter` is not forwarded):
+<p>The [demo&nbsp;manifest](http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter) includes an extra parameter that the CDN does not forward, and the [player&nbsp;demo](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmasterm3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter) loads that manifest:</p>
 
 ```text
 http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter
@@ -182,7 +186,7 @@ http://demo-files-protected.gvideo.io/coffee_run/segment-2-svod720n-v1-a1.ts?exp
 
 ### Token in a path
 
-Tokens embedded into the URL path are not supported for CDN natively. This option is available for [Gcore&nbsp;Video&nbsp;Streaming](/streaming/interaction-with-cdn/video-secure-token):
+<p>CDN secure token carries `md5` and `expires` in the query string. [Gcore&nbsp;Video&nbsp;Streaming](/streaming/interaction-with-cdn/video-secure-token) places the token in the URL path:</p>
 
 ```text
 https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/master.m3u8
@@ -190,13 +194,13 @@ https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/rendition-1080.m3u8
 https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/segment-001.ts
 ```
 
-Example of token in path for Gcore Video Streaming:
+<p>A Video Streaming path token looks like this:</p>
 
 ```text
 https://demo-protected.gvideo.io/videos/2675_pG8TfmKx2LU2qs/rI1224fiE3USCa8qYnMuGQ/1861919999/master.m3u8
 ```
 
-Where:
+<p>The path has four parts:</p>
 
 - `https://demo-protected.gvideo.io` is the CDN URL
 - `/videos/2675_pG8TfmKx2LU2qs/` is the video ID
@@ -207,7 +211,7 @@ Where:
 
 ### PHP
 
-Script with IP-based access restriction — the file is accessible only from the allowlisted IP address until the link expires:
+<p>This script adds the client IP address to the hash, so the file stays reachable from that address until the link expires:</p>
 
 ```php
 <?php
@@ -225,7 +229,7 @@ echo $url;
 echo "\n";
 ```
 
-Script without IP restriction — the file is accessible from any IP address until the link expires:
+<p>This script signs the expiration, the path, and the key, so any client IP address can open the file until the link expires:</p>
 
 ```php
 <?php
@@ -242,7 +246,7 @@ echo $url;
 echo "\n";
 ```
 
-In these scripts:
+<p>In these scripts:</p>
 
 - `$secret` is the secret key
 - `$path` is the path to the file
@@ -252,7 +256,7 @@ In these scripts:
 
 ### Python
 
-Script with IP-based access restriction:
+<p>This script signs the expiration, the path, the client IP address, and the key:</p>
 
 ```python
 import base64
@@ -270,7 +274,7 @@ secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"
 print(secured_url)
 ```
 
-Script without IP restriction:
+<p>This script signs the expiration, the path, and the key:</p>
 
 ```python
 import base64
@@ -287,7 +291,7 @@ secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"
 print(secured_url)
 ```
 
-In these scripts:
+<p>In these scripts:</p>
 
 - `secret` is the secret key
 - `path` is the path to the file
@@ -297,32 +301,191 @@ In these scripts:
 
 ### OpenSSL
 
-Script that limits the link lifespan and restricts access to an allowlisted IP:
+<p>This command limits the link lifespan and adds the client IP address to the hash:</p>
 
 ```bash
 echo -n '2147483647/images/1.jpg1.2.3.4 secret_key' | openssl md5 -binary | openssl base64 | tr +/ -_ | tr -d =
 # Pattern: '{expires}{path}{ip} {secret_key}'
 ```
 
-Script that only limits the link lifespan:
+<p>This command signs the expiration, the path, and the key:</p>
 
 ```bash
 echo -n '2147483647/images/1.jpg secret_key' | openssl md5 -binary | openssl base64 | tr +/ -_ | tr -d =
 # Pattern: '{expires}{path} {secret_key}'
 ```
 
-In these scripts:
+<p>In these scripts:</p>
 
 - `2147483647/images/1.jpg` is the path to the file prefixed with the expiration timestamp
 - `1.2.3.4` is the IP address allowed to access the content
-- `secret_key` is the key entered in step 4 of the [portal&nbsp;configuration](#configure-secure-token-in-the-customer-portal)
+- `secret_key` is the key entered in **Enter a key**
 
-These scripts generate the secure token only. A separate script is needed to construct the full signed URL in the format `{path}?md5={token}&expires={expires}`.
+<p>These scripts generate the secure token only. A separate script is needed to construct the full signed URL in the format `{path}?md5={token}&expires={expires}`.</p>
 
 ## IP binding and mobile networks
 
-When a secure token is bound to the client's IP address, the CDN recomputes the hash using the IP it sees on the incoming request. This becomes a problem on some mobile networks. In certain countries, mobile ISPs change a subscriber's public IP address very aggressively — sometimes within minutes — because they route many subscribers through carrier-grade NAT (CGNAT) and rotate addresses across a pool. A token signed for one IP fails as soon as the carrier moves the user to another.
+<p>When a secure token includes the client IP address, the CDN recomputes the hash with the IP on the incoming request. A token signed for one address fails as soon as the carrier moves the client to another.</p>
 
-The effect is most visible with [Query&nbsp;String&nbsp;Forwarding](/cdn/cdn-resource-options/query-string-forwarding) for video. The player requests the manifest, gets a token, and the token is forwarded to related sub-segments. If the mobile ISP switches the client IP between requests, the next segment returns `403` while earlier segments returned `200`. Receiving `200` and `403` responses almost simultaneously for the same user on a mobile network is a strong indicator of mobile IP rotation rather than an expired or malformed token.
+<p>On some mobile networks the public address changes within minutes, because the ISP routes many subscribers through carrier-grade NAT and rotates addresses across a pool.</p>
 
-For Enterprise customers, Gcore can change the default token behavior from binding to a dedicated IP to binding to a wider subnet mask — `/24` or `/16` for very aggressive mobile operators. A wider mask still ties the URL to the ISP block — external sharing and hotlinking remain blocked — while tolerating IP rotation within that block. To enable it, contact [Gcore&nbsp;support](https://support.gcore.com/hc/en-us) or an account manager.
+<p>The effect shows up with Query String Forwarding for video. The player requests the manifest and receives a token, and the CDN forwards that token to the related segments. If the address changes between those requests, the next segment returns `403` while earlier segments returned `200`, so the mixed responses indicate address rotation rather than an expired or malformed token.</p>
+
+<p>For Enterprise customers, Gcore can bind the token to a `/24` or `/16` subnet instead of one address. The wider mask still ties the URL to the ISP block, so sharing outside that block stays blocked, while the client can move between addresses inside it. Contact [Gcore&nbsp;support](https://support.gcore.com/hc/en-us) or an account manager to enable the wider mask.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>`secure_key` sets the signing key for tokenized URLs. `type` `0` signs the expiration, the path, the client IP, and the key, with a space before the key, while `type` `2` signs the expiration, the path, and the key.</p>
+
+<p>`enabled` and `key` are required. A blank `key` returns HTTP 400, while a `key` longer than 255 characters returns HTTP 400.</p>
+
+<p>`type` accepts `0` or `2`, so any other value returns HTTP 400.</p>
+
+<p>When `type` is omitted, the stored value is `0`.</p>
+
+<p>Send JSON `null` to clear `secure_key`, while `enabled` false keeps the key and turns the option off.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export the token and the resource ID before running the calls. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Secure token
+
+<p>Send `secure_key` with `enabled` true, `key` set to `secretkey`, and `type` `2`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "secure_key": {
+                "enabled": True,
+                "key": "secretkey",
+                "type": 2,
+            },
+        },
+    )
+    print(
+        resource.options.secure_key.enabled,
+        resource.options.secure_key.key,
+        resource.options.secure_key.type,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                SecureKey: cdn.CDNResourceUpdateParamsOptionsSecureKey{
+                    Enabled: true,
+                    Key:     param.NewOpt("secretkey"),
+                    Type:    2,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.SecureKey.Enabled, resource.Options.SecureKey.Type, resource.Options.SecureKey.Key)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "secure_key": {
+            "enabled": true,
+            "key": "secretkey",
+            "type": 2
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "secure_key": {
+          "enabled": true,
+          "key": "secretkey",
+          "type": 2
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Restrict content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `secure_key` is enabled, a missing, expired, or incorrect hash returns `403 Forbidden`. A blank `key` returns HTTP 400 and the message `This field may not be blank.` Run `terraform apply` after editing `options`.</p>
+
+## Type 2 signing
+
+<p>`type` `2` signs the expiration, the path, and the key. `type` `0` also includes the client IP, with a space before the key. Set `enabled` to `true` and `key` to `secretkey`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    secure_key = {
+      enabled = true
+      key     = "secretkey"
+      type    = 2
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>
