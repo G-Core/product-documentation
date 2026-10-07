@@ -267,3 +267,14 @@ Append-only session notes. Add an entry every time this skill runs.
 - **Next suggested issue:** #1846 or user priority.
 
 ---
+
+## Article `description`
+
+If an issue requires writing or replacing frontmatter `description`, follow `.agents/references/mdx-rules.md`:
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about, using the words a person would type into search.
+- Do not write Portal, API, or Terraform.
+- Do not rewrite existing descriptions unless the task is a description pass.
+
+---

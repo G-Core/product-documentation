@@ -1,31 +1,38 @@
 ---
 title: "Specify cache lifetime for user browsers"
 sidebarTitle: "Configure browser caching"
-ai-navigation: Configure browser cache lifetime on CDN resources via the Gcore Customer Portal using Origin controlled or CDN controlled modes.
+description: Control browser caching for CDN resources by choosing origin controlled or CDN controlled cache lifetime.
 ---
 
-The Browser caching option controls how long CDN content is stored in end users' browsers. Two modes are available: **Origin controlled** and **CDN controlled**.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Use **Origin controlled** when the origin server already manages browser cache duration through response headers. Use **CDN controlled** to set a fixed expiry independently of origin configuration.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-When **Origin controlled** is active, Gcore CDN passes the origin's `Cache-Control` header to browsers unchanged. If the origin sends no `Cache-Control`, browsers may apply heuristic caching if a `Last-Modified` header is present. If neither header is present, content is not cached in the browser.
+<p>The Browser caching option controls how long CDN content is stored in end users' browsers. Two modes are available: **Origin controlled** and **CDN controlled**.</p>
 
-When **CDN controlled** is active, Gcore CDN overrides origin cache headers and adds the following to each response:
+<p>Use **Origin controlled** when the origin server already manages browser cache duration through response headers. Use **CDN controlled** to set a fixed browser cache lifetime independently of the origin headers.</p>
 
-- `Cache-Control` — sets the maximum browser cache time. A 12-hour expiry returns `Cache-Control: max-age=43200`.
+<p>When **Origin controlled** is active, the origin determines browser cache behavior through its response headers. Gcore CDN passes the origin's `Cache-Control` header to browsers unchanged.</p>
+
+<p>If the origin sends no `Cache-Control`, browsers may apply heuristic caching when a `Last-Modified` header is present. If neither header is present, the browser does not cache the response.</p>
+
+<p>When **CDN controlled** is active, Gcore CDN overrides the origin cache headers and sets the lifetime on the response:</p>
+
+- `Cache-Control` — sets the maximum browser cache time. A 12-hour lifetime returns `Cache-Control: max-age=43200`.
 - `Expires` — calculated from the current time plus the `max-age` value.
 
 <Note>
   Browser caching applies to responses with codes 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Responses with other codes will not be cached.
 </Note>
 
-## Enable browser caching
+## Configure browser caching
 
-To enable and configure browser caching on a CDN resource:
+<p>Configure browser caching on a CDN resource:</p>
 
 <Steps>
   <Step title="Navigate to CDN resources">
-    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** and click the custom domain of the target resource.
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CNAME of the required resource.
 
     <Frame>
       ![CDN resources list with custom domain names](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image1.png)
@@ -45,19 +52,19 @@ To enable and configure browser caching on a CDN resource:
   </Step>
 
   <Step title="Select the caching mode">
-    From the dropdown, select **Origin controlled** or **CDN controlled**. If Origin controlled is selected, the configuration is complete — proceed to save. For CDN controlled, configure the expiry using the expandable block.
+    From the dropdown, select **Origin controlled** or **CDN controlled**. If Origin controlled is selected, the configuration is complete — proceed to save. For CDN controlled, configure the cache lifetime using the expandable block.
 
     <Accordion title="Configure CDN controlled mode">
-      From the list, select an expiry period. The recommended value is four days.
+      In the **Cache expiry** list, select a cache lifetime. The list marks four days as recommended.
 
       <Frame>
         ![Cache expiry dropdown in CDN controlled mode showing duration options](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image3.png)
       </Frame>
 
-      To set a duration not in the list, select **Custom value** and enter the cache expiration time in seconds — to cache content for one day, enter `86400`.
+      To set a duration not in the list, select **Custom value** and enter the lifetime in seconds. To keep the response for one day, enter `86400`.
 
       <Frame>
-        ![Custom value field in CDN controlled mode with 86400 seconds entered](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image4.png)
+        ![Custom value field in CDN controlled mode](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers/specify-cache-lifetime-for-user-browsers-image4.png)
       </Frame>
     </Accordion>
   </Step>
@@ -66,3 +73,300 @@ To enable and configure browser caching on a CDN resource:
     Click **Save changes**.
   </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Set `options.browser_cache_settings` on a CDN resource. **Origin controlled** is selected in the Customer Portal. `enabled` `true` with `value` sets the CDN controlled lifetime. Find the resource ID in [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Cache lifetime
+
+<p>Send `enabled` true and `value` `4d` to store a four-day CDN controlled lifetime. For a custom lifetime, set `value` to a string of seconds. `86400` is one day.</p>
+
+<Note>
+`value` is required. A duration above `1y` returns HTTP 400.
+</Note>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    resource = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "browser_cache_settings": {"enabled": True, "value": "4d"},
+        },
+    )
+    print(resource.options.browser_cache_settings.enabled, resource.options.browser_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                BrowserCacheSettings: cdn.CDNResourceUpdateParamsOptionsBrowserCacheSettings{
+                    Enabled: true,
+                    Value:   "4d",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.BrowserCacheSettings.Enabled, resource.Options.BrowserCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "browser_cache_settings": {
+            "enabled": true,
+            "value": "4d"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "browser_cache_settings": {
+          "enabled": true,
+          "value": "4d"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn browser caching off
+
+<p>Set `enabled` to `false` and still send `value`. Browser caching turns off, and the stored `value` remains.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    resource = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "browser_cache_settings": {"enabled": False, "value": "4d"},
+        },
+    )
+    print(resource.options.browser_cache_settings.enabled, resource.options.browser_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        resource, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                BrowserCacheSettings: cdn.CDNResourceUpdateParamsOptionsBrowserCacheSettings{
+                    Enabled: false,
+                    Value:   "4d",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.BrowserCacheSettings.Enabled, resource.Options.BrowserCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "browser_cache_settings": {
+            "enabled": false,
+            "value": "4d"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": "4d"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set how long browsers keep a CDN response with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. **Origin controlled** is selected in the Customer Portal. With `enabled` set to `true`, `value` is the CDN controlled lifetime: the CDN overrides origin cache headers, sends `Cache-Control` with `max-age`, and sets `Expires` to the current time plus that `max-age`.</p>
+
+<p>The lifetime applies to responses `200`, `201`, `204`, `206`, `301`, `302`, `303`, `304`, `307`, and `308`. Other codes are not cached. A duration above `1y` returns HTTP 400.</p>
+
+## Set a CDN controlled lifetime
+
+<p>Set `enabled` to `true` and `value` to `4d` to keep responses in the browser for four days. The CDN sends `Cache-Control: max-age=345600`.</p>
+
+<p>Edit `value` and run `terraform apply` to change the lifetime.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    browser_cache_settings = {
+      enabled = true
+      value   = "4d"
+    }
+  }
+}
+```
+
+## Set a lifetime in seconds
+
+<p>Set `value` to `86400` for a one-day lifetime in seconds. The CDN sends `Cache-Control: max-age=86400`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    browser_cache_settings = {
+      enabled = true
+      value   = "86400"
+    }
+  }
+}
+```
+
+## Turn browser caching off
+
+<p>Set `enabled` to `false` and keep `value` in the same object. The next `terraform apply` turns browser caching off, and the stored `value` remains.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    browser_cache_settings = {
+      enabled = false
+      value   = "4d"
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

@@ -1,20 +1,30 @@
 ---
 title: Enable Image Stack
 sidebarTitle: Enable Image Stack
-ai-navigation: Enable Image Stack for CDN resources via Resource Settings or an Image optimization rule, and configure quality, compression, resize, and crop settings.
+description: Enable Image Stack on a CDN resource or rule to optimize JPG and PNG images with quality, compression, resize, and crop settings.
 ---
 
-Image Stack is enabled for a CDN resource in two places:
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-- **Resource Settings** — applies Image Stack to all requests for that resource. Use this only when the origin serves static image assets exclusively. For mixed-content origins, enabling it resource-wide causes conflicts with the [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) option.
-- **Rules** — applies Image Stack to requests matching a specific URL pattern. This is the recommended approach for most resources.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-The steps below describe how to enable Image Stack via a rule.
+<p>**Resource settings** apply Image Stack to every request on a CDN resource. Use it when the origin serves static images alone, because a resource-wide Image Stack conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) when the origin also serves other files.</p>
+
+<p>**Rules** apply Image Stack to URLs that match a pattern, and that is the usual choice.</p>
+
+## Image optimization rule
+
+<p>The rule pattern `/.*\.(jpg|jpeg|png)` limits Image Stack to JPG and PNG requests.</p>
 
 <Steps>
 <Step title="Open the CDN resource Rules tab">
 
-Open the settings of the required CDN resource and go to **Rules**. Click **Create rule** and select **Image optimization** from the template list.
+In the [Gcore Customer Portal](https://portal.gcore.com), open the required CDN resource.
+
+1. Navigate to **Rules**.
+2. Click **Create rule**.
+3. Select **Image optimization**.
 
 <Frame>
   <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/enable-image-stack-image1.png" alt="Create rule dropdown with Image optimization template selected" width="70%"/>
@@ -37,38 +47,38 @@ After enabling, configure the parameters:
   <img src="/images/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/enable-image-stack-image3.png" alt="Image Stack settings expanded showing Image quality, Compression, and Image Stack overview sections" width="70%"/>
 </Frame>
 
-**Image quality** — default quality level for delivered images. Four values are available:
+**Image quality** sets the default for delivered images. Four values are available:
 
 - High: 95%
 - Medium: 80%
 - Low: 65%
 - Custom value: 0–100%
 
-**Enable lossless for PNG** — delivers PNG images without any quality loss. When enabled, the quality setting has no effect on PNG files.
+**Enable lossless for PNG** delivers PNG images without quality loss. When it is on, the quality setting has no effect on PNG files.
 
 <Note>
-The quality setting cannot run independently. Enable at least one other option — Compression, Resize, or Crop — alongside Image quality. To set quality per individual image, add the `quality` query parameter to the image URL. For example: `https://image.example.com/image.jpg?fmt=avif&quality=50`
+Use Image quality together with Compression, Resize, or Crop, because quality does not change an image on its own. To set quality for one image, add `quality` to the image URL:
+
+```
+https://image.example.com/image.jpg?fmt=avif&quality=50
+```
 </Note>
 
-**Compression** — converts JPG and PNG images to WebP or AVIF format. Enable **Enable WebP compression**, **Enable AVIF compression**, or both. When both formats are enabled and the browser supports both, images are delivered in AVIF.
+**Compression** converts JPG and PNG images to WebP or AVIF. Enable **Enable WebP compression**, **Enable AVIF compression**, or both. When both formats are enabled and the browser accepts both, images are delivered in AVIF.
 
-To apply compression per individual image, add the `fmt` query parameter to the image URL:
+[Image&nbsp;compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) converts one file when the URL includes `fmt=webp` or `fmt=avif`:
 
 ```
 https://image.example.com/image.jpg?fmt=webp
 https://image.example.com/image.jpg?fmt=avif
 ```
 
-For more details, see [image&nbsp;compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif).
-
-**Image Stack overview** — the resize and crop operations are configured per image via query parameters. Because each image has unique dimensions and crop coordinates, there are no resource-level defaults for these operations.
-
-For query parameter reference, see [Crop&nbsp;images](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images) and [Reduce&nbsp;image&nbsp;size](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size).
+**Image Stack overview.** Resize and crop have no defaults on the CDN resource, because each image has its own dimensions. [Crop&nbsp;images](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images) trims a JPG or PNG to a target area, and [Reduce&nbsp;image&nbsp;size](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size) changes the width and height, both through query parameters on the image URL.
 
 </Step>
 <Step title="Save the rule">
 
-Click **Create rule** to save changes. Image Stack becomes active within 5–10 minutes.
+Click **Create rule**. Image Stack becomes active within 5–10 minutes.
 
 <Note>
 When a rule with Image Stack is saved, the resource cache clears automatically and CDN servers begin requesting content from the origin. To prevent origin overload during this period, consider enabling [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) first or scheduling the change during low-traffic hours.
@@ -76,3 +86,550 @@ When a rule with Image Stack is saved, the resource cache clears automatically a
 
 </Step>
 </Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Image Stack makes the images Gcore CDN delivers smaller. It converts each image to a lighter format and sets how much detail to keep, either for image URLs only or for every request on the CDN resource.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Enable Image Stack for image URLs
+
+<p>A rule stores Image Stack for paths that match `/.*\.(jpg|jpeg|png)`, so only JPG and PNG requests are converted. `ruleType` 0 is a regular expression and must start with `^/` or `/`.</p>
+
+<p>`enabled` is required. The call sets `quality` to 80, turns on WebP and AVIF, and sets `png_lossless` to true.</p>
+
+<p>A field left out of the request is stored as its default, so send every field that should stay set. `quality` outside 1-100 returns HTTP 400, and `quality` alone does not change the image. The JSON field is `image_stack`; the key `imageStack` is ignored. When the rule is created, the resource cache clears and CDN servers request the images from the origin. Enable Origin Shielding first, or make the change during low-traffic hours.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="image-stack",
+        rule="/.*\\.(jpg|jpeg|png)",
+        rule_type=0,
+        options={
+            "image_stack": {
+                "enabled": True,
+                "quality": 80,
+                "webp_enabled": True,
+                "avif_enabled": True,
+                "png_lossless": True,
+            }
+        },
+    )
+    saved = rule.options.image_stack
+    print(rule.id, saved.enabled, saved.quality, saved.webp_enabled, saved.avif_enabled, saved.png_lossless)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "image-stack",
+            Rule:     "/.*\\.(jpg|jpeg|png)",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                ImageStack: cdn.CDNResourceRuleNewParamsOptionsImageStack{
+                    Enabled:     true,
+                    Quality:     gcore.Int(80),
+                    WebpEnabled: gcore.Bool(true),
+                    AvifEnabled: gcore.Bool(true),
+                    PngLossless: gcore.Bool(true),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := rule.Options.ImageStack
+        fmt.Println(rule.ID, saved.Enabled, saved.Quality, saved.WebpEnabled, saved.AvifEnabled, saved.PngLossless)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "image-stack",
+        "rule": "/.*\\.(jpg|jpeg|png)",
+        "ruleType": 0,
+        "options": {
+          "image_stack": {
+            "enabled": true,
+            "quality": 80,
+            "webp_enabled": true,
+            "avif_enabled": true,
+            "png_lossless": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "avif_enabled": true,
+      "webp_enabled": true,
+      "quality": 80,
+      "png_lossless": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>95, 80, and 65 are the high, medium, and low quality settings. When WebP and AVIF are both on and the browser accepts both, the image is delivered as AVIF, and `png_lossless` true means `quality` has no effect on PNG. Resize, crop, and a per-image `quality` or `fmt` value are query parameters, not fields of `image_stack`: [Crop&nbsp;images](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images) trims to a target area, [Reduce&nbsp;image&nbsp;size](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size) changes the width and height, and [image&nbsp;compression](/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif) sets `fmt` for one file.</p>
+
+## Enable Image Stack on the resource
+
+<p>Unlike a URL rule, these fields apply Image Stack to every request on the CDN resource. Use them when the origin serves only static images.</p>
+
+<p>A resource-wide Image Stack conflicts with [Rewrite](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack#conflict-with-the-rewrite-option) when the origin also serves other files.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "image_stack": {
+                "enabled": True,
+                "quality": 80,
+                "webp_enabled": True,
+                "avif_enabled": True,
+                "png_lossless": True,
+            }
+        },
+    )
+    saved = updated.options.image_stack
+    print(saved.enabled, saved.quality, saved.webp_enabled, saved.avif_enabled, saved.png_lossless)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ImageStack: cdn.CDNResourceUpdateParamsOptionsImageStack{
+                    Enabled:     true,
+                    Quality:     gcore.Int(80),
+                    WebpEnabled: gcore.Bool(true),
+                    AvifEnabled: gcore.Bool(true),
+                    PngLossless: gcore.Bool(true),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := updated.Options.ImageStack
+        fmt.Println(saved.Enabled, saved.Quality, saved.WebpEnabled, saved.AvifEnabled, saved.PngLossless)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "image_stack": {
+            "enabled": true,
+            "quality": 80,
+            "webp_enabled": true,
+            "avif_enabled": true,
+            "png_lossless": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "avif_enabled": true,
+      "webp_enabled": true,
+      "quality": 80,
+      "png_lossless": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn Image Stack off
+
+<p>Conversion stops, while the saved quality and compression flags stay in place.</p>
+
+<p>Send `enabled` as `false` together with the same `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`. `enabled` false alone stores the defaults instead: `quality` 95 and every flag false.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "image_stack": {
+                "enabled": False,
+                "quality": 80,
+                "webp_enabled": True,
+                "avif_enabled": True,
+                "png_lossless": True,
+            }
+        },
+    )
+    saved = updated.options.image_stack
+    print(saved.enabled, saved.quality, saved.webp_enabled, saved.avif_enabled, saved.png_lossless)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                ImageStack: cdn.CDNResourceUpdateParamsOptionsImageStack{
+                    Enabled:     false,
+                    Quality:     gcore.Int(80),
+                    WebpEnabled: gcore.Bool(true),
+                    AvifEnabled: gcore.Bool(true),
+                    PngLossless: gcore.Bool(true),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := updated.Options.ImageStack
+        fmt.Println(saved.Enabled, saved.Quality, saved.WebpEnabled, saved.AvifEnabled, saved.PngLossless)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "image_stack": {
+            "enabled": false,
+            "quality": 80,
+            "webp_enabled": true,
+            "avif_enabled": true,
+            "png_lossless": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "avif_enabled": true,
+      "webp_enabled": true,
+      "quality": 80,
+      "png_lossless": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove Image Stack
+
+<p>Sending `image_stack` as JSON `null` deletes the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"image_stack": None},
+    )
+    print(updated.options.image_stack)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "image_stack": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.ImageStack.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "image_stack": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Image Stack converts JPG and PNG images to WebP or AVIF and sets how much detail to keep. A rule limits conversion to JPG and PNG requests. On the resource, the same fields apply to every request, which fits an origin that serves static images only. A resource-wide Image Stack conflicts with Rewrite when the origin also serves other files. Declare the option with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>A new resource without `image_stack` leaves the option unset. After the option is saved, keep the object in the configuration. Setting `image_stack` to `null`, or removing the `options` block, leaves the saved `enabled`, `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless` in place. A REST API call removes the option by sending JSON `null`.</p>
+
+<p>`quality` is an integer from 1 to 100. 95, 80, and 65 are the high, medium, and low settings. 0 and 101 are rejected before `terraform apply`: the provider reports that `quality` must be between 1 and 100. Setting `enabled` to `false` and leaving out `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless` stores `quality` 95 and sets those three flags to false. With `png_lossless` true, `quality` has no effect on PNG. When WebP and AVIF are both on and the browser accepts both, the image is delivered as AVIF. Quality changes an image only together with compression, resize, or crop. Resize, crop, and a per-image `quality` or `fmt` value are query parameters, not fields of `image_stack`.</p>
+
+## Enable Image Stack for image URLs
+
+<p>The rule converts JPG and PNG requests. `rule_type` `0` matches a regular expression, and the pattern is `/.*\.(jpg|jpeg|png)`. The resource keeps Image Stack turned off, with `quality` 80 and WebP, AVIF, and lossless PNG still stored. Saving the rule clears the resource cache, and CDN servers request the images from the origin. Enable Origin Shielding first, or apply the change during low-traffic hours.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = false
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "example" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "image-stack"
+  rule        = "/.*\\.(jpg|jpeg|png)"
+  rule_type   = 0
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
+
+## Enable Image Stack on the resource
+
+<p>These fields apply Image Stack to every request on the CDN resource. Use them when the origin serves only static images. Set `enabled`, `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = true
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
+
+## Turn Image Stack off
+
+<p>Conversion stops, while the saved quality and compression flags stay in place. Set `enabled` to `false` and keep `quality`, `webp_enabled`, `avif_enabled`, and `png_lossless`, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    image_stack = {
+      enabled      = false
+      quality      = 80
+      webp_enabled = true
+      avif_enabled = true
+      png_lossless = true
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

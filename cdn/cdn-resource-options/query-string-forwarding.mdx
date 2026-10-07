@@ -1,20 +1,23 @@
 ---
 title: "Query String Forwarding: forward parameters to sub-requests"
 sidebarTitle: Query String Forwarding
-ai-navigation: Configure Query String Forwarding in Gcore CDN to copy query string parameters from parent manifest requests to nested HLS and MPEG-DASH file requests, specifying forward_from_file_types, forward_to_file_types, and forward_only_keys via portal or API.
+description: Query String Forwarding copies selected query parameters to nested HLS and MPEG-DASH manifests and segments on Gcore CDN.
 ---
 
-## Overview
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-**Query String Forwarding** copies selected query string parameters from a parent file request to nested file requests. It is mainly used for HLS and MPEG-DASH video, where a viewer requests a master manifest first, and that manifest references rendition manifests, media segments, subtitles, or other related files.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-For example, a viewer can request a protected HLS master manifest with a secure token:
+<p>Query String Forwarding adds selected query string parameters to nested file addresses in a playlist before Gcore CDN returns the file. It is mainly used for HLS and MPEG-DASH video, where a viewer requests a master manifest first, and that manifest references rendition manifests, media segments, subtitles, or other related files.</p>
+
+<p>A viewer requests a protected HLS master manifest with a secure token:</p>
 
 ```text
 http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
 ```
 
-Without this option, nested manifests and segments in the manifest body are transferred as is, meaning they don't have query string parameters:
+<p>Without this option, URLs for nested manifests and segments in the playlist stay unchanged, so they have no query string parameters:</p>
 
 ```text
 manifest.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
@@ -22,7 +25,7 @@ index720.m3u8                 <= as is, without token parameters
 chunk720-1.ts                 <= as is, without token parameters
 ```
 
-When `Query String Forwarding` is enabled, the CDN automatically inserts the parameters from the initial request into nested manifests and segments. For example, for Secure Token, the `md5` and `expires` parameters are forwarded:
+<p>When Query String Forwarding is enabled, the CDN inserts the `md5` and `expires` parameters from the initial request into nested manifests and segments:</p>
 
 ```text
 manifest.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
@@ -30,79 +33,410 @@ index720.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
 chunk720-1.ts?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
 ```
 
-Example with enabled Query String Forwarding:
-
-<Frame>![Example of query string forwarding settings](/images/docs/cdn/cdn-resource-options/query-string-forwarding/cdn-query-string-forwarding-enabled.png)</Frame>
-
-A video player requests only the main manifest and receives a modified version with security parameters already included in all internal links: 
-
-<Frame>![Query string parameters are inserted into manifest body links automatically](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-token-forwarding-body.png)</Frame>
-
-As the result, the video player doesn't need to operate with tokens for each file, as it reads data from modified manifests instead.
-
-<Frame>![Query string parameters are forwarded from the master manifest to nested manifests and segments](/images/docs/cdn/video-cdn/improve-video-delivery-speed/cdn-token-forwarding-query.png)</Frame>
-
+<Frame>![Query string parameters from the master manifest request are added to nested playlist links](/images/docs/cdn/cdn-resource-options/query-string-forwarding/cdn-query-string-forwarding-enabled.png)</Frame>
 
 ## Configure in the Customer Portal
 
-To configure Query String Forwarding in the Gcore Customer Portal:
+<p>Set Query String Forwarding on a CDN resource in the [Gcore Customer Portal](https://portal.gcore.com).</p>
 
-1. Go to **CDN** and select the CDN resource you want to configure.
-2. In the sidebar, under the **Content** section, click **Query String Forwarding**.
+<Steps>
+  <Step title="Open the CDN resource">
+    Navigate to **CDN** and select the CDN resource to configure.
+  </Step>
+  <Step title="Open Query String Forwarding">
+    In the sidebar, under the **Content** section, click **Query String Forwarding**.
 
-<Frame>
-  <img src="/images/docs/cdn/cdn-resource-options/query-string-forwarding/cdn-query-string-forwarding-settings.png" alt="CDN Query String Forwarding settings" style={{ maxHeight: '300px' }} />
-</Frame>
+    <Frame>
+      <img src="/images/docs/cdn/cdn-resource-options/query-string-forwarding/cdn-query-string-forwarding-settings.png" alt="CDN Query String Forwarding settings" style={{ maxHeight: '300px' }} />
+    </Frame>
+  </Step>
+  <Step title="Enable forwarding">
+    Enable the option.
+  </Step>
+  <Step title="Set the file types and keys">
+    Apply these settings for HLS and DASH video:
 
-3. Enable the option.
-4. Apply settings (example for HLS/DASH video):
+    - **Forward from file types**: add `m3u8`, `mpd`, or any others.
+    - **Forward to file types**: add `ts`, `mp4`, `m3u8`, `m4s`, `vtt`, or any others.
+    - **Forward only keys**: add the query string parameter names to copy: `md5`, `expires`, or any others.
+  </Step>
+  <Step title="Save the resource">
+    Save the CDN resource.
+  </Step>
+</Steps>
 
-   - **Forward from file types**: add `m3u8`, `mpd`, or any others. 
-   - **Forward to file types**: add `ts`, `mp4`, `m3u8`, `m4s`, `vtt`, or any others.
-   - **Forward only keys**: add `md5`, `expires`, or any others.
-   
-5. Save the CDN resource.
-
-
-## Configure by API
-
-Use the same values when updating a CDN resource by API.
-
-<Accordion title="AI agent instruction: CDN resource update JSON">
-When automating CDN resource setup, enable Query String Forwarding and pass this JSON object in the CDN resource update payload:
-
-```json
-{
-  "enabled": true,
-  "forward_from_file_types": [
-    "m3u8",
-    "mpd"
-  ],
-  "forward_to_file_types": [
-    "ts",
-    "mp4",
-    "m3u8",
-    "m4s",
-    "vtt"
-  ],
-  "forward_only_keys": [
-    "md5",
-    "expires"
-  ]
-}
-```
-</Accordion>
 ## Demo links
 
-Use these links to check how Query String Forwarding work with a real ABR stream:
+<p>Use these links to check how Query String Forwarding works with a real ABR stream:</p>
 
 - Manifest URL: [master.m3u8](http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
-- hls.js player demo: [open protected HLS stream](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.m3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
+- hls.js player demo: [HLS&nbsp;player](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.m3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
 - MPEG-DASH manifest URL: [master.mpd](https://demo-files-protected.gvideo.io/coffee_run/master.mpd?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
-- dash.js player demo: [open protected MPEG-DASH stream](https://reference.dashif.org/dash.js/nightly/samples/dash-if-reference-player/index.html?autoplay=true&loop=true&stream=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.mpd%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
+- dash.js player demo: [DASH&nbsp;player](https://reference.dashif.org/dash.js/nightly/samples/dash-if-reference-player/index.html?autoplay=true&loop=true&stream=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.mpd%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
 
-Links to demo files are valid until January 1, 2030.
+<p>Links to demo files are valid until January 1, 2030.</p>
 
-## Recommended settings for HLS and MPEG-DASH
+<p>HLS and MPEG-DASH playlists keep a [secure&nbsp;token](/cdn/video-cdn/secure-token#recommended-settings-for-hls-and-mpeg-dash) on `md5` and `expires`.</p>
 
-For video-specific setup, recommended file types, and Secure Token path rules, see [Secure token for video](/cdn/video-cdn/secure-token#recommended-settings-for-hls-and-mpeg-dash).
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A player requests one playlist, and that playlist names the renditions and segments without the query string from the first request. Query string forwarding copies selected parameters onto those nested addresses. Gcore CDN rewrites the links inside the playlist before it returns the file.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Forward selected parameters
+
+<p>Copy `md5` and `expires` from requests for `m3u8` and `mpd` files onto the nested `ts`, `mp4`, `m3u8`, `m4s`, and `vtt` files.</p>
+
+<p>`enabled`, `forward_from_file_types`, and `forward_to_file_types` are required. Each list needs at least one value, with no repeats, and each extension is written without a leading dot. `forward_only_keys` and `forward_except_keys` cannot be sent in the same request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "query_string_forwarding": {
+                "enabled": True,
+                "forward_from_file_types": ["m3u8", "mpd"],
+                "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+                "forward_only_keys": ["md5", "expires"],
+            }
+        },
+    )
+    saved = updated.options.query_string_forwarding
+    print(saved.enabled, saved.forward_from_file_types, saved.forward_only_keys)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                QueryStringForwarding: cdn.CDNResourceUpdateParamsOptionsQueryStringForwarding{
+                    Enabled:              true,
+                    ForwardFromFileTypes: []string{"m3u8", "mpd"},
+                    ForwardToFileTypes:   []string{"ts", "mp4", "m3u8", "m4s", "vtt"},
+                    ForwardOnlyKeys:      []string{"md5", "expires"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.QueryStringForwarding.Enabled, updated.Options.QueryStringForwarding.ForwardOnlyKeys)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "query_string_forwarding": {
+            "enabled": true,
+            "forward_from_file_types": ["m3u8", "mpd"],
+            "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+            "forward_only_keys": ["md5", "expires"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "forward_from_file_types": ["m3u8", "mpd"],
+      "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+      "forward_only_keys": ["md5", "expires"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Turn forwarding off
+
+<p>Set `enabled` to `false` and send the same file types and keys. Gcore CDN keeps the saved lists and stops copying the parameters. `enabled` alone returns HTTP 400, because the file-type lists are still required.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "query_string_forwarding": {
+                "enabled": False,
+                "forward_from_file_types": ["m3u8", "mpd"],
+                "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+                "forward_only_keys": ["md5", "expires"],
+            }
+        },
+    )
+    saved = updated.options.query_string_forwarding
+    print(saved.enabled, saved.forward_only_keys)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                QueryStringForwarding: cdn.CDNResourceUpdateParamsOptionsQueryStringForwarding{
+                    Enabled:              false,
+                    ForwardFromFileTypes: []string{"m3u8", "mpd"},
+                    ForwardToFileTypes:   []string{"ts", "mp4", "m3u8", "m4s", "vtt"},
+                    ForwardOnlyKeys:      []string{"md5", "expires"},
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.QueryStringForwarding.Enabled, updated.Options.QueryStringForwarding.ForwardOnlyKeys)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "query_string_forwarding": {
+            "enabled": false,
+            "forward_from_file_types": ["m3u8", "mpd"],
+            "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+            "forward_only_keys": ["md5", "expires"]
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "forward_from_file_types": ["m3u8", "mpd"],
+      "forward_to_file_types": ["ts", "mp4", "m3u8", "m4s", "vtt"],
+      "forward_only_keys": ["md5", "expires"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Remove forwarding
+
+<p>Send `query_string_forwarding` as JSON `null` to remove the option. The next read returns `null`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"query_string_forwarding": None},
+    )
+    print(updated.options.query_string_forwarding)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        options := cdn.CDNResourceUpdateParamsOptions{}
+        options.SetExtraFields(map[string]any{
+            "query_string_forwarding": nil,
+        })
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: options,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.QueryStringForwarding.RawJSON())
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "query_string_forwarding": null
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    null
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>The [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2 adds `md5` and `expires` from a playlist request to the nested file addresses before Gcore CDN returns the playlist. A master manifest requested with those parameters is returned with the same parameters on the rendition and segment links. Run `terraform apply` after editing `options`.</p>
+
+## Forward selected parameters
+
+<p>Gcore CDN rewrites links inside `m3u8` and `mpd` files so nested `ts`, `mp4`, `m3u8`, `m4s`, and `vtt` files receive `md5` and `expires` from the parent request. Set `enabled` to `true`. `forward_from_file_types` and `forward_to_file_types` are required. Write each extension without a leading dot.</p>
+
+<p>`forward_only_keys` lists the parameters to copy. `forward_except_keys` lists parameters to leave out. Sending both returns HTTP 400.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    query_string_forwarding = {
+      enabled                  = true
+      forward_from_file_types = ["m3u8", "mpd"]
+      forward_to_file_types   = ["ts", "mp4", "m3u8", "m4s", "vtt"]
+      forward_only_keys       = ["md5", "expires"]
+    }
+  }
+}
+```
+
+## Turn forwarding off
+
+<p>Set `enabled` to `false` and keep the same file types and keys. Gcore CDN keeps the saved lists and stops copying the parameters. A resource created without this block leaves query string forwarding unset.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    query_string_forwarding = {
+      enabled                  = false
+      forward_from_file_types = ["m3u8", "mpd"]
+      forward_to_file_types   = ["ts", "mp4", "m3u8", "m4s", "vtt"]
+      forward_only_keys       = ["md5", "expires"]
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

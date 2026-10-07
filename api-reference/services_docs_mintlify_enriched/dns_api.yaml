@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – DNS API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 2a13a4eda450
+  version: cf9de6156f72
 servers:
 - url: https://api.gcore.com
 paths:
@@ -1229,8 +1229,8 @@ paths:
       - SecondaryZones
       summary: Create secondary zone
       description: |-
-        Create a secondary zone. Optionally include `primary_server` to create
-        the first primary server in the same request.
+        Create a secondary zone. Optionally include `primary_server` (one) or
+        `primary_servers` (a list) to create its primaries atomically in the same request.
       operationId: CreateSecondaryZone
       requestBody:
         content:
@@ -1779,6 +1779,14 @@ paths:
       - name: healthcheck
         in: query
         description: Zones with RRsets that have healthchecks
+        schema:
+          type: boolean
+      - name: is_secondary
+        in: query
+        description: |-
+          Filter by AXFR secondary zone marker (meta.`is_secondary`).
+          true returns only secondary zones, false returns only zones without that marker
+          (primary zones have no `is_secondary` key at all), omitted returns all zones.
         schema:
           type: boolean
       - name: updated_at_from
@@ -3391,6 +3399,13 @@ components:
           format: int64
         primary_server:
           $ref: '#/components/schemas/CreatePrimaryServerPayload'
+        primary_servers:
+          type: array
+          description: |-
+            Seed the zone with one or more primary servers in this same request, atomically. Mutually
+            exclusive with `primary_server`.
+          items:
+            $ref: '#/components/schemas/CreatePrimaryServerPayload'
         transfer_mode:
           type: string
           description: Transfer mode. Defaults to push when omitted.

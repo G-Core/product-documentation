@@ -1,14 +1,14 @@
 ---
 title: Manage CDN resources with Terraform v0
 sidebarTitle: Manage via Terraform v0
-ai-navigation: Create and manage Gcore CDN resources using Terraform provider v0. Covers origin groups with host and S3 origins, CDN resources with delivery options, SSL certificates (automated and manual), CA certificates for origin verification, CDN rules, rule templates, presets, account configuration, origin shielding (premium), and CDN logs uploader (premium). Uses gcore_cdn_origingroup, gcore_cdn_resource, gcore_cdn_sslcert, gcore_cdn_cacert, gcore_cdn_rule, gcore_cdn_rule_template, gcore_cdn_applied_preset, gcore_cdn_client_config, gcore_cdn_originshielding, gcore_cdn_logs_uploader_policy, gcore_cdn_logs_uploader_target, gcore_cdn_logs_uploader_config resources.
+description: Manage CDN origin groups, resources, SSL certificates, and delivery options with Gcore provider v0 configuration files.
 ---
 
 With the Gcore Terraform provider v0, teams define CDN resources in configuration files, then apply them consistently without clicking through the Portal.
 
 The following resources are supported: origin groups, CDN resources with delivery options, SSL certificates, CA certificates, rules, rule templates, presets, account configuration, origin shielding, and CDN log uploading.
 
-Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). The [v2 reference](/cdn/terraform/manage-cdn-via-terraform-v2) covers the equivalent resources for provider v2, with a [migration guide](/developer-tools/terraform/migrate-v0-to-v2) for existing v0 configurations.
+Provider installation and authentication are covered in the [Terraform&nbsp;overview](/developer-tools/terraform/overview). [Provider&nbsp;v2](/cdn/terraform/manage-cdn-via-terraform-v2) renames the CDN resources and describes the options map and presets, with a [migration&nbsp;guide](/developer-tools/terraform/migrate-v0-to-v2) for existing v0 configurations.
 
 ## Workflow
 
@@ -99,15 +99,32 @@ resource "gcore_cdn_origingroup" "s3_example" {
 
 - Set `origin_type = "s3"` in the `origin` block.
 - In the nested `config` block:
-  - Set `s3_type`: `"amazon"` for Amazon S3, or `"other"` for S3-compatible storage.
-  - Specify `s3_bucket_name`.
-  - Specify `s3_region` — required when `s3_type` is `"amazon"`.
-  - Specify `s3_storage_hostname` — required when `s3_type` is `"other"`.
-  - Specify `s3_access_key_id` and `s3_secret_access_key`.
+  - Set `s3_type`: `"amazon"` for Amazon S3, `"other"` for other S3-compatible storage, or `"gcore"` for a bucket in Gcore Object Storage.
+  - Specify `s3_bucket_name`. The bucket must already exist.
+  - Specify `s3_region` when `s3_type` is `"amazon"`.
+  - Specify `s3_storage_hostname` when `s3_type` is `"other"`.
+  - Specify `s3_access_key_id` and `s3_secret_access_key` when `s3_type` is `"amazon"` or `"other"`.
+  - Specify `storage_id` when `s3_type` is `"gcore"`. That origin does not take access keys, `s3_region`, `s3_storage_hostname`, or `host_header_override`.
 
-<Tip>
-To use Gcore Object Storage as an S3 origin, set `s3_type = "other"` and provide the `s3_storage_hostname` for the storage endpoint.
-</Tip>
+A Gcore Object Storage origin takes the storage id and the name of a bucket that already exists in that storage. Replace `1234` with that storage id.
+
+```hcl
+resource "gcore_cdn_origingroup" "gcore_storage" {
+  name     = "gcore-storage-group"
+  use_next = false
+
+  origin {
+    enabled     = true
+    origin_type = "s3"
+
+    config {
+      s3_type        = "gcore"
+      storage_id     = 1234
+      s3_bucket_name = "cdn-content"
+    }
+  }
+}
+```
 
 ### Add S3 authentication at the group level
 

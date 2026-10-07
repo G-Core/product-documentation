@@ -1,23 +1,30 @@
 ---
 title: Set the hostname passed in SNI requests to the origin
 sidebarTitle: Set SNI hostname
-ai-navigation: Configure Change SNI hostname on a CDN resource to control which hostname CDN servers include in TLS handshakes when pulling content from the origin over HTTPS.
+description: Configure the SNI hostname CDN servers send to the origin, choosing dynamic or custom modes for HTTPS origin pulls.
 ---
 
-Server Name Indication (SNI) is a TLS extension that tells the origin server which hostname the CDN is connecting to during a TLS handshake. It allows an origin serving multiple hostnames over the same IP address to select the appropriate SSL certificate.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-The **Change SNI hostname** option controls this hostname. It is enabled by default on all CDN resources and takes effect only when CDN servers pull content from the origin over HTTPS.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-To configure the SNI hostname mode:
+<p>Server Name Indication (SNI) is a TLS extension that tells the origin server which hostname the CDN is connecting to during a TLS handshake. It allows an origin serving multiple hostnames over the same IP address to select the appropriate SSL certificate.</p>
 
-1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**.
+<p>The **Change SNI hostname** option controls this hostname. It is enabled by default on all CDN resources and takes effect only when CDN servers pull content from the origin over HTTPS.</p>
 
-2. Click the CNAME of the resource to open its settings.
+## SNI hostname
 
-3. On the **OPTIONS** tab, scroll to the **SNI hostname** section and select a mode:
+<p>To configure the SNI hostname mode:</p>
 
-   - **Dynamic SNI hostname** (default) — the CDN uses the hostname set in the **Change Host Header** option.
-   - **Custom SNI hostname** — enter a specific hostname in the **Specify SNI hostname** field. IP addresses are not accepted.
+<p>1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**.</p>
+
+<p>2. Click the CNAME of the resource to open its settings.</p>
+
+<p>3. On the **OPTIONS** tab, scroll to the **SNI hostname** section and select a mode:</p>
+
+- **Dynamic SNI hostname** (default) — the CDN uses the hostname set in the **Change Host Header** option.
+- **Custom SNI hostname** — enter a specific hostname in the **Specify SNI hostname** field. IP addresses are not accepted.
 
 <Frame>
   <img src="/images/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/set-the-hostname-passed-in-sni-requests-to-the-origin-server-image1.png" alt="SNI hostname section with Dynamic SNI hostname selected" width="70%" />
@@ -27,4 +34,166 @@ To configure the SNI hostname mode:
   <img src="/images/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/set-the-hostname-passed-in-sni-requests-to-the-origin-server-image2.png" alt="SNI hostname section with Custom SNI hostname selected and Specify SNI hostname input field visible" width="70%" />
 </Frame>
 
-4. Click **Save changes**.
+<p>4. Click **Save changes**.</p>
+
+<p>5. Confirm the hostname on the origin.</p>
+
+<p>Inspect the TLS logs for connections from CDN servers. The SNI extension contains the selected hostname. **Dynamic SNI hostname** uses the hostname from **Change Host Header**. **Custom SNI hostname** uses the value in **Specify SNI hostname**.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>`options.sni` sets the hostname CDN servers include in SNI requests to the origin. The option works only when the origin protocol is HTTPS or MATCH.</p>
+
+<p>With `sni_type` `dynamic`, the SNI hostname comes from the Host header options:</p>
+
+- `hostHeader` enabled: the SNI hostname matches that Host header.
+- `forward_host_header` true: the SNI hostname matches the Host header of the request to the CDN.
+- Both disabled: the SNI hostname matches the primary CNAME.
+
+<p>`sni_type` `custom` uses `custom_hostname`.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+<p>Export these variables. `CDN_RESOURCE_ID` is the `id` from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## SNI hostname
+
+<p>Both `enabled` and `custom_hostname` are required by the API. For dynamic mode, send `custom_hostname` as an empty string. `sni_type` accepts `dynamic` or `custom`. Any other value returns HTTP 400.</p>
+
+<p>For `custom`, an empty `custom_hostname` returns HTTP 400. `custom_hostname` must be a domain name. An IP address returns HTTP 400.</p>
+
+<p>Omitting `sni_type` stores `dynamic` and clears `custom_hostname`. `enabled` false keeps the stored `sni_type` and `custom_hostname`. Sending `null` removes `options.sni`.</p>
+
+<p>The request sets a custom SNI hostname.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        12345,  # CDN resource ID
+        options={
+            "sni": {
+                "enabled": True,
+                "sni_type": "custom",
+                "custom_hostname": "origin.example.com",
+            },
+        },
+    )
+    print(resource.options.sni.enabled, resource.options.sni.sni_type, resource.options.sni.custom_hostname)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 12345, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Sni: cdn.CDNResourceUpdateParamsOptionsSni{
+                    Enabled:        true,
+                    SniType:        "custom",
+                    CustomHostname: "origin.example.com",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.Sni.Enabled, resource.Options.Sni.SniType, resource.Options.Sni.CustomHostname)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "sni": {
+            "enabled": true,
+            "sni_type": "custom",
+            "custom_hostname": "origin.example.com"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 12345,
+      "options": {
+        "sni": {
+          "enabled": true,
+          "sni_type": "custom",
+          "custom_hostname": "origin.example.com"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set the hostname CDN servers send in SNI requests to an HTTPS origin with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. `sni_type` `custom` sends `custom_hostname` during the TLS handshake. `sni_type` `dynamic` takes the hostname from the Host header options: an enabled Host header, a forwarded Host header, or the primary CNAME when both are disabled. An IP address in `custom_hostname` returns HTTP 400 and the message `Incorrect field value. Must be a valid domain name`. Run `terraform apply` after editing `options`.</p>
+
+## Custom SNI hostname
+
+<p>Set `enabled` to `true`, `sni_type` to `custom`, and `custom_hostname` to the origin hostname. For `dynamic`, set `sni_type` to `dynamic` and `custom_hostname` to an empty string.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    sni = {
+      enabled         = true
+      sni_type        = "custom"
+      custom_hostname = "origin.example.com"
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

@@ -1,7 +1,7 @@
 ---
 title: CDN cache lifetime configuration
 sidebarTitle: Configure CDN caching
-ai-navigation: Configure CDN cache lifetime in the Customer Portal or via REST API with origin headers, a CDN lifetime, or per-code rules.
+description: Configure CDN cache lifetime from origin headers or CDN settings, including custom expiry by response code and disabling caching.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,10 +9,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Choose where the cache lifetime comes from. Origin controlled uses caching headers from the origin and a fallback lifetime from the CDN settings. CDN controlled uses the lifetime configured on the CDN. In CDN controlled mode, an advanced rule overrides that lifetime for one response code.</p>
+<p>Choose where the cache lifetime comes from. Origin controlled uses caching headers from the origin and a fallback lifetime from the CDN settings. CDN controlled uses the lifetime configured on the CDN. Advanced rules can set a separate caching time for specific response codes.</p>
 
 <Note>
-Files users have not requested within 36 hours will be removed from the CDN servers' cache, regardless of the feature settings.
+Files that users have not requested within 36 hours will be removed from the CDN servers' cache, regardless of the feature settings.
 </Note>
 
 ## CDN caching configuration
@@ -23,7 +23,7 @@ CDN caching eligibility is based on HTTP response status codes and `Cache-Contro
 
 ### Origin controlled
 
-<p>If the origin does not already send `Cache-Control`, configure it before selecting Origin controlled. Then set the fallback cache expiry.</p>
+<p>Configure `Cache-Control` on the origin when the origin should control freshness. **Default cache expiry** is the fallback when the origin does not send caching headers.</p>
 
 <Steps>
   <Step title="Configure Cache-Control on the origin server">
@@ -54,7 +54,7 @@ CDN caching eligibility is based on HTTP response status codes and `Cache-Contro
     ```
   </Step>
   <Step title="Open the CDN resource settings">
-    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CNAME of the resource where the `Cache-Control` header is configured.
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the CNAME of the required resource.
 
     <Frame>![CDN resources list page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources.png)</Frame>
   </Step>
@@ -89,7 +89,7 @@ CDN caching eligibility is based on HTTP response status codes and `Cache-Contro
 <p>These settings are independent — CDN caching can be set to **Do not cache** in the main settings while enabled in an advanced rule, and vice versa.</p>
 
 <Warning>
-CDN caching applies only to responses with status codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` status codes are not cached by default. To cache `404` or other non-default status codes, configure an advanced caching rule under the **Enable CDN caching via advanced caching rules** tab below.
+By default, CDN caching applies to responses with status codes `200`, `206`, `301`, and `302`. Responses with `4xx` and `5xx` status codes require an advanced caching rule. To cache `404` or another non-default status code, configure a rule under the **Enable CDN caching via advanced caching rules** tab below.
 </Warning>
 
 <Tabs>
@@ -118,7 +118,7 @@ CDN caching applies only to responses with status codes `200`, `206`, `301`, and
         Specify the caching timespan in the **Cache expiry** field. Select a predefined value from the list or select **Custom value** and enter a time in seconds.
 
         <Warning>
-        If the **Do not cache** option is selected, caching is disabled even when the **Enable CDN caching** toggle is enabled.
+        If the **Do not cache** option is selected, caching is disabled for the general resource setting even when the **Enable CDN caching** toggle is enabled. Matching advanced caching rules can still cache responses.
         </Warning>
       </Step>
       <Step title="Configure advanced rules (optional)">
@@ -149,9 +149,9 @@ CDN caching applies only to responses with status codes `200`, `206`, `301`, and
 
         <Frame>![Advanced caching rule form with Response code and Caching time fields](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/advanced-caching-rule.png)</Frame>
 
-        The Caching time in advanced rules takes priority over the general Cache expiry.
+        The **Caching time** in advanced rules takes priority over the general **Cache expiry**.
 
-        With a Cache expiry of 4 days and two advanced rules — one for the `200` response code configured for 10 minutes and another for `404` configured for 1 minute — requests are cached as follows:
+        With a **Cache expiry** of 4 days and two advanced rules — one for the `200` response code configured for 10 minutes and another for `404` configured for 1 minute — requests are cached as follows:
 
           * Requests with response code `200`: cached for 10 minutes.
           * Requests with response code `404`: cached for 1 minute.
@@ -204,13 +204,13 @@ x-cached-since: 2026-09-22T08:00:00+00:00
 
 ### Caching response headers
 
-| HTTP header | Explanation |
-| --- | --- |
-| CACHE: HIT | The file was served from the CDN cache. |
-| CACHE: MISS | The file was not in the CDN cache and was fetched from the origin. If the response is cacheable under the current configuration, it is stored in cache and a later request can return CACHE: HIT. |
-| CACHE: BYPASS | The CDN did not store the response. This happens when `Cache-Control` is `no-store` or `no-cache`. |
-| X-Cached-Since | The UTC time when the file was stored on the CDN server. |
-| X-ID | Identifier of the edge server that delivered the file. See [cache diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue). |
+| HTTP header | Value | Explanation |
+| --- | --- | --- |
+| `cache` | `HIT` | The file was served from the CDN cache. |
+| `cache` | `MISS` | The file was not in the CDN cache and was fetched from the origin. If the response is cacheable under the current configuration, it is stored in cache and a later request can return `cache: HIT`. |
+| `cache` | `BYPASS` | The CDN did not store the response. This happens when `Cache-Control` is `no-store` or `no-cache`. |
+| `X-Cached-Since` | UTC time | The time when the file was stored on the CDN server. |
+| `X-ID` | Edge server ID | Identifier of the edge server that delivered the file. See [cache diagnostics](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue). |
 
 <p>For content caching issues, check the origin settings or contact [Gcore&nbsp;Support](https://support.gcore.com/hc/en-us/requests/new).</p>
 
@@ -220,7 +220,7 @@ x-cached-since: 2026-09-22T08:00:00+00:00
 <p>Set how long CDN servers store an origin response. `default` follows origin cache headers and supplies a fallback lifetime. `value` sets one lifetime on the CDN. Files with no requests for 36 hours leave the cache regardless of this setting.</p>
 
 <Info>
-An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
 </Info>
 
 <p>A [resource update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.edge_cache_settings`. Use `default` to follow origin cache headers with a fallback lifetime, or `value` to set the lifetime on the CDN. The two fields cannot be sent together, and one of them is required.</p>
@@ -234,7 +234,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ## Use origin cache headers
 
-<p>Set `default` to the fallback lifetime used when the origin sends no caching headers. The fallback applies to responses `200`, `201`, `204`, `206`, `301`, `302`, `303`, `304`, `307`, and `308`. Other codes are not cached. A duration uses nginx time, such as `4d`, `12h`, or `10m`.</p>
+<p>Set `default` to the fallback lifetime used when the origin sends no caching headers. The fallback applies to responses `200`, `201`, `204`, `206`, `301`, `302`, `303`, `307`, and `308`. A `304 Not Modified` response is not independently stored; it revalidates and extends an existing cached entry. Other codes are not cached. A duration uses nginx time, such as `4d`, `12h`, or `10m`.</p>
 
 <Info>
 Send the full `edge_cache_settings` object on every update. Fields omitted from the object are removed.
@@ -408,9 +408,9 @@ Send the full `edge_cache_settings` object on every update. Fields omitted from 
   </Tab>
 </Tabs>
 
-## Set a lifetime for one response code
+## Set a custom lifetime by response code
 
-<p>Add `custom_values` next to `value` or `default`. Each key is a status code, or `any` for every code. These entries take priority over `value`. `10m` on `200` and `1m` on `404` override a `4d` lifetime for those codes only. Codes absent from the map keep `value`.</p>
+<p>Add `custom_values` next to `value` or `default`. Each key is a status code, or `any` for every code. A matching entry takes priority over the general setting. When `value` is set, codes absent from the map use `value`. When `default` is set, codes absent from the map continue to follow origin caching headers and use `default` only as the fallback lifetime. In the example below, `10m` on `200` and `1m` on `404` override the `4d` `value` for those codes only.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -512,9 +512,9 @@ Send the full `edge_cache_settings` object on every update. Fields omitted from 
   </Tab>
 </Tabs>
 
-## Disable caching
+## Leave responses uncached
 
-<p>Set `value` to `0s` to keep the CDN caching option enabled and leave responses `200`, `206`, `301`, and `302` uncached. To turn the option off instead, set `enabled` to `false` and still send `default` or `value`.</p>
+<p>Set `value` to `0s` while `enabled` stays `true`. Responses `200`, `206`, `301`, and `302` are then left uncached.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -598,7 +598,274 @@ Send the full `edge_cache_settings` object on every update. Fields omitted from 
   </Tab>
 </Tabs>
 
+## Turn CDN caching off
+
+<p>Set `enabled` to `false` and still send `value` or `default`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"edge_cache_settings": {"enabled": False, "value": "0s"}},
+    )
+    cache = updated.options.edge_cache_settings
+    print(cache.enabled, cache.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                EdgeCacheSettings: cdn.CDNResourceUpdateParamsOptionsEdgeCacheSettings{
+                    Enabled: false,
+                    Value:   gcore.String("0s"),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        cache := updated.Options.EdgeCacheSettings
+        fmt.Println(cache.Enabled, cache.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "edge_cache_settings": {
+            "enabled": false,
+            "value": "0s"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": "0s"
+    }
+    ```
+  </Tab>
+</Tabs>
+
 <p>A path-specific lifetime uses the same `edge_cache_settings` object on a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files).</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Set how long CDN servers store an origin response with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. `default` follows origin cache headers, and `value` sets one lifetime on the CDN.</p>
+
+<p>Set only one of `default` or `value`. Files with no requests for 36 hours leave the cache regardless of this setting.</p>
+
+## Follow origin cache headers
+
+<p>Set `default` when origin cache headers should control freshness and this duration is the fallback. It applies to responses `200`, `201`, `204`, `206`, `301`, `302`, `303`, `307`, and `308`.</p>
+
+<p>A `304 Not Modified` response is not independently stored; it revalidates and extends an existing cached entry. Responses with other codes stay uncached. Edit `default` and run `terraform apply` to change the fallback.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      default = "4d"
+    }
+  }
+}
+```
+
+## Set a CDN cache lifetime
+
+<p>Set `value` to store responses `200`, `206`, `301`, and `302` for one lifetime and ignore origin cache headers. Responses `4xx` and `5xx` stay uncached unless `custom_values` names them.</p>
+
+<p>The next `terraform apply` drops a saved `default`, because `value` replaces it.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "12h"
+    }
+  }
+}
+```
+
+## Set a custom lifetime by response code
+
+<p>Add `custom_values` beside `value` or `default`. Each key is a status code, and that entry overrides the general setting for that code only. When `default` is set, codes absent from the map follow origin cache headers, and `default` remains the fallback. The configuration below sets the map beside `value`.</p>
+
+<p>`10m` on `200` and `1m` on `404` override a `4d` lifetime for those codes. Codes absent from the map keep `value`.</p>
+
+<p>Keep `custom_values` in later applies. Omitting the map removes those per-code rules.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "4d"
+      custom_values = {
+        "200" = "10m"
+        "404" = "1m"
+      }
+    }
+  }
+}
+```
+
+<p>A path-specific lifetime uses the same `edge_cache_settings` object on a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files).</p>
+
+## Check the cache response
+
+<p>Request the file twice after the lifetime is saved. A cacheable response returns `cache: MISS` on the origin fetch, then `cache: HIT` when the CDN serves the stored copy.</p>
+
+```sh
+curl -sS -D - -o /dev/null https://cdn.example.com/css/style.css
+```
+
+## Leave responses uncached
+
+<p>Set `value` to `0s` while `enabled` stays `true`. Responses `200`, `206`, `301`, and `302` are then left uncached.</p>
+
+<p>Omit `custom_values` from this block. The apply removes the per-code rules.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "0s"
+    }
+  }
+}
+```
+
+## Turn CDN caching off
+
+<p>Set `enabled` to `false` and keep `value` in the same object. The next `terraform apply` turns CDN caching off on the existing resource.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = false
+      value   = "0s"
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>

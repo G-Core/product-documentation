@@ -72,14 +72,14 @@ Files fixed: `cloud/virtual-instances/create-an-instance.mdx`,
 `cloud/virtual-instances/connect/connect-to-your-instance-via-ssh.mdx` line 91
 (branch DOC-1544, June 2026).
 
-### Root cause B: `{identifier}` inside `ai-navigation` frontmatter
+### Root cause B: `{identifier}` inside `description` frontmatter
 
 The CI workflow sanitizes `:` and `#`, but does not remove `{...}`. The YAML parser
 crashes, the frontmatter is not read, and Mintlify cannot compile the page.
 
-**Fix:** remove curly braces from `ai-navigation`. Use plain English ("task ID", not `{task_id}`).
+**Fix:** remove curly braces from `description`. Use plain English ("task ID", not `{task_id}`).
 
-See also: `mdx-rules.md` → `ai-navigation` rules.
+See also: `mdx-rules.md` → `description` rules.
 
 ### Root cause C: Missing `.jsx` extension on MethodSwitch import
 

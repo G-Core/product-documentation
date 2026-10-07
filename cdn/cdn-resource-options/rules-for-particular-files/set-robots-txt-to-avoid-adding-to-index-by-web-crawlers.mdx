@@ -1,41 +1,274 @@
 ---
-title: Avoid CDN resource indexing by web crawlers
-sidebarTitle: Avoid indexing
-ai-navigation: Create a CDN rule for the robots.txt path that returns a disallow directive and prevents search engines from indexing the CDN custom domain.
+title: Block crawling of a CDN domain
+sidebarTitle: Block crawling
+description: Block web crawlers from crawling a CDN custom domain by returning a disallow robots.txt response.
 ---
 
-When a [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) is set up for a website, its content becomes accessible from both the origin domain (e.g., `website-example.com/image.png`) and [CDN&nbsp;custom&nbsp;domains](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn) (e.g., `cdn.website-example.com/image.png`). Search engines treat the same content at two different URLs as duplicate content, which degrades the site's search ranking.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-To prevent this, create a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) that matches the `/robots.txt` path and returns a `Disallow: /` directive. Web crawlers checking `/robots.txt` on the CDN domain receive the disallow response and stop indexing it. All other CDN URLs continue to serve content normally.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-## Block CDN domain indexing
+<p>When the same website content is available through both the origin domain and a [CDN&nbsp;custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), web crawlers can discover and index both URLs. Block crawling on the CDN domain with a dedicated robots.txt response so that compliant crawlers do not crawl that domain.</p>
 
-1\. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources** and click the CNAME of the resource.
+<p>Create a [CDN&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) that matches `/robots.txt` and returns a `Disallow: /` directive. The rule changes only that response, so other CDN URLs keep serving their configured content while compliant crawlers do not crawl them.</p>
 
-<Frame>![CDN resources list with CNAME links](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png)</Frame>
+## CDN domain crawling
 
-2\. Navigate to the **RULES** tab and click **Create rule**, then select **Create blank rule**.
+<p>Open the resource and set the path, the status code, and the disallow body.</p>
 
-3\. In the **Rule name** field, enter a descriptive name — `Block robots.txt indexing`.
+<Steps>
+  <Step title="Open the CDN resource">
+    In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** → **CDN resources** and click the CNAME of the resource.
 
-4\. In the **Rule pattern** field, enter `^/robots\.txt$`.
+    <Frame>![CDN resources list with CNAME links](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png)</Frame>
+  </Step>
+  <Step title="Start a blank rule">
+    1. Navigate to the **RULES** tab.
+    2. Click **Create rule**.
+    3. Select **Create blank rule**.
+  </Step>
+  <Step title="Set the name and path">
+    1. In the **Rule name** field, enter `Block CDN crawling`.
+    2. In the **Rule pattern** field, enter `^/robots\.txt$`.
+  </Step>
+  <Step title="Return the disallow text">
+    1. Click **Add option**.
+    2. Under **Content**, click **Add** next to **Status code**, then close the panel.
+    3. In the **Status code** section, enable the **Set status code** option.
+    4. In the **Status code** field, enter `200`.
+    5. In the **URL or code text (optional)** field, enter:
 
-5\. Click **Add option**. In the panel that opens, under **Content**, click **Add** next to **Status code**, then close the panel.
+    ```text
+    User-agent: *\nDisallow: /\n
+    ```
 
-6\. In the **Status code** section, enable the **Set status code** option.
+    6. Click **Create rule**.
 
-7\. In the **Status code** field, enter `200`.
+    <Frame>![Create rule form with Status code section configured: status 200 and robots.txt disallow directive](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png)</Frame>
+  </Step>
+</Steps>
 
-8\. In the **URL or code text (optional)** field, enter:
+<p>The origin website keeps serving its own files and its own robots.txt. Crawlers that request the origin domain follow that file, while the CDN rule applies only when the request uses the CDN custom domain.</p>
 
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
 ```
-User-agent: *\nDisallow: /\n
+
+```text
+User-agent: *
+Disallow: /
 ```
 
-9\. Click **Create rule**.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-<Frame>![Create rule form with Status code section configured: status 200 and robots.txt disallow directive](/images/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png)</Frame>
+<p>Create a CDN rule for `/robots.txt` that returns a disallow directive. The exact `^/robots\.txt$` match limits the override to that path, so other responses stay as configured on the resource.</p>
 
-Web crawlers that request `/robots.txt` from the CDN domain receive a `Disallow: /` directive and stop indexing it. All other URLs on the CDN domain continue to serve content as configured.
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a CDN resource ID from [list&nbsp;CDN&nbsp;resources](/api-reference/cdn/cdn-resources/list-cdn-resources).
+</Info>
 
-<Note>This configuration applies only to the `/robots.txt` path on the CDN custom domain and does not affect the origin website or other CDN URLs.</Note>
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
+```
+
+## Robots.txt rule
+
+<p>Send `rule` `^/robots\.txt$` and `ruleType` `0`. Set `options.force_return` to status `200` and body `User-agent: *\nDisallow: /\n`, and leave `time_interval` out of the request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="Block CDN crawling",
+        rule=r"^/robots\.txt$",
+        rule_type=0,
+        options={
+            "force_return": {
+                "enabled": True,
+                "code": 200,
+                "body": "User-agent: *\\nDisallow: /\\n",
+            },
+        },
+    )
+    print(rule.id, rule.rule, rule.options.force_return.body)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "Block CDN crawling",
+            Rule:     `^/robots\.txt$`,
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                ForceReturn: cdn.CDNResourceRuleNewParamsOptionsForceReturn{
+                    Enabled: true,
+                    Code:    200,
+                    Body:    "User-agent: *\\nDisallow: /\\n",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Rule, rule.Options.ForceReturn.Body)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block CDN crawling",
+        "rule": "^/robots\\.txt$",
+        "ruleType": 0,
+        "options": {
+          "force_return": {
+            "enabled": true,
+            "code": 200,
+            "body": "User-agent: *\\nDisallow: /\\n"
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201:</p>
+
+    ```json
+    {
+      "id": 10001,
+      "name": "Block CDN crawling",
+      "rule": "^/robots\\.txt$",
+      "ruleType": 0,
+      "active": true,
+      "options": {
+        "force_return": {
+          "enabled": true,
+          "code": 200,
+          "body": "User-agent: *\\nDisallow: /\\n",
+          "time_interval": null
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
+```
+
+```text
+User-agent: *
+Disallow: /
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a CDN rule for `/robots.txt` with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. A request for that path on the CDN domain returns status 200 and `Disallow: /`, so compliant crawlers skip the CDN domain while the origin keeps its own robots.txt.</p>
+
+## Block CDN crawling
+
+<p>The pattern `^/robots\.txt$` matches only `/robots.txt` on the CDN resource already declared in the configuration, so other CDN URLs keep the resource configuration.</p>
+
+```hcl
+resource "gcore_cdn_resource_rule" "robots" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "Block CDN crawling"
+  rule        = "^/robots\\.txt$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    force_return = {
+      enabled = true
+      code    = 200
+      body    = "User-agent: *\\nDisallow: /\\n"
+    }
+  }
+}
+```
+
+## Delete the rule
+
+<p>Remove the rule block so the next `terraform apply` deletes the rule and leaves the CDN resource in place. `/robots.txt` then follows the resource configuration.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cdn_resource_rule" "robots" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "Block CDN crawling"
+#   rule        = "^/robots\\.txt$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     force_return = {
+#       enabled = true
+#       code    = 200
+#       body    = "User-agent: *\\nDisallow: /\\n"
+#     }
+#   }
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Check the robots.txt response
+
+<p>Request `/robots.txt` on the CDN domain after the rule is in place. The response status is 200, and the body contains the disallow directive. The origin domain still serves its own robots.txt.</p>
+
+```bash
+curl -i "http://<cdn-domain>/robots.txt"
+```
+
+```text
+User-agent: *
+Disallow: /
+```
+
+</MethodSection>
+</MethodSwitch>

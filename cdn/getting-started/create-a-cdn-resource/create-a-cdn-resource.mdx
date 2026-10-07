@@ -1,7 +1,7 @@
 ---
 title: Create a CDN resource
 sidebarTitle: Create a resource
-ai-navigation: Create a CDN resource and origin group in the Customer Portal or via REST API to deliver content through Gcore edge servers.
+description: Create a Gcore CDN resource by setting up an origin group, adding a domain, and completing DNS with a CNAME record or delegated zone.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>A CDN resource connects an origin to Gcore edge servers, which cache content and are hosted in geographically distributed data centers located closer to end users. An origin is required to create the resource in the [Gcore Customer Portal](https://portal.gcore.com); create it during setup or reuse an existing [origin group](/cdn/add-an-origin-group). To route production traffic through the CDN, access to the domain's DNS provider or registrar is required to point the domain to the resource's CNAME.</p>
+<p>A CDN resource connects an origin to Gcore edge servers, which cache content and are hosted in geographically distributed data centers located closer to end users. An origin is required to create the resource in the [Gcore Customer Portal](https://portal.gcore.com); create it during setup or reuse an existing [origin&nbsp;group](/cdn/add-an-origin-group). To route production traffic through the CDN, access to the domain's DNS provider or registrar is required to complete the DNS setup, either by adding a CNAME record or by delegating the DNS zone.</p>
 
 <Steps>
   <Step title="Open the creation form">
@@ -55,7 +55,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   <Step title="Configure the origin">
     The origin settings depend on the DNS option:
 
-    - For **Do not delegate**, select **Specify content origin** to add an origin or **Select origin group** to reuse an existing [origin&nbsp;group](/cdn/add-an-origin-group). A new origin can use a URL, S3 storage, or FastEdge application. Configure the port and host header when the origin requires non-default values, and click **Add origin** to add another source.
+    - For **Do not delegate**, select **Specify content origin** to add an origin or **Select origin group** to reuse an existing [origin&nbsp;group](/cdn/add-an-origin-group). A new origin can use a URL, S3 storage, or FastEdge application. For Gcore Object Storage, open the **S3 storage** tab, keep **Gcore** selected, then choose a **Storage** and **Bucket**. Access keys are not entered. **Create storage** and **Create bucket** are available in those lists. Only Standard storage is supported. Egress from Gcore Object Storage to the CDN is not billed. Amazon and Other still require access keys. Configure the port and host header when the origin requires non-default values, and click **Add origin** to add another source.
     - For delegated DNS, the portal resolves the domain to determine the origin. If no server address is found, enter it in **Enter your origin IP so we can connect to your site**.
 
     <Frame>
@@ -403,6 +403,80 @@ dig cdn.example.com CNAME +short
 ```
 
 <p>The output should show the `{resource_id}.gcdn.co` address.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare an origin group and a CDN resource that pulls that origin over HTTPS with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+## Create the CDN resource
+
+<p>The origin hostname must resolve in DNS. Set `origin_protocol` to `HTTPS` so edge servers fetch the origin over HTTPS.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+
+output "cdn_resource_id" {
+  value = gcore_cdn_resource.example.id
+}
+```
+
+## DNS setup
+
+<p>Apply prints `cdn_resource_id`. Add a CNAME record at the DNS provider. The target is that id with `.gcdn.co` appended.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `cdn.example.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co`. Replace `{resource_id}` with the printed `cdn_resource_id` value |
+
+## Delete the CDN resource
+
+<p>Remove both resource blocks and the `cdn_resource_id` output. The next `terraform apply` deletes the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the CDN resource and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "my-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "cdn.example.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+# }
+#
+# output "cdn_resource_id" {
+#   value = gcore_cdn_resource.example.id
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>

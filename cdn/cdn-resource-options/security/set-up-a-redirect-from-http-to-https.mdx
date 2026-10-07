@@ -1,7 +1,7 @@
 ---
 title: Set up a redirect from HTTP to HTTPS
 sidebarTitle: Redirect from HTTP to HTTPS
-ai-navigation: Enable an HTTP to HTTPS redirect in the Customer Portal or via REST API after HTTPS and a certificate are active.
+description: Redirect all HTTP requests for a CDN resource to HTTPS after enabling HTTPS and attaching an SSL certificate.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -13,11 +13,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Enable the redirect
 
-1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**. Open the resource.
+<p>1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**. Open the resource.</p>
 
-2. On the **OPTIONS** tab, navigate to **General** > **SSL**.
+<p>2. On the **OPTIONS** tab, navigate to **General** > **SSL**.</p>
 
-3. If HTTPS isn't enabled for the resource, turn on **Enable HTTPS** and select **Free Let's Encrypt certificate** or **Custom SSL certificate**.
+<p>3. If HTTPS isn't enabled for the resource, turn on **Enable HTTPS** and select **Free Let's Encrypt certificate** or **Custom SSL certificate**.</p>
 
    Let's Encrypt issuance takes up to 15 minutes. Certificate setup is covered in [SSL&nbsp;certificates](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https).
 
@@ -25,9 +25,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
      <img src="/images/docs/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https/set-up-a-redirect-from-http-to-https-image1.png" alt="SSL section with Enable HTTPS and Free Let's Encrypt certificate selected" width="70%" />
    </Frame>
 
-4. Navigate to **Access** > **Redirect HTTP to HTTPS**.
+<p>4. Navigate to **Access** > **Redirect HTTP to HTTPS**.</p>
 
-5. Turn on **Enable redirect HTTP to HTTPS** and click **Save changes**.
+<p>5. Turn on **Enable redirect HTTP to HTTPS** and click **Save changes**.</p>
 
    If the resource uses a custom CNAME, the SSL certificate must include that hostname.
 
@@ -39,7 +39,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 The **Enable redirect HTTP to HTTPS** toggle stays disabled until HTTPS and a certificate are active.
 </Info>
 
-6. Confirm the redirect:
+<p>6. Confirm the redirect:</p>
 
    ```bash
    curl -I http://cdn.example.com/path/file.css
@@ -56,7 +56,7 @@ The **Enable redirect HTTP to HTTPS** toggle stays disabled until HTTPS and a ce
 An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**, or from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
 </Info>
 
-<p>A [resource update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.redirect_http_to_https`. That option and `redirect_https_to_http` cannot be enabled at the same time.</p>
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets `options.redirect_http_to_https`. That option and `redirect_https_to_http` cannot be enabled at the same time.</p>
 
 <p>Open a terminal and export the required variables:</p>
 
@@ -235,6 +235,95 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Send HTTP requests for a CDN resource to HTTPS with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The configuration enables HTTPS, attaches an SSL certificate, and sets `redirect_http_to_https`. An HTTP request receives HTTP 301, and the `Location` header keeps the same path on HTTPS.</p>
+
+<p>The certificate includes the CDN hostname in its SAN extension. Set `validate_root_ca` to `false` for a self-signed certificate. `ssl_certificate_wo` is the certificate chain and `ssl_private_key_wo` is the private key. The PEM layout is on the [SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) page. Enabling `redirect_https_to_http` while `redirect_http_to_https` is enabled returns HTTP 400 and the message `You should enable only one option from [redirect_http_to_https, redirect_https_to_http] list`, so leave `redirect_https_to_http` unset. Run `terraform apply` after editing `options`.</p>
+
+## Enable the redirect
+
+<p>Set `enabled` and `value` to `true`. The CDN answers the HTTP request with HTTP 301 and a `Location` header for the same path on HTTPS.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "cdn-certificate"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+
+  options = {
+    redirect_http_to_https = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+## Turn the redirect off
+
+<p>Set `enabled` and `value` to `false` and run `terraform apply`. The HTTP response no longer redirects to HTTPS.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name                       = "cdn-certificate"
+  automated                  = false
+  ssl_certificate_wo         = file("fullchain.pem")
+  ssl_private_key_wo         = file("privkey.pem")
+  ssl_certificate_wo_version = 1
+  validate_root_ca           = false
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+
+  options = {
+    redirect_http_to_https = {
+      enabled = false
+      value   = false
+    }
+  }
+}
+```
 
 </MethodSection>
 </MethodSwitch>

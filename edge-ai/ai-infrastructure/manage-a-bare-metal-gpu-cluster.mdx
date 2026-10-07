@@ -1,7 +1,7 @@
 ---
 title: "Manage a Bare Metal GPU cluster"
 sidebarTitle: "Manage a Bare Metal GPU cluster"
-ai-navigation: Manage Bare Metal GPU cluster nodes, resize, control power, rebuild, replace, and delete, via Customer Portal, REST API, or Terraform.
+description: Manage a Bare Metal GPU cluster by viewing nodes, resizing, reconfiguring, powering, rebuilding, replacing, and deleting nodes.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -11,7 +11,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>The cluster details page provides tools for monitoring nodes, managing lifecycle operations, configuring networking, and accessing administrative functions.</p>
 
-<p>Cluster management operates at two levels: cluster-wide operations (resize, reconfigure, delete) that affect all nodes at once, and per-node operations (rebuild, replace, power, apply settings) that target individual nodes independently.</p>
+<p>Cluster management operates at two levels. Cluster-level operations (resize, reconfigure, delete) change the cluster configuration or which nodes belong to it, and some of those changes can then be applied to selected nodes. Per-node operations (rebuild, replace, power, apply settings) target individual nodes.</p>
 
 ## Access cluster details
 
@@ -37,7 +37,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>The **Overview** tab lists all nodes (servers) in the cluster. Each node entry shows the node name, flavor, assigned IP addresses, status, timestamps, cost, and other metadata. The table supports filtering by name, date range, and status.</p>
 
 <Info>
-Each node inherits its **cluster configuration** — image, SSH key, and user data — from the cluster. Network interfaces and file shares cannot be changed at the node level after creation. To update the cluster configuration, use **Reconfigure Cluster**; to sync a specific outdated node, use **Apply settings**.
+Each node inherits its **cluster configuration** — image, SSH key, and user data — from the cluster. File shares cannot be changed at the node level after creation. Network interfaces can be added on a node after creation. To update the cluster configuration, use **Reconfigure Cluster**; to sync a specific outdated node, use **Apply settings**.
 </Info>
 
 ## Cluster lifecycle
@@ -60,11 +60,14 @@ Scaling down to zero nodes is not allowed. When scaling down, the system removes
 
 ### Reconfigure cluster
 
-<p>Use **Reconfigure Cluster** to change the image, SSH key, or user data for the cluster and select how to apply the update.</p>
+<p>Use **Reconfigure Cluster** to change the image, SSH key, or user data, to remove an SSH key or user data, and to select how to apply the update.</p>
 
 1. Click **Reconfigure Cluster** in the top-right corner of the cluster details page.
-2. In the **Update settings** step, use the dropdowns next to **Image**, **SSH Key**, and **User data** to select new values, or leave them unchanged to keep the current settings. Click **Next**.
-3. In the **Select update method** step, select how to apply the changes:
+2. On step 1, change a setting or leave it unchanged. Select **Image** after **Public** or **Custom**; the current image is marked **Current**. Turn off **Configure SSH key access** to remove the SSH key. Click **Replace user data** and enter **New User Data** to replace existing user data, or click **Cancel replacement** to keep it. Turn off **User data** to remove it. Click **Next**.
+
+<Frame>![Reconfigure cluster settings showing image, SSH key access, and user data](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-reconfigure-step1.png)</Frame>
+
+3. On **Update method**, select how to apply the changes:
 
 <Frame>![Reconfigure cluster page step 2 showing update method options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-reconfigure-step2.png)</Frame>
 
@@ -114,7 +117,7 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
 
 ### Rebuild node
 
-<p>Rebuild reinstalls the OS on a node. The dialog shows the current **Image**, **SSH Key**, and **User data**. Use the dropdown next to any field to select a new value for this rebuild, or leave it unchanged to keep the current setting. All data on local storage is deleted.</p>
+<p>Rebuild reinstalls the OS on a node. The dialog shows the current **Image**, **SSH Key**, and **User data**. Use the dropdown next to any field to select a new value for this rebuild, or leave it unchanged to keep the current setting. The selected values apply only to this rebuild. The cluster configuration stays unchanged. To change the image, SSH key, or user data for the cluster, use **Reconfigure Cluster**. All data on local storage is deleted.</p>
 
 1. Click the actions menu (three dots) on the node row.
 2. Select **Rebuild**.
@@ -145,7 +148,7 @@ Rebuild deletes all data on the node's local storage. Node identity is preserved
 4. Confirm the deletion.
 
 <Warning>
-Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API/Terraform operations. When using the API or Terraform to delete nodes, no warning is displayed before the cluster is removed. Leave at least one node in the cluster to preserve it.
+Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API operations. When using the API to delete a node, no warning is displayed before the cluster is removed. Leave at least one node in the cluster to preserve it.
 </Warning>
 
 ### Apply settings
@@ -192,12 +195,12 @@ Deleting the last node in a cluster automatically deletes the entire cluster. Th
 4. Configure the interface type (public or private) and IP allocation settings as supported by the service.
 
 <Info>
-Only network interfaces can be modified on individual nodes after cluster creation. Image and storage configuration cannot be changed independently at the node level. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
+Network interfaces can be added on individual nodes after cluster creation, while a rebuild can apply a different image, SSH key, or user data to that node and leave the cluster configuration unchanged. Storage stays with the cluster. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
 </Info>
 
 ## Administration
 
-<p>Administrative tools for organizing clusters with tags, tracking operations through the audit log, and accessing nodes for troubleshooting via the browser console.</p>
+<p>Administrative tools organize clusters with tags, track operations in the audit log, and open nodes in the browser console for troubleshooting.</p>
 
 ### Tags
 
@@ -229,7 +232,7 @@ Only network interfaces can be modified on individual nodes after cluster creati
 
 <Frame>![Browser-based noVNC console with login prompt](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-console.png)</Frame>
 
-<p>The Customer Portal is suitable for managing individual clusters. For automated workflows — CI/CD pipelines, infrastructure-as-code, or batch provisioning — the [API](#api) and [Terraform](#terraform) tabs cover the same operations programmatically.</p>
+<p>The Customer Portal is suitable for managing individual clusters. For automated workflows — CI/CD pipelines, infrastructure-as-code, or batch provisioning — the [API](#api) tab covers lifecycle operations, and the [Terraform](#terraform) tab imports, renames, scales, tags, and deletes a cluster.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -256,7 +259,7 @@ Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. 
 
 ## List bare metal GPU clusters
 
-<p>List all clusters in a project and region. Query string filters — by name, flavor, node count, tags, and timestamps — are documented in the [API&nbsp;reference](/api-reference/cloud/gpu-baremetal).</p>
+<p>List clusters in a project and region. Query parameters filter the page by name, flavor, node count, tags, and timestamps, with the syntax in the [API&nbsp;reference](/api-reference/cloud/gpu-baremetal). The Python and Go calls return an unfiltered page, while the curl call sets those filters.</p>
 
 <Info>
 The list call returns a page of clusters. Pass `limit` and `offset` to control page size and position.
@@ -552,6 +555,81 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
   </Tab>
 </Tabs>
 
+## Update server settings
+
+<p>A PATCH on the cluster changes the template image, SSH key, and user data through <code>image_id</code> and <code>servers_settings</code>, alongside <code>name</code> and <code>tags</code>. An omitted field stays unchanged, and <code>null</code> for <code>credentials</code> or <code>user_data</code> clears the stored value. The template updates immediately, while existing nodes keep their current settings until [Apply&nbsp;settings](#apply-settings-to-nodes) or a rebuild.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    cluster = client.cloud.gpu_baremetal.clusters.update(
+        cluster_id="{CLUSTER_ID}",
+        image_id="{IMAGE_ID}",
+        servers_settings={
+            "credentials": {"ssh_key_name": "my-ssh-key"},
+            "user_data": "eyJ0ZXN0IjogImRhdGEifQ==",
+        },
+    )
+    print(cluster.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        cluster, err := client.Cloud.GPUBaremetal.Clusters.Update(ctx,
+            "{CLUSTER_ID}",
+            cloud.GPUBaremetalClusterUpdateParams{
+                ImageID: gcore.String("{IMAGE_ID}"),
+                ServersSettings: cloud.GPUBaremetalClusterUpdateParamsServersSettings{
+                    Credentials: cloud.GPUBaremetalClusterUpdateParamsServersSettingsCredentials{
+                        SSHKeyName: gcore.String("my-ssh-key"),
+                    },
+                    UserData: gcore.String("eyJ0ZXN0IjogImRhdGEifQ=="),
+                },
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", cluster.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH \
+      "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "image_id": "{IMAGE_ID}",
+        "servers_settings": {
+          "credentials": {"ssh_key_name": "my-ssh-key"},
+          "user_data": "eyJ0ZXN0IjogImRhdGEifQ=="
+        }
+      }'
+    ```
+
+    The response is the updated cluster object.
+  </Tab>
+</Tabs>
+
 ## Rebuild a cluster
 
 <p>Reinstalls the OS on all nodes in the cluster using the cluster's current image, SSH key, and user data. All local storage data is erased.</p>
@@ -610,7 +688,7 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
 
 ## Rebuild a specific node
 
-<p>Reinstalls the OS on a single node without affecting other nodes in the cluster. All local storage on the node is erased. The rebuild uses the image, SSH key, and user data currently configured in the cluster's server settings — to use different values, first update the server settings via <code>PATCH&nbsp;/cloud/v3/gpu/baremetal/&#123;project_id&#125;/&#123;region_id&#125;/clusters/&#123;cluster_id&#125;/servers_settings</code>, then trigger the rebuild.</p>
+<p>Reinstalls the OS on a single node without affecting other nodes in the cluster. All local storage on the node is erased. The rebuild uses the image, SSH key, and user data stored on the cluster, so different values require a [server&nbsp;settings](#update-server-settings) patch first.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -730,9 +808,9 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
   </Tab>
 </Tabs>
 
-## Apply settings to a node
+## Apply settings to nodes
 
-<p>Pushes updated cluster server settings (image, SSH key, and user data) onto one node or every node. The call re-images the target servers. Set `max_disruption` to `rebuild`. The cluster settings must already be patched before this call.</p>
+<p>Pushes updated cluster server settings (image, SSH key, and user data) onto one node or every node, and re-images the target servers. Set `max_disruption` to `rebuild`, and patch the server settings before this call.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -1055,7 +1133,7 @@ resource "gcore_cloud_gpu_baremetal_cluster" "my_cluster" {
 
 ## Delete the cluster
 
-<p>Remove the resource block from the configuration and run `terraform apply`, or run `terraform destroy` to delete all resources at once.</p>
+<p>Remove the resource block from the configuration and run `terraform apply`, or run `terraform destroy` to delete all resources managed by the current Terraform configuration.</p>
 
 <Warning>
 Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered. File shares and object storage remain intact.

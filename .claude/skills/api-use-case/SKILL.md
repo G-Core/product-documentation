@@ -11,7 +11,7 @@ description: >-
   API method to this doc", "map these portal steps to API calls", or "show the API
   version of these steps". It reads the article, optionally runs live curl calls to
   verify responses, writes Python SDK / Go SDK / curl examples with quickstart and
-  step-by-step sections, wraps content in MethodSwitch, and updates ai-navigation
+  step-by-step sections, wraps content in MethodSwitch, and updates description
   frontmatter. Do not use it to write a brand-new article from scratch or to audit
   an existing one — only to add the API method to an article that already exists.
 ---

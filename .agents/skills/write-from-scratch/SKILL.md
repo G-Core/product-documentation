@@ -274,15 +274,17 @@ Every article requires these fields:
 ---
 title: [Full title — shown in browser tab]
 sidebarTitle: [Short sidebar label]
-ai-navigation: [One sentence, starts with action verb, max 160 chars, no {braces} or /slashes/]
+description: [One sentence, 140 characters maximum, what the article is about. No Portal, API, or Terraform.]
 ---
 ```
 
-Write `ai-navigation` last — after the article is complete, it is easier to
+Write `description` last — after the article is complete, it is easier to
 summarize accurately.
 
-Check the rules in `.agents/references/mdx-rules.md` — curly braces and colons in
-`ai-navigation` break the Mintlify build.
+`description` is the search summary. Use the feature name and the words a person
+would type into search. Do not name Portal, API, or Terraform. 140 characters
+maximum. Curly braces, slashes, and colons break the Mintlify build. Rules:
+`.agents/references/mdx-rules.md`.
 
 ---
 
@@ -298,8 +300,7 @@ Check the rules in `.agents/references/mdx-rules.md` — curly braces and colons
 
 **Frontmatter:**
 - [ ] `title` present
-- [ ] `ai-navigation` present, no forbidden characters
-- [ ] No `description` field
+- [ ] `description` present: one sentence, 140 characters maximum, no Portal, API, or Terraform, no forbidden characters
 
 **Style:**
 - [ ] Opening sentence does not describe the document
