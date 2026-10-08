@@ -40,7 +40,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     <Warning>
       Two purge requests per resource per minute are allowed. One purge request is limited to 100 URLs, so up to 200 files can be removed from the cache per minute.
     </Warning>
-    <p>In the text area, specify one or more content URLs to purge, entering one URL per line. Links must:</p>
+    <p>In the text area, specify one or more content URLs to purge, entering one URL per line. Each path must:</p>
 
     - Start with a slash (/).
     - Not include a protocol, domain name, or wildcard (\*).
@@ -108,7 +108,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 - **Search by CNAME.** CNAME of the CDN resource.
 - **Type.** Purge type: Purge by URL, Purge all, or Purge by pattern.
-- **Status.** Request status: In progress, Successful, Failed, or Status report disabled.
+- **Status.** Request status: In progress, Successful, Failed, or Status report disabled. When [CDN caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) is **CDN controlled** and **Cache expiry** is **Do not cache**, the purge stays **In progress** for about 45 minutes and then becomes **Failed**.
 - **Date.** Time period up to one month.
 
 </MethodSection>
@@ -120,7 +120,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 An [API&nbsp;token](/account-settings/api-tokens) is required.
 </Info>
 
-<p>Set the required environment variables. The CDN resource ID is available in the [Customer Portal](https://portal.gcore.com/cdn/resources) under **CDN** → **CDN Resources**, or via the [List CDN resources](/api-reference/cdn/cdn-resources/list-cdn-resources) API call.</p>
+<p>Set the required environment variables. The CDN resource ID is available in the [Customer Portal](https://portal.gcore.com/cdn/resources) under **CDN** → **CDN Resources**, or via the [List CDN resources](/api-reference/cdn/cdn-resources/list-cdn-resources) API call. In the SDK examples, <code>12345</code> is that resource ID.</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -184,7 +184,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
       }'
     ```
 
-    <p>A successful request returns HTTP 201 with the list of purged URLs:</p>
+    <p>HTTP 201 means the request was accepted. The response body echoes the submitted URLs. The purge finishes later, and its status is in purge history: <code>In progress</code>, then <code>Successful</code> or <code>Failed</code>.</p>
 
     ```json
     {
@@ -196,7 +196,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 
 ## Purge by pattern
 
-<p>Remove files matching a path pattern. Use the `*` operator to match any number of characters. Patterns must start with `/`. One request is limited to 10 patterns; one purge request per resource per minute is allowed.</p>
+<p>Remove files matching a path pattern. Use the `*` operator to match any number of characters. Patterns must start with `/`. If a query string is not included in a pattern, the purge covers all query string variants of matching files. One request is limited to 10 patterns; one purge request per resource per minute is allowed.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -248,7 +248,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
       }'
     ```
 
-    <p>A successful request returns HTTP 201 with the purged patterns:</p>
+    <p>HTTP 201 means the request was accepted. The response body echoes the submitted patterns. The result appears later in purge history.</p>
 
     ```json
     {
@@ -260,7 +260,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 
 ## Purge all
 
-<p>Remove all cached content for a CDN resource. One purge request per resource per minute is allowed. After a full purge, CDN servers must re-fetch all content from the origin, which can sharply increase origin load — use purge by URL or pattern for large content sets.</p>
+<p>Remove all cached content for a CDN resource. One purge request per resource per minute is allowed. After a full purge, subsequent cache misses cause CDN servers to fetch content from the origin, which can sharply increase origin load. For large content sets, use purge by URL or pattern.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -310,7 +310,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
       -d '{"paths": []}'
     ```
 
-    <p>A successful request returns HTTP 201 with an empty paths array:</p>
+    <p>HTTP 201 means the request was accepted. The response body echoes an empty paths array. The result appears later in purge history.</p>
 
     ```json
     {
@@ -322,7 +322,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 
 ## Purge history
 
-<p>Retrieve the history of purge requests for the past month. Filter by CNAME, purge type, status, or date range.</p>
+<p>Retrieve the history of purge requests for the past month. An HTTP 201 response only accepts a purge. Find that request here by CNAME and path, and read <code>status</code>. Filter by CNAME, purge type, status, or date range.</p>
 
 <Tabs>
   <Tab title="Python SDK">
