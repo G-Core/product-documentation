@@ -69,7 +69,7 @@ _NUMBERED_ITEM = re.compile(r"^\d+\\?\.\s")
 _SKIP_DIR_NAMES = frozenset(
     {
         "_drafts",
-        "_planning",
+        "_private",
         "_deprecated",
         "node_modules",
         ".git",

@@ -186,7 +186,7 @@ npm i -g mintlify
 
 ### Run
 
-From the repository root (`C:\Projects\product-documentation`):
+From the repository root:
 
 ```powershell
 mintlify dev

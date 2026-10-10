@@ -76,7 +76,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 ### Portal section rules
 
 - Opening sentence inside `<MethodSection>` — what the user will accomplish
-- Numbered steps using `1.` (not `1\.`) — see mdx-rules.md
+- Numbered steps wrapped in `<p>` (`<p>1. text</p>`), or `<Steps>` when the steps are large — see procedures.md, "Choosing the format", and mdx-rules.md
 - Prose paragraphs between steps wrapped in `<p>` tags
 - Screenshots in `<Frame>` blocks after the relevant step
 - Bold for UI element names: Click **Create Instance**, In the **Name** field
@@ -92,7 +92,7 @@ Use when steps must be executed in order and outputs feed into later steps.
 {One intro sentence: what this section enables — not "The steps below..."}
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](...) and a [region ID](...).
 </Info>
 
@@ -243,11 +243,11 @@ description: Deploy a Linux Virtual Machine in Gcore Cloud with an image, flavor
 {Opening sentence: what is built and why. No "This guide..."}
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](...) and a [region ID](...).
 </Info>
 
-Open a terminal and set these environment variables before running the examples:
+Open a terminal and set these environment variables before running the commands:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -451,18 +451,14 @@ description: {What the scenario produces, 140 characters maximum. No Portal, API
 ---
 
 {One paragraph: who this guide is for and what they will achieve.
-Mention all Gcore products involved.}
-
-## Prerequisites
-
-{Integrate as prose in the opening paragraph OR as a brief inline list.
-Never as a separate `## Prerequisites` section with bullets.}
+Mention all Gcore products involved. Put the requirements here as prose,
+never as a separate `## Prerequisites` section.}
 
 ## Step 1. {First major action}
 
-{Brief instructions — 3–5 sentences max. Then link to the source article for full details.}
-
-See [full instructions](/path/to/source-article) for the complete steps.
+{Brief instructions — 3–5 sentences max. Embed the link to the source article in a content
+sentence, for example: "Add an [origin group](/path/to/source-article) that points to the streaming origin."
+Never write a standalone "See ... for the complete steps" sentence.}
 
 ## Step 2. {Second major action}
 

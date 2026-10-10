@@ -1,38 +1,37 @@
 ---
-description: Enforce correct git branch naming — ticket key only, no suffixes
+description: Enforce correct git branch naming - three allowed formats, created with the helper script
 alwaysApply: true
 ---
 
-# Git branch naming — HARD RULE
+# Git branch naming - HARD RULE
 
-## Branch name = Jira ticket key ONLY
+## Three allowed formats
+
+| Work comes from | Branch name | Example |
+|---|---|---|
+| A Jira ticket (the default) | The ticket key only: `DOC-XXXX`, uppercase, no prefix, no suffix, no slug | `DOC-2405` |
+| A GitHub issue | `issue/{number}-{short-slug}`, slug of 2-4 lowercase words with hyphens | `issue/1845-fastedge-log-field` |
+| A contributor draft | `feature-draft/{name}`, a ticket key or a short slug | `feature-draft/DOC-2405` |
 
 ```
-CORRECT: DOC-2405
 WRONG:   doc-2405-account-overview-regression
 WRONG:   DOC-2405-fix-images
 WRONG:   feature/DOC-2405-something
-WRONG:   doc-2405
+WRONG:   update/some-article
 ```
 
-The branch name is ALWAYS the Jira ticket key, nothing else.
-Format: `DOC-XXXX` — uppercase, hyphen, digits. No prefix, no suffix, no slug, no description.
+For Jira-ticket work the branch is named exactly as the ticket key, nothing else.
 
-## Creating a branch — use the helper script
+## Creating a branch - use the helper script
 
 NEVER run `git checkout -b` manually.
-ALWAYS use the helper script:
+ALWAYS use the helper script from the repository root:
 
 ```powershell
-cd C:\Gcore_projects\product-documentation
 .\.agents\tools\create_branch.ps1 DOC-XXXX
+.\.agents\tools\create_branch.ps1 issue/1845-fastedge-log-field
+.\.agents\tools\create_branch.ps1 feature-draft/DOC-XXXX
 ```
 
-The script validates the format, checks out main, pulls, and creates the branch.
-
-## Before every git checkout -b
-
-1. Is the name exactly `DOC-XXXX`?
-2. No extra words after the ticket key?
-
-If NO to either — STOP. Use the script.
+The script validates the name against the three formats, checks out main, pulls, and creates the branch.
+If a skill already created the branch for the current work, stay on it.

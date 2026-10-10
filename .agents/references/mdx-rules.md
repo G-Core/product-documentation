@@ -123,16 +123,19 @@ paragraphs become text strings — blank lines are stripped and content runs tog
 
 **Rules for all content inside `<MethodSection>`:**
 
-**1. Numbered steps — use `1.` (not `1\.`):**
+**1. Numbered steps — wrap every step in `<p>` and write the number as plain `1.` (not `1\.`):**
+```mdx
+<p>1. Navigate to **Networking** > **Security Groups**.</p>
+
+<p>2. Find the required security group and click its name.</p>
 ```
-1. Go to **Networking** > **Security Groups**.
-2. Find the required security group and click its name.
-```
-Sub-items indent 3 spaces:
-```
-1. Open the creation form:
+Without `<p>`, `MethodSwitch` merges all numbered steps into a single paragraph ("1. ... 2. ... 3. ...") and nothing can split them again.
+Put a blank line between steps. Sub-items are plain bullets, indented 3 spaces, placed after the `<p>` of their step:
+```mdx
+<p>1. Open the creation form:</p>
+
    - In the Cloud menu, click **Create**.
-   - On the VM creation page, go to **Networking**.
+   - On the VM creation page, navigate to **Networking**.
 ```
 
 **2. Every prose paragraph — wrap in `<p>` tags:**
@@ -274,11 +277,11 @@ cargo build --target wasm32-wasi --release
 
 **Numbered list items — wrap each item individually:**
 ```mdx
-<p>1. Go to **Streaming** > **AI**.</p>
+<p>1. Navigate to **Streaming** > **AI**.</p>
 <p>2. In the **Origin URL** field, enter the link to your MP4 video.</p>
 <p>3. Click **Generate task**.</p>
 ```
-Without `<p>`, numbered items inside `<MethodSection>` merge into a single line.
+Without `<p>`, numbered items inside `<MethodSection>` merge into a single line, because `MethodSwitch` compiles its children in expression mode.
 
 This applies inside any `<MethodSection>`. Does not apply to content outside `<MethodSection>`.
 
@@ -451,14 +454,12 @@ if data.startswith(b'\xef\xbb\xbf'):
 
 ## Image display width
 
-All screenshots use `<Frame>` with a markdown image shorthand inside.
+All screenshots use a single-line `<Frame>` with a markdown image shorthand inside.
 Do not add `width` attributes or `style` props — let Mintlify size the image naturally.
 
-**Correct (matches WAAP and all new articles):**
+**Correct:**
 ```mdx
-<Frame>
-  ![Alt text](/images/docs/...)
-</Frame>
+<Frame>![Alt text](/images/docs/...)</Frame>
 ```
 
 **Wrong — width attribute breaks on Mintlify production:**
@@ -475,20 +476,16 @@ Do not add `width` attributes or `style` props — let Mintlify size the image n
 </Frame>
 ```
 
-When in doubt, use `70%`.
-
-To convert all markdown images in a file at once, use the script
-`scripts/fix_image_widths.py` in the `docops-agent2` repository:
+To convert `<img ... width="N%"/>` tags in a file back to markdown shorthand, use the script
+`scripts/fix_image_widths.py` from the repository root:
 
 ```powershell
-cd C:\Projects\docops-agent2
-.\venv\Scripts\python.exe scripts\fix_image_widths.py "C:\Projects\product-documentation\path\to\article.mdx"
+python scripts/fix_image_widths.py path/to/article.mdx
 ```
 
 The script:
-- Converts `![alt](src)` inside `<Frame>` to `<img src="src" alt="alt" width="70%"/>`
-- Removes `style={{ width:"..." }}` and replaces with the `width` attribute
-- Preserves UTF-8 encoding without BOM
+- Converts `<img src="src" alt="alt" width="N%"/>` to `![alt](src)`
+- Writes UTF-8 with LF line endings and no BOM
 
 ---
 
@@ -527,17 +524,11 @@ Validate MDX locally before committing. The compiler gives exact error line and 
 unlike the generic "parsing error" shown in the browser.
 
 ```powershell
-# Install once (run from any temp dir)
-cd C:\Temp; npm install @mdx-js/mdx
-
-# Validate an article
-node -e "
-const {compile}=require('@mdx-js/mdx');
-const fs=require('fs');
-const c=fs.readFileSync('path/to/article.mdx','utf8');
-compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message));
-"
+.\.agents\tools\validate_mdx.ps1 path\to\article.mdx
 ```
+
+The script installs the compiler once into `$env:TEMP\mdx-check` (outside the repository) and prints `OK`
+or the exact error.
 
 **Note:** the compiler does NOT catch the missing `.jsx` extension in the MethodSwitch
 import — that error appears only in the Mintlify runtime.
@@ -546,13 +537,13 @@ import — that error appears only in the Mintlify runtime.
 
 ## Steps component
 
-Use `<Steps>` with `<Step>` for any multi-step procedural content. This renders numbered UI blocks with a title and body, which is clearer than a plain ordered list.
+Use `<Steps>` with `<Step>` for procedures with large steps, where each step is a mini-task made of several actions. This renders numbered UI blocks with a title and body. Procedures with short steps use a plain numbered list (see `procedures.md`, "Choosing the format").
 
 ### When to use
 
-Use `<Steps>` whenever a procedure has 2 or more discrete actions the reader must perform in order: enabling a feature, creating a resource, configuring settings.
+Use `<Steps>` when each step consists of several actions the reader must perform in order, for example configuring a resource through a form, with a screenshot or callout inside the step.
 
-Do **not** use `<Steps>` for conceptual lists, reference tables, or a single action.
+Do **not** use `<Steps>` for short single-action steps (use a numbered list), conceptual lists, reference tables, or a single action.
 
 ### Basic structure
 
@@ -564,9 +555,7 @@ Do **not** use `<Steps>` for conceptual lists, reference tables, or a single act
   <Step title="Configure the option">
     Toggle **Enable Feature** and select a value from the dropdown.
 
-    <Frame>
-      ![Alt text describing the screenshot](/images/docs/.../screenshot.png)
-    </Frame>
+    <Frame>![Alt text describing the screenshot](/images/docs/.../screenshot.png)</Frame>
   </Step>
   <Step title="Save">
     Click **Save changes**.
@@ -581,6 +570,7 @@ Do **not** use `<Steps>` for conceptual lists, reference tables, or a single act
 - Body content inside `<Step>` follows all normal MDX rules: prose, `<Frame>`, code blocks, nested lists.
 - A `<Frame>` screenshot goes **inside** the relevant `<Step>`, after the instructions that describe the UI state being shown.
 - Do not number the steps manually — the component handles numbering.
+- **Three forms of a step** (very small, with a little explanation, large and complex): see `procedures.md`, "Three forms of a `<Step>`".
 - **No body that restates the title.** If the body text is identical or near-identical to the title, omit the body entirely — the title alone is sufficient. A step with only a title renders correctly and is less noisy than a title + one-word restatement.
 
 **Wrong — body restates title:**
@@ -600,12 +590,10 @@ Do **not** use `<Steps>` for conceptual lists, reference tables, or a single act
 </Step>
 
 <Step title="Select a region">
-  <Frame>
-    <img src="..." alt="Region selector" />
-  </Frame>
+  <Frame>![Region selector](/images/docs/.../region-selector.png)</Frame>
 </Step>
 ```
 
-### Sections that should use Steps
+### Converting an existing list
 
-Convert plain numbered lists to `<Steps>` when the article covers a portal procedure. This applies to sections titled "Enable X", "Create X", "Configure X", "Disable X", and similar action headings.
+Convert a plain numbered list to `<Steps>` only when its steps are large: each step has several actions, a screenshot, or a callout. Do not convert lists of short steps. A section title such as "Enable X" or "Create X" does not decide the format; the size of the steps does.

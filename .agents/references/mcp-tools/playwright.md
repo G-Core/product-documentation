@@ -13,7 +13,7 @@ mcp__playwright__browser_click      — click a UI element
 mcp__playwright__browser_type       — type into a field
 mcp__playwright__browser_snapshot   — get DOM/accessibility tree (read UI labels)
 mcp__playwright__browser_take_screenshot — capture the current page visually
-mcp__playwright__browser_evaluate   — run JavaScript (scroll, zoom, collapse sidebar)
+mcp__playwright__browser_evaluate   — run JavaScript (scroll, replace real data with placeholders)
 mcp__playwright__browser_select     — select from a dropdown
 mcp__playwright__browser_hover      — hover over an element
 ```
@@ -59,9 +59,10 @@ automated. Do not attempt to bypass it — ask the user to confirm, then continu
 
 ### Before every screenshot
 
-1. **Collapse the portal sidebar.** The left sidebar occludes the main content area.
-   Use `browser_evaluate` to collapse it, or click the collapse icon on the left edge.
-   Verify the sidebar is gone before taking the screenshot.
+1. **Do not collapse or change the portal sidebar.** The sidebar is part of the portal as the
+   customer sees it. Whether it appears in a screenshot is decided by the `article-screenshot`
+   skill with one rule: show what the step is talking about. If the step mentions a sidebar item
+   or a navigation path, the sidebar is in the frame. Otherwise it is cropped out.
 
 2. **Scroll to the target element:**
    ```javascript
@@ -69,24 +70,14 @@ automated. Do not attempt to bypass it — ask the user to confirm, then continu
    document.querySelector('selector').scrollIntoView()
    ```
 
-3. **Set zoom if needed:**
-   ```javascript
-   // Zoom in — target is small or text is hard to read
-   document.body.style.zoom = '1.25'
-
-   // Zoom out — target is wide (tables, multi-column layouts)
-   document.body.style.zoom = '0.8'
-
-   // Reset after capturing
-   document.body.style.zoom = '1'
-   ```
+3. **Do not change the viewport or zoom.** Never call `browser_resize` and never set
+   `document.body.style.zoom`. Capture the page as the browser shows it.
 
 ### Capture settings
 
 | Setting | Rule |
 |---------|------|
-| Browser width | 1280px minimum (1440px for wide layouts) |
-| Zoom | 100% unless adjusted per above |
+| Viewport and zoom | Never changed. Use the browser as it is |
 | Theme | Light mode only |
 | Language | English (US) |
 | Personal data | None visible — no real emails, names, user IDs, tokens |
@@ -120,46 +111,9 @@ When the audit or screenshot workflow requires creating a resource (instance, ne
 
 ### Framing
 
-Do not submit a full-page screenshot when the subject is a small part of the page.
+Taking and cropping a screenshot is a separate task with its own skill: use the `article-screenshot` skill. It captures the full viewport, chooses the area by context (a control, a whole form, a dialog, a table with its toolbar, a sidebar or side panel), crops with `.agents/tools/crop_screenshot.py`, and checks the result. Never change the viewport or zoom, and never pass `element` or `target` to `browser_take_screenshot`.
 
-`browser_take_screenshot` does NOT support a `clip` parameter. Use these methods instead:
-
-**Method 1 — Element screenshot (preferred):**
-Use the `element` + `target` parameters to capture a specific DOM element. The tool automatically crops to the element's bounding box, cutting out white borders, sidebar, and browser chrome.
-
-```
-browser_take_screenshot(
-  element="main content area",
-  target="[class*='isp-content'], main, .main-content",
-  filename="C:\\Users\\...\\screenshot.png"
-)
-```
-
-For the Gcore Hosting portal (`hosting.gcore.com/billmgr`), the main content wrapper is typically `[class*='isp-content']` or the inner panel — get the exact selector from a snapshot first.
-
-**Method 2 — Zoom + full viewport:**
-```javascript
-// browser_evaluate before screenshot
-document.body.style.zoom = '0.85'  // zoom out to fit wide content
-```
-
-Then reset after:
-```javascript
-document.body.style.zoom = '1'
-```
-
-**Method 3 — Hide whitespace with CSS:**
-```javascript
-// browser_evaluate — removes body margin/padding that creates white borders
-document.body.style.margin = '0';
-document.body.style.padding = '0';
-```
-
-- **Zoom in** when controls or labels would otherwise be too small to read
-- **Zoom out** when a wide table would cause horizontal scrolling artifacts
-- Be dynamic — adjust zoom, scroll position, and element target per screenshot
-
-**Hosting portal note:** The `hosting.gcore.com/billmgr` portal has no sidebar collapse button. Always use element screenshot (Method 1) or hide the sidebar with CSS before capturing.
+**Hosting portal note:** `hosting.gcore.com/billmgr` has its own navigation panel. Capture the full viewport and let the skill decide what to crop.
 
 ### File format
 
@@ -208,7 +162,7 @@ For each `<Frame>`, `<img>`, or `![]()` in the article:
 1. Extract the path from `src="..."` or `![](...)`
 2. Check the file exists:
    ```powershell
-   Test-Path "C:\Projects\product-documentation{image-path}"
+   Test-Path ".{image-path}"
    ```
 3. If the file does not exist — flag it. Do not change the path without confirming
    the file exists at the new location.
@@ -222,7 +176,7 @@ Some files in the repo are data URIs saved as files instead of actual images.
 Check the first bytes before using a file:
 
 ```powershell
-$bytes = [System.IO.File]::ReadAllBytes("C:\Projects\product-documentation\images\file.png")[0..3]
+$bytes = [System.IO.File]::ReadAllBytes("images\file.png")[0..3]
 ```
 
 Valid signatures:
@@ -257,18 +211,18 @@ will not display in browsers.
 
 `browser_take_screenshot` with a `filename` parameter can only save files inside the
 **current working directory** of the active project. It cannot write directly to
-`C:\Projects\product-documentation`.
+the docs repository.
 
 **Workaround:** Save to the current project directory first, then copy with PowerShell:
 
 ```powershell
 Copy-Item ".\screenshot.png" `
-          "C:\Projects\product-documentation\images\docs\{product}\{slug}\screenshot.png" -Force
+          "images\docs\{product}\{slug}\screenshot.png" -Force
 ```
 
 Screenshot storage path in the docs repo:
 ```
-C:\Projects\product-documentation\images\docs\{product}\{article-slug}\{filename}.png
+images\docs\{product}\{article-slug}\{filename}.png
 ```
 
 Referenced in MDX as:
