@@ -1,5 +1,123 @@
 ---
-title: Configure a CDN resource
+title: Settings for one hostname
 sidebarTitle: Resource settings
-description: Settings for one CDN resource, from availability and origin to cache and security.
+description: When a setting applies to a whole CDN hostname, and when a rule overrides it for a matching path.
 ---
+
+**OPTIONS** applies to every request for the hostname. **RULES** overrides that behavior where the URI matches a path or a regular expression, and only for the options placed on the rule. Anything the rule does not mention stays as set under **OPTIONS**.
+
+## OPTIONS
+
+### General
+
+Files are pulled from an origin group. [Origin&nbsp;pull](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol) sets the protocol to HTTP, HTTPS, or both, and selects the group. The sources in the group are edited in [origin&nbsp;groups](/reseller-support/cdn/origin-groups).
+
+<Frame>
+  ![Content availability, origin pull protocol, and origin group](/images/docs/reseller-support/cdn/resource-settings/general.png)
+</Frame>
+
+To keep every edge from calling that origin, [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) places one precache server in front of it. A hit is served from the shield, and the origin is contacted on a miss. Brotli, under Content, has no effect until the shield is enabled.
+
+[Connection&nbsp;timeouts](/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts) limit how long an edge waits to open a connection to the origin, and how long it waits for the next bytes of the response.
+
+**Content availability** is the switch for delivery. While it is on, content is available to customers. The name viewers request is fixed after the resource is created: a [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), or a name in the gcdn.co zone. They reach it with a [Let's&nbsp;Encrypt](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) certificate, which renews automatically, or with a [custom&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate). **HTTP/3** applies only while HTTPS is on. [DNS-01](/cdn/ssl-certificates/use-dns-01-for-a-lets-encrypt-certificate) matters only when the HTTP challenge cannot reach the hostname.
+
+### Cache
+
+[CDN&nbsp;caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) is the edge lifetime. [Browser&nbsp;caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers) is the lifetime in the viewer's browser. Changing one leaves the other as it was. A different lifetime for one path belongs on a rule.
+
+<Frame>
+  ![CDN caching, redirection from origin, and browser caching](/images/docs/reseller-support/cdn/resource-settings/cache.png)
+</Frame>
+
+The same file with a different query string, or with a `Set-Cookie` header, can be stored once or many times. Ignoring the [query&nbsp;string](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) or [Set-Cookie](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers) keeps one object. The [cache&nbsp;key](/cdn/cdn-resource-options/cache/modify-cache-key) names the request parts that must be stored apart, and changing that key drops the copies already stored.
+
+A redirect from the origin is stored and returned as a redirect. [Origin&nbsp;redirects](/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects) follow the selected codes and store the target instead. When the origin cannot return a fresh object, [Always&nbsp;online](/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable) can serve one that is already cached.
+
+### Access
+
+[Access&nbsp;policies](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies) filter by country, referrer, IP address, or user agent. **Allow by default** rejects only the listed values. **Block by default** accepts only those values. A [secure&nbsp;token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) goes further and ties the URL to a time limit or to an allowed IP address.
+
+<Frame>
+  ![Country access policy, referrer access policy, and redirect from HTTP to HTTPS](/images/docs/reseller-support/cdn/resource-settings/access.png)
+</Frame>
+
+HTTP requests can follow an [HTTPS&nbsp;redirect](/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https). Methods the hostname should not serve are limited under [HTTP&nbsp;methods](/cdn/cdn-resource-options/security/specify-http-methods-allowed-for-content-requests-from-the-cdn).
+
+[SNI&nbsp;hostname](/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server) and [TLS&nbsp;versions](/cdn/cdn-resource-options/security/choose-tls-versions) sit together and apply to different ends of the path. SNI is the name sent to the origin during its handshake, and only when the pull uses HTTPS. **Dynamic** follows the Host header. **Custom** sends a name set for the origin. TLS versions limit what a viewer may use to reach the hostname.
+
+### Content
+
+A [status&nbsp;code](/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn) can replace the origin response for every request. The same replacement for one path is a rule.
+
+<Frame>
+  ![Status code, Gzip compression, and Brotli compression](/images/docs/reseller-support/cdn/resource-settings/content.png)
+</Frame>
+
+Uncompressed text can be compressed at the edge. [Edge&nbsp;compression](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression) does that with Gzip or Brotli, and Brotli requires Origin Shielding.
+
+On the resource, or inside one rule, that compression cannot run together with [Fetch&nbsp;compressed](/cdn/cdn-resource-options/compression/configure-fetch-compression), which pulls files the origin already compressed, or with [large&nbsp;files](/cdn/cdn-resource-options/optimize-large-file-delivery), which delivers big objects in parts.
+
+The path the origin sees can differ from the path the viewer used. [Rewrite](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) changes it before the fetch, or returns a redirect.
+
+[WebSockets](/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin) proxy an open connection to the origin.
+
+A token on a playlist does not reach the files inside it on its own. [Query&nbsp;forwarding](/cdn/cdn-resource-options/query-string-forwarding) copies the query parameters onto those URLs.
+
+### HTTP headers
+
+On the way to the origin, the CDN can add [request&nbsp;headers](/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin) and can set which site a shared server should answer. That site is the [host&nbsp;header](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header): the hostname the viewer requested, or one fixed value on every origin request.
+
+<Frame>
+  ![Request headers, CORS header support, and response headers](/images/docs/reseller-support/cdn/resource-settings/http-headers.png)
+</Frame>
+
+The response back to the viewer is a separate edit. A [CORS&nbsp;header](/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response) lets the browser accept the response from this hostname. [Response&nbsp;headers](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers) can be added on that response, or hidden when the origin sent them.
+
+### Network limits
+
+A large file can occupy a connection for the whole transfer. [Download&nbsp;speed](/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users) holds each connection to a lower rate, either one rate for every connection or a rate taken from the request.
+
+<Frame>
+  ![Download speed limit](/images/docs/reseller-support/cdn/resource-settings/network-limits.png)
+</Frame>
+
+### Optimization
+
+[Image&nbsp;Stack](/cdn/cdn-resource-options/image-optimization-paid/about-image-stack) can change the quality, format, or size of a JPG or PNG on the way to the viewer. The file on the origin stays as it was. Enabling it for every request conflicts with Rewrite when the origin also serves other files. A rule can limit the processing to image paths.
+
+<Frame>
+  ![Image Stack](/images/docs/reseller-support/cdn/resource-settings/optimization.png)
+</Frame>
+
+### Security
+
+[WAAP](/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-waap) inspects requests and can block malicious ones before they reach the origin. The switch stays disabled until a WAAP plan is active. **Rate limiting**, marked **BETA**, only caps how many requests one IP address can send. **Bot protection** is a paid control on the same form.
+
+<Frame>
+  ![WAAP, rate limiting, and bot protection](/images/docs/reseller-support/cdn/resource-settings/security.png)
+</Frame>
+
+### FastEdge apps
+
+[FastEdge&nbsp;applications](/cdn/getting-started/integrate-cdn-with-fastedge) run during CDN processing and can change the request or the response. Each stage of that processing accepts one application.
+
+<Frame>
+  ![FastEdge apps](/images/docs/reseller-support/cdn/resource-settings/fastedge.png)
+</Frame>
+
+## RULES
+
+A path that should not follow the resource settings needs a rule. The rule matches a URI path or a regular expression, and its pull protocol can stay inherited or be set to HTTP, HTTPS, or both. When several rules match one URI, the rule listed first applies.
+
+| On the rule | For a matching request |
+| --- | --- |
+| The option is absent | The resource setting stays in effect |
+| The option is present and disabled | That resource setting is turned off |
+| The option is present and enabled | The value on the rule replaces the resource setting |
+
+[Create&nbsp;rule](/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files) starts blank or from a template. A template already holds a path, a pull protocol, and the options to override. [Rule&nbsp;templates](/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one) include system presets for playlists, video segments, static content, the Let's Encrypt HTTP-01 challenge, and Image Stack. A system template opens as a read-only view of that preset.
+
+<Frame>
+  ![System rule templates](/images/docs/reseller-support/cdn/resource-settings/rules.png)
+</Frame>
