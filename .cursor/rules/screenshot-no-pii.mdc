@@ -15,32 +15,32 @@ written to the repo. Never commit a screenshot and fix it afterwards.
 - Account names and account IDs that identify a real account
 - Phone numbers, IP addresses, API tokens, any credential
 
-## How to remove it, in this order
+## How to remove it
 
-1. **Hide it in the page with JavaScript before capturing.** Run this in the browser
-   before every screenshot. `visibility: hidden` keeps the layout unchanged:
+Replace real values with placeholders in the page with JavaScript BEFORE the first capture.
+Cropping is framing, not protection: the full screenshot must already be clean.
 
-```javascript
-document.querySelectorAll('span, p, div, a, button').forEach(el => {
-  if (el.children.length === 0 && /[^@\s]+@[^@\s]+\.[^@\s]+/.test(el.textContent || '')) {
-    el.style.visibility = 'hidden';
-  }
-});
-```
+Build every placeholder from the real value as it is displayed: keep the same length,
+separators, and prefix (a 7-digit ID becomes another 7-digit ID, a token shaped like `12345$`
+plus hex keeps that shape). The same real value gets the same placeholder everywhere in one
+article, and different values get different placeholders.
 
-   Adapt the selector when the data is an account name, account ID, or phone number
-   rather than an email. Target the specific element and hide or replace its text.
+| Real data | Placeholder |
+|---|---|
+| Email address | `user@example.com`, then `user2@example.com` |
+| Hostname, URL | same subdomains, registered part replaced: `cdn.resource1.example.com` |
+| Public IPv4 | `203.0.113.10`, then `.11` (RFC 5737 documentation range) |
+| IPv6 | `2001:db8::1` (RFC 3849) |
+| Token, key, secret, numeric ID, UUID | the same shape as the real value |
+| Person or account name | `my-account`, then `my-account-2` |
 
-2. **Frame the shot so the data is outside it.** Crop to the region that shows the
-   documented UI and leave the header, avatar menu, or account bar out of the frame
-   when they are not the subject.
+Private addresses (10.x, 172.16-31.x, 192.168.x) stay as they are.
 
-3. **Replace the text with a placeholder** (for example `user@example.com`,
-   `my-account`, `ID 0001`) when the element itself is what the screenshot documents
-   and cannot be hidden or cropped out. A blurred or pixelated real value is acceptable
-   only when replacement is impossible.
+The snippets and the full procedure are in `.claude/skills/article-screenshot/SKILL.md`.
+Elements that only show the account (avatar menu, user block) may be hidden with
+`visibility: hidden`. A blurred or pixelated real value is acceptable only when
+replacement is impossible.
 
 ## Check before saving
 
-Read the captured image back and scan it for emails, real names, and real account
-identifiers. If any remain, retake the screenshot. Do not rely on a later manual edit.
+Read the captured image back and scan it for real emails, names, IDs, tokens, and addresses. If any remain, retake the screenshot. Do not rely on a later manual edit.

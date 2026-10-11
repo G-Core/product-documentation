@@ -5,7 +5,45 @@ Load this file when a skill tells you to write or review procedural content.
 
 ---
 
-## Step format
+## Choosing the format: numbered list or `<Steps>`
+
+Decide by the size of the steps in the whole procedure.
+
+- **All steps short: plain numbered list.** Each step is a single action that fits in a sentence or two, for example "Click **Save**." or a step with a short list of values to enter. Follow the rules in this file.
+- **Steps are large, or the sizes are mixed: `<Steps>` with `<Step title="...">`.** One format for the whole procedure. If at least one step is large and the others are short, the whole procedure uses `<Steps>`. Follow `mdx-rules.md`, "Steps component", and `style-guide.md`, "Use `<Steps>` for procedures with large steps".
+
+Never nest `<Steps>` inside `<Steps>`. Inside a `<Step>` body, write sub-actions as a flat numbered list.
+
+### Three forms of a `<Step>`
+
+Pick the form by the size of the step. The title and the body must never duplicate each other.
+
+1. **Very small step: the action is the title, no body.** A very small step does not need a separate paragraph.
+   ```mdx
+   <Step title="Click **Save**"></Step>
+   ```
+2. **Step with a little explanation: the action or goal is the title, the explanation is the body.** The body adds what the title does not say.
+   ```mdx
+   <Step title="Select a region">
+     Choose the region closest to the users. The region cannot be changed after creation.
+   </Step>
+   ```
+3. **Large, complex step: the goal is the title, the content is in the body.** The body holds the full content: a numbered sub-list, screenshots, callouts.
+   ```mdx
+   <Step title="Add a CNAME record">
+     Click **Add record** and fill in the form:
+
+     1. Set **Type** to **CNAME**.
+     2. In the **Name** field, enter the root domain.
+     3. Click **Add**.
+
+     <Frame>![Add CNAME record form](/images/docs/...)</Frame>
+   </Step>
+   ```
+
+---
+
+## Step format (numbered list)
 
 ```mdx
 1. Navigate to **Settings** > **API Keys**.
@@ -21,6 +59,8 @@ Load this file when a skill tells you to write or review procedural content.
 ```
 
 Blank line between every numbered item. Sub-items indent 3 spaces under their parent.
+
+Inside `<MethodSection>` (tabbed articles) write each numbered step as `<p>1. text</p>` instead; plain `1.` items merge into one paragraph there. See `mdx-rules.md`, "Content rules inside `<MethodSection>`".
 
 ---
 
@@ -51,6 +91,12 @@ just "Click **Save**."
 
 ---
 
+## Navigation paths
+
+Write navigation paths with `>` as the separator and bold for each UI element: `navigate to **Section** > **Subsection**`. Do not use arrows.
+
+---
+
 ## Optional steps
 
 Prefix optional steps with exactly `(Optional)` as the first word:
@@ -75,12 +121,12 @@ Consolidate login and navigation into a single step when they are always done to
 **Over-split:**
 ```
 1. Log in to the Customer Portal.
-2. Go to Cloud > Virtual Machines.
+2. Navigate to Cloud > Virtual Machines.
 ```
 
 **Correct:**
 ```
-1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and go to
+1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to
    **Cloud** > **Virtual Machines**.
 ```
 
@@ -120,6 +166,8 @@ For nested steps, use letters then Roman numerals:
 
 Do not go deeper than three levels (number → letter → Roman numeral). If a procedure
 requires a fourth level, restructure it into separate top-level steps.
+
+The letter and Roman numeral levels apply to plain numbered lists. Inside a `<Step>` body use a flat numbered list, because `<Steps>` already provides the top level.
 
 ---
 

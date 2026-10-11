@@ -1,16 +1,365 @@
 ---
 name: write-from-scratch
 description: >-
-  Writes a brand-new documentation article (.mdx) from scratch based on provided
-  source material — a Jira ticket or brief, a Confluence page/URL, or a plain
-  free-text description — following the project's content types, style guide, and
-  MDX/frontmatter rules. Use this skill when the user wants to create a page that
-  does not yet exist, with phrases like "write a new doc", "create a doc for this
-  feature", "draft documentation from this Jira ticket", "turn this Confluence
-  page into an article", "document this new API endpoint from scratch", or "write
-  up a guide for X". It picks the article type, chooses the right structure, finds
-  the file path and a reference article, drafts the content, marks unverified facts
-  as TODO, verifies agent-added claims, and produces compliant frontmatter. Do not
-  use it to edit, update, audit, or fix an existing article.
+  Writes a brand-new article (.mdx) from a Jira ticket or brief, a Confluence
+  page, or a free-text description, following the project's content types, style
+  guide, and MDX rules. Use when the page does not exist yet, for example "write
+  a new doc", "create a doc for this feature", "turn this Confluence page into
+  an article", or "write up a guide for X". Picks the article type and
+  structure, finds the file path and a reference article, drafts the content,
+  marks unverified facts as TODO, verifies agent-added claims, and adds the
+  article to docs.json. Not for editing, updating, or auditing existing
+  articles.
 ---
-@../../../.agents/skills/write-from-scratch/SKILL.md
+
+Write a new article from source material, following the correct structure for
+the article type and the project style guide.
+
+## Scope — read exactly these files
+
+1. This SKILL.md
+2. `.agents/references/content-types.md` — article type decision and templates
+3. `.agents/references/style-guide.md` — writing rules
+4. `.agents/references/procedures.md` — step format, Optional prefix, location/purpose before action
+5. `.agents/references/mdx-rules.md` — MDX and frontmatter rules
+6. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+7. One or two existing articles of the same type (found during Phase 3)
+8. Source material: Jira brief, Confluence page, or user input
+9. `.agents/references/mcp-tools/confluence.md` — only if fetching from Confluence
+10. `.agents/references/mcp-tools/jira.md` — only if fetching from Jira directly
+11. `.agents/references/concept-articles.md` — only for concept articles (Type 5 in content-types.md)
+12. `.agents/references/intro-writing.md` — only when writing the intro of a tab or section
+
+Do not read more than two reference articles. Do not read articles from other
+product areas unless directly relevant.
+
+---
+
+## Inputs
+
+| Input | Required | Notes |
+|-------|----------|-------|
+| Topic or feature description | Yes | What the article is about |
+| Source material | One of these | Jira brief, Confluence URL, or free-text description |
+| Article type | No | If not specified, determine from content-types.md |
+| Product area | No | If not specified, infer from topic |
+
+If coming from `jira-context` skill — the brief from that skill is your source material.
+Do not re-fetch the Jira ticket.
+
+---
+
+## Phase 1 — Gather source material
+
+Collect everything needed to write accurately. Do not write from memory or assumptions.
+
+**If a jira-context brief was provided:**
+Use it directly. The brief already contains what changed, which article, and scope of work.
+
+**If a Jira ticket ID is provided directly:**
+Fetch the ticket. Extract: summary, description, acceptance criteria, linked dev ticket.
+Follow the instructions in `.agents/references/mcp-tools/jira.md`.
+
+**If a Confluence URL is provided:**
+Fetch the page. Look for: feature description, API fields, known limitations, screenshots.
+Follow the instructions in `.agents/references/mcp-tools/confluence.md`.
+Never copy Confluence text verbatim — use it to understand the feature, write in your own words.
+
+**If free-text description is provided:**
+Use it as the primary source. Note what is known vs what needs verification.
+
+**For API content — check the OpenAPI spec:**
+Find the relevant YAML file in `/api-reference/services_documented/{product}_api.yaml`.
+Verify field names, parameter types, and endpoint paths against the spec — not against
+Confluence or memory.
+
+**Mark gaps:** If important details are missing (exact field names, UI navigation path,
+behavior in edge cases), note them as `{TODO: verify X}` inline in the draft.
+Do not invent technical details.
+
+---
+
+## Phase 2 — Determine article type
+
+Read `.agents/references/content-types.md` and answer two questions:
+
+**1. Does the feature have both Customer Portal UI and REST API coverage?**
+- Both → Tabbed article
+- Portal only → Portal-only article
+- API only → API-only article
+
+**2. For articles with an API section — do the steps require sequential execution?**
+- Yes (outputs feed into next steps) → Structure A: Quickstart + Step-by-step
+- No (independent operations) → Structure B: standalone sections
+
+**Rule of thumb:**
+- "Create" / "Deploy" articles → almost always sequential (Structure A)
+- "Manage" / "Configure" articles → almost always independent (Structure B)
+- Test: "Can the user do Step 3 without Steps 1 and 2?" If yes → Structure B
+
+If unsure — ask the user before writing.
+
+If the type is a concept article (Type 5), also read `.agents/references/concept-articles.md` and follow it for structure and prose.
+
+---
+
+## Phase 3 — Find the file path and a reference article
+
+**Determine the file path:**
+```
+/{product}/{section}/{article-name}.mdx
+```
+
+- Product: matches the top-level folder (`cloud`, `cdn`, `dns`, `waap`, etc.)
+- Section: matches the subfolder within the product
+- Filename: lowercase, hyphens, verb-noun pattern — `create-an-instance.mdx`,
+  `configure-firewall-rules.mdx`
+
+**Find one reference article:**
+Look for an existing article of the same type in the same product folder:
+```powershell
+ls {product}/{section}/*.mdx
+```
+
+Read it fully. Use it to understand:
+- The depth of explanation typical for this product
+- How UI steps are formatted
+- How code examples are presented
+- The tone and level of assumed knowledge
+
+---
+
+## Phase 4 — Write the article
+
+Use the template from `.agents/references/content-types.md` for the article type
+determined in Phase 2.
+
+### Opening sentence
+
+The first sentence must state what the reader will accomplish and why it matters.
+Never open with "This guide covers...", "This article explains...", or any description
+of the document itself.
+
+**Bad:** "This guide covers creating a virtual machine using the Gcore Cloud API."
+**Good:** "Deploy a Linux virtual machine using the Gcore Cloud REST API — create
+SSH keys, select a flavor and image, and assign a floating IP address."
+
+Keep the opening to two paragraphs at most: what this is and why, then what is required. Write prerequisites there as plain text, never as a `## Prerequisites` section. For the intro of a `<MethodSection>`, follow `.agents/references/intro-writing.md`.
+
+### Writing each section
+
+Before writing a section:
+1. Know what the section's goal is — what does the reader need after reading it?
+2. Write the intro sentence for that section first
+3. Then the content
+
+Follow the paragraph formulas in `style-guide.md`:
+- Maximum 2 sentences per paragraph (Formulas A and B)
+- No root-word pairs in the same paragraph
+- No filler words: just, simply, ensure, platform
+
+### Portal steps
+
+For `<MethodSection id="portal">`:
+- Numbered steps wrapped in `<p>`: `<p>1. Click **Save**.</p>`, with a blank line between steps
+- Bold for UI element names: Click **Create**, In the **Name** field
+- Wrap every standalone prose paragraph in `<p>` tags
+- No `####` headings — use **bold text** for sub-labels
+- Screenshot placeholders where needed: `{TODO: screenshot — [what it shows]}`
+
+### Screenshots — format
+
+Always single-line Frame with Markdown image syntax:
+
+```mdx
+<Frame>![Alt text describing what the screenshot shows](/images/docs/{product}/{section}/{article-slug}/{filename}.png)</Frame>
+```
+
+Never use `<img>` tags with JSX `style={{...}}` inside `<Frame>`. Never multi-line Frame with indented content. Image path convention: `/images/docs/{product}/{section}/{article-slug}/{name}.png`.
+
+Take each screenshot with the `article-screenshot` skill, saving to the matching path under `images/docs/` in the repository. Never change the viewport or zoom.
+
+### API steps
+
+For `<MethodSection id="api">` or standalone API articles:
+
+**Opening sentence** (required, before the `<Info>` block):
+Describe what this section enables. Not "The steps below...".
+Good: "Create a subnet inside an existing network and customize its DHCP settings."
+
+**`<Info>` block** (required):
+```mdx
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a
+[project ID](...) and a [region ID](...).
+</Info>
+```
+
+**Tab order:** always Python SDK → Go SDK → curl (curl always last).
+**In Quickstart:** Python SDK and Go SDK only — no curl tab.
+
+**SDK code examples — CRITICAL:**
+Before writing ANY SDK code, read `.agents/references/sdk-best-practices.md`.
+- Use `*_and_poll()` / `*AndPoll()` methods instead of manual polling
+- Never use `os.environ["GCORE_API_KEY"]` - SDK reads it automatically
+- Never `import time` when using `*_and_poll()` methods
+
+**Step anatomy** (for Structure A sequential steps):
+1. One sentence: why this step matters in the flow
+2. Key parameters table (non-obvious required fields only)
+3. Code tabs: Python SDK → Go SDK → curl
+4. `The API returns:` label, then the response JSON
+5. Inline link to API reference on a meaningful noun
+
+**Quickstart scripts:**
+- Comment every step: `# Step 1.` / `// Step 1.` — never combine (`# Step 3+4`)
+- Must run as-is after setting three env vars — no other substitutions
+- Never hardcode region-specific IDs — select by characteristics:
+  ```python
+  # IDs are region-specific; selects 2 vCPU / 4 GB RAM
+  flavor = next(f for f in flavors if f.vcpus == 2 and f.ram == 4096)
+  ```
+
+### Marking uncertainty
+
+When technical details cannot be verified from source material:
+```
+{TODO: verify — [what needs to be checked and where]}
+```
+
+Use for: exact UI navigation paths, field names not in the spec, behavior in
+edge cases, screenshot content.
+
+Do not publish speculation as fact.
+
+---
+
+## Phase 5 — Verify agent-added claims
+
+Before writing frontmatter, find everything you wrote that did NOT come directly
+from the provided source material.
+
+**The rule:** if the contributor or source gave you the information — trust it and
+use it, even if it is not yet in Jira or Confluence. Verification only targets
+what you added through your own reasoning.
+
+**What counts as agent-added:**
+- A number or limit you inferred: "the timeout is probably 30 seconds" or "standard
+  limit is 100" — when the source didn't state it
+- A behavioral claim you deduced: "since it uses REST, it returns JSON" or "this
+  will automatically scale"
+- A step you added because "it seems logical this would be needed"
+- Any phrase starting with "typically", "usually", "generally", "by default" when
+  the source did not say this
+
+**What does NOT need verification:**
+- Numbers, limits, and specs explicitly stated by the contributor in their input
+- Values taken directly from the Jira ticket description or Confluence page
+- Technical details confirmed by real API testing in Phase 1
+- Values copied from the OpenAPI YAML spec
+
+**For each agent-added claim, check in order:**
+
+1. **Main Jira ticket** — is it stated in description or acceptance criteria?
+2. **Parent ticket** — does the parent epic specify this?
+3. **Sibling tickets** — other issues linked to the same parent
+4. **Confluence pages** — linked from any ticket or searchable by feature name
+
+Use `.agents/references/mcp-tools/jira.md` and `.agents/references/mcp-tools/confluence.md`.
+
+**Decision:**
+
+| Situation | Action |
+|-----------|--------|
+| Claim came from contributor or source | Keep it — no verification needed |
+| Claim confirmed in Jira or Confluence | Keep it |
+| Claim is your own reasoning, not found anywhere | `{TODO: verify — added by agent, not confirmed in source}` |
+| Sources disagree | Use most authoritative (Confluence spec > ticket description), note the discrepancy |
+
+When in doubt, ask yourself: **"Where did I get this from?"**
+If the answer is "I reasoned it" or "it seemed logical" — mark it as TODO.
+
+---
+
+## Phase 6 — Frontmatter
+
+Every article requires these fields:
+
+```yaml
+---
+title: [Full title — shown in browser tab]
+sidebarTitle: [Short sidebar label]
+description: [One sentence, 140 characters maximum, what the article is about. No Portal, API, or Terraform.]
+---
+```
+
+Write `description` last — after the article is complete, it is easier to
+summarize accurately.
+
+`description` is the search summary. Use the feature name and the words a person
+would type into search. Do not name Portal, API, or Terraform. 140 characters
+maximum. Curly braces, slashes, and colons break the Mintlify build. Rules:
+`.agents/references/mdx-rules.md`.
+
+---
+
+## Phase 7 — Validate before showing
+
+Run the tools from `.agents/references/review-process.md`, Step 1, and fix every real violation. Then check:
+
+**MDX:**
+- [ ] Import line includes `.jsx` extension: `from "/snippets/method-switch.jsx"`
+- [ ] `<MethodSwitch>` wraps both sections, `label` is on `<MethodSection>`
+- [ ] All prose and every numbered step inside `<MethodSection>` wrapped in `<p>` tags; bullet lists not wrapped
+- [ ] No `{identifier}` in inline backtick spans — use `<code>` with `&nbsp;`
+- [ ] No `####` headings inside `<MethodSection>`
+- [ ] Closing `</MethodSection>` tags at column 0 (not indented after a list)
+- [ ] `.\.agents\tools\validate_mdx.ps1 {path}` prints `OK`
+
+**Frontmatter:**
+- [ ] `title` present
+- [ ] `description` present: one sentence, 140 characters maximum, no Portal, API, or Terraform, no forbidden characters
+
+**Style:**
+- [ ] Opening sentence does not describe the document
+- [ ] No forbidden sections: `## Prerequisites`, `## Next steps`, `## See also`
+- [ ] Every `##` heading followed by a prose sentence before code or table
+- [ ] Headings in sentence case
+- [ ] Bold only for UI element names
+- [ ] No forbidden words: just, simply, ensure, platform, obviously
+
+**docs.json:**
+- [ ] The new article is added to the correct group in `docs.json`, after reading the sibling entries of that group
+- [ ] `docs.json` is still valid JSON: `node -e "JSON.parse(require('fs').readFileSync('docs.json','utf8')); console.log('OK')"`
+- [ ] The `docs.json` change is shown to the user
+
+---
+
+## Phase 8 — Output
+
+Show the complete article content. Then:
+
+```
+File: [path]
+Article type: [type from content-types.md]
+Structure: [A — sequential / B — independent / N/A]
+
+TODO items requiring verification:
+- {TODO: ...} at Step N — [what to check]
+- {TODO: ...} in [section] — [what to check]
+
+Recommended next step:
+- No TODOs → ready for review, create PR with skill pr
+- Has portal TODOs → run skill full-audit to verify UI steps
+- Has API TODOs → verify against API spec or test manually
+```
+
+Before telling the user the article is ready, confirm all four:
+
+- [ ] **Content** — structure correct, no forbidden sections, all links embedded in content sentences
+- [ ] **Testing** — every command and code block was actually executed and passed
+- [ ] **Style** — the Phase 7 checks passed
+- [ ] **Human review** — the article was shown to the user
+
+When the user confirms the result looks good — load `.claude/skills/pr/SKILL.md`
+to create the branch, commit, and open a draft PR.

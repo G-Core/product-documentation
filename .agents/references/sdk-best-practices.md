@@ -253,6 +253,67 @@ https://pkg.go.dev/github.com/G-Core/gcore-go/cloud
 
 ---
 
+## Rule 4: Client-level parameters and Go specifics
+
+`Gcore()` / `gcore.NewClient()` read `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` at client level, so they must not be passed to individual calls.
+
+- Python: do not import `os` just for `GCORE_CLOUD_PROJECT_ID` or `GCORE_CLOUD_REGION_ID`. Import it only for additional variables the SDK does not read, for example `GCORE_SSH_KEY_NAME` or `CLUSTER_NAME`.
+- Go: `gcore.NewClient()` takes no arguments. Never pass `option.WithAPIKey`; no `option` import is needed.
+- Go: `ctx := context.Background()` — one variable, reused in all calls. `context.TODO()` is forbidden.
+- Go: omit `ProjectID` / `RegionID` from params structs. Add them back only for an example that deliberately targets a project or region different from the one in the env vars.
+- Never wrap a call in a manual project/region lookup from `os.environ` / `strconv.ParseInt(os.Getenv(...))`.
+
+---
+
+## Setting up a test environment
+
+Run SDK samples against the live API in a temporary environment outside the repository.
+
+```powershell
+# Python: temporary venv with the SDK
+python -m venv "$env:TEMP\gcore-sdk-venv"
+& "$env:TEMP\gcore-sdk-venv\Scripts\pip" install gcore
+```
+
+Go samples run with `go run` in a temporary module directory under `$env:TEMP`.
+
+---
+
+## Finding exact method signatures
+
+Both SDKs are generated from the OpenAPI spec. The single source of truth is `api.md` in each SDK. Field names in code must match the SDK. Never guess them or take them from memory — only from `api.md`, `inspect.signature()`, or the Go module cache.
+
+**Python SDK**
+- Documentation: https://docs.gcore.com/developer-tools/sdks/python
+- API reference: https://github.com/G-Core/gcore-python/blob/main/api.md
+
+```powershell
+# Check a method signature
+& "$env:TEMP\gcore-sdk-venv\Scripts\python.exe" -c "import inspect; from gcore import Gcore; c = Gcore(); print(inspect.signature(c.streaming.ai_tasks.create))"
+
+# List the methods of a service
+& "$env:TEMP\gcore-sdk-venv\Scripts\python.exe" -c "from gcore import Gcore; c = Gcore(); print([m for m in dir(c.streaming.ai_tasks) if not m.startswith('_')])"
+```
+
+**Go SDK**
+- Documentation: https://docs.gcore.com/developer-tools/sdks/go
+- API reference: https://github.com/G-Core/gcore-go/blob/main/api.md
+- pkg.go.dev: https://pkg.go.dev/github.com/G-Core/gcore-go
+
+```powershell
+# Find the newest cached module version
+$modver = (Get-ChildItem "$env:GOPATH\pkg\mod\github.com\!g-!core\gcore-go@*" | Sort-Object Name -Descending | Select-Object -First 1).Name
+$gomodpath = "$env:GOPATH\pkg\mod\github.com\!g-!core\$modver"
+
+# List all methods of a service (example: streaming)
+Select-String -Path "$gomodpath\streaming\*.go" -Pattern "func \(r \*" | ForEach-Object { $_.Line.Trim() }
+
+# Find the file for a specific resource
+Get-ChildItem "$gomodpath\streaming" | Where-Object { $_.Name -like "*aitask*" -or $_.Name -like "*ai_task*" }
+```
+
+---
+
 ## Quick reference - Examples
 
 ### K8S cluster update

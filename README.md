@@ -1,32 +1,29 @@
-# Mintlify Starter Kit
+# Gcore Product Documentation
 
-Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
+Source of the Gcore documentation site at [docs.gcore.com](https://docs.gcore.com), built with [Mintlify](https://mintlify.com). Content is MDX, grouped by product (`cloud/`, `cdn/`, `dns/`, `waap/`, `streaming/`, `fastedge/`, and others). Site navigation is defined in `docs.json`.
 
-- Guide pages
-- Navigation
-- Customizations
-- API Reference pages
-- Use of popular components
+## Preview locally
 
-### Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
+Install the Mintlify CLI once, then run it from the repo root (the folder that contains `docs.json`):
 
 ```
 npm i -g mintlify
-```
-
-Run the following command at the root of your documentation (where mint.json is)
-
-```
 mintlify dev
 ```
 
-### Publishing Changes
+If the preview does not start, run `mintlify install` to reinstall dependencies. If a page returns 404, check that you are in the folder with `docs.json`.
 
-Install our Github App to auto propagate changes from your repo to your deployment. Changes will be deployed to production automatically after pushing to the default branch. Find the link to install on your dashboard. 
+On Windows, run `git config --global core.longpaths true` once after cloning, because some image paths exceed the default path length limit.
 
-#### Troubleshooting
+## Writing and editing articles
 
-- Mintlify dev isn't running - Run `mintlify install` it'll re-install dependencies.
-- Page loads as a 404 - Make sure you are running in a folder with `mint.json`
+- [CONTRIBUTING.md](CONTRIBUTING.md) - guide for writers: the tabbed `MethodSwitch` article pattern, frontmatter, links, and debugging MDX build errors.
+- [.agents/references/style-guide.md](.agents/references/style-guide.md) - voice, structure, and formatting rules.
+
+## Working with AI agents
+
+[AGENTS.md](AGENTS.md) holds the repo-wide rules for AI agents and a table that maps each task to a skill in `.claude/skills/`. Claude Code reads it through `CLAUDE.md`.
+
+## Automation
+
+GitHub Actions in `.github/workflows/` normalize images, sanitize frontmatter, regenerate `llms.txt`, validate Terraform examples, and track API, SDK, and Terraform provider changes. The full list and what each one does to a pull request is in [AGENTS.md](AGENTS.md). Do not push directly to `main`; open a pull request.
