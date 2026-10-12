@@ -19,6 +19,7 @@ The user may write in any language. Every time:
 2. Match it against the Task - Skill table below.
 3. Read the matching skill file as your first tool call, before writing any response or asking any question.
 4. Follow the skill exactly. It overrides everything else in this file except the absolute rules above.
+5. After that task is finished, run the What's new triage below. It is the only second skill allowed in the same session.
 
 ## What this repo is
 
@@ -83,6 +84,11 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 | Compile a multi-product end-to-end guide | `.claude/skills/cookbook/SKILL.md` |
 | Take or retake a screenshot for an article step | `.claude/skills/article-screenshot/SKILL.md` |
 | Create a PR after work is done | `.claude/skills/pr/SKILL.md` |
+| Triage, publish, or audit a product What's new page | `.claude/skills/product-whats-new/SKILL.md` |
+
+## What's new triage
+
+After completing each documentation ticket, article update, or documentation PR review, invoke the `product-whats-new` skill in **Triage** mode using the ticket context and before/after diff. Record `Include`, `Skip`, or `Needs verification` in the approved persistent register. Report the one-line decision in the task summary. Do not edit public What's new pages unless explicitly asked to publish.
 
 ## Common mistakes
 
@@ -186,4 +192,4 @@ Image folder convention: `images/docs/{product}/{article-slug}/`.
 
 ## Hard stop
 
-Load one skill per task. Do not read other skill files. Do not read articles to "understand context". Do not read references unless the skill explicitly says to. When in doubt about what to do next, ask the user. Do not explore.
+Load one skill per task. Do not read other skill files, except the What's new triage after the main task is finished. Do not read articles to "understand context". Do not read references unless the skill explicitly says to. When in doubt about what to do next, ask the user. Do not explore.
