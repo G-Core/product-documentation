@@ -7,7 +7,7 @@ published_page: /streaming/whats-new
 
 # Restream audio, statistics filter, ingest region, SRT targets
 
-Customer change: A restream can drop or silence audio, and can send the original stream or the transcoded stream with overlays. YouTube rejects a stream with no audio track. Statistics aggregation accepts a live, VOD, or playlist type filter. A live stream response includes the active ingest region. A restream can push to an SRT endpoint in caller mode.
+Customer change: A restream can drop or silence audio. YouTube rejects a stream with no audio track. Statistics aggregation accepts a live, VOD, or playlist type filter. A restream can push to an SRT endpoint in caller mode. The active ingest region is recorded separately under June 2026.
 Affected users: Streaming customers using restreams, statistics, or live ingest
 Release evidence: Documentation appearance, used as the month heading because no separate release record was found. Restream audio and source, statistics type, and active ingest region are in articles and the overview list from September 2026. SRT restream targets are in the overview list from 2026-05-08. October 2026 streaming commits on main only rewrite descriptions.
 Open verification: A product release record that names a ship date independently of the article edit

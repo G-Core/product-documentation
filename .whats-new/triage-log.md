@@ -5,4 +5,7 @@
 - 2026-10-12 — Live frame rate — Streaming — Skip — The FAQ describes existing transcoding behavior. An article date is not a release date.
 - 2026-10-12 — Player SDK — Streaming — Skip — The entry described the SDK. It did not name a new capability.
 - 2026-10-12 — SRT and RTMP comparison — Streaming — Skip — A protocol comparison is reference material, not a product change.
+- 2026-10-12 — SCTE-35 marker notes, August and September 2026 — Streaming — Skip — The articles describe current marker behavior. They do not add a new capability.
+- 2026-10-12 — Streaming billing pages, 2026-06-29 — Streaming — Skip — Existing trial and PAYG terms were moved into billing articles.
+- 2026-10-12 — DOC-1472, 2026-07-01 — Streaming — Skip — New pages for delete, screenshots, and getting started describe existing operations.
 
