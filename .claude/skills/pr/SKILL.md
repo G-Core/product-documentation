@@ -219,8 +219,10 @@ After completing all content changes, report what was done and ask the user for 
 
 Before staging, follow `.claude/skills/changelog-label/SKILL.md` on this session's article diff.
 
-- `Include`: stage the feed JSON and `changelog.mdx` from that skill together with the article files. After `gh pr create`, apply the `changelog` label as that skill describes.
-- `Skip` or `Needs verification`: do not add a feed file and do not add the label. Put that skill's one-line decision in the PR body under What changed.
+- `Include`: stage the feed JSON, `changelog.mdx`, and the candidate file from that skill together with the article files. After `gh pr create`, apply the `changelog` label as that skill describes.
+- `Skip`: stage `.whats-new/triage-log.md` when that skill updated it. Do not add a feed file and do not add the label.
+- `Needs verification`: stage the candidate file when that skill wrote one. Do not add a feed file and do not add the label.
+- Put that skill's one-line `Changelog:` decision in the PR body under What changed.
 
 Stage only the files changed in this session — by name, never `git add .`:
 

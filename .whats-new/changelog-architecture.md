@@ -6,13 +6,13 @@ Three stages:
 
 1. Detect. Automation finds possible changes.
 2. Decide. A person accepts, skips, or holds each candidate. This stage exists so one product cannot publish every commit.
-3. Assemble. Automation rebuilds the showcase and the permanent product pages from accepted records.
+3. Assemble. Automation rebuilds `changelog.mdx` from accepted records. The decision drafted on the pull request is a proposal. The reviewer accepts it by merging, or edits or removes the feed record before merge.
 
 GitHub releases never skip the decision stage. A release can contain internal fixes and dependency bumps. It becomes a candidate, not a public item.
 
 ## Stored records
 
-One file per published news item under `.whats-new/feed/`. Each file is JSON. The triage notes in `.whats-new/candidates/` stay separate: they record Include, Skip, and Needs verification. The feed contains only items that are allowed on the public page.
+One file per published news item under `.whats-new/feed/`. Each file is JSON. Candidates in `.whats-new/candidates/` record Include and Needs verification. Skip is one line in `.whats-new/triage-log.md`. The feed contains only items that are allowed on the public page.
 
 Fields:
 
@@ -57,7 +57,7 @@ The generator reads the feed and writes `changelog.mdx`. Nobody edits that file 
 
 Each product is one full-width card. A filter column lists products and counts. The first cards are open; the rest start as a single header row. An open card shows the five latest updates. One control expands that card with the updates that did not fit. "View all" opens the same product as a full history grouped by month. The anchor on an entry is the permanent URL, `/changelog#{id}`.
 
-A separate product What's new page is not generated.
+A separate product What's new page is not generated. `streaming/whats-new.mdx` stays as a static page until the global changelog is in production.
 
 ## What runs automatically
 
@@ -73,7 +73,7 @@ Adding one feed record and running the script adds that entry to the product win
 
 A workflow looks at commits that touch product article folders. It opens or updates a candidate in `.whats-new/candidates/` with status Needs verification. It does not write the feed and does not change the public page. It skips sources already listed on a feed record or on a candidate with `published_as` set.
 
-The existing What's new triage decides whether the article change is a product change. Only an accepted item with both dates and a working `url` is copied into `.whats-new/feed/`.
+`changelog-label` decides on the pull request whether the article change is a product change. Only an accepted record, with both dates and a working `url`, is copied into `.whats-new/feed/`. The candidate then stores `published_as` set to that feed `id`. A `Skip` is one line in `.whats-new/triage-log.md`.
 
 ### Detect in product repositories, third
 
@@ -90,7 +90,7 @@ An RSS or Atom feed can be generated from the same records. It is not part of th
 ## What stays manual
 
 - The customer-facing title and summary.
-- `available_since`, when the only evidence is a commit or a release note.
+- `available_since`. Use the day the article or ticket says the customer got the change. When neither states that day, use the pull request open day and say so in the pull request body. The current backfill keeps the documentation commit date.
 - `announced_at`, set when the item is accepted for the public page.
 - The decision to skip a documentation edit, or to mark a candidate as already published.
 - Creating the docs article that the permanent URL points at.
