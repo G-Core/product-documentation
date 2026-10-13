@@ -84,6 +84,7 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 | Compile a multi-product end-to-end guide | `.claude/skills/cookbook/SKILL.md` |
 | Take or retake a screenshot for an article step | `.claude/skills/article-screenshot/SKILL.md` |
 | Create a PR after work is done | `.claude/skills/pr/SKILL.md` |
+| Decide if a change belongs in the changelog and draft its feed record | `.claude/skills/changelog-label/SKILL.md` |
 | Triage, publish, or audit a product What's new page | `.claude/skills/product-whats-new/SKILL.md` |
 
 ## What's new triage

@@ -217,6 +217,11 @@ After completing all content changes, report what was done and ask the user for 
 
 **Only after the user explicitly confirms** — run the git operations in this order. The branch already exists from Step 3: confirm with `git branch --show-current` that you are on it. Do not run `git checkout main` or create another branch.
 
+Before staging, follow `.claude/skills/changelog-label/SKILL.md` on this session's article diff.
+
+- `Include`: stage the feed JSON and `changelog.mdx` from that skill together with the article files. After `gh pr create`, apply the `changelog` label as that skill describes.
+- `Skip` or `Needs verification`: do not add a feed file and do not add the label. Put that skill's one-line decision in the PR body under What changed.
+
 Stage only the files changed in this session — by name, never `git add .`:
 
 ```powershell
