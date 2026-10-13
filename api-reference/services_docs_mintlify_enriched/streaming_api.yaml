@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 2d4dd8bdd1e3
+  version: a530a0309a3f
 servers:
 - url: https://api.gcore.com
 tags:
@@ -9039,6 +9039,68 @@ components:
       - $ref: '#/components/schemas/player'
       required:
       - name
+    createPlaylist:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Playlist name
+        active:
+          type: boolean
+          default: true
+          description: |-
+            Enables/Disables playlist. Has two possible values:
+            - true – Playlist can be played.
+            - false – Playlist is disabled. No broadcast while it's disabled.
+        start_time:
+          type: string
+          default: null
+          description: Playlist start time. Playlist won't be available before the specified time. Datetime in ISO 8601 format.
+        loop:
+          type: boolean
+          default: false
+          description: Enables/Disables playlist loop
+        video_ids:
+          type: array
+          description: |-
+            A list of VOD IDs included in the playlist. Order of videos in a
+            playlist reflects the order of IDs in the array.
+
+            Maximum video limit = 128.
+          items:
+            type: integer
+        client_user_id:
+          type: integer
+          description: Custom field where you can specify user ID in your system
+        ad_id:
+          type: integer
+          description: The advertisement ID that will be inserted into the video
+        player_id:
+          type: integer
+          description: The player ID with which the video will be played
+        countdown:
+          type: boolean
+          description: 'Enables countdown before playlist start with ```playlist_type: live```'
+        playlist_type:
+          type: string
+          enum:
+          - live
+          - vod
+          description: |-
+            Determines whether the playlist:
+             - `live` - playlist for live-streaming
+             - `vod` - playlist is for video on demand access
+      example:
+        name: 'Playlist: Webinar ''Onboarding for new employees on working with the corporate portal'''
+        active: true
+        start_time: '2024-07-01T11:00:00Z'
+        loop: false
+        video_ids:
+        - 17800
+        - 17801
+        client_user_id: 2876
+        countdown: true
+        playlist_type: live
     createRestream:
       type: object
       properties:
@@ -10132,108 +10194,50 @@ components:
         show_sharing: true
         speed_control: false
     playlist:
-      type: object
-      properties:
-        name:
-          type: string
-          description: Playlist name
-        client_id:
-          type: integer
-          description: Current playlist client ID
-        active:
-          type: boolean
-          default: true
-          description: |-
-            Enables/Disables playlist. Has two possible values:
-            - true – Playlist can be played.
-            - false – Playlist is disabled. No broadcast while it's disabled.
-        start_time:
-          type: string
-          default: null
-          description: Playlist start time. Playlist won't be available before the specified time. Datetime in ISO 8601 format.
-        loop:
-          type: boolean
-          default: false
-          description: Enables/Disables playlist loop
-        video_ids:
-          type: array
-          description: |-
-            A list of VOD IDs included in the playlist. Order of videos in a
-            playlist reflects the order of IDs in the array.
-
-            Maximum video limit = 128.
-          items:
+      allOf:
+      - $ref: '#/components/schemas/createPlaylist'
+      - properties:
+          client_id:
             type: integer
-        client_user_id:
-          type: integer
-          description: Custom field where you can specify user ID in your system
-        ad_id:
-          type: integer
-          description: The advertisement ID that will be inserted into the video
-        player_id:
-          type: integer
-          description: The player ID with which the video will be played
-        countdown:
-          type: boolean
-          description: 'Enables countdown before playlist start with ```playlist_type: live```'
-        playlist_type:
-          type: string
-          enum:
-          - live
-          - vod
-          description: |-
-            Determines whether the playlist:
-             - `live` - playlist for live-streaming
-             - `vod` - playlist is for video on demand access
-        hls_url:
-          type: string
-          description: |-
-            A URL to a master playlist HLS (master.m3u8) with MPEG TS container.
-              
+            description: Current playlist client ID
+          hls_url:
+            type: string
+            description: |-
+              A URL to a master playlist HLS (master.m3u8) with MPEG TS container.
+                
 
 
-            This URL is a link to the main manifest. But you can also manually specify suffix-options that will allow you to change the manifest to your request:
+              This URL is a link to the main manifest. But you can also manually specify suffix-options that will allow you to change the manifest to your request:
 
-            ```/playlists/{client_id}_{playlist_id}/master[-cmaf][-min-N][-max-N][-img][-(h264|hevc|av1)].m3u8```
-            Please see the details in ```hls_url``` attribute of /videos/{id} method.
-              
-
-
-            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
-        hls_cmaf_url:
-          type: string
-          description: |-
-            A URL to a master playlist HLS (master-cmaf.m3u8) with CMAF-based chunks. Chunks are in fMP4 container.
-              
+              ```/playlists/{client_id}_{playlist_id}/master[-cmaf][-min-N][-max-N][-img][-(h264|hevc|av1)].m3u8```
+              Please see the details in ```hls_url``` attribute of /videos/{id} method.
+                
 
 
-            It is possible to use the same suffix-options as described in the "hls_url" attribute.
-              
+              Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
+          hls_cmaf_url:
+            type: string
+            description: |-
+              A URL to a master playlist HLS (master-cmaf.m3u8) with CMAF-based chunks. Chunks are in fMP4 container.
+                
 
 
-            Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
-        iframe_url:
-          type: string
-          description: |-
-            A URL to a built-in HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
-
-            The player can be opened or shared via this direct link. Also the video player can be integrated into your web pages using the Iframe tag.
-
-              
+              It is possible to use the same suffix-options as described in the "hls_url" attribute.
+                
 
 
-            Please see the details in ```iframe_url``` attribute of /videos/{id} method.
-      example:
-        name: 'Playlist: Webinar ''Onboarding for new employees on working with the corporate portal'''
-        active: true
-        start_time: '2024-07-01T11:00:00Z'
-        loop: false
-        video_ids:
-        - 17800
-        - 17801
-        client_user_id: 2876
-        countdown: true
-        playlist_type: live
+              Caution. Solely master.m3u8 (and master[-options].m3u8) is officially documented and intended for your use. Any additional internal manifests, sub-manifests, parameters, chunk names, file extensions, and related components are internal infrastructure entities. These may undergo modifications without prior notice, in any manner or form. It is strongly advised not to store them in your database or cache them on your end.
+          iframe_url:
+            type: string
+            description: |-
+              A URL to a built-in HTML video player with the video inside. It can be inserted into an iframe on your website and the video will automatically play in all browsers.
+
+              The player can be opened or shared via this direct link. Also the video player can be integrated into your web pages using the Iframe tag.
+
+                
+
+
+              Please see the details in ```iframe_url``` attribute of /videos/{id} method.
     playlistDetails:
       allOf:
       - $ref: '#/components/schemas/playlist'
@@ -10537,6 +10541,8 @@ components:
 
               To use RTMPS just manually change the protocol name from "rtmp://" to "rtmps://".
 
+              If your encoder or camera does not support a query string ("?") in the URL, replace "?" with "/", for example: rtmp://vp-push.domain.com/in/123/08cd54f0.
+
               Use only 1 protocol of sending a master stream: either only RTMP/S (`push_url`), or only SRT (`push_url_srt`).
 
                 
@@ -10569,6 +10575,8 @@ components:
               Mainly sending one stream to main server is enough. But if you need a backup stream, then this is the field to PUSH it. 
 
               To use RTMPS just manually change the protocol name from "rtmp://" to "rtmps://".
+
+              If your encoder or camera does not support a query string ("?") in the URL, replace "?" with "/", for example: rtmp://vp-push.domain.com/in/123/08cd54f0.
 
               The backup logs are as follows: In PUSH mode, you initiate sending a stream from your machine. If your stream stops or breaks for some reason and it stops coming to the main server, then after 3-10 seconds of waiting the stream will turn off or the backup one will be automatically turned on, if you are pushing it too.
           push_url_srt:
@@ -11771,7 +11779,7 @@ components:
         application/json:
           schema:
             allOf:
-            - $ref: '#/components/schemas/playlist'
+            - $ref: '#/components/schemas/createPlaylist'
   responses:
     error_bad_request:
       description: Bad Request
