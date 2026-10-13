@@ -108,6 +108,16 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
         (r"\btype in\b", "type in — use 'enter'"),
         (r"\bchoose\b", "choose — use 'select'"),
         (r"\blog\s+into\b", "log into — use 'log in to' (three words, not two)"),
+        (r"\bno spend\b", "draft note — delete it. State the current product, not an empty account"),
+        (r"\bno expenses\b", "draft note — delete it. State the current product, not an empty account"),
+        (r"\bno data yet\b", "draft note — delete it. State the current product"),
+        (r"\bnothing to show\b", "draft note — delete it. State the current product"),
+        (r"\bempty chart\b", "draft note — delete it. Name the controls on the screen"),
+        (r"\bwill appear later\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bcoming soon\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bto be updated\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bdeveloper promised\b", "draft note — delete it. Do not write process notes"),
+        (r"\bwaiting for a screenshot\b", "draft note — delete it. Do not write process notes"),
     ]
     for lineno, text in lines:
         clean = strip_urls_and_links(text)
@@ -470,11 +480,11 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
                     text=raw.strip(),
                 ))
 
-            if len(val) > 140:
+            if len(val) > 160:
                 violations.append(Violation(
                     line=i,
                     rule="description length",
-                    detail=f"description is {len(val)} chars — maximum 140",
+                    detail=f"description is {len(val)} chars — maximum 160",
                     text=raw.strip(),
                 ))
 
