@@ -770,13 +770,14 @@ terraform apply
 
 ## Create SFTP storage
 
-<p>Declares an SFTP storage with an auto-generated password. After apply, use `full_name` as the login username when connecting on port 2200.</p>
+<p>Declares an SFTP storage and sets a password with the write-only arguments <code>password_wo</code> and <code>password_wo_version</code>. Terraform sends <code>password_wo</code> to the API and does not keep it in state, so the password cannot be read back from an output. After apply, use <code>full_name</code> as the login username on port 2200. Omit both password arguments to create a storage that accepts SSH keys only.</p>
 
 ```hcl
 resource "gcore_storage_sftp" "example" {
-  location_name = "ams"
-  name          = "my-sftp-storage"
-  password_mode = "auto"
+  location_name       = "ams"
+  name                = "my-sftp-storage"
+  password_wo         = var.sftp_password
+  password_wo_version = 1
 }
 
 output "sftp_address" {
@@ -785,11 +786,6 @@ output "sftp_address" {
 
 output "sftp_full_name" {
   value = gcore_storage_sftp.example.full_name
-}
-
-output "sftp_password" {
-  value     = gcore_storage_sftp.example.password
-  sensitive = true
 }
 
 # terraform import gcore_storage_sftp.example '<storage_id>'
@@ -801,14 +797,14 @@ terraform apply
 
 ## Update SFTP password
 
-<p>To change the SFTP storage password, set <code>password_mode</code> to <code>set</code> and add a <code>password</code> attribute, then apply.</p>
+<p>Replace the password by setting <code>password_wo</code> to the new value and incrementing <code>password_wo_version</code>, then apply. A change to <code>password_wo</code> alone produces no plan. Remove both arguments to clear password authentication without replacing the storage.</p>
 
 ```hcl
 resource "gcore_storage_sftp" "example" {
-  location_name = "ams"
-  name          = "my-sftp-storage"
-  password_mode = "set"
-  password      = var.sftp_password
+  location_name       = "ams"
+  name                = "my-sftp-storage"
+  password_wo         = var.sftp_password
+  password_wo_version = 2
 }
 ```
 
@@ -827,9 +823,10 @@ Deleting the storage permanently removes all its contents. This action cannot be
 ```hcl
 # Remove or comment out this block:
 # resource "gcore_storage_sftp" "example" {
-#   location_name = "ams"
-#   name          = "my-sftp-storage"
-#   password_mode = "auto"
+#   location_name       = "ams"
+#   name                = "my-sftp-storage"
+#   password_wo         = var.sftp_password
+#   password_wo_version = 1
 # }
 ```
 
