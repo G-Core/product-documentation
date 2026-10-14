@@ -108,7 +108,8 @@ rule_sets = client.waap.domains.list_rule_sets(domain_id)
 owasp_set = next(
     rs for rs in rule_sets if rs.resource_slug == "core-waf-owasp-top-threats"
 )
-for rule in owasp_set.rules:
+rules = client.waap.domains.policies.list(domain_id, rule_set_id=owasp_set.id)
+for rule in rules:
     status = "enabled" if rule.mode else "disabled"
     print(f"{rule.id}: {rule.name} - {status}")
 ```
@@ -124,27 +125,35 @@ import (
 	"strconv"
 
 	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/waap"
 )
 
 func main() {
 	client := gcore.NewClient()
 	domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-	ruleSets, err := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, rs := range *ruleSets {
+	ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
+	for ruleSets.Next() {
+		rs := ruleSets.Current()
 		if rs.ResourceSlug == "core-waf-owasp-top-threats" {
-			for _, rule := range rs.Rules {
+			policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+			for policies.Next() {
+				rule := policies.Current()
 				status := "disabled"
 				if rule.Mode {
 					status = "enabled"
 				}
 				fmt.Printf("%s: %s - %s\n", rule.ID, rule.Name, status)
 			}
+			if err := policies.Err(); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
+	}
+	if err := ruleSets.Err(); err != nil {
+		fmt.Println(err)
+		return
 	}
 }
 ```
@@ -204,9 +213,10 @@ rule_sets = client.waap.domains.list_rule_sets(domain_id)
 owasp_set = next(
     rs for rs in rule_sets if rs.resource_slug == "core-waf-owasp-top-threats"
 )
-policy = next(r for r in owasp_set.rules if r.name == "Open redirect")
+rules = client.waap.domains.policies.list(domain_id, rule_set_id=owasp_set.id)
+policy = next(r for r in rules if r.name == "Open redirect")
 
-result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+result = client.waap.domains.policies.update(policy.id, domain_id=domain_id, mode=True)
 print(f"Policy is now {'enabled' if result.mode else 'disabled'}")
 ```
 </Tab>
@@ -229,26 +239,33 @@ func main() {
 	domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
 	// Find the policy ID by name
-	ruleSets, err := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
 	var policyID string
-	for _, rs := range *ruleSets {
+	for ruleSets.Next() {
+		rs := ruleSets.Current()
 		if rs.ResourceSlug == "core-waf-owasp-top-threats" {
-			for _, rule := range rs.Rules {
+			policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+			for policies.Next() {
+				rule := policies.Current()
 				if rule.Name == "Open redirect" {
 					policyID = rule.ID
 				}
 			}
+			if err := policies.Err(); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
+	if err := ruleSets.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	result, err := client.Waap.Domains.Policies.Toggle(
+	result, err := client.Waap.Domains.Policies.Update(
 		context.Background(),
 		policyID,
-		waap.DomainPolicyToggleParams{
+		waap.DomainPolicyUpdateParams{
 			DomainID:                 domainID,
 			WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true},
 		},

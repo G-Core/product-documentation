@@ -115,7 +115,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Create a player
 
-<p>Send `POST /streaming/players` with a `name` and any customization fields. The API returns the full player object including the generated `id`. The Python and Go SDKs do not return the new player — retrieve the `id` by calling `list()` after creation.</p>
+<p>Send `POST /streaming/players` with a `name` and any customization fields. The API and the Python and Go SDKs return the player object, including the generated `id`.</p>
 
 <p>The examples below create a customized player and configure its playback controls and interface colors.</p>
 
@@ -125,7 +125,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 from gcore import Gcore
 
 client = Gcore()
-client.streaming.players.create(
+player = client.streaming.players.create(
     player={
         "name": "My custom player",
         "autoplay": False,
@@ -140,9 +140,6 @@ client.streaming.players.create(
         "hover_color": "#ef9047",
     }
 )
-# create() returns None — retrieve the id using list()
-players = list(client.streaming.players.list())
-player = next(p for p in players if p.name == "My custom player")
 print(f"Player ID: {player.id}")
 ```
   </Tab>
@@ -163,8 +160,8 @@ func main() {
     client := gcore.NewClient()
     ctx := context.Background()
 
-    err := client.Streaming.Players.New(ctx, streaming.PlayerNewParams{
-        Player: streaming.PlayerParam{
+    player, err := client.Streaming.Players.New(ctx, streaming.PlayerNewParams{
+        Player: streaming.CreatePlayerParam{
             Name:                 "My custom player",
             Autoplay:             param.NewOpt(false),
             Mute:                 param.NewOpt(false),
@@ -181,17 +178,7 @@ func main() {
     if err != nil {
         panic(err)
     }
-    // New() returns no player object — retrieve the id using List
-    page, err := client.Streaming.Players.List(ctx, streaming.PlayerListParams{})
-    if err != nil {
-        panic(err)
-    }
-    for _, p := range page.Items {
-        if p.Name == "My custom player" {
-            fmt.Printf("Player ID: %d\n", p.ID)
-            break
-        }
-    }
+    fmt.Printf("Player ID: %d\n", player.ID)
 }
 ```
   </Tab>
@@ -248,7 +235,7 @@ export PLAYER_ID="{PLAYER_ID}"
 
 ## Update player settings
 
-<p>Use `PATCH /streaming/players/{player_id}` to update any field. Returns the full updated player object. In the Go SDK, `Name` is always required — read the current name with `Get()` before calling `Update()`. The `logo_position` field accepts `tl`, `tr`, `bl`, or `br` (top-left, top-right, bottom-left, bottom-right).</p>
+<p>Use <code>PATCH&nbsp;/streaming/players/{player_id}</code> to update any field. The call returns the updated player object. <code>name</code> is optional on update. The <code>logo_position</code> field accepts <code>tl</code>, <code>tr</code>, <code>bl</code>, or <code>br</code> (top-left, top-right, bottom-left, bottom-right).</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -294,16 +281,9 @@ func main() {
     client := gcore.NewClient()
     ctx := context.Background()
 
-    // Name is required for Update — read it first
-    existing, err := client.Streaming.Players.Get(ctx, playerID)
-    if err != nil {
-        panic(err)
-    }
-
     player, err := client.Streaming.Players.Update(ctx, playerID,
         streaming.PlayerUpdateParams{
             Player: streaming.PlayerParam{
-                Name:         existing.Name,
                 SpeedControl: param.NewOpt(true),
                 Mute:         param.NewOpt(false),
                 BgColor:      param.NewOpt("#1a1a2e"),
