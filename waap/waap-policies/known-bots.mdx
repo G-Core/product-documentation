@@ -115,7 +115,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         rs for rs in rule_sets if rs.resource_slug == "common-automated-services"
     )
 
-    for bot in bot_set.rules:
+    rules = client.waap.domains.policies.list(domain_id, rule_set_id=bot_set.id)
+    for bot in rules:
         mode = "Allow" if bot.mode else "Policy-based"
         print(f"{bot.name}: {mode} ({bot.id})")
     ```
@@ -138,10 +139,13 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-        for _, rs := range *ruleSets {
+        ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
+        for ruleSets.Next() {
+            rs := ruleSets.Current()
             if rs.ResourceSlug == "common-automated-services" {
-                for _, bot := range rs.Rules {
+                policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+                for policies.Next() {
+                    bot := policies.Current()
                     mode := "Policy-based"
                     if bot.Mode {
                         mode = "Allow"
@@ -192,9 +196,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     bot_set = next(
         rs for rs in rule_sets if rs.resource_slug == "common-automated-services"
     )
-    bot = next(r for r in bot_set.rules if r.name == "Google Bot")
+    rules = client.waap.domains.policies.list(domain_id, rule_set_id=bot_set.id)
+    bot = next(r for r in rules if r.name == "Google Bot")
 
-    result = client.waap.domains.policies.toggle(bot.id, domain_id=domain_id, mode=True)
+    result = client.waap.domains.policies.update(bot.id, domain_id=domain_id, mode=True)
     print(f"Google Bot is now {'Allow' if result.mode else 'Policy-based'}")
     ```
   </Tab>
@@ -217,11 +222,14 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
         // Find the bot ID by name
-        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
         var botID string
-        for _, rs := range *ruleSets {
+        for ruleSets.Next() {
+            rs := ruleSets.Current()
             if rs.ResourceSlug == "common-automated-services" {
-                for _, bot := range rs.Rules {
+                policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+                for policies.Next() {
+                    bot := policies.Current()
                     if bot.Name == "Google Bot" {
                         botID = bot.ID
                     }
@@ -229,7 +237,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), botID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
+        result, _ := client.Waap.Domains.Policies.Update(context.Background(), botID, waap.DomainPolicyUpdateParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         mode := "Policy-based"
         if result.Mode {
             mode = "Allow"

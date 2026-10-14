@@ -117,7 +117,8 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
     )
 
-    for policy in ip_rep.rules:
+    rules = client.waap.domains.policies.list(domain_id, rule_set_id=ip_rep.id)
+    for policy in rules:
         status = "enabled" if policy.mode else "disabled"
         print(f"{policy.name}: {status} ({policy.id})")
     ```
@@ -133,16 +134,20 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         "strconv"
 
         gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
     )
 
     func main() {
         client := gcore.NewClient()
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-        for _, rs := range *ruleSets {
+        ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
+        for ruleSets.Next() {
+            rs := ruleSets.Current()
             if rs.ResourceSlug == "ip-reputation" {
-                for _, policy := range rs.Rules {
+                policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+                for policies.Next() {
+                    policy := policies.Current()
                     status := "disabled"
                     if policy.Mode {
                         status = "enabled"
@@ -189,9 +194,10 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
     ip_rep = next(
         rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
     )
-    policy = next(r for r in ip_rep.rules if r.name == "Traffic via TOR network")
+    rules = client.waap.domains.policies.list(domain_id, rule_set_id=ip_rep.id)
+    policy = next(r for r in rules if r.name == "Traffic via TOR network")
 
-    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id, mode=True)
+    result = client.waap.domains.policies.update(policy.id, domain_id=domain_id, mode=True)
     print(f"Traffic via TOR network is now {'enabled' if result.mode else 'disabled'}")
     ```
   </Tab>
@@ -214,11 +220,14 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
         // Find the policy ID by name
-        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
         var policyID string
-        for _, rs := range *ruleSets {
+        for ruleSets.Next() {
+            rs := ruleSets.Current()
             if rs.ResourceSlug == "ip-reputation" {
-                for _, p := range rs.Rules {
+                policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+                for policies.Next() {
+                    p := policies.Current()
                     if p.Name == "Traffic via TOR network" {
                         policyID = p.ID
                     }
@@ -226,7 +235,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
+        result, _ := client.Waap.Domains.Policies.Update(context.Background(), policyID, waap.DomainPolicyUpdateParams{DomainID: domainID, WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true}})
         status := "disabled"
         if result.Mode {
             status = "enabled"

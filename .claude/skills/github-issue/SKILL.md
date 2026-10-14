@@ -231,6 +231,7 @@ Maintained by the agent. Update after each triage or merge.
 | 1872 | Add BYOD description to Edge Storage | FastEdge | 2026-02-19 | Open | — | Edge Storage BYOD configuration underdocumented |
 | 2650 | Terraform Provider updated to v2.0.0-rc.1 | terraform | 2026-09-01 | PR open | `issue/2650-terraform-lb-floating-ip` | Replaced `floating_ip` inline block in `gcore_cloud_load_balancer` with `gcore_cloud_floating_ip` resource. Updated `.terraform-provider-version` to `2.0.0-rc.1`. |
 | 2652 | SDK updated to Python v0.56.0, Go v0.56.0 | api-sdk-tracker | 2026-09-01 | In progress | `issue/2652-sdk-waap-breaking-changes` | Breaking: `policies.toggle()` now requires `mode: bool` (Python) and `WaapDomainPolicySettingsParam{Mode}` (Go). Updated 10 WAAP policy articles. Updated prose in advanced-rules.mdx, custom-rules.mdx, ip-allowlist-and-blocklist.mdx. |
+| 3165 | SDK updated to Python v0.59.0, Go v0.59.0 | api-sdk-tracker | 2026-10-12 | In progress | `issue/3165-sdk-v059` | Rule sets are paginated and no longer embed rules. Policy enable/disable uses Update. Snapshot and streaming samples from v0.57.0 and v0.58.0 are on this branch. Pins set to v0.59.0. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -261,6 +262,13 @@ Append-only session notes. Add an entry every time this skill runs.
 - Updated `.terraform-provider-version` from `2.0.0-alpha.15` to `2.0.0-rc.1`.
 - Validated with `terraform validate` and schema inspection against real provider v2.0.0-rc.1.
 - Branch: `issue/2650-terraform-lb-floating-ip` — pushed, ready for PR.
+
+### 2026-10-14 — Issue #3165: SDK v0.59.0
+
+- Fetched issue #3165. Decision: PROCEED. The tracker names the snapshot article. Live tests also showed WAAP rule-set and policy-update breaks, plus the v0.57.0 and v0.58.0 sample breaks that are still in v0.59.0.
+- Production: listed rule sets and policies, paged all 109 known-bot policies, and sent a no-op policy update from Python and Go SDK v0.59.0. REST v1 still returns embedded rules, so curl samples stayed.
+- Updated nine WAAP policy articles. Brought the snapshot and streaming sample fixes onto this branch. Set both SDK pin files to v0.59.0.
+- Branch: `issue/3165-sdk-v059` — not committed.
 
 ### 2026-06-10 — Skill created, queue inventoried
 
