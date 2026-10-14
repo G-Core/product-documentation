@@ -29,7 +29,9 @@ downstream skill.
 
 ## Phase 1 — Sync main and pick an issue
 
-**Step 1.** Ensure you are on an up-to-date `main`:
+**Step 1.** Commit the current branch before leaving it, then sync `main`.
+
+If the current branch is not `main` and `git status --short` shows changes, commit those changes on that branch. Stage files by name. Message: `[Product] Short description (fixes #{number})`. Never `git stash` to switch. Push still waits for an explicit request. Then:
 
 ```powershell
 git checkout main
@@ -148,6 +150,8 @@ Produce a brief before editing:
 
 Only after triage is PROCEED.
 
+If the current branch is not `main` and it has uncommitted changes, commit them on that branch before the helper. The helper checks out `main` and exits with an error when that branch is dirty. Never `git stash` the finished issue to start the next one.
+
 ```powershell
 .\.agents\tools\create_branch.ps1 issue/{number}-{short-slug}
 ```
@@ -216,6 +220,8 @@ After merge (or explicit deferral):
 1. Update backlog status in this file
 2. Tell the user which issue is next (oldest still Open)
 3. Wait for user approval before starting the next issue
+
+Starting the next issue runs Phase 1. That step commits any uncommitted work on the current branch before `git checkout main`. Do not stash a finished issue.
 
 ---
 

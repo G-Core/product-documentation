@@ -481,4 +481,4 @@ For work tied to a Jira ticket the branch name is the ticket key, exactly: `DOC-
 .\.agents\tools\create_branch.ps1 DOC-2148
 ```
 
-No prefixes, no slugs, no descriptions for a ticket branch. Never run `git checkout -b` by hand. If a skill already created the branch, stay on it.
+No prefixes, no slugs, no descriptions for a ticket branch. Never run `git checkout -b` by hand. If a skill already created the branch, stay on it. Before the helper checks out `main`, commit any uncommitted work on the current branch. Never stash it to switch.

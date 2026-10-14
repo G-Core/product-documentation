@@ -277,7 +277,7 @@ Quick validation before creating the PR:
 .\.agents\tools\create_branch.ps1 feature-draft/{ticket-id-or-slug}
 ```
 
-The helper checks out `main`, pulls, and creates the branch. Never run `git checkout -b` by hand.
+The helper checks out `main`, pulls, and creates the branch. Never run `git checkout -b` by hand. If the current branch is not `main` and it has uncommitted changes, commit them on that branch before the helper. Never `git stash` to switch.
 
 Stage only the files you created or modified:
 ```powershell
