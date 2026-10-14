@@ -101,13 +101,10 @@ export const ChangelogDashboard = ({ data }) => {
     <article key={item.id} className="changelog-entry" id={item.id}>
       <span className="changelog-dot changelog-dot-entry" />
       <span className={`changelog-kind changelog-kind-${item.kind}`}>{item.kindLabel}</span>
-      <div className="changelog-entry-meta">
-        {item.shortMonth}
-        <span>{" · "}</span>
+      <div className="changelog-entry-summary">{React.createElement(RichText, { text: item.summary })}</div>
+      <a className="changelog-guide" href={item.guideUrl}>
         {item.guideLabel}
-      </div>
-      <a className="changelog-entry-link" href={item.guideUrl}>
-        {React.createElement(RichText, { text: item.summary })}
+        <span>{item.shortMonth}</span>
       </a>
     </article>
   );
