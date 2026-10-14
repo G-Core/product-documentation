@@ -3,6 +3,7 @@
 Usage (from the repository root):
     python .agents/tools/check_mdx_encoding.py path/to/article.mdx [more.mdx ...]
     python .agents/tools/check_mdx_encoding.py --fix path/to/article.mdx
+    python .agents/tools/check_mdx_encoding.py --fix-dirty
 
 Checks:
     NOT_UTF8   the file is not valid UTF-8
@@ -12,9 +13,13 @@ Checks:
                reads UTF-8 as a legacy codepage
 --fix removes a BOM and converts CRLF to LF. It never touches garbage: restore the
 file from git and re-apply the edits instead.
+--fix-dirty does that for MDX files git already lists as modified. A file whose
+bytes already match the index is left alone, including one stored with CRLF.
+Staged paths are staged again after a fix. The git hooks in .githooks run this.
 Exit code 0 = clean, 1 = problems found, 2 = usage error.
 """
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -65,10 +70,48 @@ def check(path: Path, fix: bool) -> list[str]:
     return problems
 
 
+def _git(args: list[str]) -> bytes:
+    return subprocess.check_output(["git", *args])
+
+
+def fix_dirty() -> int:
+    """Normalize BOM and CRLF on MDX files that git already reports as modified."""
+    root = Path(_git(["rev-parse", "--show-toplevel"]).decode("utf-8").strip())
+    raw = _git(["diff", "--name-only", "-z", "HEAD", "--", "*.mdx"])
+    staged_raw = _git(["diff", "--cached", "--name-only", "-z", "--", "*.mdx"])
+    names = {p.decode("utf-8").replace("\\", "/") for p in raw.split(b"\0") if p}
+    names.update(p.decode("utf-8").replace("\\", "/") for p in staged_raw.split(b"\0") if p)
+    cached = {
+        p.decode("utf-8").replace("\\", "/")
+        for p in _git(["diff", "--cached", "--name-only", "-z"]).split(b"\0")
+        if p
+    }
+
+    for rel in sorted(names):
+        path = root / rel
+        if not path.is_file():
+            continue
+        try:
+            blob = _git(["show", f":{rel}"])
+        except subprocess.CalledProcessError:
+            blob = None
+        if blob is not None and path.read_bytes() == blob:
+            continue
+        problems = check(path, fix=True)
+        if not any(p.endswith("(fixed)") for p in problems):
+            continue
+        print(f"normalized {rel}")
+        if rel in cached:
+            subprocess.check_call(["git", "add", "--", rel], cwd=root)
+    return 0
+
+
 def main() -> int:
     args = sys.argv[1:]
+    if "--fix-dirty" in args:
+        return fix_dirty()
     fix = "--fix" in args
-    files = [Path(a) for a in args if a != "--fix"]
+    files = [Path(a) for a in args if a not in ("--fix", "--fix-dirty")]
     if not files:
         print(__doc__)
         return 2

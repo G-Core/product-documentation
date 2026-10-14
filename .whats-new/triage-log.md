@@ -9,4 +9,9 @@
 - 2026-10-12 — Streaming billing pages, 2026-06-29 — Streaming — Skip — Existing trial and PAYG terms were moved into billing articles.
 - 2026-10-12 — DOC-1472, 2026-07-01 — Streaming — Skip — New pages for delete, screenshots, and getting started describe existing operations.
 - 2026-10-13 — DOC-2652, waap/waap-rules/custom-rules.mdx, waap/waap-policies/waf-and-owasp-top-threats.mdx — WAAP — Skip — Policy overrides are already documented and announced. This change adds the left-menu link and two cross-mentions.
+- 2026-10-14 — `reseller-support/customer-portal/dnsaas-settings.mdx` — Reseller — Skip — Wording pass on the existing DNSaaS settings page. No product behavior changed.
+- 2026-10-14 — Reseller nav Services group — Reseller — Skip — Cloud, Storage, and WAAP pages moved into one nav group. The duplicate DNS management page was removed. No product behavior changed.
+- 2026-10-14 — `reseller-support/api.mdx` — Reseller — Skip — Corrected which reseller API operations each reference covers. No product behavior changed.
+- 2026-10-14 — `reseller-support/reports-and-activity/generate-monthly-reports.mdx` — Reseller — Skip — Replaced the empty reports list with an existing report row and its download menu. No product behavior changed.
+- 2026-10-14 — DOC-2494 — Reseller — Skip — Articles were written from the reseller portal we already checked. The ticket corrects the old sidebar text. No new product capability.
 

@@ -15,6 +15,14 @@ If the preview does not start, run `mintlify install` to reinstall dependencies.
 
 On Windows, run `git config --global core.longpaths true` once after cloning, because some image paths exceed the default path length limit.
 
+Point Git at the hooks in this repo once after cloning:
+
+```
+git config core.hooksPath .githooks
+```
+
+Those hooks strip a UTF-8 BOM and convert CRLF to LF on MDX files that Git already shows as modified. Without them, a Windows editor can save CRLF and `git status` lists files that were not edited. The same normalization is `python .agents/tools/check_mdx_encoding.py --fix-dirty`.
+
 ## Writing and editing articles
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - guide for writers: the tabbed `MethodSwitch` article pattern, frontmatter, links, and debugging MDX build errors.
