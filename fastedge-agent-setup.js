@@ -104,24 +104,33 @@
 
     var place = tocPlace();
     if (!place) return false;
-    if (isPlaced(existing, place)) return true;
+    if (isPlaced(existing, place)) {
+      var liveCluster = existing.querySelector('.fastedge-agent-setup-cluster');
+      var liveTitle = existing.querySelector('.fastedge-agent-setup-title');
+      if (liveCluster && liveTitle) fitTitle(liveTitle, liveCluster);
+      return true;
+    }
     if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
 
     var root = document.createElement('div');
     root.id = 'fastedge-agent-setup';
 
+    var cluster = document.createElement('div');
+    cluster.className = 'fastedge-agent-setup-cluster';
+    root.appendChild(cluster);
+
     var title = document.createElement('p');
     title.className = 'fastedge-agent-setup-title';
     title.textContent = 'Set up FastEdge with AI';
-    root.appendChild(title);
+    cluster.appendChild(title);
 
     var agents = document.createElement('div');
     agents.className = 'fastedge-agent-setup-agents';
-    root.appendChild(agents);
+    cluster.appendChild(agents);
 
     var actions = document.createElement('div');
     actions.className = 'fastedge-agent-setup-actions';
-    root.appendChild(actions);
+    cluster.appendChild(actions);
 
     var copy = document.createElement('button');
     copy.type = 'button';
@@ -168,7 +177,64 @@
 
     if (place.before) place.parent.insertBefore(root, place.before);
     else place.parent.appendChild(root);
+    fitTitle(title, cluster);
     return true;
+  }
+
+  function buttonRowWidth(cluster) {
+    var actions = cluster.querySelector('.fastedge-agent-setup-actions');
+    if (!actions) return 0;
+    var wrap = actions.style.flexWrap;
+    actions.style.flexWrap = 'nowrap';
+    var width = actions.scrollWidth;
+    actions.style.flexWrap = wrap;
+    return width;
+  }
+
+  function applyFit(title, cluster) {
+    if (!cluster.isConnected) return;
+    cluster.style.width = '';
+    title.style.letterSpacing = '0px';
+    var target = Math.max(cluster.getBoundingClientRect().width, buttonRowWidth(cluster));
+    if (target < 80) return;
+    cluster.style.width = target + 'px';
+    var range = document.createRange();
+    range.selectNodeContents(title);
+    var textWidth = range.getBoundingClientRect().width;
+    var gaps = Math.max(title.textContent.length - 1, 1);
+    var extra = target - textWidth;
+    if (extra <= 0) {
+      title.style.letterSpacing = '0px';
+      return;
+    }
+    title.style.letterSpacing = (extra / gaps) + 'px';
+    var fitted = range.getBoundingClientRect().width;
+    if (fitted > target) {
+      title.style.letterSpacing = Math.max(0, (extra - (fitted - target)) / gaps) + 'px';
+    }
+  }
+
+  function fitTitle(title, cluster) {
+    function run() {
+      applyFit(title, cluster);
+    }
+    run();
+    requestAnimationFrame(function () {
+      requestAnimationFrame(run);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+    if (window.ResizeObserver && cluster.getAttribute('data-fit-watch') !== 'true') {
+      cluster.setAttribute('data-fit-watch', 'true');
+      var toc = cluster.closest ? cluster.closest('#table-of-contents') : null;
+      var lastWidth = 0;
+      var observer = new ResizeObserver(function (entries) {
+        var width = entries[0].contentRect.width;
+        if (Math.abs(width - lastWidth) < 1) return;
+        lastWidth = width;
+        requestAnimationFrame(run);
+      });
+      if (toc) observer.observe(toc);
+    }
   }
 
   function isPlaced(existing, place) {
