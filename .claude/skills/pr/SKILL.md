@@ -4,8 +4,8 @@ description: >-
   Creates a draft GitHub pull request for documentation changes made in the
   current session. Use at the end of a docs workflow when the user asks to open
   a PR, create a pull request, ship the article, or get the changes reviewed.
-  Checks gh and git auth, optionally starts a Mintlify local preview, derives
-  the product from the file path, uses the ticket branch, stages only the
+  Checks gh and git auth, derives the product from the file path, uses the
+  ticket branch, stages only the
   session's files, commits with a [Product] message, pushes, and opens a draft
   PR with a What changed, Files changed, and TODO body. Does not edit
   documentation.
@@ -101,51 +101,7 @@ Before creating the PR, confirm you have:
 
 ---
 
-## Step 1 — Local preview (recommended before pushing)
-
-Running the local preview lets the user verify the article renders correctly
-before creating a PR. Run it now, then continue with the steps below — do not
-wait for it to finish loading.
-
-### Check if Mintlify is installed
-
-```powershell
-mintlify --version
-```
-
-If the command is not found:
-
-> **Mintlify CLI is not installed.**
->
-> Install it once with npm (Node.js required):
-> ```powershell
-> npm i -g mintlify
-> ```
-> Node.js download: https://nodejs.org (LTS version)
->
-> After installing, run `mintlify --version` to confirm.
-
-### Start the local preview
-
-Run from the repository root (where `docs.json` lives) **in the background** —
-do not wait for output, continue immediately with Step 1:
-
-```powershell
-# Start in a separate window so it doesn't block
-Start-Process powershell -ArgumentList "-NoExit", "-Command", `
-  "Set-Location '$($PWD.Path)'; mintlify dev"
-```
-
-Mintlify chooses the port automatically (default 3000, increments if taken).
-The URL appears in the terminal window that opened. Tell the user:
-
-> Local preview is starting. The URL will appear in the new terminal window
-> (usually http://localhost:3000). Navigate to the article you just edited
-> to check how it renders. Continue — we'll create the PR in parallel.
-
----
-
-## Step 2 — Determine the product name
+## Step 1 — Determine the product name
 
 Infer the product display name from the file path. Use this table:
 
@@ -170,7 +126,7 @@ If the change spans multiple products, list the two most prominent: `[Cloud, CDN
 
 ---
 
-## Step 3 — Determine the branch
+## Step 2 — Determine the branch
 
 Run `git branch --show-current`.
 
@@ -178,7 +134,7 @@ Run `git branch --show-current`.
 
 | Work comes from | Branch name | Created by |
 |---|---|---|
-| A Jira ticket (the default) | The ticket key, for example `DOC-1865` | `full-audit`, `api-use-case`, `api-audit`, or Step 3 below |
+| A Jira ticket (the default) | The ticket key, for example `DOC-1865` | `full-audit`, `api-use-case`, `api-audit`, or Step 2 below |
 | A GitHub issue | `issue/{number}-{short-slug}` | `github-issue` |
 | A contributor draft | `feature-draft/{name}` | `feature-draft` |
 
@@ -215,7 +171,7 @@ After completing all content changes, report what was done and ask the user for 
 >
 > Proceed with commit and push?
 
-**Only after the user explicitly confirms** — run the git operations in this order. The branch already exists from Step 3: confirm with `git branch --show-current` that you are on it. Do not run `git checkout main` or create another branch.
+**Only after the user explicitly confirms** — run the git operations in this order. The branch already exists from Step 2: confirm with `git branch --show-current` that you are on it. Do not run `git checkout main` or create another branch.
 
 Stage only the files changed in this session — by name, never `git add .`:
 
@@ -247,7 +203,7 @@ If you commit without pulling, the push will be rejected with "non-fast-forward"
 
 ---
 
-## Step 4 — Create the PR
+## Step 3 — Create the PR
 
 ```powershell
 gh pr create --base main --draft --title "[{Product}] {short description}" --body-file "$env:TEMP\pr-body.md"
@@ -293,7 +249,7 @@ Remove-Item "$env:TEMP\pr-body.md"
 
 ---
 
-## Step 5 — Report
+## Step 4 — Report
 
 ```
 PR created: {URL}
