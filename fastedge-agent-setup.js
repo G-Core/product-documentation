@@ -179,14 +179,8 @@
 
   function tocPlace() {
     var toc = document.getElementById('table-of-contents');
-    var layout = document.getElementById('table-of-contents-layout');
-    if (layout && toc && layout.contains(toc)) {
-      return { parent: layout, before: null };
-    }
-    if (toc && toc.parentElement) {
-      return { parent: toc.parentElement, before: null };
-    }
-    return null;
+    if (!toc) return null;
+    return { parent: toc, before: null };
   }
 
   var pollId = null;
