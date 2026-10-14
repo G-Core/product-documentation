@@ -8,4 +8,7 @@
 - 2026-10-12 — SCTE-35 marker notes, August and September 2026 — Streaming — Skip — The articles describe current marker behavior. They do not add a new capability.
 - 2026-10-12 — Streaming billing pages, 2026-06-29 — Streaming — Skip — Existing trial and PAYG terms were moved into billing articles.
 - 2026-10-12 — DOC-1472, 2026-07-01 — Streaming — Skip — New pages for delete, screenshots, and getting started describe existing operations.
+- 2026-10-14 — `reseller-support/customer-portal/dnsaas-settings.mdx` — Reseller — Skip — Wording pass on the existing DNSaaS settings page. No product behavior changed.
+- 2026-10-14 — Reseller nav Services group — Reseller — Skip — Cloud, Storage, and WAAP pages moved into one nav group. The duplicate DNS management page was removed. No product behavior changed.
+- 2026-10-14 — `reseller-support/api.mdx` — Reseller — Skip — Corrected which reseller API operations each reference covers. No product behavior changed.
 
