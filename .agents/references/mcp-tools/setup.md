@@ -163,35 +163,3 @@ If a tool connects mid-session, its tools are **not available** in the current c
 
 **For Playwright specifically:** run `npx playwright install` once to install browsers
 before starting any session that requires portal testing.
-
----
-
-## Mintlify local preview
-
-Not an MCP tool — a CLI for previewing the documentation site locally before pushing.
-
-### Check if installed
-
-```powershell
-mintlify --version
-```
-
-### Install if missing
-
-Requires Node.js (https://nodejs.org, LTS version):
-
-```powershell
-npm i -g mintlify
-```
-
-### Run
-
-From the repository root:
-
-```powershell
-mintlify dev
-```
-
-Port is chosen automatically (default 3000, increments if taken).
-Run in a separate terminal window — does not need to be running for other tasks.
-The URL appears in that terminal once ready.
