@@ -8,4 +8,5 @@
 - 2026-10-12 — SCTE-35 marker notes, August and September 2026 — Streaming — Skip — The articles describe current marker behavior. They do not add a new capability.
 - 2026-10-12 — Streaming billing pages, 2026-06-29 — Streaming — Skip — Existing trial and PAYG terms were moved into billing articles.
 - 2026-10-12 — DOC-1472, 2026-07-01 — Streaming — Skip — New pages for delete, screenshots, and getting started describe existing operations.
+- 2026-10-13 — DOC-2652, waap/waap-rules/custom-rules.mdx, waap/waap-policies/waf-and-owasp-top-threats.mdx — WAAP — Skip — Policy overrides are already documented and announced. This change adds the left-menu link and two cross-mentions.
 
