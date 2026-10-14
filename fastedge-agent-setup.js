@@ -102,9 +102,9 @@
       return true;
     }
 
-    var slot = document.getElementById('table-of-contents') || document.getElementById('table-of-contents-layout');
-    if (!slot) return false;
-    if (existing && existing.parentNode === slot) return true;
+    var place = tocPlace();
+    if (!place) return false;
+    if (isPlaced(existing, place)) return true;
     if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
 
     var root = document.createElement('div');
@@ -166,8 +166,31 @@
       done();
     });
 
-    slot.appendChild(root);
+    if (place.before) place.parent.insertBefore(root, place.before);
+    else place.parent.insertBefore(root, place.parent.firstChild);
     return true;
+  }
+
+  function isPlaced(existing, place) {
+    if (!existing || existing.parentNode !== place.parent) return false;
+    if (!place.before) return existing === place.parent.firstElementChild;
+    return existing.nextElementSibling === place.before;
+  }
+
+  function tocPlace() {
+    var toc = document.getElementById('table-of-contents');
+    var layout = document.getElementById('table-of-contents-layout');
+    if (toc && (toc.tagName === 'UL' || toc.tagName === 'OL') && toc.parentElement) {
+      return { parent: toc.parentElement, before: toc };
+    }
+    if (layout && toc && layout.contains(toc) && toc !== layout) {
+      return { parent: toc.parentElement || layout, before: toc };
+    }
+    var parent = layout || toc;
+    if (!parent) return null;
+    var before = parent.firstElementChild;
+    if (before && before.id === 'fastedge-agent-setup') before = before.nextElementSibling;
+    return { parent: parent, before: before };
   }
 
   var pollId = null;
