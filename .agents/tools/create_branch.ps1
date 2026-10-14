@@ -46,6 +46,16 @@ if ($LASTEXITCODE -eq 0) {
     exit 1
 }
 
+$current = git branch --show-current
+if ($LASTEXITCODE -ne 0) { Write-Error "git branch failed"; exit 1 }
+if ($current -and $current -ne "main") {
+    $dirty = git status --porcelain
+    if ($dirty) {
+        Write-Error ("Branch '$current' has uncommitted changes. Commit them on this branch before creating another branch. Do not stash.")
+        exit 1
+    }
+}
+
 Write-Host "Checking out main..."
 git checkout main
 if ($LASTEXITCODE -ne 0) { Write-Error "git checkout main failed"; exit 1 }

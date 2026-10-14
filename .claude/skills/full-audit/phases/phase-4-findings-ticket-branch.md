@@ -46,6 +46,6 @@ Report the created ticket key and URL to the user. Record the ticket key — it 
 
 ## Create the feature branch immediately after the ticket
 
-Do not wait until Phase 9. Create the branch now, so all subsequent edits land on the feature branch and never on `main`. Follow `.agents/references/ticket-and-branch.md` (`create_branch.ps1` with the ticket key just returned).
+Do not wait until Phase 9. Create the branch now, so all subsequent edits land on the feature branch and never on `main`. Follow `.agents/references/ticket-and-branch.md` (`create_branch.ps1` with the ticket key just returned). If the current branch has uncommitted changes, that file requires a commit on the current branch before the helper. Never stash them to switch.
 
 Immediately proceed to Phase 5 without asking for confirmation.

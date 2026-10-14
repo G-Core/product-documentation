@@ -33,8 +33,12 @@ Report the created ticket key and URL to the user.
 
 Replace `DOC-XXXX` with the ticket key just returned by the script. The helper checks out `main`, pulls, and creates the branch named exactly as the ticket key.
 
+Before running the helper, if the current branch is not `main` and it has uncommitted changes, commit those changes on that branch. Never `git stash` to switch. The helper exits with an error when that branch is dirty.
+
 All subsequent file edits go on this branch. Never write on `main`. Proceed without asking for confirmation.
 
 ## Commit and push
 
-Do not commit or push until the user says one of: коммить / коммит / commit / пуш / пушь / push / закоммить / запушь. Then commit only the files changed in this session (never `git add .`), push the existing ticket branch, and load the `pr` skill if the user also asked for a PR. Never push to `main`.
+Commit on the current branch before leaving it, as above. That commit does not need a separate user message.
+
+Do not push, and do not make any other commit, until the user says one of: коммить / коммит / commit / пуш / пушь / push / закоммить / запушь. Then commit only the files changed in this session (never `git add .`), push the existing ticket branch, and load the `pr` skill if the user also asked for a PR. Never push to `main`.

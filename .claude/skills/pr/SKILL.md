@@ -13,7 +13,7 @@ description: >-
 
 ## HARD RULES — NEVER VIOLATE
 
-- **NEVER commit without explicit user instruction: "commit" or "сделай коммит"**
+- **NEVER commit without explicit user instruction: "commit" or "сделай коммит"**, except the commit on the current branch required immediately before leaving it. Never stash that work to switch. Push still needs an explicit request.
 - **NEVER push without explicit user instruction: "push" or "запушь"**
 - **NEVER create a PR without explicit user instruction**
 - **NEVER do any git write operation proactively**
@@ -130,7 +130,7 @@ If the change spans multiple products, list the two most prominent: `[Cloud, CDN
 
 Run `git branch --show-current`.
 
-**If the current branch is not `main`,** the skill that did the work already created it. Use it as is and do not create another. There are three formats:
+**If the current branch is not `main`,** the skill that did the work already created it. Use it as is and do not create another. If that branch has uncommitted changes, commit them before any `git checkout` or `create_branch.ps1`. Never stash them to switch. There are three formats:
 
 | Work comes from | Branch name | Created by |
 |---|---|---|

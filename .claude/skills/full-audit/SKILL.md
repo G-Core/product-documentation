@@ -27,6 +27,8 @@ git status --short
 
 If the branch is `main` and the Jira ticket was already created in Phase 4 of the previous session, do NOT create a new ticket. Run `.\.agents\tools\create_branch.ps1 DOC-XXXX` with the existing ticket key and continue from the phase where the previous session stopped.
 
+If the current branch is not `main` and it has uncommitted changes, commit them on that branch before `create_branch.ps1` or `git checkout`. Never `git stash` to switch.
+
 If `send_to_review.py` already ran for this ticket, do NOT run it again. Check the ticket status first and skip Phase 10 if it is already In Review.
 
 ## Inputs
@@ -139,7 +141,7 @@ Do not read other articles for context unless they are directly linked from the 
 
 ## Hard rules
 
-- Never commit or push until the user says `коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, or `запушь`.
+- Never commit or push until the user says `коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, or `запушь`, except the commit on the current branch immediately before leaving it. Never stash that work to switch. Push still waits for an explicit request.
 - Never touch `<MethodSection id="api">`: API sections are a separate update cycle (`api-audit`).
 - Never rename article files, change slugs, or edit `docs.json` without explicit user confirmation.
 - Never read `.env`, `access.md`, or `_private/secrets/`. The agent never handles portal credentials: the user logs in.
