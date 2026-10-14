@@ -180,6 +180,9 @@
   function tocPlace() {
     var toc = document.getElementById('table-of-contents');
     if (!toc) return null;
+    // Preview renders the links inside nav. Local dev renders them directly in the TOC.
+    var nav = toc.querySelector('nav');
+    if (nav) return { parent: nav, before: null };
     return { parent: toc, before: null };
   }
 
