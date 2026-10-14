@@ -167,30 +167,26 @@
     });
 
     if (place.before) place.parent.insertBefore(root, place.before);
-    else place.parent.insertBefore(root, place.parent.firstChild);
+    else place.parent.appendChild(root);
     return true;
   }
 
   function isPlaced(existing, place) {
     if (!existing || existing.parentNode !== place.parent) return false;
-    if (!place.before) return existing === place.parent.firstElementChild;
+    if (!place.before) return existing === place.parent.lastElementChild;
     return existing.nextElementSibling === place.before;
   }
 
   function tocPlace() {
     var toc = document.getElementById('table-of-contents');
     var layout = document.getElementById('table-of-contents-layout');
-    if (toc && (toc.tagName === 'UL' || toc.tagName === 'OL') && toc.parentElement) {
-      return { parent: toc.parentElement, before: toc };
+    if (layout && toc && layout.contains(toc)) {
+      return { parent: layout, before: null };
     }
-    if (layout && toc && layout.contains(toc) && toc !== layout) {
-      return { parent: toc.parentElement || layout, before: toc };
+    if (toc && toc.parentElement) {
+      return { parent: toc.parentElement, before: null };
     }
-    var parent = layout || toc;
-    if (!parent) return null;
-    var before = parent.firstElementChild;
-    if (before && before.id === 'fastedge-agent-setup') before = before.nextElementSibling;
-    return { parent: parent, before: before };
+    return null;
   }
 
   var pollId = null;
