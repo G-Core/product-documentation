@@ -12,4 +12,5 @@
 - 2026-10-14 — `reseller-support/customer-portal/dnsaas-settings.mdx` — Reseller — Skip — Wording pass on the existing DNSaaS settings page. No product behavior changed.
 - 2026-10-14 — Reseller nav Services group — Reseller — Skip — Cloud, Storage, and WAAP pages moved into one nav group. The duplicate DNS management page was removed. No product behavior changed.
 - 2026-10-14 — `reseller-support/api.mdx` — Reseller — Skip — Corrected which reseller API operations each reference covers. No product behavior changed.
+- 2026-10-14 — `reseller-support/reports-and-activity/generate-monthly-reports.mdx` — Reseller — Skip — Replaced the empty reports list with an existing report row and its download menu. No product behavior changed.
 
