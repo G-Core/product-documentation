@@ -1,0 +1,160 @@
+---
+title: Configure the FastEdge plugin and MCP server
+sidebarTitle: Configure plugin and MCP
+description: Configure the FastEdge plugin, Docker fallback, and MCP clients without the plugin.
+---
+
+Install the plugin manually, set an API token, or connect an MCP client that has no plugin. The usual path is the [setup&nbsp;prompt](/fastedge/local-development/ai-assisted-development).
+
+## Install the plugin
+
+Claude Code and Codex use the same Gcore marketplace repository. Cursor uses the FastEdge plugin repository.
+
+<Tabs>
+<Tab title="Claude Code">
+
+```bash
+claude plugin marketplace add G-Core/gcore-marketplace
+claude plugin install gcore-fastedge@gcore-marketplace
+```
+
+Run these in a shell. `/plugin` is handled inside Claude Code and fails as a shell command.
+
+After installation, run `/reload-plugins` in Claude Code. The plugin is not active in the session that installed it. To pick up new versions later, run `/plugin marketplace update gcore-marketplace` in Claude Code.
+
+</Tab>
+<Tab title="Codex">
+
+```bash
+codex plugin marketplace add G-Core/gcore-marketplace
+codex plugin add gcore-fastedge@gcore-marketplace
+```
+
+</Tab>
+<Tab title="Cursor">
+
+```bash
+agent plugin marketplace add https://github.com/G-Core/fastedge-plugin.git
+```
+
+Run `agent`, enter `/plugins`, open the **Marketplace** tab, and select **Gcore FastEdge**. Cursor prompts for an install scope, personal use or shared with project contributors, then installs the plugin. Run `agent plugin marketplace update gcore-fastedge-marketplace` later to pick up new versions.
+
+</Tab>
+</Tabs>
+
+## Set an API token
+
+The plugin starts the FastEdge MCP server in Docker when a skill needs it. No separate `mcp add` command or manual server registration is required.
+
+Browser approval from the setup prompt is the usual sign-in. For CI pipelines and machines where a browser cannot be opened, set an [API&nbsp;token](/account-settings/api-tokens) as `GCORE_API_KEY`. When `GCORE_API_KEY` is set, it takes priority over the browser session.
+
+<Tabs>
+<Tab title="Claude Code">
+
+Export the key in the shell that starts Claude Code:
+
+```bash
+export GCORE_API_KEY="your-api-key"
+```
+
+To keep the key in the project instead, add a `.env` file in the working directory. Claude Code loads that file. Do not commit it.
+
+```
+GCORE_API_KEY=your-api-key
+```
+
+An `env` block in `.claude/settings.local.json` is a further alternative. Keep that file out of Git. A copy of the project can carry the key with it.
+
+```json
+{
+  "env": {
+    "GCORE_API_KEY": "your-api-key"
+  }
+}
+```
+
+<Warning>
+Values in the `env` block are literal strings, not interpolated. A value wrapped as a shell variable is sent as that text, not as the variable's value. To source the value from the shell instead, export a variable named `GCORE_API_KEY` or `GCORE_API_BASE` and omit the `env` block.
+</Warning>
+
+</Tab>
+<Tab title="Codex">
+
+Codex does not auto-load `.env` files and cannot pin credentials in `.codex/config.toml` for a plugin-provided MCP server. Export the key in the shell before launching Codex:
+
+```bash
+export GCORE_API_KEY="your-api-key"
+codex
+```
+
+Verify Codex sees the bundled server:
+
+```bash
+codex mcp get fastedge-assistant
+```
+
+The output shows the Docker command and `env: GCORE_API_KEY=*****`.
+
+</Tab>
+<Tab title="Cursor">
+
+Cursor CLI inherits `GCORE_API_KEY` from the shell that launches it:
+
+```bash
+export GCORE_API_KEY="your-api-key"
+```
+
+<Warning>
+On macOS, Cursor launched from Finder or the Dock does not inherit variables exported from `.zshrc`. Set the key in the GUI session instead, then fully quit and reopen Cursor:
+</Warning>
+
+```bash
+launchctl setenv GCORE_API_KEY "your-api-key"
+```
+
+</Tab>
+</Tabs>
+
+<Info>
+To test against preprod instead of production, set `GCORE_API_BASE=https://api.preprod.world` alongside `GCORE_API_KEY`.
+</Info>
+
+## Docker and local fallback
+
+If Docker is not used, the plugin falls back to local tools (`fastedge-build`, `cargo`, `asc`) and calls `api.gcore.com` directly. It warns that toolchain versions are no longer managed automatically. MCP clients without the plugin require Docker.
+
+## Connect other MCP clients
+
+Other MCP clients can connect directly to the FastEdge MCP server. For VS Code, create `.vscode/mcp.json` in the workspace, with the top-level key `servers`. Some clients use `mcpServers` in their own file instead. The [FastEdge&nbsp;extension](/fastedge/local-development/vscode-extension) can write this file from the Command Palette.
+
+```json
+{
+  "servers": {
+    "fastedge-assistant": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=always",
+        "-v",
+        "${workspaceFolder}:/workspace",
+        "-e",
+        "WORKSPACE_ROOT=/workspace",
+        "-v",
+        "fastedge-session:/run/fastedge:ro",
+        "-e",
+        "GCORE_API_KEY",
+        "ghcr.io/g-core/fastedge-mcp-server:latest"
+      ]
+    }
+  }
+}
+```
+
+`-e GCORE_API_KEY` forwards a key already set in the environment of the process that starts Docker. Do not write the key into this file. Without a key, the server signs in through the Customer Portal.
+
+VS Code opened from a desktop shortcut or the Dock may not see a variable exported only in a terminal. Start VS Code from that terminal, or set the variable for the graphical session.
+
+When the MCP client starts the server, Docker pulls the image if needed and launches the container. Confirm that `fastedge-assistant` appears in the client's MCP server list.
