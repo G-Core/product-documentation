@@ -84,11 +84,11 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 | Compile a multi-product end-to-end guide | `.claude/skills/cookbook/SKILL.md` |
 | Take or retake a screenshot for an article step | `.claude/skills/article-screenshot/SKILL.md` |
 | Create a PR after work is done | `.claude/skills/pr/SKILL.md` |
-| Triage, publish, or audit a product What's new page | `.claude/skills/product-whats-new/SKILL.md` |
+| Decide if a change belongs in the changelog and draft its feed record | `.claude/skills/changelog-label/SKILL.md` |
 
 ## What's new triage
 
-After completing each documentation ticket, article update, or documentation PR review, invoke the `product-whats-new` skill in **Triage** mode using the ticket context and before/after diff. Record `Include`, `Skip`, or `Needs verification` in the approved persistent register. Report the one-line decision in the task summary. Do not edit public What's new pages unless explicitly asked to publish.
+After completing each documentation ticket, article update, or documentation PR review, follow `.claude/skills/changelog-label/SKILL.md` on that diff. Record `Include`, `Skip`, or `Needs verification`. Report the one-line `Changelog:` decision in the task summary. Do not edit `streaming/whats-new.mdx`. That page stays until the global changelog is in production.
 
 ## Common mistakes
 
