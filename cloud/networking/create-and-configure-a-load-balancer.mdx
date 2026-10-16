@@ -382,6 +382,7 @@ export VM2_IP="{VM2_PUBLIC_IP}"
         polling_timeout_seconds=300,
     )
     print(f"LB VIP: {lb.vip_address}")
+    print(f"LB FQDN: {lb.vip_fqdn}")
 
     # Step 3. Create HTTP listener on port 80
     listener = client.cloud.load_balancers.listeners.create_and_poll(
@@ -446,6 +447,7 @@ export VM2_IP="{VM2_PUBLIC_IP}"
             panic(err.Error())
         }
         fmt.Printf("LB VIP: %s\n", lb.VipAddress)
+        fmt.Printf("LB FQDN: %s\n", lb.VipFqdn)
 
         // Step 3. Create HTTP listener on port 80
         listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
@@ -488,6 +490,8 @@ export VM2_IP="{VM2_PUBLIC_IP}"
     ```
   </Tab>
 </Tabs>
+
+<p>When the provisioning status is ACTIVE, <code>vip_fqdn</code> is the fully qualified domain name of the VIP. Use it anywhere a hostname is accepted instead of that address.</p>
 
 ## Step-by-step
 
@@ -568,7 +572,7 @@ export LB_FLAVOR="lb1-1-2"
         flavor=os.environ["LB_FLAVOR"],
         polling_timeout_seconds=300,
     )
-    print(f"LB ID: {lb.id}  VIP: {lb.vip_address}")
+    print(f"LB ID: {lb.id}  VIP: {lb.vip_address}  FQDN: {lb.vip_fqdn}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -580,7 +584,7 @@ export LB_FLAVOR="lb1-1-2"
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("LB ID: %s  VIP: %s\n", lb.ID, lb.VipAddress)
+    fmt.Printf("LB ID: %s  VIP: %s  FQDN: %s\n", lb.ID, lb.VipAddress, lb.VipFqdn)
     ```
   </Tab>
   <Tab title="curl">
@@ -597,7 +601,7 @@ export LB_FLAVOR="lb1-1-2"
     {"tasks": ["d4a4b10e-..."]}
     ```
 
-    <p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The load balancer ID is returned in `created_resources.loadbalancers[0]`. Then retrieve the VIP address:</p>
+    <p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The load balancer ID is returned in `created_resources.loadbalancers[0]`. Then retrieve the load balancer:</p>
 
     ```bash
     curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
@@ -609,7 +613,8 @@ export LB_FLAVOR="lb1-1-2"
       "id": "f0782954-...",
       "provisioning_status": "ACTIVE",
       "operating_status": "ONLINE",
-      "vip_address": "85.234.84.36"
+      "vip_address": "85.234.84.36",
+      "vip_fqdn": "f0782954-1a2b-4c3d-8e9f-0123456789ab.luxembourg-1.lb.cloud.example.com"
     }
     ```
   </Tab>
@@ -823,7 +828,7 @@ export POOL_ID="{POOL_ID}"
     ```python
     fetched = client.cloud.load_balancers.get(load_balancer_id=lb.id)
     print(f"Status: {fetched.provisioning_status} / {fetched.operating_status}")
-    print(f"VIP: {fetched.vip_address}")
+    print(f"VIP: {fetched.vip_address}  FQDN: {fetched.vip_fqdn}")
     print(f"Listeners: {len(fetched.listeners)}")
     ```
   </Tab>
@@ -834,7 +839,7 @@ export POOL_ID="{POOL_ID}"
         panic(err.Error())
     }
     fmt.Printf("Status: %s / %s\n", fetched.ProvisioningStatus, fetched.OperatingStatus)
-    fmt.Printf("VIP: %s  Listeners: %d\n", fetched.VipAddress, len(fetched.Listeners))
+    fmt.Printf("VIP: %s  FQDN: %s  Listeners: %d\n", fetched.VipAddress, fetched.VipFqdn, len(fetched.Listeners))
     ```
   </Tab>
   <Tab title="curl">
@@ -851,6 +856,7 @@ export POOL_ID="{POOL_ID}"
       "provisioning_status": "ACTIVE",
       "operating_status": "ONLINE",
       "vip_address": "85.234.84.36",
+      "vip_fqdn": "f0782954-1a2b-4c3d-8e9f-0123456789ab.luxembourg-1.lb.cloud.example.com",
       "listeners": [{"id": "d2ac5700-..."}]
     }
     ```
