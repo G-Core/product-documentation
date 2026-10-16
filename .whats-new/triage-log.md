@@ -28,5 +28,6 @@
 - 2026-10-16 — DOC-2753, `waap/waap-rules/custom-rules.mdx` File extension — WAAP — Skip — Clarified that the existing condition reads the extension from the uploaded file name. No product behavior changed.
 - 2026-10-16 — DOC-2754, nine API reference landing pages — API Reference — Skip — Short root pages for existing product APIs. No product behavior changed.
 - 2026-10-16 — `api-reference/resellers.mdx` — API Reference — Skip — One overview for the existing reseller references. No product behavior changed.
+- 2026-10-16 — DOC-2646, `fastedge/manage-apps.mdx` — FastEdge — Skip — Response headers already replaced CORS and Cache-Control on a successful response. The article now says so. No new capability.
 - 2026-10-16 — DOC-2649, floating IP article and Kubernetes SSH article — Cloud — Skip — The Floating IP form renamed the existing attach controls. Both articles now use the current labels. No new capability.
 
