@@ -9,7 +9,8 @@ description: >-
   structure, finds the file path and a reference article, drafts the content,
   marks unverified facts as TODO, verifies agent-added claims, and adds the
   article to docs.json. Not for editing, updating, or auditing existing
-  articles.
+  articles. Not for a product overview, an API reference overview, or a
+  developer landing page; those use technical-landing-pages.
 ---
 
 Write a new article from source material, following the correct structure for

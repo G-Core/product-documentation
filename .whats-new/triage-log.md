@@ -26,5 +26,6 @@
 - 2026-10-16 — `cloud/networking/create-and-configure-a-load-balancer.mdx` — Cloud — Skip — Bold-label bullets now use a colon, matching the manage article. No product behavior changed.
 - 2026-10-16 — load balancer create and manage articles — Cloud — Skip — FQDN and VIP are explained at first use. SR-IOV was removed from the flavor sentence. No product behavior changed.
 - 2026-10-16 — DOC-2753, `waap/waap-rules/custom-rules.mdx` File extension — WAAP — Skip — Clarified that the existing condition reads the extension from the uploaded file name. No product behavior changed.
-- 2026-10-16 — DOC-2761, `cloud/networking/load-balancers/manage-load-balancers.mdx` — Cloud — Skip — FQDN stays in the endpoint dialog and in connection details. The list screenshot no longer opens that dialog. No product behavior changed.
+- 2026-10-16 — DOC-2754, nine API reference landing pages — API Reference — Skip — Short root pages for existing product APIs. No product behavior changed.
+- 2026-10-16 — `api-reference/resellers.mdx` — API Reference — Skip — One overview for the existing reseller references. No product behavior changed.
 

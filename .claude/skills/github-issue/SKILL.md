@@ -117,6 +117,7 @@ Determine the action:
 | Existing article needs a small addition or fix | UPDATE (simple) | `.claude/skills/update-page/SKILL.md` |
 | Existing article needs restructuring or screenshots | UPDATE (complex) | `.claude/skills/update-page/SKILL.md` |
 | New article or major new section | NEW | `.claude/skills/write-from-scratch/SKILL.md` |
+| New or rewritten product overview, API reference overview, or developer landing | NEW or UPDATE | `.claude/skills/technical-landing-pages/SKILL.md` |
 | Issue links a specific page URL | UPDATE | `.claude/skills/update-page/SKILL.md` — map URL path to repo file |
 | End-to-end guide spanning products | NEW | `.claude/skills/cookbook/SKILL.md` |
 | Needs portal/API verification before editing | AUDIT first | `.claude/skills/full-audit/SKILL.md`, then update-page |
