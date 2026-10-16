@@ -5,13 +5,30 @@ description: >-
   described in a Jira ticket (migration, refactoring, version bump, handler
   changes). Use when the user gives such a ticket and asks whether the docs need
   updates, or asks to re-test API articles after a backend change. Finds the
-  affected articles, retests the documented calls on preprod, and reports what
-  changed. Not for adding or auditing an API tab (use api-use-case or api-audit).
+  affected articles, runs the curl, Python, and Go examples live on preprod,
+  and only then edits the articles to match that run. Not for adding or
+  auditing an API tab (use api-use-case or api-audit).
 ---
 
 # API Retest
 
 Validate that existing documentation articles remain accurate after a backend API change. The goal is a binary outcome: **no changes needed** or **specific fixes required**.
+
+## Hard rule — live test before any write
+
+A live test is a mandatory precondition. Run the call first. Write the article only after that run succeeds.
+
+Do not add or change a sentence, a field name, a JSON example, or an SDK line from a ticket, an OpenAPI file, or SDK source code. Those sources say what might be true. Only the live run says what the article may state.
+
+Each example the article will show is tested in the language the customer copies:
+
+- A curl block is tested by running that curl.
+- A Python block is tested by running that Python.
+- A Go block is tested by running that Go.
+
+A successful REST call does not count as a test of the Python or Go example. Finding the field in the SDK repository does not count as a test. If that snippet has not been executed against the live API in this session, do not write it.
+
+If the credential, the SDK, or the toolchain is missing, stop. Do not draft the example and test it later.
 
 ---
 
@@ -129,6 +146,14 @@ Every resource created in the test **must be deleted in the same run**. Use `try
 python "$env:TEMP\test_{resource_name}.py"
 ```
 
+The HTTP script proves the endpoint. It does not replace the examples the article will show. Before any article edit, run each of those examples against the same live API and keep the output:
+
+1. The curl block, when the article has a curl tab.
+2. The Python SDK block, when the article has a Python tab.
+3. The Go SDK block, when the article has a Go tab.
+
+Use only the field names and values that this run printed. If one language cannot be executed, stop. Leave that language unchanged.
+
 ---
 
 ## Phase 5 — Compare results with documentation
@@ -156,8 +181,7 @@ For each endpoint the article documents, check:
 
 **If changes are needed:**
 
-- Update the affected articles
-- Test the updated code examples end-to-end
+- Edit the articles so they match the snippets that already ran in this session. Every new or changed line comes from that run.
 - Show the diff to the user and stop. Commit, push, and open a PR only when the user asks, as described in `.agents/references/ticket-and-branch.md`
 
 ---
