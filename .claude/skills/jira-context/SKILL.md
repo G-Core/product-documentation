@@ -25,6 +25,31 @@ it does not make changes to documentation.
 
 ---
 
+## Decisions file
+
+Use this one file for every run:
+
+`_private/jira-context-decisions.md`
+
+Do not create a second file. Do not put a date or a timestamp in the name.
+
+`_private/` is gitignored. Do not commit the file. Do not put credentials, tokens, or customer data in it. Do not read `_private/secrets/`.
+
+Create the file only when it does not exist, with this table and no other content:
+
+```markdown
+| Ticket | Status | Category | Decision | Reason |
+|--------|--------|----------|----------|--------|
+```
+
+If the file exists, append rows to it. After each ticket is classified, append one row before starting the next ticket. If that ticket already has a row, replace the row. Decision is `CANCEL`, `PROCEED`, or `BLOCKED`. Reason is one sentence.
+
+If the user gave a list, a status stop or a blocking comment applies to that ticket only: write the row, then continue with the next ticket. For a single ticket, write the row, report, and stop as Phase 2 says.
+
+The chat brief for each ticket stays as specified below. The file is the full list of decisions for the run.
+
+---
+
 ## Phase 1 — Verify MCP and fetch ticket
 
 **Step 1.** Check that Jira MCP is available. If not — follow the instructions
@@ -62,9 +87,9 @@ Check the ticket status against this table:
 | Done | NO — already completed |
 | Cancelled | NO |
 
-**If status is not in the YES list — stop immediately.**
+**If status is not in the YES list — do not classify the ticket.**
 
-Report to the user:
+Append a row: Category `-`, Decision `BLOCKED`, Reason the status reason. Then report to the user:
 ```
 Ticket: [TICKET-ID]
 Status: [status]
@@ -77,7 +102,7 @@ Cannot start: [reason]
 - "feature not released" / "not in production"
 - "blocked by..." / "depends on..."
 
-If any blocking signal found — stop and report to the user.
+If any blocking signal found — append a row with Decision `BLOCKED` and the signal as Reason, then report to the user.
 
 ---
 
@@ -170,7 +195,7 @@ If **none checked** → likely NOT_DOCUMENTABLE or INTERNAL_DOC. Verify with the
 
 ### If category requires cancel
 
-Output exactly this — nothing more:
+Append the decisions-file row first. Then output exactly this — nothing more:
 
 ```
 Ticket: [TICKET-ID]
@@ -236,7 +261,9 @@ Score the update based on these signals:
 
 ## Output
 
-Produce this brief — always, regardless of next action:
+Skip this section when the category requires cancel. That path already wrote the row and its short block.
+
+Otherwise append the decisions-file row first, then produce this brief:
 
 ```
 ## Jira context: [TICKET-ID]
