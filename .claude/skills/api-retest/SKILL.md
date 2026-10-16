@@ -30,6 +30,12 @@ A successful REST call does not count as a test of the Python or Go example. Fin
 
 If the credential, the SDK, or the toolchain is missing, stop. Do not draft the example and test it later.
 
+## Hard rule — preprod is the same product
+
+Preprod and production are the same product. Preprod is where a change can be checked before it is rolled out.
+
+Document the preprod result. If production still returns the previous value, the change has not been rolled out there yet. Do not write that previous value into the article. Do not treat it as a difference between the environments. Do not ask the user to confirm it with engineers.
+
 ---
 
 ## Inputs
@@ -89,9 +95,9 @@ Even if no changes turn out to be needed, work on the branch. Delete it at the e
 
 ### Environment
 
-Test on **preprod first** — this allows documentation to be ready before the feature reaches production.
+Run the test on preprod. That result is the product behavior.
 
-Switch to production only if the feature is not yet deployed on preprod.
+Use production only when the change is not on preprod at all. A production response that still has the old value does not replace a successful preprod run.
 
 | Environment | API base | Portal |
 |---|---|---|
