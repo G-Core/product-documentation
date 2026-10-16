@@ -72,6 +72,7 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 | Task | Skill (read this file) |
 |------|------------------------|
 | Product or UI changed - find affected articles and update them | `.claude/skills/update-page/SKILL.md` |
+| Write, rewrite, or review a product, API, or developer landing page | `.claude/skills/technical-landing-pages/SKILL.md` |
 | Write a new article from scratch | `.claude/skills/write-from-scratch/SKILL.md` |
 | Analyze a Jira ticket - what needs documenting | `.claude/skills/jira-context/SKILL.md` |
 | Work from a GitHub issue | `.claude/skills/github-issue/SKILL.md` |
