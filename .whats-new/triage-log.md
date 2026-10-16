@@ -30,4 +30,5 @@
 - 2026-10-16 — `api-reference/resellers.mdx` — API Reference — Skip — One overview for the existing reseller references. No product behavior changed.
 - 2026-10-16 — DOC-2646, `fastedge/manage-apps.mdx` — FastEdge — Skip — Response headers already replaced CORS and Cache-Control on a successful response. The article now says so. No new capability.
 - 2026-10-16 — DOC-2649, floating IP article and Kubernetes SSH article — Cloud — Skip — The Floating IP form renamed the existing attach controls. Both articles now use the current labels. No new capability.
+- 2026-10-16 — DOC-2762, `edge-proxy/faqs-and-troubleshooting.mdx` — Edge Proxy — Skip — The FAQ now states existing handshake checks, connection limits, port-mapping billing, Anycast filtering capacity, and that the protected IP is not null-routed. No new capability.
 
