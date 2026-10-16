@@ -88,7 +88,7 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 
 ## What's new triage
 
-After completing each documentation ticket, article update, or documentation PR review, invoke the `product-whats-new` skill in **Triage** mode using the ticket context and before/after diff. Record `Include`, `Skip`, or `Needs verification` in the approved persistent register. If the behavior was used on a production account and it worked, customers already have it: decide `Include` or `Skip`, and do not mark `Needs verification` because a Jira status is still open. Report the one-line decision in the task summary. Do not edit public What's new pages unless explicitly asked to publish.
+After completing each documentation ticket, article update, or documentation PR review, invoke the `product-whats-new` skill in **Triage** mode using the ticket context and before/after diff. Record `Include`, `Skip`, or `Needs verification` in the approved persistent register. If the behavior was used on the preprod or production Customer Portal and it worked, that is the product behavior: decide `Include` or `Skip`, and do not mark `Needs verification` because the check was on preprod or because a Jira status is still open. Report the one-line decision in the task summary. Do not edit public What's new pages unless explicitly asked to publish.
 
 ## Common mistakes
 

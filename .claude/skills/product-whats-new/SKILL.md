@@ -23,7 +23,7 @@ Inspect the **ticket/release context**, before/after diff, the resulting article
 
 When evidence is incomplete, ask for the missing fact only if needed to finish the main task; otherwise mark `Needs verification` and continue.
 
-A production account where the behavior already worked is complete evidence. Do not replace that check with `Needs verification`.
+A check on the preprod Customer Portal is a check of the product. Behavior that worked there is the production behavior. A production check is the same evidence. Do not replace either check with `Needs verification`, and do not ask for the same clicks again on production.
 
 ## Decision procedure (run for every completed doc task)
 
@@ -31,14 +31,14 @@ A production account where the behavior already worked is complete evidence. Do 
 2. **Determine customer impact.** Can a user do something new, must they act differently, does an integration change, or is there a meaningful effect on reliability, compatibility, security, pricing, limits, or availability? State who is affected and what changed, not just a feature name.
 3. **Establish novelty and availability.** Find evidence the product change actually shipped and when it became available. Ticket creation, documentation publication, PR merge, or new page creation **are not** release evidence by themselves. A newly documented old capability is not automatically news.
 
-   **A production check is release evidence.** If this work used the behavior on a production account and it worked, customers already have it. Record that check as the availability evidence. Then choose `Include` or `Skip` from what the customer gained. Do not mark `Needs verification`.
+   **A portal check is release evidence.** If this work used the behavior on the preprod or production Customer Portal and it worked, customers have that behavior. Preprod is not a weaker check. Record that check as the availability evidence. Then choose `Include` or `Skip` from what the customer gained. Do not mark `Needs verification`.
 
-   Do not wait for a Jira status, a workflow button, a resolution date, or a comment that some other bug is still open. A ticket left In Progress does not remove a capability from the production account that already has it. `Needs verification` means the change was **not** seen working on a production account, and nothing else shows that customers can use it.
+   Do not wait for a Jira status, a workflow button, a resolution date, or a comment that some other bug is still open. A ticket left In Progress does not remove a capability that already worked on preprod or production. `Needs verification` means the change was not seen working on preprod or on production, and nothing else shows that customers can use it. Do not use `Needs verification` to demand the same check again on production.
 4. **Check duplicates.** Search the existing product What's new page and candidate register for the same underlying release. Several tickets/pages may describe **one** product event; link all relevant docs to one candidate.
 5. **Decide:**
    - `Include`: verified, customer-relevant product change, not already published. A small but impactful change can qualify.
    - `Skip`: documentation-only work, inconsequential product change, or already covered. Record a brief reason; do not write public news.
-   - `Needs verification`: plausible customer-relevant product change that was not seen working on a production account, and no other evidence shows customers can use it. Record what to verify; do not publish. Do not use this status after a successful production check.
+   - `Needs verification`: plausible customer-relevant product change that nobody has seen working, on preprod or on production, and no other evidence shows customers can use it. Record what to verify; do not publish. Do not use this status after a successful preprod or production check.
 
 Do not assign scores, force quotas, or publish merely to maintain a cadence. Do not treat all bug fixes as news or reject all fixes: evaluate impact.
 
@@ -82,8 +82,8 @@ Group entries in reverse chronological order, normally by month. Prefer meaningf
 
 - Rewriting an old CDN account limits article for clarity: `Skip` — no product behavior changed.
 - Correcting RTMP `?` vs `/` documentation for an already supported encoder format: `Skip` unless evidence shows a newly introduced compatibility change.
-- Adding a page about HEVC/AV1/VP9: `Needs verification` only when nobody has seen it work on a production account. If a production account already used it successfully, customers have it: `Include` for a new capability, `Skip` when the page only describes behavior that was already there.
-- Reseller articles rewritten from a production reseller account that already showed the new sidebar: `Skip`. The production check is the availability evidence. A Jira status of In Progress does not reopen that check.
+- Adding a page about HEVC/AV1/VP9: `Needs verification` only when nobody has seen it work on preprod or on production. If either portal already showed it working, customers have that behavior: `Include` for a new capability, `Skip` when the page only describes behavior that was already there.
+- Reseller articles rewritten from a portal account that already showed the new sidebar: `Skip`. The portal check, preprod or production, is the availability evidence. A Jira status of In Progress does not reopen that check.
 - Changing an API parameter required by existing integrations: potentially `Include` even if a small diff; verify release and impact.
 - New region, material quota change, deprecation, or paid capability: potentially `Include`, with confirmed scope and effective date.
 
