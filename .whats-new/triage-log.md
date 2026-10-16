@@ -22,4 +22,7 @@
 - 2026-10-14 — #3055, five streaming articles — Streaming — Include — On 2026-09-29 SDK v0.58.0 returns the created player, video, and playlist from create. Player create uses CreatePlayerParam. Playlist fields are direct. name is optional on player update. Same event is on this branch because v0.59.0 still has those signatures. Not published on the What's new page.
 - 2026-10-14 — #2937, two Storage articles — Storage — Include — On 2026-09-22 provider v2.0.0-rc.2 removed password and password_mode from gcore_storage_sftp. Configurations use password_wo and password_wo_version. Not published on the What's new page.
 - 2026-10-14 — DOC-2653, fastedge/local-development/ai-assisted-development.mdx — FastEdge — Include — Production Copy prompt returns one setup prompt for every agent. Browser approval replaces a required API token. Not published on the What's new page.
+- 2026-10-16 — `cloud/networking/create-and-configure-a-load-balancer.mdx` — Cloud — Skip — Standard class ceiling aligned with the 5 Gbps row already in the flavor table. No product behavior changed.
+- 2026-10-16 — `cloud/networking/create-and-configure-a-load-balancer.mdx` — Cloud — Skip — Bold-label bullets now use a colon, matching the manage article. No product behavior changed.
+- 2026-10-16 — load balancer create and manage articles — Cloud — Skip — FQDN and VIP are explained at first use. SR-IOV was removed from the flavor sentence. No product behavior changed.
 

@@ -821,6 +821,16 @@ Never use an unspaced em-dash `—`.
 | `configuration files—a Gcore account` | `configuration files — a Gcore account` |
 | `API calls—it defines` | `API calls — it defines` |
 
+### Bold labels in bullets
+
+A bullet that names a field, option, or flavor and then explains it uses a colon after the bold label:
+
+```
+- **VIP address**: virtual IP address of the Load Balancer
+```
+
+Do not use an em dash for that pattern. An em dash stays in prose.
+
 ### Code
 
 - Inline code: backticks — `api_key`, `terraform plan`
