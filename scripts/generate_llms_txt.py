@@ -147,12 +147,38 @@ def get_product_prefix(node: object) -> Optional[str]:
     return max(prefixes, key=lambda k: prefixes[k])
 
 
+def developer_tools_index_group(tools_tab: dict) -> dict:
+    """Fold the Developer Tools tab into one llms product group.
+
+    In navigation, REST API, SDKs, MCP Server, and Terraform are sibling
+    sections. The index still treats them as one product: the landing page
+    first, then each section as a heading.
+
+    Args:
+        tools_tab: The Developer Tools tab object from docs.json.
+
+    Returns:
+        A group dict whose pages are the landing page and the section groups.
+    """
+    pages: list = []
+    for group in tools_tab.get("groups", []):
+        group_pages = group.get("pages", [])
+        landing_only = group.get("group") == "Developer Tools" and all(
+            isinstance(page, str) for page in group_pages
+        )
+        if landing_only:
+            pages = list(group_pages) + pages
+            continue
+        pages.append(group)
+    return {"group": "Developer Tools", "pages": pages}
+
+
 def indexed_product_groups(tabs: list) -> list[dict]:
     """Return product groups in the order used by the llms index.
 
     Groups from the Documentation tab keep their navigation order. The
-    Developer Tools tab is one group and is placed immediately after
-    Account settings.
+    Developer Tools tab is one product index entry, placed immediately
+    after Account settings.
 
     Args:
         tabs: ``navigation.tabs`` from docs.json.
@@ -180,10 +206,7 @@ def indexed_product_groups(tabs: list) -> list[dict]:
     if account_index is None:
         raise ValueError("Account settings group not found in the Documentation tab")
 
-    insert_at = account_index + 1
-    for group in tools_tab.get("groups", []):
-        groups.insert(insert_at, group)
-        insert_at += 1
+    groups.insert(account_index + 1, developer_tools_index_group(tools_tab))
     return groups
 
 
