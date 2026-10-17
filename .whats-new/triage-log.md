@@ -36,4 +36,5 @@
 - 2026-10-17 — DOC-1062, `cdn/troubleshooting/diagnose-cdn-routing-and-connectivity.mdx` — CDN — Skip — Documented the existing CDN Debug page and speed test. No new capability.
 - 2026-10-17 — DOC-2587 — Billing — Skip — The top-up list already includes adding a payment method in the same window. The payments article now uses the current labels. No new capability.
 - 2026-10-17 — `developer-tools.mdx`, docs.json tab — Developer Tools — Skip — Existing guides moved to their own top tab and landing page. No product behavior changed.
+- 2026-10-17 — DOC-2491 — Account settings — Skip — The API tokens article now points a reseller to the existing Admin Portal steps. That path was already documented. No new capability.
 
