@@ -35,6 +35,9 @@ log = logging.getLogger(__name__)
 BASE_URL_DEFAULT = "https://docs.gcore.com"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
+# Own top tab, indexed with the product groups. Inserted after Account settings,
+# which is where this section sat inside Documentation.
+DEVELOPER_TOOLS_TAB = "Developer Tools"
 MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"
 
 ROOT_SIZE_WARN = 50_000
@@ -142,6 +145,46 @@ def get_product_prefix(node: object) -> Optional[str]:
     if not prefixes:
         return None
     return max(prefixes, key=lambda k: prefixes[k])
+
+
+def indexed_product_groups(tabs: list) -> list[dict]:
+    """Return product groups in the order used by the llms index.
+
+    Groups from the Documentation tab keep their navigation order. The
+    Developer Tools tab is one group and is placed immediately after
+    Account settings.
+
+    Args:
+        tabs: ``navigation.tabs`` from docs.json.
+
+    Returns:
+        Group dicts to write as product ``llms.txt`` files.
+
+    Raises:
+        ValueError: Documentation or Developer Tools is missing, or
+            Account settings is not a Documentation group.
+    """
+    doc_tab = next((tab for tab in tabs if tab.get("tab") == DOCUMENTATION_TAB), None)
+    if doc_tab is None:
+        raise ValueError(f"Tab '{DOCUMENTATION_TAB}' not found in docs.json")
+
+    tools_tab = next((tab for tab in tabs if tab.get("tab") == DEVELOPER_TOOLS_TAB), None)
+    if tools_tab is None:
+        raise ValueError(f"Tab '{DEVELOPER_TOOLS_TAB}' not found in docs.json")
+
+    groups: list[dict] = list(doc_tab.get("groups", []))
+    account_index = next(
+        (index for index, group in enumerate(groups) if group.get("group") == "Account settings"),
+        None,
+    )
+    if account_index is None:
+        raise ValueError("Account settings group not found in the Documentation tab")
+
+    insert_at = account_index + 1
+    for group in tools_tab.get("groups", []):
+        groups.insert(insert_at, group)
+        insert_at += 1
+    return groups
 
 
 def derive_product_summary(group: dict, repo_root: Path) -> str:
@@ -463,9 +506,10 @@ def main() -> int:
         return 1
 
     tabs = docs_json.get("navigation", {}).get("tabs", [])
-    doc_tab = next((t for t in tabs if t.get("tab") == DOCUMENTATION_TAB), None)
-    if not doc_tab:
-        log.error("Tab '%s' not found in docs.json", DOCUMENTATION_TAB)
+    try:
+        groups = indexed_product_groups(tabs)
+    except ValueError as exc:
+        log.error("%s", exc)
         return 1
 
     product_entries: list[tuple[str, str, int, str]] = []
@@ -474,7 +518,7 @@ def main() -> int:
     total_pages = 0
     used_prefixes: dict[str, str] = {}  # prefix -> group_name, collision guard
 
-    for group in doc_tab.get("groups", []):
+    for group in groups:
         group_name: str = group.get("group", "Unknown")
         page_count = len(collect_pages(group))
 
