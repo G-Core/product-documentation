@@ -36,4 +36,7 @@
 - 2026-10-17 — DOC-1062, `cdn/troubleshooting/diagnose-cdn-routing-and-connectivity.mdx` — CDN — Skip — Documented the existing CDN Debug page and speed test. No new capability.
 - 2026-10-17 — DOC-2587 — Billing — Skip — The top-up list already includes adding a payment method in the same window. The payments article now uses the current labels. No new capability.
 - 2026-10-17 — `developer-tools.mdx`, docs.json tab — Developer Tools — Skip — Existing guides moved to their own top tab and landing page. No product behavior changed.
+- 2026-10-17 — `developer-tools.mdx` intro — Developer Tools — Skip — Reworded the overview introduction. No product behavior changed.
+- 2026-10-17 — Developer Tools articles — Developer Tools — Skip — Aligned contradictory statements across the existing guides. No product behavior changed.
+- 2026-10-17 — Terraform get-started and variables articles — Developer Tools — Skip — Corrected a mid-sentence capital and removed an announcement word. No product behavior changed.
 
