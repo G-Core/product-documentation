@@ -33,4 +33,5 @@
 - 2026-10-16 — DOC-2762, `edge-proxy/faqs-and-troubleshooting.mdx` — Edge Proxy — Skip — The FAQ now states existing handshake checks, connection limits, port-mapping billing, Anycast filtering capacity, and that the protected IP is not null-routed. No new capability.
 - 2026-10-16 — DOC-2561, Bare Metal Advanced DDoS about and activate articles — Cloud — Skip — Corrected basic protection coverage and region availability for an existing feature. No new capability.
 - 2026-10-16 — DOC-2654 — Hosting — Skip — The order and plan pages now say the included IPv4 is dedicated and not behind NAT. That is existing behavior. Not published on the What's new page.
+- 2026-10-17 — DOC-2587 — Billing — Skip — The top-up list already includes adding a payment method in the same window. The payments article now uses the current labels. No new capability.
 
