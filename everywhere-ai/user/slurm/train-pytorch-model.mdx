@@ -1,0 +1,330 @@
+---
+title: "Train a PyTorch model"
+sidebarTitle: "Train a model"
+description: "Submit PyTorch and TensorFlow training jobs to Slurm clusters in Everywhere AI, including script preparation, job file configuration, and"
+---
+
+# Train a model
+
+To train a model on a Slurm cluster, prepare a training script, create a Slurm job file with resource requirements, and submit it with `sbatch`. Both PyTorch and TensorFlow workflows follow the same pattern.
+
+## Training script
+
+Training scripts run on compute nodes, which may have different environments than the login node. Structure scripts to be self-contained with all imports and configurations.
+
+The scripts below accept `--checkpoint` to resume from a saved checkpoint and `--checkpoint-dir` to set the output directory.
+
+<Tabs>
+<Tab title="PyTorch">
+```python
+#!/usr/bin/env python3
+"""Train a simple neural network on synthetic data."""
+
+import argparse
+import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+
+
+def create_model(input_size: int, hidden_size: int, output_size: int) -> nn.Module:
+    """Create a simple feedforward network."""
+    return nn.Sequential(
+        nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, output_size),
+    )
+
+
+def train(
+    epochs: int = 10,
+    batch_size: int = 32,
+    learning_rate: float = 0.001,
+    checkpoint_dir: str = "./checkpoints",
+    checkpoint_path: str = None,
+):
+    """Run training loop with optional checkpoint resumption."""
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
+    # Synthetic data for demonstration
+    X = torch.randn(1000, 64)
+    y = torch.randint(0, 10, (1000,))
+    dataset = TensorDataset(X, y)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    model = create_model(input_size=64, hidden_size=128, output_size=10)
+    model = model.to(device)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+    start_epoch = 0
+    if checkpoint_path and os.path.exists(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path, map_location=device)
+        model.load_state_dict(checkpoint["model_state_dict"])
+        optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+        start_epoch = checkpoint["epoch"]
+        print(f"Resuming from epoch {start_epoch}")
+
+    for epoch in range(start_epoch, epochs):
+        total_loss = 0.0
+        for batch_X, batch_y in dataloader:
+            batch_X, batch_y = batch_X.to(device), batch_y.to(device)
+
+            optimizer.zero_grad()
+            outputs = model(batch_X)
+            loss = criterion(outputs, batch_y)
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(dataloader)
+        print(f"Epoch {epoch + 1}/{epochs}, Loss: {avg_loss:.4f}")
+
+        # Save checkpoint
+        checkpoint_path_out = os.path.join(checkpoint_dir, f"checkpoint_epoch_{epoch + 1}.pt")
+        torch.save({
+            "epoch": epoch + 1,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "loss": avg_loss,
+        }, checkpoint_path_out)
+
+    final_path = os.path.join(checkpoint_dir, "model_final.pt")
+    torch.save(model.state_dict(), final_path)
+    print(f"Training complete. Model saved to {final_path}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", default=None, help="Resume from this checkpoint file")
+    parser.add_argument("--checkpoint-dir", default="./checkpoints", dest="checkpoint_dir",
+                        help="Directory for saving checkpoints")
+    args = parser.parse_args()
+    train(checkpoint_path=args.checkpoint, checkpoint_dir=args.checkpoint_dir)
+```
+</Tab>
+<Tab title="TensorFlow">
+```python
+#!/usr/bin/env python3
+"""Train a simple neural network on synthetic data."""
+
+import argparse
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+
+
+def create_model(input_size: int, hidden_size: int, output_size: int) -> keras.Model:
+    """Create a simple feedforward network."""
+    return keras.Sequential([
+        keras.layers.Dense(hidden_size, activation="relu", input_shape=(input_size,)),
+        keras.layers.Dense(hidden_size, activation="relu"),
+        keras.layers.Dense(output_size, activation="softmax"),
+    ])
+
+
+def train(
+    epochs: int = 10,
+    batch_size: int = 32,
+    learning_rate: float = 0.001,
+    checkpoint_dir: str = "./checkpoints",
+    checkpoint_path: str = None,
+):
+    """Run training loop with optional checkpoint resumption."""
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    # Check GPU availability
+    gpus = tf.config.list_physical_devices("GPU")
+    print(f"GPUs available: {len(gpus)}")
+
+    # Synthetic data for demonstration
+    X = np.random.randn(1000, 64).astype(np.float32)
+    y = np.random.randint(0, 10, (1000,))
+
+    initial_epoch = 0
+    if checkpoint_path and os.path.exists(checkpoint_path):
+        model = keras.models.load_model(checkpoint_path)
+        # Extract epoch number from filename (checkpoint_epoch_05.keras -> 5)
+        initial_epoch = int(os.path.splitext(os.path.basename(checkpoint_path))[0].split("_")[-1])
+        print(f"Resuming from epoch {initial_epoch}")
+    else:
+        model = create_model(input_size=64, hidden_size=128, output_size=10)
+
+    model.compile(
+        optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+        loss="sparse_categorical_crossentropy",
+        metrics=["accuracy"],
+    )
+
+    checkpoint_callback = keras.callbacks.ModelCheckpoint(
+        filepath=os.path.join(checkpoint_dir, "checkpoint_epoch_{epoch:02d}.keras"),
+        save_weights_only=False,
+        save_freq="epoch",
+    )
+
+    model.fit(
+        X, y,
+        epochs=epochs,
+        initial_epoch=initial_epoch,
+        batch_size=batch_size,
+        callbacks=[checkpoint_callback],
+        verbose=1,
+    )
+
+    final_path = os.path.join(checkpoint_dir, "model_final.keras")
+    model.save(final_path)
+    print(f"Training complete. Model saved to {final_path}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--checkpoint", default=None, help="Resume from this checkpoint file")
+    parser.add_argument("--checkpoint-dir", default="./checkpoints", dest="checkpoint_dir",
+                        help="Directory for saving checkpoints")
+    args = parser.parse_args()
+    train(checkpoint_path=args.checkpoint, checkpoint_dir=args.checkpoint_dir)
+```
+</Tab>
+</Tabs>
+
+## Job script
+
+The script structure is the same for PyTorch and TensorFlow — only the `python3` invocation changes.
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=model-train
+#SBATCH --output=train_%j.out
+#SBATCH --error=train_%j.err
+#SBATCH --mem=4G
+#SBATCH --cpus-per-task=4
+#SBATCH --time=01:00:00
+
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $(hostname)"
+echo "Start time: $(date)"
+
+cd $SLURM_SUBMIT_DIR
+
+python3 train.py
+
+echo "End time: $(date)"
+```
+
+
+<Warning>
+Set `--mem` based on model size and batch size. Insufficient memory causes out-of-memory errors that terminate the job. Start with a conservative estimate and increase if needed.
+</Warning>
+
+
+## Submission and monitoring
+
+Submit the job:
+
+```bash
+sbatch train_job.sh
+```
+
+Monitor progress in real time:
+
+```bash
+tail -f train_*.out
+```
+
+Check job status:
+
+```bash
+squeue -u root
+```
+
+## GPU training
+
+For GPU-accelerated training, request GPU resources with the `--gres` directive.
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=gpu-train
+#SBATCH --output=train_gpu_%j.out
+#SBATCH --error=train_gpu_%j.err
+#SBATCH --mem=16G
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --time=02:00:00
+
+echo "Job ID: $SLURM_JOB_ID"
+echo "Node: $(hostname)"
+echo "GPUs: $CUDA_VISIBLE_DEVICES"
+
+nvidia-smi
+
+python3 train.py
+```
+
+The `--gres=gpu:1` requests one GPU. Request multiple GPUs with `--gres=gpu:2` or `--gres=gpu:4`.
+
+
+<Tip>
+Check available GPU resources before submitting: `sinfo -o "%N %G"` shows nodes and their GPU counts.
+</Tip>
+
+
+## Checkpoint resumption
+
+The training scripts above save a checkpoint after each epoch. To resume an interrupted job, pass the checkpoint file with `--checkpoint`:
+
+<Tabs>
+<Tab title="PyTorch">
+```bash
+python3 train.py --checkpoint ./checkpoints/checkpoint_epoch_05.pt
+```
+</Tab>
+<Tab title="TensorFlow">
+```bash
+python3 train.py --checkpoint ./checkpoints/checkpoint_epoch_05.keras
+```
+</Tab>
+</Tabs>
+
+## Resource estimation
+
+Memory requirements scale with model size and batch size:
+
+| Model parameters | Batch size 32 | Batch size 64 | Batch size 128 |
+|------------------|---------------|---------------|----------------|
+| 1M | 1-2 GB | 2-3 GB | 3-4 GB |
+| 10M | 2-4 GB | 4-6 GB | 6-8 GB |
+| 100M | 4-8 GB | 8-12 GB | 12-16 GB |
+
+These are rough estimates. Actual requirements depend on model architecture, optimizer state, and intermediate activations. TensorFlow typically uses slightly more memory than PyTorch for equivalent models due to eager execution overhead.
+
+
+<Warning>
+Jobs terminated due to memory limits leave no output in the error file. If a job disappears without logs, increase `--mem` and resubmit.
+</Warning>
+
+
+## Output management
+
+Training outputs accumulate quickly. Organize outputs by job ID and date:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=model-train
+#SBATCH --output=logs/%x_%j.out
+#SBATCH --error=logs/%x_%j.err
+
+mkdir -p logs checkpoints/$SLURM_JOB_ID
+
+python3 train.py --checkpoint-dir checkpoints/$SLURM_JOB_ID
+```
+
+The `%x` substitution token expands to the job name at runtime. Create the `logs` directory before submitting, or the job fails immediately.

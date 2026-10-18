@@ -1,0 +1,223 @@
+---
+title: "AI Models Guide"
+description: "Review Everywhere AI catalog models, choose a serving topology, and read container monitoring after the instance is active."
+---
+
+Everywhere AI provides access to pre-configured AI models from leading providers. Deploying a catalog model creates an inference instance with an HTTP endpoint.
+
+## Model categories
+
+The Application Catalog organizes models into categories based on their input/output types and primary use cases:
+
+| Category | Input | Output | Use cases |
+|----------|-------|--------|-----------|
+| Text LLM | Text | Text | Chat assistants, reasoning, summarization, code generation |
+| Text Generation | Text | Text | Content creation, completion, translation |
+| Image Generation | Text prompt | Image | Art creation, product visualization, design mockups |
+| Video Super-Resolution | Video | Video | Raise the resolution of a video |
+| Text Embedding | Text | Vector | Semantic search, document similarity, retrieval-augmented generation (RAG) systems |
+| Embedding | Document image and text | Vectors | Visual document retrieval |
+| Reranker | Query and document | Relevance score | Rank passages returned by a search |
+| Text + Image LLM | Text and/or image | Text | Visual QA, image description, document analysis |
+| Safety model | Text | Classification | Content moderation, policy enforcement |
+| TTS (Text-to-Speech) | Text | Audio | Voice assistants, audiobook generation, podcasts |
+| Text + Audio LLM | Text and audio | Text | Audio understanding, voice Q&A, transcription with context |
+| ASR | Audio | Text | Transcription, voice commands, meeting notes |
+| Automatic Speech Recognition | Speech or text | Speech or text | Speech-to-speech, speech-to-text, text-to-speech, and text-to-text translation |
+
+**ASR** and **Automatic Speech Recognition** are separate catalog filters. **ASR** contains transcription models that convert audio into text. **Automatic Speech Recognition** currently includes SeamlessM4T, which supports speech-to-speech, speech-to-text, text-to-speech, and text-to-text translation, as well as transcription. Check the model card for its supported capabilities.
+
+## Model selection
+
+Use the model category that matches the task and its required input and output. The table below lists example models for common tasks; the examples are not a ranking. Models within the same category can have different requirements, so check the model card before deployment. The card shows **Min config**, the smallest flavor that can start the model.
+
+| Task | Recommended category | Example models | Hardware |
+|------|---------------------|----------------|----------|
+| Build a chatbot | Text LLM | gpt-oss-120b, Qwen3-235B, Mistral Medium | GPU |
+| Generate code | Text LLM | Qwen3-Coder, Devstral-2 | GPU |
+| Complex reasoning | Text LLM | gpt-oss-120b, DeepSeek-V4, Qwen3 Thinking | GPU |
+| Create images | Image Generation | FLUX.1, Stable Diffusion 3.5 | GPU |
+| Increase video resolution | Video Super-Resolution | SeedVR2 | GPU |
+| Transcribe audio | ASR | Whisper large-v3, Whisper large-v3-turbo | GPU |
+| Generate speech | TTS | Chatterbox | GPU |
+| Semantic search | Text Embedding | BGE-M3, Qwen3-Embedding | GPU |
+| Search document images | Embedding | ColPali, Nemotron ColEmbed | GPU |
+| Rerank search results | Reranker | BGE-Reranker | GPU |
+| Analyze images | Text + Image LLM | `Gemma 4`, Qwen3-VL | GPU |
+| Moderate content | Safety model | gpt-oss-safeguard, Qwen3Guard | CPU/GPU |
+
+## Deployment
+
+Open the model card and click **Deploy Application**. The form offers only the serving topologies that model supports.
+
+**Single node** places each replica on one node. **Multi-node** runs each replica on a fixed group of nodes when the model does not fit on one node. **P/D disaggregation** splits prompt processing and token generation into separate pools. **E/P/D disaggregation**, when the model defines it, adds an encode pool in front of those two. Disaggregated topologies run on the **Dynamo** runtime. Region, flavor, replica bounds, and API keys are set on the same form. The procedure is in [Application&nbsp;Catalog](/everywhere-ai/user/application-catalog/application-catalog).
+
+**Deployment status** stays **Provisioning** until the instance is **Active**. Open **Endpoint** on **Overview** to get the address for the requests in the next section. The URL follows this format:
+
+```text
+https://{instance-name}-{region}-{project}.{region}.caas.{cluster-domain}/
+```
+
+Once the instance is running, **Monitoring** charts CPU, memory, GPU utilization, and GPU memory for its containers. A deployment whose engine is vLLM or SGLang also shows engine-specific metrics. **Logs** records a **Source** on each line for a router, a prefill worker, or a decode worker. Scaling, keys, and these views are covered in [Manage&nbsp;inference&nbsp;instances](/everywhere-ai/user/inference-instances/manage-inference-instances).
+
+## API request formats
+
+Most models expose an OpenAI-compatible API. The examples below are requests for common categories. Required parameters, including `model`, depend on the deployed application. For a category that is not listed here, use the format on the model page.
+
+The examples include the `Authorization` header. Remove that line when no API key is attached to the instance.
+
+### Text LLM and Text Generation
+
+Text models accept requests at the `/v1/chat/completions` endpoint. Set `model` to the application name shown on the endpoint row.
+
+```bash
+curl -X POST "https://your-endpoint/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -d '{
+    "model": "<application-name>",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Explain quantum computing in simple terms."}
+    ],
+    "max_tokens": 500,
+    "temperature": 0.7
+  }'
+```
+
+Response:
+```json
+{
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "Quantum computing uses quantum bits..."
+      }
+    }
+  ]
+}
+```
+
+### Image Generation
+
+Stable Diffusion and FLUX models accept requests at the `/v1/images/generations` endpoint:
+
+```bash
+curl -X POST "https://your-endpoint/v1/images/generations" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -d '{
+    "prompt": "A futuristic city at sunset, cyberpunk style",
+    "n": 1,
+    "size": "1024x1024"
+  }'
+```
+
+Response contains a base64-encoded image or URL.
+
+### ASR
+
+Whisper models transcribe audio at the `/v1/audio/transcriptions` endpoint. `model` is the name shown on the endpoint row, Whisper large-v3 or Whisper large-v3-turbo.
+
+```bash
+curl -X POST "https://your-endpoint/v1/audio/transcriptions" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -F "file=@audio.mp3" \
+  -F "model=<application-name>"
+```
+
+Response:
+```json
+{
+  "text": "Hello, this is the transcribed text from your audio file."
+}
+```
+
+### Text-to-Speech
+
+TTS models generate audio at the `/v1/audio/speech` endpoint:
+
+```bash
+curl -X POST "https://your-endpoint/v1/audio/speech" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -d '{
+    "input": "Hello, welcome to Everywhere AI.",
+    "voice": "default"
+  }' \
+  --output speech.mp3
+```
+
+### Text Embedding
+
+Embedding models return vectors at the `/v1/embeddings` endpoint:
+
+```bash
+curl -X POST "https://your-endpoint/v1/embeddings" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -d '{
+    "input": "The quick brown fox jumps over the lazy dog.",
+    "model": "default"
+  }'
+```
+
+Response:
+```json
+{
+  "data": [
+    {
+      "embedding": [0.0023, -0.0142, ...],
+      "index": 0
+    }
+  ]
+}
+```
+
+### Multimodal (Text + Image)
+
+For `Gemma 4` or Qwen3-VL, include images in the messages:
+
+```bash
+curl -X POST "https://your-endpoint/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <API_KEY>" \
+  -d '{
+    "model": "<application-name>",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {"type": "text", "text": "What is in this image?"},
+          {"type": "image_url", "image_url": {"url": "data:image/jpeg;base64,..."}}
+        ]
+      }
+    ]
+  }'
+```
+
+## API key authentication
+
+The requests above send `Authorization: Bearer` when a key is attached at deploy time. With no key attached, the endpoint accepts requests that do not authenticate. With a key attached, a request without that key is rejected. Rotation, expiration, and attaching one key to several instances are covered in [API&nbsp;Keys](/everywhere-ai/user/api-keys/manage-api-keys).
+
+## Integration
+
+Store outputs that must survive a restart on [Volumes](/everywhere-ai/user/volumes/manage-volumes), including generated images, an embedding cache, or conversation history.
+
+A [JupyterLab](/everywhere-ai/user/jupyterlab/create-jupyterlab-instance) instance in the same project can send the chat request below before the calling application is ready:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-endpoint/v1",
+    api_key="your-api-key"
+)
+
+response = client.chat.completions.create(
+    model="<application-name>",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
+```

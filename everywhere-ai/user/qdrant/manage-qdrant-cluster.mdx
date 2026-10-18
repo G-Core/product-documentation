@@ -1,0 +1,72 @@
+---
+title: "Manage Qdrant clusters"
+sidebarTitle: "Manage clusters"
+description: "Edit settings, resize replicas, connect to, and delete Qdrant vector database clusters in Everywhere AI."
+---
+
+After [cluster&nbsp;creation](/everywhere-ai/user/qdrant/create-qdrant-cluster), the replica count, compute flavor, storage size, and external access settings can all be changed without recreating the cluster.
+
+Navigate to **Managed Databases** > **Qdrant vector DB** and open a cluster by clicking its name.
+
+![Cluster detail view](/images/docs/everywhere-ai/user/qdrant/manage-qdrant-cluster/qdrant-detail-view.png)
+
+## Edit cluster settings
+
+Each replica's compute and storage can be changed after creation. Storage can only be increased, while the flavor can be replaced with a different CPU and RAM configuration — applying a new flavor triggers a rolling update across all replicas.
+
+To change either setting, click **Edit** next to it on the cluster detail page. External access can also be changed independently by enabling or disabling **Expose cluster**.
+
+## Resize replicas
+
+Changing the flavor or storage modifies the resources available to each replica. To change the number of replicas instead, use **Resize**.
+
+Click **Resize** on the cluster detail page, set the new replica count, and click **Resize** again to confirm.
+
+![Resize cluster modal](/images/docs/everywhere-ai/user/qdrant/manage-qdrant-cluster/qdrant-resize-modal.png)
+
+When reducing the replica count, Qdrant redistributes the data across the remaining replicas through a rolling update. Temporary performance degradation may occur during this process.
+
+## Connect to the cluster
+
+The cluster must be in **Ready** status before connecting.
+
+| Access method | Endpoint to use |
+|---|---|
+| Internal network | Copy the `.svc` endpoint from the cluster detail page: `http://qdr-<cluster-name>.<project-name>.svc:6333` |
+| Public access | Enable **Expose cluster** — the public endpoint appears on the cluster detail page once active. |
+| Local access | Run `kubectl port-forward svc/qdr-<cluster-name> 6333:6333` — use `http://localhost:6333` as the endpoint. |
+
+### Python client
+
+Once the endpoint is reachable, verify the connection with the Qdrant Python client.
+
+Install the client:
+
+```bash
+pip install qdrant-client
+```
+
+Connect and verify (replace `QDRANT_URL` with the endpoint for your chosen access method):
+
+```python
+from qdrant_client import QdrantClient
+
+client = QdrantClient(url="QDRANT_URL")
+print(client.get_collections())
+```
+
+A successful response confirms the cluster is reachable.
+
+## Delete a cluster
+
+Deleting a cluster permanently removes all collections, vectors, and indexes. Export any data that must be preserved before continuing.
+
+
+<Warning>
+Deletion is immediate and irreversible.
+</Warning>
+
+
+On the cluster detail page, click **Delete**, type `Delete` in the confirmation field, and confirm. The cluster can also be deleted from the list view via the context menu.
+
+![Delete cluster confirmation dialog](/images/docs/everywhere-ai/user/qdrant/manage-qdrant-cluster/qdrant-delete-modal-content.png)

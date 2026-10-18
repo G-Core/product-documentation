@@ -1,0 +1,178 @@
+---
+title: "Configure the autoinstaller"
+description: "Configuration reference for box-installer. Covers config.yaml structure, secrets file, cluster settings, DNS provider, addons, node"
+---
+
+The installer reads deployment parameters from `config.yaml`. This article covers the main configuration options. For the installation procedure itself, see [Install Everywhere AI](/everywhere-ai/admin/autoinstaller/install-box).
+
+## Configuration file
+
+Pass the config file path with `--config`:
+
+```bash
+box-installer --config path/to/config.yaml install <command>
+```
+
+Paths in the config file (such as `secrets:` and `clusters[].kubeconfig`) resolve against the current working directory, not the location of `config.yaml`. Run `box-installer` from the directory where those paths make sense, or use absolute paths.
+
+## Naming considerations
+
+Keep cluster names and domain prefixes short. Long names combined with model deployment names can exceed Kubernetes label length limits (63 characters), causing deployment failures.
+
+
+<Warning>
+Cluster name and domain cannot be changed after bootstrap. The installer configures OpenID Connect authentication using these values, and subsequent changes require a full reinstallation.
+</Warning>
+
+
+## Global settings
+
+| Parameter | Description |
+|-----------|-------------|
+| `secrets` | Path to the secrets file (required) |
+| `boxStackRegistry` | Container registry host for box-stack images (required; must match a `registries[].host` entry in the secrets file) |
+| `defaultStorageClassName` | Default Kubernetes storage class (default: `standard`) |
+| `ingressClass` | Ingress class for routing (default: `envoy-gateway-core-caas`) |
+| `adminEmail` | Fallback admin email for all clusters (default: `admin@example.com`) |
+| `tmpdir` | Working directory for installer runs (default: `/tmp/box-installer`) |
+| `mirrorRegistry` | Airgap mirror registry host for all non-box-stack images. Setting this enables airgap mode for all clusters. |
+
+## Cluster settings
+
+Each entry under `clusters` describes one Kubernetes cluster:
+
+| Parameter | Description |
+|-----------|-------------|
+| `name` | Cluster identifier (permanent — wired into OIDC and Keycloak) |
+| `lead` | Set to `true` for the primary cluster (exactly one required) |
+| `kubeconfig` | Path to kubeconfig file with admin access |
+| `platform.domain` | Domain name for this cluster (required; must be unique) |
+| `boxStackRegistry` | Per-cluster override of the global registry |
+| `defaultStorageClassName` | Per-cluster override of the global storage class |
+| `admin.email` | Admin email for this cluster (defaults to global `adminEmail`) |
+
+## DNS provider (per-cluster)
+
+Configure `dnsProvider` on a cluster to enable automated TLS certificate issuance via DNS-01 challenge. This is required before running `install certs-acme`. Configure it before `install bootstrap`, or rerun bootstrap with `--force-rewrite-repo` after adding it.
+
+```yaml
+clusters:
+  - name: my-cluster
+    lead: true
+    kubeconfig: path/to/kubeconfig.yaml
+    platform:
+      domain: box.example.com
+    dnsProvider:
+      gcore:
+        tokenRef: prod-token
+```
+
+The `tokenRef` references a named token in the secrets file. Multiple clusters can share the same token, or each cluster can use a separate token. Currently only the Gcore DNS provider is supported.
+
+## Addons
+
+Optional components configured globally, with per-cluster overrides. Default state: `argocd`, `gitea`, and `localPathProvisioner` are enabled; `cilium` is disabled.
+
+`addons.cilium: false` means box-installer will not manage Cilium — it assumes Cilium is already installed on the cluster as an operator-managed prerequisite. Set to `true` to have box-installer install and manage Cilium.
+
+```yaml
+addons:
+  cilium: false
+  argocd: true
+  gitea:
+    enabled: true
+  localPathProvisioner: true
+  nfsExternalProvisioner:
+    server: "10.95.187.235"
+    path: "/shares/share-1"
+    storageClass: "nfs-client-regional"
+    labels:
+      inference.gcore.com/ready: "true"
+```
+
+
+<Warning>
+`nodelocaldns` is a per-cluster addon only — setting it globally is an error. Configure it under `clusters[].addons.nodelocaldns`, because the kube-dns ClusterIP differs per cluster:
+
+```yaml
+clusters:
+  - name: my-cluster
+    addons:
+      nodelocaldns:
+        kubeDnsServiceIP: "10.96.0.10"
+```
+</Warning>
+
+
+## Node scheduling
+
+Configure node selectors and tolerations for inference and VM workloads. Set globally here, or override per cluster:
+
+```yaml
+inferenceNodeSelector:
+  node-role.kubernetes.io/gpu: ""
+inferenceTolerations:
+  - key: node-role.kubernetes.io/gpu
+    effect: NoSchedule
+
+vmNodeSelector:
+  node-role.kubernetes.io/kubevirt: ""
+vmTolerations:
+  - key: node-role.kubernetes.io/kubevirt
+    effect: NoSchedule
+```
+
+## Feature gates
+
+Enable optional features. Feature gates are global — they apply to the entire installation, either on all clusters or none:
+
+```yaml
+featureGates:
+  virtualMachines:
+    enabled: false
+    scratchSpaceStorageClass: "ssd-hiiops"
+    network:
+      pubNetInterfaceName: "enp4s0"
+      pubNetNodes: ""
+      cidrBlock: ""
+      gateway: ""
+      excludeIps: []
+  hami:
+    enabled: false
+```
+
+`hami` enables vGPU sharing on GPU nodes (gates the hami and gpu-feature-discovery apps). `virtualMachines` enables KubeVirt support — see [Enable Virtual Machines](/everywhere-ai/admin/autoinstaller/enable-virtual-machines) for prerequisites and the full configuration reference.
+
+## Secrets file
+
+The secrets file contains sensitive credentials referenced by name from `config.yaml`. The path is set by the top-level `secrets:` field.
+
+```yaml
+registries:
+  - host: registry.example.com
+    username: "registry-user"
+    password: "your-registry-password"
+
+gcore:
+  tokens:
+    - name: prod-token
+      apiToken: "your-gcore-api-token"
+    - name: edge-token
+      apiToken: "another-api-token"
+
+s3:
+  credentials:
+    - name: prod-s3
+      accessKey: "AKIAEXAMPLE12345678"
+      secretKey: "your-secret-key"
+```
+
+| Block | Required when |
+|-------|---------------|
+| `registries` | Always (min 1 entry; must match `boxStackRegistry`) |
+| `gcore.tokens` | Any cluster uses `dnsProvider.gcore`, `inferenceDns.gcore`, or `cdn.gcore` |
+| `s3.credentials` | S3-backed Harbor or Postgres is enabled |
+
+Token and credential names are independent of cluster names. Multiple clusters can reference the same entry, or each cluster can use a dedicated one.
+
+The `inferenceDns`, `cdn`, and S3 consumer blocks (`Harbor`, `Postgres`) are advanced features whose configuration parameters are not covered in this article. Contact Gcore support for their configuration.
