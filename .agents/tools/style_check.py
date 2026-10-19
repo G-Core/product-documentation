@@ -169,6 +169,30 @@ def check_em_dash(lines: list[tuple[int, str]]) -> list[Violation]:
     return violations
 
 
+def check_bullet_label_dash(lines: list[tuple[int, str]]) -> list[Violation]:
+    """Flag a bullet that names a term and then describes it with a dash.
+
+    Style guide, "Bold labels in bullets": use a colon. Link-list glosses
+    ("- [Name](/path) — description") are a different pattern and stay dashes.
+    """
+    violations: list[Violation] = []
+    pattern = re.compile(
+        r"^\s*[-*+]\s+"
+        r"(?!\[[^\]]+\]\([^)]+\))"
+        r"(?:\*\*[^*]+\*\*|`[^`]+`|\w[\w .+/()-]{0,40}?)"
+        r"\s+[—–]\s+\S"
+    )
+    for lineno, text in lines:
+        if pattern.search(text):
+            violations.append(Violation(
+                line=lineno,
+                rule="Bullet label punctuation",
+                detail="Bullet names a term and then uses a dash. Use a colon: '- **Term**: description'",
+                text=text.strip(),
+            ))
+    return violations
+
+
 def check_link_text(lines: list[tuple[int, str]]) -> list[Violation]:
     violations: list[Violation] = []
     link_pattern = re.compile(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)")
@@ -337,11 +361,24 @@ def check_opening_heading(raw_lines: list[str]) -> list[Violation]:
             continue
         if stripped == "":
             continue
+        if stripped.startswith("import ") or stripped.startswith("<"):
+            continue
         if stripped.startswith("##"):
             violations.append(Violation(
                 line=i,
                 rule="Opening heading",
                 detail="Article body opens with a heading — add an intro paragraph before the first ## heading",
+                text=raw.strip(),
+            ))
+        elif re.match(
+            r"^The\s+\S+(?:\s+\S+){0,8}\s+(monitors|provides|enables|supports)\b",
+            stripped,
+            re.IGNORECASE,
+        ):
+            violations.append(Violation(
+                line=i,
+                rule="Intro opens on the component",
+                detail="Intro starts with the component and a capability verb (monitors, provides, enables, supports). State what the reader can do. Do not open with a command. See intro-writing.md",
                 text=raw.strip(),
             ))
         break
@@ -501,6 +538,7 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
 
 CHECKERS = [
     check_you_your, check_forbidden_words, check_uk_spelling, check_em_dash,
+    check_bullet_label_dash,
     check_link_text, check_meta_preamble, check_numbers, check_alt_text,
 ]
 

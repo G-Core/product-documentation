@@ -41,4 +41,30 @@
 - 2026-10-17 — Developer Tools articles — Developer Tools — Skip — Aligned contradictory statements across the existing guides. No product behavior changed.
 - 2026-10-17 — Terraform get-started and variables articles — Developer Tools — Skip — Corrected a mid-sentence capital and removed an announcement word. No product behavior changed.
 - 2026-10-17 — docs.json Developer Tools tab — Developer Tools — Skip — REST API, SDKs, MCP Server, and Terraform are sibling sections. No product behavior changed.
+- 2026-10-19 — Grafana plugin install page and statistics articles — CDN, WAAP, Developer Tools — Skip — Installation steps moved to Developer Tools. Query fields stayed in the existing statistics articles. No product behavior changed.
+- 2026-10-19 — `developer-tools/grafana/install-the-grafana-plugin.mdx` — Developer Tools — Skip — Dropped a passed deprecation date and clarified the data source URL and panel link. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` — CDN — Skip — The statistics article now covers CDN only and includes a chart of the existing Grafana query. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` wording — CDN — Skip — Clarified the Bandwidth unit, two sentences, and the Grafana 13 variable steps. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` — WAAP — Skip — The statistics article now matches the Grafana 13 panel editor and includes a chart of the existing WAAP query. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana CDN steps and Developer Tools links — CDN, WAAP, Developer Tools — Skip — Dashboard steps and the links to query articles now match the existing pages. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` description — WAAP — Skip — The summary now says the panels are account totals. No product behavior changed.
+- 2026-10-19 — DOC-1120, `fastedge/grafana/view-fastedge-statistics-in-grafana.mdx` — FastEdge — Skip — New page for the existing FastEdge duration query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, FastEdge Step (s) wording — FastEdge — Skip — The sentence now says 60 is the default sampling interval. No product behavior changed.
+- 2026-10-19 — DOC-1120, `dns/grafana/view-dns-statistics-in-grafana.mdx` — DNS — Skip — New page for the existing DNS request query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, DNS record type wording — DNS — Skip — The ALL value is described as requests for all record types. No product behavior changed.
+- 2026-10-19 — DOC-1120, WAAP Grafana navigation — WAAP — Skip — The existing statistics page is now in a Grafana sidebar group, and the overview links to it. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro — Developer Tools — Skip — The intro now states the monitoring task before the Grafana version and API token. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana install field bullets — Developer Tools — Skip — Field bullets use a colon after the label. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro task — Developer Tools — Skip — The intro now starts with the reader's task. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro voice — Developer Tools — Skip — The intro states what the reader can do with the plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana dashboard steps — CDN, WAAP, FastEdge, DNS — Skip — The steps now name the plus button, Add drawer, and Edit visualization that are on the Grafana screen, and include screenshots. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana saved dashboard screenshots — CDN, WAAP, FastEdge, DNS — Skip — Each statistics article now shows the saved dashboard after the panel steps. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana navigation position — CDN, WAAP, FastEdge, DNS — Skip — The Grafana group is the last item in each product sidebar. No product behavior changed.
+- 2026-10-19 — DOC-1120, `developer-tools/grafana/create-an-alert-rule.mdx` — Developer Tools — Skip — The page documents the existing Grafana alert-rule form for the Gcore data source. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule structure — Developer Tools — Skip — The alert-rule page now leads with the notification task, limits several series to CDN grouping, and adds one CDN request example. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule style pass — Developer Tools — Skip — Wording and step shape now follow the style guide. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule example accuracy — Developer Tools — Skip — The intro separates rule state from notification delivery, and the CDN example now matches hourly request counts. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana statistics intros — CDN, DNS, FastEdge, WAAP — Skip — Removed the sentence that announced which Service the steps select. No product behavior changed.
+- 2026-10-19 — DOC-1120, CDN Grafana metric table — CDN — Skip — Long metric identifiers no longer wrap mid-word. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert links — CDN, DNS, FastEdge, WAAP, Developer Tools — Skip — Alert-rule links now sit in the query description instead of a sentence that only points to another page. No product behavior changed.
 
