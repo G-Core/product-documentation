@@ -42,4 +42,6 @@
 - 2026-10-17 — Terraform get-started and variables articles — Developer Tools — Skip — Corrected a mid-sentence capital and removed an announcement word. No product behavior changed.
 - 2026-10-17 — docs.json Developer Tools tab — Developer Tools — Skip — REST API, SDKs, MCP Server, and Terraform are sibling sections. No product behavior changed.
 - 2026-10-18 — `everywhere-ai.mdx`, docs.json tab — Everywhere AI — Skip — Navigation stubs for a future public section. No product behavior changed.
+- 2026-10-18 — `edge-ai.mdx`, `edge-ai/getting-started.mdx` — Edge AI — Skip — Moved CloudStack and Everywhere AI next to the section introduction and folded the train-or-serve choice into Overview. No product behavior changed.
+- 2026-10-18 — Box user and admin articles (English and French) — Everywhere AI — Skip — Style-guide wording and opening headings only. No product behavior changed.
 

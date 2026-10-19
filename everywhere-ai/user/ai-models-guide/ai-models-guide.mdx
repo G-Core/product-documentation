@@ -3,7 +3,7 @@ title: "AI Models Guide"
 description: "Review Everywhere AI catalog models, choose a serving topology, and read container monitoring after the instance is active."
 ---
 
-Everywhere AI provides access to pre-configured AI models from leading providers. Deploying a catalog model creates an inference instance with an HTTP endpoint.
+A catalog model includes its container, runtime, and weights. Deploying one creates an inference instance with an HTTPS endpoint.
 
 ## Model categories
 
@@ -43,7 +43,7 @@ Use the model category that matches the task and its required input and output. 
 | Semantic search | Text Embedding | BGE-M3, Qwen3-Embedding | GPU |
 | Search document images | Embedding | ColPali, Nemotron ColEmbed | GPU |
 | Rerank search results | Reranker | BGE-Reranker | GPU |
-| Analyze images | Text + Image LLM | `Gemma 4`, Qwen3-VL | GPU |
+| Analyze images | Text + Image LLM | Gemma 4, Qwen3-VL | GPU |
 | Moderate content | Safety model | gpt-oss-safeguard, Qwen3Guard | CPU/GPU |
 
 ## Deployment
@@ -58,7 +58,7 @@ Open the model card and click **Deploy Application**. The form offers only the s
 https://{instance-name}-{region}-{project}.{region}.caas.{cluster-domain}/
 ```
 
-Once the instance is running, **Monitoring** charts CPU, memory, GPU utilization, and GPU memory for its containers. A deployment whose engine is vLLM or SGLang also shows engine-specific metrics. **Logs** records a **Source** on each line for a router, a prefill worker, or a decode worker. Scaling, keys, and these views are covered in [Manage&nbsp;inference&nbsp;instances](/everywhere-ai/user/inference-instances/manage-inference-instances).
+Once the instance is running, **Monitoring** charts CPU, memory, GPU utilization, and GPU memory for its containers. A deployment whose engine is vLLM or SGLang also shows engine-specific metrics. **Logs** sets **Source** from the pod role. A Dynamo deployment uses `router`, `prefill`, or `decode`. A MultiNode deployment uses `leader` or `worker`. A standard Deployment leaves **Source** empty. Scaling, keys, and these views are covered in [Manage&nbsp;inference&nbsp;instances](/everywhere-ai/user/inference-instances/manage-inference-instances).
 
 ## API request formats
 
@@ -71,7 +71,7 @@ The examples include the `Authorization` header. Remove that line when no API ke
 Text models accept requests at the `/v1/chat/completions` endpoint. Set `model` to the application name shown on the endpoint row.
 
 ```bash
-curl -X POST "https://your-endpoint/v1/chat/completions" \
+curl -X POST "https://<endpoint-url>/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <API_KEY>" \
   -d '{
@@ -104,7 +104,7 @@ Response:
 Stable Diffusion and FLUX models accept requests at the `/v1/images/generations` endpoint:
 
 ```bash
-curl -X POST "https://your-endpoint/v1/images/generations" \
+curl -X POST "https://<endpoint-url>/v1/images/generations" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <API_KEY>" \
   -d '{
@@ -121,7 +121,7 @@ Response contains a base64-encoded image or URL.
 Whisper models transcribe audio at the `/v1/audio/transcriptions` endpoint. `model` is the name shown on the endpoint row, Whisper large-v3 or Whisper large-v3-turbo.
 
 ```bash
-curl -X POST "https://your-endpoint/v1/audio/transcriptions" \
+curl -X POST "https://<endpoint-url>/v1/audio/transcriptions" \
   -H "Authorization: Bearer <API_KEY>" \
   -F "file=@audio.mp3" \
   -F "model=<application-name>"
@@ -130,7 +130,7 @@ curl -X POST "https://your-endpoint/v1/audio/transcriptions" \
 Response:
 ```json
 {
-  "text": "Hello, this is the transcribed text from your audio file."
+  "text": "Hello, this is the transcribed text from the audio file."
 }
 ```
 
@@ -139,7 +139,7 @@ Response:
 TTS models generate audio at the `/v1/audio/speech` endpoint:
 
 ```bash
-curl -X POST "https://your-endpoint/v1/audio/speech" \
+curl -X POST "https://<endpoint-url>/v1/audio/speech" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <API_KEY>" \
   -d '{
@@ -154,12 +154,12 @@ curl -X POST "https://your-endpoint/v1/audio/speech" \
 Embedding models return vectors at the `/v1/embeddings` endpoint:
 
 ```bash
-curl -X POST "https://your-endpoint/v1/embeddings" \
+curl -X POST "https://<endpoint-url>/v1/embeddings" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <API_KEY>" \
   -d '{
     "input": "The quick brown fox jumps over the lazy dog.",
-    "model": "default"
+    "model": "<application-name>"
   }'
 ```
 
@@ -177,10 +177,10 @@ Response:
 
 ### Multimodal (Text + Image)
 
-For `Gemma 4` or Qwen3-VL, include images in the messages:
+For Gemma 4 or Qwen3-VL, include images in the messages:
 
 ```bash
-curl -X POST "https://your-endpoint/v1/chat/completions" \
+curl -X POST "https://<endpoint-url>/v1/chat/completions" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <API_KEY>" \
   -d '{
@@ -211,8 +211,8 @@ A [JupyterLab](/everywhere-ai/user/jupyterlab/create-jupyterlab-instance) instan
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://your-endpoint/v1",
-    api_key="your-api-key"
+    base_url="https://<endpoint-url>/v1",
+    api_key="<API_KEY>"
 )
 
 response = client.chat.completions.create(
