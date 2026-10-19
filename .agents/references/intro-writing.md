@@ -30,6 +30,8 @@ Those belong in the body of the section, not in the intro.
 - "In this section you will learn..."
 - "The following steps will walk you through..."
 - Any sentence that starts with "This" and describes the article itself
+- An opening sentence that names the component and then a capability verb: "The X plugin monitors...", "The X resource provides...", "The X feature enables...", "The X service supports...". That sentence describes the product.
+- An opening that orders the reader: "Use...", "Create...", "Visualize...", "Add...", "Confirm...". State what the reader can do. Do not issue a command.
 
 **Links:** Insert organically where they add value. Not every intro needs links. When links are relevant, choose from:
 - [Gcore Terraform provider v2](/developer-tools/terraform/overview) — link the provider when the reader may need setup context
