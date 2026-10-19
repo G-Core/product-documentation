@@ -41,4 +41,16 @@
 - 2026-10-17 — Developer Tools articles — Developer Tools — Skip — Aligned contradictory statements across the existing guides. No product behavior changed.
 - 2026-10-17 — Terraform get-started and variables articles — Developer Tools — Skip — Corrected a mid-sentence capital and removed an announcement word. No product behavior changed.
 - 2026-10-17 — docs.json Developer Tools tab — Developer Tools — Skip — REST API, SDKs, MCP Server, and Terraform are sibling sections. No product behavior changed.
+- 2026-10-19 — Grafana plugin install page and statistics articles — CDN, WAAP, Developer Tools — Skip — Installation steps moved to Developer Tools. Query fields stayed in the existing statistics articles. No product behavior changed.
+- 2026-10-19 — `developer-tools/grafana/install-the-grafana-plugin.mdx` — Developer Tools — Skip — Dropped a passed deprecation date and clarified the data source URL and panel link. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` — CDN — Skip — The statistics article now covers CDN only and includes a chart of the existing Grafana query. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` wording — CDN — Skip — Clarified the Bandwidth unit, two sentences, and the Grafana 13 variable steps. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` — WAAP — Skip — The statistics article now matches the Grafana 13 panel editor and includes a chart of the existing WAAP query. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana CDN steps and Developer Tools links — CDN, WAAP, Developer Tools — Skip — Dashboard steps and the links to query articles now match the existing pages. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` description — WAAP — Skip — The summary now says the panels are account totals. No product behavior changed.
+- 2026-10-19 — DOC-1120, `fastedge/grafana/view-fastedge-statistics-in-grafana.mdx` — FastEdge — Skip — New page for the existing FastEdge duration query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, FastEdge Step (s) wording — FastEdge — Skip — The sentence now says 60 is the default sampling interval. No product behavior changed.
+- 2026-10-19 — DOC-1120, `dns/grafana/view-dns-statistics-in-grafana.mdx` — DNS — Skip — New page for the existing DNS request query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, DNS record type wording — DNS — Skip — The ALL value is described as requests for all record types. No product behavior changed.
+- 2026-10-19 — DOC-1120, WAAP Grafana navigation — WAAP — Skip — The existing statistics page is now in a Grafana sidebar group, and the overview links to it. No product behavior changed.
 
