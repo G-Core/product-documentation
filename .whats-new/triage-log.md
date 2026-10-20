@@ -67,6 +67,8 @@
 - 2026-10-19 — DOC-1120, Grafana statistics intros — CDN, DNS, FastEdge, WAAP — Skip — Removed the sentence that announced which Service the steps select. No product behavior changed.
 - 2026-10-19 — DOC-1120, CDN Grafana metric table — CDN — Skip — Long metric identifiers no longer wrap mid-word. No product behavior changed.
 - 2026-10-19 — DOC-1120, Grafana alert links — CDN, DNS, FastEdge, WAAP, Developer Tools — Skip — Alert-rule links now sit in the query description instead of a sentence that only points to another page. No product behavior changed.
+- 2026-10-20 — DOC-2808, `account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance.mdx` — Account Settings — Skip — The Status Page article now matches the existing subscription screens. No product behavior changed.
+- 2026-10-20 — DOC-2808, Status Page title and subscription wording — Account Settings — Skip — Editorial wording only. No product behavior changed.
 - 2026-10-20 — DOC-2050, `account-settings/billing/data-deletion.mdx` — Account settings — Skip — Wording pass on deletion timelines already configured. No product behavior changed.
 - 2026-10-20 — DOC-2050, `cloud/billing.mdx` — Cloud — Skip — Removed duplicated deletion periods and left the link to Data deletion. No product behavior changed.
 - 2026-10-20 — DOC-2050, `cloud/billing.mdx` editorial pass — Cloud — Skip — Wording and section structure only. No product behavior changed.
