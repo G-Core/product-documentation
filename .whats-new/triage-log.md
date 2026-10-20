@@ -72,4 +72,14 @@
 - 2026-10-20 — DOC-2050, `account-settings/billing/data-deletion.mdx` — Account settings — Skip — Wording pass on deletion timelines already configured. No product behavior changed.
 - 2026-10-20 — DOC-2050, `cloud/billing.mdx` — Cloud — Skip — Removed duplicated deletion periods and left the link to Data deletion. No product behavior changed.
 - 2026-10-20 — DOC-2050, `cloud/billing.mdx` editorial pass — Cloud — Skip — Wording and section structure only. No product behavior changed.
+- 2026-10-20 — account-settings.mdx landing — Account settings — Skip — Navigation landing only. No product behavior changed.
+- 2026-10-20 — account-settings.mdx intro — Account settings — Skip — Intro now explains the Customer Portal before the account settings cards. No product behavior changed.
+- 2026-10-20 — account-settings.mdx title — Account settings — Skip — Page title and sidebar label are Overview. No product behavior changed.
+- 2026-10-20 — account-settings.mdx intro — Account settings — Skip — Intro wording only. No product behavior changed.
+- 2026-10-20 — account-settings.mdx overview — Account settings — Skip — Landing now separates a login from the account. No product behavior changed.
+- 2026-10-20 — account-settings.mdx order — Account settings — Skip — Profile menu screenshot moved above the section cards. No product behavior changed.
+- 2026-10-20 — account-settings.mdx order — Account settings — Skip — How to open Profile now comes before the sentence that names My profile. No product behavior changed.
+- 2026-10-20 — account-settings.mdx intro — Account settings — Skip — Opening now states what account settings are for before the login and account difference. No product behavior changed.
+- 2026-10-20 — account-settings.mdx screenshot caption — Account settings — Skip — A paragraph after the Profile menu screenshot explains personal and account settings. No product behavior changed.
+- 2026-10-20 — account-settings.mdx cards — Account settings — Skip — Section cards now explain how the areas differ. No product behavior changed.
 
