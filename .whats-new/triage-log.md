@@ -68,4 +68,5 @@
 - 2026-10-19 — DOC-1120, CDN Grafana metric table — CDN — Skip — Long metric identifiers no longer wrap mid-word. No product behavior changed.
 - 2026-10-19 — DOC-1120, Grafana alert links — CDN, DNS, FastEdge, WAAP, Developer Tools — Skip — Alert-rule links now sit in the query description instead of a sentence that only points to another page. No product behavior changed.
 - 2026-10-20 — DOC-2808, `account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance.mdx` — Account Settings — Skip — The Status Page article now matches the existing subscription screens. No product behavior changed.
+- 2026-10-20 — DOC-2808, Status Page title and subscription wording — Account Settings — Skip — Editorial wording only. No product behavior changed.
 
