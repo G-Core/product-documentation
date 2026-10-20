@@ -1,0 +1,45 @@
+---
+description: Enforce correct git branch naming - three allowed formats, created with the helper script
+alwaysApply: true
+---
+
+# Git branch naming - HARD RULE
+
+## Three allowed formats
+
+| Work comes from | Branch name | Example |
+|---|---|---|
+| A Jira ticket (the default) | The ticket key only: `DOC-XXXX`, uppercase, no prefix, no suffix, no slug | `DOC-2405` |
+| A GitHub issue | `issue/{number}-{short-slug}`, slug of 2-4 lowercase words with hyphens | `issue/1845-fastedge-log-field` |
+| A contributor draft | `feature-draft/{name}`, a ticket key or a short slug | `feature-draft/DOC-2405` |
+
+```
+WRONG:   doc-2405-account-overview-regression
+WRONG:   DOC-2405-fix-images
+WRONG:   feature/DOC-2405-something
+WRONG:   update/some-article
+```
+
+For Jira-ticket work the branch is named exactly as the ticket key, nothing else.
+
+## Creating a branch - use the helper script
+
+NEVER run `git checkout -b` manually.
+ALWAYS use the helper script from the repository root:
+
+```powershell
+.\.agents\tools\create_branch.ps1 DOC-XXXX
+.\.agents\tools\create_branch.ps1 issue/1845-fastedge-log-field
+.\.agents\tools\create_branch.ps1 feature-draft/DOC-XXXX
+```
+
+The script validates the name against the three formats, checks out main, pulls, and creates the branch.
+If a skill already created the branch for the current work, stay on it.
+
+## Commit before leaving the branch
+
+The helper checks out `main`. If the current branch is not `main` and it has uncommitted changes, commit them on that branch before running the helper. Stage files by name. Message: `[Product] Short description`.
+
+Never `git stash` to make the switch succeed. The work must show up in `git log` on that branch. The helper refuses to run when the current branch is dirty.
+
+Push and a PR still require an explicit user request.

@@ -44,7 +44,7 @@ All methods live in one MDX file — never create separate files per method.
 ---
 title: Create a Virtual Machine
 sidebarTitle: Create an instance
-ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Customer Portal by configuring image, flavor, volumes, network, and firewall, or via REST API using the Instances API.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, network, and firewall.
 ---
 ```
 
@@ -54,7 +54,7 @@ ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Custo
 ---
 title: ...
 sidebarTitle: ...
-ai-navigation: ...
+description: ...
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -76,7 +76,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 ### Portal section rules
 
 - Opening sentence inside `<MethodSection>` — what the user will accomplish
-- Numbered steps using `1.` (not `1\.`) — see mdx-rules.md
+- Numbered steps wrapped in `<p>` (`<p>1. text</p>`), or `<Steps>` when the steps are large — see procedures.md, "Choosing the format", and mdx-rules.md
 - Prose paragraphs between steps wrapped in `<p>` tags
 - Screenshots in `<Frame>` blocks after the relevant step
 - Bold for UI element names: Click **Create Instance**, In the **Name** field
@@ -92,7 +92,7 @@ Use when steps must be executed in order and outputs feed into later steps.
 {One intro sentence: what this section enables — not "The steps below..."}
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](...) and a [region ID](...).
 </Info>
 
@@ -229,7 +229,7 @@ No Customer Portal steps — no MethodSwitch component.
 ---
 title: Deploy a Linux VM via API
 sidebarTitle: Deploy a VM
-ai-navigation: Deploy a Linux Virtual Machine using the Gcore Cloud REST API — create SSH keys, select a flavor and image, create the instance, and assign a floating IP address.
+description: Deploy a Linux Virtual Machine in Gcore Cloud with an image, flavor, SSH key, and floating IP.
 ---
 ```
 
@@ -243,11 +243,11 @@ ai-navigation: Deploy a Linux Virtual Machine using the Gcore Cloud REST API —
 {Opening sentence: what is built and why. No "This guide..."}
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](...) and a [region ID](...).
 </Info>
 
-Open a terminal and set these environment variables before running the examples:
+Open a terminal and set these environment variables before running the commands:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -361,7 +361,7 @@ links to the main articles. Usually the `index.mdx` or `overview.mdx` of a folde
 ---
 title: Virtual Machines
 sidebarTitle: Overview
-ai-navigation: Overview of Gcore Cloud Virtual Machines — create, manage, connect, and configure VM instances using the Customer Portal or REST API.
+description: Gcore Cloud Virtual Machines, from creating an instance to connecting and configuring it.
 ---
 
 {One paragraph: what this product is and what it enables. Value before mechanics.}
@@ -398,7 +398,7 @@ Not a step-by-step guide. No MethodSwitch.
 ---
 title: Load Balancer overview
 sidebarTitle: Overview
-ai-navigation: ...
+description: ...
 ---
 
 {One paragraph: what this thing is and what problem it solves.}
@@ -447,22 +447,18 @@ or
 ---
 title: {Scenario title — what the reader will have when done}
 sidebarTitle: {Short label}
-ai-navigation: {All products involved, the outcome.}
+description: {What the scenario produces, 140 characters maximum. No Portal, API, or Terraform.}
 ---
 
 {One paragraph: who this guide is for and what they will achieve.
-Mention all Gcore products involved.}
-
-## Prerequisites
-
-{Integrate as prose in the opening paragraph OR as a brief inline list.
-Never as a separate `## Prerequisites` section with bullets.}
+Mention all Gcore products involved. Put the requirements here as prose,
+never as a separate `## Prerequisites` section.}
 
 ## Step 1. {First major action}
 
-{Brief instructions — 3–5 sentences max. Then link to the source article for full details.}
-
-See [full instructions](/path/to/source-article) for the complete steps.
+{Brief instructions — 3–5 sentences max. Embed the link to the source article in a content
+sentence, for example: "Add an [origin group](/path/to/source-article) that points to the streaming origin."
+Never write a standalone "See ... for the complete steps" sentence.}
 
 ## Step 2. {Second major action}
 

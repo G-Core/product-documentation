@@ -1,7 +1,7 @@
 ---
 title: "Custom Rules"
 sidebarTitle: Custom Rules
-ai-navigation: Create and manage WAAP custom rules and actions via Customer Portal or REST API, including how Allow skips all security checks.
+description: Custom rules for Gcore WAAP define conditions and actions to allow, block, or challenge web requests, with rate limit and tag rules.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -24,6 +24,8 @@ You can create the following types of custom rules:
   * [Rate limit rules](/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules) allow you to set the limit for the number of requests allowed within a particular time range.
 
   * [Tag rules](/waap/waap-rules/custom-rules/tag-rules) contain tags, which are added to existing rules and function as identifiers for monitoring and analytics purposes. You can also create custom rules based on tags.
+
+  * [Policy&nbsp;overrides](/waap/waap-rules/policy-overrides) suppress a false-positive detection from a default rule for a defined traffic scope. The default rule stays active for all other traffic.
 
 ## Actions in Custom Rules
 
@@ -64,10 +66,11 @@ Each custom rule action applies to matched traffic as a whole. The **Allow** act
 | Header                 | Challenge requests based on a specified header.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Header exists          | Challenge requests depending on whether a specific header NAME is present in the request. For example, if a request doesn't include the `User-Agent` header name, then such request should be blocked or challenged.                                                                                                                                                                                                                                            |
 | HTTP method            | Challenge requests based on a specified HTTP method, such as GET, POST, and others.                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| File extension         | Challenge requests based on a specified file type, such as pdf, jpeg, jfif, and exe.                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| File extension         | Challenge requests based on a specified file type, such as pdf, jpeg, jfif, and exe.<br/>The condition reads the extension from the uploaded file name, while it does not evaluate the URL path.                                                                                                                                                                                                                                                                                                          |
 | Content type           | Challenge requests based on a specified content type, such as application/pdf.                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | Country                | Challenge requests based on the country associated with the requesting IP address. This challenge is based on public IP address databases.                                                                                                                                                                                                                                                                                                                                                               |
 | Organization           | Challenge requests based on the organization associated with the requesting IP address. This challenge is based on a public database that contains known ranges relating to organizations.                                                                                                                                                                                                                                                                                                             |
+| ASN                    | Challenge requests based on the autonomous system number of the requesting IP address. One or more numbers, separated by commas.                                                                                                                                                                                                                                                                                                                                          |
 | Owner types            | Challenge requests based on the category associated with a related IP range. For example, an IP range can be categorized as Commercial, CDN, or related to Hosting services.                                                                                                                                                                                                                                                                                                                           |
 | Session request count  | Challenge requests based on the number of requests made within a session (per session ID).                                                                                                                                                                                                                                                                                                                                                                                                               |
 | Tag                    | Sanction requests based on specific pre-defined tags provided by Gcore. View the full list of tags, their API slugs, and their descriptions in our [dedicated guide](/waap/waap-rules/custom-rules/tag-rules/predefined-tags).                                                                                                                                                                                                                                                   |
@@ -301,7 +304,7 @@ All conditions support an optional `negation` boolean (default: `false`). Set `n
 
 ## Update a rule
 
-<p>Update any combination of a rule's name, description, enabled state, action, or conditions. Only fields included in the request body are changed. The API returns 204 with no body on success.</p>
+<p>Update any combination of a rule's name, description, enabled state, action, or conditions. Only fields included in the request body are changed. The API returns the updated rule on success.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -367,13 +370,13 @@ All conditions support an optional `negation` boolean (default: `false`). Set `n
       }'
     ```
 
-    The API returns 204 with no body on success.
+    The API returns the updated rule on success.
   </Tab>
 </Tabs>
 
 ## Enable and disable a rule
 
-<p>Switch a rule between active and inactive without deleting it. Disabling a rule stops it from matching requests while preserving its configuration for later reactivation. The API returns 204 with no body for both operations.</p>
+<p>Switch a rule between active and inactive without deleting it. Disabling a rule stops it from matching requests while preserving its configuration for later reactivation. The API returns the rule's new enabled state for both operations.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -440,7 +443,7 @@ All conditions support an optional `negation` boolean (default: `false`). Set `n
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
 
-    Both calls return 204 with no body on success.
+    Both calls return the rule's new enabled state.
   </Tab>
 </Tabs>
 

@@ -1,161 +1,182 @@
 ---
-title: "Configure a custom protection profile"
-ai-navigation: Configure custom DDoS protection profiles with rules and policies to match network traffic criteria and apply protocol-aware protections for gaming protocols including Minecraft, Counter-Strike 1.6, Counter-Strike GO, Counter-Strike 2, and Left 4 Dead 2.
+title: "Custom protection profile configuration"
+description: Create custom protection profiles with rules and policies for DDoS protection based on network traffic and security requirements.
 ---
-
-## Overview
 
 Custom protection profiles define rules and policies based on network traffic and security requirements.
 
-## Step 1. Open protection profiles
+## Protection profile access
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **DDoS Protection** \> **Protection profiles**.
-2. Review the list of available profiles:
-   - Default profiles
-   - Custom profiles
+<Steps>
+  <Step title="Open protection profiles">
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DDoS Protection** > **Settings** > **Protection profiles**.
+  </Step>
+  <Step title="Review profiles">
+    Review the list of profiles. Each row shows the profile name, assigned networks, and template.
 
-<Frame>
-  ![Protection profiles](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-1.png)
-</Frame>
+    <Frame>
+      ![Protection profiles](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-1.png)
+    </Frame>
+  </Step>
+</Steps>
 
-## Step 2. Create a protection profile
+## Profile creation
 
-1. Click **Add protection profile**.
-2. Select a template.\
-   Templates include preconfigured settings for common use cases.
-3. Enter a profile name.\
-   Use a clear and descriptive name for easier identification.
+<Steps>
+  <Step title="Add a protection profile">
+    Click **Add protection profile**.
+  </Step>
+  <Step title="Enter a profile name">
+    In **Name**, enter `my-profile-1`.
+  </Step>
+  <Step title="Select the Basic template">
+    In **Template**, select **Basic**. The template adds four catch-all rules: `tcp` with Default TCP, `udp` with Default UDP, `icmp` with Default ICMP, and `any` with Default Other.
 
-**Example:** `High-security web server profile`
+    <Frame>
+      ![Add protection profile form](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-2.png)
+    </Frame>
+  </Step>
+</Steps>
 
-<Frame>
-  ![Protection profiles](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-2.png)
-</Frame>
+## Rule and policy configuration
 
-## Step 3. Configure rules and policies
+A protection profile has two configuration areas on the same form. The **Rules** tab matches traffic and chooses a policy. The **Policy** tab sets the GEOIP block list, rate-limiter caps, and lockdown limits that some of those policies use.
 
-A protection profile includes two configuration areas:
+### Rules and policies
 
-- Rules
-- Policies
+Rules define traffic-matching criteria and apply a selected policy to matching traffic. The Basic template pre-populates four rules that match `tcp`, `udp`, `icmp`, and `any`. Add more rules to layer specific protections above these defaults. Policy names and what each policy does are in the [Policy&nbsp;reference](#policy-reference).
 
-<Frame>
-  ![Protection profiles rules and policies](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protection-profile-3.png)
-</Frame>
+<Frame>![How rules and policies work](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/how-rules-and-policies-work.png)</Frame>
 
-### Configure rules
+Once traffic is matched by a rule and processed by a policy, there are two possible outcomes: it is dropped or passed to the final destination. It is not evaluated by the rules again.
 
-Rules define traffic-matching criteria and apply a selected policy to matching traffic.
+#### Rule creation
 
-#### Policy reference
+Add a rule to match specific traffic and apply a policy to it.
 
-This table provides a consolidated reference of the available policies, including what each policy does.
+<Warning>
+Rules are evaluated from top to bottom, and the first matching rule is applied. Traffic that matches none of the rules is denied. The form labels this as an implicit deny-all at the end of the list. Place a specific rule above the matching catch-all rule, or the catch-all matches first and the specific rule never runs.
+</Warning>
 
-| Policy ID          | Policy Name                 | Description                                                                                                                                                                                                                    |
-| :----------------- | :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| minecraft          | Minecraft Protection        | Protocol-aware protection for Minecraft (Java and Bedrock) traffic with TCP and UDP support. Mitigates handshake/login floods, ping/status abuse, and volumetric attacks while allowing legitimate client connections.         |
-| counter-strike-16  | Counter-Strike 1.6          | Protocol-aware protection for Counter-Strike 1.6 (GoldSrc) traffic. Mitigates UDP floods, query abuse, and malformed packet patterns while allowing normal gameplay traffic.                                                   |
-| counter-strike-go  | Counter-Strike GO           | Protocol-aware protection for Counter-Strike: GO (Source) traffic. Mitigates A2S query floods, connection floods, and high-PPS UDP attacks while allowing legitimate players and server queries.                               |
-| counter-strike-2   | Counter-Strike 2            | Protocol-aware protection for Counter-Strike 2 traffic. Mitigates UDP floods, query abuse, and abnormal packet patterns while allowing normal gameplay sessions.                                                               |
-| left-4-dead-2      | Left 4 Dead 2               | Protocol-aware protection for Left 4 Dead 2 (Source) traffic. Mitigates A2S query floods and volumetric UDP attacks while allowing legitimate clients and server discovery.                                                    |
-| fivem-tcp          | FiveM TCP                   | Protocol-aware protection for FiveM TCP traffic. Mitigates connection floods and handshake abuse while allowing legitimate sessions to be established and maintained.                                                          |
-| fivem-udp          | FiveM UDP                   | Protocol-aware protection for FiveM UDP traffic. Mitigates high-PPS floods and abnormal packet patterns while allowing legitimate gameplay traffic.                                                                            |
-| samp               | San Andreas Multiplayer     | Protocol-aware protection for San Andreas Multiplayer (SA-MP) traffic. Mitigates connection floods, query abuse, and malformed UDP packets while allowing legitimate player connections.                                       |
-| rust               | Rust Game Protection        | Protocol-aware protection for Rust traffic. Mitigates UDP floods, connection spikes, and abnormal packet patterns while allowing legitimate gameplay traffic.                                                                  |
-| team-speak3        | TeamSpeak 3 Voice Chat      | Protocol-aware protection for TeamSpeak 3 traffic. Mitigates UDP floods and connection abuse while allowing stable voice sessions.                                                                                             |
-| rust-a2s           | Rust Game A2S Caching       | Protocol-aware protection for Rust Steam A2S queries. Enables query response caching to mitigate A2S flood patterns and reduce origin load.                                                                                    |
-| bf2-query          | Battlefield 2 Query Caching | Protocol-aware protection for Battlefield 2 server queries. Enables query response caching to mitigate server-browser query floods and reduce origin load.                                                                     |
-| bf2                | Battlefield 2 Game          | Protocol-aware protection for Battlefield 2 gameplay traffic. Mitigates UDP floods and malformed packet patterns while allowing legitimate sessions.                                                                           |
-| unity-unet         | Unity Engine UNET           | Protocol-aware protection for Unity UNET traffic. Mitigates malformed packets and high-PPS flood patterns while allowing legitimate game sessions.                                                                             |
-| unity-utp          | Unity Engine UTP            | Protocol-aware protection for Unity Transport Protocol (UTP) traffic. Mitigates UDP floods and abnormal packet patterns while allowing real-time traffic.                                                                      |
-| geo                | Geo Restriction             | Protocol-aware protection for geo-based access control rules. Enforces allow/deny decisions based on client location metadata. This policy must be configured in the **Policy** tab before use.                                |
-| ssh-server         | SSH Server                  | Protocol-aware protection for SSH traffic. Mitigates connection floods and abnormal connection patterns while allowing legitimate administrative access.                                                                       |
-| default-tcp        | Default TCP                 | Protection for generic TCP traffic with baseline destination limits (per IP address): 20k pps, 50 Mbps and policy caps (overall): 50k pps, 500 Mbps to mitigate common TCP flood attacks.                                      |
-| default-udp        | Default UDP                 | Protection for generic UDP traffic with baseline destination limits (per IP address): 5k pps, 5 Mbps and policy caps (overall): 50k pps, 50 Mbps to mitigate common UDP flood attacks.                                         |
-| default-icmp       | Default ICMP                | Protection for generic ICMP traffic with baseline destination limits (per IP address): 100 pps and policy caps (overall): 1k pps to mitigate common ICMP flood attacks.                                                        |
-| default-other      | Default Other               | Protection for generic traffic with baseline destination limits (per IP address): 200 pps and policy caps (overall): 1k pps to mitigate common flood attacks.                                                                  |
-| ratelimiter-low    | Rate Limiter Low            | Generic rate-limited traffic with a destination PPS limit up to 50k pps (default: 50k). Intended to limit packet rate during abnormal traffic spikes. This policy can be configured in the **Policy** tab before use.          |
-| ratelimiter-medium | Rate Limiter Medium         | Generic rate-limited traffic with a destination PPS limit from 50k to 150k pps (default: 150k). Intended to limit packet rate during abnormal traffic spikes. This policy can be configured in the **Policy** tab before use.  |
-| ratelimiter-high   | Rate Limiter High           | Generic rate-limited traffic with a destination PPS limit from 150k to 300k pps (default: 300k). Intended to limit packet rate during abnormal traffic spikes. This policy can be configured in the **Policy** tab before use. |
-| allowlist | Allow List | Add rule-based traffic matching to the allowlist. Any traffic that matches a rule will be allowed through without inspection. |
-| tcp-autodetect | TCP auto-detect | The TCP countermeasure operates in passive mode and is triggered only during a DDoS attack. |
-| tcp-server | TCP Countermeasure | The TCP countermeasure operates in always-on mode and actively performs a SYN-cookie challenge for all incoming TCP traffic. |
-| tcp-server-v2 | TCP Flow Track | An experimental countermeasure that tracks the full TCP session to provide smoother, more adaptive protection. Recommended when the SYN-cookie challenge does not work correctly for a specific application. |
-| tcp-private | TCP Ephemeral Ports Protection | Policy protects ephemeral (client source) TCP ports. |
+<Steps>
+  <Step title="Add a rule">
+    Click **Add rule**. The **Add ACL Rule** dialog opens.
+  </Step>
+  <Step title="Configure the rule">
+    **Policy** is required. Each match field accepts a list of values:
 
+    - **Protocol List**
+    - **Source IP List**
+    - **Destination IP List**
+    - **Source Port List**
+    - **Destination Port List**
 
-#### Add a rule
+    <Frame>
+      ![Add ACL Rule dialog](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-save-rule.png)
+    </Frame>
+  </Step>
+  <Step title="Set rule priority">
+    Drag a rule by the handle at the left of the row. The Basic catch-all rules match `tcp`, `udp`, `icmp`, and `any`, so a rule for specific traffic must sit above the matching catch-all rule.
+  </Step>
+  <Step title="Save the rule">
+    Click **Save**.
+  </Step>
+</Steps>
 
-1. Click **Add rule**.
-2. Complete the required fields:
-   - **Protocol**: Select the protocol (for example, TCP, UDP, ICMP).
-   - **Source IP**: Enter a source IP address or range.
-   - **Destination IP**: Enter a destination IP address or range.
-   - **Source port**: Enter a port number or range.
-   - **Destination port**: Enter a port number or range.
-   - **Policy**: Select the policy to apply (for example, `tcp-server`).
+A profile can contain multiple rules.
 
-Rules are processed from top to bottom. The first matching rule is applied.
+Match `tcp` on destination port `80` and apply **TCP SYN cookie challenge**.
 
-Traffic that does not match any rule is dropped.
+### Policy configuration
 
-To change the rule priority, drag the rule up or down.
+The **Policy** tab sets profile-level limits for the selected template. Limits on the rate-limiter fields are in thousand packets per second (kpps).
 
 <Frame>
-  ![Protection profiles rules order](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-rule-order.png)
+  ![Protection profile Policy tab](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-policy-1.png)
 </Frame>
 
-3. Click **Save**.
+For the Basic template, the **Policy** tab includes these fields:
 
-<Frame>
-  ![Protection profiles save rule](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-save-rule.png)
-</Frame>
+- **GEOIP list**: ISO country codes for the **Geo Restriction** policy. The field is a block list. Select the codes before adding a rule that uses **Geo Restriction**.
+- **Rate limiter low**: destination cap for **Rate Limiter Low**, from 1 to 50 kpps. Default: 50 kpps.
+- **Rate limiter medium**: destination cap for **Rate Limiter Medium**, from 50 to 150 kpps. Default: 150 kpps.
+- **Rate limiter high**: destination cap for **Rate Limiter High**, from 150 to 300 kpps. Default: 300 kpps.
+- **Rate limiter geo**: destination cap for **Geo Restriction**, from 1 to 300 kpps. Default: 300 kpps.
+- **Lockdown threshold**: range 1-300k. The control shows 10, and the helper text states the default as 10k.
+- **Lockdown destination limiter**: lockdown rate limiter, range 1-300k. The control shows 10, and the helper text states the default as 10k.
 
-Multiple rules can be added to a protection profile.
+Set the GEOIP list and rate-limiter thresholds on the **Policy** tab before selecting **Geo Restriction** or a rate-limiter policy in a rule.
 
-**Example**\
-Match TCP traffic on destination port `80` (HTTP) and apply a whitelist policy.
+To forward trusted traffic without inspection, add a rule on the **Rules** tab with **Allow List** applied to the trusted source addresses.
 
-### Configure policies
+## Profile saving
 
-Policies define how matching traffic is handled.
+<Steps>
+  <Step title="Review the profile">
+    Review the configured rules and the **Policy** tab.
+  </Step>
+  <Step title="Save the profile">
+    Click **Add protection profile**.
+  </Step>
+</Steps>
 
-<Frame>
-  ![Protection profiles Policy](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-policy-1.png)
-</Frame>
+The new profile appears in the profile list from [Protection&nbsp;profile&nbsp;access](#protection-profile-access), with its template and name.
 
-Available policy settings depend on the selected template and profile type. Common options include:
+## Policy reference
 
-- Geo filtering
-- Whitelisting
-- Rate limiting
-- Traffic filtering
-- Anomaly detection thresholds
+Select a policy by the name shown in **Add ACL Rule**. Game policies inspect that game's protocol. Default and rate-limiter policies cap generic floods. TCP policies run handshake or session checks.
 
-<Frame>
-  ![Protection profiles Policy settings](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-policy-2.png)
-</Frame>
+UDP games that have no named policy in the list use **Default UDP**. The list also includes `udp-arma`, with no description on the form.
 
-#### Example: Configure a whitelist
+| Policy | Description |
+| --- | --- |
+| Drop | Drops all matching traffic |
+| Minecraft Protection | Minecraft Java and Bedrock: handshake, login, ping, and volumetric floods |
+| Unreal engine Protection | Unreal Engine traffic over UDP |
+| Garry's Mod Protection | UDP floods, query abuse, and abnormal packets |
+| Nova-Life Game Protection | Nova-Life UDP traffic |
+| Counter-Strike 1.6 | GoldSrc: UDP floods, query abuse, and malformed packets |
+| Counter-Strike Go | Source engine: A2S query floods, connection floods, and high packet rates |
+| Counter-Strike 2 | UDP floods, query abuse, and abnormal packets |
+| FiveM TCP | TCP connection and handshake floods |
+| FiveM TCP 2 | FiveM TCP. TCP protection turns on during an attack and turns off when the attack ends |
+| FiveM UDP | High packet rates and abnormal packets |
+| San-Andreas Multiplayer | Connection floods, query abuse, and malformed UDP |
+| Rust Game Protection | UDP floods, connection spikes, and abnormal packets |
+| Teamspeak 3 Voice Chat | UDP floods and connection abuse on voice sessions |
+| Rust Game A2S Caching | Caches Rust Steam A2S query responses |
+| Steam Query A2S Caching | Caches Steam A2S query responses |
+| Battlefield 2 Query Caching | Caches Battlefield 2 server-browser query responses |
+| Battlefield 2 Game | UDP floods and malformed packets on gameplay traffic |
+| Unity Engine Unet | Malformed packets and high packet rates on Unity UNET |
+| Unity Engine UTP | UDP floods on Unity Transport Protocol (UTP) |
+| `udp-arma` | Shown in the list with no description |
+| Geo Restriction | Allow or deny by client location. Configure **GEOIP list** on the **Policy** tab first |
+| RageMP test policy | Test policy. The form states that it is not guaranteed to work |
+| RageMP TCP test policy | Test policy for RageMP TCP. The form states that it is not guaranteed to work |
+| SSH Server | SSH connection floods |
+| TCP auto-detect | Passive TCP countermeasure, triggered only during an attack |
+| TCP SYN cookie challenge | SYN cookie challenge for incoming TCP |
+| TCP Flow Track | Experimental full-session TCP tracking, for applications where the SYN cookie challenge does not fit |
+| TCP ephemeral ports Protection | Protects ephemeral client-source TCP ports |
+| `dns-trust` | Shown in the list with no description |
+| Allow List | Matching traffic is forwarded without inspection |
+| Rate Limiter Low | Destination cap from 1 to 50 kpps. Default: 50 kpps. Configure on the **Policy** tab first |
+| Rate Limiter Medium | Destination cap from 50 to 150 kpps. Default: 150 kpps. Configure on the **Policy** tab first |
+| Rate Limiter High | Destination cap from 150 to 300 kpps. Default: 300 kpps. Configure on the **Policy** tab first |
+| General UDP Countermeasure | Turns on when UDP traffic exceeds a threshold. Set the threshold to the maximum expected UDP traffic for the service |
+| Default TCP | Generic TCP. Per IP 20 kpps / 50 Mbps; overall 50 kpps / 500 Mbps |
+| Default UDP | Generic UDP. Per IP 5 kpps / 5 Mbps; overall 50 kpps / 50 Mbps |
+| Default ICMP | Generic ICMP. Per IP 100 pps; overall 1000 pps |
+| Default Other | Other protocols. Per IP 200 pps; overall 1000 pps |
 
-1. Add trusted IP addresses or ranges to the whitelist.
-2. Confirm that whitelisted traffic bypasses the required protection mechanisms.
+## Best practices
 
-Whitelisting is recommended for trusted partners and internal systems.
-
-## Save the profile
-
-1. Review the configured rules and policies.
-2. Click **Add protection profile**.
-
-<Frame>
-  ![Save the protection profile](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protection-profile-save.png)
-</Frame>
-
-## Best practices and next steps
+When building and maintaining protection profiles:
 
 - Start with simple rules and expand them as needed.
-- Test new profiles in a non-production environment first.
+- Apply a new profile to a non-critical network first. The [events&nbsp;log](/ddos-protection/events-log) shows the result before the profile is used on production prefixes.
 - Document rules and policies for future maintenance.
 - Review and update profiles regularly based on traffic patterns.
-- Next, [apply the custom profile to a protected network](/ddos-protection/onboarding-service/apply-a-custom-profile-to-a-protected-network)
+
+Once the profile is saved, continue with [applying&nbsp;the&nbsp;profile](/ddos-protection/onboarding-service/apply-a-custom-profile-to-a-protected-network) to a protected network.

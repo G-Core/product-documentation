@@ -1,12 +1,15 @@
 ---
 title: "Protect CDN resources with Gcore WAAP"
 sidebarTitle: "Gcore WAAP"
-ai-navigation: Enable WAAP (Web Application and API Protection) for CDN resources via the Customer Portal Security section to activate Layer 7 DDoS protection, web app security, and API protection; create CDN rules with WAAP exceptions to prevent blocking legitimate content by matching URLs or regex patterns.
+description: Enable Gcore WAAP for CDN resources to block malicious HTTP requests and create rules that turn protection off for specific URL paths.
 ---
 
-[Gcore Web Application and API Protection](/waap/overview) (WAAP) combines all aspects of website security and traffic management, including Layer 7 DDoS protection, web app security, and API protection.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-With built-in security rules, advanced behavioral analytics, and a range of available customization options, Gcore WAAP protects your domains against known vulnerabilities and common exploits.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>[Gcore Web Application and API Protection](/waap/overview) (WAAP) inspects HTTP traffic passing through a CDN resource and can block malicious requests before they reach the origin.</p>
 
 <Info>
 WAAP operates at the CDN resource level and protects all requests passing through the CDN, regardless of origin type. CDN resources that use Gcore Object Storage as the origin require WAAP to be explicitly enabled in resource settings.
@@ -14,48 +17,333 @@ WAAP operates at the CDN resource level and protects all requests passing throug
 
 ## Enable WAAP for a resource
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), navigate to **CDN** \> **CDN resources**.
+<p>1. In the [Gcore Customer Portal](https://portal.gcore.com/cdn/resources/list), navigate to **CDN** \> **CDN resources**.</p>
 
-2. Next to the resource that you want to protect with WAAP, click the three-dot icon and select **Settings**.
+<p>2. Next to the resource that you want to protect with WAAP, click the three-dot icon and select **Settings**.</p>
 
 <Frame>
   ![CDN resource three-dot menu showing management options](/images/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/cdn-resources-filter.png)
 </Frame>
 
-3. Scroll down the page and find the **Security** section.
+<p>3. Scroll down the page and find the **Security** section.</p>
 
-4. Enable the **WAAP** toggle to activate Web Application and API Protection for your CDN resource.
+<p>4. Enable the **WAAP** toggle to activate Web Application and API Protection for your CDN resource.</p>
 
 <Frame>
   ![Enable WAAP toggle in CDN resource creation form](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/enable-waap.png)
 </Frame>
 
-5. Click **Save** to apply the changes.
+<p>5. Click **Save** to apply the changes.</p>
 
-Consider that it might take up to 20 minutes for the HTTP traffic to start passing through our WAAP after the activation.
+<p>It can take up to 20 minutes for HTTP traffic to start passing through WAAP after activation.</p>
 
 ### What to do if WAAP blocks content that shouldn't be blocked?
 
-Instead of disabling WAAP protection for the whole resource, you can create a rule with an exception:
+<p>Instead of disabling WAAP protection for the whole resource, you can create a rule with an exception:</p>
 
-1. In the CDN resource settings, open the **Rules** tab.
+<p>1. In the CDN resource settings, open the **Rules** tab.</p>
 
-2. Click **Create rule** \> **Create blank rule**.
+<p>2. Click **Create rule** \> **Create blank rule**.</p>
 
-3. Give your rule a name.
+<p>3. Give your rule a name.</p>
 
-4. In the **Match criteria** section, specify the URLs or a regular expression of files blocked by WAAP.
+<p>4. In the **Match criteria** section, specify the URLs or a regular expression of files blocked by WAAP.</p>
 
-5. Set the origin pull protocol to **Inherit from resource**.
+<p>5. Set the origin pull protocol to **Inherit from resource**.</p>
 
 <Frame>
   ![Create rule form showing Rule name, Match criteria, and Options sections](/images/docs/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-waap/cdn-create-rule.png)
 </Frame>
 
-6. In the **Options** section, click **Add option**.
+<p>6. In the **Options** section, click **Add option**.</p>
 
-7. Find WAAP and then turn it off for the selected URL rule pattern.
+<p>7. Find WAAP and then turn it off for the selected URL rule pattern.</p>
 
-8. Click **Create rule**.
+<p>8. Click **Create rule**.</p>
 
-Your content should no longer be blocked by WAAP.
+<p>WAAP is disabled for requests that match the rule pattern.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>WAAP checks requests that pass through a Gcore CDN resource and can block attacks before they reach the origin. The switch is the `waap` option on the resource. A rule can turn that check off for one URL pattern.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Turn WAAP on
+
+<p>This call turns WAAP on for every request on the CDN resource. `enabled` and `value` are both required.</p>
+
+<p>The call sets both fields to true.</p>
+
+<p>A request that omits `value` returns HTTP 400. The JSON field is `waap`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"waap": {"enabled": True, "value": True}},
+    )
+    saved = updated.options.waap
+    print(saved.enabled, saved.value, updated.waap_domain_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Waap: cdn.CDNResourceUpdateParamsOptionsWaap{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := updated.Options.Waap
+        fmt.Println(saved.Enabled, saved.Value, updated.WaapDomainID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "waap": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>The resource response also includes `waap_domain_id`. A resource that uses Gcore Object Storage as the origin needs this call. HTTP traffic can take up to 20 minutes to start passing through WAAP.</p>
+
+## Turn WAAP off for one path
+
+<p>A rule turns WAAP off for paths that match `^/public/.*`. `ruleType` 0 is a regular expression and must start with `^/` or `/`.</p>
+
+<p>`enabled` true and `value` false turn WAAP off for that pattern. The resource setting stays on.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    rule = client.cdn.cdn_resources.rules.create(
+        resource_id,
+        name="waap-exception",
+        rule="^/public/.*",
+        rule_type=0,
+        options={"waap": {"enabled": True, "value": False}},
+    )
+    saved = rule.options.waap
+    print(rule.id, saved.enabled, saved.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
+            Name:     "waap-exception",
+            Rule:     "^/public/.*",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                Waap: cdn.CDNResourceRuleNewParamsOptionsWaap{
+                    Enabled: true,
+                    Value:   false,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        saved := rule.Options.Waap
+        fmt.Println(rule.ID, saved.Enabled, saved.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "waap-exception",
+        "rule": "^/public/.*",
+        "ruleType": 0,
+        "options": {
+          "waap": {
+            "enabled": true,
+            "value": false
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 201. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>WAAP checks requests that pass through a CDN resource and can block attacks before they reach the origin. Declare the check with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. The `waap` option requires `enabled` and `value`, and HTTP traffic can take up to 20 minutes to start passing through WAAP after the option is stored.</p>
+
+## Turn WAAP on
+
+<p>Set `enabled` and `value` to true so WAAP checks every request on the CDN resource, then run `terraform apply`. A resource that uses Gcore Object Storage as the origin needs this option. The resource stores `waap_domain_id`.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    waap = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+## Turn WAAP off for one path
+
+<p>A rule turns WAAP off for paths that match `^/public/.*` while the CDN resource stays on. `rule_type` 0 is a regular expression and must start with `^/` or `/`. `enabled` true and `value` false store the exception. Run `terraform apply`. WAAP is disabled for requests that match the rule pattern.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    waap = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "public" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "waap-exception"
+  rule        = "^/public/.*"
+  rule_type   = 0
+
+  options = {
+    waap = {
+      enabled = true
+      value   = false
+    }
+  }
+}
+```
+
+</MethodSection>
+</MethodSwitch>

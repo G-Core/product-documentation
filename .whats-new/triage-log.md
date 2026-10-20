@@ -1,0 +1,70 @@
+# What's new triage log
+
+- 2026-10-12 — PR 3158, `streaming.mdx` schema-fix bullet — Streaming — Include — Published under September 2026 with a Fixed badge. The developer asked to highlight the schema correction for generated SDKs.
+- 2026-10-12 — Demo players — Streaming — Include — Published under September 2026 with a New badge. DOC-2319 added the Demo page on 2026-09-22.
+- 2026-10-12 — Live frame rate — Streaming — Skip — The FAQ describes existing transcoding behavior. An article date is not a release date.
+- 2026-10-12 — Player SDK — Streaming — Skip — The entry described the SDK. It did not name a new capability.
+- 2026-10-12 — SRT and RTMP comparison — Streaming — Skip — A protocol comparison is reference material, not a product change.
+- 2026-10-12 — SCTE-35 marker notes, August and September 2026 — Streaming — Skip — The articles describe current marker behavior. They do not add a new capability.
+- 2026-10-12 — Streaming billing pages, 2026-06-29 — Streaming — Skip — Existing trial and PAYG terms were moved into billing articles.
+- 2026-10-12 — DOC-1472, 2026-07-01 — Streaming — Skip — New pages for delete, screenshots, and getting started describe existing operations.
+- 2026-10-13 — DOC-2652, waap/waap-rules/custom-rules.mdx, waap/waap-policies/waf-and-owasp-top-threats.mdx — WAAP — Skip — Policy overrides are already documented and announced. This change adds the left-menu link and two cross-mentions.
+- 2026-10-14 — `reseller-support/customer-portal/dnsaas-settings.mdx` — Reseller — Skip — Wording pass on the existing DNSaaS settings page. No product behavior changed.
+- 2026-10-14 — Reseller nav Services group — Reseller — Skip — Cloud, Storage, and WAAP pages moved into one nav group. The duplicate DNS management page was removed. No product behavior changed.
+- 2026-10-14 — `reseller-support/api.mdx` — Reseller — Skip — Corrected which reseller API operations each reference covers. No product behavior changed.
+- 2026-10-14 — `reseller-support/reports-and-activity/generate-monthly-reports.mdx` — Reseller — Skip — Replaced the empty reports list with an existing report row and its download menu. No product behavior changed.
+- 2026-10-14 — DOC-2494 — Reseller — Skip — Articles were written from the reseller portal we already checked. The ticket corrects the old sidebar text. No new product capability.
+- 2026-10-15 — `api-reference/overview.mdx` — API Reference — Skip — Added the existing IAM request and login quotas to the introduction. No product behavior changed.
+- 2026-10-15 — `api-reference/overview.mdx` per-IP rate limit — API Reference — Skip — Named the IP as the key for the existing 100 requests per second limit. No product behavior changed.
+- 2026-10-15 — DOC-2752, `custom.css` — Docs — Skip — Restored the inset inside tab borders. No product behavior changed.
+- 2026-10-14 — #3165, nine WAAP policy articles — WAAP — Include — On 2026-10-12 SDK v0.59.0 lists domain rule sets as a page without embedded rules. Policies are listed by rule_set_id. Enable and disable uses policies.update. REST v1 still embeds rules. Not published on the What's new page.
+- 2026-10-14 — #2939, set-up-automatic-snapshot-creation.mdx — Cloud — Include — On 2026-09-22 SDK v0.57.0 renamed cloud.lifecycle_policies to cloud.snapshot_schedules. REST path stays /cloud/v1/lifecycle_policy. Same event is on this branch because v0.59.0 still uses that name. Not published on the What's new page.
+- 2026-10-14 — #3055, five streaming articles — Streaming — Include — On 2026-09-29 SDK v0.58.0 returns the created player, video, and playlist from create. Player create uses CreatePlayerParam. Playlist fields are direct. name is optional on player update. Same event is on this branch because v0.59.0 still has those signatures. Not published on the What's new page.
+- 2026-10-14 — #2937, two Storage articles — Storage — Include — On 2026-09-22 provider v2.0.0-rc.2 removed password and password_mode from gcore_storage_sftp. Configurations use password_wo and password_wo_version. Not published on the What's new page.
+- 2026-10-14 — DOC-2653, fastedge/local-development/ai-assisted-development.mdx — FastEdge — Include — Production Copy prompt returns one setup prompt for every agent. Browser approval replaces a required API token. Not published on the What's new page.
+- 2026-10-16 — `cloud/networking/create-and-configure-a-load-balancer.mdx` — Cloud — Skip — Standard class ceiling aligned with the 5 Gbps row already in the flavor table. No product behavior changed.
+- 2026-10-16 — `cloud/networking/create-and-configure-a-load-balancer.mdx` — Cloud — Skip — Bold-label bullets now use a colon, matching the manage article. No product behavior changed.
+- 2026-10-16 — load balancer create and manage articles — Cloud — Skip — FQDN and VIP are explained at first use. SR-IOV was removed from the flavor sentence. No product behavior changed.
+- 2026-10-16 — DOC-2753, `waap/waap-rules/custom-rules.mdx` File extension — WAAP — Skip — Clarified that the existing condition reads the extension from the uploaded file name. No product behavior changed.
+- 2026-10-16 — DOC-2754, nine API reference landing pages — API Reference — Skip — Short root pages for existing product APIs. No product behavior changed.
+- 2026-10-16 — `api-reference/resellers.mdx` — API Reference — Skip — One overview for the existing reseller references. No product behavior changed.
+- 2026-10-16 — DOC-2646, `fastedge/manage-apps.mdx` — FastEdge — Skip — Response headers already replaced CORS and Cache-Control on a successful response. The article now says so. No new capability.
+- 2026-10-16 — DOC-2649, floating IP article and Kubernetes SSH article — Cloud — Skip — The Floating IP form renamed the existing attach controls. Both articles now use the current labels. No new capability.
+- 2026-10-16 — DOC-2762, `edge-proxy/faqs-and-troubleshooting.mdx` — Edge Proxy — Skip — The FAQ now states existing handshake checks, connection limits, port-mapping billing, Anycast filtering capacity, and that the protected IP is not null-routed. No new capability.
+- 2026-10-16 — DOC-2561, Bare Metal Advanced DDoS about and activate articles — Cloud — Skip — Corrected basic protection coverage and region availability for an existing feature. No new capability.
+- 2026-10-16 — DOC-2654 — Hosting — Skip — The order and plan pages now say the included IPv4 is dedicated and not behind NAT. That is existing behavior. Not published on the What's new page.
+- 2026-10-17 — DOC-1062, `cdn/troubleshooting/diagnose-cdn-routing-and-connectivity.mdx` — CDN — Skip — Documented the existing CDN Debug page and speed test. No new capability.
+- 2026-10-17 — DOC-2587 — Billing — Skip — The top-up list already includes adding a payment method in the same window. The payments article now uses the current labels. No new capability.
+- 2026-10-17 — `developer-tools.mdx`, docs.json tab — Developer Tools — Skip — Existing guides moved to their own top tab and landing page. No product behavior changed.
+- 2026-10-17 — DOC-2491 — Account settings — Skip — The API tokens article now points a reseller to the existing Admin Portal steps. That path was already documented. No new capability.
+- 2026-10-17 — `developer-tools.mdx` intro — Developer Tools — Skip — Reworded the overview introduction. No product behavior changed.
+- 2026-10-17 — Developer Tools articles — Developer Tools — Skip — Aligned contradictory statements across the existing guides. No product behavior changed.
+- 2026-10-17 — Terraform get-started and variables articles — Developer Tools — Skip — Corrected a mid-sentence capital and removed an announcement word. No product behavior changed.
+- 2026-10-17 — docs.json Developer Tools tab — Developer Tools — Skip — REST API, SDKs, MCP Server, and Terraform are sibling sections. No product behavior changed.
+- 2026-10-19 — Grafana plugin install page and statistics articles — CDN, WAAP, Developer Tools — Skip — Installation steps moved to Developer Tools. Query fields stayed in the existing statistics articles. No product behavior changed.
+- 2026-10-19 — `developer-tools/grafana/install-the-grafana-plugin.mdx` — Developer Tools — Skip — Dropped a passed deprecation date and clarified the data source URL and panel link. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` — CDN — Skip — The statistics article now covers CDN only and includes a chart of the existing Grafana query. No product behavior changed.
+- 2026-10-19 — DOC-1120, `cdn/grafana/view-cdn-statistics-in-grafana.mdx` wording — CDN — Skip — Clarified the Bandwidth unit, two sentences, and the Grafana 13 variable steps. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` — WAAP — Skip — The statistics article now matches the Grafana 13 panel editor and includes a chart of the existing WAAP query. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana CDN steps and Developer Tools links — CDN, WAAP, Developer Tools — Skip — Dashboard steps and the links to query articles now match the existing pages. No product behavior changed.
+- 2026-10-19 — DOC-1120, `waap/view-waap-statistics-in-grafana.mdx` description — WAAP — Skip — The summary now says the panels are account totals. No product behavior changed.
+- 2026-10-19 — DOC-1120, `fastedge/grafana/view-fastedge-statistics-in-grafana.mdx` — FastEdge — Skip — New page for the existing FastEdge duration query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, FastEdge Step (s) wording — FastEdge — Skip — The sentence now says 60 is the default sampling interval. No product behavior changed.
+- 2026-10-19 — DOC-1120, `dns/grafana/view-dns-statistics-in-grafana.mdx` — DNS — Skip — New page for the existing DNS request query in the Grafana plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, DNS record type wording — DNS — Skip — The ALL value is described as requests for all record types. No product behavior changed.
+- 2026-10-19 — DOC-1120, WAAP Grafana navigation — WAAP — Skip — The existing statistics page is now in a Grafana sidebar group, and the overview links to it. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro — Developer Tools — Skip — The intro now states the monitoring task before the Grafana version and API token. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana install field bullets — Developer Tools — Skip — Field bullets use a colon after the label. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro task — Developer Tools — Skip — The intro now starts with the reader's task. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana plugin install intro voice — Developer Tools — Skip — The intro states what the reader can do with the plugin. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana dashboard steps — CDN, WAAP, FastEdge, DNS — Skip — The steps now name the plus button, Add drawer, and Edit visualization that are on the Grafana screen, and include screenshots. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana saved dashboard screenshots — CDN, WAAP, FastEdge, DNS — Skip — Each statistics article now shows the saved dashboard after the panel steps. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana navigation position — CDN, WAAP, FastEdge, DNS — Skip — The Grafana group is the last item in each product sidebar. No product behavior changed.
+- 2026-10-19 — DOC-1120, `developer-tools/grafana/create-an-alert-rule.mdx` — Developer Tools — Skip — The page documents the existing Grafana alert-rule form for the Gcore data source. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule structure — Developer Tools — Skip — The alert-rule page now leads with the notification task, limits several series to CDN grouping, and adds one CDN request example. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule style pass — Developer Tools — Skip — Wording and step shape now follow the style guide. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert rule example accuracy — Developer Tools — Skip — The intro separates rule state from notification delivery, and the CDN example now matches hourly request counts. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana statistics intros — CDN, DNS, FastEdge, WAAP — Skip — Removed the sentence that announced which Service the steps select. No product behavior changed.
+- 2026-10-19 — DOC-1120, CDN Grafana metric table — CDN — Skip — Long metric identifiers no longer wrap mid-word. No product behavior changed.
+- 2026-10-19 — DOC-1120, Grafana alert links — CDN, DNS, FastEdge, WAAP, Developer Tools — Skip — Alert-rule links now sit in the query description instead of a sentence that only points to another page. No product behavior changed.
+

@@ -117,6 +117,25 @@ this to work — it is handled by the component automatically.
 
 ---
 
+## Numbered steps and prose inside tabs
+
+`MethodSwitch` compiles everything inside a `<MethodSection>` in expression mode. Plain paragraphs become text strings and
+numbered steps merge into one paragraph ("1. ... 2. ... 3. ..."), and nothing can split them again. Wrap every prose
+paragraph and every numbered step in its own `<p>`, with a blank line between them:
+
+```mdx
+<p>1. Navigate to the CDN resources list and click the CDN resource to configure.</p>
+
+<Frame>![CDN resources list](/images/docs/...)</Frame>
+
+<p>2. In the sidebar, click **GZip compression**.</p>
+```
+
+Sub-items of a step are plain bullets, indented 3 spaces, placed after the step's `<p>`. Bullet lists are never wrapped.
+Never delete a `<p>` that sits between numbered steps: replace its text instead, or the page can render blank.
+
+---
+
 ## Critical MDX parsing rule: lists before `</MethodSection>`
 
 **This is the most common cause of broken pages.**
@@ -157,23 +176,25 @@ only markdown lists (`-` or `1.` style).
 
 ## Frontmatter requirements
 
-Every tabbed article must have an `ai-navigation` field that describes **all
-methods** covered in the article. Do not use `description` — Mintlify renders
-that field as visible page text.
+Every article must have a `description` field. It is the search summary.
+Mintlify copies it into the meta description and prints it under the title.
+`custom.css` hides that paragraph. `llms.txt` reads the same sentence.
 
 ```mdx
 ---
 title: Create a Virtual Machine
 sidebarTitle: Create an instance
-ai-navigation: Create Linux or Windows Virtual Machines in Gcore Cloud via Customer Portal by configuring image, flavor, volumes, network, and firewall, or via REST API using the Instances API.
+description: Create a Gcore Cloud Virtual Machine with an image, flavor, volume, network, and firewall.
 ---
 ```
 
-Rules for `ai-navigation`:
-- One sentence, max 160 characters.
-- Start with an action verb: Create, Configure, Manage, Enable, etc.
-- Mention both methods if both are present (e.g., "via Customer Portal ... or via REST API").
+Rules for `description`:
+- One sentence, 140 characters maximum.
+- Summarize what the article is about. Use the feature name and the words a person would type into search.
+- Do not write Portal, API, or Terraform. Naming the interface does not help search.
 - No "you", "your", "this article", "learn how to".
+
+Do not rewrite existing descriptions to this rule unless the task is a description pass.
 
 ---
 
@@ -228,7 +249,8 @@ standard markdown headings are used.
 3. Write the REST API section second.
 4. Use `##` headings throughout both sections.
 5. Ensure no section ends with a list followed by an indented `</MethodSection>`.
-6. Update `ai-navigation` to mention both methods.
+   Wrap every prose paragraph and numbered step in `<p>`.
+6. Write `description` as a search summary of the article. Do not name Portal, API, or Terraform. 140 characters maximum.
 7. Check that all internal links use the correct merged-article path.
 8. Preview locally with `mintlify dev` before opening a PR.
 
@@ -240,7 +262,7 @@ standard markdown headings are used.
    existing sections, inside `<MethodSwitch>`.
 2. Write the new method content using `##` headings.
 3. Close with `</MethodSection>`.
-4. Update `ai-navigation` to mention the new method.
+4. Leave `description` as a search summary of the article. Do not add Portal, API, or Terraform to it.
 5. No changes to `docs.json` or any other configuration are needed.
 
 ---
@@ -278,17 +300,10 @@ c639bb25 Revert "Merge pull request #2116 from G-Core/cloud-api-guides"
 Before committing any new or heavily edited article, validate it locally:
 
 ```powershell
-# Install once in any temp dir
-cd C:\Temp; npm install @mdx-js/mdx
-
-# Validate an article
-node -e "
-const {compile}=require('@mdx-js/mdx');
-const fs=require('fs');
-const c=fs.readFileSync('path/to/article.mdx','utf8');
-compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message));
-"
+.\.agents\tools\validate_mdx.ps1 path\to\article.mdx
 ```
+
+The script installs the compiler once into `$env:TEMP\mdx-check` and prints `OK` or the exact error.
 
 The compiler produces an exact error message with line and column number, which is far more useful than the generic "A parsing error occurred" shown in the browser.
 
@@ -359,8 +374,7 @@ The `MethodSwitch` component hides inactive-tab headings from the TOC by queryin
 - Do not create separate files under `cloud/api/`, `cloud/terraform/`, or
   `cloud/cli/` for scenarios that already have a merged article. Add a new
   `<MethodSection>` tab instead.
-- Do not use `description` in frontmatter (Mintlify renders it on the page).
-  Use `ai-navigation`.
+- Do not add `ai-navigation`. The page summary field is `description`.
 - Do not use HTML `<h2>` or custom heading components inside `MethodSection`.
   Use standard markdown `##` and `###`.
 - Do not leave `ApiH2` or `ApiH3` components in files — these were a temporary

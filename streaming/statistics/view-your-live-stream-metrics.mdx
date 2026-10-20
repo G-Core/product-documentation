@@ -1,58 +1,257 @@
 ---
 title: "Stream metrics"
-ai-navigation: Monitor live stream performance metrics including video bitrate, FPS, and key frame interval via Live Stream Monitoring in Gcore Streaming platform, with 1-minute resolution data stored for one year.
+description: Track live stream metrics including concurrent viewers, bitrate, FPS, and key frame interval with time-series charts and viewer count data.
 ---
 
-## About live stream monitoring
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 
-You can monitor how a particular stream performs using _Live Stream Monitoring_. This tool provides metrics that can help you observe the performance of a stream and detect and resolve issues as they happen or retrospectively (i.e., once the stream has ended). These data are stored for a year for recordkeeping purposes.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-Live Stream Monitoring allows you to monitor the following metrics:
+<p>The Monitoring tab in Live stream settings tracks four metrics updated every minute while the stream is active:</p>
 
-  * **Video bitrate.** This displays the bitrate of the source stream (in Kbps).
-  * **FPS.** This displays the frame rate of the source stream (in fps).
-  * **Interval between key frames.** This displays the key frame interval of the source stream.
+  * **Number of concurrent viewers** shows the number of unique viewers counted within each one-minute interval.
+  * **FPS** measures the frame rate of the source stream.
+  * **Interval between key frames** captures the key frame interval of the source stream.
+  * **Bitrate** reflects the source stream bitrate in kb/s.
 
+<p>The charts remain available after the stream ends.</p>
 
+## Monitoring
 
-## Open the monitoring page
+<p>1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Streaming** → **Live Streaming**.</p>
 
-To view the Live Stream Monitoring page:
+<p>2. Click the three-dot menu next to the stream. The stream can be active or finished.</p>
 
-1\. Go to **Streaming** in Gcore Customer Portal.
+<p>3. Select **Monitoring**.</p>
 
-2\. Click **Streaming**, then open **Live streaming**.
+<Frame>![Live stream list with the three-dot menu open showing Monitoring, Statistics, Settings, and Delete options](/images/docs/streaming/statistics/view-your-live-stream-metrics/live-stream-list-context-menu.png)</Frame>
 
-3\. Click the three dots next to the stream whose metrics you want to view (it can be a finished or ongoing stream).
+<p>The Monitoring tab displays all four metrics as separate time-series charts. Each chart plots values at one-minute intervals, so a gap in the line means no signal was received during that minute.</p>
 
-4\. Select **Monitoring**.
+<p>The controls above the charts provide preset or custom time ranges (**Last hour**, **Last 4 hours**, **Last 8 hours**), local or UTC time, and automatic refresh.</p>
 
+<Frame>![Monitoring tab in Live stream settings showing time range controls and four metric charts stacked vertically](/images/docs/streaming/statistics/view-your-live-stream-metrics/monitoring-overview.png)</Frame>
 
-<Frame>![Streaming ](/images/docs/streaming-platform/statistics/view-your-live-stream-metrics/10318231817105.png)</Frame>
+<p>Hovering over a data point shows the exact metric value for that minute. An unstable bitrate, unexpected frame rate, or gaps in a chart can indicate a problem with the source stream — the time of the anomaly can then be compared with encoder or source-connection events.</p>
 
+<Frame>![Monitoring charts showing FPS, key frame interval, and bitrate data with visible spikes from an active stream session](/images/docs/streaming/statistics/view-your-live-stream-metrics/monitoring-charts-data.png)</Frame>
 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-## Use the monitoring page
+<p>Source metrics and viewer counts are returned by separate statistics endpoints.</p>
 
-The Live Stream Monitoring page consists of the following elements:
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
 
-  1. **Metrics.** This allows you to select the metric to monitor. It defaults to Video bitrate.
-  2. **Date.** This allows you to select the date for which you want to monitor the metric. It defaults to the current date.
-  3. **Time.** This allows you to select the 1-hour time range for which you want to monitor the metric. It defaults to the current hour.
-  4. **Time series graph.** This displays the data for the selected metric, date, and time range at a 1-minute step.
+<p>Set the required environment variables:</p>
 
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
 
-<Frame>![Live Stream Monitoring page](/images/docs/streaming-platform/statistics/view-your-live-stream-metrics/10318226324753.png)</Frame>
+## Get stream metrics
 
+<p>Use <code>GET /streaming/statistics/ffprobe</code> to retrieve a timeseries of bitrate, FPS, and key frame interval for a specific live stream.</p>
 
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+import datetime
+from gcore import Gcore
 
-You can hover the cursor over any data point on the chart to see the value of the selected metric (Kbps, fps, or key frame interval) in the tooltip. In this example, we have a point that shows the value of the key frame interval.
+stream_id = os.environ["STREAM_ID"]
 
+client = Gcore()
+now = datetime.datetime.now(datetime.timezone.utc)
+hour_ago = now - datetime.timedelta(hours=1)
 
-<Frame>![chart ](/images/docs/streaming-platform/statistics/view-your-live-stream-metrics/10318231896465.png)</Frame>
+metrics = client.streaming.statistics.get_ffprobes(
+    stream_id=stream_id,
+    date_from=hour_ago.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    date_to=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    units="minute",
+)
+print(f"Data points: {len(metrics.data) if metrics.data else 0}")
+for point in (metrics.data or []):
+    print(f"time={point.time}, bitrate={point.avg_bitrate:.1f} Kbps, fps={point.max_fps:.2f}, key_interval={point.max_keyframe_interval}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
 
+import (
+    "context"
+    "fmt"
+    "os"
+    "time"
 
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
 
-## Use stream metrics to troubleshoot
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+    streamID := os.Getenv("STREAM_ID")
 
-Live Stream Monitoring can be useful in debugging issues that originate at the source stream. For example, you see an unstable bitrate, too many key frames, or gaps in the graph. This indicates that there might be some missing or dropped frames with the source. You can then check your source and start working on the problem.
+    now := time.Now().UTC()
+    hourAgo := now.Add(-1 * time.Hour)
+
+    metrics, err := client.Streaming.Statistics.GetFfprobes(
+        ctx,
+        streaming.StatisticGetFfprobesParams{
+            StreamID: streamID,
+            DateFrom: hourAgo.Format(time.RFC3339),
+            DateTo:   now.Format(time.RFC3339),
+            Units:    streaming.StatisticGetFfprobesParamsUnitsMinute,
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("Data points: %d\n", len(metrics.Data))
+    for _, point := range metrics.Data {
+        fmt.Printf("time=%s, bitrate=%.1f Kbps, fps=%.2f, key_interval=%d\n",
+            point.Time, point.AvgBitrate, point.MaxFps, point.MaxKeyframeInterval)
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+DATE_FROM=$(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v-1H '+%Y-%m-%dT%H:%M:%SZ')
+DATE_TO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+curl "https://api.gcore.com/streaming/statistics/ffprobe?stream_id=$STREAM_ID&date_from=${DATE_FROM}&date_to=${DATE_TO}&units=minute" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+{
+  "data": [
+    {
+      "time": 1789109410,
+      "avg_bitrate": 12739,
+      "max_fps": 25.5,
+      "sum_frames": 16,
+      "max_height": 1080,
+      "max_keyframe_interval": 9
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Get viewer count
+
+<p>Use <code>GET /streaming/statistics/stream/viewers</code> to retrieve a timeseries of unique viewer counts for a specific live stream. The data comes from CDN and is available regardless of which player the viewers used.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import datetime
+import os
+from gcore import Gcore
+
+stream_id = int(os.environ["STREAM_ID"])
+
+client = Gcore()
+now = datetime.datetime.now(datetime.timezone.utc)
+hour_ago = now - datetime.timedelta(hours=1)
+
+result = client.streaming.statistics.get_live_unique_viewers(
+    from_=hour_ago.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    to=now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+    stream_id=stream_id,
+    granularity="1m",
+)
+for item in result:
+    for timestamp, viewers in item.metrics.streams:
+        if viewers:
+            print(f"time={timestamp}, viewers={viewers}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+    "time"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    now := time.Now().UTC()
+    hourAgo := now.Add(-1 * time.Hour)
+
+    result, err := client.Streaming.Statistics.GetLiveUniqueViewers(
+        ctx,
+        streaming.StatisticGetLiveUniqueViewersParams{
+            From:        hourAgo.Format(time.RFC3339),
+            To:          now.Format(time.RFC3339),
+            StreamID:    gcore.Int(streamID),
+            Granularity: streaming.StatisticGetLiveUniqueViewersParamsGranularity1m,
+        },
+    )
+    if err != nil {
+        panic(err)
+    }
+    for _, item := range *result {
+        fmt.Printf("client=%d\n%s\n", item.Client, item.Metrics.RawJSON())
+    }
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+DATE_FROM=$(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v-1H '+%Y-%m-%dT%H:%M:%SZ')
+DATE_TO=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+curl "https://api.gcore.com/streaming/statistics/stream/viewers?from=${DATE_FROM}&to=${DATE_TO}&stream_id=$STREAM_ID&granularity=1m" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns:</p>
+
+```json
+[
+  {
+    "client": 1000503,
+    "metrics": {
+      "streams": [
+        [1789927200, 4],
+        [1789927260, 3],
+        [1789927320, 0]
+      ]
+    }
+  }
+]
+```
+
+<p>Each element in <code>streams</code> is a <code>[unix_timestamp, viewer_count]</code> pair at the requested granularity.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

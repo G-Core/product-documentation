@@ -1,7 +1,7 @@
 ---
 title: "OWASP threats"
 sidebarTitle: "OWASP threats"
-ai-navigation: Configure OWASP Threats policies in Gcore WAAP via Customer Portal or REST API, including CSRF behavior when www and non-www hostnames differ.
+description: Configure WAF OWASP Top 10 threat rules, including CSRF checks, policy states, and enable or disable options.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -45,6 +45,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 | **Personally identifiable information**    | When personally identifiable information (PII) isn't properly protected, it can cause a security vulnerability and lead to data leakage. <br /> <br /> Enable the policy to prevent accidental exposure of personal data by searching for private information in the web application responses.                                                         |
 | **Server-side template injection**         | Some attackers can use native template syntax to inject a malicious payload into a template and then execute it on the server. <br /> <br /> Enable the policy to block attempts to inject unauthorized code into your web application templates.                                                                                                       |
 | **LLM Attack**                             | Attackers exploit Large Language Model integrations to perform prompt injection (OWASP LLM01) and improper output handling (OWASP LLM05). <br /> <br /> Enabling this policy alone does not protect LLM traffic. First identify LLM resources with a custom or advanced rule that applies the [LLM Trigger](/waap/waap-rules/custom-rules/tag-rules/reserved-tags#identify-llm-resources) reserved tag. WAAP then inspects tagged requests for known LLM attack patterns. |
+
+<p>When one of these policies flags legitimate traffic, suppress that detection for a defined scope with a [policy&nbsp;override](/waap/waap-rules/policy-overrides). The policy stays enabled for traffic outside that scope.</p>
 
 ## CSRF checks for www and non-www hostnames
 
@@ -106,7 +108,8 @@ rule_sets = client.waap.domains.list_rule_sets(domain_id)
 owasp_set = next(
     rs for rs in rule_sets if rs.resource_slug == "core-waf-owasp-top-threats"
 )
-for rule in owasp_set.rules:
+rules = client.waap.domains.policies.list(domain_id, rule_set_id=owasp_set.id)
+for rule in rules:
     status = "enabled" if rule.mode else "disabled"
     print(f"{rule.id}: {rule.name} - {status}")
 ```
@@ -122,27 +125,35 @@ import (
 	"strconv"
 
 	gcore "github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/waap"
 )
 
 func main() {
 	client := gcore.NewClient()
 	domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
-	ruleSets, err := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, rs := range *ruleSets {
+	ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
+	for ruleSets.Next() {
+		rs := ruleSets.Current()
 		if rs.ResourceSlug == "core-waf-owasp-top-threats" {
-			for _, rule := range rs.Rules {
+			policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+			for policies.Next() {
+				rule := policies.Current()
 				status := "disabled"
 				if rule.Mode {
 					status = "enabled"
 				}
 				fmt.Printf("%s: %s - %s\n", rule.ID, rule.Name, status)
 			}
+			if err := policies.Err(); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
+	}
+	if err := ruleSets.Err(); err != nil {
+		fmt.Println(err)
+		return
 	}
 }
 ```
@@ -178,14 +189,15 @@ Response:
 
 <p>The response contains all rule sets for the domain. Filter by `resource_slug` value `core-waf-owasp-top-threats` to find the OWASP group. Each rule has a `mode` field — `true` means enabled, `false` means disabled.</p>
 
-## Toggle a policy
+## Enable or disable a policy
 
-<p>Flips the state of one policy — enabled becomes disabled, disabled becomes enabled. No request body is required.</p>
+<p>Sets the policy to enabled or disabled by specifying the target state. Pass `mode: true` to enable and `mode: false` to disable.</p>
 
 | Parameter | Required | Description |
 |---|---|---|
-| `policy_id` | Yes | ID of the policy to toggle, obtained from the [View policy states](#view-policy-states) response. |
+| `policy_id` | Yes | ID of the policy to configure, obtained from the [View policy states](#view-policy-states) response. |
 | `domain_id` | Yes | ID of the WAAP-protected domain. |
+| `mode` | Yes | `true` to enable the policy, `false` to disable it. |
 
 <Tabs>
 <Tab title="Python SDK">
@@ -201,11 +213,11 @@ rule_sets = client.waap.domains.list_rule_sets(domain_id)
 owasp_set = next(
     rs for rs in rule_sets if rs.resource_slug == "core-waf-owasp-top-threats"
 )
-policy = next(r for r in owasp_set.rules if r.name == "Open redirect")
+rules = client.waap.domains.policies.list(domain_id, rule_set_id=owasp_set.id)
+policy = next(r for r in rules if r.name == "Open redirect")
 
-result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
-status = "enabled" if result.mode else "disabled"
-print(f"Policy is now {status}")
+result = client.waap.domains.policies.update(policy.id, domain_id=domain_id, mode=True)
+print(f"Policy is now {'enabled' if result.mode else 'disabled'}")
 ```
 </Tab>
 <Tab title="Go SDK">
@@ -227,26 +239,36 @@ func main() {
 	domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
 	// Find the policy ID by name
-	ruleSets, err := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	ruleSets := client.Waap.Domains.ListRuleSetsAutoPaging(context.Background(), domainID, waap.DomainListRuleSetsParams{})
 	var policyID string
-	for _, rs := range *ruleSets {
+	for ruleSets.Next() {
+		rs := ruleSets.Current()
 		if rs.ResourceSlug == "core-waf-owasp-top-threats" {
-			for _, rule := range rs.Rules {
+			policies := client.Waap.Domains.Policies.ListAutoPaging(context.Background(), domainID, waap.DomainPolicyListParams{RuleSetID: gcore.Int(rs.ID)})
+			for policies.Next() {
+				rule := policies.Current()
 				if rule.Name == "Open redirect" {
 					policyID = rule.ID
 				}
 			}
+			if err := policies.Err(); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
+	if err := ruleSets.Err(); err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	result, err := client.Waap.Domains.Policies.Toggle(
+	result, err := client.Waap.Domains.Policies.Update(
 		context.Background(),
 		policyID,
-		waap.DomainPolicyToggleParams{DomainID: domainID},
+		waap.DomainPolicyUpdateParams{
+			DomainID:                 domainID,
+			WaapDomainPolicySettings: waap.WaapDomainPolicySettingsParam{Mode: true},
+		},
 	)
 	if err != nil {
 		fmt.Println(err)
@@ -263,8 +285,10 @@ func main() {
 <Tab title="curl">
 ```bash
 # Set POLICY_ID to the ID from the View policy states response
-curl -X PATCH "https://api.gcore.com/waap/v1/domains/$WAAP_DOMAIN_ID/policies/$POLICY_ID/toggle" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
+curl -X PATCH "https://api.gcore.com/waap/v1/domains/$WAAP_DOMAIN_ID/policies/$POLICY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"mode": true}'
 ```
 
 Response:

@@ -1,16 +1,21 @@
 ---
-title: Pause and rewind the live streams
+title: Pause and rewind live streams
 sidebarTitle: DVR
-ai-navigation: Enable DVR (Digital Video Recorder) feature on live streams to cache and allow viewers to pause and rewind broadcasts within a 1-hour window by default, configurable up to 4 hours via API PATCH /streaming/streams/{id} with dvr-duration parameter.
+description: DVR lets viewers pause and rewind live streams, with a default 1 hour window extendable to 4 hours and 24 hours for Enterprise accounts.
 ---
 
-## What is the DVR feature?
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-DVR (Digital Video Recorder) is a feature that allows your viewers to pause and rewind the broadcast.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-DVR is based on caching technology. When you enable the feature, we cache the last 1 hour of your live stream by default. If your stream runs longer than 1 hour, viewers can rewind only within that most recent hour.
+<p>DVR (Digital Video Recorder) lets viewers pause and rewind a live broadcast by caching recent stream content.</p>
 
-Example of how the DVR window works for a live stream that has already been running for more than 1 hour:
+<p>The DVR window defines how far back viewers can rewind. The default window is 1 hour. The DVR duration cannot be changed in the Customer Portal — set `dvr_duration` via the API to extend it up to 4 hours.</p>
+
+<p>A 24-hour DVR window is available for Enterprise accounts — the [Gcore&nbsp;support](https://gcore.com/contact-us) team enables it on request.</p>
+
+<p>Example of how the DVR window works for a stream that has been running for more than 1 hour:</p>
 
 ```text
 Start                                                     Now
@@ -18,44 +23,184 @@ Start                                                     Now
   |  older part of the stream   | viewers can rewind here  |
 ```
 
-## Use the DVR feature
+## Enable DVR
 
-1\. Create a new live stream according to the [Create a live stream](/streaming/live-streaming/create-a-live-stream) guide or open an existing live stream.
+<p>1. Create a new [live&nbsp;stream](/streaming/live-streaming/create-a-live-stream) or open an existing one.</p>
 
-Complete the remaining steps on the Live stream settings page.
-
-
-<Frame>![Live stream settings page](/images/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917509521.png)</Frame>
+<p>2. On the Live stream settings page, enable the **DVR** toggle. After the broadcast starts, allow about 10 minutes for content to accumulate before viewers can rewind.</p>
 
 
-
-2\. Turn on the **DVR** toggle to activate the feature. After you start the broadcast with the DVR feature enabled, it takes about 10 minutes for the content to accumulate in the cache for rewinding. For the first 10 minutes, there won't be the ability to pause or rewind the broadcast.
-
-3\. (optional) Opposite the toggle is the **Clear** button. It allows the DVR cache to be cleared. Press it every time you start a new broadcast in an existing live stream. Otherwise, your viewers may watch the end of the previous broadcast from the cache.
-
-4\. Save changes, so that the scroll bar appears in the player for viewers and they can navigate your broadcast.
+<Frame>![Live stream settings page with DVR toggle](/images/docs/streaming/live-streaming/pause-and-rewind-the-live-streams/dvr-live-stream-settings.png)</Frame>
 
 
-<Frame>![Live stream settings page](/images/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917633553.png)</Frame>
+<p>3. Click **Save**. Viewers can then use the player timeline to pause and rewind the broadcast.</p>
 
 
+<Frame>![Embedded player showing DVR rewind scroll bar](/images/docs/streaming/live-streaming/pause-and-rewind-the-live-streams/9654917633553.png)</Frame>
 
-For Android smartphones, double-tapping the player screen in our player rewinds or skips forward by 10–15 seconds, depending on whether you press on the left or right, respectively.
 
+<p>Before starting a new broadcast on an existing stream, click **Clear** next to the DVR toggle to remove content cached from the previous broadcast. Otherwise, viewers may watch the end of the previous broadcast from the cache.</p>
 
-## Change DVR window
+<p>Viewers can rewind with the player timeline. On Android, they can also double-tap the left or right side of the Gcore player to rewind or skip forward by 10–15 seconds.</p>
 
-By default, the DVR window is 1 hour. If your live stream runs longer than that, viewers can still rewind only within the most recent hour unless you increase the DVR duration.
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
-The DVR window can be extended to up to 4 hours. To enable a longer DVR window for your account or stream, contact us.
+<p>DVR (Digital Video Recorder) lets viewers pause and rewind a live broadcast by caching recent stream content.</p>
 
-After the longer DVR duration is enabled, video engineers can set the DVR window per stream through the API. This cannot be configured in the UI.
+<p>The DVR window defines how far back viewers can rewind. The default window is 1 hour. Set `dvr_duration` (in seconds) to extend the window up to 4 hours.</p>
 
-For more details, see the API documentation: [PATCH /streaming/streams/{id}](/api-reference/streaming/streams/change-live-stream#body-stream-dvr-duration)
+<p>A 24-hour DVR window is available for Enterprise accounts — the [Gcore&nbsp;support](https://gcore.com/contact-us) team enables it on request.</p>
 
-For Enterprise customers, a DVR window of up to 24 hours is available as an optional configuration.
+<p>Example of how the DVR window works for a stream that has been running for more than 1 hour:</p>
+
+```text
+Start                                                     Now
+  |----- outside DVR window ----|<--- DVR: last 1 hour --->| Live edge
+  |  older part of the stream   | viewers can rewind here  |
+```
+
+<p>All requests require an [API&nbsp;token](/account-settings/api-tokens). Set the API key and stream ID as environment variables before running the commands:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STREAM_ID="{YOUR_STREAM_ID}"
+```
+
+## Enable DVR on a stream
+
+<p>Update an existing stream with `dvr_enabled: true`. Set `dvr_duration` (in seconds) to control how far back viewers can rewind. After the broadcast starts, allow about 10 minutes for content to accumulate before viewers can rewind.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+stream_id = int(os.environ["STREAM_ID"])
+
+# Enable DVR on an existing stream
+stream = client.streaming.streams.update(
+    stream_id,
+    stream={
+        "name": "My live stream",
+        "dvr_enabled": True,
+        "dvr_duration": 3600,  # 1 hour window
+    },
+)
+print(f"DVR enabled: {stream.dvr_enabled}, window: {stream.dvr_duration}s")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/packages/param"
+    "github.com/G-Core/gcore-go/streaming"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    // Enable DVR on an existing stream
+    stream, err := client.Streaming.Streams.Update(ctx, streamID, streaming.StreamUpdateParams{
+        Stream: streaming.StreamUpdateParamsStream{
+            Name:        "My live stream",
+            DvrEnabled:  param.NewOpt(true),
+            DvrDuration: param.NewOpt[int64](3600), // 1 hour window
+        },
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Printf("DVR enabled: %v, window: %ds\n", stream.DvrEnabled, stream.DvrDuration)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+     -H "Authorization: APIKey $GCORE_API_KEY" \
+     -H "Content-Type: application/json" \
+     -d '{"dvr_enabled": true, "dvr_duration": 3600}'
+```
+
+<p>The API returns the updated stream object with `dvr_enabled: true` and `dvr_duration: 3600`.</p>
+  </Tab>
+</Tabs>
+
+<p>The `dvr_enabled` and `dvr_duration` fields are also accepted when [creating&nbsp;a&nbsp;stream](/streaming/live-streaming/create-a-live-stream) with `POST /streaming/streams`.</p>
+
+## Clear the DVR cache
+
+<p>Clear the DVR cache between broadcasts so viewers don't see the end of the previous stream when a new one starts.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+stream_id = int(os.environ["STREAM_ID"])
+
+client.streaming.streams.clear_dvr(stream_id)
+print("DVR cache cleared")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    streamID, _ := strconv.ParseInt(os.Getenv("STREAM_ID"), 10, 64)
+
+    if err := client.Streaming.Streams.ClearDvr(ctx, streamID); err != nil {
+        panic(err)
+    }
+    fmt.Println("DVR cache cleared")
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/dvr_cleanup" \
+     -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns HTTP 204 No Content on success.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
 
 ## DVR demo
+
+The player below shows a live stream with DVR enabled — the rewind timeline bar appears once the cache has accumulated enough content.
 
 <iframe
   src="https://demo.gvideo.io/broadcasts/2675_23340"
@@ -65,5 +210,3 @@ For Enterprise customers, a DVR window of up to 24 hours is available as an opti
   allow="autoplay; fullscreen; picture-in-picture"
   allowFullScreen
 />
-
-See more demos on the demo page: https://gcore.com/streaming-platform/features-demo/dvr

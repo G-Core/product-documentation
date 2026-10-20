@@ -3,6 +3,18 @@
 Canonical writing and formatting rules for all documentation work.
 Load this file when a skill tells you to. Do not load it proactively.
 
+## Page description
+
+Frontmatter `description` is the search summary. Mintlify copies it into the meta description. `custom.css` hides the paragraph under the title. `llms.txt` reads the same sentence.
+
+- One sentence, 140 characters maximum.
+- Summarize what the article is about. Use the feature name and the words a person would type into search.
+- Do not write Portal, API, or Terraform. Naming the interface does not help search.
+- No "you", "your", "this article", or "learn how to".
+- No curly braces, slashes, colons, `#`, backticks, square brackets, or pipes.
+
+Do not rewrite existing descriptions to this rule unless the task is a description pass.
+
 ---
 
 ## Target audience
@@ -151,6 +163,28 @@ and read a prompt. Do not explain actions that the interface or terminal output 
 - Showing a terminal prompt that says `Enter a value: yes` then writing "Type `yes` when prompted"
 - Explaining what a button does after the reader just clicked it
 - "Click **Save** to save your changes" — saving is implied by clicking Save
+
+### Do not narrate the reader's reaction
+
+Do not frame technical behavior through an assumed user reaction or editorial commentary.
+
+**Forbidden patterns:** `a common surprise`, `surprisingly`, `unexpectedly`, `you may be surprised`,
+`a common source of confusion`, `confusingly`, `interestingly`, `unfortunately`, `this can be frustrating`.
+
+State the product behavior directly — what happens and under which conditions.
+
+**Bad:**
+```
+A common billing surprise: two servers in the same data center communicating through
+public IP addresses generate billed egress.
+```
+
+**Good:**
+```
+Two servers in the same data center communicating through public IP addresses generate billed egress.
+```
+
+**Test:** Remove the phrase describing the reader's reaction. If the technical meaning is unchanged — remove it.
 
 ### Do not describe features by what they are not
 
@@ -512,16 +546,17 @@ use a plain **numbered list** — not another `<Steps>` + `<Step>` block.
 
 This also applies inside `<Tab>` components that are themselves inside a `<Step>`.
 
-### Use `<Steps>` for portal procedures
+### Use `<Steps>` for procedures with large steps
 
-For any Customer Portal procedure with two or more sequential steps, use the Mintlify
-`<Steps>` + `<Step>` components instead of a plain numbered list. This renders numbered
-UI blocks with visible titles and is significantly more scannable than prose.
+When the steps are large, meaning each step is a mini-task made of several actions, use the
+Mintlify `<Steps>` + `<Step>` components. This renders numbered UI blocks with visible titles
+and is more scannable than prose. When the steps are short, use a plain numbered list instead
+(see `procedures.md`, "Choosing the format").
 
 ```mdx
 <Steps>
   <Step title="Navigate to the page">
-    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** → **Managed DNS**
+    In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DNS** > **Managed DNS**
     and click the zone name.
   </Step>
   <Step title="Configure the record">
@@ -539,14 +574,18 @@ UI blocks with visible titles and is significantly more scannable than prose.
 
 **Rules for `<Step>` bodies:**
 
-- When a step involves a single UI action — write it as a plain sentence inside `<Step>`.
+- When a step is a single very small UI action — put the action in the title and leave the body empty. Do not repeat it in a body sentence.
 - When a step involves filling a form or performing three or more sequential sub-actions
   — use a **numbered list** (not bullets) inside the `<Step>` body.
 - Never use bullet points for sequential sub-actions. Bullets imply the order does not
   matter; numbered lists signal required order.
 - A `<Frame>` screenshot goes inside the `<Step>` that it illustrates, after the instructions.
-- Each `<Step title="...">` uses sentence case. The title names the goal, not the first
-  micro-action: "Add a CNAME record", not "Click Add record".
+- Each `<Step title="...">` uses sentence case. For a large step the title names the goal, not the
+  first micro-action: "Add a CNAME record", not "Click Add record". For a very small step the title
+  is the action itself: "Click **Save**".
+- The title and the body never duplicate each other. When a step needs a little explanation, the
+  title states the action or goal and the body adds what the title does not say.
+- The three forms of a step (very small, with explanation, large) are in `procedures.md`, "Three forms of a `<Step>`".
 
 **What not to do inside `<Step>`:**
 
@@ -733,7 +772,7 @@ directly in curl headers.
 
 **FastEdge (API key only — no `<Info>` block):**
 ```mdx
-All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
+All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the commands:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -751,7 +790,7 @@ An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
 and a [region ID](/api-reference/cloud/regions/list-regions).
 </Info>
 
-Set the following environment variables before running the examples:
+Export these variables before running the commands:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -781,6 +820,16 @@ Never use an unspaced em-dash `—`.
 |-------|---------|
 | `configuration files—a Gcore account` | `configuration files — a Gcore account` |
 | `API calls—it defines` | `API calls — it defines` |
+
+### Bold labels in bullets
+
+A bullet that names a field, option, or flavor and then explains it uses a colon after the bold label:
+
+```
+- **VIP address**: virtual IP address of the Load Balancer
+```
+
+Do not use an em dash for that pattern. An em dash stays in prose.
 
 ### Code
 
@@ -867,7 +916,7 @@ in the middle of a step. The reader reads what to do, then sees what it looks li
 - **Alt text bad:** "Screenshot of the DNS page"
 - **Alt text good:** "DNS records list with the Add record button highlighted"
 
-Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) are in
+Full screenshot capture rules (the `article-screenshot` skill: area, crop, personal data) are in
 `.agents/references/mcp-tools/playwright.md`.
 
 ---
@@ -899,6 +948,8 @@ Full screenshot capture rules (browser settings, crop, zoom, sidebar collapse) a
 | programmatic access | Vague | what specifically: creates VMs, configures networks |
 | for example (inline) | Breaks sentence flow | restructure the sentence or use a dash |
 | such as | Implies incomplete list | complete the list or restructure |
+| example / examples (in instructions) | Implies optional — "run the examples" sounds like the user has a choice | use specific nouns: "the commands", "the script", "the call" |
+| the following / following | Vague filler — the reader already knows what follows | rephrase directly: "Export these variables:" not "Set the following variables:" |
 
 ### Common terms
 

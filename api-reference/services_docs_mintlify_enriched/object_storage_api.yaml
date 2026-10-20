@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Object Storage API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: d875c4b904ec
+  version: 90552d4e1685
 servers:
 - url: https://api.gcore.com
 paths:
@@ -1915,7 +1915,9 @@ paths:
       tags:
       - Storage Locations
       summary: List locations
-      description: Returns storage locations where you can create new storages. Only locations currently accepting new storage creation are returned.
+      description: |-
+        Returns storage locations where you can create new storages. Only locations currently accepting new storage creation are returned.
+        Use the `type` query parameter to restrict the result to a location type (object storage performance tier or sftp).
       operationId: listLocationsV4
       parameters:
       - name: offset
@@ -1939,6 +1941,15 @@ paths:
         schema:
           type: string
           default: created_at.desc
+      - name: type
+        in: query
+        description: 'Filter by location type: object storage performance tier (standard, fast) or sftp'
+        schema:
+          type: string
+          enum:
+          - standard
+          - fast
+          - sftp
       responses:
         '200':
           description: LocationsListEndpointResV4
@@ -2294,7 +2305,12 @@ paths:
       tags:
       - S3-Compatible Storage
       summary: Delete S3-compatible storage
-      description: Deletes an S3-compatible storage instance. This operation cannot be undone.
+      description: |-
+        Deletes an S3-compatible storage instance. This operation cannot be undone.
+
+        Returns 409 when CDN still uses the storage as an origin or a logs-uploader target — unbind
+        it in CDN first — or when that could not be verified, in which case the deletion is not
+        performed and the request can be retried.
       operationId: deleteS3StorageV4
       parameters:
       - name: storage_id
@@ -2321,6 +2337,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
         '404':
+          description: ErrResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        '409':
           description: ErrResponse
           content:
             application/json:
@@ -2525,7 +2547,7 @@ paths:
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
           access_key_created = client.storage.object_storages.access_keys.create(
-              0,
+              storage_id=0,
           )
           print(access_key_created.access_key)
       - lang: Go
@@ -2538,13 +2560,18 @@ paths:
 
           	"github.com/G-Core/gcore-go"
           	"github.com/G-Core/gcore-go/option"
+          	"github.com/G-Core/gcore-go/storage"
           )
 
           func main() {
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	accessKeyCreated, err := client.Storage.ObjectStorages.AccessKeys.New(context.TODO(), 0)
+          	accessKeyCreated, err := client.Storage.ObjectStorages.AccessKeys.New(
+          		context.TODO(),
+          		0,
+          		storage.ObjectStorageAccessKeyNewParams{},
+          	)
           	if err != nil {
           		panic(err.Error())
           	}
@@ -3008,7 +3035,12 @@ paths:
       tags:
       - S3-Compatible Storage
       summary: Delete bucket
-      description: Removes a bucket from an S3-compatible storage. All objects in the bucket will be deleted.
+      description: |-
+        Removes a bucket from an S3-compatible storage. All objects in the bucket will be deleted.
+
+        Returns 409 when CDN still uses the bucket as an origin or a logs-uploader target — unbind it
+        in CDN first — or when that could not be verified, in which case the bucket is left in place
+        and the request can be retried.
       operationId: deleteBucketV4
       parameters:
       - name: storage_id
@@ -3041,6 +3073,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrResponse'
         '404':
+          description: ErrResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrResponse'
+        '409':
           description: ErrResponse
           content:
             application/json:
@@ -3440,12 +3478,12 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          sftp_storage = client.storage.sftp_storages.create(
+          sftp_storage_created = client.storage.sftp_storages.create(
               location_name="s-region-1",
               name="my-sftp-storage",
               password_mode="auto",
           )
-          print(sftp_storage.id)
+          print(sftp_storage_created.id)
       - lang: Go
         source: |
           package main
@@ -3463,7 +3501,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	sftpStorage, err := client.Storage.SftpStorages.New(context.TODO(), storage.SftpStorageNewParams{
+          	sftpStorageCreated, err := client.Storage.SftpStorages.New(context.TODO(), storage.SftpStorageNewParams{
           		LocationName: "s-region-1",
           		Name:         "my-sftp-storage",
           		PasswordMode: storage.SftpStorageNewParamsPasswordModeAuto,
@@ -3471,7 +3509,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", sftpStorage.ID)
+          	fmt.Printf("%+v\n", sftpStorageCreated.ID)
           }
   /storage/v4/sftp_storages/{storage_id}:
     get:
@@ -3676,10 +3714,10 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          sftp_storage = client.storage.sftp_storages.update(
+          sftp_storage_created = client.storage.sftp_storages.update(
               storage_id=0,
           )
-          print(sftp_storage.id)
+          print(sftp_storage_created.id)
       - lang: Go
         source: |
           package main
@@ -3697,7 +3735,7 @@ paths:
           	client := gcore.NewClient(
           		option.WithAPIKey("My API Key"),
           	)
-          	sftpStorage, err := client.Storage.SftpStorages.Update(
+          	sftpStorageCreated, err := client.Storage.SftpStorages.Update(
           		context.TODO(),
           		0,
           		storage.SftpStorageUpdateParams{},
@@ -3705,7 +3743,7 @@ paths:
           	if err != nil {
           		panic(err.Error())
           	}
-          	fmt.Printf("%+v\n", sftpStorage.ID)
+          	fmt.Printf("%+v\n", sftpStorageCreated.ID)
           }
   /storage/v4/ssh_keys:
     get:
@@ -4123,15 +4161,23 @@ components:
           items:
             type: string
     BucketCreateBodyV4:
-      title: BucketCreateBodyV4 Request body for creating a bucket.
       required:
       - name
       type: object
       properties:
+        cors:
+          $ref: '#/components/schemas/BucketCORSPatchV4'
+        lifecycle:
+          $ref: '#/components/schemas/BucketLifecyclePatchV4'
         name:
           type: string
           description: Name of the bucket to create
           example: my-new-bucket
+        policy:
+          $ref: '#/components/schemas/BucketPolicyPatchV4'
+      description: |-
+        BucketCreateBodyV4 Request body for creating a bucket. The optional CORS, lifecycle and
+        policy blocks use the same shapes as the PATCH body and are applied as part of creation.
     BucketDetailResV4:
       title: BucketDetailResV4 Bucket with its current CORS, lifecycle, and access policy. Null sub-objects mean not configured.
       required:
@@ -4241,7 +4287,9 @@ components:
       properties:
         is_public:
           type: boolean
-          description: Set to true to allow unauthenticated object downloads, false to require valid S3 credentials.
+          description: |-
+            Set to true to allow unauthenticated object downloads, false to require valid S3 credentials.
+            Omit to leave the current policy unchanged.
           example: true
     BucketPolicyStatus:
       type: boolean

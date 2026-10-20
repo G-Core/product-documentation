@@ -1,7 +1,7 @@
 ---
 title: "Create and configure a load balancer"
 sidebarTitle: "Create load balancer"
-ai-navigation: Create and configure a Load Balancer with listeners, pools, and health monitors via the Customer Portal, REST API, or Terraform.
+description: Create and configure a Gcore load balancer with region, flavor, network, listeners, pool, health check, timeouts, logging, and tags.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -31,12 +31,14 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Two classes of Load Balancer flavors are available:</p>
 
-- **Standard** — general-purpose configurations suitable for most workloads, with network throughput up to 1.5 Gbps.
-- **Network-Optimized** — built on network-optimized infrastructure with SR-IOV on the VIP port. These deliver higher packet rates and lower latency, with guaranteed bandwidth up to 10 Gbps per instance.
+- **Standard**: general-purpose configurations suitable for most workloads, with network throughput up to 5 Gbps.
+- **Network-Optimized**: higher packet rates and lower latency than Standard, with guaranteed bandwidth up to 10 Gbps per instance.
 
 <Frame>
   ![Network-Optimized flavor tab](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-type-network-optimized.png)
 </Frame>
+
+<p>Clients reach the Load Balancer at its virtual IP (VIP), and the bandwidth in the table is the throughput of that address.</p>
 
 | **Class** | **vCPU** | **RAM (GiB)** | **Network bandwidth (VIP)** |
 | --- | --- | --- | --- |
@@ -115,8 +117,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
       ![Listeners section with Add Listener button, and Load Balancer Name, Logging, and Tags sections below](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-listeners-name-logging.png)
     </Frame>
   </Step>
-  <Step title="Enter the listener name">
-    Enter the listener's name.
+  <Step title="(Optional) Enter a listener name">
+    Enter a name for the listener.
   </Step>
   <Step title="Select the protocol">
     Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. Multiple TLS certificates are configurable for Terminated HTTPS and Prometheus.
@@ -175,22 +177,22 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ### Pool
 
-<p>Each listener forwards its traffic to a pool — a list of VMs that receive the distributed requests. Click **Add new pool** in the **Listeners** section to configure one.</p>
+<p>Each listener forwards its traffic to a pool — a list of VMs that receive the distributed requests. Click **Add pool** in the **Listeners** section to configure one.</p>
 
 <Frame>
   ![Add pools](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png)
 </Frame>
 
 <Steps>
-  <Step title="Name the pool">
+  <Step title="(Optional) Name the pool">
     Specify the pool name.
   </Step>
   <Step title="Select the balancing algorithm">
     Select one of the following:
 
-    - **Round robin** — requests are distributed across servers within a cluster one by one, in a repeating rotation: the first request goes to the first server, the second to the second, then back to the first once every server has taken a turn.
-    - **Least Connection** — new requests are sent to a server with the fewest active connections.
-    - **Source IP** — a client's IP address is used to determine which server receives the request.
+    - **Round robin**: requests are distributed across servers within a cluster one by one, in a repeating rotation: the first request goes to the first server, the second to the second, then back to the first once every server has taken a turn.
+    - **Least Connection**: new requests are sent to a server with the fewest active connections.
+    - **Source IP**: a client's IP address is used to determine which server receives the request.
   </Step>
   <Step title="Select the pool protocol">
     Select the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **UDP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what the backend application expects.
@@ -208,9 +210,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   <Step title="(Optional) Configure sticky sessions">
     In the **Sticky Sessions** dropdown, select the session persistence method:
 
-    - **None** — no session persistence, requests are distributed according to the selected algorithm.
-    - **App Cookie** — the Load Balancer reads an existing cookie set by the backend application and uses it to route subsequent requests from the same client to the same server. Fill in the **Cookie** field with the cookie name.
-    - **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
+    - **None**: no session persistence, requests are distributed according to the selected algorithm.
+    - **App Cookie**: the Load Balancer reads an existing cookie set by the backend application and uses it to route subsequent requests from the same client to the same server. Fill in the **Cookie** field with the cookie name.
+    - **HTTP Cookie**: the Load Balancer generates and manages its own session cookie automatically.
 
     <Frame>
       ![Pool configuration showing name, algorithm, protocol, and sticky sessions fields](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
@@ -295,7 +297,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 6. Enter the name
 
-<p>Enter a name for the Load Balancer. This name will be displayed in the Customer Portal.</p>
+<p>Enter a name for the Load Balancer.</p>
 
 <Frame>
   ![Enter Load Balancer name](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png)
@@ -321,6 +323,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Check the settings and click **Create Load Balancer** on the right.</p>
 
+<p>When the provisioning status is Active, the load balancer has a hostname (FQDN). [Manage load balancers](/cloud/networking/load-balancers/manage-load-balancers) explains where to copy it and how to use it.</p>
+
 ## Step 10. Configure security groups
 
 <p>Configure [security groups](/cloud/networking/add-and-configure-a-firewall) for Virtual Machines in the pool.</p>
@@ -334,7 +338,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>A [load&nbsp;balancer](/api-reference/cloud/load-balancers/create-load-balancer) distributes incoming requests across backend VMs, routing traffic only to healthy members. Creating one requires four API calls: create the balancer, add a listener, create a pool, and register the backend VMs as pool members.</p>
+<p>A [load&nbsp;balancer](/api-reference/cloud/load-balancers/create-load-balancer) distributes incoming requests across backend VMs, routing traffic only to healthy members. Creating one involves listing available flavors, then making four write calls: create the balancer, add a listener, create a pool, and register backend VMs as pool members.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
@@ -378,6 +382,7 @@ export VM2_IP="{VM2_PUBLIC_IP}"
         polling_timeout_seconds=300,
     )
     print(f"LB VIP: {lb.vip_address}")
+    print(f"LB FQDN: {lb.vip_fqdn}")
 
     # Step 3. Create HTTP listener on port 80
     listener = client.cloud.load_balancers.listeners.create_and_poll(
@@ -442,6 +447,7 @@ export VM2_IP="{VM2_PUBLIC_IP}"
             panic(err.Error())
         }
         fmt.Printf("LB VIP: %s\n", lb.VipAddress)
+        fmt.Printf("LB FQDN: %s\n", lb.VipFqdn)
 
         // Step 3. Create HTTP listener on port 80
         listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
@@ -484,6 +490,8 @@ export VM2_IP="{VM2_PUBLIC_IP}"
     ```
   </Tab>
 </Tabs>
+
+<p>When the provisioning status is ACTIVE, <code>vip_fqdn</code> is the fully qualified domain name of the VIP. Use it anywhere a hostname is accepted instead of that address.</p>
 
 ## Step-by-step
 
@@ -553,7 +561,7 @@ export LB_FLAVOR="lb1-1-2"
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Display name for the load balancer. |
+| `name` | No | Display name for the load balancer. If omitted, a name is generated automatically. |
 | `flavor` | Yes | The `flavor_name` string from step 1, not the `flavor_id` UUID. |
 
 <Tabs>
@@ -564,7 +572,7 @@ export LB_FLAVOR="lb1-1-2"
         flavor=os.environ["LB_FLAVOR"],
         polling_timeout_seconds=300,
     )
-    print(f"LB ID: {lb.id}  VIP: {lb.vip_address}")
+    print(f"LB ID: {lb.id}  VIP: {lb.vip_address}  FQDN: {lb.vip_fqdn}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -576,7 +584,7 @@ export LB_FLAVOR="lb1-1-2"
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("LB ID: %s  VIP: %s\n", lb.ID, lb.VipAddress)
+    fmt.Printf("LB ID: %s  VIP: %s  FQDN: %s\n", lb.ID, lb.VipAddress, lb.VipFqdn)
     ```
   </Tab>
   <Tab title="curl">
@@ -593,7 +601,7 @@ export LB_FLAVOR="lb1-1-2"
     {"tasks": ["d4a4b10e-..."]}
     ```
 
-    <p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Then retrieve the VIP address:</p>
+    <p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The load balancer ID is returned in `created_resources.loadbalancers[0]`. Then retrieve the load balancer:</p>
 
     ```bash
     curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
@@ -605,7 +613,8 @@ export LB_FLAVOR="lb1-1-2"
       "id": "f0782954-...",
       "provisioning_status": "ACTIVE",
       "operating_status": "ONLINE",
-      "vip_address": "85.234.84.36"
+      "vip_address": "85.234.84.36",
+      "vip_fqdn": "f0782954-1a2b-4c3d-8e9f-0123456789ab.luxembourg-1.lb.gcorecloud.com"
     }
     ```
   </Tab>
@@ -624,6 +633,7 @@ export LB_VIP="{LB_VIP_ADDRESS}"
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
+| `name` | No | Display name for the listener. If omitted, a name is generated automatically. |
 | `load_balancer_id` | Yes | The LB ID from step 2. |
 | `protocol` | Yes | `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`, or `PROMETHEUS`. |
 | `protocol_port` | Yes | Port to listen on (1–65535). |
@@ -687,6 +697,7 @@ export LISTENER_ID="{LISTENER_ID}"
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
+| `name` | No | Display name for the pool. If omitted, a name is generated automatically. |
 | `listener_id` | Yes | Attaches this pool to the listener from step 3. |
 | `load_balancer_id` | Yes | The LB ID from step 2. |
 | `lb_algorithm` | Yes | `ROUND_ROBIN`, `LEAST_CONNECTIONS`, or `SOURCE_IP`. |
@@ -790,7 +801,7 @@ export POOL_ID="{POOL_ID}"
   <Tab title="curl">
     ```bash
     # Add VM1 (repeat for VM2 with its IP)
-    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POOL_ID/member" \
+    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"address": "'"$VM1_IP"'", "protocol_port": 80}'
@@ -817,7 +828,7 @@ export POOL_ID="{POOL_ID}"
     ```python
     fetched = client.cloud.load_balancers.get(load_balancer_id=lb.id)
     print(f"Status: {fetched.provisioning_status} / {fetched.operating_status}")
-    print(f"VIP: {fetched.vip_address}")
+    print(f"VIP: {fetched.vip_address}  FQDN: {fetched.vip_fqdn}")
     print(f"Listeners: {len(fetched.listeners)}")
     ```
   </Tab>
@@ -828,7 +839,7 @@ export POOL_ID="{POOL_ID}"
         panic(err.Error())
     }
     fmt.Printf("Status: %s / %s\n", fetched.ProvisioningStatus, fetched.OperatingStatus)
-    fmt.Printf("VIP: %s  Listeners: %d\n", fetched.VipAddress, len(fetched.Listeners))
+    fmt.Printf("VIP: %s  FQDN: %s  Listeners: %d\n", fetched.VipAddress, fetched.VipFqdn, len(fetched.Listeners))
     ```
   </Tab>
   <Tab title="curl">
@@ -845,6 +856,7 @@ export POOL_ID="{POOL_ID}"
       "provisioning_status": "ACTIVE",
       "operating_status": "ONLINE",
       "vip_address": "85.234.84.36",
+      "vip_fqdn": "f0782954-1a2b-4c3d-8e9f-0123456789ab.luxembourg-1.lb.gcorecloud.com",
       "listeners": [{"id": "d2ac5700-..."}]
     }
     ```
@@ -982,18 +994,18 @@ output "vip_address" {
 | `lb1-4-8` | 4 | 8 GiB | 10 Gbps |
 | `lb1-8-16` | 8 | 16 GiB | 10 Gbps |
 
-<p>To attach a public floating IP to the load balancer's VIP:</p>
+<p>To attach a public floating IP to the load balancer's VIP, use the dedicated `gcore_cloud_floating_ip` resource:</p>
 
 ```hcl
-resource "gcore_cloud_load_balancer" "example" {
-  project_id = var.project_id
-  region_id  = var.region_id
-  name       = "my-lb"
-  flavor     = "lb1-1-2"
+resource "gcore_cloud_floating_ip" "lb_fip" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  fixed_ip_address = gcore_cloud_load_balancer.example.vip_address
+  port_id          = gcore_cloud_load_balancer.example.vip_port_id
+}
 
-  floating_ip = {
-    source = "new"  # use "existing" and set existing_floating_id to reuse one
-  }
+output "lb_floating_ip" {
+  value = gcore_cloud_floating_ip.lb_fip.floating_ip_address
 }
 ```
 

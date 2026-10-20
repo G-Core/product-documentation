@@ -164,7 +164,7 @@ Dev ticket stakeholders matter:
 ## Ticket classification (quick rules)
 
 Before doing any documentation work, classify the ticket. Full classification logic is
-in `.agents/skills/jira-context/SKILL.md`. Quick rules:
+in `.claude/skills/jira-context/SKILL.md`. Quick rules:
 
 | Signal | Classification |
 |--------|----------------|

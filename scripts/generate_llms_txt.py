@@ -8,7 +8,7 @@ root llms.txt product index.
 
 Root llms.txt is a curated meta-index (one entry per product) kept under
 50,000 characters so it is not truncated by agent platforms. Per-product
-llms.txt files contain the full article list with ai-navigation descriptions.
+llms.txt files contain the full article list with description descriptions.
 
 Usage:
     python scripts/generate_llms_txt.py \\
@@ -35,10 +35,22 @@ log = logging.getLogger(__name__)
 BASE_URL_DEFAULT = "https://docs.gcore.com"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
+# Own top tab, indexed with the product groups. Inserted after Account settings,
+# which is where this section sat inside Documentation.
+DEVELOPER_TOOLS_TAB = "Developer Tools"
 MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"
 
 ROOT_SIZE_WARN = 50_000
 ROOT_SIZE_ERROR = 100_000
+
+# Explicit prefix overrides for groups that share a top-level directory with
+# another group. Key: exact group name from docs.json. Value: relative path
+# (no leading/trailing slash) used for the output llms.txt file and the URL.
+# Example: "Public DNS" shares dns/ with "Managed DNS", so we give it its own
+# sub-path dns/public-dns so the two files don't collide.
+GROUP_PREFIX_OVERRIDES: dict[str, str] = {
+    "Public DNS": "dns/public-dns",
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -81,10 +93,10 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
     """
     Read YAML frontmatter from an MDX file.
 
-    Returns a dict with keys: title, sidebarTitle, ai-navigation.
+    Returns a dict with keys: title, sidebarTitle, description.
     Missing keys are returned as empty strings.
     """
-    result: dict[str, str] = {"title": "", "sidebarTitle": "", "ai-navigation": ""}
+    result: dict[str, str] = {"title": "", "sidebarTitle": "", "description": ""}
     if not mdx_path.exists():
         return result
     try:
@@ -104,7 +116,7 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
         return result
     fm_block = content[3:end]
     for line in fm_block.splitlines():
-        for key in ("title", "sidebarTitle", "ai-navigation"):
+        for key in ("title", "sidebarTitle", "description"):
             pattern = rf"^{key}:\s*['\"]?(.+?)['\"]?\s*$"
             m = re.match(pattern, line.strip())
             if m:
@@ -135,12 +147,75 @@ def get_product_prefix(node: object) -> Optional[str]:
     return max(prefixes, key=lambda k: prefixes[k])
 
 
+def developer_tools_index_group(tools_tab: dict) -> dict:
+    """Fold the Developer Tools tab into one llms product group.
+
+    In navigation, REST API, SDKs, MCP Server, and Terraform are sibling
+    sections. The index still treats them as one product: the landing page
+    first, then each section as a heading.
+
+    Args:
+        tools_tab: The Developer Tools tab object from docs.json.
+
+    Returns:
+        A group dict whose pages are the landing page and the section groups.
+    """
+    pages: list = []
+    for group in tools_tab.get("groups", []):
+        group_pages = group.get("pages", [])
+        landing_only = group.get("group") == "Developer Tools" and all(
+            isinstance(page, str) for page in group_pages
+        )
+        if landing_only:
+            pages = list(group_pages) + pages
+            continue
+        pages.append(group)
+    return {"group": "Developer Tools", "pages": pages}
+
+
+def indexed_product_groups(tabs: list) -> list[dict]:
+    """Return product groups in the order used by the llms index.
+
+    Groups from the Documentation tab keep their navigation order. The
+    Developer Tools tab is one product index entry, placed immediately
+    after Account settings.
+
+    Args:
+        tabs: ``navigation.tabs`` from docs.json.
+
+    Returns:
+        Group dicts to write as product ``llms.txt`` files.
+
+    Raises:
+        ValueError: Documentation or Developer Tools is missing, or
+            Account settings is not a Documentation group.
+    """
+    doc_tab = next((tab for tab in tabs if tab.get("tab") == DOCUMENTATION_TAB), None)
+    if doc_tab is None:
+        raise ValueError(f"Tab '{DOCUMENTATION_TAB}' not found in docs.json")
+
+    tools_tab = next((tab for tab in tabs if tab.get("tab") == DEVELOPER_TOOLS_TAB), None)
+    if tools_tab is None:
+        raise ValueError(f"Tab '{DEVELOPER_TOOLS_TAB}' not found in docs.json")
+
+    groups: list[dict] = list(doc_tab.get("groups", []))
+    account_index = next(
+        (index for index, group in enumerate(groups) if group.get("group") == "Account settings"),
+        None,
+    )
+    if account_index is None:
+        raise ValueError("Account settings group not found in the Documentation tab")
+
+    groups.insert(account_index + 1, developer_tools_index_group(tools_tab))
+    return groups
+
+
 def derive_product_summary(group: dict, repo_root: Path) -> str:
     """
     Derive a one-line product summary for use in the root index and blockquote.
 
     Tries, in order:
-    1. ai-navigation of the product's root overview page (first string page in group).
+    1. description of the product's root overview page (first string page in group).
     2. Comma-separated list of sub-group names from docs.json.
 
     Args:
@@ -156,7 +231,7 @@ def derive_product_summary(group: dict, repo_root: Path) -> str:
         if isinstance(item, str):
             mdx_path = repo_root / (item + ".mdx")
             fm = read_frontmatter(mdx_path)
-            nav = fm.get("ai-navigation", "")
+            nav = fm.get("description", "")
             if nav:
                 return nav
             break
@@ -186,7 +261,7 @@ def build_section_lines(
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
         depth: Current nesting depth (0 = top-level product group).
-        missing_nav: Optional list to collect paths missing ai-navigation.
+        missing_nav: Optional list to collect paths missing description.
 
     Returns:
         List of formatted text lines.
@@ -200,7 +275,7 @@ def build_section_lines(
             return lines
         fm = read_frontmatter(mdx_file)
         title = fm.get("title") or fm.get("sidebarTitle") or node.split("/")[-1]
-        description = fm.get("ai-navigation", "")
+        description = fm.get("description", "")
         url = page_to_url(node, base_url)
         if not url.endswith(".md"):
             log.warning("URL does not end with .md, check page_to_url: %s", url)
@@ -245,13 +320,13 @@ def build_product_llms(
         group: The top-level group dict from docs.json.
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
-        missing_nav: Accumulator for pages missing ai-navigation.
+        missing_nav: Accumulator for pages missing description.
 
     Returns:
         Tuple of (file_content, product_prefix, product_summary).
     """
     group_name: str = group.get("group", "Unknown")
-    product_prefix = get_product_prefix(group)
+    product_prefix = GROUP_PREFIX_OVERRIDES.get(group_name) or get_product_prefix(group)
     page_count = len(collect_pages(group))
 
     summary = derive_product_summary(group, repo_root)
@@ -389,8 +464,41 @@ def check_root_size(content: str, path: Path) -> None:
         log.info("Root size: %d characters (within safe threshold).", size)
 
 
+_UNICODE_REPLACEMENTS = {
+    "\u2013": "-",    # en dash -> hyphen
+    "\u2014": ",",    # em dash -> comma
+    "\u2018": "'",    # left single quotation mark
+    "\u2019": "'",    # right single quotation mark
+    "\u201C": '"',    # left double quotation mark
+    "\u201D": '"',    # right double quotation mark
+    "\u20AC": "EUR",  # euro sign
+    "\u00A0": " ",    # non-breaking space
+}
+
+
+def _normalize_to_ascii_safe(text: str) -> str:
+    """Replace non-ASCII typographic characters with ASCII equivalents.
+
+    The llms.txt files are served as text/plain without charset. To avoid
+    mojibake in browsers that default to Windows-1252, substitute common
+    Unicode punctuation with plain ASCII before writing.
+
+    Em dash and en dash are handled with regex to absorb surrounding spaces,
+    e.g. "location — HTTP" becomes "location, HTTP" not "location , HTTP".
+    """
+    # Em dash: collapse surrounding whitespace into a single ", "
+    text = re.sub(r"\s*\u2014\s*", ", ", text)
+    # En dash: collapse surrounding whitespace into a single "-"
+    text = re.sub(r"\s*\u2013\s*", "-", text)
+    # Remaining characters: straight substitution
+    for char, replacement in _UNICODE_REPLACEMENTS.items():
+        text = text.replace(char, replacement)
+    return text
+
+
 def write_or_print(path: Path, content: str, dry_run: bool) -> None:
     """Write content to file, or print preview to stdout if dry_run."""
+    content = _normalize_to_ascii_safe(content)
     if dry_run:
         print(f"\n{'='*60}")
         print(f"FILE: {path}")
@@ -421,17 +529,19 @@ def main() -> int:
         return 1
 
     tabs = docs_json.get("navigation", {}).get("tabs", [])
-    doc_tab = next((t for t in tabs if t.get("tab") == DOCUMENTATION_TAB), None)
-    if not doc_tab:
-        log.error("Tab '%s' not found in docs.json", DOCUMENTATION_TAB)
+    try:
+        groups = indexed_product_groups(tabs)
+    except ValueError as exc:
+        log.error("%s", exc)
         return 1
 
     product_entries: list[tuple[str, str, int, str]] = []
     product_contents: list[tuple[str, str]] = []
     missing_nav: list[str] = []
     total_pages = 0
+    used_prefixes: dict[str, str] = {}  # prefix -> group_name, collision guard
 
-    for group in doc_tab.get("groups", []):
+    for group in groups:
         group_name: str = group.get("group", "Unknown")
         page_count = len(collect_pages(group))
 
@@ -447,6 +557,15 @@ def main() -> int:
         if not product_prefix:
             log.warning("Cannot determine prefix for group '%s', skipping", group_name)
             continue
+
+        if product_prefix in used_prefixes:
+            log.error(
+                "Prefix collision: '%s' and '%s' both map to '%s'. "
+                "Add an entry to GROUP_PREFIX_OVERRIDES to resolve.",
+                used_prefixes[product_prefix], group_name, product_prefix,
+            )
+            return 1
+        used_prefixes[product_prefix] = group_name
 
         output_path = repo_root / product_prefix / "llms.txt"
         write_or_print(output_path, content, dry_run)
@@ -467,15 +586,15 @@ def main() -> int:
     missing_count = len(missing_nav)
     if missing_count:
         log.warning(
-            "ai-navigation missing: %d/%d pages. Files: %s",
+            "description missing: %d/%d pages. Files: %s",
             missing_count, total_pages,
             ", ".join(missing_nav[:10]) + ("..." if missing_count > 10 else ""),
         )
     else:
-        log.info("ai-navigation coverage: %d/%d pages (100%%).", total_pages, total_pages)
+        log.info("description coverage: %d/%d pages (100%%).", total_pages, total_pages)
 
     log.info(
-        "Done. %d products, %d total pages, %d missing ai-navigation.",
+        "Done. %d products, %d total pages, %d missing description.",
         len(product_entries), total_pages, missing_count,
     )
     return 0

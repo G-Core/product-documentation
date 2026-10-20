@@ -1,450 +1,1157 @@
 ---
 title: Create a CDN resource for video streaming
 sidebarTitle: For video streaming
-ai-navigation: Create a CDN resource for video streaming with HLS, DASH, FLV, or MP4 formats, configuring geo-blocking, secure token authentication, custom domains, and origin shielding for global delivery without transcoding.
+description: Set up a Gcore CDN resource for video streaming with HLS, MPEG-DASH, HTTP-FLV, or MP4 delivery, plus origin shielding and secure tokens.
 ---
 
-## Overview
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Use Gcore Video CDN to deliver live streams and video-on-demand content globally without transcoding. This guide walks you through creating a CDN resource optimized for video delivery.
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
-## When to use Video CDN
+<p>Gcore Video CDN delivers prepared HTTP Live Streaming (HLS), Dynamic Adaptive Streaming over HTTP (MPEG-DASH), HTTP Flash Video (HTTP-FLV), and MP4 content globally without transcoding. After setup, viewers request streams and files through a CDN domain while the CDN retrieves content from the configured origin.</p>
 
-<Tabs>
-  <Tab title="Use video CDN if...">
-    **You should use video CDN when:**
+<p>Activation requirements differ by delivery format:</p>
 
-    - You already have HLS, DASH, or FLV streams ready
-    - You handle transcoding on your own servers
-    - You need global delivery at scale (thousands to millions of viewers)
-    - You want advanced CDN features:
-      - Geo-blocking by country
-      - Secure token authentication
-      - Custom domains
-      - Origin shielding
-    - You want to reduce origin bandwidth costs
+- HLS and MPEG-DASH — require video-delivery approval from Gcore Support and a paid CDN plan.
+- HTTP-FLV Live — requires a sales agreement and a dedicated service profile. Contact your account manager or [sales@gcore.com](mailto:sales@gcore.com).
+- HTTP-FLV video on demand (VOD) and MP4 VOD — self-service; only a paid CDN plan is required.
 
-    **Supported formats:**
-    - **HLS** (`.m3u8` playlists, `.ts` or `.m4s` segments)
-    - **MPEG-DASH** (`.mpd` manifests)
-    - **HTTP-FLV** (`.flv` streams)
-    - **MP4** (progressive download, VOD only)
+## Video CDN or Gcore Video Streaming
 
-    **Example scenarios:**
-    - You run a media server (Wowza, Nginx-RTMP, SRS) producing HLS
-    - You're migrating from another CDN (Cloudflare, AWS, etc.)
-    - You need geo-restrictions for broadcasting rights
-    - You want to offload bandwidth from your origin
-  </Tab>
-  <Tab title="Use Video Streaming if...">
-    **You should use Video Streaming Platform instead when:**
+<p>Select Video CDN when prepared streams already exist, or Gcore Video Streaming when transcoding and a hosted workflow are required.</p>
 
-    - You need transcoding (raw RTMP/SRT input)
-    - You want automatic quality ladder generation (ABR)
-    - You're streaming from encoders (OBS, vMix, hardware encoders)
-    - You need DVR (pause/rewind) or recording features
-    - You want an all-in-one hosted solution
+### Video CDN
 
-    **Learn more:** [Video Streaming Platform](/streaming)
-  </Tab>
-</Tabs>
+<p>[Video&nbsp;CDN](/cdn/video-cdn/video-cdn-overview) delivers prepared content without transcoding and is suitable when:</p>
 
----
+- HLS, MPEG-DASH, HTTP-FLV, or MP4 content is available
+- Global delivery is required
+- Geo-blocking, secure token authentication, custom domains, or Origin Shielding is required
+- Origin bandwidth must be reduced
 
-## Quick setup (4 steps)
+<p>It supports HLS `.m3u8` playlists with `.ts` or `.m4s` segments, MPEG-DASH `.mpd` manifests, HTTP-FLV `.flv` streams, and progressive MP4 downloads.</p>
 
-### Step 1: Request streaming activation
+### Gcore Video Streaming
 
-<Warning>
-Required first step: video delivery via CDN requires legal approval from Gcore Support.
-</Warning>
+<p>[Gcore&nbsp;Video&nbsp;Streaming](/streaming) accepts Real-Time Messaging Protocol (RTMP) or Secure Reliable Transport (SRT) input and transcodes it into adaptive-bitrate renditions. It also provides encoder integration, digital video recorder (DVR), and recording.</p>
 
-Contact [Gcore Support](mailto:support@gcore.com) or use the chat in the bottom-right corner and ask to enable video delivery for your CDN account. This is CDN-side approval for prepared HLS and DASH delivery.
+## Quick setup
 
-Provide:
+<p>Follow the steps below. The approval step applies to HLS, MPEG-DASH, and HTTP-FLV Live; HTTP-FLV VOD and MP4 VOD can proceed directly to resource creation. The LIVE STREAMING preset step applies to live delivery only.</p>
 
-- **Your Client ID** (found on the main page of Gcore Customer Portal)
-- **Domain name** and company name
-- **Content type**: Sports, education, entertainment, news, etc.
-- **Sample stream URL**: Example of your typical stream format
-- **Viewer geography**: Where your audience is located
-- **Broadcasting license** or content compliance policy
-- **Abuse or copyright contact email**
-
-For sports, TV channels, events, or other third-party protected content, Support may request proof that you or your clients have rights to distribute the content. Requests without the necessary licensing details, company identity, or abuse handling information may be declined or closed.
-
-Processing time: Usually 1-2 business days
-
-<Frame>![Client ID location](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/12947023694225.png)</Frame>
-
----
-
-### Step 2: Activate paid CDN plan
-
-Video streaming requires a paid CDN subscription:
-
-1. Navigate to [CDN](https://portal.gcore.com/cdn/resources/list) in the Customer Portal
-2. If you're on the free plan, upgrade to:
-   - **Start** (1.5 TB included traffic)
-   - **Pro** (5 TB included traffic)
-
-Pricing: Pay for bandwidth delivered to viewers. [View pricing details](/cdn/how-the-cdn-service-and-its-additional-options-are-billed)
-
----
-
-### Step 3: Create CDN resource
-
-Once streaming is activated by support, create your CDN resource:
-
-1. Go to **CDN** > [CDN Resources](https://portal.gcore.com/cdn/resources/list)
-2. Click **Create CDN Resource**
-3. Configure the resource (for static assets):
-
-Origin settings:
-
-<Tabs>
-  <Tab title="Your own server">
-    - **Origin type**: Your server
-    - **Origin address**: Your media server domain or IP
-      - Example: `live.example.com` or `192.0.2.1`
-    - **Origin protocol**: HTTP or HTTPS (match your origin)
-  </Tab>
-  <Tab title="Gcore Storage">
-    - **Origin type**: Storage
-    - **Storage**: Select your Gcore Storage bucket
-    - **Path** (optional): `/videos` if VOD files are in a subfolder
-  </Tab>
-</Tabs>
-
-CDN resource name:
-- Choose a custom domain: `video.yourdomain.com`
-- Or use auto-generated: `123456.gcdn.co`
-
-4. Click **Create CDN Resource**
-
-Detailed guide: [Create a CDN resource for static assets](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource) (same process for video)
-
----
-
-### Step 4: Configure caching rules
-
-Optimize caching for video delivery:
-
-<Tabs>
-  <Tab title="For Live HLS Streaming">
-    Basic cache configuration for live streams:
-
-    ### Step 1: Enable "Always online" (Recommended)
-
-    1. Go to **CDN Resource** > **Cache**
-    2. Enable **"Always online"** with these settings:
-       - Check **error** (serve stale cache if origin returns errors)
-       - Check **timeout** (serve stale cache if origin times out)
-       - **Uncheck "updating"**
-
-    Why enable Always online?
-    - Protects viewers from origin failures
-    - If origin goes down, CDN serves cached content instead of error pages
-    - Improves reliability and uptime
-
+<Steps>
+  <Step title="Request video-delivery approval (HLS, MPEG-DASH, or HTTP-FLV Live)">
     <Warning>
-    Important: Uncheck the "updating" option for optimal live streaming performance. When excluded, the CDN can deliver video chunks more efficiently, reducing buffering and ensuring smoother playback. Only enable "error" and "timeout".
+    <p>HLS and MPEG-DASH require video-delivery approval from Gcore Support and a paid CDN plan. HTTP-FLV Live requires a sales agreement and a dedicated service profile — contact your account manager or [sales@gcore.com](mailto:sales@gcore.com). HTTP-FLV VOD and MP4 VOD are self-service and do not require this step.</p>
     </Warning>
 
-    ### Step 2: Set resource-level cache (for segments)
+    <p>For HLS and MPEG-DASH, contact [Gcore&nbsp;Support](mailto:support@gcore.com) or use the account chat and provide:</p>
 
-    1. Still in **CDN Resource** > **Cache**
-    2. Set **CDN cache expiry time**: **60 seconds**
-       - This caches all content (except manifests, see below) for 60 seconds
-       - If you use DVR, increase this to match your DVR window (e.g., 30 minutes)
+    - **ID** (shown in the profile menu at the top right — click your avatar to reveal it)
+    - Domain name and company name
+    - Content type: sports, education, entertainment, or news
+    - Sample stream URL: an example of the typical stream format
+    - Viewer geography: where the audience is located
+    - Broadcasting license or content compliance policy
+    - Abuse or copyright contact email
 
-    ### Step 3: Create manifest caching rule
+    <p>For sports, TV channels, events, or other third-party protected content, Support may request proof that the account holder or its clients have rights to distribute the content. Requests without the necessary licensing details, company identity, or abuse handling information may be declined or closed.</p>
 
-    1. Go to **CDN Resource** > **Rules**
-    2. Click **Create Rule** > Enter manually:
-       - **Rule name**: `manifests`
-       - **Pattern**: `^/.+\.(m3u8|mpd|ism)$` (regex for manifest files)
-       - **Cache time**: **2 seconds**
-       - **Browser cache**: **0 seconds** (no browser caching for manifests)
-    3. Click **Create rule**
+    <p>Processing time is usually 1–2 business days.</p>
 
-    **Why these values?**
-    - **Segments (60s)**: Balances freshness with cache efficiency. Longer than segment duration for slow connections.
-    - **Manifests (2s)**: Very short to ensure viewers get latest segment list
-    - **DVR adjustment**: If DVR enabled, segment cache should match DVR window
+    <Frame>![Profile menu showing the ID field](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/account-id-profile-menu.png)</Frame>
 
-    ### Optional: LL-HLS (Low-Latency) configuration
+    <p>For HTTP-FLV Live, contact your account manager or [sales@gcore.com](mailto:sales@gcore.com) to initiate the sales agreement and dedicated service profile setup. Processing time varies.</p>
+  </Step>
 
-    If using LL-HLS (Low-Latency HLS):
+  <Step title="Activate a paid CDN plan">
+    <p>Video streaming requires a paid CDN subscription.</p>
 
-    1. Go to **CDN Resource** > **Cache**
-    2. Enable **Query parameters whitelist**
-    3. Add these parameters: `_HLS_msn`, `_HLS_part`, `_HLS_skip`
-       - These are required for LL-HLS to work correctly
-       - All other query parameters will be ignored
+    <p>1. Navigate to **CDN** in the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com).</p>
 
-    <Frame>![Cache settings for live streaming](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/11775065795729.png)</Frame>
-  </Tab>
-  <Tab title="For VOD (Video on Demand)">
-    **Optimized cache configuration for VOD:**
+    <p>2. On the free plan, upgrade to a paid CDN plan. See [CDN&nbsp;billing](/cdn/how-the-cdn-service-and-its-additional-options-are-billed) for current plan options and included traffic allowances.</p>
+  </Step>
 
-    ### Step 1: Enable "Always online" (Recommended)
+  <Step title="Create a CDN resource">
+    <p>Create the CDN resource at the right point in your workflow:</p>
 
-    1. Go to **CDN Resource** > **Cache**
-    2. Enable **"Always online"** with these settings:
-       - Check **error** (serve stale cache if origin returns errors)
-       - Check **timeout** (serve stale cache if origin times out)
-       - **Uncheck "updating"**
+    - HLS or MPEG-DASH — after receiving video-delivery approval from Gcore Support
+    - HTTP-FLV Live — after sales approval and dedicated-profile activation by Gcore
+    - HTTP-FLV VOD or MP4 VOD — immediately after activating a paid CDN plan
 
-    **Why enable Always online?**
-    - If origin goes down, viewers can still watch cached videos
-    - Prevents "origin unavailable" errors from affecting users
-    - Especially important for high-traffic VOD platforms
+    <p>1. Navigate to **CDN** > [CDN&nbsp;resources](https://portal.gcore.com/cdn/resources/list).</p>
 
-    <Warning>
-    Important: Uncheck the "updating" option for optimal live streaming performance. When excluded, the CDN can deliver video chunks more efficiently, reducing buffering and ensuring smoother playback. Only enable "error" and "timeout".
-    </Warning>
+    <p>2. Click **Create CDN resource**.</p>
 
-    ### Step 2: Set long-term cache for all content
+    <p>3. Enter the domain that will serve the Video CDN — for instance, `video.example.com`. Use **Add CNAME** to add more domains if needed.</p>
 
-    1. Still in **CDN Resource** > **Cache**
-    2. Set **CDN cache expiry time**: 1 year (31536000 seconds)
-       - This caches all successful responses (2xx, 3xx) for 1 year
-       - VOD content doesn't change, so aggressive caching is safe
-    3. Set **Custom cache time for 404 errors**: 1 second
-       - Protects origin from repeated requests for non-existent files
+    <p>4. Under **Origin**, keep **Specify content origin** selected and configure one source:</p>
+       - URL — enter a resolvable media server domain or IP in **Origin source** — `live.example.com`
+       - S3 storage — select the Gcore Storage bucket that contains the VOD files
+       - FastEdge — select the FastEdge app that generates the response
 
-    Why 1 year?
-    - VOD files never change once uploaded
-    - Maximum cache efficiency = minimum origin load
-    - Can be purged manually if needed
+    <p>5. Click **Create**.</p>
 
-    ### Step 3 (Optional): Large file optimization (for MP4)
+    <p>For each [custom&nbsp;domain](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), create a CNAME record that points to the assigned CDN domain and issue or upload a valid SSL certificate before testing over HTTPS.</p>
 
-    If delivering MP4 files for progressive download:
+  </Step>
 
-    1. Go to **CDN Resource** > **Content**
-    2. Enable **Large files delivery optimization**
-       - Enables HTTP range requests for seeking
-       - Important: Your origin must support Range requests
-       - Note: Enabling this will invalidate existing cache
+  <Step title="Configure caching rules">
+    <p>Optimize caching for the delivery type. The settings below are organized by delivery format.</p>
 
-    Requirements:
-    - Origin server supports HTTP Range Request (Content-Range headers)
-    - If using origin group, files must have identical Content-Length and ETag across all origins
-    - Do not enable GZIP compression when using large file optimization
+    <Tabs>
+      <Tab title="HLS live">
+        <p>Configure the baseline cache settings:</p>
 
-    ### Step 4 (Optional): Query string handling
+        <p>1. Navigate to **CDN Resource** > **Cache**.</p>
 
-    1. Go to **CDN Resource** > **Cache**
-    2. Enable **Ignore query string** if:
-       - Your VOD URLs don't use query parameters for logic
-       - You want to cache `video.mp4?ref=email` and `video.mp4?ref=social` as the same file
-    3. Ask customer first - they may have analytics or tracking in query params
+        <p>2. Enable **Always online** and add these error types:</p>
+           - error
+           - timeout
 
-    Common file extensions:
-    - **Manifests**: `.m3u8`, `.mpd`
-    - **Segments**: `.ts`, `.m4s`, `.m4v`, `.m4a`, `.m4i`
-    - **Progressive**: `.mp4`, `.webm`
-    - **Subtitles**: `.vtt`, `.webvtt`, `.ttml`
-  </Tab>
-  <Tab title="For Live MPEG-DASH CMAF Streaming">
-    <Warning>
-    Critical for Low-Latency: If you're using MPEG-DASH with an external transcoder (not Gcore Video Streaming), you must enable the **Chunked-Proxy module** for low-latency delivery. Contact [Gcore Support](mailto:support@gcore.com) or your account manager to activate this feature.
+        <p>When an error or timeout occurs, Always Online serves previously cached content while a valid stale response is available.</p>
 
-    Without Chunked-Proxy, your CDN will use standard "store and forward" delivery, resulting in 10-15 second latency instead of the 2-4 second low-latency performance.
-    </Warning>
+        <Warning>
+        <p>Do not add `updating` to the error types list for live streaming. Add only `error` and `timeout`.</p>
+        </Warning>
 
-    ### What is Chunked-Proxy?
+        <p>3. In the **CDN caching** dropdown, select **CDN controlled**.</p>
 
-    Standard CDNs wait for files to completely download from origin before sending to viewers ("Store and Forward"). Gcore's **Chunked-Proxy module** streams data immediately:
-    - Immediate distribution: CDN edge sends bytes to viewers *while* receiving from origin
-    - Protocol optimization: Uses Chunked Transfer Encoding (HTTP/1.1) and Framing (HTTP/2/3)
-    - 2-4 second latency: Achieves true low-latency for LL-DASH streams
+        <p>4. Set **Cache expiry** to 60 seconds. With DVR enabled, increase this value to match the DVR window.</p>
 
-    Learn more: [How Low-Latency Streaming Works](/streaming/live-streaming/how-low-latency-streaming-works)
+        <p>5. Click **Save changes**.</p>
 
-    ---
+        <p>Next, create a manifest caching rule:</p>
 
-    ### Request Chunked-Proxy activation
+        <p>6. Navigate to **CDN Resource** > **Rules** and click **Create rule**.</p>
 
-    1. Contact [Gcore Support](mailto:support@gcore.com) or your account manager
-    2. Request **Chunked-Proxy module activation** for your CDN resource
-    3. Provide:
-       - Your CDN resource ID or domain
-       - Confirmation that you're using LL-DASH with CMAF segments
-       - Your origin transcoder details (Wowza, Nginx-RTMP, etc.)
+        <Frame>![Create rule dropdown with the Playlists and Video segments templates](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/create-rule-dropdown.png)</Frame>
 
-    After activation:
-    - Your LL-DASH streams will achieve 2-4 second latency
-    - CDN will stream chunks immediately as they're received from origin
+        <p>7. Select **Playlists template (.m3u8)**.</p>
+
+        <p>8. Set **Cache time** to 2 seconds and **Browser cache** to 0 seconds, then click **Create rule**.</p>
+
+        <p>A 60 s segment cache and 2 s manifest cache balance segment availability with playlist freshness.</p>
+
+        <p>For Low-Latency HLS (LL-HLS), add the delivery parameters to the cache key:</p>
+
+        <p>9. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>10. Enable **Query parameters allowlist**.</p>
+
+        <p>11. Add these parameters: `_HLS_msn`, `_HLS_part`, `_HLS_skip`.</p>
+            - These are required for LL-HLS to work correctly
+            - Other parameters are excluded from the cache key but are still forwarded to the origin
+
+        <p>12. Click **Save changes**.</p>
+      </Tab>
+      <Tab title="MPEG-DASH live">
+        <p>Configure the baseline cache settings:</p>
+
+        <p>1. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>2. Enable **Always online** and add these error types:</p>
+           - error
+           - timeout
+
+        <p>When an error or timeout occurs, Always Online serves previously cached content while a valid stale response is available.</p>
+
+        <Warning>
+        <p>Do not add `updating` to the error types list for live streaming. Add only `error` and `timeout`.</p>
+        </Warning>
+
+        <p>3. In the **CDN caching** dropdown, select **CDN controlled**.</p>
+
+        <p>4. Set **Cache expiry** to 60 seconds. With DVR enabled, increase this value to match the DVR window.</p>
+
+        <p>5. Click **Save changes**.</p>
+
+        <p>Next, create a manifest caching rule:</p>
+
+        <p>6. Navigate to **CDN Resource** > **Rules** and click **Create rule**.</p>
+
+        <p>7. Select **Create blank rule** and use `^/.+\.mpd$` as the pattern.</p>
+
+        <p>8. Set **Cache time** to 2 seconds and **Browser cache** to 0 seconds, then click **Create rule**.</p>
+
+        <p>For Low-Latency DASH (LL-DASH) with Common Media Application Format (CMAF) segments, low-latency delivery with an external transcoder requires the Chunked-Proxy module.</p>
+
+        <Warning>
+        <p>When using MPEG-DASH with an external transcoder (not Gcore Video Streaming), enable the Chunked-Proxy module for low-latency delivery by contacting Gcore Support or the account manager.</p>
+
+        <p>Without Chunked-Proxy, the CDN uses store-and-forward delivery, which can increase latency.</p>
+        </Warning>
+
+        <p>Standard CDNs wait for files to download fully from origin before sending them to viewers. The Chunked-Proxy module sends bytes to viewers while receiving them from the origin, using chunked transfer encoding and protocol framing.</p>
+
+        <p>The [low-latency&nbsp;streaming](/streaming/live-streaming/how-low-latency-streaming-works) configuration targets 2–4 seconds. Actual end-to-end latency depends on the transcoder, segment duration, player buffering, and network conditions.</p>
+
+        <p>To activate Chunked-Proxy, contact Gcore Support or the account manager and provide:</p>
+
+        <p>1. The CDN resource ID or domain</p>
+        <p>2. Confirmation of using LL-DASH with CMAF segments</p>
+        <p>3. Origin transcoder details (for example, Wowza or NGINX RTMP)</p>
+
+        <p>After activation, the CDN streams chunks as they arrive from the origin instead of waiting for complete segments.</p>
+
+        <Info>
+        <p>When using Gcore Video Streaming (the Gcore transcoding service), Chunked-Proxy is already enabled by default. Activation is only needed for an external transcoder.</p>
+        </Info>
+
+        <p>Common DASH/CMAF file extensions:</p>
+
+        - Manifests: `.mpd`
+        - Segments: `.m4s`, `.m4v`, `.m4a`, `.cmfv`, `.cmfa`
+        - Initialization: `.mp4` (init segments)
+      </Tab>
+      <Tab title="HLS/MPEG-DASH VOD">
+        <p>VOD cache duration depends on whether content URLs are immutable or reused.</p>
+
+        <p>Enable Always online first:</p>
+
+        <p>1. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>2. Enable **Always online** and add these error types:</p>
+           - error (serve stale cache if origin returns errors)
+           - timeout (serve stale cache if origin times out)
+
+        <p>When an error or timeout occurs, Always Online serves previously cached video while a valid stale response is available.</p>
+
+        <p>3. Click **Save changes**.</p>
+
+        <p>Then set long-term cache:</p>
+
+        <p>4. Still in **CDN Resource** > **Cache**, select **CDN controlled** from the **CDN caching** dropdown.</p>
+
+        <p>5. Set **Cache expiry** to 1 year (31,536,000 seconds) for immutable or versioned URLs.</p>
+           - In CDN-controlled mode, responses with status codes 200, 206, 301, and 302 are cached by default; responses with other codes are not cached unless configured separately
+           - In origin-controlled mode, caching is governed by the `Cache-Control` header the origin sends
+           - For content replaced at the same URL, use a shorter TTL or [purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after replacement
+
+        <p>6. Click **Save changes**.</p>
+
+        <p>7. To limit caching of 404 responses, add an advanced caching rule: in **CDN caching** settings, click **Add rule**, set **Response code** to `404`, and set **Caching time** to 1 second. Click **Save changes**. This protects the origin from repeated requests for non-existent files.</p>
+
+        <p>A 1-year TTL is appropriate only when content URLs are immutable or versioned. After replacing content at the same URL, [purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) to remove the older object.</p>
+
+        <p>Optionally, configure query string handling:</p>
+
+        <p>8. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>9. Enable **Ignore query string** if VOD URLs do not use query parameters for logic, and caching `video.mp4?ref=email` and `video.mp4?ref=social` as the same file is preferred.</p>
+
+        <p>10. Before removing query parameters from the cache key, confirm that they are not required for analytics or access control. Ignored parameters are still forwarded to the origin.</p>
+
+        <p>11. Click **Save changes**.</p>
+
+        <p>Common file extensions:</p>
+
+        - Manifests: `.m3u8`, `.mpd`
+        - Segments: `.ts`, `.m4s`, `.m4v`, `.m4a`, `.m4i`
+        - Subtitles: `.vtt`, `.webvtt`, `.ttml`
+      </Tab>
+      <Tab title="HTTP-FLV Live">
+        <p>[HTTP-FLV Live streaming](/cdn/video-cdn/flv-streaming) uses a single continuous connection and requires a dedicated service profile. Cache settings for HTTP-FLV Live are configured by Gcore Support as part of the service activation process — contact Support or your account manager to request the configuration.</p>
+      </Tab>
+      <Tab title="HTTP-FLV VOD and MP4">
+        <p>Enable Always online first:</p>
+
+        <p>1. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>2. Enable **Always online** and add these error types:</p>
+           - error (serve stale cache if origin returns errors)
+           - timeout (serve stale cache if origin times out)
+
+        <p>3. Click **Save changes**.</p>
+
+        <p>Then set long-term cache:</p>
+
+        <p>4. Still in **CDN Resource** > **Cache**, select **CDN controlled** from the **CDN caching** dropdown.</p>
+
+        <p>5. Set **Cache expiry** to 1 year (31,536,000 seconds) for immutable or versioned URLs.</p>
+           - In CDN-controlled mode, responses with status codes 200, 206, 301, and 302 are cached; other codes require additional configuration
+           - For content replaced at the same URL, use a shorter TTL or [purge&nbsp;the&nbsp;cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) after replacement
+
+        <p>6. Click **Save changes**.</p>
+
+        <p>7. To limit caching of 404 responses, add an advanced caching rule: in **CDN caching** settings, click **Add rule**, set **Response code** to `404`, and set **Caching time** to 1 second. Click **Save changes**.</p>
+
+        <p>Optionally, enable large file optimization for MP4 progressive download:</p>
+
+        <p>8. Navigate to **CDN Resource** > **Content**.</p>
+
+        <p>9. Enable **Large files delivery optimization**.</p>
+           - Retrieves content from the origin in 10 MB chunks using HTTP range requests and caches each chunk independently — intended for large single-file MP4 content
+           - Generally unnecessary for segmented HLS or MPEG-DASH, which already divide media into small independently cached chunks
+           - The origin must support HTTP Range requests
+           - Enabling this invalidates existing cache
+           - Incompatible with Fetch Compressed, Gzip compression, and Brotli compression
+
+        <p>10. Click **Save changes**.</p>
+
+        <p>Optionally, configure query string handling:</p>
+
+        <p>11. Navigate to **CDN Resource** > **Cache**.</p>
+
+        <p>12. Enable **Ignore query string** if VOD URLs do not use query parameters for logic.</p>
+
+        <p>13. Before removing query parameters from the cache key, confirm that they are not required for analytics or access control. Ignored parameters are still forwarded to the origin.</p>
+
+        <p>14. Click **Save changes**.</p>
+
+        <p>Common file extensions:</p>
+
+        - Progressive: `.mp4`, `.webm`, `.flv`
+        - Subtitles: `.vtt`, `.webvtt`, `.ttml`
+      </Tab>
+    </Tabs>
 
     <Info>
-    Note: If you're using **Gcore Video Streaming** (our transcoding service), Chunked-Proxy is already enabled by default. You only need to request activation if using an external transcoder.
+    <p>For high-traffic streaming or specific performance requirements, contact Gcore Support to configure cache sharding across multiple servers, cache lock timing for concurrent requests, custom TTL strategies per file type, and origin connection limits that protect the origin from traffic spikes.</p>
+    </Info>
+  </Step>
+
+  <Step title="Enable the LIVE STREAMING preset">
+    <Info>
+    <p>For live streams only — skip this step when delivering VOD.</p>
     </Info>
 
-    ---
+    <p>The LIVE STREAMING preset enables RAM-based caching for reduced latency.</p>
 
-    ### Cache configuration
+    <p>1. Navigate to CDN resources.</p>
 
-    After Chunked-Proxy activation by the support team, follow the cache configuration instructions from the **"For Live HLS Streaming"** tab above.
+    <p>2. Click **⋯** (more options) next to the Video CDN resource.</p>
 
-    Only difference: When creating the manifest caching rule (Step 3), use:
-    - **Pattern**: `^/.+\.mpd$` (for DASH manifest files instead of `.m3u8`)
+    <p>3. Select **Turn on LIVE STREAMING preset**.</p>
 
-    Common DASH/CMAF file extensions:
-    - **Manifests**: `.mpd`
-    - **Segments**: `.m4s`, `.m4v`, `.m4a`, `.cmfv`, `.cmfa`
-    - **Initialization**: `.mp4` (init segments)
-  </Tab>
-  <Tab title="For FLV Streaming">
-    FLV streams use a single continuous connection:
+    <Frame>![Resource menu with Turn on LIVE STREAMING preset](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/live-streaming-preset-menu.png)</Frame>
 
-    1. Fully custom cache settings, contact the support team for more information
+    <p>It caches video segments in RAM instead of disk for faster delivery and lower latency.</p>
+  </Step>
+</Steps>
 
-    Learn more: [FLV Streaming Guide](/cdn/video-cdn/flv-streaming)
-  </Tab>
-</Tabs>
+## Video delivery testing
 
-<Info>
-Need advanced performance optimization? For high-traffic streaming or specific performance requirements, contact [Gcore Support](mailto:support@gcore.com) to configure:
-- **Cache sharding**: Distribute cache across multiple servers
-- **Cache lock timing**: Optimize concurrent request handling
-- **Custom TTL strategies**: Fine-tune cache behavior per file type
-- **Origin connection limits**: Protect origin from traffic spikes
-</Info>
+<p>Confirm that the HTTPS CDN URL plays correctly before going to production.</p>
 
----
+### CDN URL
 
-### Step 5 (Live only): Enable LIVE STREAMING preset
+<p>Replace the origin hostname with the CDN hostname.</p>
 
-<Info>
-For live streams only - Skip this step if you're delivering VOD.
-</Info>
+<p>Before (origin):</p>
 
-The LIVE STREAMING preset enables RAM-based caching for reduced latency:
-
-1. Go to [CDN Resources](https://portal.gcore.com/cdn/resources/list)
-2. Click the **three dots** next to your video CDN resource
-3. Select **Turn on LIVE STREAMING preset**
-
-<Frame>![Turn on LIVE STREAMING preset](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming/12947072884881.png)</Frame>
-
-What it does: Caches video segments in RAM instead of disk for faster delivery and lower latency.
-
----
-
-## Test your stream
-
-### Get your CDN URL
-
-Update your stream URLs from origin to CDN:
-
-Before (origin):
-```
-http://live.example.com/playlist.m3u8
+```text
+https://live.example.com/playlist.m3u8
 ```
 
-After (CDN):
-```
-http://video.yourdomain.com/playlist.m3u8
-```
+<p>After (CDN):</p>
 
-Or with auto-generated domain:
-```
-http://123456.gcdn.co/playlist.m3u8
+```text
+https://video.example.com/playlist.m3u8
 ```
 
-### Test playback
+<p>Or with an auto-generated domain:</p>
 
-Test your stream in a player that supports HLS:
+```text
+https://123456.gcdn.co/playlist.m3u8
+```
 
-- Browser: [VLC Media Player](https://videolan.org)
-- Online: [HLS.js demo player](https://hls-js.netlify.app/demo/)
-- Mobile: Native Safari (iOS) or Chrome (Android)
+### Playback test
 
-Paste your CDN URL and verify playback works correctly.
+<p>Select a playback check that matches the delivery format. Playback alone can succeed while assets are still loaded from the origin — always verify that segment requests use the CDN hostname and return `HIT` in the `Cache` response header.</p>
 
----
+- HLS — enter the CDN URL in the [HLS.js&nbsp;demo](https://hls-js.netlify.app/demo/) or a native HLS player. Confirm the playlist loads and that segment URLs use relative paths or the CDN hostname, not the origin. Request the same segment URL twice and confirm the second response returns `HIT` in the `Cache` response header.
+- MPEG-DASH — open the `.mpd` URL in [VLC&nbsp;Media&nbsp;Player](https://videolan.org) or another MPEG-DASH player. Verify continuous playback and that segment URLs reference the CDN hostname. Request a segment URL twice and confirm `HIT` in the `Cache` response header.
+- HTTP-FLV — open the `.flv` URL in an HTTP-FLV player and verify that the continuous response plays.
+- MP4 — open the CDN URL in a browser or player, verify playback and seeking, and confirm that a repeated request returns `HIT` in the `Cache` response header.
 
-## Optional: Advanced configuration
+## Advanced configuration
 
-### Enable origin shielding
+<p>After the resource is live, Origin Shielding, geo-restrictions, and secure tokens can further protect the origin and control who can watch.</p>
 
-For high-traffic streams (100+ concurrent viewers), enable origin shielding:
+### Origin Shielding
 
-1. Go to **CDN Resource** > **General** > **Origin shielding**
-2. Toggle **Enable origin shielding**
-3. Select shield location closest to your origin
+<p>Origin Shielding routes cache misses through a designated shield location before requests reach the origin, consolidating requests and reducing direct origin traffic.</p>
 
-Benefit: Reduces origin requests by 80-95%, protecting your origin from traffic spikes.
+<Steps>
+  <Step title="Open Origin Shielding settings">
+    <p>Navigate to **CDN Resource** > **General** > **Origin shielding**.</p>
+  </Step>
+  <Step title="Enable and select a location">
+    <p>Toggle **Enable origin shielding**, then select the shield location closest to the origin. Click **Save changes**.</p>
+  </Step>
+</Steps>
 
-Learn more: [Origin Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding)
+<p>The [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) settings support location selection and failover, so select a shield location close to the origin.</p>
 
-### Add geo-restrictions
+### Geo-restrictions
 
-Restrict content by country (e.g., for broadcasting rights):
+<p>[Geo-restrictions](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) combine country access with referrer, IP, and user-agent rules.</p>
 
-1. Go to **CDN Resource** > **Security** > **Country access policy**
-2. Choose:
-   - **Allow only**: Content available only in selected countries
-   - **Block**: Content blocked in selected countries
-3. Select countries
-4. Save changes
+<Steps>
+  <Step title="Open the country access policy">
+    <p>Navigate to **CDN Resource** > **Security** > **Country access policy**.</p>
+  </Step>
+  <Step title="Select allow or block">
+    <p>Select **Allow only** to make content available only in selected countries, or **Block** to block content in selected countries.</p>
+  </Step>
+  <Step title="Apply the countries">
+    <p>Select countries, then click **Save changes**.</p>
+  </Step>
+</Steps>
 
-Example: "Allow only in Dominican Republic" for regional sports rights.
+<p>Example: "Allow only in Dominican Republic" for regional sports rights.</p>
 
-Learn more: [Geo-restrictions](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
+### Secure tokens
 
-### Add secure tokens
+<p>[Secure&nbsp;Tokens](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) protect paid content, private videos, and time-limited previews with authenticated URLs.</p>
 
-Protect content with time-limited authenticated URLs:
-
-1. Go to **CDN Resource** > **Security** > **Secure Token**
-2. Enable and configure token settings
-3. Generate tokens on your backend for each user
-
-Use cases: Paid content, private videos, time-limited previews.
-
-Learn more: [Secure Tokens](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token)
-
----
-
-## Next steps
-
-<CardGroup cols={2}>
-  <Card title="HLS and LL-HLS" icon="play" href="/cdn/video-cdn/hls">
-    Detailed HLS configuration and optimization
-  </Card>
-  <Card title="FLV Streaming Guide" icon="bolt" href="/cdn/video-cdn/flv-streaming">
-    Ultra-low latency streaming with HTTP-FLV
-  </Card>
-  <Card title="Video CDN Overview" icon="info" href="/cdn/video-cdn/video-cdn-overview">
-    Learn about all Video CDN features
-  </Card>
-  <Card title="CDN Statistics" icon="chart-line" href="/cdn/view-statistics-of-a-cdn-resource">
-    Monitor your video delivery performance
-  </Card>
-</CardGroup>
-
----
+<Steps>
+  <Step title="Open Secure Token settings">
+    <p>Navigate to **CDN Resource** > **Security** > **Secure Token**.</p>
+  </Step>
+  <Step title="Configure and generate tokens">
+    <p>Enable and configure token settings, then click **Save changes**. Generate tokens on the backend for each user.</p>
+  </Step>
+</Steps>
 
 ## Troubleshooting
 
-### Stream not playing
+<p>Use checks that match the delivery format and determine whether failure occurs at the origin, CDN, DNS, or player. Contact Gcore Support or use the account chat if the issue remains.</p>
 
-1. Check origin is accessible: Test origin URL directly in browser
-2. Verify DNS: Ensure CNAME points to CDN (if using custom domain)
-3. Check cache rules: Verify `.m3u8` and `.ts` rules are configured
-4. Review CDN logs: Check for 4xx/5xx errors in CDN statistics
+### Playback failures
 
-### High latency
+<p>Check the origin, domain, media files, and CDN response in order.</p>
 
-1. Enable LIVE STREAMING preset: For live streams (see Step 5)
-2. Reduce playlist cache: Set `.m3u8` cache to 1-2 seconds
-3. Enable origin shielding: Reduces routing hops
-4. Contact support: For advanced latency optimization
+<Steps>
+  <Step title="Test the origin directly">
+    <p>Request the origin URL directly and confirm it returns the expected content. Omitting the required Host header, SNI, authentication, or network access can produce a misleading success or failure — the test must preserve all conditions that the CDN request uses.</p>
+  </Step>
+  <Step title="Verify the custom domain">
+    <p>For a custom domain, confirm that its CNAME points to the `*.gcdn.co` target shown in the CDN resource's Setup guide, and that the SSL certificate is valid.</p>
+  </Step>
+  <Step title="Check the format-specific CDN response">
+    <p>Verify the format-specific response from the CDN:</p>
+    - HLS — verify the `.m3u8` playlist and referenced `.ts` or `.m4s` segments
+    - MPEG-DASH — verify the `.mpd` manifest and referenced `.m4s` segments
+    - HTTP-FLV — verify that the `.flv` endpoint maintains a continuous HTTP response
+    - MP4 — verify a successful response and HTTP Range support for seeking
+  </Step>
+  <Step title="Check CDN statistics">
+    <p>Check 4xx and 5xx responses in [CDN&nbsp;statistics](/cdn/view-statistics-of-a-cdn-resource).</p>
+  </Step>
+</Steps>
 
-### Need help?
+### High live-stream latency
 
-Contact [Gcore Support](mailto:support@gcore.com) or use the chat in the bottom-right corner.
+<p>For HLS or MPEG-DASH latency, review the live-delivery settings before requesting workload-specific tuning.</p>
+
+<Steps>
+  <Step title="Confirm the LIVE STREAMING preset is enabled">
+    <p>Confirm that the **LIVE STREAMING preset** is enabled on the CDN resource.</p>
+  </Step>
+  <Step title="Check manifest cache time">
+    <p>Check that manifest cache time is appropriate for the stream — 2 seconds is recommended for live delivery.</p>
+  </Step>
+  <Step title="Verify Chunked-Proxy for LL-DASH">
+    <p>For Low-Latency DASH (LL-DASH) with an external transcoder, confirm that Chunked-Proxy is active.</p>
+  </Step>
+  <Step title="Contact Support for tuning">
+    <p>Contact Gcore Support for workload-specific tuning.</p>
+  </Step>
+</Steps>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Create a CDN resource for prepared HLS, MPEG-DASH, HTTP-FLV, or MP4 content, then apply only the cache updates that match the delivery type.</p>
+
+<p>Activation requirements differ by delivery format:</p>
+
+- HLS and MPEG-DASH — require video-delivery approval from Gcore Support and a paid CDN plan.
+- HTTP-FLV Live — requires a sales agreement and a dedicated service profile. Contact the account manager or [sales@gcore.com](mailto:sales@gcore.com).
+- HTTP-FLV VOD and MP4 VOD — self-service; only a paid CDN plan is required.
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The origin hostname must resolve in DNS.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create the CDN resource
+
+<p>Set `origin` to a resolvable media hostname and `originProtocol` to `HTTPS`. An unresolved hostname returns HTTP 400 with the message `The domain name cannot be resolved. Please specify a valid domain name.` The [create&nbsp;endpoint](/api-reference/cdn/cdn-resources/create-cdn-resource) stores the hostname as the source of a new origin group.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cname` | Yes | Domain that viewers request |
+| `origin` | Yes | Resolvable origin hostname, without a scheme or a path |
+| `originProtocol` | No | Optional in the API. Set to `HTTPS` for this resource; otherwise it defaults to `HTTP` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()  # Reads GCORE_API_KEY from env
+
+    resource = client.cdn.cdn_resources.create(
+        cname="video.site.com",
+        origin="example.com",
+        origin_protocol="HTTPS",
+    )
+    print(resource.id, resource.origin_protocol)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient() // Reads GCORE_API_KEY from env
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.New(ctx, cdn.CDNResourceNewParams{
+            Cname:          "video.site.com",
+            Origin:         gcore.String("example.com"),
+            OriginProtocol: cdn.CDNResourceNewParamsOriginProtocolHTTPS,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.ID, resource.OriginProtocol)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "cname": "video.site.com",
+        "origin": "example.com",
+        "originProtocol": "HTTPS"
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "cname": "video.site.com",
+      "active": true,
+      "originProtocol": "HTTPS",
+      "originGroup": 1002
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Select calls for the delivery type
+
+<p>The create call is the same for every format. Continue with the calls that match the content:</p>
+
+- HLS live: set the HLS live cache, cache `.m3u8` playlists, and apply the LIVE STREAMING preset.
+- MPEG-DASH live: set Always online and the 60-second CDN cache, cache `.mpd` manifests, and apply the LIVE STREAMING preset. The `.m3u8` rule and the LL-HLS query parameters apply to HLS.
+- HLS VOD, MPEG-DASH VOD, HTTP-FLV VOD, and MP4: leave the live cache, the `.m3u8` and `.mpd` rules, and the LIVE STREAMING preset unset, because no further updates are required after resource creation.
+- HTTP-FLV Live: Support configures the cache during service activation.
+
+## Set the HLS live cache
+
+<p>A [resource&nbsp;update](/api-reference/cdn/cdn-resources/change-cdn-resource) sets Always online for `error` and `timeout` and a 60-second CDN cache. HLS live and MPEG-DASH live use these two fields. Sending one of these options does not remove the other.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `options.stale.value` | No | `error` and `timeout` when Always online is enabled |
+| `options.edge_cache_settings.value` | No | `60s` for CDN-controlled caching |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    resource = client.cdn.cdn_resources.update(
+        1001,
+        options={
+            "stale": {"enabled": True, "value": ["error", "timeout"]},
+            "edge_cache_settings": {"enabled": True, "value": "60s"},
+        },
+    )
+    print(resource.options.stale.value, resource.options.edge_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        resource, err := client.CDN.CDNResources.Update(ctx, 1001, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Stale: cdn.CDNResourceUpdateParamsOptionsStale{
+                    Enabled: true,
+                    Value:   []string{"error", "timeout"},
+                },
+                EdgeCacheSettings: cdn.CDNResourceUpdateParamsOptionsEdgeCacheSettings{
+                    Enabled: true,
+                    Value:   gcore.String("60s"),
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(resource.Options.Stale.Value, resource.Options.EdgeCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/1001" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "stale": {"enabled": true, "value": ["error", "timeout"]},
+          "edge_cache_settings": {"enabled": true, "value": "60s"}
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1001,
+      "options": {
+        "stale": {"enabled": true, "value": ["error", "timeout"]},
+        "edge_cache_settings": {"enabled": true, "value": "60s"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>For Low-Latency HLS, add `options.query_params_whitelist` with `enabled` set to true and the values `_HLS_msn`, `_HLS_part`, and `_HLS_skip`. The baseline update above does not include that field.</p>
+
+## Cache HLS playlists
+
+<p>For HLS live, a rule with `ruleType` 0 matches playlist paths and caches them for 2 seconds. Browser cache is `0s`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `rule` | Yes | `^/.+\.m3u8$` |
+| `ruleType` | Yes | `0` for a regular expression |
+| `options.edge_cache_settings.value` | No | `2s` on the playlist rule |
+| `options.browser_cache_settings.value` | No | `0s` on the playlist rule |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rule = client.cdn.cdn_resources.rules.create(
+        1001,
+        name="HLS playlists",
+        rule="^/.+\\.m3u8$",
+        rule_type=0,
+        options={
+            "edge_cache_settings": {"enabled": True, "value": "2s"},
+            "browser_cache_settings": {"enabled": True, "value": "0s"},
+        },
+    )
+    print(rule.id, rule.options.edge_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, 1001, cdn.CDNResourceRuleNewParams{
+            Name:     "HLS playlists",
+            Rule:     "^/.+\\.m3u8$",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                EdgeCacheSettings: cdn.CDNResourceRuleNewParamsOptionsEdgeCacheSettings{
+                    Enabled: true,
+                    Value:   gcore.String("2s"),
+                },
+                BrowserCacheSettings: cdn.CDNResourceRuleNewParamsOptionsBrowserCacheSettings{
+                    Enabled: true,
+                    Value:   "0s",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.EdgeCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/1001/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "HLS playlists",
+        "rule": "^/.+\\.m3u8$",
+        "ruleType": 0,
+        "options": {
+          "edge_cache_settings": {"enabled": true, "value": "2s"},
+          "browser_cache_settings": {"enabled": true, "value": "0s"}
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1003,
+      "rule": "^/.+\\.m3u8$",
+      "ruleType": 0,
+      "options": {
+        "edge_cache_settings": {"enabled": true, "value": "2s"},
+        "browser_cache_settings": {"enabled": true, "value": "0s"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Cache MPEG-DASH manifests
+
+<p>For MPEG-DASH live, a rule with `ruleType` 0 matches manifest paths and caches them for 2 seconds. Browser cache is `0s`.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `rule` | Yes | `^/.+\.mpd$` |
+| `ruleType` | Yes | `0` for a regular expression |
+| `options.edge_cache_settings.value` | No | `2s` on the manifest rule |
+| `options.browser_cache_settings.value` | No | `0s` on the manifest rule |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    rule = client.cdn.cdn_resources.rules.create(
+        1001,
+        name="DASH manifests",
+        rule="^/.+\\.mpd$",
+        rule_type=0,
+        options={
+            "edge_cache_settings": {"enabled": True, "value": "2s"},
+            "browser_cache_settings": {"enabled": True, "value": "0s"},
+        },
+    )
+    print(rule.id, rule.options.edge_cache_settings.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        rule, err := client.CDN.CDNResources.Rules.New(ctx, 1001, cdn.CDNResourceRuleNewParams{
+            Name:     "DASH manifests",
+            Rule:     "^/.+\\.mpd$",
+            RuleType: 0,
+            Options: cdn.CDNResourceRuleNewParamsOptions{
+                EdgeCacheSettings: cdn.CDNResourceRuleNewParamsOptionsEdgeCacheSettings{
+                    Enabled: true,
+                    Value:   gcore.String("2s"),
+                },
+                BrowserCacheSettings: cdn.CDNResourceRuleNewParamsOptionsBrowserCacheSettings{
+                    Enabled: true,
+                    Value:   "0s",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(rule.ID, rule.Options.EdgeCacheSettings.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/resources/1001/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "DASH manifests",
+        "rule": "^/.+\\.mpd$",
+        "ruleType": 0,
+        "options": {
+          "edge_cache_settings": {"enabled": true, "value": "2s"},
+          "browser_cache_settings": {"enabled": true, "value": "0s"}
+        }
+      }'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": 1004,
+      "rule": "^/.+\\.mpd$",
+      "ruleType": 0,
+      "options": {
+        "edge_cache_settings": {"enabled": true, "value": "2s"},
+        "browser_cache_settings": {"enabled": true, "value": "0s"}
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Enable the LIVE STREAMING preset
+
+<p>List presets, select the one named `LIVE STREAMING`, and apply that id to the resource. After the apply call, `preset_applied` is `true`. The list returned id `52` for that name. Use this call for live delivery. VOD leaves the preset unset.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    presets = client.cdn.presets.list()
+    preset_id = next(item.id for item in presets if item.name == "LIVE STREAMING")
+    applied = client.cdn.presets.applied.apply(preset_id, object_id=1001)
+    print(applied.preset_id, applied.object_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.CDN.Presets.List(ctx, cdn.PresetListParams{})
+        if err != nil {
+            panic(err)
+        }
+        var presetID int64
+        for _, item := range page.Results {
+            if item.Name == "LIVE STREAMING" {
+                presetID = item.ID
+                break
+            }
+        }
+        applied, err := client.CDN.Presets.Applied.Apply(ctx, presetID, cdn.PresetAppliedApplyParams{
+            ObjectID: 1001,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(applied.PresetID, applied.ObjectID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cdn/presets?limit=1000" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "results": [
+        {
+          "id": 52,
+          "name": "LIVE STREAMING"
+        }
+      ]
+    }
+    ```
+
+    <p>Apply the id of the preset named `LIVE STREAMING`:</p>
+
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/presets/52/applied" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"object_id": 1001}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "preset_id": 52,
+      "object_id": 1001,
+      "message": "Preset successfully applied"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Point the custom domain at the CDN
+
+<p>Add a CNAME record for `video.site.com` before requesting that domain over HTTPS. The target is the `id` from the create call with `.gcdn.co` appended. Viewer HTTPS uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) or an [own&nbsp;SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) after that CNAME is in place.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `video.site.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co`. Replace `{resource_id}` with the `id` from the create call |
+
+## Confirm playback through the CDN
+
+<p>Open the media through `video.site.com` after the CNAME and certificate are in place, or through the hostname formed from the create-call id and `.gcdn.co`. For HLS or MPEG-DASH, confirm that segment requests use the CDN hostname. Request a cached segment twice and confirm that the second response contains `Cache: HIT`.</p>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare an origin group, an HTTPS CDN resource for prepared video, and live manifest rules with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2.</p>
+
+<p>Activation requirements differ by delivery format:</p>
+
+- HLS and MPEG-DASH — require video-delivery approval from Gcore Support and a paid CDN plan.
+- HTTP-FLV Live — requires a sales agreement and a dedicated service profile. Contact the account manager or [sales@gcore.com](mailto:sales@gcore.com).
+- HTTP-FLV VOD and MP4 VOD — self-service; only a paid CDN plan is required.
+
+## Create the CDN resource
+
+<p>The origin hostname must resolve in DNS. HLS live and MPEG-DASH live set CDN cache to 60 seconds. The `.m3u8` rule caches HLS playlists for 2 seconds. The `.mpd` rule caches MPEG-DASH manifests for 2 seconds. Browser cache on both rules is 0 seconds. Keep the rule that matches the live format. Low-Latency HLS keeps `_HLS_msn`, `_HLS_part`, and `_HLS_skip` in the cache key. VOD declares the origin group and the CDN resource without these options and without the manifest rules. HTTP-FLV Live cache is configured by Gcore Support during service activation.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "video-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "video.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "60s"
+    }
+    query_params_whitelist = {
+      enabled = true
+      value   = ["_HLS_msn", "_HLS_part", "_HLS_skip"]
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "playlists" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "HLS playlists"
+  rule        = "^/.+\\.m3u8$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "2s"
+    }
+    browser_cache_settings = {
+      enabled = true
+      value   = "0s"
+    }
+  }
+}
+
+resource "gcore_cdn_resource_rule" "manifests" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "DASH manifests"
+  rule        = "^/.+\\.mpd$"
+  rule_type   = 0
+  active      = true
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "2s"
+    }
+    browser_cache_settings = {
+      enabled = true
+      value   = "0s"
+    }
+  }
+}
+
+output "cdn_resource_id" {
+  value = gcore_cdn_resource.example.id
+}
+```
+
+## Enable the LIVE STREAMING preset
+
+<p>For live streams, turn on the LIVE STREAMING preset from the Customer Portal resource menu after `terraform apply`. The preset includes Always online. Leave `stale` unset in `options`, because an apply that changes `stale` while the preset is on returns HTTP 400. VOD leaves the preset off.</p>
+
+## DNS setup
+
+<p>Apply prints `cdn_resource_id`. Add a CNAME record at the DNS provider. The target is that id with `.gcdn.co` appended.</p>
+
+| DNS record field | Value |
+|------------------|-------|
+| **Type** | `CNAME` |
+| **Name / Host** | The delivery subdomain — `video.example.com` |
+| **Value / Points to** | `{resource_id}.gcdn.co`. Replace `{resource_id}` with the printed `cdn_resource_id` value |
+
+<p>Viewer HTTPS on `video.example.com` uses a [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) or an [own&nbsp;SSL&nbsp;certificate](/cdn/ssl-certificates/configure-your-own-ssl-certificate) after that CNAME is in place.</p>
+
+## Delete the CDN resource
+
+<p>Remove the manifest rules, the CDN resource, the origin group, and the `cdn_resource_id` output. The next `terraform apply` deletes the rules, then the CDN resource, then the origin group.</p>
+
+```hcl
+# Remove the manifest rules, the CDN resource, and the origin group:
+# resource "gcore_cdn_origin_group" "example" {
+#   name = "video-origin-group"
+#
+#   sources = [
+#     {
+#       source  = "example.com"
+#       enabled = true
+#     }
+#   ]
+# }
+#
+# resource "gcore_cdn_resource" "example" {
+#   cname           = "video.example.com"
+#   origin_group    = gcore_cdn_origin_group.example.id
+#   origin_protocol = "HTTPS"
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "60s"
+#     }
+#     query_params_whitelist = {
+#       enabled = true
+#       value   = ["_HLS_msn", "_HLS_part", "_HLS_skip"]
+#     }
+#   }
+# }
+#
+# resource "gcore_cdn_resource_rule" "playlists" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "HLS playlists"
+#   rule        = "^/.+\\.m3u8$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "2s"
+#     }
+#     browser_cache_settings = {
+#       enabled = true
+#       value   = "0s"
+#     }
+#   }
+# }
+#
+# resource "gcore_cdn_resource_rule" "manifests" {
+#   resource_id = gcore_cdn_resource.example.id
+#   name        = "DASH manifests"
+#   rule        = "^/.+\\.mpd$"
+#   rule_type   = 0
+#   active      = true
+#
+#   options = {
+#     edge_cache_settings = {
+#       enabled = true
+#       value   = "2s"
+#     }
+#     browser_cache_settings = {
+#       enabled = true
+#       value   = "0s"
+#     }
+#   }
+# }
+#
+# output "cdn_resource_id" {
+#   value = gcore_cdn_resource.example.id
+# }
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+</MethodSwitch>

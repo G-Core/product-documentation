@@ -1,0 +1,290 @@
+---
+title: "Renew or revoke a Let's Encrypt certificate"
+sidebarTitle: "Renew or revoke"
+description: Renew or revoke a Let's Encrypt certificate that is already attached to a CDN resource.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Renew or revoke a Let's Encrypt certificate that already shows **Success** on the CDN resource. Renewal runs while that certificate is still active.</p>
+
+## Renew the certificate
+
+<p>While the resource is active, the certificate renews automatically. Gcore makes one automatic renewal attempt 30 days before the current certificate expires.</p>
+
+<p>That attempt is separate from initial issuance, which reaches **Failed** only after five unsuccessful attempts. If the certificate is not reissued, a notification is sent to the account email address.</p>
+
+<p>After an unsuccessful reissue attempt, the current certificate stays active for another 30 days. After the certificate's end date, content is unavailable over HTTPS.</p>
+
+<p>The **Failed** status also appears when automatic renewal does not complete. Correct the error, including the domain DNS records, and click **Renew certificate** while the current certificate is still active.</p>
+
+<Frame>![Failed status while renewing the certificate](/images/docs/cdn/ssl-certificates/renew-or-revoke-a-lets-encrypt-certificate/ssl-failed-renew.png)</Frame>
+
+<p>**Renew certificate** issues a new certificate and attaches it to the CDN resource. A later revoke and a new issuance turn HTTPS off until the new certificate is issued.</p>
+
+## Revoke the certificate
+
+<p>In the resource settings, open the **SSL** section and click **Revoke Let's Encrypt certificate**. Personal certificates are available for selection after the Let's Encrypt certificate is revoked.</p>
+
+<Frame>![Revoke Let's Encrypt certificate in the SSL section](/images/docs/cdn/ssl-certificates/renew-or-revoke-a-lets-encrypt-certificate/ssl-revoke.png)</Frame>
+
+<p>An [API&nbsp;request](/api-reference/cdn/ssl-certificates/change-ssl-certificate) replaces the Let's Encrypt certificate with an uploaded certificate while HTTPS stays enabled.</p>
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>Renew a Let's Encrypt certificate whose latest status is `DONE` and whose issuance is not active, or revoke it and delete the certificate object afterward. Gcore also makes one automatic renewal attempt 30 days before `validity_not_after`.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**.
+</Info>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+export CDN_SSL_CERTIFICATE_ID="{YOUR_SSL_CERTIFICATE_ID}"
+```
+
+## Renew the certificate
+
+<p>While `active` is `true`, renewal returns HTTP 400: `Certificate issuing process has already been launched.`</p>
+
+<p>The next issuance or renewal uses ECDSA unless `use_rsa_le_cert` is enabled first. Enable that option in the [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) article before the first attach or before this call.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    client.cdn.certificates.renew(certificate_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.Certificates.Renew(ctx, certificateID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID/renew" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>When renewal starts, the API returns HTTP 201:</p>
+
+    ```json
+    {}
+    ```
+  </Tab>
+</Tabs>
+
+## Revoke the certificate
+
+<p>Revoke turns HTTPS off and clears `sslData`. The certificate object remains, and in the Go response a null `sslData` prints as `0`.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    revoked = client.cdn.cdn_resources.update(
+        resource_id,
+        ssl_enabled=False,
+        ssl_data=None,
+    )
+    print(revoked.ssl_enabled, revoked.ssl_data)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        revoked, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            SslEnabled: gcore.Bool(false),
+            SslData:    param.Null[int64](),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(revoked.SslEnabled, revoked.SslData)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "sslEnabled": false,
+        "sslData": null
+      }'
+    ```
+
+    <p>The API returns HTTP 200:</p>
+
+    ```json
+    {
+      "id": 101,
+      "sslEnabled": false,
+      "sslData": null
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Delete the certificate object
+
+<p>Delete the certificate object only after the resource shows `sslData` as `null`. DELETE returns HTTP 204 and an empty body.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    certificate_id = int(os.environ["CDN_SSL_CERTIFICATE_ID"])
+
+    client.cdn.certificates.delete(certificate_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        certificateID, err := strconv.ParseInt(os.Getenv("CDN_SSL_CERTIFICATE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        err = client.CDN.Certificates.Delete(ctx, certificateID)
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cdn/sslData/$CDN_SSL_CERTIFICATE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 204 and an empty body.</p>
+  </Tab>
+</Tabs>
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Revoke an attached Let's Encrypt certificate with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2, or delete the CDN resource and the certificate. Renewal is automatic, or the **Renew certificate** control in the **SSL** section starts it, and Terraform apply does not renew the certificate.</p>
+
+## Revoke the certificate
+
+<p>Set `ssl_enabled` to `false` and `ssl_data` to `null`, then run `terraform apply`. HTTPS is off, the certificate object remains, and a later `terraform plan` shows `ssl_data` empty.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name      = "cdn-le-certificate"
+  automated = true
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "le.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = false
+  ssl_data        = null
+}
+```
+
+## Delete the resources
+
+<p>Run `terraform destroy`. The CDN resource is deleted first, then the certificate and the origin group.</p>
+
+```bash
+terraform destroy
+```
+
+</MethodSection>
+</MethodSwitch>

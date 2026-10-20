@@ -108,6 +108,16 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
         (r"\btype in\b", "type in — use 'enter'"),
         (r"\bchoose\b", "choose — use 'select'"),
         (r"\blog\s+into\b", "log into — use 'log in to' (three words, not two)"),
+        (r"\bno spend\b", "draft note — delete it. State the current product, not an empty account"),
+        (r"\bno expenses\b", "draft note — delete it. State the current product, not an empty account"),
+        (r"\bno data yet\b", "draft note — delete it. State the current product"),
+        (r"\bnothing to show\b", "draft note — delete it. State the current product"),
+        (r"\bempty chart\b", "draft note — delete it. Name the controls on the screen"),
+        (r"\bwill appear later\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bcoming soon\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bto be updated\b", "draft note — delete it. Do not promise a later update"),
+        (r"\bdeveloper promised\b", "draft note — delete it. Do not write process notes"),
+        (r"\bwaiting for a screenshot\b", "draft note — delete it. Do not write process notes"),
     ]
     for lineno, text in lines:
         clean = strip_urls_and_links(text)
@@ -154,6 +164,30 @@ def check_em_dash(lines: list[tuple[int, str]]) -> list[Violation]:
                 line=lineno,
                 rule="Em-dash spacing",
                 detail="Unspaced em-dash — must be ' — ' (space before and after)",
+                text=text.strip(),
+            ))
+    return violations
+
+
+def check_bullet_label_dash(lines: list[tuple[int, str]]) -> list[Violation]:
+    """Flag a bullet that names a term and then describes it with a dash.
+
+    Style guide, "Bold labels in bullets": use a colon. Link-list glosses
+    ("- [Name](/path) — description") are a different pattern and stay dashes.
+    """
+    violations: list[Violation] = []
+    pattern = re.compile(
+        r"^\s*[-*+]\s+"
+        r"(?!\[[^\]]+\]\([^)]+\))"
+        r"(?:\*\*[^*]+\*\*|`[^`]+`|\w[\w .+/()-]{0,40}?)"
+        r"\s+[—–]\s+\S"
+    )
+    for lineno, text in lines:
+        if pattern.search(text):
+            violations.append(Violation(
+                line=lineno,
+                rule="Bullet label punctuation",
+                detail="Bullet names a term and then uses a dash. Use a colon: '- **Term**: description'",
                 text=text.strip(),
             ))
     return violations
@@ -249,12 +283,14 @@ def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
     skip_context = re.compile(
         r"IPv[46]|step\s+\d|v\d|\d\.|port\s+\d|\d{1,3}\.\d{1,3}|"
         r"\d\s+to\s+\d|\d+\s*(to|[-\u2013])\s*\d+|[-\u2013]\d+\b|\(\d+|"
-        r"\blayer\s*\d\b|\bL\d\b",
+        r"\blayer\s*\d\b|\bL\d\b|[A-Za-z]+/\d",
         re.IGNORECASE,
     )
     digit_word = re.compile(r"\b([1-9])\b")
+    inline_code = re.compile(r"`[^`\n]+`")
     for lineno, text in lines:
         clean = strip_urls_and_links(text)
+        clean = inline_code.sub("", clean)
         for m in digit_word.finditer(clean):
             start = m.start()
             surrounding = clean[max(0, start - 15):start + 25]
@@ -325,11 +361,24 @@ def check_opening_heading(raw_lines: list[str]) -> list[Violation]:
             continue
         if stripped == "":
             continue
+        if stripped.startswith("import ") or stripped.startswith("<"):
+            continue
         if stripped.startswith("##"):
             violations.append(Violation(
                 line=i,
                 rule="Opening heading",
                 detail="Article body opens with a heading — add an intro paragraph before the first ## heading",
+                text=raw.strip(),
+            ))
+        elif re.match(
+            r"^The\s+\S+(?:\s+\S+){0,8}\s+(monitors|provides|enables|supports)\b",
+            stripped,
+            re.IGNORECASE,
+        ):
+            violations.append(Violation(
+                line=i,
+                rule="Intro opens on the component",
+                detail="Intro starts with the component and a capability verb (monitors, provides, enables, supports). State what the reader can do. Do not open with a command. See intro-writing.md",
                 text=raw.strip(),
             ))
         break
@@ -405,16 +454,6 @@ def check_callout_prefix(raw_lines: list[str]) -> list[Violation]:
 
 def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
     violations: list[Violation] = []
-    action_verbs = {
-        "create", "configure", "manage", "enable", "disable", "deploy", "set", "add",
-        "update", "remove", "connect", "install", "mount", "view", "monitor", "generate",
-        "integrate", "use", "run", "build", "upload", "download", "test", "verify",
-        "access", "allow", "block", "migrate", "restore", "delete", "list", "get", "send",
-        "receive", "assign", "attach", "detach", "scale", "resize", "start", "stop",
-        "restart", "reinstall", "resolve", "troubleshoot", "convert", "import", "export",
-        "protect", "apply", "validate", "audit", "review", "check", "change", "edit",
-        "move", "copy", "share", "publish", "back", "allocate", "order", "buy",
-    }
     in_fm = False
     for i, raw in enumerate(raw_lines, start=1):
         stripped = raw.strip()
@@ -426,22 +465,22 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
         if not in_fm:
             continue
 
-        if re.match(r"^description\s*:", stripped, re.IGNORECASE):
+        if re.match(r"^ai-navigation\s*:", stripped):
             violations.append(Violation(
                 line=i,
                 rule="Frontmatter",
-                detail="'description:' is forbidden — use 'ai-navigation:' instead",
+                detail="'ai-navigation:' was renamed to 'description:'",
                 text=raw.strip(),
             ))
 
-        if re.match(r"^ai-navigation\s*:", stripped):
+        if re.match(r"^description\s*:", stripped):
             value = stripped.split(":", 1)[1].strip()
 
             if value.startswith('"') or value.startswith("'"):
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation quotes",
-                    detail="ai-navigation value must not be wrapped in YAML quotes",
+                    rule="description quotes",
+                    detail="description value must not be wrapped in YAML quotes",
                     text=raw.strip(),
                 ))
 
@@ -450,40 +489,47 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
             if ":" in val:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation syntax",
-                    detail="ai-navigation must not contain ':' — YAML treats it as a key separator",
+                    rule="description syntax",
+                    detail="description must not contain ':' — YAML treats it as a key separator",
                     text=raw.strip(),
                 ))
             if "#" in val:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation syntax",
-                    detail="ai-navigation must not contain '#' — YAML treats it as a comment start",
+                    rule="description syntax",
+                    detail="description must not contain '#' — YAML treats it as a comment start",
                     text=raw.strip(),
                 ))
             for ch in ["/", "{", "}"]:
                 if ch in val:
                     violations.append(Violation(
                         line=i,
-                        rule="ai-navigation syntax",
-                        detail=f"ai-navigation must not contain '{ch}' — use descriptive text without URL paths or template variables",
+                        rule="description syntax",
+                        detail=f"description must not contain '{ch}' — use descriptive text without URL paths or template variables",
                         text=raw.strip(),
                     ))
+
+            if "\u2014" in val:
+                violations.append(Violation(
+                    line=i,
+                    rule="description em-dash",
+                    detail="description must not contain em-dash '\u2014' — llms.txt generator encodes it as garbage; use a comma or semicolon instead",
+                    text=raw.strip(),
+                ))
 
             if len(val) > 160:
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation length",
-                    detail=f"ai-navigation is {len(val)} chars — max 160 chars",
+                    rule="description length",
+                    detail=f"description is {len(val)} chars — maximum 160",
                     text=raw.strip(),
                 ))
 
-            first_word = val.split()[0].lower().rstrip(".,;") if val.split() else ""
-            if first_word and first_word not in action_verbs:
+            if re.search(r"\b(portal|api|terraform)\b", val, re.IGNORECASE):
                 violations.append(Violation(
                     line=i,
-                    rule="ai-navigation verb",
-                    detail=f"ai-navigation must start with an action verb — '{first_word}' is not in the approved list",
+                    rule="description search summary",
+                    detail="description must summarize the article for search and must not name Portal, API, or Terraform",
                     text=raw.strip(),
                 ))
 
@@ -492,6 +538,7 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
 
 CHECKERS = [
     check_you_your, check_forbidden_words, check_uk_spelling, check_em_dash,
+    check_bullet_label_dash,
     check_link_text, check_meta_preamble, check_numbers, check_alt_text,
 ]
 

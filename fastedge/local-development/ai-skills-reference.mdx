@@ -1,0 +1,50 @@
+---
+title: FastEdge AI skills reference
+sidebarTitle: Skills reference
+description: FastEdge plugin skills for scaffold, deploy, test, debug, and live-test, with command prefixes.
+---
+
+Claude Code, Codex, and Cursor share one skill set. The [setup&nbsp;prompt](/fastedge/local-development/ai-assisted-development) installs the plugin. Client-specific setup is in [Plugin&nbsp;setup](/fastedge/local-development/configure-plugin-and-mcp-server).
+
+## Plugin layers
+
+The plugin contains skills, reference documentation, and blueprint templates. It selects the template and determines which development steps to run.
+
+The FastEdge MCP server does the work. It is a Docker container with the Rust, Node, and WebAssembly toolchains plus a Gcore API client. It compiles the binary, uploads it, and calls the FastEdge API, so a local Rust, Node, or `wasm32` target is not required for that path.
+
+## Command prefixes
+
+| Client | Prefix | Example |
+|-------|--------|---------|
+| Claude Code | `/gcore-fastedge:` | `/gcore-fastedge:deploy` |
+| Codex | `$gcore-fastedge:` | `$gcore-fastedge:deploy` |
+| Cursor | `/` | `/deploy` |
+
+The skill names stay the same across clients. Only the prefix changes.
+
+## Skills
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| Scaffold | `scaffold [http\|cdn] [name] [description]` | Creates a project from SDK blueprint templates |
+| Deploy | `deploy [app-name]` | Builds, tests, and deploys a Wasm app via the MCP server |
+| Manage | `manage [list\|get\|update\|delete\|secrets\|sync-env] [app-id]` | Inspects apps, manages secrets, syncs `.env` files to deployed apps |
+| Test | `test` | Generates and runs test suites with `@gcoredev/fastedge-test` |
+| Debug | `debug` | Generates scenario fixtures for the visual debugger |
+| Live-test | `live-test` | Builds, deploys, and runs scenario fixtures against the live edge |
+| Docs | Auto-invoked | Answers FastEdge and SDK questions from bundled reference docs |
+
+Square brackets in the Command column are placeholders for required values, not optional arguments.
+
+<Info>
+The Docs skill works from the plugin's bundled reference docs even without the MCP server configured. Scaffold, Deploy, Manage, Test, Debug, and Live-test use the MCP server by default and stop with an explanation instead of claiming success if the account is not signed in.
+</Info>
+
+## Example requests
+
+All three clients accept the same natural-language requests. The plugin resolves them without a fixed command syntax:
+
+- "Scaffold a new HTTP app called my-api" creates a TypeScript project from an SDK blueprint
+- "Deploy this app to FastEdge" builds the Wasm binary and deploys it to the edge
+- "List my FastEdge apps" shows deployed apps with status and URLs
+- "How does the FastEdge KV store work?" pulls up SDK reference docs inline

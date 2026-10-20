@@ -1,0 +1,339 @@
+---
+title: "Use DNS-01 for a Let's Encrypt certificate"
+sidebarTitle: "DNS-01 validation"
+description: Enable DNS-01 for a Let's Encrypt certificate when HTTP-01 cannot reach the hostname.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="api" label="REST API">
+
+<p>Use DNS-01 when a multi-CDN balancer answers the hostname with an address outside Gcore and HTTP-01 fails. HTTP-01 remains the default challenge.</p>
+
+<p>Save `use_dns01_le_challenge` before the certificate is attached, or before renewal. Issuance stays in the [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) article, and renewal stays in [certificate&nbsp;renewal](/cdn/ssl-certificates/renew-or-revoke-a-lets-encrypt-certificate).</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is visible under **CDN** → **CDN Resources**.
+</Info>
+
+<p>The CDN resource already has its custom domains. [Managed&nbsp;DNS](https://gcore.com/dns) is active on the account, and the authoritative DNS provider for the zone is reachable.</p>
+
+<p>Use one of the two delegation paths. Whole-zone delegation moves the zone to the Gcore nameservers, and challenge-name delegation leaves the zone at the current provider and adds NS records only for `_acme-challenge`.</p>
+
+## Whole-zone delegation
+
+<p>Point the zone at `ns1.gcorelabs.net` and `ns2.gcdn.services` with the [nameserver&nbsp;change](/dns/manage-a-dns-zone). This path does not add NS records for `_acme-challenge`.</p>
+
+<p>Query the zone itself. A correct result lists both Gcore nameservers, and the SOA query to `ns1.gcorelabs.net` returns authoritative `NOERROR`.</p>
+
+```text
+dig +short NS mywebsite.com
+
+dig @ns1.gcorelabs.net mywebsite.com SOA
+```
+
+## Challenge-name delegation
+
+<p>Leave the rest of the zone at the current DNS provider. Add two NS records for `_acme-challenge` on each custom domain, which is the cut described in [RFC&nbsp;8555](https://www.rfc-editor.org/rfc/rfc8555#section-8.4).</p>
+
+<p>Create both records at that provider before saving the option:</p>
+
+| Name | TTL | Type | Value |
+| --- | --- | --- | --- |
+| `_acme-challenge.www.mywebsite.com` | 300 | NS | `ns1.gcorelabs.net.` |
+| `_acme-challenge.www.mywebsite.com` | 300 | NS | `ns2.gcdn.services.` |
+
+<p>A resource with www, app, and api needs a pair for each name:</p>
+
+```text
+_acme-challenge.www.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.www.mywebsite.com. IN NS ns2.gcdn.services.
+_acme-challenge.app.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.app.mywebsite.com. IN NS ns2.gcdn.services.
+_acme-challenge.api.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.api.mywebsite.com. IN NS ns2.gcdn.services.
+```
+
+<Note>
+If `www.mywebsite.com` is a separately delegated zone, create the NS records in that child zone.
+</Note>
+
+<p>A recursive resolver can return cached data, so query a nameserver of the parent zone directly. Replace the nameserver in the second command with one nameserver from that query.</p>
+
+<p>`NOERROR` with both Gcore nameservers in the ANSWER or AUTHORITY section means the records exist.</p>
+
+```text
+dig +short NS mywebsite.com
+
+dig @ns.example-dns.com NS _acme-challenge.www.mywebsite.com
+```
+
+<p>`NXDOMAIN`, or `NOERROR` with no NS records, means the records are missing at the DNS provider. Trace the chain from the root when the parent nameserver is unclear:</p>
+
+```text
+dig +trace _acme-challenge.www.mywebsite.com NS
+```
+
+## CAA records
+
+<p>CAA records are inherited from the parent zone. When no CAA record exists, any certificate authority is allowed.</p>
+
+<p>When a CAA record is present, permit Let's Encrypt:</p>
+
+```text
+dig CAA mywebsite.com
+```
+
+```text
+mywebsite.com. IN CAA 0 issue "letsencrypt.org"
+```
+
+## Save the DNS-01 option
+
+<p>Delegated names send the DNS-01 check to the Gcore nameservers. The PATCH stores `use_dns01_le_challenge` and does not create those NS records.</p>
+
+<p>On challenge-name delegation those records already exist. On whole-zone delegation they are not required.</p>
+
+<p>Open a terminal and export the required variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "use_dns01_le_challenge": {"enabled": True, "value": True},
+        },
+    )
+    print(
+        updated.options.use_dns01_le_challenge.enabled,
+        updated.options.use_dns01_le_challenge.value,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                UseDns01LeChallenge: cdn.CDNResourceUpdateParamsOptionsUseDns01LeChallenge{
+                    Enabled: true,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.UseDns01LeChallenge.Enabled, updated.Options.UseDns01LeChallenge.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "use_dns01_le_challenge": {
+            "enabled": true,
+            "value": true
+          }
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": true,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Retry issuance from the **SSL** section of the CDN resource. Gcore validates through the delegated names, and production traffic does not need to pass through Gcore.</p>
+
+## Troubleshoot DNS-01
+
+<p>Match the symptom to the delegation path that was saved.</p>
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `SERVFAIL` with EDE 22 on `_acme-challenge.*` | Gcore is not authoritative yet for that subdomain zone. Re-check challenge-name delegation |
+| `REFUSED` from `ns1.gcorelabs.net` or `ns2.gcdn.services` | The `_acme-challenge.<hostname>` zone is not provisioned in Gcore DNS yet. Wait a few minutes and retry |
+| Issuance still uses HTTP-01 after the call | The option did not save. Read `options.use_dns01_le_challenge` on the CDN resource |
+| **CNAME Flattening** is **Flatten all CNAMEs** | Set **CNAME Flattening** to **Flatten CNAME at root** |
+| DNSSEC on a challenge-name cut | Leave that cut without a DS record unless Gcore signs the child zone |
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Use DNS-01 when a multi-CDN balancer answers the hostname with an address outside Gcore and HTTP-01 fails. HTTP-01 remains the default challenge.</p>
+
+<p>Set `use_dns01_le_challenge` before apply, and before a later renewal. Issuance stays in the [Let's&nbsp;Encrypt&nbsp;certificate](/cdn/ssl-certificates/configure-a-lets-encrypt-certificate) article, and renewal stays in [certificate&nbsp;renewal](/cdn/ssl-certificates/renew-or-revoke-a-lets-encrypt-certificate).</p>
+
+<p>The CDN resource already has its custom domains. [Managed&nbsp;DNS](https://gcore.com/dns) is active on the account, and the authoritative DNS provider for the zone is reachable.</p>
+
+<p>Use one of the two delegation paths. Whole-zone delegation moves the zone to the Gcore nameservers, and challenge-name delegation leaves the zone at the current provider and adds NS records only for `_acme-challenge`.</p>
+
+## Whole-zone delegation
+
+<p>Point the zone at `ns1.gcorelabs.net` and `ns2.gcdn.services` with the [nameserver&nbsp;change](/dns/manage-a-dns-zone). This path does not add NS records for `_acme-challenge`.</p>
+
+<p>Query the zone itself. A correct result lists both Gcore nameservers, and the SOA query to `ns1.gcorelabs.net` returns authoritative `NOERROR`.</p>
+
+```text
+dig +short NS mywebsite.com
+
+dig @ns1.gcorelabs.net mywebsite.com SOA
+```
+
+## Challenge-name delegation
+
+<p>Leave the rest of the zone at the current DNS provider. Add two NS records for `_acme-challenge` on each custom domain, which is the cut described in [RFC&nbsp;8555](https://www.rfc-editor.org/rfc/rfc8555#section-8.4).</p>
+
+<p>Create both records at that provider before apply:</p>
+
+| Name | TTL | Type | Value |
+| --- | --- | --- | --- |
+| `_acme-challenge.www.mywebsite.com` | 300 | NS | `ns1.gcorelabs.net.` |
+| `_acme-challenge.www.mywebsite.com` | 300 | NS | `ns2.gcdn.services.` |
+
+<p>A resource with www, app, and api needs a pair for each name:</p>
+
+```text
+_acme-challenge.www.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.www.mywebsite.com. IN NS ns2.gcdn.services.
+_acme-challenge.app.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.app.mywebsite.com. IN NS ns2.gcdn.services.
+_acme-challenge.api.mywebsite.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.api.mywebsite.com. IN NS ns2.gcdn.services.
+```
+
+<Note>
+If `www.mywebsite.com` is a separately delegated zone, create the NS records in that child zone.
+</Note>
+
+<p>A recursive resolver can return cached data, so query a nameserver of the parent zone directly. Replace the nameserver in the second command with one nameserver from that query.</p>
+
+<p>`NOERROR` with both Gcore nameservers in the ANSWER or AUTHORITY section means the records exist.</p>
+
+```text
+dig +short NS mywebsite.com
+
+dig @ns.example-dns.com NS _acme-challenge.www.mywebsite.com
+```
+
+<p>`NXDOMAIN`, or `NOERROR` with no NS records, means the records are missing at the DNS provider. Trace the chain from the root when the parent nameserver is unclear:</p>
+
+```text
+dig +trace _acme-challenge.www.mywebsite.com NS
+```
+
+## CAA records
+
+<p>CAA records are inherited from the parent zone. When no CAA record exists, any certificate authority is allowed.</p>
+
+<p>When a CAA record is present, permit Let's Encrypt:</p>
+
+```text
+dig CAA mywebsite.com
+```
+
+```text
+mywebsite.com. IN CAA 0 issue "letsencrypt.org"
+```
+
+## Save the DNS-01 option
+
+<p>Delegated names send the DNS-01 check to the Gcore nameservers. The option stores the setting and does not create those NS records.</p>
+
+<p>On challenge-name delegation those records already exist. On whole-zone delegation they are not required.</p>
+
+<p>One `terraform apply` creates the origin group, the certificate, and the CDN resource with the option set.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_certificate" "example" {
+  name      = "cdn-le-certificate"
+  automated = true
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "le.mywebsite.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+
+  options = {
+    use_dns01_le_challenge = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+<p>Retry issuance from the **SSL** section of the CDN resource. Gcore validates through the delegated names, and production traffic does not need to pass through Gcore.</p>
+
+## Troubleshoot DNS-01
+
+<p>Match the symptom to the delegation path that was saved.</p>
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `SERVFAIL` with EDE 22 on `_acme-challenge.*` | Gcore is not authoritative yet for that subdomain zone. Re-check challenge-name delegation |
+| `REFUSED` from `ns1.gcorelabs.net` or `ns2.gcdn.services` | The `_acme-challenge.<hostname>` zone is not provisioned in Gcore DNS yet. Wait a few minutes and retry |
+| Issuance still uses HTTP-01 after apply | The option did not save. Read `use_dns01_le_challenge` on the CDN resource |
+| **CNAME Flattening** is **Flatten all CNAMEs** | Set **CNAME Flattening** to **Flatten CNAME at root** |
+| DNSSEC on a challenge-name cut | Leave that cut without a DS record unless Gcore signs the child zone |
+
+</MethodSection>
+</MethodSwitch>

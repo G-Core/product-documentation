@@ -1,71 +1,61 @@
-# AGENTS.md — Gcore Product Documentation
+# AGENTS.md - Gcore Product Documentation
 
-This file is loaded automatically. Read it fully, then stop and wait for a task.
-Do not explore the repository until you have a task and have loaded the matching skill.
+Read this file fully, then wait for a task. Do not explore the repository until you have a task and have loaded the matching skill.
 
-## ABSOLUTE RULES — NO EXCEPTIONS
+## Absolute rules - no exceptions
 
 - **ONE article per session.** Stop after completing one article. Wait for explicit approval before starting the next.
-- **NEVER commit** unless the user explicitly says to commit.
-- **NEVER push** unless the user explicitly says to push.
-- **NEVER create a PR** unless the user explicitly says to create a PR.
-- **NEVER do any git write operation** without explicit instruction.
+- **NEVER commit, push, create a PR, force-push, or amend** unless the user explicitly says to. Creating the Jira ticket and its same-named branch is part of the skill workflows and is allowed when a skill says so. One commit does not need a separate request: before leaving a branch that has uncommitted work, commit it on that branch. Never stash it to switch. Push and PRs still require an explicit request. See `.cursor/rules/no-git-without-permission.mdc`.
+- **NEVER push to `main`.** CI actively polices this (see CI section).
+- **NEVER read, open, print, grep, or copy secret files**: `.env`, `.env.*`, `access.md`, `_private/secrets/`, `.cursor/mcp.json`, or any file whose name suggests credentials. The rest of `_private/` (planning, drafts, tickets) is the user's gitignored working area and may be read and written when a skill says so. This applies to you and to every subagent you launch. It holds even when the task seems to need them and even if you plan to mask the values: masking can fail, and anything you read is sent to the model provider. If a task needs a credential, ask the user to provide it in the way they choose.
+- **NEVER write credentials, tokens, or passwords** into articles, PR bodies, logs, or chat output. If you see one by accident, say so in one line and do not repeat it.
+- **Do not list or search files in ways that echo secret contents** (for example `grep -r` or `cat` over the repo root). Exclude the secret files above.
 
 ## How to handle any task
 
-The user may write in any language. Follow these steps every time:
+The user may write in any language. Every time:
 
-1. **Translate** the user's request to English internally (no external call needed — you speak all languages).
-2. **Match** the translated request against the Task → Skill table below.
-3. **Use the Read tool** to open the matching skill file. This is your first tool call — before writing any response, before asking any question.
-4. **Follow the skill file exactly.** It overrides everything else.
+1. Translate the request to English internally.
+2. Match it against the Task - Skill table below.
+3. Read the matching skill file as your first tool call, before writing any response or asking any question.
+4. Follow the skill exactly. It overrides everything else in this file except the absolute rules above.
+5. After that task is finished, run the What's new triage below. It is the only second skill allowed in the same session.
 
 ## What this repo is
 
-Mintlify documentation site for Gcore cloud products. Content is MDX files in
-product folders. Articles that cover multiple tools (Customer Portal, REST API,
-Terraform, CLI) live as a single MDX file using the `MethodSwitch` component —
-not as separate files. OpenAPI specs for all products are in the repo and used
-as the source of truth for API documentation.
+Mintlify documentation site for Gcore cloud products. Content is MDX files in product folders. Articles that cover several tools (Customer Portal, REST API, Terraform) live as a single MDX file using the `MethodSwitch` component, not as separate files. OpenAPI specs are in the repo and are the source of truth for API documentation.
 
 ## Folder structure
 
 ```
-/{product}/{section}/article.mdx       Main content (cloud, cdn, dns, waap, …)
-/{product}.mdx                         Product landing/navigation page
-/api-reference/services_documented/    OpenAPI YAML specs, one per product
-/snippets/                             Shared JSX and MDX components
-/.agents/skills/                       Skills — load on demand, one per task
-/.agents/references/                   Reference files — load only when a skill says to
+/{product}/{section}/article.mdx          Main content (cloud, cdn, dns, waap, ...)
+/{product}.mdx                            Product landing page
+/docs.json                                Site navigation and Mintlify config (there is no mint.json)
+/api-reference/services_documented/       OpenAPI YAML specs, one per product
+/snippets/                                Shared JSX and MDX components (method-switch.jsx)
+/images/docs/{product}/{article-slug}/    Article images
+/scripts/                                 Repo maintenance scripts used by CI
+/.claude/skills/                          Skills - one folder per task, SKILL.md plus supporting files
+/.agents/references/                      Reference files - load only when a skill says to
+/.agents/tools/                           Style checkers and helper scripts
 ```
 
 ## Three rules that apply to every task
 
 **1. Never create separate files for Portal / API / Terraform.**
-All methods for the same feature live in one `.mdx` file using `MethodSwitch`.
-If you are adding API coverage to an existing Portal article, add a tab — do
-not create a new file.
+All methods for the same feature live in one `.mdx` file using `MethodSwitch`. If you are adding API coverage to an existing Portal article, add a tab. Do not create a new file.
 
-**2. Never use `description` in frontmatter.**
-Mintlify renders `description` as visible page text. Use `ai-navigation` instead.
-`ai-navigation` is one sentence, max 160 characters, starts with an action verb,
-mentions all methods covered.
-
-`ai-navigation` is not just a label — it is read by a GitHub Action that generates
-`llms.txt` files for every product. These files are how AI agents (including Claude)
-discover what documentation exists. A missing or broken `ai-navigation` means the
-article is invisible to AI-powered search and navigation tools.
-
-Forbidden characters in `ai-navigation`: `:` (colon) and `#` (hash). The CI
-workflow auto-replaces them with ` -`, but the result may look wrong. Avoid them.
+**2. Frontmatter uses `description`, never `ai-navigation`.**
+`description` is required: one sentence, 140 characters maximum, summarizes the feature using words a person would type into search. Do not write Portal, API, or Terraform in it. No "you", "your", "this article", "learn how to".
+`custom.css` hides the rendered paragraph. `llms.txt` is generated from this field by `scripts/generate_llms_txt.py`, so a missing or broken `description` makes the article invisible to AI search.
+Forbidden characters in the value: `{ }`, `/`, `:`, `#`, backticks, square brackets, pipe. Do not rewrite existing descriptions unless the task is a description pass. Full rules: `.agents/references/mdx-rules.md`.
 
 **3. Internal links are always root-relative.**
-Use `/cloud/virtual-instances/create-an-instance`, never a full
-`https://docs.gcore.com/…` URL and never a relative `../` path.
+Use `/cloud/virtual-instances/create-an-instance`. Never a full `https://docs.gcore.com/...` URL and never a relative `../` path.
 
 ## Available MCP tools
 
-These are configured in this environment. Skills that need them will say so.
+Skills that need them will say so.
 
 | MCP | Purpose |
 |-----|---------|
@@ -73,148 +63,134 @@ These are configured in this environment. Skills that need them will say so.
 | Confluence | Internal product specs, release notes |
 | Playwright | Browser testing at https://portal.gcore.com |
 
-**Before using any MCP tool:** verify it is available. If not — read
-`.agents/references/mcp-tools/setup.md` and give the user the exact setup
-instructions from that file. Do not attempt to work around a missing tool.
+**Before using any MCP tool:** verify it is available. If not, read `.agents/references/mcp-tools/setup.md` and give the user the exact setup instructions from that file. Do not work around a missing tool.
 
-## Task → Skill
+## Task - Skill
 
-Identify the task from the user's request. Load exactly one skill file.
-Read nothing else until the skill tells you to.
+Identify the task, then read exactly one skill file. Read nothing else until the skill tells you to.
 
-| Task | Load this skill |
-|------|----------------|
-| Product or UI changed — find affected articles and update them | `.agents/skills/update-page/SKILL.md` |
-| Write a new article from scratch | `.agents/skills/write-from-scratch/SKILL.md` |
-| Analyze a Jira ticket — what needs documenting | `.agents/skills/jira-context/SKILL.md` |
-| Add REST API tab to an existing Portal article | `.agents/skills/api-use-case/SKILL.md` |
-| Test an article step by step and fix it | `.agents/skills/regression-test/SKILL.md` |
-| Product team: new feature → draft PR | `.agents/skills/feature-draft/SKILL.md` |
-| Compile a multi-topic end-to-end guide | `.agents/skills/cookbook/SKILL.md` |
-| Create a PR after work is done | `.agents/skills/pr/SKILL.md` |
+| Task | Skill (read this file) |
+|------|------------------------|
+| Product or UI changed - find affected articles and update them | `.claude/skills/update-page/SKILL.md` |
+| Write, rewrite, or review a product, API, or developer landing page | `.claude/skills/technical-landing-pages/SKILL.md` |
+| Write a new article from scratch | `.claude/skills/write-from-scratch/SKILL.md` |
+| Analyze a Jira ticket - what needs documenting | `.claude/skills/jira-context/SKILL.md` |
+| Work from a GitHub issue | `.claude/skills/github-issue/SKILL.md` |
+| Add a REST API tab to an existing Portal article | `.claude/skills/api-use-case/SKILL.md` |
+| Audit, verify, or live-test an existing API tab | `.claude/skills/api-audit/SKILL.md` |
+| Re-test API tabs after a backend change | `.claude/skills/api-retest/SKILL.md` |
+| Add a Terraform tab to an existing article | `.claude/skills/terraform-use-case/SKILL.md` |
+| Audit an article step by step against the live portal and fix it | `.claude/skills/full-audit/SKILL.md` |
+| Product team: new feature - draft article and draft PR | `.claude/skills/feature-draft/SKILL.md` |
+| Compile a multi-product end-to-end guide | `.claude/skills/cookbook/SKILL.md` |
+| Take or retake a screenshot for an article step | `.claude/skills/article-screenshot/SKILL.md` |
+| Create a PR after work is done | `.claude/skills/pr/SKILL.md` |
+| Triage, publish, or audit a product What's new page | `.claude/skills/product-whats-new/SKILL.md` |
+
+## What's new triage
+
+After completing each documentation ticket, article update, or documentation PR review, invoke the `product-whats-new` skill in **Triage** mode using the ticket context and before/after diff. Record `Include`, `Skip`, or `Needs verification` in the approved persistent register. If the behavior was used on the preprod or production Customer Portal and it worked, that is the product behavior: decide `Include` or `Skip`, and do not mark `Needs verification` because the check was on preprod or because a Jira status is still open. Report the one-line decision in the task summary. Do not edit public What's new pages unless explicitly asked to publish.
 
 ## Common mistakes
 
-These errors are specific to this repository. They cause silent failures or broken
-builds that are hard to debug. Know them before touching any file.
+These errors are specific to this repository. They cause silent failures or broken builds that are hard to debug.
 
-**1. MethodSwitch import missing `.jsx` — blank page, no error**
+**1. MethodSwitch import missing `.jsx` - blank page, no error**
 ```mdx
-Wrong:  import { MethodSwitch, MethodSection } from "/snippets/method-switch"
+Wrong:   import { MethodSwitch, MethodSection } from "/snippets/method-switch"
 Correct: import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 ```
 The MDX compiler reports OK. The blank page appears only in the Mintlify runtime.
 
-**2. `description` in frontmatter — renders as visible page text**
-```yaml
-Wrong:  description: How to create a VM   ← appears on the page
-Correct: ai-navigation: Create a VM ...   ← invisible to users, read by AI
-```
-
-**3. `{identifier}` in inline backtick code spans — MDX parse error**
+**2. `{identifier}` in inline backtick code spans - MDX parse error**
 ```mdx
-Wrong:  Poll `GET /tasks/{task_id}` every 5 seconds.
+Wrong:   Poll `GET /tasks/{task_id}` every 5 seconds.
 Correct: Poll <code>GET&nbsp;/tasks/{task_id}</code> every 5 seconds.
 ```
 Safe inside triple-backtick fenced blocks. Only breaks in single-backtick inline spans.
 
-**4. `</MethodSection>` indented after a list — tag becomes invisible to parser**
+**3. `</MethodSection>` indented after a list - tag becomes invisible to the parser**
 ```mdx
 Wrong:
 - Last item.
 
-  </MethodSection>   ← indented = MDX treats as list continuation
+    </MethodSection>       <- indented = MDX treats as list continuation
 
 Correct:
 - Last item.
 
-</MethodSection>     ← column 0
+</MethodSection>           <- column 0
 ```
 
-**5. Prose not wrapped in `<p>` inside `<MethodSection>` — content merges into one block**
+**4. Prose or numbered steps not wrapped in `<p>` inside `<MethodSection>` - content merges into one block**
 ```mdx
-Wrong:  <MethodSection>Some intro text. Then a step.</MethodSection>
-Correct: <MethodSection><p>Some intro text.</p>1. Then a step.</MethodSection>
+Wrong:   <MethodSection>Some intro text. 1. First step. 2. Second step.</MethodSection>
+Correct: <MethodSection><p>Some intro text.</p><p>1. First step.</p><p>2. Second step.</p></MethodSection>
 ```
-Plain paragraphs inside `<MethodSection>` compile to text strings — blank lines are stripped.
+`MethodSwitch` compiles its children in expression mode: plain paragraphs become text strings, blank lines are stripped, and numbered steps merge into one paragraph. Wrap every prose paragraph and every numbered step in its own `<p>`. Bullet lists are not wrapped.
 
-**6. `####` heading inside `<MethodSection>` — appears in the wrong tab's TOC**
+**5. `####` heading inside `<MethodSection>` - appears in the wrong tab's TOC**
 ```mdx
-Wrong:  #### Subsection title   ← leaks into active tab's TOC
-Correct: **Subsection title**   ← bold text, no TOC entry
+Wrong:   #### Subsection title       <- leaks into active tab's TOC
+Correct: **Subsection title**        <- bold text, no TOC entry
 ```
 
-**7. `ai-navigation` with `{...}`, `/paths/`, `:` or `#` — breaks build**
+**6. `description` with `{...}`, `/paths/`, `:` or `#` - breaks the build**
 ```yaml
-Wrong:  ai-navigation: Poll GET /tasks/{task_id} until state: FINISHED
-Wrong:  ai-navigation: See #overview for details
-Correct: ai-navigation: Create and manage virtual machines via the Gcore Cloud API.
+Wrong:   description: Poll GET /tasks/{task_id} until state: FINISHED
+Wrong:   description: See #overview for details
+Correct: description: Create and manage virtual machines with the Gcore Cloud API.
 ```
-Allowed: commas, periods, hyphens, parentheses. Forbidden: `{` `}` `/` `:` `#`.
+Allowed: commas, periods, hyphens, parentheses, semicolons.
 
-**8. Image file without extension — does not display in browser**
+**7. Image file without extension - does not display in the browser**
 ```mdx
-Wrong:  ![Alt text](/images/docs/cloud/create-vm/step-3)
+Wrong:   ![Alt text](/images/docs/cloud/create-vm/step-3)
 Correct: ![Alt text](/images/docs/cloud/create-vm/step-3.png)
 ```
 Always verify the file exists at the path before referencing it.
 
-**9. `git add .` or `git add -A` — stages unrelated files from other sessions**
+**8. `git add .` or `git add -A` - stages unrelated files from other sessions**
 Always stage files by name: `git add cloud/virtual-instances/create-an-instance.mdx`
 
-**10. Branching from stale local main — silently includes other branches' commits**
+**9. Branching from a stale local `main` - silently includes other branches' commits**
+There are three branch name formats: the Jira ticket key (`DOC-2405`) for work tied to a ticket, `issue/{number}-{short-slug}` for a GitHub issue, and `feature-draft/{name}` for a contributor draft. Create every branch with the helper, which checks out `main`, pulls, then branches:
 ```powershell
-Always run before branching:
-git checkout main
-git pull origin main   ← required, not optional
-git checkout -b update-{product}-{slug}
+.\.agents\tools\create_branch.ps1 DOC-2405
 ```
+Never run `git checkout -b` by hand. If a skill already created the branch, stay on it. Before the helper checks out `main`, commit any uncommitted work on the current branch. Never stash it to switch. See `.cursor/rules/git-branch-naming.mdc`.
 
-**11. Writing content without reading the full product section first — creates duplicate content**
-Before writing or expanding any article, read ALL sibling articles in the same product
-folder and check `docs.json` to understand the nav group structure. Only then can you
-determine what belongs in the target article and what is already covered elsewhere.
+**10. Writing content without reading the full product section first - creates duplicate content**
+Before writing or expanding any article, read ALL sibling articles in the same product folder and check `docs.json` for the nav group structure. Only then can you determine what belongs in the target article and what is already covered elsewhere.
 
-Skipping this step causes content to be written that duplicates existing articles,
-regardless of how correct or accurate that content is.
-
----
-
-## CI workflows — what runs automatically
-
-Two GitHub Actions run automatically when you push a branch or open a PR.
-Know about them to avoid confusion.
-
-**`sanitize-ai-navigation`** — runs on every push to non-main branches:
-Scans all `.mdx` files and replaces `:` and `#` in `ai-navigation` values with ` -`.
-Auto-commits the fix directly to your branch. If this happens, run `git pull`
-before any follow-up commits to avoid conflicts.
-
-**`normalize-images`** — runs on every PR when images or MDX files change:
-Renames images to `{article-slug}-imageN.ext` and updates the paths in MDX files.
-Also regenerates `llms.txt` files. Auto-commits everything to your branch.
-Same rule: run `git pull` before follow-up commits.
-
-**Image naming convention** (the action enforces this, but follow it from the start):
+**11. "permanent" API token - incorrect product terminology**
 ```
-images/docs/{product}/{article-slug}/{article-slug}-image1.png
-images/docs/{product}/{article-slug}/{article-slug}-image2.png
-```
-
----
-
-**12. "permanent" API token — incorrect product terminology**
-```
-Wrong: A permanent API token is required.
-Wrong: a permanent [API token]
+Wrong:   A permanent API token is required.
 Correct: An [API token](/account-settings/api-tokens) is required.
 ```
-API keys have optional expiration set by the user. "Permanent" is not accurate — never use this word when describing API tokens.
+API tokens have an optional expiration set by the user. Never call them "permanent".
 
----
+**12. Non-UTF-8 files or non-ASCII characters in `description` - fails CI**
+A UTF-8 BOM is stripped by CI and any non-UTF-8 `.mdx` fails the build. On Windows, write files with `-Encoding UTF8` (PowerShell 5.1 `Set-Content` defaults to ANSI). Non-ASCII characters in `description` (long dashes, curly quotes) also fail the `llms.txt` check on PRs.
+
+## CI workflows - what runs automatically
+
+Nine GitHub Actions exist. These affect agent work directly.
+
+| Workflow | When | What it does to you |
+|----------|------|---------------------|
+| `sanitize-ai-navigation` | Push to any non-main branch that touches `.mdx` | Strips UTF-8 BOM. Rewrites `description:` values: replaces `: # / { }` with a space. **Fails the job on any non-UTF-8 `.mdx`.** Auto-commits with `git add -A` to your branch. Run `git pull` before follow-up commits. (The file name says ai-navigation, the workflow edits `description`.) |
+| `normalize-images` | PR touching `images/docs/**`, `**/*.mdx`, or `docs.json` | Moves images into `images/docs/{product}/{article-slug}/` and rewrites MDX paths. Original filenames are kept. **Deletes unreferenced images** (images added in the same PR get a grace period); the job fails if deletions hit `images/docs/portal-icons/` or `images/docs/home/`. Regenerates `llms.txt` files and **fails on any non-ASCII character** in them. Auto-commits to your branch. Run `git pull` before follow-up commits. |
+| `validate-terraform-examples` | PR touching `**/*.mdx` | Validates HCL blocks in changed articles against the pinned Terraform provider schema. **Fails the PR on invalid HCL.** |
+| `check-api-sdk` | Push touching `api-reference/services_documented/**`, daily 09:30 UTC | Opens an `api-sdk-tracker` issue and commits `api-sdk-tracker/doc_index.json`. |
+| `check-terraform-provider` | Daily 09:00 UTC | Opens an issue and a schema-update PR when the provider changes. |
+| `update-doc-index` | Push to `main` touching `.mdx` | Opens a `chore/update-doc-index` PR. |
+| `generate-llms-txt` | Manual only | Opens an `automated/update-llms-txt` PR. |
+| `block-direct-push-main` | Push to `main` | Fails and files a public GitHub issue if the push is not a merge commit. |
+| `sync-preprod` | Daily 04:00 UTC | **Force-pushes `main` to `preprod`.** Never base work on `preprod`. |
+
+Image folder convention: `images/docs/{product}/{article-slug}/`.
 
 ## Hard stop
 
-Load one skill per task. Do not read other skill files. Do not read articles to
-"understand context." Do not read references unless the skill explicitly says to.
-When in doubt about what to do next, ask the user — do not explore.
+Load one skill per task. Do not read other skill files, except the What's new triage after the main task is finished. Do not read articles to "understand context". Do not read references unless the skill explicitly says to. When in doubt about what to do next, ask the user. Do not explore.

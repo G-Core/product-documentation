@@ -1,7 +1,7 @@
 ---
 title: Manage S3 access keys
 sidebarTitle: Access keys
-ai-navigation: Manage S3 access keys via Customer Portal, REST API, or Terraform, including read-only keys on S3 Standard.
+description: Create, delete, and rotate S3 access keys for Gcore object storage, including read-only keys and credential replacement.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -11,9 +11,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>S3 access keys authenticate AWS CLI, SDKs, and other S3-compatible clients. An [S3&nbsp;storage](/storage/create-an-s3-or-sftp-storage) is required before keys can be created.</p>
 
-<p>S3 Standard storage holds up to 10 keys, and S3 Fast storage holds up to two keys, so a replacement can be created before the previous key is deleted. Create a second key, update applications, then delete the old key to rotate credentials without downtime.</p>
+<p>S3 Standard storage holds up to 10 keys, and S3 Fast storage holds up to two keys. If the storage has an available key slot, create a replacement key, update applications, then delete the old key to rotate credentials without downtime.</p>
 
-<p>Read-only keys can list and download objects, but cannot upload, overwrite, or delete them. They are supported on S3 Standard only, and permissions are fixed at creation, so delete a key and create another to change access.</p>
+<p>Read-only keys can list and download objects, but cannot upload, overwrite, or delete them, and cannot create or delete buckets. They are supported on S3 Standard only, and permissions are fixed at creation, so delete a key and create another to change access.</p>
 
 <Steps>
   <Step title="Open Access keys">
@@ -42,27 +42,14 @@ An [API&nbsp;token](/account-settings/api-tokens) is required.
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
+export STORAGE_ID="{STORAGE_ID}"
 ```
 
 ## Key creation
 
-<p>An empty POST body creates a read-write key, and the response sets `read_only` to `false`. A JSON body with `read_only` set to `true` creates a read-only key on S3 Standard storage.</p>
+<p>An empty POST body creates a read-write key, and the response sets `read_only` to `false`. A JSON body with `read_only` set to `true` creates a read-only key on S3 Standard storage. Key permissions cannot be changed after creation. To change access, create a replacement key and delete the old one.</p>
 
-<p>S3 Fast returns HTTP 400, because read-only keys are supported on S3 Standard only. The error body uses CEPH for S3 Standard:</p>
-
-```json
-{"error":"read-only access keys are only supported for CEPH storages"}
-```
-
-<p>When the limit is reached, the API returns HTTP 409:</p>
-
-```json
-{"error":"maximum number of access keys reached"}
-```
-
-<p>A GET request to the same `access_keys` path returns each key's `access_key`, `created_at`, and `read_only` fields, and omits the secret.</p>
-
-<p>The following examples create a read-write key, and the curl tab also shows a read-only key on S3 Standard:</p>
+<p>The following examples create access keys. Read-only keys are supported on S3 Standard only.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -152,6 +139,18 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
 </Tabs>
 
+<p>S3 Fast returns HTTP 400, because read-only keys are supported on S3 Standard only. The error body uses CEPH for S3 Standard:</p>
+
+```json
+{"error":"read-only access keys are only supported for CEPH storages"}
+```
+
+<p>When the limit is reached, the API returns HTTP 409:</p>
+
+```json
+{"error":"maximum number of access keys reached"}
+```
+
 ## Key deletion
 
 <p>Delete an access key after updating all clients to the remaining credentials. The same request deletes read-write and read-only keys.</p>
@@ -202,6 +201,8 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
   </Tab>
   <Tab title="curl">
     ```bash
+    export OLD_ACCESS_KEY="{OLD_ACCESS_KEY}"
+
     curl -X DELETE "https://api.gcore.com/storage/v4/object_storages/$STORAGE_ID/access_keys/$OLD_ACCESS_KEY" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
@@ -232,8 +233,6 @@ output "extra_secret_key" {
   value     = gcore_storage_access_key.extra.secret_key
   sensitive = true
 }
-
-# terraform import gcore_storage_access_key.extra '<storage_id>/<access_key>'
 ```
 
 ```bash
@@ -242,7 +241,7 @@ terraform apply
 
 ## Key rotation
 
-<p>Declare a new `gcore_storage_access_key` resource to create an additional key. Once clients are updated to use the new credentials, remove the resource block for the old key and apply to delete it.</p>
+<p>This rotation applies only to additional keys declared as `gcore_storage_access_key`. The key created when the storage is provisioned belongs to `gcore_storage_object_storage` and is not deleted by removing an access key resource. Declare a new `gcore_storage_access_key`, update clients to the new credentials, then remove the resource block for the previous Terraform-managed key and apply.</p>
 
 ```hcl
 # Add a new key resource, update clients, then remove this block:

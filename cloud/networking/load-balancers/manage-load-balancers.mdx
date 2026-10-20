@@ -1,6 +1,6 @@
 ---
 title: Manage load balancers
-ai-navigation: List, inspect, rename, update tags, initiate failover, and delete Load Balancers via the Customer Portal, Gcore REST API with Python SDK, Go SDK, and curl examples, or Terraform.
+description: Manage Gcore load balancers, including statuses, settings, listeners, monitoring, logging, tags, DDoS protection, limits, and failover.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -11,18 +11,24 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>After a Load Balancer is created, it appears on the **Load Balancers** page in the [Gcore Customer Portal](https://portal.gcore.com). Navigate to **Cloud** > **Networking** > **Load Balancers** to open the page.</p>
 
 <Frame>
-  ![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)
+  ![Load balancer list with the Endpoints column](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-list.png)
 </Frame>
 
 <p>The page lists each Load Balancer with the following columns:</p>
 
 - **Name**: display name and brief configuration summary
-- **IP Address**: address assigned to the Load Balancer
+- **Endpoints**: the public IP and the FQDN, the hostname used instead of that IP.
 - **Listeners**: number of configured listening ports
 - **Region**: data center location
 - **Tags**: metadata labels assigned to the Load Balancer
 - **Created**: deployment date and time
 - **Operating status**, **Provisioning status**: see [Statuses](#statuses-of-load-balancers-and-their-components)
+
+<p>Open an endpoint to copy the public IP or the FQDN. The FQDN is assigned when the provisioning status is **Active**. It is accepted anywhere a hostname is required instead of the VIP address, including as the target of a CNAME record. Gcore generates the name, and it cannot be changed.</p>
+
+<Frame>
+  ![Endpoint dialog with the public IP and the FQDN](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-endpoints.png)
+</Frame>
 
 <Tip>
 Use the **Search by name** field to filter the list when managing a large number of Load Balancers.
@@ -74,18 +80,19 @@ Updating the name, description, or tags does not interrupt connections or cause 
 
 ## Load balancer settings
 
-<p>Click a Load Balancer's name on the list page to open its detail view. The top section always shows the routing scheme, VIP address, Floating IP (if configured), and current statuses. The lower section is organized into tabs.</p>
+<p>Click a Load Balancer's name on the list page to open its detail view. **Connection details** shows the VIP address, the Floating IP when one is assigned, preferred connectivity, the FQDN, and the statuses. **Show Routing scheme** opens a diagram of ingress and egress traffic. The lower section is organized into tabs.</p>
 
 <Frame>
-  ![Load Balancers overview page](/images/docs/cloud/networking/load-balancers/manage-load-balancers/balancer-overview.png)
+  ![Connection details with the VIP address, preferred connectivity, and the FQDN](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancer-connection-details.png)
 </Frame>
 
 <p>Top-section fields:</p>
 
-- **Routing scheme**: visualization of traffic flow through the Load Balancer — ingress and egress paths
-- **Type**: network distribution type — external (public) or private
-- **VIPs**: virtual IP address of the Load Balancer
+- **Show Routing scheme**: diagram of traffic flow through the Load Balancer, with the ingress and egress paths
+- **VIP address**: the virtual IP clients use to reach the Load Balancer
 - **Floating IP**: Floating IP assigned during creation, if configured
+- **Preferred connectivity**: the connectivity currently selected. **Edit** changes it
+- **FQDN**: hostname of the VIP, assigned when the provisioning status is **Active**
 - **Operating status**, **Provisioning status**: see [Statuses](#statuses-of-load-balancers-and-their-components)
 
 ### Flavor
@@ -153,7 +160,7 @@ To apply multiple pool changes in one operation, use the [Gcore API](/api-refere
 <p>A pool is the set of Virtual Machines or Bare Metal servers to which a listener forwards traffic.</p>
 
 <Frame>
-  ![Listeners tab with pool settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-pool.png)
+  ![Listeners tab with pool settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab.png)
 </Frame>
 
 <p>Each pool shows:</p>
@@ -231,7 +238,9 @@ To apply multiple pool changes in one operation, use the [Gcore API](/api-refere
 
 ### Advanced DDoS Protection
 
-<p>The **Advanced DDoS Protection** tab configures DDoS mitigation policies for the Load Balancer.</p>
+<p>The **Advanced DDoS Protection** tab turns Advanced DDoS Protection on for the load balancer.</p>
+
+<p>The **User Actions** tab lists changes to the load balancer: the action, the resource, and who made the change.</p>
 
 ## Limits
 
@@ -287,7 +296,7 @@ Failover terminates all current connections. Schedule it during a maintenance wi
 3. Select **Rename**.
 
 <Frame>
-  ![Three-dot menu showing Rename option](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename.png)
+  ![Load balancer row menu with Overview, Rename, and Delete](/images/docs/cloud/networking/load-balancers/manage-load-balancers/row-menu.png)
 </Frame>
 
 4. Enter a new name and click **Save**.
@@ -303,7 +312,7 @@ Failover terminates all current connections. Schedule it during a maintenance wi
   ![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/custom-tags-tab.png)
 </Frame>
 
-4. Update tags and click **Save**.
+4. Update the tags and click **Save changes**.
 
 ## Delete a load balancer
 
@@ -313,7 +322,7 @@ Failover terminates all current connections. Schedule it during a maintenance wi
 3. Select **Delete**.
 
 <Frame>
-  ![Three-dot menu showing Delete option](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-three-dot-icon.png)
+  ![Load balancer row menu with Overview, Rename, and Delete](/images/docs/cloud/networking/load-balancers/manage-load-balancers/row-menu.png)
 </Frame>
 
 4. Click **Delete** to confirm.
@@ -334,11 +343,13 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export LB_ID="{YOUR_LOAD_BALANCER_ID}"
+export POOL_ID="{YOUR_POOL_ID}"
+export MEMBER_ID="{YOUR_MEMBER_ID}"
 ```
 
 ## List load balancers
 
-<p>Listing returns all load balancers in the region with their operating status, provisioning status, and VIP address.</p>
+<p>Listing returns all load balancers in the region with their operating status, provisioning status, VIP address, and fully qualified domain name (FQDN).</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -351,7 +362,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
     page = client.cloud.load_balancers.list()
     print(f"Total: {page.count}")
     for lb in page.results:
-        print(f"  {lb.id}  {lb.name}  {lb.operating_status}  {lb.vip_address}")
+        print(f"  {lb.id}  {lb.name}  {lb.operating_status}  {lb.vip_address}  {lb.vip_fqdn}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -374,7 +385,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
     }
     fmt.Printf("Total: %d\n", page.Count)
     for _, lb := range page.Results {
-        fmt.Printf("  %s  %s  %s  %s\n", lb.ID, lb.Name, lb.OperatingStatus, lb.VipAddress)
+        fmt.Printf("  %s  %s  %s  %s  %s\n", lb.ID, lb.Name, lb.OperatingStatus, lb.VipAddress, lb.VipFqdn)
     }
     ```
   </Tab>
@@ -394,6 +405,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
           "id": "ae7def79-f507-4306-93be-7784edad9211",
           "name": "my-load-balancer",
           "vip_address": "85.234.84.175",
+          "vip_fqdn": "ae7def79-f507-4306-93be-7784edad9211.luxembourg-1.lb.gcorecloud.com",
           "operating_status": "ONLINE",
           "provisioning_status": "ACTIVE",
           "listeners": [],
@@ -407,7 +419,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 
 ## Get load balancer details
 
-<p>Fetching a single load balancer returns the full configuration including flavor, VRRP IPs, listener list, tags, and logging settings.</p>
+<p>Fetching a single load balancer returns the full configuration, including the flavor, VIP address, FQDN, VRRP IPs, listener list, tags, and logging settings. <code>vip_fqdn</code> is the hostname of that VIP, and it is set when the provisioning status is ACTIVE.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -421,6 +433,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
     print(f"name: {lb.name}")
     print(f"flavor: {lb.flavor.flavor_name}  vCPU: {lb.flavor.vcpus}  RAM: {lb.flavor.ram} MB")
     print(f"vip_address: {lb.vip_address}")
+    print(f"vip_fqdn: {lb.vip_fqdn}")
     print(f"operating_status: {lb.operating_status}")
     print(f"provisioning_status: {lb.provisioning_status}")
     print(f"listeners: {len(lb.listeners)}")
@@ -438,6 +451,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
     fmt.Printf("flavor: %s  vCPU: %d  RAM: %d MB\n",
         lb.Flavor.FlavorName, lb.Flavor.Vcpus, lb.Flavor.Ram)
     fmt.Printf("vip_address: %s\n", lb.VipAddress)
+    fmt.Printf("vip_fqdn: %s\n", lb.VipFqdn)
     fmt.Printf("operating_status: %s  provisioning_status: %s\n",
         lb.OperatingStatus, lb.ProvisioningStatus)
     fmt.Printf("listeners: %d\n", len(lb.Listeners))
@@ -461,6 +475,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
         "ram": 2048
       },
       "vip_address": "85.234.84.175",
+      "vip_fqdn": "ae7def79-f507-4306-93be-7784edad9211.luxembourg-1.lb.gcorecloud.com",
       "vip_ip_family": "ipv4",
       "operating_status": "ONLINE",
       "provisioning_status": "ACTIVE",
@@ -631,6 +646,113 @@ Failover terminates all existing connections. Schedule it during a maintenance w
 
     ```json
     { "tasks": ["89316ade-d4af-4b07-97b5-acf2e3df6148"] }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+## List pool members
+
+<p>Listing returns all members in a pool with their addresses, ports, weights, and health statuses. Use `limit` and `offset` query parameters to paginate large member lists.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "id": "946e83cc-...",
+          "address": "192.168.0.10",
+          "protocol_port": 80,
+          "weight": 1,
+          "backup": false,
+          "admin_state_up": true,
+          "operating_status": "NO_MONITOR",
+          "provisioning_status": "ACTIVE"
+        },
+        {
+          "id": "0e238cfb-...",
+          "address": "192.168.0.11",
+          "protocol_port": 8080,
+          "weight": 2,
+          "backup": false,
+          "admin_state_up": true,
+          "operating_status": "NO_MONITOR",
+          "provisioning_status": "ACTIVE"
+        }
+      ]
+    }
+    ```
+
+    <p>To retrieve a specific page, append `?limit=50&offset=0` to the URL.</p>
+  </Tab>
+</Tabs>
+
+## Get a pool member
+
+<p>Fetching a single member returns its full configuration, including weight, backup status, and optional health check overrides.</p>
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members/$MEMBER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "id": "946e83cc-...",
+      "address": "192.168.0.10",
+      "protocol_port": 80,
+      "weight": 1,
+      "backup": false,
+      "admin_state_up": true,
+      "monitor_address": null,
+      "monitor_port": null,
+      "subnet_id": null,
+      "operating_status": "NO_MONITOR",
+      "provisioning_status": "ACTIVE"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Update a pool member
+
+<p>A PATCH request updates a member's traffic distribution settings in place, without removing and re-adding it. Any combination of the fields below is accepted; omitted fields remain unchanged.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `weight` | No | Relative weight for traffic distribution, range 1–256 |
+| `backup` | No | `true` marks the member as a backup — traffic reaches it only when all primary members are unreachable |
+| `admin_state_up` | No | `false` drains the member without removing it from the pool |
+| `monitor_address` | No | Override IP for health checks when it differs from the backend address |
+| `monitor_port` | No | Override port for health checks when it differs from `protocol_port` |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/pools/$POOL_ID/members/$MEMBER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"weight": 3, "backup": false}'
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {"tasks": ["7136e5e9-..."]}
     ```
 
     Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
