@@ -82,4 +82,5 @@
 - 2026-10-20 — account-settings.mdx intro — Account settings — Skip — Opening now states what account settings are for before the login and account difference. No product behavior changed.
 - 2026-10-20 — account-settings.mdx screenshot caption — Account settings — Skip — A paragraph after the Profile menu screenshot explains personal and account settings. No product behavior changed.
 - 2026-10-20 — account-settings.mdx cards — Account settings — Skip — Section cards now explain how the areas differ. No product behavior changed.
+- 2026-10-21 — `waap/analytics/view-waap-statistics-in-grafana.mdx` — WAAP — Skip — Grafana reports moved from their own group into Analytics. No product behavior changed.
 
