@@ -28,32 +28,12 @@ You can reduce this load with [Origin&nbsp;Shielding](/cdn/cdn-resource-options/
 
 ## The complete delivery path
 
-The CDN resource, edge cache, origin, and optional Origin Shielding work together to deliver content to users. The diagram below shows how a request moves through these components and where cached content can be served.
+A request reaches the nearest edge server. If that server has the file, it sends the file and does not contact the origin. If it does not, it requests the file from the origin. With Origin Shielding enabled, the edge server requests the file from the shield server, and the shield server contacts the origin only when it does not have the file. Each row is a separate request.
+
+<Frame>
+  ![Four separate CDN requests: an edge cache hit, a miss sent directly to the origin, a miss served by the shield, and a miss fetched from the origin through the shield](/images/docs/cdn/how-cdn-works/request-path.png)
+</Frame>
 
 The connections along this path can use different protocols. Even if a user connects to an edge server over HTTPS, the connection to the origin may still use HTTP.
-
-```mermaid
-sequenceDiagram
-    participant V as User
-    participant E as Edge server
-    participant S as Shield server
-    participant O as Origin
-    V->>E: request
-    Note over V,E: HTTPS requires SSL certificate
-    alt edge cache hit
-        E-->>V: content from cache
-    else edge cache miss
-        E->>S: request
-        alt shield cache hit
-            S-->>E: content from cache
-        else shield cache miss
-            S->>O: request
-            Note over S,O: HTTP or HTTPS<br/>via origin pull protocol
-            O-->>S: content
-            S-->>E: content
-        end
-        E-->>V: content
-    end
-```
 
 Between the user and the edge server, an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) lets the CDN serve the domain over HTTPS. Between the CDN and the origin, you choose HTTP or HTTPS with the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol), depending on what the origin supports.
