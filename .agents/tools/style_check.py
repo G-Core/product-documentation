@@ -2,6 +2,15 @@
 
 Checks detectable violations from .agents/references/style-guide.md.
 Usage: python .agents/tools/style_check.py hosting/path/to/article.mdx
+
+Landing pages (see .claude/skills/technical-landing-pages/references/landing-writing.md):
+the checker still flags three things on a landing, and the flags are intentional.
+The output marks them as a possible false positive. Show them to the user, who decides
+which to fix. Do not ignore them and do not fix them on your own, because the user
+may have allowed one on purpose:
+  - "you" / "your" (check_you_your): allowed on a landing in small doses.
+  - "For example," at the start of a sentence (check_forbidden_words): allowed.
+  - a digit inside a JSX attribute such as cols={2} (check_numbers): a false positive.
 """
 
 import re
@@ -64,6 +73,7 @@ def strip_urls_and_links(text: str) -> str:
 
 
 def check_you_your(lines: list[tuple[int, str]]) -> list[Violation]:
+    # On a landing page a measured use of "you" can be intentional. Check with the user, do not auto-fix.
     violations: list[Violation] = []
     pattern = re.compile(r"\b(you|your|you're|you'll|you've)\b", re.IGNORECASE)
     for lineno, text in lines:
@@ -98,6 +108,7 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
         (r"\brobust\b", "robust — say what it actually does"),
         (r"\bscalable\b", "scalable — say what it actually does"),
         (r"\bprogrammatic access\b", "programmatic access — be specific"),
+        # A sentence-initial "For example," on a landing is intentional. Check with the user, do not auto-fix.
         (r"\bfor example\b", "for example (inline) — restructure the sentence or use a dash"),
         (r"\bsuch as\b", "such as — complete the list or restructure"),
         (r"\bpermanent (api token|token)\b", "permanent API token — tokens have optional expiry, use 'API token'"),
@@ -274,6 +285,7 @@ def check_meta_preamble(lines: list[tuple[int, str]]) -> list[Violation]:
 
 
 def check_numbers(lines: list[tuple[int, str]]) -> list[Violation]:
+    # A digit inside a JSX attribute (cols={2}) is a false positive. Confirm with the user, do not rewrite the markup.
     violations: list[Violation] = []
     measurement_units = re.compile(
         r"\d+\s*(ms|s|sec|seconds?|min|minutes?|hours?|days?|GB|MB|KB|TB|Gbps|Mbps|vCPU|rpm|"
@@ -543,6 +555,30 @@ CHECKERS = [
 ]
 
 
+LANDING_NOTE = (
+    " | possible false positive on a landing page: show it to the user, "
+    "who decides whether to fix it. Do not ignore it and do not fix it on your own"
+)
+
+
+def is_landing(path: Path) -> bool:
+    """A landing is a root-level page (cdn.mdx) or a top-level api-reference page."""
+    repo_root = Path(__file__).resolve().parents[2]
+    try:
+        parts = path.resolve().relative_to(repo_root).parts
+    except ValueError:
+        return False
+    return len(parts) == 1 or (parts[0] == "api-reference" and len(parts) == 2)
+
+
+def is_landing_review_flag(v: Violation) -> bool:
+    if v.rule == "No you/your":
+        return True
+    if v.rule == "Forbidden word/phrase" and v.detail.startswith("for example"):
+        return True
+    return v.rule == "Number style" and v.text.lstrip().startswith("<")
+
+
 def lint(path: Path) -> list[Violation]:
     raw_lines = path.read_text(encoding="utf-8").splitlines()
     filtered = strip_skipped_regions(raw_lines)
@@ -554,6 +590,10 @@ def lint(path: Path) -> list[Violation]:
     violations.extend(check_callout_prefix(raw_lines))
     violations.extend(check_frontmatter(raw_lines))
     violations.sort(key=lambda v: v.line)
+    if is_landing(path):
+        for v in violations:
+            if is_landing_review_flag(v):
+                v.detail += LANDING_NOTE
     return violations
 
 

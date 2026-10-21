@@ -1,6 +1,6 @@
 ---
 name: product-whats-new
-description: Evaluate every completed Gcore product-documentation ticket or article change for customer-visible product news, record Include/Skip/Needs verification decisions, and maintain one What's new page immediately after each product landing page. Use after documentation edits, ticket reviews, PR reviews, release updates, or when preparing product What's new pages in Claude Code.
+description: Evaluate every completed Gcore product-documentation ticket or article change for customer-visible product news, record Include and Needs verification decisions, and maintain one What's new page immediately after each product landing page. Use after documentation edits, ticket reviews, PR reviews, release updates, or when preparing product What's new pages in Claude Code.
 ---
 
 # Product What's New — Claude Code
@@ -37,7 +37,7 @@ A check on the preprod Customer Portal is a check of the product. Behavior that 
 4. **Check duplicates.** Search the existing product What's new page and candidate register for the same underlying release. Several tickets/pages may describe **one** product event; link all relevant docs to one candidate.
 5. **Decide:**
    - `Include`: verified, customer-relevant product change, not already published. A small but impactful change can qualify.
-   - `Skip`: documentation-only work, inconsequential product change, or already covered. Record a brief reason; do not write public news.
+   - `Skip`: documentation-only work, inconsequential product change, or already covered. Record nothing and say nothing.
    - `Needs verification`: plausible customer-relevant product change that nobody has seen working, on preprod or on production, and no other evidence shows customers can use it. Record what to verify; do not publish. Do not use this status after a successful preprod or production check.
 
 Do not assign scores, force quotas, or publish merely to maintain a cadence. Do not treat all bug fixes as news or reject all fixes: evaluate impact.
@@ -46,11 +46,11 @@ Do not assign scores, force quotas, or publish merely to maintain a cadence. Do 
 
 Use `.whats-new/candidates/` in the repository root (create only if the workflow permits repository changes). Store **one Markdown record per underlying product event**, not one per article; use stable readable filenames, e.g. `streaming-multi-codec-vod.md`. On repeat evaluations update the existing record rather than creating a duplicate. See `references/record-template.md`.
 
-Keep `Skip` decisions lightweight: append a short entry to `.whats-new/triage-log.md` containing date (only if known), ticket/PR/article reference, product, `Skip`, and reason. Avoid logging secrets, customer data, internal-only pricing, or unapproved release details. If the repository must not contain internal metadata, use an approved external tracker instead; do not silently create public-facing records. If persistent storage is unavailable, output the decision and explicitly state that it was not saved.
+Do not log `Skip` decisions. Avoid logging secrets, customer data, internal-only pricing, or unapproved release details. If the repository must not contain internal metadata, use an approved external tracker instead; do not silently create public-facing records. If persistent storage is unavailable, output the decision and explicitly state that it was not saved.
 
-For every completed article, report at most one compact line in the normal task summary, e.g. `What's new: Skip — corrected an existing RTMP URL example`, `What's new: Needs verification — release date for multi-codec VOD unknown`, or `What's new: Include — new customer-facing capability (recorded)`.
+For `Include` or `Needs verification`, report at most one compact line in the normal task summary, e.g. `What's new: Needs verification — release date for multi-codec VOD unknown`, or `What's new: Include — new customer-facing capability (recorded)`. For `Skip`, report nothing.
 
-Do not block publication of ordinary documentation merely because a What's new candidate needs verification. Never silently skip triage.
+Do not block publication of ordinary documentation merely because a What's new candidate needs verification.
 
 ## Location and navigation
 
@@ -76,7 +76,7 @@ Group entries in reverse chronological order, normally by month. Prefer meaningf
 4. Edit only the relevant product page(s) and navigation if needed; keep the overview page untouched unless explicitly requested.
 5. Validate MDX/frontmatter/navigation, internal links, chronological ordering, factual scope, and absence of duplicates. Run existing repository checks when available.
 6. Mark candidates `Published`, recording published page and entry heading. Never mark published before the file is successfully updated.
-7. Report published entries, held candidates, and skipped changes concisely.
+7. Report published entries and held candidates concisely.
 
 ## Examples of classification
 
