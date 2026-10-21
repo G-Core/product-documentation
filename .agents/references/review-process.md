@@ -124,6 +124,8 @@ Fix anything that:
 - Sounds mechanical or machine-generated
 - Contains a sentence that could appear in three different articles (too generic)
 - Has a section that exists only to host a link
+- Leaves the next sentence unexplained: after each sentence ask why the next one follows, and join or split two facts that sit side by side with no shared subject or connector
+- Repeats the same verb or opening in adjacent sentences, so the reader cannot tell whether the second continues the first
 
 **Anti-patterns caught in review:**
 - Opening sentence is a template ("The Gcore API provides programmatic access...")
