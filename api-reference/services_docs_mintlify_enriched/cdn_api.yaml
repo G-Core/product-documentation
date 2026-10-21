@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 985c16116eb1
+  version: bbff758d656c
 servers:
 - url: https://api.gcore.com
 tags:
@@ -9319,12 +9319,16 @@ components:
                 type: string
                 description: Masked secret value.
                 example: '*****'
+            required:
+            - account_key
           - type: object
             properties:
               token:
                 type: string
                 description: Masked secret value.
                 example: '*****'
+            required:
+            - token
       required:
       - type
       - config
@@ -9385,6 +9389,7 @@ components:
     BaseHTTPAction:
       title: HTTP Action
       type: object
+      nullable: true
       properties:
         method:
           type: string
@@ -9423,6 +9428,7 @@ components:
     BaseHTTPAuth:
       title: HTTP Auth
       type: object
+      nullable: true
       properties:
         type:
           type: string
@@ -10273,22 +10279,49 @@ components:
                 default: other
         log_sample_rate: 1
     CreateLogsUploaderTarget:
+      oneOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetS3Gcore'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetS3Amazon'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetS3OSS'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetS3Other'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetS3V1'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetFTP'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetSFTP'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetHTTP'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetAzureBlob'
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetSLS'
+      discriminator:
+        propertyName: storage_type
+        mapping:
+          s3_gcore: '#/components/schemas/CreateLogsUploaderTargetS3Gcore'
+          s3_amazon: '#/components/schemas/CreateLogsUploaderTargetS3Amazon'
+          s3_oss: '#/components/schemas/CreateLogsUploaderTargetS3OSS'
+          s3_other: '#/components/schemas/CreateLogsUploaderTargetS3Other'
+          s3_v1: '#/components/schemas/CreateLogsUploaderTargetS3V1'
+          ftp: '#/components/schemas/CreateLogsUploaderTargetFTP'
+          sftp: '#/components/schemas/CreateLogsUploaderTargetSFTP'
+          http: '#/components/schemas/CreateLogsUploaderTargetHTTP'
+          azure_blob: '#/components/schemas/CreateLogsUploaderTargetAzureBlob'
+          sls: '#/components/schemas/CreateLogsUploaderTargetSLS'
+    CreateLogsUploaderTargetAzureBlob:
+      title: Azure Blob Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - azure_blob
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/AzureBlobConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetBase:
       type: object
       properties:
-        storage_type:
-          type: string
-          enum:
-          - s3_gcore
-          - s3_amazon
-          - s3_oss
-          - s3_other
-          - s3_v1
-          - ftp
-          - sftp
-          - http
-          - azure_blob
-          - sls
-          description: Type of storage for logs.
         name:
           type: string
           description: Name of the target.
@@ -10298,11 +10331,150 @@ components:
           type: string
           description: Description of the target.
           maxLength: 255
-        config:
-          $ref: '#/components/schemas/LogsUploaderTargetConfig'
-      required:
-      - storage_type
-      - config
+    CreateLogsUploaderTargetFTP:
+      title: FTP Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - ftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/FTPConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetHTTP:
+      title: HTTP Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - http
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/HTTPConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetS3Amazon:
+      title: S3 Amazon Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_amazon
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3AmazonConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetS3Gcore:
+      title: S3 Gcore Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_gcore
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/LogsUploaderS3GcoreTargetConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetS3OSS:
+      title: S3 OSS Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_oss
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OSSConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetS3Other:
+      title: S3 Other Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_other
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OtherConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetS3V1:
+      title: S3 V1 Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_v1
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3V1Config'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetSFTP:
+      title: SFTP Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SFTPConfig'
+        required:
+        - storage_type
+        - config
+    CreateLogsUploaderTargetSLS:
+      title: SLS Target
+      allOf:
+      - $ref: '#/components/schemas/CreateLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sls
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SLSConfig'
+        required:
+        - storage_type
+        - config
     CreateOriginGroup:
       oneOf:
       - type: object
@@ -11509,15 +11681,23 @@ components:
       properties:
         upload:
           type: object
-          $ref: '#/components/schemas/BaseHTTPAction'
+          allOf:
+          - $ref: '#/components/schemas/BaseHTTPAction'
         append:
           type: object
-          $ref: '#/components/schemas/BaseHTTPAction'
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/BaseHTTPAction'
         retry:
           type: object
-          $ref: '#/components/schemas/BaseHTTPAction'
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/BaseHTTPAction'
         auth:
-          $ref: '#/components/schemas/BaseHTTPAuth'
+          type: object
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/BaseHTTPAuth'
         content_type:
           type: string
           enum:
@@ -12179,34 +12359,59 @@ components:
         log_sample_rate: 1
         related_uploader_configs:
         - 123
-    LogsUploaderTargetConfig:
-      description: Config for specific storage type.
+    LogsUploaderS3GcoreTargetConfig:
+      description: Config for the `s3_gcore` storage type.
       oneOf:
       - $ref: '#/components/schemas/S3GcoreConfig'
       - $ref: '#/components/schemas/S3GcoreBoundConfig'
-      - $ref: '#/components/schemas/S3AmazonConfig'
-      - $ref: '#/components/schemas/S3OSSConfig'
-      - $ref: '#/components/schemas/S3OtherConfig'
-      - $ref: '#/components/schemas/S3V1Config'
-      - $ref: '#/components/schemas/FTPConfig'
-      - $ref: '#/components/schemas/SFTPConfig'
-      - $ref: '#/components/schemas/HTTPConfig'
-      - $ref: '#/components/schemas/AzureBlobConfig'
-      - $ref: '#/components/schemas/SLSConfig'
-    LogsUploaderTargetConfigResponse:
-      description: Config for specific storage type.
+    LogsUploaderS3GcoreTargetConfigResponse:
+      description: Config for the `s3_gcore` storage type.
       oneOf:
       - $ref: '#/components/schemas/S3GcoreConfigResponse'
       - $ref: '#/components/schemas/S3GcoreBoundConfigResponse'
-      - $ref: '#/components/schemas/S3AmazonConfigResponse'
-      - $ref: '#/components/schemas/S3OSSConfigResponse'
-      - $ref: '#/components/schemas/S3OtherConfigResponse'
-      - $ref: '#/components/schemas/S3V1ConfigResponse'
-      - $ref: '#/components/schemas/FTPConfigResponse'
-      - $ref: '#/components/schemas/SFTPConfigResponse'
-      - $ref: '#/components/schemas/HTTPConfigResponse'
-      - $ref: '#/components/schemas/AzureBlobConfigResponse'
-      - $ref: '#/components/schemas/SLSConfigResponse'
+    LogsUploaderS3GcoreTargetPutConfig:
+      description: Config for the `s3_gcore` storage type.
+      oneOf:
+      - $ref: '#/components/schemas/S3GcoreConfig'
+      - $ref: '#/components/schemas/S3GcoreBoundConfigPut'
+    LogsUploaderTargetBaseResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        client_id:
+          type: integer
+          description: Client that owns the target.
+          readOnly: true
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time when logs uploader target was created.
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Time when logs uploader target was updated.
+        name:
+          type: string
+          description: Name of the target.
+          maxLength: 255
+        description:
+          type: string
+          description: Description of the target.
+          maxLength: 255
+        related_uploader_configs:
+          type: array
+          items:
+            type: integer
+          description: List of logs uploader configs that use this target.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/LogsUploaderValidationResponse'
+          - type: object
+            description: Validation status of the logs uploader target. Informs if the specified target is reachable.
     LogsUploaderTargetListResponse:
       oneOf:
       - title: Plain list
@@ -12270,74 +12475,181 @@ components:
       - $ref: '#/components/schemas/HTTPConfig'
       - $ref: '#/components/schemas/AzureBlobConfig'
       - $ref: '#/components/schemas/SLSConfig'
-    LogsUploaderTargetPutConfig:
-      description: Config for specific storage type.
-      oneOf:
-      - $ref: '#/components/schemas/S3GcoreConfig'
-      - $ref: '#/components/schemas/S3GcoreBoundConfigPut'
-      - $ref: '#/components/schemas/S3AmazonConfig'
-      - $ref: '#/components/schemas/S3OSSConfig'
-      - $ref: '#/components/schemas/S3OtherConfig'
-      - $ref: '#/components/schemas/S3V1Config'
-      - $ref: '#/components/schemas/FTPConfig'
-      - $ref: '#/components/schemas/SFTPConfig'
-      - $ref: '#/components/schemas/HTTPConfig'
-      - $ref: '#/components/schemas/AzureBlobConfig'
-      - $ref: '#/components/schemas/SLSConfig'
     LogsUploaderTargetResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        client_id:
-          type: integer
-          description: Client that owns the target.
-          readOnly: true
-        created:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when logs uploader target was created.
-        updated:
-          type: string
-          format: date-time
-          readOnly: true
-          description: Time when logs uploader target was updated.
-        storage_type:
-          type: string
-          enum:
-          - s3_gcore
-          - s3_amazon
-          - s3_oss
-          - s3_other
-          - s3_v1
-          - ftp
-          - sftp
-          - http
-          - azure_blob
-          - sls
-          description: Type of storage for logs.
-        name:
-          type: string
-          description: Name of the target.
-          maxLength: 255
-        description:
-          type: string
-          description: Description of the target.
-          maxLength: 255
-        related_uploader_configs:
-          type: array
-          items:
-            type: integer
-          description: List of logs uploader configs that use this target.
-        status:
-          allOf:
-          - $ref: '#/components/schemas/LogsUploaderValidationResponse'
-          - type: object
-            description: Validation status of the logs uploader target. Informs if the specified target is reachable.
-        config:
-          $ref: '#/components/schemas/LogsUploaderTargetConfigResponse'
+      oneOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseS3Gcore'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseS3Amazon'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseS3OSS'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseS3Other'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseS3V1'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseFTP'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseSFTP'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseHTTP'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseAzureBlob'
+      - $ref: '#/components/schemas/LogsUploaderTargetResponseSLS'
+      discriminator:
+        propertyName: storage_type
+        mapping:
+          s3_gcore: '#/components/schemas/LogsUploaderTargetResponseS3Gcore'
+          s3_amazon: '#/components/schemas/LogsUploaderTargetResponseS3Amazon'
+          s3_oss: '#/components/schemas/LogsUploaderTargetResponseS3OSS'
+          s3_other: '#/components/schemas/LogsUploaderTargetResponseS3Other'
+          s3_v1: '#/components/schemas/LogsUploaderTargetResponseS3V1'
+          ftp: '#/components/schemas/LogsUploaderTargetResponseFTP'
+          sftp: '#/components/schemas/LogsUploaderTargetResponseSFTP'
+          http: '#/components/schemas/LogsUploaderTargetResponseHTTP'
+          azure_blob: '#/components/schemas/LogsUploaderTargetResponseAzureBlob'
+          sls: '#/components/schemas/LogsUploaderTargetResponseSLS'
+    LogsUploaderTargetResponseAzureBlob:
+      title: Azure Blob Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - azure_blob
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/AzureBlobConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseFTP:
+      title: FTP Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - ftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/FTPConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseHTTP:
+      title: HTTP Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - http
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/HTTPConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseS3Amazon:
+      title: S3 Amazon Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_amazon
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3AmazonConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseS3Gcore:
+      title: S3 Gcore Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_gcore
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/LogsUploaderS3GcoreTargetConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseS3OSS:
+      title: S3 OSS Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_oss
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OSSConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseS3Other:
+      title: S3 Other Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_other
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OtherConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseS3V1:
+      title: S3 V1 Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_v1
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3V1ConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseSFTP:
+      title: SFTP Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SFTPConfigResponse'
+        required:
+        - storage_type
+    LogsUploaderTargetResponseSLS:
+      title: SLS Target
+      allOf:
+      - $ref: '#/components/schemas/LogsUploaderTargetBaseResponse'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sls
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SLSConfigResponse'
+        required:
+        - storage_type
     LogsUploaderValidationResponse:
       type: object
       properties:
@@ -13369,22 +13681,49 @@ components:
             created: '2021-10-29T13:21:01.550849Z'
             purge_type: purge_by_url
     PutLogsUploaderTarget:
+      oneOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetS3Gcore'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetS3Amazon'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetS3OSS'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetS3Other'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetS3V1'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetFTP'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetSFTP'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetHTTP'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetAzureBlob'
+      - $ref: '#/components/schemas/PutLogsUploaderTargetSLS'
+      discriminator:
+        propertyName: storage_type
+        mapping:
+          s3_gcore: '#/components/schemas/PutLogsUploaderTargetS3Gcore'
+          s3_amazon: '#/components/schemas/PutLogsUploaderTargetS3Amazon'
+          s3_oss: '#/components/schemas/PutLogsUploaderTargetS3OSS'
+          s3_other: '#/components/schemas/PutLogsUploaderTargetS3Other'
+          s3_v1: '#/components/schemas/PutLogsUploaderTargetS3V1'
+          ftp: '#/components/schemas/PutLogsUploaderTargetFTP'
+          sftp: '#/components/schemas/PutLogsUploaderTargetSFTP'
+          http: '#/components/schemas/PutLogsUploaderTargetHTTP'
+          azure_blob: '#/components/schemas/PutLogsUploaderTargetAzureBlob'
+          sls: '#/components/schemas/PutLogsUploaderTargetSLS'
+    PutLogsUploaderTargetAzureBlob:
+      title: Azure Blob Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - azure_blob
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/AzureBlobConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetBase:
       type: object
       properties:
-        storage_type:
-          type: string
-          enum:
-          - s3_gcore
-          - s3_amazon
-          - s3_oss
-          - s3_other
-          - s3_v1
-          - ftp
-          - sftp
-          - http
-          - azure_blob
-          - sls
-          description: Type of storage for logs.
         name:
           type: string
           description: Name of the target.
@@ -13394,11 +13733,150 @@ components:
           type: string
           description: Description of the target.
           maxLength: 255
-        config:
-          $ref: '#/components/schemas/LogsUploaderTargetPutConfig'
-      required:
-      - storage_type
-      - config
+    PutLogsUploaderTargetFTP:
+      title: FTP Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - ftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/FTPConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetHTTP:
+      title: HTTP Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - http
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/HTTPConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetS3Amazon:
+      title: S3 Amazon Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_amazon
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3AmazonConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetS3Gcore:
+      title: S3 Gcore Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_gcore
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/LogsUploaderS3GcoreTargetPutConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetS3OSS:
+      title: S3 OSS Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_oss
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OSSConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetS3Other:
+      title: S3 Other Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_other
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3OtherConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetS3V1:
+      title: S3 V1 Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - s3_v1
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/S3V1Config'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetSFTP:
+      title: SFTP Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sftp
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SFTPConfig'
+        required:
+        - storage_type
+        - config
+    PutLogsUploaderTargetSLS:
+      title: SLS Target
+      allOf:
+      - $ref: '#/components/schemas/PutLogsUploaderTargetBase'
+      - type: object
+        properties:
+          storage_type:
+            type: string
+            enum:
+            - sls
+            description: Type of storage for logs.
+          config:
+            $ref: '#/components/schemas/SLSConfig'
+        required:
+        - storage_type
+        - config
     QueryParams:
       type: string
       description: Request parameters.
@@ -14172,6 +14650,8 @@ components:
       - region
     S3GcoreConfigResponse:
       title: S3 Gcore Config
+      required:
+      - access_key_id
       properties:
         access_key_id:
           type: string
@@ -14188,33 +14668,45 @@ components:
           type: boolean
     S3OSSConfig:
       title: S3 OSS Config
-      allOf:
-      - $ref: '#/components/schemas/BaseS3Config'
-      - type: object
-        properties:
-          region:
-            type: string
-            nullable: true
-          endpoint:
-            type: string
-            nullable: true
-            description: 'S3 storage endpoint URL. Must be a public address: private and reserved IP addresses, `localhost`, and hostnames that resolve to them are rejected.'
+      type: object
+      properties:
+        access_key_id:
+          type: string
+        secret_access_key:
+          type: string
+        region:
+          type: string
+          nullable: true
+        bucket_name:
+          type: string
+        directory:
+          type: string
+          nullable: true
+        endpoint:
+          type: string
+          nullable: true
+          description: 'S3 storage endpoint URL. Must be a public address: private and reserved IP addresses, `localhost`, and hostnames that resolve to them are rejected.'
       required:
       - access_key_id
       - secret_access_key
       - bucket_name
     S3OSSConfigResponse:
       title: S3 OSS Config
-      allOf:
-      - $ref: '#/components/schemas/S3AmazonConfigResponse'
-      - type: object
-        properties:
-          region:
-            type: string
-            nullable: true
-          endpoint:
-            type: string
-            nullable: true
+      type: object
+      properties:
+        access_key_id:
+          type: string
+        region:
+          type: string
+          nullable: true
+        bucket_name:
+          type: string
+        directory:
+          type: string
+          nullable: true
+        endpoint:
+          type: string
+          nullable: true
     S3OtherConfig:
       title: S3 Other Config
       allOf:
