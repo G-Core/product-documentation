@@ -55,6 +55,8 @@ Read the sources for that kind. Do not design from titles.
 - **API reference overview.** Read the tag list and the operation summaries in the product spec. Confirm every distinction from those summaries.
 - **Developer landing.** Read the pages for the tools this landing has to distinguish.
 
+For a product or section landing, also collect the terms. For each key entity (who requests the content, what holds the originals, the main features), note the word each child article uses and the word the interface uses, and mark where they disagree. The naming rules are in `references/landing-writing.md`, section Terms.
+
 Separate what the reader must understand on the landing from detail that belongs in a child article or on one operation. Record gaps in the source and contradictions between child articles, and report them. Do not fix them on the landing, and do not repeat a contradicted claim.
 
 ### 2. Design
@@ -66,7 +68,8 @@ For a product or section landing, show:
 - **Product model.** The concepts and boundaries, in a few statements.
 - **Landing responsibility.** What the reader learns here, and what stays in each child article.
 - **Split.** Whether the model needs a separate concept article (see Split below), and what stays on the landing if it does.
-- **Exclusions.** Related material that does not belong, and why. Do not promise a section that has no article.
+- **Terms.** The word chosen for each key entity, and each conflict between articles that has no rule yet. Ask the user about those conflicts, and do not decide them.
+- **Exclusions.** Related material that does not belong, and why. Do not promise a section that has no article. A topic that fits no card is a sentence, not a card.
 - **Sequence.** The order of explanations, interface context, and navigation, and why this subject needs that order.
 - **Navigation.** One responsibility per card or link. If cards are the wrong presentation, say what to use instead.
 - **Open choices.** Decide for this page, and say why. Choose a visual by the reader's task: a diagram for relations or a path, a table only when the reader makes a real choice, a card for an entry point, a screenshot when the interface must be seen. "It fits in text" is not a reason to skip a visual. Say where the visual lives so it is not repeated on two pages. Account settings and CDN are cases, not defaults.
@@ -147,7 +150,7 @@ Detailed procedures and exhaustive feature lists stay in the child articles.
 
 Account settings needed a model the menu does not show: a login is a person; an account holds services, billing, and users; one login can reach several accounts; the portal works in one account at a time; some settings are personal and some affect other people. The page put the access instruction and one screenshot before the cards, because the reader had to see the Profile menu before the personal-versus-account distinction made sense.
 
-CDN needed a different treatment: the model was a path (viewer, edge cache, origin), which a diagram explains better than cards, so it moved to a concept article and the landing kept one definition, entry cards for the two ways to start, grouped cards for settings, and plain lists for the rest. Its card text is in `references/landing-writing.md` as calibration.
+CDN needed a different treatment: the model was a path (user, edge cache, origin), which a diagram explains better than cards, so it moved to a concept article and the landing kept one definition, one entry card for the first step, grouped cards for settings, and plain lists for the rest. Video did not fit any card, so it became one sentence under the entry card. Its card text is in `references/landing-writing.md` as calibration.
 
 Do not reuse either page's order, cards, or sentences on another product.
 
