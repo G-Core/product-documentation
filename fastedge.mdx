@@ -1,36 +1,76 @@
 ---
-title: FastEdge
-description: FastEdge is a serverless edge compute platform for running WebAssembly applications on Gcore's global edge network.
+title: Overview
+sidebarTitle: Overview
+description: Run WebAssembly code on Gcore edge servers as HTTP applications or CDN applications, with Edge Storage, Cache, secrets, and local tools.
 ---
 
-FastEdge is a serverless edge compute platform that runs WebAssembly applications on Gcore's global edge network. Applications execute at the edge node closest to the request, with no infrastructure to configure or maintain.
+FastEdge runs custom code on Gcore edge servers close to end users, with no servers to set up or maintain. The code is one of two [application&nbsp;types](/fastedge/getting-started): an HTTP application answers requests sent to its own URL, and a CDN application changes the requests and responses passing through a CDN resource.
 
-## Get started
+## Build and deploy
 
-Choose a path based on what you want to build:
+Choose between two application types:
 
-- [Build an HTTP application](/fastedge/getting-started/get-started-http) — respond to HTTP requests from the edge in Rust or JavaScript
-- [Build a CDN application](/fastedge/getting-started/get-started-cdn) — extend a CDN resource with custom edge logic in Rust
+<CardGroup cols={2}>
 
-## Manage applications
+<Card title="Respond to requests">
+Build an [HTTP&nbsp;application](/fastedge/getting-started/get-started-http) that answers requests at its own URL, with the logic written in Rust or JavaScript. It can send end users to the regional version of a site based on their country, or return data as an API.
+</Card>
 
-- [Manage apps](/fastedge/manage-apps) — update, redeploy, and configure running applications
-- [Templates](/fastedge/create-manage-templates) — create reusable application templates
+<Card title="Extend a CDN resource">
+Build a [CDN&nbsp;application](/fastedge/getting-started/get-started-cdn) to act on traffic that already flows through a CDN resource. It can rewrite URLs, add headers, or reject requests without a valid token.
+</Card>
+
+</CardGroup>
+
+HTTP applications can also be deployed without code from built-in templates: [Geolocation&nbsp;redirect](/fastedge/geolocation-redirect) sends end users to a URL chosen by country, and [Markdown&nbsp;renderer](/fastedge/render-markdown) turns Markdown files into HTML pages.
 
 ## Local development
 
-[Local&nbsp;development](/fastedge/local-development/overview) covers building, testing, and deploying applications without touching the edge first — an AI plugin for Claude Code and Codex, a VS Code extension with a bundled debugger, and a headless test framework for CI.
+An application can be built and tested on a local machine before it is deployed. The [local&nbsp;development&nbsp;tools](/fastedge/local-development/overview) fit different workflows: asking a coding agent (Claude Code, Codex, or Cursor), working in VS Code, running automated tests in CI, or running a binary from a terminal with `fastedge-run`.
 
-## Runtime services
+## Data and secrets
 
-Applications have access to these services at runtime:
+Decide where an application keeps the data and credentials it uses at runtime.
 
-- [Edge Storage](/fastedge/kv-stores/how-it-works) — globally replicated key-value store for configuration, lookup tables, and data structures
-- [Cache](/fastedge/cache) — POP-local fast storage for counters, rate limits, and memoized results
-- [Secrets Manager](/fastedge/secrets-manager/manage-secrets) — encrypted values and credentials available to applications at runtime
+<CardGroup cols={3}>
 
-## Reference
+<Card title="Edge Storage">
+[Edge&nbsp;Storage](/fastedge/kv-stores/how-it-works) is a key-value store for data that applications read often and change rarely: feature flags, lookup tables, and blocklists. It is copied to every Gcore location (Point of Presence, POP), so each read is answered by the POP that handles the request, and a new value takes a moment to arrive everywhere.
+</Card>
 
-- [FastEdge CLI](/fastedge/fastedge-cli) — run and test Wasm applications locally before deploying
-- [Troubleshooting](/fastedge/troubleshooting) — HTTP error codes, debug logging, and platform limits
-- [Grafana](/fastedge/grafana/view-fastedge-statistics-in-grafana) — application duration in the Gcore Grafana data source
+<Card title="Cache">
+[Cache](/fastedge/cache) is a short-lived key-value store for application data, not for CDN files. It suits request counters for rate limiting and results that are worth reusing. Entries stay in the POP that wrote them and can be removed at any time.
+</Card>
+
+<Card title="Secrets">
+[Secrets&nbsp;Manager](/fastedge/secrets-manager/manage-secrets) stores API keys, access tokens, and passwords in encrypted form, so they stay out of the application's configuration. A secret can hold several versions, so an old and a new password work side by side while one replaces the other.
+</Card>
+
+</CardGroup>
+
+## Operate applications
+
+Change a deployed application and reuse its setup.
+
+<CardGroup cols={3}>
+
+<Card title="Manage applications">
+The [management&nbsp;page](/fastedge/manage-apps) changes the settings of an application without a rebuild, shows its metrics and logs, and stops, updates, or deletes it.
+</Card>
+
+<Card title="Templates">
+A [template](/fastedge/create-manage-templates) saves a compiled WebAssembly binary together with its parameters, so the same application can be deployed again, each time with its own values.
+</Card>
+
+<Card title="CDN attachment">
+A CDN application takes effect only after it is [attached](/cdn/getting-started/integrate-cdn-with-fastedge) to a CDN resource, either for all requests or only for chosen URL paths.
+</Card>
+
+</CardGroup>
+
+## Monitoring and troubleshooting
+
+Find the cause of a failed request and track how long applications take to run.
+
+- [Troubleshooting](/fastedge/troubleshooting): FastEdge status codes 530 to 533 and debug logging.
+- [Grafana](/fastedge/grafana/view-fastedge-statistics-in-grafana): charts of how long applications take to run.
