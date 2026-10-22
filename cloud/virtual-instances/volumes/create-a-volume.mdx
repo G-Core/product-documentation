@@ -1,0 +1,317 @@
+---
+title: Create a volume
+sidebarTitle: Create a volume
+description: Create a blank Gcore volume, a boot volume from an image, or a volume from a snapshot.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>
+A blank volume, or a volume restored from a snapshot, can be created in the same region as the Virtual Machine that will use it. A volume can also be created together with a new [Virtual&nbsp;Machine](/cloud/virtual-instances/create-an-instance).
+</p>
+
+## Create a volume
+
+<p>The **Volumes** page creates a blank volume. The **Snapshots** page creates a volume from an existing snapshot.</p>
+
+<Tabs>
+  <Tab title="From the Volumes page">
+    <p>1. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.</p>
+
+    <p>2. Click **Create Volume**.</p>
+
+    <Frame>![Volumes page with numbered storage and create volume tabs](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-volume.png)</Frame>
+
+    <p>3. The **Create volume** side panel opens on the Volumes page. Volume settings can be customized here.</p>
+
+    <Frame>![Dialog with options for configuring new volume](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-volumes-page.png)</Frame>
+
+    <p>4. Specify the required disk space in GB. If the size exceeds the current limit, request a [quota&nbsp;increase](/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).</p>
+
+    <p>5. Select the [volume&nbsp;type](/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.</p>
+
+    <p>6. (Optional) Attach the volume to an existing [Virtual&nbsp;Machine](/cloud/virtual-instances/create-an-instance) in the same region.</p>
+
+    <p>7. Enter a volume name using Latin letters, numbers, underscores, spaces, and dots. The name is 3-63 characters long.</p>
+
+    <Tip>
+    Volume names in the Customer Portal or API do not need to match device names in the operating system (sda, sdb, or sdc). For OS operations, use Universally Unique Identifiers (UUIDs) instead of names.
+    </Tip>
+
+    <p>8. (Optional) Select the **Add tags** checkbox and specify tags as key-value pairs.</p>
+
+    <p>9. Click **Create**.</p>
+
+    <p>The volume will appear on the **Volumes** page.</p>
+  </Tab>
+  <Tab title="From a volume snapshot">
+    <p>To duplicate or back up Virtual Machine data, create a volume from an existing [snapshot](/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system). A snapshot must exist in the same region first.</p>
+
+    <p>1. In the Gcore Customer Portal, navigate to **Cloud** > **Storage** > **Snapshots**.</p>
+
+    <p>2. Select the target snapshot and click the three-dot icon to open snapshot settings.</p>
+
+    <Frame>![Snapshots tab with expanded settings menu](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-snapshot.png)</Frame>
+
+    <p>3. Click **Create Volume**.</p>
+
+    <p>4. Select the Virtual Machine to attach the new volume to.</p>
+
+    <p>5. Click **Create**.</p>
+
+    <Frame>![Create volume dialog with options to select Virtual Machine and add volume name](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-volume-from-snapshot.png)</Frame>
+
+    <p>The volume will appear on the **Volumes** page.</p>
+  </Tab>
+</Tabs>
+
+<p>An existing volume can be attached, resized, or deleted in [Manage&nbsp;a&nbsp;volume](/cloud/virtual-instances/volumes/manage-a-volume).</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>A blank volume, or a volume restored from a snapshot, can be created in one project and region. <code>source</code> selects which body the call sends.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+<p>Open a bash terminal and set these as environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export SNAPSHOT_ID="{SNAPSHOT_ID}"
+```
+
+<p><code>SNAPSHOT_ID</code> is the UUID of an existing snapshot in the same region. The snapshot example reads it. The blank-volume example does not.</p>
+
+## Create a volume
+
+<p>A [volume](/api-reference/cloud/volumes/create-volume) is created with <code>source</code> set to <code>new-volume</code> or <code>snapshot</code>.</p>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name. Latin letters, numbers, underscores, spaces, and dots. 3-63 characters. |
+| `source` | Yes | `new-volume` for blank storage. `snapshot` to restore from a snapshot. |
+| `size` | Blank volume | Size in GiB. When `source` is `snapshot`, omit `size` or set it to the snapshot size. |
+| `snapshot_id` | Snapshot | UUID of a snapshot in the same region. |
+| `type_name` | No | `standard` by default. Also `ssd_hiiops`, `ssd_lowlatency`, `cold`, or `ultra`. Available types vary by region. `ssd_local` cannot be created as a standalone volume. When `source` is `snapshot` and `type_name` is omitted, the type comes from the snapshot volume. |
+
+<Tabs>
+  <Tab title="Blank volume">
+    <p>A blank volume sets <code>source</code> to <code>new-volume</code> and passes <code>size</code>.</p>
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        from gcore import Gcore
+
+        client = Gcore()
+        volume = client.cloud.volumes.create_and_poll(
+            name="data-volume",
+            source="new-volume",
+            size=10,
+            type_name="standard",
+        )
+        print(f"Volume: {volume.id}")
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        package main
+
+        import (
+            "context"
+            "fmt"
+            "log"
+
+            gcore "github.com/G-Core/gcore-go"
+            "github.com/G-Core/gcore-go/cloud"
+        )
+
+        func main() {
+            client := gcore.NewClient()
+            ctx := context.Background()
+
+            volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+                OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                    Name:     "data-volume",
+                    Size:     10,
+                    TypeName: "standard",
+                },
+            })
+            if err != nil {
+                log.Fatalf("create volume: %v", err)
+            }
+            fmt.Printf("Volume: %s\n", volume.ID)
+        }
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+          -H "Authorization: APIKey $GCORE_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "name": "data-volume",
+            "source": "new-volume",
+            "size": 10,
+            "type_name": "standard"
+          }'
+        ```
+
+        <p>The response is a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until <code>state</code> is <code>FINISHED</code>. The volume ID is in <code>created_resources.volumes</code>.</p>
+      </Tab>
+    </Tabs>
+  </Tab>
+  <Tab title="From a snapshot">
+    <p>A restored volume sets <code>source</code> to <code>snapshot</code> and passes <code>snapshot_id</code>. <code>name</code> is also required.</p>
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        import os
+
+        from gcore import Gcore
+
+        client = Gcore()
+        volume = client.cloud.volumes.create_and_poll(
+            name="volume-from-snapshot",
+            source="snapshot",
+            snapshot_id=os.environ["SNAPSHOT_ID"],
+        )
+        print(f"Volume: {volume.id}")
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        package main
+
+        import (
+            "context"
+            "fmt"
+            "log"
+            "os"
+
+            gcore "github.com/G-Core/gcore-go"
+            "github.com/G-Core/gcore-go/cloud"
+        )
+
+        func main() {
+            client := gcore.NewClient()
+            ctx := context.Background()
+
+            volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+                OfSnapshot: &cloud.VolumeNewParamsBodySnapshot{
+                    Name:       "volume-from-snapshot",
+                    SnapshotID: os.Getenv("SNAPSHOT_ID"),
+                },
+            })
+            if err != nil {
+                log.Fatalf("create volume: %v", err)
+            }
+            fmt.Printf("Volume: %s\n", volume.ID)
+        }
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+          -H "Authorization: APIKey $GCORE_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"name\": \"volume-from-snapshot\",
+            \"source\": \"snapshot\",
+            \"snapshot_id\": \"$SNAPSHOT_ID\"
+          }"
+        ```
+
+        <p>The response is a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until <code>state</code> is <code>FINISHED</code>. The volume ID is in <code>created_resources.volumes</code>.</p>
+      </Tab>
+    </Tabs>
+  </Tab>
+</Tabs>
+
+<p>The SDK methods poll automatically and return the created volume. Read the ID from <code>volume.id</code>.</p>
+
+<p>An existing volume can be attached, resized, detached, or deleted in [Manage&nbsp;a&nbsp;volume](/cloud/virtual-instances/volumes/manage-a-volume).</p>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>A boot volume can be created from an OS image, a blank data disk from empty storage, or a volume from a snapshot. The full attribute reference is on the [`gcore_cloud_volume`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_volume) resource page.</p>
+
+## Create a volume
+
+<p>The most common use case is `source = "image"`. This creates a boot volume from an OS image and is required when provisioning a Virtual Machine. Use `"new-volume"` for a blank data volume, or `"snapshot"` to restore from an existing snapshot.</p>
+
+<p>For a boot volume, pass the image UUID via a variable. To find the UUID, open the Gcore Customer Portal, navigate to **Cloud** > **Images**, and copy the ID from the image details. IDs are region-specific. Use the ID from the region where the volume is created.</p>
+
+```hcl
+variable "image_id" {
+  type        = string
+  description = "OS image UUID (region-specific). Find it in Cloud > Images."
+}
+
+resource "gcore_cloud_volume" "boot" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "boot-volume"
+  source     = "image"
+  image_id   = var.image_id
+  size       = 20
+  type_name  = "standard"
+}
+
+output "boot_volume_id" {
+  value = gcore_cloud_volume.boot.id
+}
+```
+
+<p>For a blank data volume:</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 10
+  type_name  = "standard"
+}
+
+output "volume_id" {
+  value = gcore_cloud_volume.example.id
+}
+```
+
+<p>For a volume restored from a snapshot, set `source` to `"snapshot"` and pass `snapshot_id`. Leave `size` unset, or set it to the snapshot size. When `type_name` is omitted, the type comes from the snapshot volume.</p>
+
+```hcl
+variable "snapshot_id" {
+  type        = string
+  description = "Snapshot UUID in the same region as the volume."
+}
+
+resource "gcore_cloud_volume" "from_snapshot" {
+  project_id  = var.project_id
+  region_id   = var.region_id
+  name        = "volume-from-snapshot"
+  source      = "snapshot"
+  snapshot_id = var.snapshot_id
+}
+
+output "snapshot_volume_id" {
+  value = gcore_cloud_volume.from_snapshot.id
+}
+```
+
+<p>An existing volume can be attached, resized, retyped, deleted, or imported in [Manage&nbsp;a&nbsp;volume](/cloud/virtual-instances/volumes/manage-a-volume).</p>
+
+</MethodSection>
+</MethodSwitch>
