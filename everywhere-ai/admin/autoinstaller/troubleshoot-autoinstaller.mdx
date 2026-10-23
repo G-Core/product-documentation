@@ -1,0 +1,145 @@
+---
+title: "Troubleshoot installation"
+description: "Health checks, recovery procedures, and diagnostic commands for box-installer. Use check commands to verify a deployment, recover from"
+---
+
+`check` commands verify that a deployed cluster works end to end. Recovery commands repair a failed bootstrap, a stuck Helm release, or a volume that does not bind.
+
+## Health checks
+
+The `check` commands verify that a deployed cluster works end to end. They are read-only and safe to run at any time.
+
+Run all checks against the lead cluster:
+
+```bash
+box-installer --config config.yaml check full
+```
+
+Individual checks can be run separately:
+
+| Command | What it verifies |
+|---------|-----------------|
+| `check boxstack` | Box is installed and version matches the repo |
+| `check requirements` | Node groups, Cilium nodes, and default StorageClass |
+| `check registry` | Registry is reachable and credentials are accepted |
+| `check keycloak` | Keycloak issues a valid token for the box service account |
+| `check oidc` | kube-apiserver accepts a Keycloak token and maps it to RBAC |
+| `check box-api-login` | box-api password-grant login endpoint works |
+| `check browser-login` | Full browser login flow for superuser |
+| `check api-key` | box-api fixed X-API-Key service access |
+| `check nfs` | NFS storage class is wired to a running provisioner (skipped if not configured) |
+| `check nodelocaldns` | node-local-dns DaemonSet and its ArgoCD Application (skipped if not configured) |
+
+Each check prints `PASS`, `FAIL`, or `SKIP`. The command exits non-zero if any check fails; a skip is not a failure.
+
+## Recovery procedures
+
+### Bootstrap conflict
+
+If bootstrap detects that the existing repository in the cluster does not match the current render (for example, because the configuration changed), it stops and reports the conflict. Use `--force-rewrite-repo` to delete the existing repository and recreate it from scratch:
+
+```bash
+box-installer --config config.yaml install bootstrap --force-rewrite-repo
+```
+
+
+<Warning>
+Use `--force-rewrite-repo` only before `install commit`. Once GitOps sync is active, use `release update` to deliver changes.
+</Warning>
+
+
+### Stuck Helm release
+
+If bootstrap was interrupted and left Gitea or Argo CD in a `pending-*` Helm state, use `--force-unstick` to uninstall and reinstall the affected release:
+
+```bash
+box-installer --config config.yaml install bootstrap --force-unstick
+```
+
+### Skip requirements check
+
+To proceed despite resource warnings (not recommended for production):
+
+```bash
+box-installer --config config.yaml install infra --skip-check-requirements
+```
+
+
+<Warning>
+Skipping requirements checks can lead to unstable deployments. Use only when diagnosing specific issues.
+</Warning>
+
+
+### PersistentVolumeClaim not bound
+
+If bootstrap hangs with `PersistentVolumeClaim is not bound`, verify:
+
+- The StorageClass exists and is marked as default.
+- The storage provisioner is running.
+- Sufficient storage quota is available.
+
+Kubernetes does not always surface quota errors. If PVCs remain pending without an apparent cause, check cloud provider quotas for storage volumes.
+
+### Certificate issuance fails
+
+Verify the DNS provider token is correct and has permissions to create DNS records. A single character typo in the token causes silent failures where certificates never issue. Check cert-manager logs for detailed error messages:
+
+```bash
+kubectl logs -n cert-manager -l app=cert-manager
+```
+
+### Resource quota exceeded
+
+If installation fails without clear errors, verify cloud provider quotas for compute instances, storage volumes, load balancers, and public IP addresses. The installer does not always surface quota-related errors from the underlying infrastructure.
+
+
+<Info>
+Vault startup can take several minutes during bootstrap. This is expected behavior.
+</Info>
+
+
+## Diagnostic commands
+
+The `dev` subcommand provides utilities for verifying configuration and retrieving credentials. These commands are for inspection and debugging — they are not part of the installation sequence.
+
+Verify that the installer can reach all configured container registries:
+
+```bash
+box-installer --config config.yaml dev check-registry
+```
+
+Dump the validated configuration with all defaults applied:
+
+```bash
+box-installer --config config.yaml dev conf-dump
+```
+
+Print the full configuration schema with types, constraints, and defaults:
+
+```bash
+box-installer --config config.yaml dev describe-config
+```
+
+Dump the runtime configuration including resolved secrets (handle output with care):
+
+```bash
+box-installer --config config.yaml dev runtime-conf-dump
+```
+
+Retrieve Gitea and Argo CD credentials generated during bootstrap:
+
+```bash
+box-installer --config config.yaml dev show-bootstrap-creds
+```
+
+Retrieve box frontend and API URLs and superuser login credentials:
+
+```bash
+box-installer --config config.yaml dev show-boxstack-creds
+```
+
+Show the component versions baked into the current installer binary:
+
+```bash
+box-installer --config config.yaml dev show-release
+```

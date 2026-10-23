@@ -1,0 +1,352 @@
+---
+title: "Hyperparameter tuning with job arrays"
+sidebarTitle: "Hyperparameter tuning"
+description: "Run parallel hyperparameter tuning experiments using Slurm job arrays to search across cluster resources in Everywhere AI."
+---
+
+Job arrays run multiple similar jobs with a single submission. Each job receives a unique task ID used to select different hyperparameters. This approach scales hyperparameter searches across cluster resources.
+
+## Job array basics
+
+A job array creates multiple independent tasks from one script. Each task runs with a unique `SLURM_ARRAY_TASK_ID` environment variable and can use its ID to select different parameters.
+
+Submit a job array:
+
+```bash
+sbatch --array=0-9 sweep.sh
+```
+
+This creates 10 tasks with IDs 0 through 9.
+
+Limit concurrent tasks:
+
+```bash
+sbatch --array=0-99%10 sweep.sh
+```
+
+The `%10` suffix limits concurrent tasks to 10. This prevents overwhelming the cluster and leaves resources for other users.
+
+## Parameter sweep
+
+### Training script
+
+The sweep script imports a `train()` function from `train.py`. This function must accept hyperparameters as keyword arguments and return the final loss.
+
+Create `train.py` with the following contract:
+
+```python
+#!/usr/bin/env python3
+"""Training function used by the hyperparameter sweep."""
+
+import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader, TensorDataset
+
+
+def train(
+    learning_rate: float = 0.001,
+    batch_size: int = 32,
+    hidden_size: int = 128,
+    epochs: int = 5,
+    checkpoint_dir: str = "checkpoints",
+) -> float:
+    """Train a model and return the final loss.
+
+    Args:
+        learning_rate: Learning rate for the Adam optimizer.
+        batch_size: Number of examples per batch.
+        hidden_size: Size of the hidden layers.
+        epochs: Number of training epochs.
+        checkpoint_dir: Directory to save the model checkpoint.
+
+    Returns:
+        Average loss over the last epoch.
+    """
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    # Synthetic data — replace with real dataset
+    X = torch.randn(1000, 64)
+    y = torch.randint(0, 10, (1000,))
+    dataset = TensorDataset(X, y)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
+    model = nn.Sequential(
+        nn.Linear(64, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, 10),
+    )
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+    final_loss = 0.0
+    for epoch in range(epochs):
+        final_loss = 0.0
+        for batch_X, batch_y in dataloader:
+            optimizer.zero_grad()
+            loss = criterion(model(batch_X), batch_y)
+            loss.backward()
+            optimizer.step()
+            final_loss += loss.item()
+        final_loss /= len(dataloader)
+
+    torch.save(model.state_dict(), os.path.join(checkpoint_dir, "model.pt"))
+    return final_loss
+```
+
+### Search space
+
+Create `sweep.py` that maps task IDs to hyperparameters:
+
+```python
+#!/usr/bin/env python3
+"""Run training with hyperparameters selected by SLURM_ARRAY_TASK_ID."""
+
+import os
+import json
+import itertools
+from train import train
+
+
+PARAM_GRID = {
+    "learning_rate": [0.001, 0.01, 0.1],
+    "batch_size": [16, 32, 64],
+    "hidden_size": [64, 128, 256],
+}
+
+
+def get_params_for_task(task_id: int) -> dict:
+    """Map task ID to a unique parameter combination."""
+    keys = list(PARAM_GRID.keys())
+    values = list(PARAM_GRID.values())
+
+    combinations = list(itertools.product(*values))
+
+    if task_id >= len(combinations):
+        raise ValueError(
+            f"Task ID {task_id} exceeds {len(combinations)} combinations"
+        )
+
+    selected = combinations[task_id]
+    return dict(zip(keys, selected))
+
+
+def main():
+    task_id = int(os.environ.get("SLURM_ARRAY_TASK_ID", 0))
+
+    # SWEEP_ID is set in the job script and remains stable across retries
+    sweep_id = os.environ.get("SWEEP_ID", "local")
+
+    params = get_params_for_task(task_id)
+
+    print(f"Task {task_id}: {params}")
+
+    output_dir = f"results/{sweep_id}/task_{task_id}"
+    os.makedirs(output_dir, exist_ok=True)
+
+    with open(f"{output_dir}/params.json", "w") as f:
+        json.dump(params, f, indent=2)
+
+    final_loss = train(
+        learning_rate=params["learning_rate"],
+        batch_size=params["batch_size"],
+        hidden_size=params["hidden_size"],
+        checkpoint_dir=f"{output_dir}/checkpoints",
+    )
+
+    with open(f"{output_dir}/result.json", "w") as f:
+        json.dump({"params": params, "final_loss": final_loss}, f, indent=2)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+### Job script
+
+Create `sweep_job.sh`. The script generates a stable `SWEEP_ID` from `SLURM_ARRAY_JOB_ID` on the first submission, then accepts it explicitly on retries so all results land in the same directory.
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=hp-sweep
+#SBATCH --output=logs/sweep_%A_%a.out
+#SBATCH --error=logs/sweep_%A_%a.err
+#SBATCH --mem=4G
+#SBATCH --cpus-per-task=2
+#SBATCH --time=01:00:00
+
+# SWEEP_ID is passed via --export on retries; otherwise use the current array ID
+export SWEEP_ID=${SWEEP_ID:-$SLURM_ARRAY_JOB_ID}
+
+echo "Sweep ID: $SWEEP_ID"
+echo "Task ID: $SLURM_ARRAY_TASK_ID"
+echo "Node: $(hostname)"
+
+mkdir -p logs results
+
+python3 sweep.py
+```
+
+The `%A` substitution token is the array job ID (same for all tasks), and `%a` is the task ID (unique per task).
+
+### Submission
+
+Calculate the total number of combinations first:
+
+```bash
+# 3 learning rates * 3 batch sizes * 3 hidden sizes = 27 combinations
+sbatch --array=0-26%5 sweep_job.sh
+```
+
+
+<Warning>
+Task IDs start at 0. An array of 27 combinations uses IDs 0-26, not 1-27.
+</Warning>
+
+
+## Array job monitoring
+
+View all tasks in an array:
+
+```bash
+squeue -j 12345
+```
+
+Output shows each task separately:
+
+```
+JOBID       PARTITION  NAME       USER  ST  TIME  NODES  NODELIST
+12345_0     main       hp-sweep   root  R   0:30  1      worker-0
+12345_1     main       hp-sweep   root  R   0:28  1      worker-0
+12345_2     main       hp-sweep   root  PD  0:00  1      (Resources)
+```
+
+Cancel specific tasks:
+
+```bash
+scancel 12345_5       # Cancel task 5
+scancel 12345_[10-15] # Cancel tasks 10-15
+scancel 12345         # Cancel entire array
+```
+
+## Result collection
+
+After completion, aggregate results across tasks. Create `collect_results.py`:
+
+```python
+#!/usr/bin/env python3
+"""Aggregate results from hyperparameter sweep."""
+
+import json
+import glob
+
+
+def collect_results(results_dir: str) -> list:
+    """Load all result files and sort by loss."""
+    results = []
+
+    for result_file in glob.glob(f"{results_dir}/*/result.json"):
+        with open(result_file) as f:
+            data = json.load(f)
+            data["path"] = result_file
+            results.append(data)
+
+    return sorted(results, key=lambda x: x["final_loss"])
+
+
+def main():
+    sweep_id = input("Enter sweep SWEEP_ID: ")
+    results = collect_results(f"results/{sweep_id}")
+
+    print(f"\nFound {len(results)} results\n")
+    print("Top 5 configurations:")
+    print("-" * 60)
+
+    for i, result in enumerate(results[:5], 1):
+        print(f"{i}. Loss: {result['final_loss']:.4f}")
+        print(f"   Params: {result['params']}")
+        print()
+
+
+if __name__ == "__main__":
+    main()
+```
+
+Run after the sweep completes:
+
+```bash
+python3 collect_results.py
+```
+
+## Random search alternative
+
+Grid search explores all combinations but scales poorly with the number of parameters. Random search samples from parameter distributions and often finds good configurations faster.
+
+Add the following function to `sweep.py`:
+
+```python
+import random
+
+def get_random_params(task_id: int) -> dict:
+    """Generate random parameters seeded by task ID."""
+    random.seed(task_id)
+
+    return {
+        "learning_rate": 10 ** random.uniform(-4, -1),  # 0.0001 to 0.1
+        "batch_size": random.choice([16, 32, 64, 128]),
+        "hidden_size": random.randint(32, 512),
+        "dropout": random.uniform(0.0, 0.5),
+    }
+```
+
+Then in `main()`, replace the parameter selection line:
+
+```python
+# Replace:
+params = get_params_for_task(task_id)
+
+# With:
+params = get_random_params(task_id)
+```
+
+Using `task_id` as the seed ensures reproducibility. The same task ID always produces the same parameters.
+
+With random search, the number of array tasks determines the number of samples. Adjust `--array` based on the desired compute budget, independently of any grid size:
+
+```bash
+# 50 random configurations, 5 at a time
+sbatch --array=0-49%5 sweep_job.sh
+```
+
+## Failed tasks
+
+Some tasks may fail due to bad hyperparameters (diverging loss) or resource issues. Identify failed tasks:
+
+```bash
+sacct -j 12345 --format=JobID,State | grep FAILED
+```
+
+Resubmit specific tasks **while preserving the original `SWEEP_ID`** by passing it via `--export`:
+
+```bash
+sbatch --array=5,12,18 --export=ALL,SWEEP_ID=12345 sweep_job.sh
+```
+
+Results from retried tasks are written to `results/12345/`, alongside the original run. `collect_results.py` aggregates them automatically.
+
+
+<Tip>
+Design training scripts to fail fast on bad configurations. Check for NaN loss after each epoch and exit early rather than wasting compute time.
+</Tip>
+
+
+## Resource sizing
+
+Memory consumption depends on the model, framework, and data and cannot be derived from `batch_size` and `hidden_size` values alone. To determine the right `--mem` for the workload, run a test task with a generous value first, then measure actual consumption after the job completes:
+
+```bash
+sacct -j <job_id> --format=JobID,MaxRSS
+```
+
+Add a 20% margin above the measured value and use that figure for subsequent submissions. Over-requesting memory wastes cluster capacity and increases queue wait times, while under-requesting causes job failures.
