@@ -352,36 +352,17 @@ In Quickstart: Python SDK and Go SDK only — curl cannot be a single runnable s
 
 ### When to use
 
-A product or section landing page. Introduces the product, lists what the section covers,
-links to the main articles. Usually the `index.mdx` or `overview.mdx` of a folder.
+A product or section landing page. Usually the `index.mdx` or `{product}.mdx` of a folder.
+The page explains the area, then links onward. It does not list the sidebar.
 
-### Structure
-
-```mdx
----
-title: Virtual Machines
-sidebarTitle: Overview
-description: Gcore Cloud Virtual Machines, from creating an instance to connecting and configuring it.
----
-
-{One paragraph: what this product is and what it enables. Value before mechanics.}
-
-## {Main topic 1}
-
-{One sentence intro.}
-
-- [Article name](/path/to/article)
-- [Article name](/path/to/article)
-
-## {Main topic 2}
-
-...
-```
+Write, rewrite, and review these pages with `.claude/skills/technical-landing-pages/SKILL.md`.
+That skill chooses the sequence after the product model is approved.
 
 **Rules:**
-- No step-by-step instructions — link to the relevant how-to articles
-- No `## What's next` or `## Next steps`
-- No standalone link-dump sections — every link must have a sentence of context
+- No step-by-step instructions. Link to the relevant how-to articles.
+- No `## What's next` or `## Next steps`.
+- No standalone link-dump sections. Every link must have a sentence of context.
+- Do not turn the child-article titles into the introduction.
 
 ---
 

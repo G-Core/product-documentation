@@ -363,4 +363,4 @@ Before telling the user the article is ready, confirm all four:
 - [ ] **Human review** — the article was shown to the user
 
 When the user confirms the result looks good — load `.claude/skills/pr/SKILL.md`
-to create the branch, commit, and open a draft PR.
+to commit and open a draft PR on the task branch. Do not create a second branch when the task already has one.
