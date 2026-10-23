@@ -1,0 +1,70 @@
+---
+title: "Load Balancers"
+description: "Create and manage load balancers to distribute TCP and UDP traffic across Virtual Instances in Everywhere AI."
+---
+
+A load balancer distributes TCP or UDP traffic across a pool of backend Virtual Instances, exposing a single IP address to callers.
+
+Create and manage load balancers under **Compute Instances** > **Networking** > **Load Balancers**.
+
+![Load Balancers list showing one Available entry with public address](/images/docs/everywhere-ai/user/networking/load-balancers/lb-list.png)
+
+## Create a load balancer
+
+Backend members are identified by their private IP addresses, so the target region must have a private [network](/everywhere-ai/user/networking/networks) containing those instances before creating the load balancer.
+
+<Steps>
+<Step title="Region and name">
+
+Click **Create Load Balancer** to open the form. The region is immutable after creation, and the load balancer, its network interface, and its backend members must all be in the same region. Select the region first, then enter a name. The name cannot be changed after creation.
+</Step>
+
+<Step title="Network interface">
+
+Click **Attach Network Interface**. Create a new interface, or attach one that is already in the region and is not attached to another resource.
+
+**Create new interface.** **Public Network** assigns a public address. **Private network** places the load balancer on a private subnetwork. Leave the address empty to assign one automatically. The dialog lists **IPv4**, **IPv6**, and **IPv4 & IPv6**. Only **IPv4** can be selected when the subnetwork is IPv4. The interface name cannot be changed after creation. Click **Create & Attach**.
+
+**Use existing interface** selects that interface. Security groups and port security are not supported on a load balancer. Click **Attach**.
+
+![Attach Network Interface dialog with Public Network selected and IPv6 unavailable](/images/docs/everywhere-ai/user/networking/load-balancers/lb-attach-interface.png)
+</Step>
+
+<Step title="Listeners">
+
+Each listener maps a frontend port to a port on the backend members. Click **Add Listener**, select TCP or UDP, and set **Port** and **Target port**.
+
+Listeners can also be added after the load balancer is created. A load balancer supports up to 32 listeners.
+</Step>
+
+<Step title="Backend pool">
+
+The backend pool is shared by all listeners. When the interface is public, open **Network** and select the private network that contains the backend instances. When the interface is private, the pool uses that network. The pool network cannot be changed after the load balancer is created. Click **Add backend member** and enter a private IP address, or switch the member to **Resource** and select an instance on that network.
+
+![Backend pool with Network open on the private network after a public interface](/images/docs/everywhere-ai/user/networking/load-balancers/lb-pool-network.png)
+
+Click **Create Load Balancer**. The load balancer is ready when its status becomes **Available**.
+</Step>
+</Steps>
+
+Once created, the detail page shows a traffic path diagram of the interface, listeners, and pool members. Connect to the load balancer address on the listener port with a client for that service. A response from the backend shows that traffic is reaching the pool.
+
+![Load balancer overview page showing traffic path from interface through listener to backend pool member 10.0.0.10](/images/docs/everywhere-ai/user/networking/load-balancers/lb-overview.png)
+
+## Manage the load balancer
+
+### Update backend members
+
+When scaling out or replacing a failed instance, open the **LB Pool** tab and click **Edit**. Add a member by private IP address or by selecting an instance, change an existing address, or remove a member. Changes take effect immediately.
+
+![LB Pool tab showing pool name, algorithm, network, and one member at 10.0.0.10](/images/docs/everywhere-ai/user/networking/load-balancers/lb-pool.png)
+
+### Manage listeners
+
+When a service needs to accept traffic on an additional port, open the **Listeners** tab and click **Create Listener**. To change the ports or protocol of an existing listener, use the menu icon (three dots) next to it and select **Edit**.
+
+![Listeners tab showing one TCP listener on port 80 with Create Listener button](/images/docs/everywhere-ai/user/networking/load-balancers/lb-listeners.png)
+
+### Delete
+
+Deleting a load balancer is permanent — its listeners, pool, and members are removed, and the assigned IP address is released. Open the **Delete** tab to confirm.

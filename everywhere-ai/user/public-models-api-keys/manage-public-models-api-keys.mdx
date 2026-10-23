@@ -1,0 +1,60 @@
+---
+title: "Public Models API Keys"
+description: "Create and manage API keys for authenticating requests to shared Public Models in Everywhere AI."
+---
+
+Public Models API Keys authenticate requests to models in the [catalog](/everywhere-ai/user/public-models-catalog/public-models-catalog). Each key provides access to all public models available in the organization. Unlike [API&nbsp;Keys](/everywhere-ai/user/api-keys/manage-api-keys) scoped to specific inference instances, these keys work with centrally managed models that administrators have deployed for all users.
+
+## API key management
+
+Navigate to **Public Models** > **Public models API Keys** in the sidebar. The page displays all existing keys with name, description, and expiration date. The search box filters keys by name.
+
+![Public Models API Keys list showing keys with names, descriptions, and expiration](/images/docs/everywhere-ai/user/public-models-api-keys/manage-public-models-api-keys/public-models-api-keys.png)
+
+### Generate an API key
+
+Keys can be created directly from this page or from the **API Endpoint** dialog in the catalog. Use descriptive names like `prod-chatbot` or `dev-testing` to identify which key is used where. Set expiration dates for temporary access — expired keys are automatically invalidated.
+
+1. Click **Generate API Key**.
+2. Enter a **Name** for the key (a unique suffix is appended automatically).
+3. Optionally enter a **Description** to identify the key purpose.
+4. Set an **Expires at** date or leave as **Never expire** for a non-expiring key.
+5. Click **Generate**.
+
+![Generate API Key form with name, description, and expiration options](/images/docs/everywhere-ai/user/public-models-api-keys/manage-public-models-api-keys/public-models-generate-api-key-form.png)
+
+
+<Warning>
+Copy the generated key immediately — it appears only once and cannot be retrieved later. Store it in an environment variable or secret manager. Never commit keys to version control.
+</Warning>
+
+
+### Edit and delete keys
+
+To update the name or description of a key, click the three-dot menu on the key row and select **Edit**.
+
+To rotate a key without downtime, create a new key first, update applications, verify they authenticate successfully with the new key, then delete the old key. To delete, click the three-dot menu and select **Delete**, then confirm.
+
+
+<Warning>
+Deletion immediately revokes access. Applications using the deleted key receive 401 Unauthorized errors.
+</Warning>
+
+
+## Authentication
+
+Public Models use an OpenAI-compatible API. Include the key in the `Authorization` header as a Bearer token.
+
+Example for a chat model that supports the Chat Completions API:
+
+```bash
+curl -X POST "<ENDPOINT_URL>/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <PUBLIC_MODELS_API_KEY>" \
+  -d '{
+    "model": "model-name",
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'
+```
+
+The endpoint URL and model name are shown in the **API Endpoint** dialog on each model card in the catalog.

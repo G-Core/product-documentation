@@ -1,0 +1,64 @@
+---
+title: "Manage Qdrant vector databases"
+sidebarTitle: "Qdrant vector DB"
+description: "View and manage Qdrant vector database clusters in the Everywhere AI Admin Panel. Monitor replica status, filter by account and project,"
+---
+
+Navigate to **Managed Databases** > **Qdrant vector DB** to view all Qdrant clusters deployed across Everywhere AI. Unlike the user panel, which shows only the current project, the admin list includes every cluster regardless of account or project.
+
+![Qdrant vector DB list showing clusters with project, region, and status](/images/docs/everywhere-ai/admin/qdrant/manage-qdrant/qdrant-list.png)
+
+## Cluster information
+
+Each entry displays:
+
+- **Name and flavor**: Cluster identifier and its resource allocation (vCPU, memory).
+- **Project**: Project that owns the cluster.
+- **Region**: Data center location.
+- **Version**: Qdrant version running on the cluster.
+- **Replicas**: Number of instances. Clusters with 3+ replicas tolerate one replica failure without downtime. Single-replica clusters have no redundancy.
+- **Storage**: Disk allocation and storage class.
+- **Created At**: Deployment timestamp.
+- **Status**: Current operational state.
+
+## Cluster statuses
+
+The Status filter helps identify clusters requiring attention.
+
+![Status filter dropdown showing available cluster states](/images/docs/everywhere-ai/admin/qdrant/manage-qdrant/qdrant-status-filter.png)
+
+| Status | Meaning |
+|--------|---------|
+| Initializing | Replicas are starting up |
+| Ready | All replicas are healthy and accepting requests |
+| Upgrading | Version update is in progress |
+| ScalingUp / ScalingDown | Replica count is being adjusted |
+| Degraded | One or more replicas are unhealthy; cluster continues operating with reduced capacity |
+| Error | Provisioning or operation failed |
+| Deleting | Cluster removal is in progress |
+
+### Error and Degraded clusters
+
+These states require investigation. Common causes and where to look:
+
+- **Quota exceeded**: Resource limits are under [Quotas](/everywhere-ai/admin/capacity/manage-quotas). The user may need a quota increase to provision or maintain replicas.
+- **No available nodes**: Check [Nodes](/everywhere-ai/admin/resource-management/manage-nodes) for capacity issues. If nodes are at capacity, a Qdrant replica cannot be scheduled.
+- **Degraded**: One replica is down. The cluster still serves requests but has no fault tolerance. If the remaining replica fails, data may be lost.
+
+
+<Warning>
+A Degraded cluster with a single remaining replica is at risk. Notify the project owner to resize the cluster and restore redundancy.
+</Warning>
+
+
+Administrators cannot take action directly on clusters from this page. Cluster operations (resize, delete) are performed by project members through the user panel.
+
+## Filters
+
+Additional filters narrow the cluster list: **Project** (isolate by team), **Region** (focus on data centers), **Flavor** (identify high-resource deployments), **Replicas** (filter by fault tolerance configuration), and **Date range** (find recently created or legacy clusters).
+
+The search box finds clusters by name.
+
+## User operations
+
+Users manage their own clusters through **Managed Databases** > **Qdrant vector DB** in the user panel. Creation, scaling, and deletion happen within [project&nbsp;quotas](/everywhere-ai/admin/capacity/manage-quotas).
