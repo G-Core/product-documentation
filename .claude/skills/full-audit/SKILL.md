@@ -103,7 +103,7 @@ Also create a todo list with every phase set to `pending` and advance it in step
 
 Work on exactly one phase and finish it completely. Read the phase file only when you reach that phase. Do not read ahead and do not plan the next phase while executing the current one. When a phase is done, report what was completed and immediately start the next phase without asking for permission.
 
-**Exception — after Phase 10:** stop completely. Do NOT move to the next article. Wait for explicit user instruction.
+**Exception — after Phase 10:** that article is done. If the user's task names more articles, continue with the next one on the same branch. Do not create a new ticket or branch. If the task was this article only, stop and wait.
 
 ## Phases
 

@@ -47,7 +47,7 @@ If the article has no API tab, stop and use the `api-use-case` skill.
    ```
 4. Live-test every curl, Python SDK, and Go SDK code block as described in `.agents/references/api-live-testing.md`. Record which blocks fail and why.
 5. Run the standalone tab test from `.agents/references/api-tab-review.md`: mentally delete the Portal tab and list every topic the Portal tab covers that the API tab does not.
-6. **Create the Jira ticket and feature branch now**, following `.agents/references/ticket-and-branch.md`. Do not write on `main`. In the ticket description include the article path, "Audit API tab", the failing blocks, and the missing operations.
+6. **Create the Jira ticket and feature branch now** if this task does not have one yet, following `.agents/references/ticket-and-branch.md`. If it already has a branch, stay on it. Do not write on `main`. In the ticket description include the article path, "Audit API tab", the failing blocks, and the missing operations.
 7. Add missing operations using the templates in `api-tab-structures.md`. Fix broken code. Fix checker violations in the API tab only.
 8. Run the checker again. Exit code must be 0.
 9. Update `description` only if the tab content changed significantly. Rules are in `.agents/references/mdx-rules.md`.

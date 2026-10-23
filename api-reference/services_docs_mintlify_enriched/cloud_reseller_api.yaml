@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 7fe188250a8f
+  version: 3594b27d2933
 servers:
 - url: https://api.gcore.com
 paths:
@@ -75,6 +75,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResellerLimitsRequestCollectionSerializer'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequestOnReadWithLegacyKeys'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorizedWithLegacyKeys'
+        '403':
+          $ref: '#/components/responses/ProblemForbiddenWithLegacyKeys'
+        '404':
+          $ref: '#/components/responses/ProblemNotFoundWithLegacyKeys'
+        '409':
+          $ref: '#/components/responses/ProblemConflictWithLegacyKeys'
+        '500':
+          $ref: '#/components/responses/ProblemInternalServerErrorWithLegacyKeys'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailableWithLegacyKeys'
       tags:
       - Quotas
   /cloud/reseller/v1/limits_request/{request_id}:
@@ -104,6 +118,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResellerLimitsRequestSerializer'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequestWithLegacyKeys'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorizedWithLegacyKeys'
+        '403':
+          $ref: '#/components/responses/ProblemForbiddenWithLegacyKeys'
+        '404':
+          $ref: '#/components/responses/ProblemNotFoundWithLegacyKeys'
+        '409':
+          $ref: '#/components/responses/ProblemConflictWithLegacyKeys'
+        '500':
+          $ref: '#/components/responses/ProblemInternalServerErrorWithLegacyKeys'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailableWithLegacyKeys'
       requestBody:
         content:
           application/json:
@@ -193,6 +221,363 @@ components:
       - in progress
       - rejected
       title: LimitsRequestStatus
+      type: string
+    NotAvailableReason:
+      enum:
+      - account
+      - balance
+      - capacity
+      - plan
+      - region
+      title: NotAvailableReason
+      type: string
+    ProblemBlockingResource:
+      additionalProperties: false
+      description: One resource that blocks the request.
+      properties:
+        resource_id:
+          description: ID of the blocking resource.
+          title: Resource Id
+          type: string
+        resource_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Name of the blocking resource.
+          title: Resource Name
+        resource_type:
+          description: Type of the blocking resource, as the permissions name it, such as `ports`.
+          title: Resource Type
+          type: string
+      required:
+      - resource_type
+      - resource_id
+      title: ProblemBlockingResource
+      type: object
+    ProblemContext:
+      additionalProperties: false
+      description: |-
+        Data for the `type`. One flat object shared by all types. Each `type` always sends the same keys, and a key that the server cannot fill is `null`. The keys of each type:
+        - `resource-in-use`: `blocking_resources`, `blocking_count`
+        - `quota-exceeded`: `quotas`
+        - `not-available`: `reason`, `region_id`, `resource_type`, `resource_id`
+        - `permission-denied`: `operation`, `client_id`, `project_id`
+        - `not-found`: `resource_type`, `resource_id`
+        - `method-not-allowed`: `allowed_methods`
+        - `resource-busy`: `resource_type`, `resource_id`, `resource_status`
+        - `rate-limited`: `retry_after`
+        - `service-unavailable`: `retry_after`
+        The other types send no `context`, and neither does a `not-found` for an unknown URL.
+      properties:
+        allowed_methods:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          default: null
+          description: Methods that the endpoint supports.
+          title: Allowed Methods
+        blocking_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: Total number of blocking resources.
+          title: Blocking Count
+        blocking_resources:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProblemBlockingResource'
+            type: array
+          - type: 'null'
+          default: null
+          description: At most 50 resources that block the request.
+          title: Blocking Resources
+        client_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: The account of the operation.
+          title: Client Id
+        operation:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Name of the operation that the credentials lack.
+          title: Operation
+        project_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: The project of the operation.
+          title: Project Id
+        quotas:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProblemQuota'
+            type: array
+          - type: 'null'
+          default: null
+          description: The quotas that the request exceeds.
+          title: Quotas
+        reason:
+          anyOf:
+          - $ref: '#/components/schemas/NotAvailableReason'
+          - type: 'null'
+          default: null
+          description: Why the resource is not available.
+        region_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: The region of the error.
+          title: Region Id
+        resource_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: ID or name of the resource.
+          title: Resource Id
+        resource_status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Current status of the resource.
+          title: Resource Status
+        resource_type:
+          anyOf:
+          - type: string
+          - type: 'null'
+          default: null
+          description: Type of the resource, as the permissions name it, such as `instances`.
+          title: Resource Type
+        retry_after:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          default: null
+          description: Seconds to wait before the next request. `null` when the server cannot tell.
+          title: Retry After
+      title: ProblemContext
+      type: object
+    ProblemError:
+      additionalProperties: false
+      description: One invalid input.
+      properties:
+        code:
+          description: 'What is wrong, as a code from a fixed list, such as `missing`, `int_parsing` or `less_than_equal`, or one of the shared codes: `not_unique`, `not_found`, `mutually_exclusive`, `missing_one_of`, `incompatible_value`, `invalid_format`, `duplicate_item`, `invalid_status`. Codes are only added, never renamed or removed. Treat an unknown code like `value_error`.'
+          type: string
+        ctx:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          default: null
+          description: 'Values of the broken constraint, such as `{"le": 4096}`. Absent when the check has no values.'
+          title: Ctx
+        detail:
+          description: What is wrong with the input.
+          title: Detail
+          type: string
+        loc:
+          description: 'Path to the input. Starts with `body`, `query`, `path` or `header`. A query filter is the parameter, then the operator: `name[contains]` is `["query", "name", "contains"]`.'
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Loc
+          type: array
+      required:
+      - loc
+      - code
+      - detail
+      title: ProblemError
+      type: object
+    ProblemQuota:
+      additionalProperties: false
+      description: One quota that the request exceeds.
+      properties:
+        available:
+          anyOf:
+          - type: integer
+          - type: number
+          description: '`limit` minus `usage`.'
+          title: Available
+        limit:
+          anyOf:
+          - type: integer
+          - type: number
+          description: The limit of the quota.
+          title: Limit
+        name:
+          description: Quota name, such as `vm_count`.
+          title: Name
+          type: string
+        overflow:
+          anyOf:
+          - type: integer
+          - type: number
+          description: 'The amount above the limit: `resulting_usage` minus `limit`.'
+          title: Overflow
+        region_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Region of a regional quota. `null` for a global quota, or when unknown.
+          title: Region Id
+        requested:
+          anyOf:
+          - type: integer
+          - type: number
+          description: The amount that the request adds.
+          title: Requested
+        resulting_usage:
+          anyOf:
+          - type: integer
+          - type: number
+          description: 'The usage after the request: `usage` plus `requested`.'
+          title: Resulting Usage
+        scope:
+          anyOf:
+          - $ref: '#/components/schemas/QuotaScope'
+          - type: 'null'
+          description: '`regional` for a quota of one region, `global` for a quota of the account. `null` when the server cannot tell.'
+        unit:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Unit of the numbers, such as `MiB`, `GiB` or `bytes`. `null` for a quota that counts items.
+          title: Unit
+        usage:
+          anyOf:
+          - type: integer
+          - type: number
+          description: The usage before the request.
+          title: Usage
+      required:
+      - name
+      - scope
+      - region_id
+      - limit
+      - usage
+      - available
+      - requested
+      - resulting_usage
+      - overflow
+      - unit
+      title: ProblemQuota
+      type: object
+    ProblemType:
+      enum:
+      - internal-server-error
+      - method-not-allowed
+      - not-available
+      - not-found
+      - permission-denied
+      - quota-exceeded
+      - rate-limited
+      - resource-busy
+      - resource-in-use
+      - service-unavailable
+      - unauthorized
+      - validation-error
+      title: ProblemType
+      type: string
+    ProblemWithLegacyKeys:
+      additionalProperties: false
+      description: |-
+        The error body of an endpoint that was released before the problem body. The old keys stay
+        next to the problem fields until the endpoint is removed.
+      properties:
+        context:
+          anyOf:
+          - $ref: '#/components/schemas/ProblemContext'
+          - type: 'null'
+          default: null
+          description: Data for the `type`. Absent on a type without context keys, and on a `not-found` for an unknown URL.
+        detail:
+          description: The facts of this occurrence.
+          title: Detail
+          type: string
+        errors:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProblemError'
+            type: array
+          - type: 'null'
+          default: null
+          description: One item for each invalid input. Only on `validation-error`, and absent when no single input is wrong.
+          title: Errors
+        exception_class:
+          deprecated: true
+          description: The old name of the error. Use `type`.
+          title: Exception Class
+          type: string
+        hint:
+          description: What to do next.
+          title: Hint
+          type: string
+        info:
+          default: null
+          deprecated: true
+          description: Old data about the error. Use `context`.
+          title: Info
+        invalid_fields:
+          default: null
+          deprecated: true
+          description: The old list of the invalid inputs. Use `errors`.
+          title: Invalid Fields
+        message:
+          deprecated: true
+          description: The old text of the error. Use `detail`.
+          title: Message
+          type: string
+        request_id:
+          description: ID of the request. The response also sends it in the `X-Request-Id` header. Quote it to support.
+          title: Request Id
+          type: string
+        status:
+          description: Copy of the HTTP status code.
+          title: Status
+          type: integer
+        title:
+          description: Fixed sentence for the `type`.
+          title: Title
+          type: string
+        trace_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: W3C trace ID from the `traceparent` of the request. Null when the request has no valid `traceparent`.
+          title: Trace Id
+        type:
+          $ref: '#/components/schemas/ProblemType'
+          description: Stable error code in kebab-case, such as `not-found`. Clients branch on it. It is not `errors[].code`, which names what is wrong with one input in `snake_case`, such as `not_found`.
+      required:
+      - type
+      - title
+      - status
+      - detail
+      - hint
+      - request_id
+      - trace_id
+      - exception_class
+      - message
+      title: ProblemWithLegacyKeys
+      type: object
+    QuotaScope:
+      enum:
+      - global
+      - regional
+      title: QuotaScope
       type: string
     RegionalQuotasLimitsSerializer:
       additionalProperties: false
@@ -672,6 +1057,118 @@ components:
       - updated_at
       title: ResellerLimitsRequestSerializer
       type: object
+  responses:
+    ProblemBadRequestOnReadWithLegacyKeys:
+      description: The request cannot succeed as it is. `type` is `validation-error` or `not-available`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemBadRequestWithLegacyKeys:
+      description: The request cannot succeed as it is. `type` is `validation-error`, `resource-in-use`, `quota-exceeded` or `not-available`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemConflictWithLegacyKeys:
+      description: The resource is in a transient state. `type` is `resource-busy`. Send the same request again after the `Retry-After` seconds.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
+    ProblemForbiddenWithLegacyKeys:
+      description: The credentials do not permit the operation, or another service manages the resource. `type` is `permission-denied`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemInternalServerErrorWithLegacyKeys:
+      description: The server cannot complete the request. `type` is `internal-server-error`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemNotFoundWithLegacyKeys:
+      description: The resource or the URL does not exist. `type` is `not-found`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemServiceUnavailableWithLegacyKeys:
+      description: The service is down for a known reason, such as planned maintenance. `type` is `service-unavailable`. A 503 without the `application/problem+json` media type, and every 502 and 504, comes from the gateway and has no problem body.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemUnauthorizedWithLegacyKeys:
+      description: The request has no valid credentials. `type` is `unauthorized`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+  headers:
+    ContentLanguage:
+      description: The language of `title`, `detail`, `hint` and `errors[].detail`, from the `Accept-Language` of the request. Any other field is the same in every language.
+      schema:
+        type: string
+        enum:
+        - en
+        - de
+        - ru
+        - az
+        - zh
+    RequestId:
+      description: The ID of the request, the same as `request_id` in the body.
+      schema:
+        type: string
+    RetryAfter:
+      description: The number of seconds to wait before the client sends the same request again.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 60
   securitySchemes:
     APIKey:
       description: |-

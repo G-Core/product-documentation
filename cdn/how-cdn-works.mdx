@@ -1,0 +1,39 @@
+---
+title: How Gcore CDN works
+sidebarTitle: How CDN works
+description: Gcore CDN delivery model covering the CDN resource, edge cache, origin group, origin shielding, and connections.
+---
+
+When a user requests a file from a domain connected to Gcore CDN, the request goes to a nearby Gcore edge server shown on the [network&nbsp;map](https://gcore.com/network). If the server has the file in its cache, it sends the file to the user. Otherwise, it retrieves the file from the origin, the server that stores the original files. Answering from the cache helps content load faster and reduces requests to the origin.
+
+## CDN resource
+
+To deliver your content, the CDN needs to know where to get the files and how to handle requests. This information is configured in a CDN resource, which can serve one or more domains.
+
+A resource has one main domain and can have additional ones. All of them share the same settings, so domains that need different settings are separate resources.
+
+Each resource uses an [origin&nbsp;group](/cdn/add-an-origin-group) to specify where files come from. An origin group can contain one or more origins, such as servers, storage buckets, or FastEdge HTTP applications.
+
+## Cache
+
+When an edge server retrieves a file from the origin, it can keep a copy in its cache for future requests. Whether the file can be cached depends on the HTTP status code and the `Cache-Control` header of the response.
+
+The copy does not stay in the cache forever. How long it stays is set by the [cache&nbsp;lifetime](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin), which comes from the origin headers or from the CDN resource settings.
+
+## Origin shielding
+
+The cache reduces the number of requests to the origin, but not to zero: a file that is not cached yet, or whose copy has expired, is requested again. If this happens often on many edge servers, the origin can be overloaded with requests.
+
+You can reduce this load with [Origin&nbsp;Shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding), which adds a shield server: another cache between the edge servers and the origin. Edge servers request missing files from the shield server first. If the file is not there either, the shield server retrieves it from the origin.
+
+## The complete delivery path
+
+A request reaches the nearest edge server. If that server has the file, it sends the file and does not contact the origin. If it does not, it requests the file from the origin. With Origin Shielding enabled, the edge server requests the file from the shield server, and the shield server contacts the origin only when it does not have the file. Each row is a separate request.
+
+<Frame>
+  ![Four separate CDN requests: an edge cache hit, a miss sent directly to the origin, a miss served by the shield, and a miss fetched from the origin through the shield](/images/docs/cdn/how-cdn-works/request-path.png)
+</Frame>
+
+The connections along this path can use different protocols. Even if a user connects to an edge server over HTTPS, the connection to the origin may still use HTTP.
+
+Between the user and the edge server, an [SSL&nbsp;certificate](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) lets the CDN serve the domain over HTTPS. Between the CDN and the origin, you choose HTTP or HTTPS with the [origin&nbsp;pull&nbsp;protocol](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol), depending on what the origin supports.
