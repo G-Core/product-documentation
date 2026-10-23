@@ -128,7 +128,7 @@ Use Luxembourg Preprod (region_id=4) for general networking and VM tests.
 
 ### Credentials
 
-Tokens come from environment variables that the user sets before the session: `GCORE_API_KEY` for prod and `GCORE_PREPROD_API_KEY` for preprod. Never read `.env` or `access.md`, and never hardcode a token in committed files. If the variable is empty, stop and ask the user to set it.
+Tokens come from the environment or from `.env` via dotenv: `GCORE_API_KEY` for prod and `GCORE_PREPROD_API_KEY` for preprod. Never print a token, and never hardcode one in committed files. If both the environment and `.env` lack the variable, stop and ask the user.
 
 ### If the feature is not yet on preprod
 

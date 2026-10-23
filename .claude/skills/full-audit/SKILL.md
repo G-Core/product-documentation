@@ -144,7 +144,7 @@ Do not read other articles for context unless they are directly linked from the 
 - Never commit or push until the user says `коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, or `запушь`, except the commit on the current branch immediately before leaving it. Never stash that work to switch. Push still waits for an explicit request.
 - Never touch `<MethodSection id="api">`: API sections are a separate update cycle (`api-audit`).
 - Never rename article files, change slugs, or edit `docs.json` without explicit user confirmation.
-- Never read `.env`, `access.md`, or `_private/secrets/`. The agent never handles portal credentials: the user logs in.
+- Load API tokens from `.env` with dotenv. Never print them. Never read `access.md` or `_private/secrets/`. The agent never handles portal credentials: the user logs in.
 - Never change the browser viewport, window size, or zoom.
 - Apply only fixes from the confirmed findings. Note other issues at the end; do not fix them silently.
 - Never use scripts for text replacements in MDX. Use targeted edits, one replacement at a time.
