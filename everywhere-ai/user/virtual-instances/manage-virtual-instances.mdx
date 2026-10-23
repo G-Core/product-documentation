@@ -1,0 +1,67 @@
+---
+title: "Manage Virtual Instances"
+description: "Manage Virtual Instances in Everywhere AI attach storage, configure networking, access the console, and control instance lifecycle."
+---
+
+A Virtual Instance can be managed from its detail view, where storage, networking, console access, and lifecycle controls are available. Each entry in **Virtual Instances** shows the current [status](#instance-statuses).
+
+The **Actions** menu in the top-right corner provides the lifecycle commands available for the current instance state, and **Delete**, from any tab.
+
+![Virtual Instance detail view showing instance name, Provisioning status, flavor, region, creation date, and Actions button](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-details-overview.png)
+
+## Storage
+
+Additional storage can be attached without recreating the instance. In **Volumes**, click **Add Volume** and select **Data Volume** to create a new empty disk, or **Existing Volume** to reuse a previously detached one. For a **Data Volume**, set **Volume Name**, **Size**, and **Storage Class**, then click **Create & Add**. For an **Existing Volume**, select the volume, then click **Add**.
+
+![Volumes tab showing attached volumes list with Type, Name, Storage class, Size, and Created At columns](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-volumes-tab.png)
+
+To resize an attached volume, or to detach or delete one that is not the instance's only disk, click **...** on its row. Detaching preserves the data and moves the volume to [Compute&nbsp;Volumes](/everywhere-ai/user/compute-volumes/manage-compute-volumes) for reuse. **Detach** and **Delete** stay unavailable on the last disk: the instance must keep at least one volume, and stopping the instance does not remove that limit.
+
+Volumes persist independently of the instance — deleting the instance does not delete the attached volumes. After the instance is deleted, the remaining volume can be removed or attached to another instance.
+
+## Console access
+
+The instance is accessible through a VNC session in the browser. In **Access**, click **Launch console** to open the session.
+
+![Access tab showing Console access section with Launch console button](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-access-tab.png)
+
+## Instance lifecycle
+
+**Pause** suspends the instance on the same host. Allocated resources stay reserved, and non-persistent data is kept. **Stop** shuts it down and releases those resources — when started again, the instance may run on a different host and non-persisted data may be lost. **Resume** continues an instance in the **Paused** status. **Start** starts an instance in the **Stopped** status. **Soft reboot** attempts a clean shutdown and restart of the instance.
+
+![Power tab showing Pause Instance, Stop Instance, and Soft reboot Instance options](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-power-tab.png)
+
+These controls are available from both the **Power** tab and the **Actions** dropdown.
+
+## Network interfaces
+
+Additional network interfaces connect the instance to a selected [network&nbsp;and&nbsp;subnetwork](/everywhere-ai/user/networking/networks). In **Networking**, click **Add Interface** and select the target network and subnetwork. Optionally assign security groups, and enable **Use floating IP** if the interface must be reachable externally. If the required network or subnetwork does not exist yet, create one directly from the corresponding dropdown.
+
+![Networking tab showing network interfaces with Interface, Security Group, and Subnetwork columns](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-networking-tab.png)
+
+Click **Add**. The new entry appears in the list with its assigned IP and MAC address visible when the row is expanded.
+
+To edit security groups or detach an interface, click **...** on its row.
+
+## Deletion
+
+Deleting an instance is irreversible. The instance itself is removed, but its attached volumes are not deleted.
+
+![Delete tab showing deletion warning and Delete button](/images/docs/everywhere-ai/user/virtual-instances/manage-virtual-instances/vm-delete-tab.png)
+
+## Instance statuses
+
+| Status | Description |
+|--------|-------------|
+| WaitingForVolumeBinding | Volume provisioning is in progress; instance will start once the volume is ready |
+| Provisioning | Resources are being allocated |
+| Starting | OS is booting from the boot volume |
+| Running | Instance is active and accessible |
+| Paused | Instance is suspended; resources remain reserved |
+| Stopped | Instance is shut down; configuration and storage preserved |
+| Error | Provisioning or operation failed |
+
+
+<Info>
+If the boot volume is importing an image, the instance may remain in `Provisioning` until the import completes before transitioning to `Starting`.
+</Info>

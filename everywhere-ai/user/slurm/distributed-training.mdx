@@ -1,0 +1,529 @@
+---
+title: "Multi-node distributed training"
+sidebarTitle: "Distributed training"
+description: "Run multi-node distributed training across multiple GPUs using PyTorch DDP or TensorFlow with Slurm job scheduling in Everywhere AI."
+---
+
+Distributed training spreads computation across multiple nodes and GPUs. Both PyTorch and TensorFlow provide strategies that replicate the model on each GPU and synchronize gradients during backpropagation. This approach can approach linear scaling with hardware for suitable data-parallel workloads, subject to network bandwidth and communication overhead.
+
+## Architecture overview
+
+Distributed training involves several components:
+
+- **Rank**: Unique ID for each process (0 to world_size-1)
+- **World size**: Total number of processes across all nodes
+- **Local rank**: Process ID within a single node
+- **Master node**: Coordinates initialization (rank 0)
+
+With 2 nodes and 4 GPUs per node, world_size is 8. Each node has local ranks 0-3.
+
+## Training script
+
+Distributed training requires modifications to single-GPU code. The process group must be initialized, the model wrapped for distribution, and data must be sharded across processes.
+
+<Tabs>
+<Tab title="PyTorch DDP">
+```python
+#!/usr/bin/env python3
+"""Distributed training with PyTorch DDP."""
+
+import os
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data.distributed import DistributedSampler
+
+
+def setup_distributed():
+    """Initialize the distributed process group.
+
+    Compatible with both srun (SLURM_* variables) and torchrun (RANK/LOCAL_RANK/WORLD_SIZE).
+    torchrun variables take priority when present.
+    """
+    rank = int(os.environ.get("RANK", os.environ.get("SLURM_PROCID", 0)))
+    world_size = int(os.environ.get("WORLD_SIZE", os.environ.get("SLURM_NTASKS", 1)))
+    local_rank = int(os.environ.get("LOCAL_RANK", os.environ.get("SLURM_LOCALID", 0)))
+
+    master_addr = os.environ.get("MASTER_ADDR", "localhost")
+    master_port = os.environ.get("MASTER_PORT", "29500")
+
+    os.environ["MASTER_ADDR"] = master_addr
+    os.environ["MASTER_PORT"] = master_port
+
+    dist.init_process_group(
+        backend="nccl",  # Use "gloo" for CPU-only
+        init_method=f"tcp://{master_addr}:{master_port}",
+        world_size=world_size,
+        rank=rank,
+    )
+
+    torch.cuda.set_device(local_rank)
+    return rank, world_size, local_rank
+
+
+def cleanup():
+    """Clean up the distributed process group."""
+    dist.destroy_process_group()
+
+
+def create_model(input_size: int, hidden_size: int, output_size: int) -> nn.Module:
+    """Create a simple feedforward network."""
+    return nn.Sequential(
+        nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, hidden_size),
+        nn.ReLU(),
+        nn.Linear(hidden_size, output_size),
+    )
+
+
+def train(epochs: int = 10, batch_size: int = 32):
+    """Run distributed training."""
+    rank, world_size, local_rank = setup_distributed()
+    device = torch.device(f"cuda:{local_rank}")
+
+    if rank == 0:
+        print(f"Starting distributed training with {world_size} processes")
+
+    # Synthetic data
+    X = torch.randn(10000, 64)
+    y = torch.randint(0, 10, (10000,))
+    dataset = TensorDataset(X, y)
+
+    # Distributed sampler shards data across processes
+    sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank)
+    dataloader = DataLoader(dataset, batch_size=batch_size, sampler=sampler)
+
+    # Wrap model in DDP
+    model = create_model(64, 256, 10).to(device)
+    model = DDP(model, device_ids=[local_rank])
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    for epoch in range(epochs):
+        sampler.set_epoch(epoch)  # Required for proper shuffling
+
+        total_loss = 0.0
+        for batch_X, batch_y in dataloader:
+            batch_X, batch_y = batch_X.to(device), batch_y.to(device)
+
+            optimizer.zero_grad()
+            outputs = model(batch_X)
+            loss = criterion(outputs, batch_y)
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        if rank == 0:
+            print(f"Epoch {epoch + 1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}")
+
+    # Save from rank 0 only
+    if rank == 0:
+        torch.save(model.module.state_dict(), "model_distributed.pt")
+
+    cleanup()
+
+
+if __name__ == "__main__":
+    train()
+```
+</Tab>
+<Tab title="TensorFlow MultiWorker">
+```python
+#!/usr/bin/env python3
+"""Distributed training with TensorFlow MultiWorkerMirroredStrategy.
+
+TF_CONFIG must be set before any TensorFlow import.
+This script builds it from Slurm variables at module level.
+"""
+
+import os
+import json
+import subprocess
+
+
+def _build_tf_config() -> None:
+    """Build and set TF_CONFIG from Slurm environment variables.
+
+    Must be called before importing TensorFlow.
+    Each node runs a single TensorFlow worker (--ntasks-per-node=1).
+    """
+    nodelist = os.environ.get("SLURM_JOB_NODELIST", "localhost")
+    task_id = int(os.environ.get("SLURM_PROCID", 0))
+
+    result = subprocess.run(
+        ["scontrol", "show", "hostnames", nodelist],
+        capture_output=True, text=True,
+    )
+    workers = [f"{host}:12345" for host in result.stdout.strip().split("\n")]
+
+    cluster_config = {
+        "cluster": {"worker": workers},
+        "task": {"type": "worker", "index": task_id},
+    }
+    os.environ["TF_CONFIG"] = json.dumps(cluster_config)
+
+
+# Set TF_CONFIG before any TensorFlow import
+_build_tf_config()
+
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+
+
+def create_model(input_size: int, hidden_size: int, output_size: int) -> keras.Model:
+    """Create a simple feedforward network."""
+    return keras.Sequential([
+        keras.layers.Dense(hidden_size, activation="relu", input_shape=(input_size,)),
+        keras.layers.Dense(hidden_size, activation="relu"),
+        keras.layers.Dense(output_size, activation="softmax"),
+    ])
+
+
+def train(epochs: int = 10, batch_size: int = 32):
+    """Run distributed training."""
+    task_id = int(os.environ.get("SLURM_PROCID", 0))
+
+    # MultiWorkerMirroredStrategy for multi-node training
+    strategy = tf.distribute.MultiWorkerMirroredStrategy()
+
+    print(f"Worker {task_id}: devices = {strategy.num_replicas_in_sync}")
+
+    # Global batch size = per-replica batch * num_replicas
+    global_batch_size = batch_size * strategy.num_replicas_in_sync
+
+    # Synthetic data
+    X = np.random.randn(10000, 64).astype(np.float32)
+    y = np.random.randint(0, 10, (10000,))
+
+    dataset = tf.data.Dataset.from_tensor_slices((X, y))
+    dataset = dataset.shuffle(10000).batch(global_batch_size)
+
+    # Shard dataset across workers
+    options = tf.data.Options()
+    options.experimental_distribute.auto_shard_policy = (
+        tf.data.experimental.AutoShardPolicy.DATA
+    )
+    dataset = dataset.with_options(options)
+
+    with strategy.scope():
+        model = create_model(64, 256, 10)
+        model.compile(
+            optimizer=keras.optimizers.Adam(0.001),
+            loss="sparse_categorical_crossentropy",
+            metrics=["accuracy"],
+        )
+
+    # Only chief worker saves checkpoints
+    callbacks = []
+    if task_id == 0:
+        callbacks.append(keras.callbacks.ModelCheckpoint(
+            "checkpoints/model_{epoch:02d}.keras"
+        ))
+
+    model.fit(dataset, epochs=epochs, callbacks=callbacks)
+
+    if task_id == 0:
+        model.save("model_distributed.keras")
+
+
+if __name__ == "__main__":
+    train()
+```
+</Tab>
+</Tabs>
+
+
+<Warning>
+**PyTorch:** Always call `sampler.set_epoch(epoch)` before each epoch. Without this, all epochs use the same data order.
+
+**TensorFlow:** Set `TF_CONFIG` **before** any TensorFlow import. The script above calls `_build_tf_config()` at module level to satisfy this requirement. The TensorFlow topology uses one worker per node (`--ntasks-per-node=1`); `MultiWorkerMirroredStrategy` handles the node's GPUs internally.
+</Warning>
+
+
+## Job script
+
+Multi-node jobs require additional Slurm directives.
+
+<Tabs>
+<Tab title="PyTorch">
+```bash
+#!/bin/bash
+#SBATCH --job-name=ddp-train
+#SBATCH --output=logs/ddp_%j.out
+#SBATCH --error=logs/ddp_%j.err
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --mem=16G
+#SBATCH --time=02:00:00
+
+echo "Job ID: $SLURM_JOB_ID"
+echo "Nodes: $SLURM_JOB_NODELIST"
+
+# Get master node address
+export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
+export MASTER_PORT=29500
+
+echo "Master: $MASTER_ADDR:$MASTER_PORT"
+
+mkdir -p logs
+
+srun python3 train_distributed.py
+```
+</Tab>
+<Tab title="TensorFlow">
+```bash
+#!/bin/bash
+#SBATCH --job-name=tf-distributed
+#SBATCH --output=logs/tf_%j.out
+#SBATCH --error=logs/tf_%j.err
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:1
+#SBATCH --mem=16G
+#SBATCH --time=02:00:00
+
+echo "Job ID: $SLURM_JOB_ID"
+echo "Nodes: $SLURM_JOB_NODELIST"
+
+mkdir -p logs checkpoints
+
+# The Python script builds TF_CONFIG from SLURM_JOB_NODELIST and SLURM_PROCID
+# at module level, before any TensorFlow import.
+
+srun python3 train_distributed.py
+```
+</Tab>
+</Tabs>
+
+Key directives:
+
+| Directive | Purpose |
+|-----------|---------|
+| `--nodes=N` | Request N compute nodes |
+| `--ntasks-per-node=N` | Processes per node (usually one per GPU) |
+| `--gres=gpu:N` | GPUs per node |
+
+The `srun` command launches the script on all allocated nodes. Each instance receives different `SLURM_PROCID` values.
+
+## Multi-GPU scaling (PyTorch)
+
+This section applies to **PyTorch DDP only**. For TensorFlow, `MultiWorkerMirroredStrategy` handles GPUs per node internally with `--ntasks-per-node=1`; the TensorFlow job script above is used as-is.
+
+With four GPUs per node across two nodes (8 GPUs total):
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=multi-gpu
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:4
+#SBATCH --mem=64G
+#SBATCH --time=04:00:00
+
+export MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
+export MASTER_PORT=29500
+
+srun python3 train_distributed.py
+```
+
+Slurm launches 8 processes (`SLURM_PROCID` 0–7). `setup_distributed()` reads `SLURM_PROCID`, `SLURM_NTASKS`, and `SLURM_LOCALID` to configure the topology automatically.
+
+
+<Tip>
+Set `--cpus-per-task` to at least two for each GPU. Data loading and preprocessing run on CPU while the GPU computes. Too few CPUs cause GPU idle time.
+</Tip>
+
+
+## Alternative launchers
+
+### PyTorch torchrun
+
+PyTorch provides `torchrun` as an alternative to `srun`. It handles environment variable setup automatically by setting `RANK`, `LOCAL_RANK`, and `WORLD_SIZE`.
+
+The `train_distributed.py` script works with `torchrun` without modification: `setup_distributed()` reads `RANK`, `LOCAL_RANK`, and `WORLD_SIZE` first, falling back to `SLURM_*` variables when running under `srun`.
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=torchrun-ddp
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16
+#SBATCH --gres=gpu:4
+#SBATCH --mem=64G
+#SBATCH --time=04:00:00
+
+MASTER_ADDR=$(scontrol show hostnames $SLURM_JOB_NODELIST | head -n 1)
+NNODES=$SLURM_JOB_NUM_NODES
+GPUS_PER_NODE=4
+
+srun torchrun \
+    --nnodes=$NNODES \
+    --nproc_per_node=$GPUS_PER_NODE \
+    --rdzv_id=$SLURM_JOB_ID \
+    --rdzv_backend=c10d \
+    --rdzv_endpoint=$MASTER_ADDR:29500 \
+    train_distributed.py
+```
+
+## Troubleshooting
+
+Distributed training failures often produce cryptic errors.
+
+### Connection timeout
+
+```
+RuntimeError: Timed out initializing process group
+```
+
+The processes failed to connect. Verify:
+
+- `MASTER_ADDR` resolves correctly on all nodes
+- `MASTER_PORT` is not blocked by firewall
+- All processes start within the timeout window
+
+To increase the timeout in PyTorch:
+
+```python
+import datetime
+dist.init_process_group(..., timeout=datetime.timedelta(minutes=60))
+```
+
+TensorFlow does not expose an equivalent timeout parameter in `MultiWorkerMirroredStrategy`. If a worker hangs, enable verbose logging to identify which process is stalling:
+
+```bash
+export TF_CPP_MIN_LOG_LEVEL=0
+```
+
+### GPU communication errors
+
+**PyTorch NCCL:**
+```
+NCCL error: unhandled system error
+```
+
+**TensorFlow:**
+```
+CollectiveError: Collective ops are aborted
+```
+
+Common causes: mismatched CUDA versions, network misconfiguration, insufficient GPU memory.
+
+Enable debug logging:
+
+```bash
+# PyTorch
+export NCCL_DEBUG=INFO
+
+# TensorFlow
+export TF_CPP_MIN_LOG_LEVEL=0
+```
+
+
+<Warning>
+Distributed training hangs (no error, no output) usually indicate rank 0 is waiting for other processes that never connected. Check that all nodes started and can reach the master node.
+</Warning>
+
+
+## Performance optimization
+
+### Gradient accumulation
+
+For large models that don't fit in GPU memory, accumulate gradients across multiple forward passes.
+
+<Tabs>
+<Tab title="PyTorch">
+```python
+accumulation_steps = 4
+
+for i, (batch_X, batch_y) in enumerate(dataloader):
+    outputs = model(batch_X)
+    loss = criterion(outputs, batch_y) / accumulation_steps
+    loss.backward()
+
+    if (i + 1) % accumulation_steps == 0:
+        optimizer.step()
+        optimizer.zero_grad()
+
+# Apply accumulated gradients from the last incomplete window
+if (i + 1) % accumulation_steps != 0:
+    optimizer.step()
+    optimizer.zero_grad()
+```
+</Tab>
+<Tab title="TensorFlow">
+```python
+# Use tf.GradientTape for manual accumulation
+accumulation_steps = 4
+accumulated_gradients = [tf.zeros_like(v) for v in model.trainable_variables]
+
+for i, (batch_X, batch_y) in enumerate(dataset):
+    with tf.GradientTape() as tape:
+        outputs = model(batch_X, training=True)
+        loss = loss_fn(batch_y, outputs) / accumulation_steps
+
+    gradients = tape.gradient(loss, model.trainable_variables)
+    accumulated_gradients = [a + g for a, g in zip(accumulated_gradients, gradients)]
+
+    if (i + 1) % accumulation_steps == 0:
+        optimizer.apply_gradients(zip(accumulated_gradients, model.trainable_variables))
+        accumulated_gradients = [tf.zeros_like(v) for v in model.trainable_variables]
+
+# Apply accumulated gradients from the last incomplete window
+if (i + 1) % accumulation_steps != 0:
+    optimizer.apply_gradients(zip(accumulated_gradients, model.trainable_variables))
+```
+</Tab>
+</Tabs>
+
+Effective batch size becomes `batch_size * accumulation_steps * world_size`.
+
+### Mixed precision training
+
+Reduce memory usage and increase throughput with automatic mixed precision.
+
+<Tabs>
+<Tab title="PyTorch">
+```python
+from torch.cuda.amp import autocast, GradScaler
+
+scaler = GradScaler()
+
+for batch_X, batch_y in dataloader:
+    optimizer.zero_grad()
+
+    with autocast():
+        outputs = model(batch_X)
+        loss = criterion(outputs, batch_y)
+
+    scaler.scale(loss).backward()
+    scaler.step(optimizer)
+    scaler.update()
+```
+</Tab>
+<Tab title="TensorFlow">
+```python
+# Enable mixed precision globally
+tf.keras.mixed_precision.set_global_policy("mixed_float16")
+
+# Model automatically uses float16 for compute, float32 for variables
+model = create_model(64, 256, 10)
+model.compile(
+    optimizer=keras.optimizers.Adam(0.001),
+    loss="sparse_categorical_crossentropy",
+)
+```
+</Tab>
+</Tabs>
+
+Mixed precision typically provides 1.5-2x speedup on modern GPUs with Tensor Cores (V100, A100, H100).

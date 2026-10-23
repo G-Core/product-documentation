@@ -1,0 +1,76 @@
+---
+title: "Monitoring and alerts"
+description: "Configure and view platform monitoring metrics, Prometheus integration, Grafana dashboards, and alert rules for the Everywhere AI cluster."
+---
+
+Everywhere AI provides built-in monitoring capabilities to track Everywhere AI health and detect issues. The monitoring stack collects telemetry from all cluster components and evaluates alert rules to notify administrators when intervention is required.
+
+## Metrics
+
+Metrics are time-series data points collected from all Everywhere AI components: Kubernetes resources, databases, GPU accelerators, networking, and application-level services. Victoria Metrics stores and aggregates this telemetry for visualization and alerting.
+
+Administrators can integrate these metrics with external monitoring systems. The metrics endpoint exposes Prometheus-compatible data that can be scraped by third-party tools.
+
+## Alerts
+
+Alerts are predefined rules that evaluate metric conditions and trigger notifications when thresholds are exceeded. All alert rules are accessible in Grafana under the **Alerting** section.
+
+Everywhere AI includes approximately 120 alert rules organized into the following categories:
+
+| Category | Alerts | Description |
+|----------|--------|-------------|
+| Kubernetes | 23 | Core cluster health: API server availability, controller manager status, node readiness, pod lifecycle errors (CrashLoopBackOff, ImagePullBackOff, Pending), StatefulSet and Deployment replica availability, CPU throttling |
+| etcd | 7 | Distributed key-value store health: cluster membership, leader election, database space, fsync and commit latency, member communication |
+| Nodes | 28 | Host-level metrics: CPU and memory utilization per node role (worker, ingress, control-plane), disk space and I/O latency, network errors and throughput, OOM kills, RAID status, clock synchronization |
+| Storage | 4 | Persistent volume claims: capacity utilization thresholds at 70%, 80%, 90%, and 95% |
+| Ingress | 7 | Traffic routing health: HTTP 4xx/5xx error rates, request latency percentiles, per-ingress status code monitoring |
+| PostgreSQL | 17 | Database health: instance availability, replication lag, connection pool saturation, cache hit ratio, blocking sessions, WAL archiving, Patroni leader status, vacuum and analyze scheduling |
+| Redis | 7 | Cache cluster health: instance availability, master/slave topology, replication status, memory utilization, connection limits |
+| NVIDIA GPU | 1 | GPU thermal monitoring: temperature threshold at 95 degrees Celsius |
+| ArgoCD | 3 | GitOps deployment status: sync failures, out-of-sync applications, autosync configuration |
+| Vault | 2 | Secrets management: seal status, cluster health percentage |
+| Harbor | 1 | Container registry: component availability |
+| Kyverno | 1 | Policy engine: policy validation failures |
+| Envoy Gateway | 1 | API gateway: HTTP route update rejections |
+| External Secrets Operator | 5 | Secret synchronization: webhook errors and latency, reconcile queue depth and errors |
+| KEDA | 1 | Autoscaler health: deployment replica availability |
+| Kilo (WireGuard) | 1 | VPN mesh: tunnel handshake timeouts |
+| RBAC Manager | 1 | Access control: rule processing errors |
+| Controllers | 1 | Operators: reconciliation error rates |
+| Blackbox Exporter | 3 | Endpoint probing: HTTP probe success, status codes, response latency |
+
+
+<Warning>
+Standard Kubernetes alerts (pod status, deployment replicas, node readiness) apply to all workloads. Alerts specific to Everywhere AI components are in the Controllers and application-specific categories.
+</Warning>
+
+
+## Dashboards
+
+Grafana includes preconfigured dashboards for visualizing Everywhere AI metrics:
+
+| Category | Dashboards |
+|----------|------------|
+| ArgoCD | Application overview, operational overview, notifications overview |
+| Envoy | Proxy global, gateway global, clusters, global ratelimit |
+| PostgreSQL | PostgreSQL overview, WAL-G backup status |
+| Redis | Redis overview |
+| NVIDIA | DCGM exporter metrics |
+| Ingress NGINX | NGINX overview, NGINX performance |
+| Kyverno | Policy engine metrics |
+| KEDA | Scaled objects, scaled jobs, operator metrics |
+| Keycloak | Authentication metrics |
+| Harbor | Registry metrics |
+| Vault | Secrets engine metrics |
+| x509 | Certificate expiration monitoring |
+| Golang | Controller metrics for Everywhere AI components |
+| Gitea | Git service metrics |
+
+## Integration with external systems
+
+The monitoring stack supports integration with external observability platforms. Metrics are exposed in Prometheus format and can be scraped by external collectors. Alert notifications can be routed to external systems through Grafana notification channels: Slack, email, PagerDuty, webhooks, and others.
+
+
+<Tip>
+Contact the infrastructure team for endpoint addresses and authentication credentials required for external integrations.
+</Tip>

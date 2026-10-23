@@ -1,0 +1,219 @@
+---
+title: "Submit jobs"
+description: "Run and monitor batch jobs on Slurm clusters in Everywhere AI using sbatch, squeue, and scancel commands."
+---
+
+Slurm manages job scheduling and resource allocation on the cluster. After connecting via SSH, jobs are submitted through the command line. The login node handles job submission; compute nodes execute the work.
+
+## Cluster status
+
+Before submitting jobs, verify the cluster state and available resources.
+
+```bash
+sinfo
+```
+
+Output shows partitions, node states, and availability:
+
+```
+PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
+default*     up   24:00:00      1   idle worker-0
+```
+
+- **PARTITION**: Job queue name. The asterisk marks the default partition.
+- **STATE**: `idle` means the node is available. Other states include `alloc` (busy), `down` (unavailable), and `drain` (maintenance).
+
+To see detailed node information including CPU count, memory, and current allocation status:
+
+```bash
+scontrol show node worker-0
+```
+
+## Interactive jobs
+
+The `srun` command executes a command directly on a compute node. Use it for quick tests and interactive work.
+
+```bash
+srun --mem=100M hostname
+```
+
+The `--mem` flag specifies memory allocation. Without it, jobs may fail because the default allocation is often insufficient.
+
+
+<Warning>
+Always specify `--mem` when submitting jobs. The default memory allocation is often insufficient and causes job failures.
+</Warning>
+
+
+```bash
+srun --mem=512M --cpus-per-task=2 python3 -c "print('Hello from Slurm')"
+```
+
+## Batch jobs
+
+Batch jobs run without interaction. Create a job script with `#SBATCH` directives that specify resource requirements, then submit it with `sbatch`.
+
+### Job script
+
+Job scripts are shell scripts with `#SBATCH` directives at the top. These directives specify resource requests.
+
+Create a file named `job.sh`:
+
+```bash
+#!/bin/bash
+#SBATCH --job-name=test-job
+#SBATCH --output=output_%j.txt
+#SBATCH --mem=256M
+#SBATCH --cpus-per-task=1
+#SBATCH --time=00:10:00
+
+echo "Job started: $(date)"
+echo "Running on node: $(hostname)"
+
+python3 -c "
+import time
+print('Processing...')
+time.sleep(5)
+print('Done')
+"
+
+echo "Job finished: $(date)"
+```
+
+The `%j` in the output filename is replaced with the job ID.
+
+Submit the script:
+
+```bash
+sbatch job.sh
+```
+
+Output confirms submission:
+
+```
+Submitted batch job 42
+```
+
+### Common SBATCH directives
+
+| Directive | Purpose |
+|-----------|---------|
+| `--job-name=NAME` | Job name shown in queue listings |
+| `--output=FILE` | Standard output destination |
+| `--error=FILE` | Standard error destination |
+| `--mem=SIZE` | Memory per node (100M, 1G, 16G) |
+| `--cpus-per-task=N` | CPU cores per task |
+| `--time=HH:MM:SS` | Maximum runtime |
+| `--partition=NAME` | Target partition |
+
+
+<Warning>
+Jobs exceeding the `--time` limit are terminated automatically. Set realistic limits with some buffer.
+</Warning>
+
+
+## Job monitoring
+
+### Queue status
+
+```bash
+squeue
+```
+
+Output shows running and pending jobs:
+
+```
+JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+   42   default test-job     root  R       0:05      1 worker-0
+   43   default  another     root PD       0:00      1 (Resources)
+```
+
+- **ST**: Job state. `R` = running, `PD` = pending.
+- **REASON**: Why a job is pending. `(Resources)` means waiting for available resources.
+
+Filter by user:
+
+```bash
+squeue -u root
+```
+
+To view detailed metadata for a specific job, including submission time, resource allocation, and working directory:
+
+```bash
+scontrol show job 42
+```
+
+### Job history
+
+```bash
+sacct --format=JobID,JobName,State,ExitCode,Elapsed
+```
+
+Output includes completed jobs:
+
+```
+JobID        JobName      State ExitCode    Elapsed
+------------ ---------- ---------- -------- ----------
+42           test-job   COMPLETED      0:0   00:00:12
+43           another       FAILED      1:0   00:00:03
+```
+
+A non-zero exit code indicates failure; check the output file or, if `--error` is set, the error file.
+
+## Job cancellation
+
+Cancel a specific job:
+
+```bash
+scancel 42
+```
+
+Cancel all jobs for the current user:
+
+```bash
+scancel -u root
+```
+
+## Job output files
+
+By default, Slurm writes output to `slurm-JOBID.out` in the submission directory. The `--output` and `--error` directives change this behavior.
+
+View output while a job runs:
+
+```bash
+tail -f output_42.txt
+```
+
+
+<Tip>
+Use `%j` in filenames to include the job ID, preventing overwrites when submitting multiple jobs with the same script.
+</Tip>
+
+
+## Common issues
+
+### Memory errors
+
+```
+sbatch: error: Memory specification can not be satisfied
+```
+
+The requested memory exceeds available resources. Check node capacity with `scontrol show node` and reduce the `--mem` value.
+
+### Job pending indefinitely
+
+Check the reason column in `squeue`. Common causes:
+
+| Reason | Solution |
+|--------|----------|
+| `(Resources)` | Wait for running jobs to complete, or reduce resource request |
+| `(Priority)` | Other jobs have higher priority |
+| `(PartitionNodeLimit)` | Requested more nodes than partition allows |
+
+### Script not found
+
+```
+sbatch: error: Unable to open file job.sh
+```
+
+The script file does not exist or the path is incorrect. Verify the file location with `ls -la`.

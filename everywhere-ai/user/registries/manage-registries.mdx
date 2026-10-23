@@ -1,0 +1,131 @@
+---
+title: "Registries"
+description: "Create and manage private container image registries within projects in Everywhere AI to store and distribute custom model images."
+---
+
+Registries are private container image repositories within a [project](/everywhere-ai/user/overview/portal-overview). Each registry has a unique endpoint used with standard Docker commands (`docker login`, `docker push`, `docker pull`). Access requires authentication. The creator has access by default; other users must be added explicitly before they can push or pull images.
+
+Use registries for fine-tuned models or custom inference code not available publicly, CI/CD pipelines that push new versions after each commit, and sharing images with specific team members. For images stored in external private registries, [pull&nbsp;secrets](/everywhere-ai/user/pull-secrets/manage-pull-secrets) provide authentication without migrating images.
+
+![Registries page with Add Registry button](/images/docs/everywhere-ai/user/registries/manage-registries/registries-list.png)
+
+## Create a registry
+
+1. Navigate to **Images** > **Registries**.
+2. Click **Add Registry**.
+3. Enter a **Container Registry name**. Use lowercase letters, numbers, and hyphens. The name becomes part of the image path.
+4. Set the **Storage limit** in Gi. The limit can be increased later but not decreased.
+5. Click **Create**.
+
+![Create Registry dialog with Container Registry name and Storage limit fields](/images/docs/everywhere-ai/user/registries/manage-registries/registries-create-form.png)
+
+The registry appears in the list immediately. The endpoint URL is generated automatically based on the project and registry name.
+
+
+<Info>
+Registries are accessible from all regions within the project.
+</Info>
+
+
+## Publishing images
+
+Pushing images uses standard Docker CLI commands: login, tag, push. The image path follows this format:
+
+```
+<endpoint>/<project>.<registry-name>/<image-name>:<tag>
+```
+
+### Login
+
+Authenticate with the registry endpoint from the registry detail view:
+
+```bash
+docker login <registry-endpoint>
+```
+
+Enter the username and password from the **Users** tab in the registry detail view.
+
+### Tagging
+
+Tag the local image with the full registry path:
+
+```bash
+docker tag <local-image>:<tag> \
+  <registry-endpoint>/<project>.<registry-name>/<image-name>:<tag>
+```
+
+The tag command creates a reference — it does not upload anything.
+
+### Upload
+
+```bash
+docker push \
+  <registry-endpoint>/<project>.<registry-name>/<image-name>:<tag>
+```
+
+
+<Tip>
+Click **Push commands** in the registry detail view for ready-to-use commands with the endpoint pre-filled.
+</Tip>
+
+
+After the push completes, the image appears on the **Images** tab of the registry detail view. The tab may take a few seconds to update.
+
+## Pulling images
+
+```bash
+docker pull \
+  <registry-endpoint>/<project>.<registry-name>/<image-name>:<tag>
+```
+
+The **Pull commands** button in the registry detail view provides the exact command with pre-filled values.
+
+## User management
+
+By default, only the registry creator has access. Other team members must be added with the appropriate permission level:
+
+- **Pull images** — download only. For deployment pipelines and read-only access.
+- **Push and pull images** — upload and download. For developers and CI/CD systems.
+
+To add a user:
+
+1. Open the registry detail view and click the **Users** tab.
+2. Click **Add users**.
+3. Enter a username and select the permission level.
+4. Click **Save**.
+
+To remove access, click the delete icon next to the user entry.
+
+## Storage limit
+
+If the registry runs low on space, the storage limit can be increased.
+
+1. In the registry detail view, click **Actions** > **Change storage limit**.
+2. Enter the new storage limit in Gi.
+3. Click **Save**.
+
+Storage limit supports increases only.
+
+## Delete a registry
+
+Deleting a registry removes it permanently along with all stored images.
+
+1. In the registry detail view, click **Actions** > **Delete**.
+2. Confirm by clicking **Delete Container Registry**.
+
+
+<Warning>
+This action cannot be undone. Confirm that required images are backed up or pushed to another registry before deletion.
+</Warning>
+
+
+## Instance image selection
+
+Private registry images can be selected when creating an inference instance.
+
+1. In the **Image & Port** section, select **Private** for **Registry type**.
+2. Select the registry from the dropdown.
+3. Select the image and tag.
+4. Complete the [instance&nbsp;configuration](/everywhere-ai/user/inference-instances/create-inference-instance).
+
+The selected image is pulled automatically during deployment.
