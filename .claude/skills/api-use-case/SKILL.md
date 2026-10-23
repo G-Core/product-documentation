@@ -67,7 +67,7 @@ Follow `.agents/references/api-live-testing.md`, "Finding the API endpoints" and
 
 ## Phase 4 — Create the Jira ticket and feature branch
 
-**Mandatory. Do it immediately after live testing and endpoint mapping, before writing any MDX.** Do not wait for the user to ask. Do not write the API tab on `main`. Follow `.agents/references/ticket-and-branch.md`. In the ticket description include the article path, "Add API tab", the endpoints that were live-tested, and Structure A or B.
+**Mandatory when this task has no branch yet. Do it immediately after live testing and endpoint mapping, before writing any MDX.** Do not wait for the user to ask. Do not write the API tab on `main`. Follow `.agents/references/ticket-and-branch.md`. If this task already has a branch, stay on it and do not create another ticket. In the ticket description include the article path, "Add API tab", the endpoints that were live-tested, and Structure A or B.
 
 ## Phase 5 — Write the API section
 

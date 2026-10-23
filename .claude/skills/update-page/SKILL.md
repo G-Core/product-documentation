@@ -339,4 +339,4 @@ Unrelated issues noticed (not changed):
 If multiple articles were updated — one report block per article.
 
 When the user confirms the result looks good — load `.claude/skills/pr/SKILL.md`
-to create the branch, commit, and open a draft PR.
+to commit and open a draft PR on the task branch. Do not create a second branch when the task already has one.

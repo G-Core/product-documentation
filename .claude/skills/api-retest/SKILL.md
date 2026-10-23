@@ -75,9 +75,11 @@ Check:
 
 ---
 
-## Phase 3 — Create a branch
+## Phase 3 — Branch
 
-If the current branch is not `main` and it has uncommitted changes, commit them on that branch first. Never `git stash` to switch. The helper exits with an error when that branch is dirty.
+One task uses one branch. If this task already has a branch, stay on it. Do not create another ticket or branch for another article in the same task.
+
+Create a branch only when the task does not have one yet. If the current branch is not `main` and it has uncommitted changes, commit them on that branch first. Never `git stash` to switch. The helper exits with an error when that branch is dirty.
 
 ```powershell
 .\.agents\tools\create_branch.ps1 {TICKET_ID}
