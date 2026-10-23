@@ -2,9 +2,13 @@
 
 Used by skills that edit articles. The ticket comes first, the branch second, and every edit lands on the ticket branch, never on `main`.
 
+## One task, one branch
+
+The user's request is one task, even when it names several articles. Create one ticket and one branch for that task. Edit every article of the task on that branch. Do not create another ticket. Do not run `create_branch.ps1` again. A new ticket and branch start only when the user gives a different task.
+
 ## If a Jira ticket already exists
 
-Use that ticket key. Do not create a duplicate. Check out the existing branch (or create it from `main` if it does not exist yet).
+Use that ticket key. Do not create a duplicate. If the branch for this task already exists, stay on it. Check out the existing branch (or create it from `main` if it does not exist yet) only when you are not already on it.
 
 ## Create the ticket
 
