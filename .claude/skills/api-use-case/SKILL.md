@@ -73,7 +73,13 @@ Follow `.agents/references/api-live-testing.md`, "Finding the API endpoints" and
 
 If `git branch --show-current` is `main`, Phase 4 was skipped. Stop writing, create the ticket and branch first.
 
-Write the section using the template for the chosen structure in `.agents/references/api-tab-structures.md`. After writing each code block (curl, Python SDK, Go SDK), run the checker before moving on:
+Write the section using the template for the chosen structure in `.agents/references/api-tab-structures.md`.
+
+Examples use placeholder addresses from `203.0.113.0/24` and placeholder IDs. Do not copy live IP addresses, network IDs, profile IDs, template IDs, document IDs, or site codes from a test account into the article.
+
+`## Step-by-step` and the `Show all steps` accordion are allowed only when `## Quickstart` is the section immediately before them. Without a Quickstart, do not add `## Step-by-step`, do not use an Accordion, and do not write the procedure as `##` or `###` headings. Use Mintlify `<Steps>` and `<Step title="...">`. Leave the Structure A accordion template as it is for articles that have a Quickstart.
+
+After writing each code block (curl, Python SDK, Go SDK), run the checker before moving on:
 
 ```powershell
 python .agents/tools/api_check_style.py {relative/path/to/article.mdx}

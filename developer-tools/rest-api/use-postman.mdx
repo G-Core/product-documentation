@@ -1,0 +1,45 @@
+---
+title: How to use Gcore APIs with Postman
+sidebarTitle: Use Postman
+description: Send a request in Postman and reuse a response value in the next request.
+---
+
+Postman provides a graphical interface for sending Gcore API requests and inspecting responses. Authentication is configured at the collection level, a protection template is retrieved, and its `id` is reused in another request.
+
+<Steps>
+  <Step title="Store the token">
+    Create an environment named `Gcore API`. Add a variable named `token` and set the value to the [API&nbsp;token](/account-settings/api-tokens).
+
+    Select `Gcore API` in **Environment**.
+  </Step>
+  <Step title="Authorize the collection">
+    Create a collection. On its **Authorization** tab:
+
+    1. Set **Auth type** to **API Key**.
+    2. Set **Key** to `Authorization`.
+    3. Set **Value** to <code>apikey {{token}}</code>.
+    4. Set **Add to** to **Header**.
+
+    Requests configured to inherit authorization from the collection use this header.
+  </Step>
+  <Step title="Read the templates">
+    Create a request in the collection. Set **Auth type** to **Inherit auth from parent**.
+
+    Set the method to GET and enter `https://api.gcore.com/security/sifter/v3/templates` as the request URL. The operation is [List&nbsp;protection&nbsp;templates](/api-reference/ddos-protection/protection-templates/list-protection-templates).
+
+    Select **Send**.
+
+    HTTP 200 means the request succeeded.
+
+    Find the template named `Basic` in the response. In the `Gcore API` environment, create a variable named `template_id` and set its value to the template's `id`.
+  </Step>
+  <Step title="Read one template">
+    Create another request in the same collection. Set **Auth type** to **Inherit auth from parent**.
+
+    Set the method to GET and enter `https://api.gcore.com/security/sifter/v3/templates/` followed by <code>{{template_id}}</code> as the request URL. The operation is [Get&nbsp;protection&nbsp;template](/api-reference/ddos-protection/protection-templates/get-protection-template).
+
+    Select **Send**.
+
+    An HTTP 200 response confirms that the request succeeded. The response body contains the selected template.
+  </Step>
+</Steps>

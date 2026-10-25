@@ -11,6 +11,7 @@ Read this file fully, then wait for a task. Do not explore the repository until 
 - **NEVER read, open, print, grep, or copy** `access.md`, `_private/secrets/`, `.cursor/mcp.json`, or any other file whose name suggests credentials. The rest of `_private/` (planning, drafts, tickets) is the user's gitignored working area and may be read and written when a skill says so.
 - **NEVER write credentials, tokens, or passwords** into articles, PR bodies, logs, or chat output. If you see one by accident, say so in one line and do not repeat it.
 - **Do not list or search files in ways that echo secret contents** (for example `grep -r` or `cat` over the repo root). Exclude the secret files above.
+- **Follow the loaded skill as written.** Do only what that skill and the references it names say to do. Do not add a component, attribute, section, sentence, link, file, screenshot, or step the skill does not name. Do not fill a gap from memory or from another article. If the skill is silent, stop and ask. See `.cursor/rules/follow-skill-exactly.mdc`.
 
 ## How to handle any task
 
@@ -19,7 +20,7 @@ The user may write in any language. Every time:
 1. Translate the request to English internally.
 2. Match it against the Task - Skill table below.
 3. Read the matching skill file as your first tool call, before writing any response or asking any question.
-4. Follow the skill exactly. It overrides everything else in this file except the absolute rules above.
+4. Follow the skill exactly. Do only what it says. It overrides everything else in this file except the absolute rules above. Do not add anything it does not name. If it is silent, ask before doing it.
 5. After that task is finished, run the What's new triage below. It is the only second skill allowed in the same session.
 
 ## What this repo is
