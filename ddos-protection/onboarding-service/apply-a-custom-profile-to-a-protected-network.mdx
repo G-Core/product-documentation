@@ -3,21 +3,28 @@ title: "Apply a custom profile to a protected network"
 description: Apply a custom DDoS protection profile to a protected network to activate its rules and policy.
 ---
 
-After creating a custom protection profile, apply it to a protected network to activate its rules and policy.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>After creating a custom protection profile, apply it to a protected network to activate its rules and policy.</p>
 
 ## Step 1. Open protected networks
 
-Protected networks appear in a single list in the Customer Portal, regardless of protection status.
+<p>Protected networks appear in a single list in the Customer Portal, regardless of protection status.</p>
 
-1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DDoS Protection** \> **Protected networks**.
-2. Locate the protected network to update.
+<p>1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **DDoS Protection** \> **Protected networks**.</p>
+
+<p>2. Locate the protected network to update.</p>
 
 ## Step 2. Edit the protected network
 
-Open the edit view for the target network.
+<p>Open the edit view for the target network.</p>
 
-1. Next to the target network, click **…**.
-2. Select **Edit**.
+<p>1. Next to the target network, click **…**.</p>
+
+<p>2. Select **Edit**.</p>
 
 <Frame>
   ![Edit the protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-networks-edit.png)
@@ -25,16 +32,17 @@ Open the edit view for the target network.
 
 ## Step 3. Assign a protection profile
 
-Select the profile to apply from the network's edit view.
+<p>Select the profile to apply from the network's edit view.</p>
 
-1. In the **Edit protected network** view, open the **Profile** list.
-2. Select the required protection profile.
+<p>1. In the **Edit protected network** view, open the **Profile** list.</p>
 
-The list includes the default **Basic** profile and any custom profiles created for the account.
+<p>2. Select the required protection profile.</p>
+
+<p>The list includes the default **Basic** profile and any custom profiles created for the account.</p>
 
 ## Step 4. Save changes
 
-Click **Save changes** to apply the selected profile to the network. The selected profile becomes active immediately.
+<p>Click **Save changes** to apply the selected profile to the network. The selected profile becomes active immediately.</p>
 
 <Frame>
   ![Save the protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-network-save.png)
@@ -42,4 +50,104 @@ Click **Save changes** to apply the selected profile to the network. The selecte
 
 ## Verification
 
-After saving, the **Profile** field on the network shows the selected profile name. New attack events in the [events log](/ddos-protection/events-log) reflect the profile's rules and policies: traffic matching a game policy stops appearing under the generic default policy. Adjust the profile settings if the observed behavior does not match expectations.
+<p>After saving, the **Profile** field on the network shows the selected profile name. New attack events in the [events log](/ddos-protection/events-log) reflect the profile's rules and policies: traffic matching a game policy stops appearing under the generic default policy. Adjust the profile settings if the observed behavior does not match expectations.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Assign a protection profile to a protected network.</p>
+
+<Info>
+  An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Steps>
+  <Step title="Find the protected network">
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/list-protected-networks) list returns the network id.</p>
+
+  ```bash
+  curl "https://api.gcore.com/security/sifter/v3/protected_networks" \
+    -H "Authorization: APIKey $GCORE_API_KEY"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "results": [
+      {
+        "id": 30001,
+        "network": "203.0.113.0/24",
+        "status": "NEED_INFO",
+        "lifecycle_status": "APPROVED",
+        "profile": null
+      }
+    ]
+  }
+  ```
+  </Step>
+  <Step title="Assign the protection profile">
+  <p>The [protection&nbsp;profile](/api-reference/ddos-protection/protection-profiles/list-protection-profiles) list returns <code>profile_id</code>.</p>
+
+  ```bash
+  curl "https://api.gcore.com/security/sifter/v3/profiles" \
+    -H "Authorization: APIKey $GCORE_API_KEY"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "results": [
+      {
+        "id": 101,
+        "name": "my-profile-1"
+      }
+    ]
+  }
+  ```
+
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/partially-update-protected-network) update sets <code>profile_id</code>. After the update, <code>status</code> is <code>INACTIVE</code> and <code>lifecycle_status</code> stays <code>APPROVED</code>.</p>
+
+  | Parameter | Required | Description |
+  |---|---|---|
+  | `profile_id` | Yes | ID of the protection profile. |
+
+  ```bash
+  export NETWORK_ID="{NETWORK_ID}"
+  export PROFILE_ID="{PROFILE_ID}"
+  ```
+
+  ```bash
+  curl -X PATCH "https://api.gcore.com/security/sifter/v3/protected_networks/$NETWORK_ID" \
+    -H "Authorization: APIKey $GCORE_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"profile_id\": $PROFILE_ID
+    }"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "id": 30001,
+    "network": "203.0.113.0/24",
+    "status": "INACTIVE",
+    "lifecycle_status": "APPROVED",
+    "is_active": false,
+    "profile": {
+      "id": 101,
+      "name": "my-profile-1"
+    }
+  }
+  ```
+  </Step>
+</Steps>
+
+</MethodSection>
+</MethodSwitch>

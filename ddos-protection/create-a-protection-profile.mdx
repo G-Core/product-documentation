@@ -1,0 +1,364 @@
+---
+title: Create a protection profile
+sidebarTitle: Create a profile
+description: Create a universal_v6 protection profile for an address from a template and an ACL entry.
+---
+
+Create a protection profile from the `universal_v6` template and apply one ACL entry to an address. Creating the profile enables protection for that address.
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+Generate a token in the [Gcore Customer Portal](https://portal.gcore.com) and send it in the `Authorization` header of each request to `https://api.gcore.com`.
+
+Open a terminal and set the token as an environment variable before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+The Python and Go SDKs read `GCORE_API_KEY` automatically. curl sends the same value as `APIKey` in the `Authorization` header.
+
+## Quickstart
+
+The scripts read the `universal_v6` template, take the ACL list field from that response, and create the profile.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. Read the template id and the ACL list field id
+    templates = client.security.profile_templates.list()
+    template = next(item for item in templates if item.name == "universal_v6")
+    acl_field = next(field for field in template.fields if field.name == "ACL list")
+
+    # Step 2. Create the profile
+    profile = client.security.profiles.create(
+        profile_template=template.id,
+        site="EX1",
+        ip_address="203.0.113.10",
+        fields=[
+            {
+                "base_field": acl_field.id,
+                "field_value": [
+                    {
+                        "policy": "tcp-server",
+                        "sip_list": ["203.0.113.10"],
+                        "sport_list": [8080],
+                        "dport_list": [80],
+                        "proto_list": ["tcp"],
+                    }
+                ],
+            }
+        ],
+    )
+    print(profile.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/security"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. Read the template id and the ACL list field id
+        templates, err := client.Security.ProfileTemplates.List(ctx, security.ProfileTemplateListParams{})
+        if err != nil {
+            log.Fatalf("list profile templates: %v", err)
+        }
+        var templateID int64
+        var aclFieldID int64
+        for _, template := range *templates {
+            if template.Name != "universal_v6" {
+                continue
+            }
+            templateID = template.ID
+            for _, field := range template.Fields {
+                if field.Name == "ACL list" {
+                    aclFieldID = field.ID
+                }
+            }
+        }
+
+        // Step 2. Create the profile
+        profile, err := client.Security.Profiles.New(ctx, security.ProfileNewParams{
+            ProfileTemplate: templateID,
+            Site:            "EX1",
+            IPAddress:       param.NewOpt("203.0.113.10"),
+            Fields: []security.ProfileNewParamsField{{
+                BaseField: aclFieldID,
+                FieldValue: []map[string]any{{
+                    "policy":     "tcp-server",
+                    "sip_list":   []string{"203.0.113.10"},
+                    "sport_list": []int{8080},
+                    "dport_list": []int{80},
+                    "proto_list": []string{"tcp"},
+                }},
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create profile: %v", err)
+        }
+        fmt.Println(profile.ID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step uses an id from the previous response. The template id and the ACL list field id come from [profile&nbsp;templates](/api-reference/ddos-protection/templates/get-profile-templates).
+
+<Accordion title="Show all steps">
+
+### Step 1. Read the template
+
+The [profile&nbsp;templates](/api-reference/ddos-protection/templates/get-profile-templates) response lists each template with an id and a `fields` array. Use the object named `universal_v6`. In that object, use the field named `ACL list` as `base_field` on the create call.
+
+<Frame>![universal_v6 template id and the rate limiter field in the profile templates response](/images/docs/ddos-protection/create-a-protection-profile/template-response.png)</Frame>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    templates = client.security.profile_templates.list()
+    template = next(item for item in templates if item.name == "universal_v6")
+    acl_field = next(field for field in template.fields if field.name == "ACL list")
+    print(template.id, acl_field.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/security"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        templates, err := client.Security.ProfileTemplates.List(ctx, security.ProfileTemplateListParams{})
+        if err != nil {
+            log.Fatalf("list profile templates: %v", err)
+        }
+        for _, template := range *templates {
+            if template.Name != "universal_v6" {
+                continue
+            }
+            for _, field := range template.Fields {
+                if field.Name == "ACL list" {
+                    fmt.Println(template.ID, field.ID)
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/security/iaas/profile-templates" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    [
+      {
+        "id": 1001,
+        "name": "universal_v6",
+        "description": "Universal v6",
+        "fields": [
+          {
+            "id": 1401,
+            "name": "Rate limiter medium",
+            "description": "PPS ip address destination restriction for all (50-150 kilo packets per second). Default 150"
+          },
+          {
+            "id": 1402,
+            "name": "ACL list",
+            "description": "The element consisting of policy, sip, sport, dport, proto for routing traffic to policies"
+          }
+        ]
+      }
+    ]
+    ```
+  </Tab>
+</Tabs>
+
+The same template lists rate limiter fields. The field description states the allowed range in kilo packets per second and the default.
+
+`GEOIP list` accepts ISO country codes.
+
+### Step 2. Create the profile
+
+[Create&nbsp;profile](/api-reference/ddos-protection/profiles/create-profile) sends the template id, the region code, the address, and one ACL entry. The example policy is `tcp-server`, one of the names in the template field schema.
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `profile_template` | Yes | Template id from Step 1 |
+| `site` | Yes | Region code where the profile is deployed. The example uses `EX1` |
+| `ip_address` | Yes | Address for a universal template |
+| `fields[].base_field` | Yes | Id of the `ACL list` field from Step 1 |
+| `fields[].field_value[].policy` | Yes | Policy name from the template schema |
+| `fields[].field_value[].sip_list` | No | Source prefixes |
+| `fields[].field_value[].sport_list` | No | Source ports |
+| `fields[].field_value[].dport_list` | No | Destination ports |
+| `fields[].field_value[].proto_list` | No | Protocols. The example uses `tcp` |
+
+```bash
+export TEMPLATE_ID="{TEMPLATE_ID}"
+export ACL_FIELD_ID="{ACL_FIELD_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    profile = client.security.profiles.create(
+        profile_template=template.id,
+        site="EX1",
+        ip_address="203.0.113.10",
+        fields=[
+            {
+                "base_field": acl_field.id,
+                "field_value": [
+                    {
+                        "policy": "tcp-server",
+                        "sip_list": ["203.0.113.10"],
+                        "sport_list": [8080],
+                        "dport_list": [80],
+                        "proto_list": ["tcp"],
+                    }
+                ],
+            }
+        ],
+    )
+    print(profile.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    ctx := context.Background()
+    profile, err := client.Security.Profiles.New(ctx, security.ProfileNewParams{
+        ProfileTemplate: templateID,
+        Site:            "EX1",
+        IPAddress:       param.NewOpt("203.0.113.10"),
+        Fields: []security.ProfileNewParamsField{{
+            BaseField: aclFieldID,
+            FieldValue: []map[string]any{{
+                "policy":     "tcp-server",
+                "sip_list":   []string{"203.0.113.10"},
+                "sport_list": []int{8080},
+                "dport_list": []int{80},
+                "proto_list": []string{"tcp"},
+            }},
+        }},
+    })
+    if err != nil {
+        log.Fatalf("create profile: %v", err)
+    }
+    fmt.Println(profile.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/security/iaas/v2/profiles" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d @- <<EOF
+    {
+      "profile_template": $TEMPLATE_ID,
+      "site": "EX1",
+      "ip_address": "203.0.113.10",
+      "fields": [
+        {
+          "base_field": $ACL_FIELD_ID,
+          "field_value": [
+            {
+              "policy": "tcp-server",
+              "sip_list": ["203.0.113.10"],
+              "sport_list": [8080],
+              "dport_list": [80],
+              "proto_list": ["tcp"]
+            }
+          ]
+        }
+      ]
+    }
+    EOF
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "id": 20001,
+      "ip_address": "203.0.113.10",
+      "site": "EX1"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Delete the profile
+
+Deleting the profile disables protection for that address at the same time. Pass the profile id from the create response.
+
+```bash
+export PROFILE_ID="{PROFILE_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.security.profiles.delete(profile.id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    ctx := context.Background()
+    if err := client.Security.Profiles.Delete(ctx, profile.ID); err != nil {
+        log.Fatalf("delete profile: %v", err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/security/iaas/v2/profiles/$PROFILE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns HTTP 204 and no response body.</p>
+  </Tab>
+</Tabs>
+
+## Change a BGP announce
+
+The [BGP&nbsp;announces](/api-reference/ddos-protection/bgp-announces/list-bgp-announces) call enables or disables an announce that already belongs to an active profile.
