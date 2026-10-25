@@ -3,20 +3,25 @@ title: DDoS log and monitoring
 description: Review DDoS attack events from the past three months, event details, traffic graphs, source breakdowns, and attack email notifications.
 ---
 
-The events log stores DDoS attacks and related incidents from the past three months in the [Gcore Customer Portal](https://portal.gcore.com). This page covers that log and attack email notifications. Live attack statistics stay on [Traffic Analytics](/ddos-protection/traffic-analytics).
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>The events log stores DDoS attacks and related incidents from the past three months in the [Gcore Customer Portal](https://portal.gcore.com). This page covers that log and attack email notifications. Live attack statistics stay on [Traffic Analytics](/ddos-protection/traffic-analytics).</p>
 
 ## Events log
 
-Each row is one incident. Open a row for traffic graphs and a source breakdown.
+<p>Each row is one incident. Open a row for traffic graphs and a source breakdown.</p>
 
 <Steps>
   <Step title="Open the events log">
-    In the Customer Portal, navigate to **DDoS Protection** → **Reports** → **Events log**.
+    <p>In the Customer Portal, navigate to **DDoS Protection** → **Reports** → **Events log**.</p>
 
     <Frame>![DDoS Protection sidebar with Events log selected under Reports](/images/docs/ddos-protection/events-log/events-log-image1.png)</Frame>
   </Step>
   <Step title="Find an incident">
-    Use **Search by Target IP**, the date range, and the **Show all** event-type filter to narrow the list. Adjust **Entries per page** and pagination when the log spans more than one page.
+    <p>Use **Search by Target IP**, the date range, and the **Show all** event-type filter to narrow the list. Adjust **Entries per page** and pagination when the log spans more than one page.</p>
 
     <Frame>![Events log table with search, date filter, Show all, and DDoS Attack rows](/images/docs/ddos-protection/events-log/events-log-image2.png)</Frame>
   </Step>
@@ -35,15 +40,15 @@ BPS and PPS are the instantaneous rates measured at detection, after filtering h
 | Target IP | IP address that was attacked |
 | Unique Source IPs | Number of distinct source addresses in the attack |
 
-A DDoS Attack row is a detected flood. An RTBH row is a remotely triggered black hole that null-routes the target IP until the block lifts.
+<p>A DDoS Attack row is a detected flood. An RTBH row is a remotely triggered black hole that null-routes the target IP until the block lifts.</p>
 
 ## Event details
 
-Click an event to open attack details for that incident. The view combines a traffic-volume graph with breakdowns by country, IP, port, and protocol.
+<p>Click an event to open attack details for that incident. The view combines a traffic-volume graph with breakdowns by country, IP, port, and protocol.</p>
 
 <Frame>![DDoS Attack details with the Network traffic graph selected](/images/docs/ddos-protection/events-log/events-log-image3.png)</Frame>
 
-The tabs are:
+<p>The tabs are:</p>
 
 - **Network traffic** shows volume during the incident.
 - **Packet sizes** shows how packet sizes were distributed.
@@ -55,10 +60,247 @@ The tabs are:
 
 ## Attack email notifications
 
-Gcore sends attack and IP-block emails to the account's registered address, once **Protected Network notifications** is turned on in [notification&nbsp;settings](/account-settings/notifications). When the attack or the RTBH block ends, a separate email goes to the same address.
+<p>Gcore sends attack and IP-block emails to the account's registered address, once **Protected Network notifications** is turned on in [notification&nbsp;settings](/account-settings/notifications). When the attack or the RTBH block ends, a separate email goes to the same address.</p>
 
-A DDoS end email uses the subject **Security Alert: DDoS Attack Resolved** and states how long the attack lasted. An RTBH end email states that the null-route was lifted and how long the block lasted.
+<p>A DDoS end email uses the subject **Security Alert: DDoS Attack Resolved** and states how long the attack lasted. An RTBH end email states that the null-route was lifted and how long the block lasted.</p>
 
-A follow-up attack that starts while the IP is still null-routed does not generate another start email, so a quiet inbox during a prolonged block does not mean the attack stopped.
+<p>A follow-up attack that starts while the IP is still null-routed does not generate another start email, so a quiet inbox during a prolonged block does not mean the attack stopped.</p>
 
-If an expected alert is missing, check the spam folder first, then confirm the registered address in the Customer Portal.
+<p>If an expected alert is missing, check the spam folder first, then confirm the registered address in the Customer Portal.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>List DDoS attack events and read one event.</p>
+
+<Info>
+  An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Quickstart
+
+<p>The scripts list event logs and read the first event.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from gcore import Gcore
+
+    client = Gcore()
+
+    page = client.security.events.list(limit=1, ordering="-attack_start_time")
+    event = client.security.events.get(page.results[0].id)
+    print(event.id, event.alert_type)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/security"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        page, err := client.Security.Events.List(ctx, security.EventListParams{
+            Limit:    param.NewOpt(int64(1)),
+            Ordering: security.EventListParamsOrderingMinusAttackStartTime,
+        })
+        if err != nil {
+            log.Fatalf("list event logs: %v", err)
+        }
+
+        event, err := client.Security.Events.Get(ctx, page.Results[0].ID)
+        if err != nil {
+            log.Fatalf("get event log: %v", err)
+        }
+        fmt.Println(event.ID, event.AlertType)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Steps>
+  <Step title="List event logs">
+    <p>The [event&nbsp;logs](/api-reference/ddos-protection/event-logs/event-logs-clients-view) list returns DDoS Attack (<code>ddos_alert</code>) and RTBH (<code>rtbh_alert</code>) rows.</p>
+
+    | Parameter | Required | Description |
+    | --- | --- | --- |
+    | `date_from` | No | Start of the window, ISO 8601 |
+    | `date_to` | No | End of the window, ISO 8601 |
+    | `alert_type` | No | `ddos_alert` or `rtbh_alert` |
+    | `targeted_ip_addresses` | No | Target IP address |
+    | `ordering` | No | Sort field. A leading `-` sorts descending |
+    | `limit` | No | Page size, from 1 to 500 |
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        from gcore import Gcore
+
+        client = Gcore()
+
+        page = client.security.events.list(limit=1, ordering="-attack_start_time")
+        for event in page.results:
+            print(event.id, event.alert_type)
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        package main
+
+        import (
+            "context"
+            "fmt"
+            "log"
+
+            gcore "github.com/G-Core/gcore-go"
+            "github.com/G-Core/gcore-go/packages/param"
+            "github.com/G-Core/gcore-go/security"
+        )
+
+        func main() {
+            client := gcore.NewClient()
+            page, err := client.Security.Events.List(context.Background(), security.EventListParams{
+                Limit:    param.NewOpt(int64(1)),
+                Ordering: security.EventListParamsOrderingMinusAttackStartTime,
+            })
+            if err != nil {
+                log.Fatalf("list event logs: %v", err)
+            }
+            for _, event := range page.Results {
+                fmt.Println(event.ID, event.AlertType)
+            }
+        }
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        curl "https://api.gcore.com/security/notifier/v1/event_logs?limit=1&ordering=-attack_start_time" \
+          -H "Authorization: APIKey $GCORE_API_KEY"
+        ```
+
+        <p>The API returns:</p>
+
+        ```json
+        {
+          "count": 1,
+          "limit": 1,
+          "offset": 0,
+          "results": [
+            {
+              "id": "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+              "alert_type": "ddos_alert",
+              "client_id": 12345,
+              "notification_type": null,
+              "attack_start_time": "2026-08-15T12:00:00Z",
+              "attack_power_bps": 1500000,
+              "attack_power_pps": 4200,
+              "number_of_ip_involved_in_attack": 18,
+              "targeted_ip_addresses": "203.0.113.10"
+            }
+          ]
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Read one event">
+    <p>Pass an id from the list to the [event&nbsp;log](/api-reference/ddos-protection/event-logs/event-log-detail-view). The response adds the traffic, packet-size, country, IP, port, and protocol arrays.</p>
+
+    <Tabs>
+      <Tab title="Python SDK">
+        ```python
+        from gcore import Gcore
+
+        client = Gcore()
+
+        page = client.security.events.list(limit=1, ordering="-attack_start_time")
+        event = client.security.events.get(page.results[0].id)
+        print(event.id, event.alert_type)
+        ```
+      </Tab>
+      <Tab title="Go SDK">
+        ```go
+        package main
+
+        import (
+            "context"
+            "fmt"
+            "log"
+
+            gcore "github.com/G-Core/gcore-go"
+            "github.com/G-Core/gcore-go/packages/param"
+            "github.com/G-Core/gcore-go/security"
+        )
+
+        func main() {
+            client := gcore.NewClient()
+            ctx := context.Background()
+
+            page, err := client.Security.Events.List(ctx, security.EventListParams{
+                Limit:    param.NewOpt(int64(1)),
+                Ordering: security.EventListParamsOrderingMinusAttackStartTime,
+            })
+            if err != nil {
+                log.Fatalf("list event logs: %v", err)
+            }
+
+            event, err := client.Security.Events.Get(ctx, page.Results[0].ID)
+            if err != nil {
+                log.Fatalf("get event log: %v", err)
+            }
+            fmt.Println(event.ID, event.AlertType)
+        }
+        ```
+      </Tab>
+      <Tab title="curl">
+        ```bash
+        export EVENT_LOG_ID="{EVENT_LOG_ID}"
+
+        curl "https://api.gcore.com/security/notifier/v1/event_logs/$EVENT_LOG_ID" \
+          -H "Authorization: APIKey $GCORE_API_KEY"
+        ```
+
+        <p>The API returns:</p>
+
+        ```json
+        {
+          "id": "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+          "alert_type": "ddos_alert",
+          "client_id": 12345,
+          "notification_type": null,
+          "attack_start_time": "2026-08-15T12:00:00Z",
+          "attack_power_bps": 1500000,
+          "attack_power_pps": 4200,
+          "number_of_ip_involved_in_attack": 18,
+          "targeted_ip_addresses": "203.0.113.10",
+          "attack_traffic": [],
+          "attack_packet_sizes": [],
+          "attack_top_source_countries": [],
+          "attack_top_source_ips": [],
+          "attack_top_source_ports": [],
+          "attack_top_destination_ports": [],
+          "attack_top_protocols": []
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+</MethodSection>
+</MethodSwitch>

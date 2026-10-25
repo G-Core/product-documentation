@@ -3,36 +3,149 @@ title: "Network configuration"
 description: Configure an approved protected network in Gcore DDoS Protection by setting the GRE endpoint IP and protection profile.
 ---
 
-Network configuration is the final portal step in the setup process, after [NOC approval](/ddos-protection/onboarding-service/review-and-approval). Set the GRE endpoint IP and a protection profile for the approved network.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Filtered traffic reaches that endpoint only once the [GRE tunnel](/ddos-protection/onboarding-service/gre-tunneling/set-a-gre-tunnel-with-gcore) is configured on the local router, so complete that router-side setup along with this portal step.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>Network configuration is the final portal step in the setup process, after [NOC approval](/ddos-protection/onboarding-service/review-and-approval). Set the GRE endpoint IP and a protection profile for the approved network.</p>
+
+<p>Filtered traffic reaches that endpoint only once the [GRE tunnel](/ddos-protection/onboarding-service/gre-tunneling/set-a-gre-tunnel-with-gcore) is configured on the local router, so complete that router-side setup along with this portal step.</p>
 
 ## Configuration steps
 
-Complete the following steps in the [Gcore Customer Portal](https://portal.gcore.com) to configure an approved network.
+<p>Complete the following steps in the [Gcore Customer Portal](https://portal.gcore.com) to configure an approved network.</p>
 
-1. Navigate to **DDoS Protection** \> **Protected networks**.
-2. Locate the approved network.
-   - Find the network with the **Inactive: need info** status.
-   - Click the **…** (three dots) menu next to the network and select **Edit**.
+<p>1. Navigate to **DDoS Protection** \> **Protected networks**.</p>
 
-   <Frame>
-     ![Inactive network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/inactive-need-info.png)
-   </Frame>
-3. In the **Edit protected network** view, configure the following fields:
-   - **GRE endpoint**
-     - Enter the Generic Routing Encapsulation (GRE) endpoint IP address on the local router. This is the address Gcore uses to forward filtered traffic through the tunnel.
-     - Example: `203.0.113.1`.
-   - **Protection profile**
-     - Select a protection profile from the dropdown list. Create [custom profiles](/ddos-protection/onboarding-service/custom-protection-profile-configuration) later if needed.
-4. Review the settings and click **Save changes** to apply them.
+<p>2. Locate the approved network.</p>
 
-   <Note>
-     The default **Basic** profile is a network filtering profile, distinct from the free Basic protection mode described in [About&nbsp;DDoS&nbsp;Protection](/ddos-protection/about-ddos-protection). Changes to the protection profile take effect immediately and do not require a new network submission or NOC review.
-   </Note>
+- Find the network with the **Inactive: need info** status.
+- Click the **…** (three dots) menu next to the network and select **Edit**.
 
-   <Frame>
-     ![Saved network configuration](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-network-saving.png)
-   </Frame>
+<Frame>
+  ![Inactive network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/inactive-need-info.png)
+</Frame>
 
-Once the network is configured, check attack volume and incidents in the [events log](/ddos-protection/events-log) and adjust the protection profile as needed.
+<p>3. In the **Edit protected network** view, configure the following fields:</p>
+
+- **GRE endpoint**
+  - Enter the Generic Routing Encapsulation (GRE) endpoint IP address on the local router. This is the address Gcore uses to forward filtered traffic through the tunnel.
+  - Example: `203.0.113.1`.
+- **Protection profile**
+  - Select a protection profile from the dropdown list. Create [custom profiles](/ddos-protection/onboarding-service/custom-protection-profile-configuration) later if needed.
+
+<p>4. Review the settings and click **Save changes** to apply them.</p>
+
+<Note>
+  The default **Basic** profile is a network filtering profile, distinct from the free Basic protection mode described in [How&nbsp;protection&nbsp;works](/ddos-protection/about-ddos-protection). Changes to the protection profile take effect immediately and do not require a new network submission or NOC review.
+</Note>
+
+<Frame>
+  ![Saved network configuration](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-network-saving.png)
+</Frame>
+
+<p>Once the network is configured, check attack volume and incidents in the [events log](/ddos-protection/events-log) and adjust the protection profile as needed.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Set the GRE endpoint and a protection profile on an approved network.</p>
+
+<Info>
+  An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Steps>
+  <Step title="Find the approved network">
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/list-protected-networks) list returns the approved network. A network that still needs configuration has <code>status</code> <code>NEED_INFO</code> and <code>lifecycle_status</code> <code>APPROVED</code>.</p>
+
+  ```bash
+  curl "https://api.gcore.com/security/sifter/v3/protected_networks" \
+    -H "Authorization: APIKey $GCORE_API_KEY"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "results": [
+      {
+        "id": 30001,
+        "network": "203.0.113.0/24",
+        "status": "NEED_INFO",
+        "lifecycle_status": "APPROVED",
+        "gre_endpoint": null,
+        "profile": null
+      }
+    ]
+  }
+  ```
+  </Step>
+  <Step title="Set the GRE endpoint and the protection profile">
+  <p>The [protection&nbsp;profile](/api-reference/ddos-protection/protection-profiles/list-protection-profiles) named Basic provides <code>profile_id</code>.</p>
+
+  ```bash
+  curl "https://api.gcore.com/security/sifter/v3/profiles?name=Basic" \
+    -H "Authorization: APIKey $GCORE_API_KEY"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "results": [
+      {
+        "id": 101,
+        "name": "Basic"
+      }
+    ]
+  }
+  ```
+
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/partially-update-protected-network) update sets <code>gre_endpoint</code> and <code>profile_id</code>. After the update, <code>status</code> is <code>INACTIVE</code> and <code>lifecycle_status</code> stays <code>APPROVED</code>.</p>
+
+  | Parameter | Required | Description |
+  |---|---|---|
+  | `gre_endpoint` | Yes | Global IPv4 address of the local router. |
+  | `profile_id` | Yes | ID of the protection profile. |
+
+  ```bash
+  export NETWORK_ID="{NETWORK_ID}"
+  export PROFILE_ID="{PROFILE_ID}"
+  ```
+
+  ```bash
+  curl -X PATCH "https://api.gcore.com/security/sifter/v3/protected_networks/$NETWORK_ID" \
+    -H "Authorization: APIKey $GCORE_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"gre_endpoint\": \"203.0.113.1\",
+      \"profile_id\": $PROFILE_ID
+    }"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "id": 30001,
+    "network": "203.0.113.0/24",
+    "gre_endpoint": "203.0.113.1",
+    "status": "INACTIVE",
+    "lifecycle_status": "APPROVED",
+    "profile": {
+      "id": 101,
+      "name": "Basic"
+    }
+  }
+  ```
+  </Step>
+</Steps>
+
+</MethodSection>
+</MethodSwitch>
