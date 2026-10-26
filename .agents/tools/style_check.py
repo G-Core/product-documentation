@@ -117,7 +117,8 @@ def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
         (r"\bclick on\b", "click on — use 'click'"),
         (r"\bgo to\b", "go to — use 'navigate to'"),
         (r"\btype in\b", "type in — use 'enter'"),
-        (r"\bchoose\b", "choose — use 'select'"),
+        # Only the UI action is flagged. "Choose between two types" is a decision in prose and stays.
+        (r"\bchoose\s+(?:the\s+|an?\s+)?(?:\*\*|[\"“`])", "choose before an interface label — use 'select'"),
         (r"\blog\s+into\b", "log into — use 'log in to' (three words, not two)"),
         (r"\bno spend\b", "draft note — delete it. State the current product, not an empty account"),
         (r"\bno expenses\b", "draft note — delete it. State the current product, not an empty account"),

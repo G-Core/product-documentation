@@ -956,11 +956,13 @@ Full screenshot capture rules (the `article-screenshot` skill: area, crop, perso
 | Use this | Not this |
 |----------|----------|
 | click | click on |
-| select | choose |
+| select | choose, when the reader picks an item in the interface: "Select **Templates**" |
 | enter | type in |
 | navigate to | go to |
 | API key | api key, API Key |
 | email address | email, e-mail |
+
+"Choose" is correct when the reader decides between options in prose: "Choose between two application types". The rule above is only for actions in the interface.
 
 ### Inclusive language
 
