@@ -101,12 +101,12 @@ If the tool is not found — tell the user:
 > ```
 > If `pip` is not available, install Python first: https://www.python.org/downloads/
 >
-> **Step 2 — Get a personal access token:**
-> 1. Go to https://jira.gcore.lu
-> 2. Click your profile avatar (top right) → **Profile**
-> 3. Navigate to **Personal Access Tokens**
-> 4. Click **Create token**, give it a name
-> 5. Copy the token — it is shown only once
+> **Step 2 — Get an API token:**
+> 1. Open https://id.atlassian.com/manage-profile/security/api-tokens
+> 2. Click **Create API token**, give it a name
+> 3. Copy the token — it is shown only once
+>
+> The Jira site is https://gcore.atlassian.net. The documentation scripts read `JIRA_CLOUD_URL`, `JIRA_CLOUD_EMAIL`, and `JIRA_CLOUD_API_TOKEN`.
 >
 > **Step 3 — Add to Claude Desktop config:**
 >
@@ -117,9 +117,9 @@ If the tool is not found — tell the user:
 >   "command": "python",
 >   "args": ["-c", "from jira_mcp_server.server import main; main()"],
 >   "env": {
->     "JIRA_MCP_URL": "https://jira.gcore.lu",
->     "JIRA_MCP_TOKEN": "<paste your token here>",
->     "JIRA_MCP_VERIFY_SSL": "false"
+>     "JIRA_MCP_URL": "https://gcore.atlassian.net",
+>     "JIRA_MCP_USERNAME": "<account email>",
+>     "JIRA_MCP_TOKEN": "<paste your API token here>"
 >   }
 > }
 > ```

@@ -9,28 +9,19 @@ Idempotent: if the ticket is already In Review or Blocked, no transitions are ap
 A comment is still posted (with the preview URL) so the reviewer sees the latest link.
 """
 import argparse
-import json
 import logging
-import os
-import re
 import sys
-import urllib.request
 
-from create_jira_ticket import add_comment, transition_issue
+from create_jira_ticket import add_comment, jira_request, transition_issue
 
 log = logging.getLogger(__name__)
-JIRA_BASE = "https://jira.gcore.lu"
 
 
 def _get_ticket_status(ticket: str) -> str:
     """Return the current status name of a Jira ticket (e.g. 'In Review', 'To Do')."""
-    from dotenv import load_dotenv
-    load_dotenv()
-    api_key = os.environ.get("JIRA_MCP_TOKEN", os.environ.get("JIRA_API_KEY", ""))
-    url = f"{JIRA_BASE}/rest/api/2/issue/{ticket}?fields=status"
-    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"})
-    with urllib.request.urlopen(req) as resp:
-        data = json.loads(resp.read())
+    data = jira_request("GET", f"/rest/api/2/issue/{ticket}?fields=status")
+    if not isinstance(data, dict):
+        raise RuntimeError("Jira did not return an issue")
     return data["fields"]["status"]["name"]
 
 

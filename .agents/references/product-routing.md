@@ -46,31 +46,31 @@ Use the ORG_UNIT as the `--org-unit` argument of `.agents/tools/create_jira_tick
 
 | Article path prefix | ORG_UNIT | ORG_UNIT label |
 |---------------------|----------|----------------|
-| `hosting/` | 16036 | Cloud |
-| `cloud/` | 16036 | Cloud |
-| `storage/` | 16036 | Cloud |
-| `api-reference/` | 16036 | Cloud |
-| `cdn/` | 16037 | Edge Network |
-| `streaming/` | 16037 | Edge Network |
-| `dns/` | 16037 | Edge Network |
-| `fastedge/` | 16037 | Edge Network |
-| `waap/` | 16035 | Security |
-| `ddos-protection/` | 16035 | Security |
-| `edge-proxy/` | 16035 | Security |
-| `edge-ai/` | 16034 | AI |
-| `account-settings/` | 16038 | Platform/Web |
-| `developer-tools/` | 16038 | Platform/Web |
-| `gclaw/` | 16038 | Platform/Web |
-| `colocation/` | 16038 | Platform/Web |
-| Repository tooling: `.claude/`, `.agents/`, `.cursor/`, `.github/`, `scripts/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CONTRIBUTING.md` | 16038 | Platform/Web |
+| `hosting/` | 11815 | Cloud |
+| `cloud/` | 11815 | Cloud |
+| `storage/` | 11815 | Cloud |
+| `api-reference/` | 11815 | Cloud |
+| `cdn/` | 11816 | Edge Network |
+| `streaming/` | 11816 | Edge Network |
+| `dns/` | 11816 | Edge Network |
+| `fastedge/` | 11816 | Edge Network |
+| `waap/` | 11814 | Security |
+| `ddos-protection/` | 11814 | Security |
+| `edge-proxy/` | 11814 | Security |
+| `edge-ai/` | 11813 | AI |
+| `account-settings/` | 11817 | Platform/Web |
+| `developer-tools/` | 11817 | Platform/Web |
+| `gclaw/` | 11817 | Platform/Web |
+| `colocation/` | 11817 | Platform/Web |
+| Repository tooling: `.claude/`, `.agents/`, `.cursor/`, `.github/`, `scripts/`, `AGENTS.md`, `CLAUDE.md`, `README.md`, `CONTRIBUTING.md` | 11817 | Platform/Web |
 
-The five Org Unit options of the Jira field `Org Unit` (`customfield_14411`): 16034 AI, 16035 Security, 16036 Cloud, 16037 Edge Network, 16038 Platform/Web. Issue type `12504` is `Documentation`.
+The five Org Unit options of the Jira field `Org Unit` (`customfield_10675`) on https://gcore.atlassian.net: 11813 AI, 11814 Security, 11815 Cloud, 11816 Edge Network, 11817 Platform/Web. Issue type `10330` is `Documentation`.
 
-**Assignee:** always `sergey.kostichev@gcore.lu`. It is the script default, so do not pass `--assignee`.
+**Assignee:** always `sergey.kostichev@gcore.com`. It is the script default, so do not pass `--assignee`. The script resolves that email to an Atlassian account id.
 
 **Epic:** do not set an epic and do not add a "relates to" link. Epics are temporary: each one belongs to a period of work, and an old epic put into a new ticket is wrong. Pass `--epic` or `--link-to` only when the user names an epic or an issue for the current batch.
 
-**Issue type:** `12504` (the script default).
+**Issue type:** `10330` (the script default).
 
 ---
 
