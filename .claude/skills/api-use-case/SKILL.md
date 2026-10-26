@@ -67,13 +67,19 @@ Follow `.agents/references/api-live-testing.md`, "Finding the API endpoints" and
 
 ## Phase 4 — Create the Jira ticket and feature branch
 
-**Mandatory. Do it immediately after live testing and endpoint mapping, before writing any MDX.** Do not wait for the user to ask. Do not write the API tab on `main`. Follow `.agents/references/ticket-and-branch.md`. In the ticket description include the article path, "Add API tab", the endpoints that were live-tested, and Structure A or B.
+**Mandatory when this task has no branch yet. Do it immediately after live testing and endpoint mapping, before writing any MDX.** Do not wait for the user to ask. Do not write the API tab on `main`. Follow `.agents/references/ticket-and-branch.md`. If this task already has a branch, stay on it and do not create another ticket. In the ticket description include the article path, "Add API tab", the endpoints that were live-tested, and Structure A or B.
 
 ## Phase 5 — Write the API section
 
 If `git branch --show-current` is `main`, Phase 4 was skipped. Stop writing, create the ticket and branch first.
 
-Write the section using the template for the chosen structure in `.agents/references/api-tab-structures.md`. After writing each code block (curl, Python SDK, Go SDK), run the checker before moving on:
+Write the section using the template for the chosen structure in `.agents/references/api-tab-structures.md`.
+
+Examples use placeholder addresses from `203.0.113.0/24` and placeholder IDs. Do not copy live IP addresses, network IDs, profile IDs, template IDs, document IDs, or site codes from a test account into the article.
+
+`## Step-by-step` and the `Show all steps` accordion are allowed only when `## Quickstart` is the section immediately before them. Without a Quickstart, do not add `## Step-by-step`, do not use an Accordion, and do not write the procedure as `##` or `###` headings. Use Mintlify `<Steps>` and `<Step title="...">`. Leave the Structure A accordion template as it is for articles that have a Quickstart.
+
+After writing each code block (curl, Python SDK, Go SDK), run the checker before moving on:
 
 ```powershell
 python .agents/tools/api_check_style.py {relative/path/to/article.mdx}

@@ -103,7 +103,7 @@ Also create a todo list with every phase set to `pending` and advance it in step
 
 Work on exactly one phase and finish it completely. Read the phase file only when you reach that phase. Do not read ahead and do not plan the next phase while executing the current one. When a phase is done, report what was completed and immediately start the next phase without asking for permission.
 
-**Exception — after Phase 10:** stop completely. Do NOT move to the next article. Wait for explicit user instruction.
+**Exception — after Phase 10:** that article is done. If the user's task names more articles, continue with the next one on the same branch. Do not create a new ticket or branch. If the task was this article only, stop and wait.
 
 ## Phases
 
@@ -144,7 +144,7 @@ Do not read other articles for context unless they are directly linked from the 
 - Never commit or push until the user says `коммить`, `коммит`, `commit`, `пуш`, `пушь`, `push`, `закоммить`, or `запушь`, except the commit on the current branch immediately before leaving it. Never stash that work to switch. Push still waits for an explicit request.
 - Never touch `<MethodSection id="api">`: API sections are a separate update cycle (`api-audit`).
 - Never rename article files, change slugs, or edit `docs.json` without explicit user confirmation.
-- Never read `.env`, `access.md`, or `_private/secrets/`. The agent never handles portal credentials: the user logs in.
+- Load API tokens from `.env` with dotenv. Never print them. Never read `access.md` or `_private/secrets/`. The agent never handles portal credentials: the user logs in.
 - Never change the browser viewport, window size, or zoom.
 - Apply only fixes from the confirmed findings. Note other issues at the end; do not fix them silently.
 - Never use scripts for text replacements in MDX. Use targeted edits, one replacement at a time.

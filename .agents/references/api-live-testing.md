@@ -14,7 +14,7 @@ Used by the `api-use-case` and `api-audit` skills.
 
 Always test against the live API. Do not ask the user. Do not use spec-only mode.
 
-- The API token comes from the `GCORE_API_KEY` environment variable, which the user sets before the session. Never read `.env` or `access.md`. If `$env:GCORE_API_KEY` is empty, stop and ask the user to set it.
+- The API token comes from `GCORE_API_KEY` in the environment or in `.env`, loaded with dotenv. Never print it. If it is missing from both, stop and ask the user.
 - Use Luxembourg-3 (`region_id: 148`) — `GCORE_CLOUD_REGION_ID`. Kubernetes uses this region. Do not override it.
 - Container Registry and CaaS only: Luxembourg-2 (`region_id: 76`). Those products are not in Luxembourg-3; the articles state this.
 - Managed PostgreSQL only: Frankfurt-2 (`region_id: 180`). The service is not in Luxembourg-3; the article sample host is frankfurt-2. No other region overrides.

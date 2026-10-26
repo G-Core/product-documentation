@@ -3,42 +3,132 @@ title: 'Network submission'
 description: Submit a network for DDoS Protection by providing CIDR details, AS number, and a Letter of Authorization, then track NOC approval status.
 ---
 
-Network submission is the second step in the [setup process](/ddos-protection/onboarding-service/service-activation), after [plan activation](/ddos-protection/onboarding-service/plan-activation). Submit the network to protect by providing its network details and a Letter of Authorization (LOA) document.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+<p>Network submission is the second step in the DDoS Protection onboarding process. In this step, you provide your network prefix, AS number, and a Letter of Authorization (LOA) to prove ownership of the network.</p>
 
 ## Submission steps
 
-Complete the following steps in the [Gcore Customer Portal](https://portal.gcore.com) to submit a network for protection.
+<p>Complete the following steps to submit your network for protection:</p>
 
-1. In the **DDoS Protection** dashboard, click **Add protected network**.
-   - This opens the network submission form.
+<p>1. In the **DDoS Protection** dashboard, click **Add protected network**.</p>
 
-   <Frame>
-     ![Protected network form](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-networks.png)
-   </Frame>
-2. Complete the required fields:
+- This opens the network submission form.
 
-   | Field | Value |
-   | --- | --- |
-   | Network (CIDR format) | Network in CIDR notation. Accepted prefix length: `/8` to `/24` (examples: `10.0.0.0/8`, `172.16.0.0/12`, `198.51.100.0/24`) |
-   | AS Number | Autonomous System (AS) number. Valid ranges: `1-65534` (16-bit ASNs) and `131072-4294967294` (32-bit ASNs); the gap between them is reserved for private and documentation use (examples: `64512`, `200000`) |
-   | Letter of Authorization (LOA) | PDF confirming authorization to route and protect the submitted network, up to 10 MB |
-3. Submit the network.
-   - Review the entered information.
-   - Click **Add protected network** to submit the request.
-   - The portal redirects to the **Protected networks** page.
+<Frame>
+  ![Protected network form](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/protected-networks.png)
+</Frame>
 
-   <Frame>
-     ![Add protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protected-network.png)
-   </Frame>
-4. Check the submission status.
-   - The newly submitted network appears in the list with the **Pending** status until the network operations center (NOC) team reviews it. Once approved, the status changes to **Inactive: need info**, which unlocks [network configuration](/ddos-protection/onboarding-service/network-configuration).
+<p>2. Complete the required fields:</p>
 
-   <Note>
-     The portal displays: "Your request is pending approval by our NOC team. We will notify you by email once the network is approved and ready for configuration."
-   </Note>
+| Field | Value |
+|---|---|
+| **Network** | Your network prefix in CIDR notation (for example, `10.0.0.0/8`, `192.0.2.0/24`, `198.51.100.0/24`). The prefix length must be between `/8` and `/24`. |
+| **AS number** | Your Autonomous System number. Valid ranges: 1-65534 or 131072-4294967294. Examples: `64512`, `200000`. |
+| **Letter of Authorization (LOA)** | Upload a signed LOA document in PDF format (up to 10 MB). The LOA must be issued by the network owner and authorize Gcore to announce the prefix. |
 
-   <Frame>
-     ![Add protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/pending-approval.png)
-   </Frame>
+<p>3. Submit the network.</p>
 
-Continue with [review and approval](/ddos-protection/onboarding-service/review-and-approval) to track the NOC decision.
+- Review the entered details.
+- Click **Add protected network**.
+- The portal redirects to the protected networks list.
+
+<Frame>
+  ![Add protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/add-protected-network.png)
+</Frame>
+
+<p>4. Check the submission status.</p>
+
+- The newly submitted network appears in the list with the status **Pending**.
+- The status remains **Pending** until the Gcore Network Operations Center (NOC) reviews the submission.
+
+<Note>
+  The portal displays: "Your request has been sent. Our team will contact you via email."
+</Note>
+
+<Frame>
+  ![Add protected network](/images/docs/ddos-protection/onboarding-service/custom-protection-profile-configuration/pending-approval.png)
+</Frame>
+
+<p>Continue with [review and approval](/ddos-protection/onboarding-service/review-and-approval) to track the NOC decision.</p>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Submit a network prefix and a Letter of Authorization, then read the review status.</p>
+
+<Info>
+  An [API&nbsp;token](/account-settings/api-tokens) is required.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Steps>
+  <Step title="Submit the network">
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/create-protected-network) request submits the prefix, the AS number, and the LOA file.</p>
+
+  | Parameter | Required | Description |
+  |---|---|---|
+  | `network` | Yes | IPv4 prefix in CIDR notation. |
+  | `as_number` | Yes | Autonomous System number. |
+  | `files` | Yes | LOA PDF. |
+
+  ```bash
+  curl -X POST "https://api.gcore.com/security/sifter/v3/protected_networks" \
+    -H "Authorization: APIKey $GCORE_API_KEY" \
+    -F "network=203.0.113.0/24" \
+    -F "as_number=64512" \
+    -F "files=@loa.pdf;type=application/pdf"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "id": 10001,
+    "network": "203.0.113.0/24",
+    "as_number": 64512,
+    "status": "PENDING",
+    "lifecycle_status": "PENDING",
+    "documents": [
+      {
+        "id": 1001,
+        "name": "loa.pdf"
+      }
+    ]
+  }
+  ```
+  </Step>
+  <Step title="Read the submission status">
+  ```bash
+  export NETWORK_ID="{NETWORK_ID}"
+  ```
+
+  <p>The [protected&nbsp;network](/api-reference/ddos-protection/protected-networks/get-protected-network) from step 1 reports `status` and `lifecycle_status`. Immediately after creation, both are `PENDING`.</p>
+
+  ```bash
+  curl "https://api.gcore.com/security/sifter/v3/protected_networks/$NETWORK_ID" \
+    -H "Authorization: APIKey $GCORE_API_KEY"
+  ```
+
+  <p>The API returns:</p>
+
+  ```json
+  {
+    "id": 10001,
+    "network": "203.0.113.0/24",
+    "as_number": 64512,
+    "status": "PENDING",
+    "lifecycle_status": "PENDING"
+  }
+  ```
+  </Step>
+</Steps>
+
+</MethodSection>
+</MethodSwitch>

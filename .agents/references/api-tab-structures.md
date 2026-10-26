@@ -22,6 +22,10 @@ Read the Portal article and identify the flow type:
 "Create" / "Deploy" articles are almost always sequential. "Manage" / "Configure" articles are almost always independent.
 Test: "Can the user do Step 3 without Steps 1 and 2?" If yes → Structure B.
 
+**Step-by-step only after a Quickstart.** `## Step-by-step` and the `Show all steps` accordion are allowed only when `## Quickstart` is the section immediately before them. Without a Quickstart, do not add `## Step-by-step`, do not use an Accordion, and do not write the procedure as `##` or `###` headings. Use Mintlify `<Steps>` and `<Step title="...">` (see `mdx-rules.md`, "Steps component"). The accordion template below stays for articles that have a Quickstart. Do not replace it.
+
+Examples use placeholder addresses from `203.0.113.0/24` and placeholder IDs. Do not copy live IP addresses, network IDs, profile IDs, template IDs, document IDs, or site codes from a test account into the article.
+
 ---
 
 ## Structure A — sequential creation flow

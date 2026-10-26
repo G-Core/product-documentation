@@ -4,12 +4,14 @@ Read this file fully, then wait for a task. Do not explore the repository until 
 
 ## Absolute rules - no exceptions
 
-- **ONE article per session.** Stop after completing one article. Wait for explicit approval before starting the next.
+- **ONE task, one branch.** A task is the request the user gave. Several articles in that request stay on the same Jira ticket and the same branch. Do not open a new ticket, branch, or PR for the next article of the same task. Finish the task, then stop. Wait for a different request before starting a different task.
 - **NEVER commit, push, create a PR, force-push, or amend** unless the user explicitly says to. Creating the Jira ticket and its same-named branch is part of the skill workflows and is allowed when a skill says so. One commit does not need a separate request: before leaving a branch that has uncommitted work, commit it on that branch. Never stash it to switch. Push and PRs still require an explicit request. See `.cursor/rules/no-git-without-permission.mdc`.
 - **NEVER push to `main`.** CI actively polices this (see CI section).
-- **NEVER read, open, print, grep, or copy secret files**: `.env`, `.env.*`, `access.md`, `_private/secrets/`, `.cursor/mcp.json`, or any file whose name suggests credentials. The rest of `_private/` (planning, drafts, tickets) is the user's gitignored working area and may be read and written when a skill says so. This applies to you and to every subagent you launch. It holds even when the task seems to need them and even if you plan to mask the values: masking can fail, and anything you read is sent to the model provider. If a task needs a credential, ask the user to provide it in the way they choose.
+- **Load credentials from `.env` with dotenv when a command needs them.** Reading `.env` is allowed. Never print, quote, or copy a credential, token, or password into articles, PR bodies, logs, tool output, or chat. If a command would print one, redact it before the output is shown. Do not commit `.env`.
+- **NEVER read, open, print, grep, or copy** `access.md`, `_private/secrets/`, `.cursor/mcp.json`, or any other file whose name suggests credentials. The rest of `_private/` (planning, drafts, tickets) is the user's gitignored working area and may be read and written when a skill says so.
 - **NEVER write credentials, tokens, or passwords** into articles, PR bodies, logs, or chat output. If you see one by accident, say so in one line and do not repeat it.
 - **Do not list or search files in ways that echo secret contents** (for example `grep -r` or `cat` over the repo root). Exclude the secret files above.
+- **Follow the loaded skill as written.** Do only what that skill and the references it names say to do. Do not add a component, attribute, section, sentence, link, file, screenshot, or step the skill does not name. Do not fill a gap from memory or from another article. If the skill is silent, stop and ask. See `.cursor/rules/follow-skill-exactly.mdc`.
 
 ## How to handle any task
 
@@ -18,7 +20,7 @@ The user may write in any language. Every time:
 1. Translate the request to English internally.
 2. Match it against the Task - Skill table below.
 3. Read the matching skill file as your first tool call, before writing any response or asking any question.
-4. Follow the skill exactly. It overrides everything else in this file except the absolute rules above.
+4. Follow the skill exactly. Do only what it says. It overrides everything else in this file except the absolute rules above. Do not add anything it does not name. If it is silent, ask before doing it.
 5. After that task is finished, run the What's new triage below. It is the only second skill allowed in the same session.
 
 ## What this repo is
@@ -158,7 +160,7 @@ There are three branch name formats: the Jira ticket key (`DOC-2405`) for work t
 ```powershell
 .\.agents\tools\create_branch.ps1 DOC-2405
 ```
-Never run `git checkout -b` by hand. If a skill already created the branch, stay on it. Before the helper checks out `main`, commit any uncommitted work on the current branch. Never stash it to switch. See `.cursor/rules/git-branch-naming.mdc`.
+Never run `git checkout -b` by hand. If this task already has a branch, stay on it. Do not create another branch because the task has another article. Before the helper checks out `main`, commit any uncommitted work on the current branch. Never stash it to switch. See `.cursor/rules/git-branch-naming.mdc`.
 
 **10. Writing content without reading the full product section first - creates duplicate content**
 Before writing or expanding any article, read ALL sibling articles in the same product folder and check `docs.json` for the nav group structure. Only then can you determine what belongs in the target article and what is already covered elsewhere.

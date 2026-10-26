@@ -24,7 +24,7 @@ If in doubt about a resource name — check the [Terraform Registry](https://reg
 
 1. This SKILL.md
 2. The existing article specified by the user
-3. `cloud/manage-cloud-via-terraform-v2.mdx` — HCL syntax reference for all Cloud resources
+3. The Terraform tab of the Cloud article being edited — HCL syntax reference for that resource
 4. `.agents/references/mdx-rules.md` — MethodSwitch structure rules
 5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (if comparing Terraform to SDK)
 6. `.agents/references/style-guide.md` — writing rules for prose
@@ -50,7 +50,7 @@ is directly relevant to mapping a Portal step to a Terraform resource.
 ## Phase 1 — Read the existing article and registry docs
 
 1. Read the full article — understand what resources are created and what operations are performed
-2. Open `cloud/manage-cloud-via-terraform-v2.mdx` — find the matching HCL resource blocks
+2. Open the Terraform tab of the Cloud article for this resource — find the matching HCL resource blocks
 3. Check the resource schema in the GitHub v2 branch docs (this is the canonical source):
    - `https://github.com/G-Core/terraform-provider-gcore/blob/v2/docs/resources/{resource_name}.md`
    - If that file is empty or 404, extract the schema directly from the installed provider:
@@ -84,7 +84,7 @@ before being included in the article.
 ```powershell
 if (-not $env:GCORE_API_KEY) { "GCORE_API_KEY is not set" }
 ```
-The user sets `GCORE_API_KEY` in the terminal before the session. Never read `.env` or `access.md`. If the variable is empty, stop and ask the user to set it.
+Load `GCORE_API_KEY` from the environment or from `.env` with dotenv. Never print the value. If it is missing from both, stop and ask the user.
 
 **Environment:**
 - API key: the `GCORE_API_KEY` environment variable

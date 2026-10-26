@@ -75,9 +75,11 @@ Check:
 
 ---
 
-## Phase 3 — Create a branch
+## Phase 3 — Branch
 
-If the current branch is not `main` and it has uncommitted changes, commit them on that branch first. Never `git stash` to switch. The helper exits with an error when that branch is dirty.
+One task uses one branch. If this task already has a branch, stay on it. Do not create another ticket or branch for another article in the same task.
+
+Create a branch only when the task does not have one yet. If the current branch is not `main` and it has uncommitted changes, commit them on that branch first. Never `git stash` to switch. The helper exits with an error when that branch is dirty.
 
 ```powershell
 .\.agents\tools\create_branch.ps1 {TICKET_ID}
@@ -126,7 +128,7 @@ Use Luxembourg Preprod (region_id=4) for general networking and VM tests.
 
 ### Credentials
 
-Tokens come from environment variables that the user sets before the session: `GCORE_API_KEY` for prod and `GCORE_PREPROD_API_KEY` for preprod. Never read `.env` or `access.md`, and never hardcode a token in committed files. If the variable is empty, stop and ask the user to set it.
+Tokens come from the environment or from `.env` via dotenv: `GCORE_API_KEY` for prod and `GCORE_PREPROD_API_KEY` for preprod. Never print a token, and never hardcode one in committed files. If both the environment and `.env` lack the variable, stop and ask the user.
 
 ### If the feature is not yet on preprod
 
