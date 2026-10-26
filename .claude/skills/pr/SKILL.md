@@ -150,7 +150,7 @@ python .agents/tools/create_jira_ticket.py --summary "..." --description-file "$
 
 Take `--org-unit` from `.agents/references/product-routing.md`, Section B. The assignee is the script default and no epic is set unless the user names one.
 
-**Work that is not an article** (agent rules, skills, references, tooling scripts, CI, repository docs such as `README.md`): there is no article path, so no row of Section B matches by prefix. Do not ask the user. Create the Jira ticket with `--org-unit 16038` (Platform/Web) and a summary that describes the work, then name the branch with the ticket key as usual. Use `[Repo]` as the product label in the commit message and the PR title.
+**Work that is not an article** (agent rules, skills, references, tooling scripts, CI, repository docs such as `README.md`): there is no article path, so no row of Section B matches by prefix. Do not ask the user. Create the Jira ticket with `--org-unit 11817` (Platform/Web) and a summary that describes the work, then name the branch with the ticket key as usual. Use `[Repo]` as the product label in the commit message and the PR title.
 Run without `--dry-run` to create the ticket. The script prints the created ticket key — create the branch with `.\.agents\tools\create_branch.ps1 {ticket-key}`.
 
 ---
