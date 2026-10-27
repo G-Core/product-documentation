@@ -1,7 +1,7 @@
 export const MethodSection = ({ id, label, children }) => {
   return (
     <div className="method-section" data-method={id} data-label={label}>
-      <p className="method-name">{label}</p>
+      {React.createElement("h2", { className: "method-name" }, label)}
       {children}
     </div>
   );
