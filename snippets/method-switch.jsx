@@ -1,21 +1,27 @@
-export const MethodSection = ({ children }) => children ?? null;
+export const MethodSection = ({ id, label, children }) => {
+  return (
+    <div className="method-section" data-method={id} data-label={label}>
+      <p className="method-name">{"## " + label}</p>
+      {children}
+    </div>
+  );
+};
 
 export const MethodSwitch = ({ children }) => {
-  const tabs = React.Children.toArray(children).map((c) => {
-    if (!c || !c.props) return null;
-    if (c.props.id) return c;
-    const inner = c.props.children;
+  const tabs = React.Children.toArray(children).map((child) => {
+    if (!child || !child.props) return null;
+    if (child.props.id) return child;
+    const inner = child.props.children;
     if (inner && inner.props && inner.props.id) return inner;
     return null;
   }).filter(Boolean);
   const firstId = tabs.length > 0 ? tabs[0].props.id : "";
-
   const [active, setActive] = React.useState(firstId);
 
   React.useEffect(() => {
     try {
       const saved = localStorage.getItem("gcore_docs_method");
-      if (saved && tabs.find((t) => t.props.id === saved)) {
+      if (saved && tabs.find((tab) => tab.props.id === saved)) {
         setActive(saved);
       }
     } catch (_) {}
@@ -23,15 +29,16 @@ export const MethodSwitch = ({ children }) => {
 
   React.useEffect(() => {
     try {
+      document.querySelectorAll("[data-method-switch] .method-section").forEach((section) => {
+        section.style.display = section.getAttribute("data-method") === active ? "block" : "none";
+      });
       document.querySelectorAll("h2[id], h3[id]").forEach((heading) => {
         const visible = heading.offsetParent !== null;
-        document
-          .querySelectorAll(`a[href="#${heading.id}"]`)
-          .forEach((link) => {
-            if (link.closest("h1,h2,h3,h4,h5,h6")) return;
-            const li = link.closest("li");
-            if (li) li.style.display = visible ? "" : "none";
-          });
+        document.querySelectorAll(`a[href="#${heading.id}"]`).forEach((link) => {
+          if (link.closest("h1,h2,h3,h4,h5,h6")) return;
+          const li = link.closest("li");
+          if (li) li.style.display = visible ? "" : "none";
+        });
       });
     } catch (_) {}
     window.dispatchEvent(new Event("scroll"));
@@ -45,7 +52,7 @@ export const MethodSwitch = ({ children }) => {
   };
 
   return (
-    <div>
+    <div data-method-switch="">
       <div
         className="not-prose flex gap-0 border-b border-zinc-200 dark:border-zinc-800 mb-8 mt-2"
         role="tablist"
@@ -70,15 +77,7 @@ export const MethodSwitch = ({ children }) => {
           );
         })}
       </div>
-
-      {tabs.map((tab) => (
-        <div
-          key={tab.props.id}
-          style={{ display: active === tab.props.id ? "" : "none" }}
-        >
-          {tab.props.children}
-        </div>
-      ))}
+      {children}
     </div>
   );
 };
