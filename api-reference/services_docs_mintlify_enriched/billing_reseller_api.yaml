@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Billing Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: b5b84a7f3048
+  version: 5ae9555e6df7
 servers:
 - url: https://api.gcore.com
 tags:
@@ -5246,6 +5246,51 @@ components:
       required:
       - default
       - id
+    AdyenPayPalPaymentResourcePublicConfig:
+      type: object
+      properties:
+        paypalEmail:
+          type: string
+          format: email
+          nullable: true
+          description: PayPal account email.
+      required:
+      - paypalEmail
+    AdyenPaymentResourcePublicConfig:
+      type: object
+      properties:
+        cardBin:
+          type: string
+          nullable: true
+          description: Card BIN (first six digits).
+        cardSummary:
+          type: string
+          nullable: true
+          description: Last four digits of the card.
+          pattern: \d{4}
+        expiryDate:
+          type: string
+          nullable: true
+          description: Card expiry date formatted as ``MM/YYYY``.
+          pattern: ^(0[1-9]|1[0-2])/[0-9]{4}$
+        cardHolderName:
+          type: string
+          nullable: true
+          description: Cardholder name.
+        cardType:
+          type: string
+          description: Card brand, e.g. ``visa`` or ``mc``.
+        issuerCountry:
+          type: string
+          nullable: true
+          description: ISO country code of the card issuer.
+      required:
+      - cardBin
+      - cardHolderName
+      - cardSummary
+      - cardType
+      - expiryDate
+      - issuerCountry
     BalanceForOrgSerializerV1:
       type: object
       properties:
@@ -6642,7 +6687,6 @@ components:
       - type
     PaymentResource:
       type: object
-      description: Serializer for payment resources.
       properties:
         id:
           type: integer
@@ -6676,9 +6720,14 @@ components:
           readOnly: true
           description: Payment method that this resource is related to
         config:
-          type: object
-          additionalProperties: {}
-          description: Retrieve the public configuration of the payment resource.
+          allOf:
+          - $ref: '#/components/schemas/PaymentResourcePublicConfig'
+          description: |-
+            AdyenPaymentResourcePublicConfig used for card, googlepay and applepay.
+
+            AdyenPayPalPaymentResourcePublicConfig used for paypal.
+
+            Empty object for others.
           readOnly: true
         archive:
           type: boolean
@@ -6695,6 +6744,13 @@ components:
       - locked_fraud
       - payment_method
       - type
+    PaymentResourcePublicConfig:
+      oneOf:
+      - $ref: '#/components/schemas/AdyenPaymentResourcePublicConfig'
+      - $ref: '#/components/schemas/AdyenPayPalPaymentResourcePublicConfig'
+      - type: object
+        additionalProperties: false
+        maxProperties: 0
     PlanCommonShort:
       type: object
       properties:
