@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 811c04993481
+  version: 94c311356ef5
 servers:
 - url: https://api.gcore.com
 paths:
@@ -62865,6 +62865,17 @@ components:
       - size
       title: CreateDdnFileShareSerializer
       type: object
+    CreateFileShareQuotaSerializer:
+      additionalProperties: false
+      properties:
+        default_group_quota:
+          $ref: '#/components/schemas/FileShareQuotaLimitInputSerializer'
+          description: Quota for each group without an override.
+        default_user_quota:
+          $ref: '#/components/schemas/FileShareQuotaLimitInputSerializer'
+          description: Quota for each user without an override.
+      title: CreateFileShareQuotaSerializer
+      type: object
     CreateFileShareSerializer:
       oneOf:
       - $ref: '#/components/schemas/CreateStandardFileShareSerializer'
@@ -66158,6 +66169,9 @@ components:
           - LCD
           title: Path Length
           type: string
+        quota:
+          $ref: '#/components/schemas/CreateFileShareQuotaSerializer'
+          description: Default user and group quotas. Use the update request to add quotas for specified users and groups after they write to the file share.
         root_squash:
           default: true
           description: |-
@@ -67336,7 +67350,7 @@ components:
           title: Name
           type: string
         share_settings:
-          $ref: '#/components/schemas/UpdateVastFileShareSettingsSerializer'
+          $ref: '#/components/schemas/DeprecatedUpdateVastFileShareSettingsSerializer'
           description: Configuration settings for the share
         tags:
           anyOf:
@@ -67357,6 +67371,67 @@ components:
           - my-tag: my-tag-value
             my-tag-to-remove: null
       title: DeprecatedUpdateFileShareSerializer
+      type: object
+    DeprecatedUpdateVastFileShareSettingsSerializer:
+      additionalProperties: false
+      properties:
+        allowed_characters:
+          description: |-
+            Determines which characters are allowed in file names. Choose between:
+              - Lowest Common Denominator (LCD), allows only characters allowed by all VAST Cluster-supported protocols
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+
+            Omit this field to keep the current setting.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Allowed Characters
+          type: string
+        path_length:
+          description: |-
+            Affects the maximum limit of file path component name length. Choose between:
+              - Lowest Common Denominator (LCD), imposes the lowest common denominator file length limit of all VAST Cluster-supported protocols. With this option, the limitation on the length of a single component of the path is 255 characters
+              - Native Protocol Limit (NPL), imposes no limitation beyond that of the client protocol.
+
+            Omit this field to keep the current setting.
+          enum:
+          - LCD
+          - NPL
+          example: LCD
+          examples:
+          - LCD
+          title: Path Length
+          type: string
+        root_squash:
+          description: |-
+            Enables or disables root squash for NFS clients.
+              - If `true`, root squash is enabled: the root user is mapped to nobody for all file and folder management operations on the export.
+              - If `false`, root squash is disabled: the NFS client `root` user retains root privileges. Use this option if you trust the root user not to perform operations that will corrupt data.
+
+            Omit this field to keep the current setting.
+          example: true
+          examples:
+          - true
+          title: Root Squash
+          type: boolean
+        trash_access:
+          description: |-
+            Enables or disables access to the hidden `.vast_trash` folder of the share.
+              - If `false`, the folder is not accessible.
+              - If `true`, clients within the share's access range can move files and folders to `.vast_trash` for asynchronous deletion, which is much faster than deleting large directory trees in place.
+
+            Requires `root_squash` to be disabled, because VAST ignores trash folder access for hosts that are under root squash.
+
+            Omit this field to keep the current setting.
+          example: false
+          examples:
+          - false
+          title: Trash Access
+          type: boolean
+      title: DeprecatedUpdateVastFileShareSettingsSerializer
       type: object
     DestinationRegionCollectionSerializer:
       properties:
@@ -68265,6 +68340,220 @@ components:
       - size
       title: FileSharePricingRequestSerializer
       type: object
+    FileShareQuotaLimitInputSerializer:
+      additionalProperties: false
+      properties:
+        grace_period:
+          anyOf:
+          - pattern: ^\d+ ([01]\d|2[0-3]):[0-5]\d:[0-5]\d$
+            type: string
+          - type: 'null'
+          description: Time after the usage goes above `soft_limit`, in the `D HH:MM:SS` format. The maximum is 365 days. You must also specify `soft_limit`.
+          examples:
+          - 7 00:00:00
+          title: Grace Period
+        hard_limit:
+          description: Maximum capacity in bytes. Write operations fail when the usage reaches this limit. It must not be more than the file share size.
+          example: 53687091200
+          examples:
+          - 53687091200
+          minimum: 1
+          title: Hard Limit
+          type: integer
+        soft_limit:
+          anyOf:
+          - minimum: 1
+            type: integer
+          - type: 'null'
+          description: Capacity in bytes that starts the grace period. Write operations fail when the grace period ends and the usage is still above this limit. It must not be more than `hard_limit`.
+          examples:
+          - 42949672960
+          title: Soft Limit
+      required:
+      - hard_limit
+      title: FileShareQuotaLimitInputSerializer
+      type: object
+    FileShareQuotaLimitOutputSerializer:
+      properties:
+        grace_period:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Time after the usage goes above `soft_limit`, in the `D HH:MM:SS` format.
+          examples:
+          - 7 00:00:00
+          title: Grace Period
+        hard_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Maximum capacity in bytes. Write operations fail when the usage reaches this limit.
+          examples:
+          - 53687091200
+          title: Hard Limit
+        soft_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Capacity in bytes that starts the grace period.
+          examples:
+          - 42949672960
+          title: Soft Limit
+      required:
+      - hard_limit
+      - soft_limit
+      - grace_period
+      title: FileShareQuotaLimitOutputSerializer
+      type: object
+    FileShareQuotaOutputSerializer:
+      properties:
+        default_group_quota:
+          anyOf:
+          - $ref: '#/components/schemas/FileShareQuotaLimitOutputSerializer'
+          - type: 'null'
+          description: Quota for each group without an override. The value is `null` if there is no default.
+        default_user_quota:
+          anyOf:
+          - $ref: '#/components/schemas/FileShareQuotaLimitOutputSerializer'
+          - type: 'null'
+          description: Quota for each user without an override. The value is `null` if there is no default.
+        overrides:
+          description: Quotas for specified users and groups.
+          items:
+            $ref: '#/components/schemas/FileShareQuotaOverrideOutputSerializer'
+          title: Overrides
+          type: array
+      required:
+      - default_user_quota
+      - default_group_quota
+      - overrides
+      title: FileShareQuotaOutputSerializer
+      type: object
+    FileShareQuotaOverrideInputSerializer:
+      additionalProperties: false
+      properties:
+        grace_period:
+          anyOf:
+          - pattern: ^\d+ ([01]\d|2[0-3]):[0-5]\d:[0-5]\d$
+            type: string
+          - type: 'null'
+          description: Time after the usage goes above `soft_limit`, in the `D HH:MM:SS` format. The maximum is 365 days. You must also specify `soft_limit`.
+          examples:
+          - 7 00:00:00
+          title: Grace Period
+        hard_limit:
+          description: Maximum capacity in bytes. Write operations fail when the usage reaches this limit. It must not be more than the file share size.
+          example: 53687091200
+          examples:
+          - 53687091200
+          minimum: 1
+          title: Hard Limit
+          type: integer
+        identifier:
+          description: Numeric user ID or group ID. Before you set a quota for a user or group, it must write a file to the file share. If it did not write a file, the update task fails.
+          example: 1000
+          examples:
+          - 1000
+          maximum: 4294967294
+          minimum: 0
+          title: Identifier
+          type: integer
+        identifier_type:
+          description: Type of `identifier`. Use `uid` for a user and `gid` for a group.
+          enum:
+          - gid
+          - uid
+          example: uid
+          examples:
+          - uid
+          title: Identifier Type
+          type: string
+        soft_limit:
+          anyOf:
+          - minimum: 1
+            type: integer
+          - type: 'null'
+          description: Capacity in bytes that starts the grace period. Write operations fail when the grace period ends and the usage is still above this limit. It must not be more than `hard_limit`.
+          examples:
+          - 42949672960
+          title: Soft Limit
+      required:
+      - hard_limit
+      - identifier
+      - identifier_type
+      title: FileShareQuotaOverrideInputSerializer
+      type: object
+    FileShareQuotaOverrideOutputSerializer:
+      properties:
+        grace_period:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Time after the usage goes above `soft_limit`, in the `D HH:MM:SS` format.
+          examples:
+          - 7 00:00:00
+          title: Grace Period
+        hard_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Maximum capacity in bytes. Write operations fail when the usage reaches this limit.
+          examples:
+          - 53687091200
+          title: Hard Limit
+        identifier:
+          description: Numeric user ID or group ID.
+          example: 1000
+          examples:
+          - 1000
+          title: Identifier
+          type: integer
+        identifier_type:
+          description: Type of `identifier`. The value `uid` is for a user and `gid` is for a group.
+          enum:
+          - gid
+          - uid
+          example: uid
+          examples:
+          - uid
+          title: Identifier Type
+          type: string
+        soft_limit:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Capacity in bytes that starts the grace period.
+          examples:
+          - 42949672960
+          title: Soft Limit
+        state:
+          $ref: '#/components/schemas/FileShareQuotaState'
+          description: Usage state of the quota. `OK` means that the usage is below the limits. `SOFT_EXCEEDED`, `INODE_SOFT_EXCEEDED` and `SOFT_BOTH_EXCEEDED` mean that the capacity, the number of files or both are above the soft limit. `GRACE_EXPIRED` means that the grace period is over and write operations fail. `HARD_EXCEEDED`, `INODE_HARD_EXCEEDED` and `HARD_BOTH_EXCEEDED` mean that the capacity, the number of files or both are at the hard limit and write operations fail. `FAILED` means that the system cannot get the state. `UNKNOWN` means that the state is not available.
+          examples:
+          - OK
+      required:
+      - hard_limit
+      - soft_limit
+      - grace_period
+      - identifier
+      - identifier_type
+      - state
+      title: FileShareQuotaOverrideOutputSerializer
+      type: object
+    FileShareQuotaState:
+      enum:
+      - FAILED
+      - GRACE_EXPIRED
+      - HARD_BOTH_EXCEEDED
+      - HARD_EXCEEDED
+      - INODE_HARD_EXCEEDED
+      - INODE_SOFT_EXCEEDED
+      - OK
+      - SOFT_BOTH_EXCEEDED
+      - SOFT_EXCEEDED
+      - UNKNOWN
+      title: FileShareQuotaState
+      type: string
     FileShareRequiredQuotaSerializer:
       properties:
         sfs_count_limit:
@@ -104048,6 +104337,68 @@ components:
             my-tag-to-remove: null
       title: UpdateClusterSerializer
       type: object
+    UpdateFileShareQuotaLimitSerializer:
+      additionalProperties: false
+      properties:
+        grace_period:
+          anyOf:
+          - pattern: ^\d+ ([01]\d|2[0-3]):[0-5]\d:[0-5]\d$
+            type: string
+          - type: 'null'
+          description: |-
+            Time after the usage goes above `soft_limit`, in the `D HH:MM:SS` format. The maximum is 365 days. The quota must have a `soft_limit`. Set it to `null` to remove the grace period.
+
+            Omit this field to keep the current setting.
+          examples:
+          - 7 00:00:00
+          title: Grace Period
+        hard_limit:
+          description: |-
+            Maximum capacity in bytes. Write operations fail when the usage reaches this limit. It must not be more than the file share size. It is necessary if the file share does not have this quota yet.
+
+            Omit this field to keep the current setting.
+          example: 53687091200
+          examples:
+          - 53687091200
+          minimum: 1
+          title: Hard Limit
+          type: integer
+        soft_limit:
+          anyOf:
+          - minimum: 1
+            type: integer
+          - type: 'null'
+          description: |-
+            Capacity in bytes that starts the grace period. Write operations fail when the grace period ends and the usage is still above this limit. It must not be more than `hard_limit`. Set it to `null` to remove the soft limit and the grace period.
+
+            Omit this field to keep the current setting.
+          examples:
+          - 42949672960
+          title: Soft Limit
+      title: UpdateFileShareQuotaLimitSerializer
+      type: object
+    UpdateFileShareQuotaSerializer:
+      additionalProperties: false
+      properties:
+        default_group_quota:
+          anyOf:
+          - $ref: '#/components/schemas/UpdateFileShareQuotaLimitSerializer'
+          - type: 'null'
+          description: Quota for each group without an override. The specified fields change and the other fields keep their current values. Set it to `null` to remove the default.
+        default_user_quota:
+          anyOf:
+          - $ref: '#/components/schemas/UpdateFileShareQuotaLimitSerializer'
+          - type: 'null'
+          description: Quota for each user without an override. The specified fields change and the other fields keep their current values. Set it to `null` to remove the default.
+        overrides:
+          description: Quotas for specified users and groups. This list replaces all current overrides. Send an empty list to remove all overrides.
+          items:
+            $ref: '#/components/schemas/FileShareQuotaOverrideInputSerializer'
+          maxItems: 100
+          title: Overrides
+          type: array
+      title: UpdateFileShareQuotaSerializer
+      type: object
     UpdateFileShareSerializer:
       properties:
         name:
@@ -104059,10 +104410,10 @@ components:
           title: Name
           type: string
         share_settings:
-          anyOf:
+          description: Configuration settings for the share
+          oneOf:
           - $ref: '#/components/schemas/DdnFileShareSettingsInputSerializer'
           - $ref: '#/components/schemas/UpdateVastFileShareSettingsSerializer'
-          description: Configuration settings for the share
           title: Share Settings
         tags:
           anyOf:
@@ -104714,6 +105065,14 @@ components:
           - LCD
           title: Path Length
           type: string
+        quota:
+          anyOf:
+          - $ref: '#/components/schemas/UpdateFileShareQuotaSerializer'
+          - type: 'null'
+          description: |-
+            User and group quotas. Send an object to enable quotas and change the specified fields. Send `null` to disable quotas. When you disable quotas, the system removes the default quotas and all overrides. You cannot restore them.
+
+            Omit this field to keep the current setting.
         root_squash:
           description: |-
             Enables or disables root squash for NFS clients.
@@ -106091,6 +106450,11 @@ components:
           examples:
           - LCD
           title: Path Length
+        quota:
+          anyOf:
+          - $ref: '#/components/schemas/FileShareQuotaOutputSerializer'
+          - type: 'null'
+          description: User and group quotas of the file share. The value is `null` if quotas are disabled or if the quotas are not available.
         root_squash:
           description: |-
             Enables or disables root squash for NFS clients.
@@ -106119,6 +106483,7 @@ components:
       - path_length
       - allowed_characters
       - trash_access
+      - quota
       title: VastShareSettingsOutputSerializer
       type: object
     VirtualClusterListSerializer:
