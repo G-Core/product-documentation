@@ -110,6 +110,12 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
   <Step title="(Optional) Add details and advanced settings">
     Click **Open resource settings**. Add notes in **Description**, add more custom domains with **Add CNAME**, or configure other delivery settings.
+
+    **Enable Network Error Logging** is on for a new CDN resource, while an existing resource keeps its current setting. When the option is on, the CDN adds `NEL` and `Report-To` headers to responses, so supported browsers report network errors for the resource. To disable network error reporting, turn the option off and click **Save changes**.
+
+    <Frame>
+      <img src="/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource/network-error-logging.png" alt="Enable Network Error Logging turned on" width="70%"/>
+    </Frame>
   </Step>
 </Steps>
 
@@ -403,6 +409,100 @@ dig cdn.example.com CNAME +short
 ```
 
 <p>The output should show the `{resource_id}.gcdn.co` address.</p>
+
+## Network error logging
+
+<p>New CDN resources are created with network error logging enabled, while existing resources keep their current setting. Change it with a resource update.</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `enabled` | Yes | `true` adds the `NEL` and `Report-To` headers. `false` removes them. |
+| `value` | Yes | `true` for both states |
+
+<p>The call below turns the option off. The resource id is the id returned in Step 2.</p>
+
+```bash
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={"network_error_logging": {"enabled": False, "value": True}},
+    )
+    print(updated.options.network_error_logging.enabled, updated.options.network_error_logging.value)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                NetworkErrorLogging: cdn.CDNResourceUpdateParamsOptionsNetworkErrorLogging{
+                    Enabled: false,
+                    Value:   true,
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.NetworkErrorLogging.Enabled, updated.Options.NetworkErrorLogging.Value)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "network_error_logging": {"enabled": false, "value": true}
+        }
+      }'
+    ```
+
+    <p>The API returns HTTP 200. The saved option is:</p>
+
+    ```json
+    {
+      "enabled": false,
+      "value": true
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>To turn the option on, send the same request with <code>enabled</code> set to <code>true</code> and <code>value</code> set to <code>true</code>.</p>
 
 </MethodSection>
   <MethodSection id="terraform" label="Terraform">
