@@ -1,0 +1,128 @@
+---
+title: Subtitles and captions in live streams
+sidebarTitle: Subtitles and captions
+description: Pass embedded CEA-608 closed captions from a live ingest stream into HLS MPEG-TS playback, and learn about upcoming AI live captions.
+---
+
+Live streams can show captions in two ways: captions that the source already embeds, which Gcore passes through to viewers, and captions that AI generates while the stream runs. 
+
+## Embedded captions
+
+Pass-through requires a live stream whose source already carries CEA-608 captions.
+
+CEA-608 captions travel inside the H.264 video data as SEI messages, not in the transport, so RTMP and SRT pushes carry them in the same way. Gcore does not read, edit, or create the caption text. When the flag is on, the transcoder adds a caption track to the HLS MPEG-TS master playlist, and the text itself stays in the H.264 video of each segment.
+
+<Warning>
+Turn the flag on only for streams whose source is confirmed to carry captions. Without caption data in the video, the player shows a captions menu that selects and renders nothing.
+</Warning>
+
+### CEA-608 input and output
+
+The captions must be present in the stream that the encoder pushes to Gcore. These are the supported inputs:
+
+| Item | Supported input |
+| --- | --- |
+| Caption standard | CEA-608 |
+| Carried in | H.264 video data (SEI) |
+| Ingest protocols | RTMP, SRT |
+| Caption channel | CC1 only |
+
+Captions on the CC2, CC3, and CC4 channels are not supported, so the source must put its captions on CC1.
+
+Captions appear only in HLS MPEG-TS, the `hls_mpegts_url` output of the stream, which is H.264. MPEG-DASH and HLS CMAF outputs do not change when the flag is on, so they carry no caption track.
+
+With the flag on, `master_mpegts.m3u8` gets one `#EXT-X-MEDIA` line for the caption track, and every video variant points to it. This is the master playlist of a stream with captions enabled:
+
+```text
+#EXTM3U
+#EXT-X-VERSION:6
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID="cc",NAME="CC1",LANGUAGE="en",INSTREAM-ID="CC1",AUTOSELECT=YES
+#EXT-X-STREAM-INF:BANDWIDTH=985600,RESOLUTION=688x468,CODECS="avc1.64001e,mp4a.40.2",CLOSED-CAPTIONS="cc"
+media_mpegts_0.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=565400,RESOLUTION=528x360,CODECS="avc1.42c01e,mp4a.40.2",CLOSED-CAPTIONS="cc"
+media_mpegts_1.m3u8
+```
+
+These are the tags the player reads:
+
+| Tag or attribute | Value | Meaning |
+| --- | --- | --- |
+| `#EXT-X-MEDIA:TYPE` | `CLOSED-CAPTIONS` | Declares one caption track, added once per master playlist |
+| `GROUP-ID` | `cc` | Group that the video variants refer to |
+| `INSTREAM-ID` | `CC1` | Caption channel inside the video data |
+| `NAME` | `CC1` | Label in the player menu, taken from `INSTREAM-ID`, so players show CC1 and not a language name |
+| `LANGUAGE` | `en` | Language of the track |
+| `AUTOSELECT` | `YES` | Lets the player select the track automatically when it matches the viewer's language settings |
+| `#EXT-X-STREAM-INF:CLOSED-CAPTIONS` | `cc` | Added to every video variant to link it to the caption group |
+
+Only one caption language is available: the track is always labeled English (`en`) for every stream, and the label cannot be changed, so a source with captions in another language is still announced as `en`.
+
+### Enable CEA-608 captions
+
+The flag is set per stream and is off by default, so existing streams keep producing the same playlists. Four steps turn captions on and check them in a player.
+
+<Steps>
+  <Step title="Check that the source carries captions">
+    Play the source file or stream locally and confirm that the captions display. The captions must be CEA-608 data inside the H.264 video.
+  </Step>
+  <Step title="Set hls_mpegts_cc_tag to true">
+    Send the flag with the stream update request. The stream object returned by `GET /streaming/streams/{stream_id}` includes the field, and `POST /streaming/streams` accepts it on creation.
+
+    ```bash
+    export GCORE_API_KEY="{YOUR_API_KEY}"
+    export STREAM_ID="{YOUR_STREAM_ID}"
+
+    curl -X PATCH "https://api.gcore.com/streaming/streams/$STREAM_ID" \
+         -H "Authorization: APIKey $GCORE_API_KEY" \
+         -H "Content-Type: application/json" \
+         -d '{"hls_mpegts_cc_tag": true}'
+    ```
+  </Step>
+  <Step title="Restart the push">
+    The flag applies at the start of the next transcoding session. Stop the encoder and start it again, because a change made during a live session takes effect only after the restart.
+  </Step>
+  <Step title="Open the HLS MPEG-TS URL in a player">
+    Load the `hls_mpegts_url` value of the stream (the `master_mpegts.m3u8` link) in a player that supports closed captions, then open the captions menu and select CC1. The [hls.js demo player](https://hlsjs.video-dev.org/demo/) shows the CC1 captions track with the text rendered over the video.
+  </Step>
+</Steps>
+
+### Push CEA-608 captions from FFmpeg
+
+FFmpeg keeps the captions of a source file in the H.264 output when `-a53cc 1` is set. The command below was tested with FFmpeg 9.0 and a transport stream recording that contains CEA-608 captions on CC1:
+
+```bash
+ffmpeg -re -i {INPUT_FILE}.ts \
+  -c:v libx264 -pix_fmt yuv420p -profile:v main -b_strategy 0 -g 60 -a53cc 1 \
+  -c:a aac -b:a 128k \
+  -f flv "{RTMP_URL}"
+```
+
+`{RTMP_URL}` is the server URL with the stream key appended, as described in the [FFmpeg guide](/streaming/live-streaming/broadcasting-software/ffmpeg). The rest of the options are the usual H.264 and AAC settings for live ingest.
+
+### Check captions in a segment
+
+The caption text can be read back out of the transcoded output, which confirms that the captions reach the playlist. Download a `.ts` segment listed in a media playlist such as `media_mpegts_0.m3u8`, then extract its captions with [CCExtractor](https://www.ccextractor.org/):
+
+```bash
+ccextractor segment.ts
+```
+
+CCExtractor 0.96.5 detects the CEA-608 data in the H.264 video and writes the captions to an SRT file:
+
+```text
+1
+00:00:00,001 --> 00:00:01,734
+ CHANCES ♪
+
+2
+00:00:01,802 --> 00:00:06,004
+     <i> ♪ TRUSTIN' MY HEART ♪</i>
+```
+
+An empty SRT file means that the segment carries no caption data.
+
+## AI-generated captions
+
+Gcore plans to generate captions with AI while a live stream runs, so streams without embedded captions get a caption track too. This feature is coming soon. Captions for recorded videos are already available as [VOD subtitles](/streaming/video-hosting/subtitles-and-closed-captions-for-vod).
