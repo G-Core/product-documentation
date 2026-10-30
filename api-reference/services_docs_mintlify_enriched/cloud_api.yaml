@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 94c311356ef5
+  version: 43056ad33102
 servers:
 - url: https://api.gcore.com
 paths:
@@ -52631,6 +52631,49 @@ paths:
           		panic(err.Error())
           	}
           }
+  /cloud/v1/volumes/types:
+    get:
+      operationId: VolumeTypesView.get
+      summary: List volume types
+      description: |-
+        Returns the capabilities and the QoS profile of each volume type, sorted by name.
+        Use the capabilities to find which operations a volume supports before you send a request.
+        Set `region_id` to get the capabilities in that region. Without it, the capabilities ignore region limits.
+      parameters:
+      - in: query
+        name: region_id
+        required: false
+        description: Region ID. If you set it, the list shows only the types that the region supports. The capabilities then also include the limits of that region.
+        schema:
+          description: Region ID. If you set it, the list shows only the types that the region supports. The capabilities then also include the limits of that region.
+          example: 1
+          examples:
+          - 1
+          title: Region Id
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VolumeTypeCollectionSerializer'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequestOnRead'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '500':
+          $ref: '#/components/responses/ProblemInternalServerError'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+      tags:
+      - Volumes
   /cloud/v1/volumes/{project_id}/{region_id}/{volume_id}/attach:
     post:
       operationId: VolumeInstanceAttachView.post
@@ -85083,6 +85126,64 @@ components:
       - volume_ids
       title: PricingLifecyclePolicyV2Serializer
       type: object
+    Problem:
+      additionalProperties: false
+      description: The error body, served as `application/problem+json`.
+      properties:
+        context:
+          anyOf:
+          - $ref: '#/components/schemas/ProblemContext'
+          - type: 'null'
+          default: null
+          description: Data for the `type`. Absent on a type without context keys, and on a `not-found` for an unknown URL.
+        detail:
+          description: The facts of this occurrence.
+          title: Detail
+          type: string
+        errors:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProblemError'
+            type: array
+          - type: 'null'
+          default: null
+          description: One item for each invalid input. Only on `validation-error`, and absent when no single input is wrong.
+          title: Errors
+        hint:
+          description: What to do next.
+          title: Hint
+          type: string
+        request_id:
+          description: ID of the request. The response also sends it in the `X-Request-Id` header. Quote it to support.
+          title: Request Id
+          type: string
+        status:
+          description: Copy of the HTTP status code.
+          title: Status
+          type: integer
+        title:
+          description: Fixed sentence for the `type`.
+          title: Title
+          type: string
+        trace_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: W3C trace ID from the `traceparent` of the request. Null when the request has no valid `traceparent`.
+          title: Trace Id
+        type:
+          $ref: '#/components/schemas/ProblemType'
+          description: Stable error code in kebab-case, such as `not-found`. Clients branch on it. It is not `errors[].code`, which names what is wrong with one input in `snake_case`, such as `not_found`.
+      required:
+      - type
+      - title
+      - status
+      - detail
+      - hint
+      - request_id
+      - trace_id
+      title: Problem
+      type: object
     ProblemBlockingResource:
       additionalProperties: false
       description: One resource that blocks the request.
@@ -99525,7 +99626,10 @@ components:
       title: SnapshotStatusChoices
       type: string
     SnapshottableVolumeTypeChoices:
-      description: Snapshots are currently supported only for these volume types.
+      description: |-
+        Volume types that a volume from a snapshot can use instead of the type of its source volume.
+
+        This list does not show which types support snapshots. The `snapshottable` capability of a volume type shows that.
       enum:
       - ssd_hiiops
       - standard
@@ -107853,6 +107957,64 @@ components:
       - ultra
       title: VolumeType
       type: string
+    VolumeTypeCapabilitiesSerializer:
+      properties:
+        attachable_to_boot:
+          description: A volume of this type can be the boot volume of an instance. The instance flavor can add more limits.
+          example: true
+          examples:
+          - true
+          title: Attachable To Boot
+          type: boolean
+        resizable:
+          description: A volume of this type can increase in size. Without `region_id`, the value ignores region limits. A region can set it to false.
+          example: true
+          examples:
+          - true
+          title: Resizable
+          type: boolean
+        retypable:
+          description: A volume of this type can change to a different retypable type, and the reverse.
+          example: true
+          examples:
+          - true
+          title: Retypable
+          type: boolean
+        snapshottable:
+          description: A volume of this type can have snapshots.
+          example: true
+          examples:
+          - true
+          title: Snapshottable
+          type: boolean
+      required:
+      - snapshottable
+      - resizable
+      - retypable
+      - attachable_to_boot
+      title: VolumeTypeCapabilitiesSerializer
+      type: object
+    VolumeTypeCollectionSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/VolumeTypeSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: VolumeTypeCollectionSerializer
+      type: object
     VolumeTypeName:
       enum:
       - cold
@@ -107863,6 +108025,94 @@ components:
       - ultra
       title: VolumeTypeName
       type: string
+    VolumeTypeQosSerializer:
+      description: |-
+        QoS profile of a volume type.
+
+        The base limit of a volume is the integer part of its size in GiB multiplied by the per-GiB rate.
+        The minimum and maximum values limit the result.
+        The burst limit is the base limit multiplied by `burst_ratio`. The maximum value limits the result.
+      properties:
+        bandwidth_max_mb_per_sec:
+          description: Highest base and burst bandwidth limit in megabytes per second.
+          example: 500
+          examples:
+          - 500
+          title: Bandwidth Max Mb Per Sec
+          type: integer
+        bandwidth_mb_per_sec_per_gib:
+          description: Base bandwidth in megabytes per second for each GiB of volume size.
+          example: 2.5
+          examples:
+          - 2.5
+          title: Bandwidth Mb Per Sec Per Gib
+          type: number
+        bandwidth_min_mb_per_sec:
+          description: Lowest base bandwidth limit in megabytes per second.
+          example: 10
+          examples:
+          - 10
+          title: Bandwidth Min Mb Per Sec
+          type: integer
+        burst_ratio:
+          description: Burst limit divided by base limit.
+          example: 10
+          examples:
+          - 10
+          title: Burst Ratio
+          type: number
+        iops_max:
+          description: Highest base and burst IOPS limit.
+          example: 9000
+          examples:
+          - 9000
+          title: Iops Max
+          type: integer
+        iops_min:
+          description: Lowest base IOPS limit.
+          example: 10
+          examples:
+          - 10
+          title: Iops Min
+          type: integer
+        iops_per_gib:
+          description: Base IOPS for each GiB of volume size.
+          example: 60
+          examples:
+          - 60
+          title: Iops Per Gib
+          type: number
+      required:
+      - iops_per_gib
+      - iops_min
+      - iops_max
+      - bandwidth_mb_per_sec_per_gib
+      - bandwidth_min_mb_per_sec
+      - bandwidth_max_mb_per_sec
+      - burst_ratio
+      title: VolumeTypeQosSerializer
+      type: object
+    VolumeTypeSerializer:
+      properties:
+        capabilities:
+          $ref: '#/components/schemas/VolumeTypeCapabilitiesSerializer'
+          description: Operations that a volume of this type supports.
+        name:
+          $ref: '#/components/schemas/VolumeTypeName'
+          description: Volume type name.
+          examples:
+          - ssd_hiiops
+        qos:
+          anyOf:
+          - $ref: '#/components/schemas/VolumeTypeQosSerializer'
+          - type: 'null'
+          description: QoS profile of the type. The value is null if the type has no QoS limits.
+      required:
+      - name
+      - capabilities
+      - qos
+      title: VolumeTypeSerializer
+      type: object
     Zone:
       enum:
       - AMERICAS
@@ -107930,6 +108180,17 @@ components:
       title: _FloatingIp
       type: object
   responses:
+    ProblemBadRequestOnRead:
+      description: The request cannot succeed as it is. `type` is `validation-error` or `not-available`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemBadRequestOnReadWithLegacyKeys:
       description: The request cannot succeed as it is. `type` is `validation-error` or `not-available`.
       content:
@@ -107952,6 +108213,19 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemConflict:
+      description: The resource is in a transient state. `type` is `resource-busy`. Send the same request again after the `Retry-After` seconds.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
     ProblemConflictWithLegacyKeys:
       description: The resource is in a transient state. `type` is `resource-busy`. Send the same request again after the `Retry-After` seconds.
       content:
@@ -107965,12 +108239,34 @@ components:
           $ref: '#/components/headers/ContentLanguage'
         Retry-After:
           $ref: '#/components/headers/RetryAfter'
+    ProblemForbidden:
+      description: The credentials do not permit the operation, or another service manages the resource. `type` is `permission-denied`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemForbiddenWithLegacyKeys:
       description: The credentials do not permit the operation, or another service manages the resource. `type` is `permission-denied`.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemInternalServerError:
+      description: The server cannot complete the request. `type` is `internal-server-error`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
       headers:
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
@@ -107987,6 +108283,17 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemNotFound:
+      description: The resource or the URL does not exist. `type` is `not-found`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemNotFoundWithLegacyKeys:
       description: The resource or the URL does not exist. `type` is `not-found`.
       content:
@@ -107998,12 +108305,34 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemServiceUnavailable:
+      description: The service is down for a known reason, such as planned maintenance. `type` is `service-unavailable`. A 503 without the `application/problem+json` media type, and every 502 and 504, comes from the gateway and has no problem body.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemServiceUnavailableWithLegacyKeys:
       description: The service is down for a known reason, such as planned maintenance. `type` is `service-unavailable`. A 503 without the `application/problem+json` media type, and every 502 and 504, comes from the gateway and has no problem body.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemUnauthorized:
+      description: The request has no valid credentials. `type` is `unauthorized`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
       headers:
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
