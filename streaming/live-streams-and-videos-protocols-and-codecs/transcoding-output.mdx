@@ -1,0 +1,156 @@
+---
+title: "Transcoding output: free up to Full HD"
+sidebarTitle: "Output transcoding"
+description: Free H.264 transcoding up to Full HD 1080p for live streams and VOD. 2K, 4K, 8K, HEVC, AV1, and VP9 need premium encoding.
+---
+
+Gcore Video Streaming transcodes every live stream and VOD file to H.264 video and AAC audio at no cost, with output up to Full HD 1080p and 30 FPS. [Premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding) adds 2K, 4K, 8K, other codecs, and custom bitrate ladders for enterprise accounts.
+
+## Free transcoding scope
+
+Live streams and VOD files get the same output settings, so one table covers both.
+
+| Item | Free transcoding |
+| --- | --- |
+| Video codec | H.264 |
+| Audio codec | AAC, 44.1 kHz, stereo |
+| Maximum resolution | Full HD 1080p (1920 × 1080) |
+| Maximum frame rate | 30 FPS |
+| Content | Live streams and VOD files |
+| Delivery formats | HLS MPEG-TS, HLS CMAF, MPEG-DASH, MP4 |
+| Cost | €0 |
+
+<Note>
+A source above 1080p is transcoded down to 1080p, and Gcore does not upscale smaller sources. A 720p source produces renditions up to 720p.
+</Note>
+
+Free transcoding still appears on the billing page as an amount of minutes, with a cost of €0. Live and VOD minutes are reported separately in the [usage&nbsp;and&nbsp;billing&nbsp;reports](/streaming/billing/usage-and-billing-reports).
+
+## ABR renditions
+
+Gcore builds an adaptive bitrate (ABR) set of renditions from each source, so players switch between qualities as the connection changes. The table lists the free renditions from Full HD down to 360p.
+
+| Video quality | Resolution | FPS | Video bitrate, kbps | Audio bitrate, kbps |
+| --- | --- | --- | --- | --- |
+| Full HD 1080p | 1920 × 1080 | 30 | 4,050 | 128 |
+| HD 720p | 1280 × 720 | 30 | 1,800 | 128 |
+| SD 468p | 832 × 468 | 30 | 800 | 96 |
+| 360p | 640 × 360 | 30 | 450 | 64 |
+
+Gcore transcodes horizontal and vertical video alike, including video recorded in mobile apps, and every rendition keeps the orientation of the source. The table lists horizontal 16:9 sizes, while vertical video uses the same sizes with width and height swapped, so 1080p is 1920 × 1080 horizontal and 1080 × 1920 vertical.
+
+<Frame>![Horizontal 1920 × 1080 and vertical 1080 × 1920 canvases that both count as 1080p](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/1080p-horizontal-and-vertical.png)</Frame>
+
+Other aspect ratios, including 4:3 and 1:1, are supported as well, and the only limit is the 1080p cap. The width and height of the video must be divisible by 2.
+
+Gcore uses variable bitrate (VBR) encoding, so the table shows average values. The Gcore Customer Portal displays a combined audio and video bitrate.
+
+## Live streams and VOD
+
+Free transcoding covers both content types with the same renditions, and the difference lies in when the source arrives.
+
+### Live streams
+
+A live stream is transcoded in real time from the master stream that an encoder pushes to Gcore or that Gcore pulls from a source. The master stream must stay stable during the broadcast, so the [recommended&nbsp;input&nbsp;settings](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs#recommended-parameters-for-live) apply.
+
+### VOD files
+
+A VOD file is transcoded after upload, and the source can use many containers and codecs. The [accepted&nbsp;source&nbsp;parameters](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs#recommended-parameters-for-vod) list the requirements.
+
+## Premium encoding
+
+Premium encoding extends free transcoding with 2K, 4K, and 8K resolutions, 240p and 144p renditions, 60+ FPS, HEVC, AV1, and VP9 codecs, and custom bitrate ladders. Enterprise accounts request it from support or a sales manager, as described in [premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding#request-premium-encoding).
+
+## Output protocols
+
+The ABR renditions are delivered in four HTTP streaming formats: **HLS MPEG-TS**, **HLS CMAF**, **MPEG-DASH**, and **MP4**. Select the format that matches the target players, devices, and latency goals.
+
+For VOD, these protocols deliver adaptive bitrate playback from uploaded and transcoded videos. For Live, they deliver adaptive bitrate playback of an ongoing broadcast with regular or low latency.
+
+### HLS MPEG-TS
+
+HLS MPEG-TS is the traditional HLS format that uses `.ts` segments. It is the safest compatibility option for Live and VOD playback, especially on older devices, set-top boxes, Smart TVs, and legacy players.
+
+- **Segment format**: MPEG-TS (`.ts`)
+- **Best for**: Maximum compatibility
+- **Live latency**: Regular latency, usually higher than low-latency CMAF workflows
+- **VOD usage**: Reliable HLS playback
+- **Codec fit**: H.264 with AAC audio
+- **Example manifest**:
+
+  ```
+  #EXTM3U
+  #EXT-X-VERSION:3
+  #EXT-X-TARGETDURATION:4
+  #EXT-X-MEDIA-SEQUENCE:0
+  #EXTINF:4.000,
+  segment0.ts
+  ```
+
+### HLS CMAF
+
+HLS CMAF uses fragmented MP4 (`.m4s`) chunks. It is recommended for modern HLS playback, and for Live it also supports low-latency playback.
+
+- **Segment format**: Fragmented MP4 (`.m4s`)
+- **Best for**: Modern HLS playback, Apple devices, and low-latency Live
+- **Live latency**: Low latency when configured with partial segments
+- **VOD usage**: Modern HLS playback
+- **Codec fit**: H.264 with AAC audio
+- **Example manifest**:
+
+  ```
+  #EXTM3U
+  #EXT-X-VERSION:6
+  #EXT-X-TARGETDURATION:2
+  #EXT-X-PART-INF:PART-TARGET=0.5
+  #EXTINF:2.0,
+  seg0.m4s
+  #EXT-X-PART:DURATION=0.5,URI="seg1_part_0.m4s",INDEPENDENT=YES
+  ```
+
+### MPEG-DASH
+
+MPEG-DASH is widely used for Android, web players, Smart TVs, and advanced player workflows. It serves both VOD and Live, including low-latency Live, with fragmented MP4 (`.m4s`) chunks.
+
+- **Segment format**: Fragmented MP4 (`.m4s`)
+- **Best for**: Android, web players, Smart TVs, and low-latency Live
+- **Live latency**: Low latency when configured with short segments and chunked delivery
+- **VOD usage**: Adaptive bitrate playback
+- **Codec fit**: H.264 with AAC audio
+- **Example MPD structure**:
+
+  ```xml
+  <MPD type="dynamic" minimumUpdatePeriod="PT2S">
+    <Period>
+      <AdaptationSet>
+        <SegmentTemplate media="segment_$Time$.m4s" initialization="init.mp4" duration="2000" startNumber="1">
+          <SegmentTimeline>
+            <S t="0" d="2000" r="4"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </AdaptationSet>
+    </Period>
+  </MPD>
+  ```
+
+## Output examples
+
+The embedded player plays a live stream transcoded to 1080p H.264, and the [demo](/streaming/getting-started/demo) page lists VOD and live players for every output format.
+
+<Frame>
+<iframe
+  title="Live streaming demo player"
+  src="https://player.gvideo.co/broadcasts/2675_21606?no_low_latency"
+  width="100%"
+  height="420"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+</Frame>
+
+Playback URLs:
+
+- [HTML&nbsp;player](https://player.gvideo.co/broadcasts/2675_21606?no_low_latency)
+- [MPEG-DASH&nbsp;CMAF](https://demo.gvideo.io/cmaf/2675_19146/index.mpd) (low latency)
+- [LL&nbsp;HLS&nbsp;CMAF](https://demo.gvideo.io/cmaf/2675_19146/master.m3u8) (low latency)
+- [HLS&nbsp;MPEG-TS](https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8) (regular latency)
