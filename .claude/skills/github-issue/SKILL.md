@@ -239,6 +239,7 @@ Maintained by the agent. Update after each triage or merge.
 | 2650 | Terraform Provider updated to v2.0.0-rc.1 | terraform | 2026-09-01 | PR open | `issue/2650-terraform-lb-floating-ip` | Replaced `floating_ip` inline block in `gcore_cloud_load_balancer` with `gcore_cloud_floating_ip` resource. Updated `.terraform-provider-version` to `2.0.0-rc.1`. |
 | 2652 | SDK updated to Python v0.56.0, Go v0.56.0 | api-sdk-tracker | 2026-09-01 | In progress | `issue/2652-sdk-waap-breaking-changes` | Breaking: `policies.toggle()` now requires `mode: bool` (Python) and `WaapDomainPolicySettingsParam{Mode}` (Go). Updated 10 WAAP policy articles. Updated prose in advanced-rules.mdx, custom-rules.mdx, ip-allowlist-and-blocklist.mdx. |
 | 3165 | SDK updated to Python v0.59.0, Go v0.59.0 | api-sdk-tracker | 2026-10-12 | In progress | `issue/3165-sdk-v059` | Rule sets are paginated and no longer embed rules. Policy enable/disable uses Update. Snapshot and streaming samples from v0.57.0 and v0.58.0 are on this branch. Pins set to v0.59.0. |
+| 3242 | SDK updated to Python v0.60.0, Go v0.60.0 | api-sdk-tracker | 2026-10-28 | PR open | `issue/3242-sdk-v060` | Logs Uploader Go target create and S3 origin key fields no longer match v0.60.0. Playlist, WAAP rule update, and cost-report samples do not call the removed fields. Pins set to v0.60.0. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -269,6 +270,14 @@ Append-only session notes. Add an entry every time this skill runs.
 - Updated `.terraform-provider-version` from `2.0.0-alpha.15` to `2.0.0-rc.1`.
 - Validated with `terraform validate` and schema inspection against real provider v2.0.0-rc.1.
 - Branch: `issue/2650-terraform-lb-floating-ip` — pushed, ready for PR.
+
+### 2026-10-30 — Issue #3242: SDK v0.60.0
+
+- Fetched issue #3242. Decision: PROCEED. Pins were v0.59.0. No comments.
+- Checked the breaking changes against article samples. Playlist create and update samples do not send the removed read-only fields. WAAP rule updates still omit unchanged fields. Cost-report SDK methods are not used in articles.
+- Go Logs Uploader target create used the old flat params. Origin-group S3 access keys are now optional strings and no longer accept a bare string. Both samples were updated to the v0.60.0 constructors.
+- Preprod key returned 401. Live run used production `https://api.gcore.com` with gcore and gcore-go v0.60.0. Python and Go created a logs-uploader policy, HTTP target, and config, then an S3 origin group. Go also updated the origin group. Every create returned 201. Response keys are five asterisks. Every created object was deleted in the same run.
+- Pins set to v0.60.0. Branch: `issue/3242-sdk-v060` — ready for PR.
 
 ### 2026-10-14 — Issue #3165: SDK v0.59.0
 
