@@ -1101,7 +1101,7 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
 
 ### Step 4. (Optional) Add a health monitor
 
-<p>A health monitor probes each pool member on a schedule and removes unreachable members from rotation automatically. Define it inline in the pool resource using the `healthmonitor` attribute.</p>
+<p>A health monitor probes each pool member on a schedule and removes unreachable members from rotation automatically. Create it with the `gcore_cloud_load_balancer_pool_health_monitor` resource.</p>
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -1112,19 +1112,18 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
 | `url_path` | No | HTTP path to probe. Default is `/`. Only for `HTTP` and `HTTPS` types. |
 | `expected_codes` | No | Expected HTTP response codes, e.g. `200` or `200,204`. Default is `200`. |
 
-<p>Example pool block with a health monitor:</p>
+<p>Example health monitor:</p>
 
 ```hcl
-resource "gcore_cloud_load_balancer_pool" "backend" {
-  # ... other attributes ...
-
-  healthmonitor = {
-    type        = "HTTP"
-    delay       = 10
-    timeout     = 5
-    max_retries = 3
-    url_path    = "/health"
-  }
+resource "gcore_cloud_load_balancer_pool_health_monitor" "backend" {
+  project_id  = var.project_id
+  region_id   = var.region_id
+  pool_id     = gcore_cloud_load_balancer_pool.backend.id
+  type        = "HTTP"
+  delay       = 10
+  timeout     = 5
+  max_retries = 3
+  url_path    = "/health"
 }
 ```
 
@@ -1132,12 +1131,13 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
 
 ## Import
 
-<p>To bring existing load balancer resources under Terraform management, run each import command separately:</p>
+<p>To bring existing load balancer resources under Terraform management, run each import command separately. The health monitor ID is the project, the region, and the pool, separated by slashes.</p>
 
 ```bash
 terraform import gcore_cloud_load_balancer.example PROJECT_ID:REGION_ID:LB_ID
 terraform import gcore_cloud_load_balancer_listener.http PROJECT_ID:REGION_ID:LISTENER_ID
 terraform import gcore_cloud_load_balancer_pool.backend PROJECT_ID:REGION_ID:POOL_ID
+terraform import gcore_cloud_load_balancer_pool_health_monitor.backend PROJECT_ID/REGION_ID/POOL_ID
 ```
 
 <p>Find the IDs in the Customer Portal under **Networking** → **Load Balancers**, or retrieve them with the REST API.</p>
