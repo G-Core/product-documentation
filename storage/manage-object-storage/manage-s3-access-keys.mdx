@@ -139,17 +139,53 @@ export STORAGE_ID="{STORAGE_ID}"
   </Tab>
 </Tabs>
 
-<p>S3 Fast returns HTTP 400, because read-only keys are supported on S3 Standard only. The error body uses CEPH for S3 Standard:</p>
+<p>S3 Fast returns HTTP 400, because read-only keys are supported on S3 Standard only.</p>
 
 ```json
-{"error":"read-only access keys are only supported for CEPH storages"}
+{
+  "error": "read-only access keys are only supported for Standard storages",
+  "type": "validation-error",
+  "title": "The request has invalid input.",
+  "status": 400,
+  "detail": "read-only access keys are only supported for Standard storages",
+  "hint": "Correct the request and send it again.",
+  "request_id": "8f1c9a2e4d6b4f0e9a1b3c5d7e9f0a1b",
+  "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736"
+}
 ```
 
-<p>When the limit is reached, the API returns HTTP 409:</p>
+<p>When the limit is reached, the API returns HTTP 409.</p>
 
 ```json
-{"error":"maximum number of access keys reached"}
+{
+  "error": "maximum number of access keys reached",
+  "type": "quota-exceeded",
+  "title": "The request exceeds a quota.",
+  "status": 409,
+  "detail": "maximum number of access keys reached",
+  "hint": "Ask for a quota increase, or delete resources you no longer need.",
+  "request_id": "2c4e6a8b0d1f3a5c7e9b1d3f5a7c9e0b",
+  "trace_id": "6ba7b8109dad11d180b400c04fd430c8",
+  "context": {
+    "quotas": [
+      {
+        "available": 0,
+        "limit": 2,
+        "name": "access_keys",
+        "overflow": 1,
+        "region_id": null,
+        "requested": 1,
+        "resulting_usage": 3,
+        "scope": null,
+        "unit": null,
+        "usage": 2
+      }
+    ]
+  }
+}
 ```
+
+<p>Both responses use <code>Content-Type: application/problem+json</code>. <code>error</code> stays English, and <code>title</code>, <code>detail</code>, and <code>hint</code> follow <code>Accept-Language</code> for English, French, and German.</p>
 
 ## Key deletion
 
