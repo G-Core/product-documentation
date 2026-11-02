@@ -72,6 +72,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 3. In the **Network settings** panel, select the **Network** and **Subnet** to use for the file share.
 4. In the **Access** panel, the default **Accessible for the selected subnet** option grants read/write access to all addresses on the allocated network. To restrict access by IP address, select **Custom access rules**, click **+ Add rule**, enter the **Source IP or subnet address**, and select the **Access rule mode**.
 5. Set **Additional options**, if required.
+6. Click **Create File Share**.
   </Step>
   <Step title="Set up NFS client support">
 <p>Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and set up NFS client support.</p>
@@ -101,11 +102,7 @@ sudo yum install nfs-utils
   ![File share Overview tab with mount command](/images/docs/cloud/file-shares/configure-file-shares/4-1.png)
 </Frame>
 
-<p>Mount the file share:</p>
-
-```bash
-mount 0.0.0.0:/shares/share-d54589b8-132f-4de4-ae99-af5c6cdfdb9c /mount/path
-```
+<p>Run the copied command. It contains this share's server address and export path, and it needs `sudo` when the shell is not root.</p>
 
 <p>Replace `/mount/path` with the absolute local directory path where the file share should be mounted.</p>
   </Step>
@@ -134,6 +131,8 @@ mount 0.0.0.0:/shares/share-d54589b8-132f-4de4-ae99-af5c6cdfdb9c /mount/path
 <p>The access rules cannot be configured manually — the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).</p>
 
 <p>VAST file shares always use read/write access; access rules are not supported.</p>
+
+4. Click **Create File Share**.
   </Step>
   <Step title="Add VAST network interface to a compute resource">
 <p>Once the VAST file share is created, it is best to add the VAST network interface while provisioning the compute resource.</p>
@@ -224,7 +223,7 @@ sudo dhclient enp8s0
 3. Note the **interface name** for use in the following steps. Interface names follow the format `enp8s0` or `enp4s0`.
 4. Configure the interface as described below for the relevant instance type.
 
-<p>In all commands below, replace `198.51.100.25` with the IP address from step 2, and replace `198.51.100.1` with the gateway IP — take the first three octets of the CIDR range from step 2 and append `.1`.</p>
+<p>In the commands below, replace `198.51.100.25` with the IP address from step 2. Replace `198.51.100.1` with the gateway of that subnet.</p>
 
 **Configuring VAST interface for VMs and GPU clusters**
 
@@ -372,13 +371,13 @@ sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noex
 
 ## Resizing file shares
 
-<p>VAST shares can be resized while mounted. Standard shares must be unmounted before resizing:</p>
+<p>VAST shares can be resized while mounted. Unmount a Standard share before resizing:</p>
 
 ```bash
-umount -lf /mount/path
+sudo umount /mount/path
 ```
 
-<p>After the resize, remount the Standard share as described above.</p>
+<p>If umount reports that the path is busy, close the processes that are using the share and run umount again. After the resize, remount the Standard share as described above.</p>
 
 ### Resize file share
 
@@ -402,12 +401,7 @@ In the **Overview** tab, click **Resize** and enter the new share size:
 
 <p>NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. Each step below creates one resource — network, subnet, file share — and ends with the connection point used in the mount command.</p>
 
-<p>Before picking a region, check that file shares are available there — look for `has_sfs: true` in the regions response:</p>
-
-```bash
-curl "https://api.gcore.com/cloud/v1/regions" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<p>Before picking a region, check that file shares are available there. Look for `has_sfs` set to true in the regions response.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a [project ID](/api-reference/cloud/projects/list-projects) and [region ID](/api-reference/cloud/regions/list-regions).
@@ -421,9 +415,14 @@ export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
+```bash
+curl "https://api.gcore.com/cloud/v1/regions" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
 ## Quickstart
 
-The scripts below create a private network, subnet, and 5 GiB NFS file share, then print the connection point for mounting.
+<p>The Python and Go scripts create a private network, a subnet, and an NFS file share, then print the connection point. The curl example creates the share on an existing network and subnet.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -533,7 +532,55 @@ The scripts below create a private network, subnet, and 5 GiB NFS file share, th
     }
     ```
   </Tab>
+  <Tab title="curl">
+    <p>Replace <code>NETWORK_ID</code> and <code>SUBNET_ID</code> with an existing network and subnet. The request returns a task ID.</p>
+
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name":"my-share","protocol":"NFS","size":5,"network":{"network_id":"NETWORK_ID","subnet_id":"SUBNET_ID"},"access":[{"access_mode":"rw","ip_address":"192.168.100.0/24"}]}'
+    ```
+
+    <p>Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until <code>state</code> is <code>FINISHED</code>. Read the share ID from <code>created_resources.file_shares</code>, then request the share and read <code>connection_point</code>.</p>
+
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -s "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FILE_SHARE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
 </Tabs>
+
+## Create a VAST file share
+
+<p>A VAST share does not take a network or an access rule. The POST returns a task ID.</p>
+
+```bash
+curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"my-vast-share","protocol":"NFS","size":5,"type_name":"vast"}'
+```
+
+<p>When the task <code>state</code> is <code>FINISHED</code>, read the share ID from <code>created_resources.file_shares</code> and GET the share for <code>connection_point</code>.</p>
+
+## Set a VAST quota
+
+<p>A VAST file share takes a user or group quota in <code>share_settings.quota</code> on <code>POST&nbsp;/cloud/v1/file_shares/{project_id}/{region_id}</code> and on <code>PATCH&nbsp;/cloud/v3/file_shares/{project_id}/{region_id}/{file_share_id}</code>.</p>
+
+<p><code>default_user_quota</code> and <code>default_group_quota</code> set <code>hard_limit</code> in bytes, and a later request merges with the quota already stored. <code>grace_period</code> requires <code>soft_limit</code>, and <code>overrides</code> holds at most 100 entries.</p>
+
+<p>A VAST share with no quota returns <code>quota</code> as null. <code>PATCH&nbsp;/cloud/v1/file_shares/{project_id}/{region_id}/{file_share_id}</code> rejects <code>quota</code>, and a Standard file share rejects <code>share_settings</code>.</p>
+
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v3/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"share_settings":{"quota":{"default_user_quota":{"hard_limit":104857600}}}}'
+```
 
 ## Resize the file share
 
@@ -672,6 +719,25 @@ output "connection_point" {
 ```
 
 <p>After `terraform apply`, `connection_point` holds the NFS server address and share path for the mount command, in the format `<nfs-ip>:/shares/<share-uuid>`. File share creation takes 60–90 seconds.</p>
+
+## Create a VAST file share
+
+<p>A VAST share sets <code>type_name</code> to <code>vast</code> and omits <code>network</code>. The API assigns the network, and <code>connection_point</code> is available after apply.</p>
+
+```hcl
+resource "gcore_cloud_file_share" "vast" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-vast-share"
+  protocol   = "NFS"
+  size       = 5
+  type_name  = "vast"
+}
+
+output "vast_connection_point" {
+  value = gcore_cloud_file_share.vast.connection_point
+}
+```
 
 ## Resize a file share
 
