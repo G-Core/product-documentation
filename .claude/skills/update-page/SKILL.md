@@ -71,6 +71,8 @@ Never create a new `###` heading for a fix. Never add a dedicated curl example b
 parameter that can be described in a table cell. The article already has structure — fit
 the change into it.
 
+A developer ticket is a point fix, not an epic. Edit only the sentence that states the outdated fact. Do not copy the correction into other articles, tabs, or examples that never stated it. A second place is in scope only when it states the same outdated fact.
+
 ### Ticket is a signal, not a blueprint
 
 A Jira ticket tells you **what content is missing** — not how to structure the article or
