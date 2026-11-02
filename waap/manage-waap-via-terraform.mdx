@@ -39,11 +39,26 @@ The following configuration creates a CDN resource with WAAP enabled and attache
   </Step>
   <Step title="Copy and customize the code">
     ```hcl
+    resource "gcore_cdn_origin_group" "example" {
+      name = "app-origin"
+
+      sources = [
+        {
+          source  = "origin.example.com"
+          enabled = true
+        }
+      ]
+    }
+
     resource "gcore_cdn_resource" "example" {
-      cname  = "app.example.com"
-      origin = "origin.example.com"
-      options {
-        waap { value = true }
+      cname        = "app.example.com"
+      origin_group = gcore_cdn_origin_group.example.id
+
+      options = {
+        waap = {
+          enabled = true
+          value   = true
+        }
       }
     }
 
@@ -77,8 +92,8 @@ The following configuration creates a CDN resource with WAAP enabled and attache
   </Step>
   <Step title="Configure the CDN resource">
     - Specify `cname` — the domain name to protect.
-    - Specify `origin` — the origin server hostname or IP address.
-    - Keep `waap { value = true }` to enable WAAP on this CDN resource.
+    - Set `origin_group` to the origin group that contains the origin hostname.
+    - Set `options.waap.enabled` and `options.waap.value` to true so WAAP checks requests on this CDN resource.
   </Step>
   <Step title="Configure the WAAP domain">
     - `name` — must match the CDN resource `cname`.

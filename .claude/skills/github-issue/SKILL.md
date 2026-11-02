@@ -240,6 +240,7 @@ Maintained by the agent. Update after each triage or merge.
 | 2652 | SDK updated to Python v0.56.0, Go v0.56.0 | api-sdk-tracker | 2026-09-01 | In progress | `issue/2652-sdk-waap-breaking-changes` | Breaking: `policies.toggle()` now requires `mode: bool` (Python) and `WaapDomainPolicySettingsParam{Mode}` (Go). Updated 10 WAAP policy articles. Updated prose in advanced-rules.mdx, custom-rules.mdx, ip-allowlist-and-blocklist.mdx. |
 | 3165 | SDK updated to Python v0.59.0, Go v0.59.0 | api-sdk-tracker | 2026-10-12 | In progress | `issue/3165-sdk-v059` | Rule sets are paginated and no longer embed rules. Policy enable/disable uses Update. Snapshot and streaming samples from v0.57.0 and v0.58.0 are on this branch. Pins set to v0.59.0. |
 | 3242 | SDK updated to Python v0.60.0, Go v0.60.0 | api-sdk-tracker | 2026-10-28 | PR open | `issue/3242-sdk-v060` | Logs Uploader Go target create and S3 origin key fields no longer match v0.60.0. Playlist, WAAP rule update, and cost-report samples do not call the removed fields. Pins set to v0.60.0. |
+| 3251 | Terraform provider updated to v2.0.0-rc.3 | terraform | 2026-10-31 | In progress | `issue/3251-cdn-origin-group` | Pin and pool health monitor are already on main. Two articles still set removed `origin` on `gcore_cdn_resource`. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -248,6 +249,13 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-11-02 — Issue #3251: Terraform provider v2.0.0-rc.3
+
+- Fetched issue #3251. No comments. Decision: PROCEED for the removed `origin` attribute. Pin `2.0.0-rc.3` and the pool health monitor are already on main via PR 3255.
+- The other 49 CDN articles already set `origin_group`. Secret examples still set `payload`, which remains a valid optional attribute. `managed_by` and the bucket `id` are computed. `vip_network_id`, `vip_subnet_id`, and security group `rules` are unused. No new WAAP policy article.
+- Live apply on provider 2.0.0-rc.3 created `gcore_cdn_origin_group` and `gcore_cdn_resource`. A nested `origin` argument was rejected. The test resources were destroyed.
+- Branch: `issue/3251-cdn-origin-group`.
 
 ### 2026-09-02 — Issue #2652: SDK v0.56.0 WAAP breaking changes
 
