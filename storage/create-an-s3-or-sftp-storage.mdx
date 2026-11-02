@@ -85,7 +85,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 | Details | View the hostname and connection path. Use port 2200 to connect via SFTP. |
 | Edit | Configure the server alias and the HTTP `Expires` response header for files served over HTTP. Configuration details are in the [Edit&nbsp;dialog](#edit-dialog) section. |
 | Set/Update password | Set or replace the password used to authenticate SFTP connections. |
-| Remove password | Remove password authentication from the storage. After removal, only SSH key authentication is accepted. |
+| Remove password | Remove password authentication from the storage. Add an SSH key first, because after removal SFTP accepts only an SSH key. |
 | SSH keys manager | Add or remove [SSH&nbsp;keys](/storage/manage-sftp-storage/create-and-add-an-ssh-key-to-your-storage) for SFTP authentication. Up to five keys are allowed per storage. |
 | Delete object storage | Permanently delete the storage and all its contents. This action cannot be undone. |
 
@@ -97,7 +97,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Frame>![Edit dialog for SFTP storage with Server alias and Expires fields](/images/docs/storage/create-an-s3-or-sftp-storage/sftp-expires-header-50.png)</Frame>
 
-<p>In the **Server alias** field, enter a domain name (subdomains are supported), then add a CNAME record in DNS settings: `<server_name>.<host>`. For a storage named `12345-test` in Amsterdam, the record would be `CNAME 12345-test.ams.origin.gcdn.co`.</p>
+<p>In the **Server alias** field, enter the domain that should serve the storage. Point a CNAME record for that domain at the storage hostname.</p>
+
+| DNS field | Value |
+| --- | --- |
+| Type | `CNAME` |
+| Name | The domain entered in **Server alias** |
+| Target | `12345-test.ams.origin.gcdn.co` when the storage name is `12345-test` and the hostname is `ams.origin.gcdn.co` |
 
 <p>In the **Expires** field, set the value of the HTTP `Expires` response header for files served over HTTP. Use the format `N years|months|weeks|days|hours|minutes|seconds`. The default is one year.</p>
 
@@ -552,7 +558,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 ## Update SFTP password
 
-<p>Use <code>PATCH /v4/sftp_storages/{storage_id}</code> to replace an SFTP storage's password. Set <code>password_mode</code> to <code>set</code> and provide the new value in <code>password</code>. The <code>password</code> field is only accepted when <code>password_mode</code> is <code>set</code>.</p>
+<p>Use <code>PATCH /storage/v4/sftp_storages/{storage_id}</code> to replace an SFTP storage's password. Set <code>password_mode</code> to <code>set</code> and provide the new value in <code>password</code>. The <code>password</code> field is only accepted when <code>password_mode</code> is <code>set</code>.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -772,7 +778,18 @@ terraform apply
 
 <p>Declares an SFTP storage and sets a password with the write-only arguments <code>password_wo</code> and <code>password_wo_version</code>. Terraform sends <code>password_wo</code> to the API and does not keep it in state, so the password cannot be read back from an output. After apply, use <code>full_name</code> as the login username on port 2200. Omit both password arguments to create a storage that accepts SSH keys only.</p>
 
+<p>Terraform 1.11 or later is required. Set <code>TF_VAR_sftp_password</code> to the SFTP password before apply.</p>
+
 ```hcl
+terraform {
+  required_version = ">= 1.11"
+}
+
+variable "sftp_password" {
+  type      = string
+  sensitive = true
+}
+
 resource "gcore_storage_sftp" "example" {
   location_name       = "ams"
   name                = "my-sftp-storage"
