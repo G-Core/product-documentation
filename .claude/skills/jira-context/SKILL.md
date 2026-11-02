@@ -42,7 +42,7 @@ Create the file only when it does not exist, with this table and no other conten
 |--------|--------|----------|----------|--------|
 ```
 
-If the file exists, append rows to it. After each ticket is classified, append one row before starting the next ticket. If that ticket already has a row, replace the row. Decision is `CANCEL`, `PROCEED`, or `BLOCKED`. Reason is one sentence.
+If the file exists, append rows to it. After each ticket is classified, append one row before starting the next ticket. If that ticket already has a row, replace the row. Decision is `CANCEL`, `PROCEED`, `BLOCKED`, or `NOT_PORTAL`. Reason is one sentence.
 
 If the user gave a list, a status stop or a blocking comment applies to that ticket only: write the row, then continue with the next ticket. For a single ticket, write the row, report, and stop as Phase 2 says.
 
@@ -66,6 +66,7 @@ If the format is wrong — tell the user and stop.
 **Step 4.** Fetch the linked dev ticket (if exists):
 - Description and acceptance criteria — most detailed technical spec
 - Stakeholders field — critical for classification
+- Labels and components — required to tell AI work from Customer Portal work
 - Any linked Confluence pages — fetch if present
 
 ---
@@ -103,6 +104,36 @@ Cannot start: [reason]
 - "blocked by..." / "depends on..."
 
 If any blocking signal found — append a row with Decision `BLOCKED` and the signal as Reason, then report to the user.
+
+---
+
+## Phase 2b — AI is not Customer Portal documentation
+
+Run this before Phase 3. AI has its own documentation. Do not classify it as portal documentation, do not search this repository for a portal article, and do not cancel the ticket.
+
+The Org Unit on the DOC ticket is not the source of truth. The drafting agent writes it, and it is often wrong. Open the linked developer ticket and read its labels and components.
+
+It is AI when either of these is on the developer ticket:
+
+- Component `Everywhere AI`
+- Label `ai-enhanced`
+
+One of them is enough. Org Unit `AI` on the DOC ticket does not prove it. Org Unit `Cloud` on the DOC ticket does not override the developer ticket.
+
+When the developer ticket has either marker:
+
+- The DOC ticket must have the same label, `ai-enhanced`. If that label is missing, name the missing label in the reason. Do not add it in this skill.
+- Append a row: Category `AI_DOCS`, Decision `NOT_PORTAL`, Reason one sentence that names the marker and says AI has its own documentation.
+- Output only this, then continue with the next ticket. Do not run Phase 3 or Phase 4 for this ticket.
+
+```
+Ticket: [TICKET-ID]
+Category: AI_DOCS
+Decision: NOT_PORTAL
+Reason: [1-2 sentences]
+```
+
+`NOT_PORTAL` is not `CANCEL`. Leave the Jira status unchanged.
 
 ---
 
@@ -180,6 +211,7 @@ If **none checked** → likely NOT_DOCUMENTABLE or INTERNAL_DOC. Verify with the
 | "Team DX", "DevOps team", "Backend team" in stakeholders | INTERNAL_DOC |
 | `api-reference/`, "OpenAPI", "swagger", "YAML spec" | NOT_DOCUMENTABLE |
 | "GitLab to GitHub", "migrate repo", "publish internally" | NOT_DOCUMENTABLE |
+| Developer ticket component `Everywhere AI` or label `ai-enhanced` | AI_DOCS, Decision `NOT_PORTAL`. Do not cancel. |
 
 ### Green flags (proceed)
 
@@ -257,6 +289,8 @@ Score the update based on these signals:
 **Score 0–2 → SIMPLE** — a targeted text change in one location
 **Score 3+ → COMPLEX** — involves multiple locations, restructuring, or screenshots
 
+A developer ticket is a point fix, not an epic. The scope is the sentence that states the old fact. Do not repeat the new fact in other articles, tabs, examples, or the API spec. If one sentence is wrong, the scope is that sentence. Name a second place only when that place states the same outdated fact.
+
 ---
 
 ## Output
@@ -281,7 +315,7 @@ Otherwise append the decisions-file row first, then produce this brief:
 - Complexity: [SIMPLE / COMPLEX] (for UPDATE only)
 
 ### Scope of work
-[Bullet list: what specifically needs to be added, changed, or removed]
+[Only the sentences that are wrong. One wrong sentence is one edit. Do not list places that do not state the old fact.]
 
 ### Suggested next skill
 [One of the following:]
