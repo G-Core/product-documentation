@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 2375427e0371
+  version: 4544047f5c2a
 servers:
 - url: https://api.gcore.com
 paths:
@@ -46047,6 +46047,10 @@ paths:
         - Rules that exist in the request but not in the current state will be added
         - Rules that exist in the current state but not in the request will be removed
         - To keep existing rules, they must be included in the request alongside any new rules
+        - A security group of a Kubernetes cluster can have system rules with the description `system`.
+          The cluster manages these rules. Keep them in the request without a change.
+          A request that removes or changes one of them gets 403.
+          A request that adds a rule with this description gets 400.
       parameters:
       - in: path
         name: project_id
@@ -46162,6 +46166,9 @@ paths:
       description: |-
         Add a new rule to an existing security group.
         Returns a task ID for tracking the asynchronous operation.
+
+        In a security group of a Kubernetes cluster, the description `system` marks the rules
+        that the cluster manages. A request that adds a rule with this description gets 400.
       parameters:
       - in: path
         name: project_id
@@ -46279,6 +46286,9 @@ paths:
       description: |-
         Delete a specific rule from a security group.
         Returns a task ID for tracking the asynchronous operation.
+
+        A security group of a Kubernetes cluster can have system rules with the description `system`.
+        The cluster manages these rules. A request to delete one gets 403.
       parameters:
       - in: path
         name: project_id
