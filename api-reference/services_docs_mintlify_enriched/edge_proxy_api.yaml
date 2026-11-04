@@ -1,0 +1,1515 @@
+openapi: 3.1.0
+info:
+  title: Gcore OpenAPI – Edge Proxy API
+  description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
+  version: fcde528c1488
+servers:
+- url: https://api.gcore.com
+paths:
+  /security/edgeproxy/v3/profiles:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: List proxy profiles
+      description: List proxy profiles with optional filtering by client, status, and search (matches name, origin IP, or protected IP). Sorting by default is by 'created_at' field desc.
+      operationId: list_proxy_profiles_api_edge_proxy_v3_profiles_get
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - $ref: '#/components/schemas/ProxyProfileStatus'
+          - type: 'null'
+          title: Status
+      - name: search
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          description: Search by name, origin IP or protected IP
+          title: Search
+        description: Search by name, origin IP or protected IP
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000000000
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: ordering
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 255
+          - type: 'null'
+          description: Ordering, e.g. 'created_at,name'
+          title: Ordering
+        description: Ordering, e.g. 'created_at,name'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse_ProxyProfileClientResponse_'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Create proxy profile
+      description: Create a new edge proxy profile with ACL rules. Omit `protected_ip_address` or use null for automatic allocation. For manual selection, supply an IPv4 string from any non-common pool assigned to the target customer, including restricted shared pools. Manual failures never substitute another address or pool.
+      operationId: create_proxy_profile_api_edge_proxy_v3_profiles_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProxyProfileClientCreateRequest'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyProfileClientResponse'
+        '400':
+          description: Address conflicts with active protection configuration, or edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          description: Requested protected IP is not in your assigned pools.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '409':
+          description: Requested protected IP is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/profiles/{proxy_profile_id}:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Get proxy profile
+      description: Get a specific proxy profile
+      operationId: get_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__get
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyProfileClientResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Replace proxy profile
+      description: Replace an existing edge proxy profile's name, origin, template and ACL rules.
+      operationId: update_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__put
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProxyProfileRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyProfileClientResponse'
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    patch:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Update proxy profile
+      description: Update the given fields of an existing edge proxy profile; omitted fields are kept.
+      operationId: patch_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__patch
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchProxyProfileRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProxyProfileClientResponse'
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Delete proxy profile
+      description: Delete an edge proxy profile.
+      operationId: delete_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__delete
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      responses:
+        '204':
+          description: Successful Response
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/profiles/{proxy_profile_id}/redeploy:
+    post:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Redeploy proxy profile
+      description: Redeploy an edge proxy profile.
+      operationId: redeploy_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__redeploy_post
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      responses:
+        '202':
+          description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '409':
+          description: Conflict - operation in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/profiles/{proxy_profile_id}/activate:
+    post:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Activate proxy profile
+      description: Activate an edge proxy profile.
+      operationId: activate_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__activate_post
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      responses:
+        '202':
+          description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '409':
+          description: Conflict - already active or operation in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/profiles/{proxy_profile_id}/deactivate:
+    post:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Deactivate proxy profile
+      description: Deactivate an edge proxy profile.
+      operationId: deactivate_proxy_profile_api_edge_proxy_v3_profiles__proxy_profile_id__deactivate_post
+      parameters:
+      - name: proxy_profile_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Proxy Profile Id
+      responses:
+        '202':
+          description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '409':
+          description: Conflict - already inactive or operation in progress
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/templates:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy templates
+      - public
+      - edge_proxy_public
+      - public
+      summary: List proxy templates
+      description: List proxy templates visible to the caller (own + common default). Sorted by id ascending.
+      operationId: list_proxy_templates_api_edge_proxy_v3_templates_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000000000
+          minimum: 0
+          default: 0
+          title: Offset
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse_Union_ProxyTemplateAdminResponse__ProxyTemplateUserResponse__'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/templates/{template_id}:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy templates
+      - public
+      - edge_proxy_public
+      - public
+      summary: Get proxy template
+      description: Get a proxy template visible to the caller (own or common default).
+      operationId: get_proxy_template_api_edge_proxy_v3_templates__template_id__get
+      parameters:
+      - name: template_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
+          title: Template Id
+        description: A positive integer ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                anyOf:
+                - $ref: '#/components/schemas/ProxyTemplateAdminResponse'
+                - $ref: '#/components/schemas/ProxyTemplateUserResponse'
+                title: Response Get Proxy Template Api Edge Proxy V3 Templates  Template Id  Get
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '404':
+          description: Proxy template not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/acl_limit:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: Get ACL limit
+      description: Get the client's ACL rule limit and current usage count.
+      operationId: get_acl_limit_api_edge_proxy_v3_acl_limit_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AclLimitResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /security/edgeproxy/v3/available_addresses:
+    get:
+      tags:
+      - v3
+      - edge_proxy
+      - proxy profiles
+      - public
+      - edge_proxy_public
+      summary: List available protected IPv4 addresses
+      description: 'List unallocated addresses from the customer''s assigned non-common pools, in numeric IP order. Common pools are excluded; customers without assigned pools retain automatic allocation. Empty results mean no assigned pools, empty or fully allocated pools, no prefix matches, or no matches after the cursor. Listing does not reserve addresses: creation rechecks membership and availability. Keep `starts_with` across pages and reset cursor when the filter changes.'
+      operationId: list_available_addresses_api_edge_proxy_v3_available_addresses_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: ipv4
+          - type: 'null'
+          description: Last returned IPv4 address; continue with greater addresses
+          title: Cursor
+        description: Last returned IPv4 address; continue with greater addresses
+      - name: starts_with
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            maxLength: 15
+            pattern: ^[0-9.]*$
+          - type: 'null'
+          description: Textual host IPv4 prefix, e.g. 192.0.2.1 matches .1, .10, .100. Empty disables filtering.
+          title: Starts With
+        description: Textual host IPv4 prefix, e.g. 192.0.2.1 matches .1, .10, .100. Empty disables filtering.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableAddressesResponse'
+        '400':
+          description: Edge proxy service is inactive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Request'
+          description: Forbidden
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    ACLProtocol:
+      type: string
+      enum:
+      - tcp
+      - udp
+      title: ACLProtocol
+    AclLimitResponse:
+      properties:
+        total_acl_limit:
+          type: integer
+          title: Total Acl Limit
+          description: Maximum ACL rules allowed for the client
+        current_acl_count:
+          type: integer
+          title: Current Acl Count
+          description: Total ACL rules across all non-deleted profiles
+      type: object
+      required:
+      - total_acl_limit
+      - current_acl_count
+      title: AclLimitResponse
+    AvailableAddressesResponse:
+      properties:
+        results:
+          items:
+            type: string
+            format: ipv4
+          type: array
+          title: Results
+        next_cursor:
+          anyOf:
+          - type: string
+            format: ipv4
+          - type: 'null'
+          title: Next Cursor
+      type: object
+      required:
+      - results
+      - next_cursor
+      title: AvailableAddressesResponse
+      example:
+        next_cursor: 192.0.2.11
+        results:
+        - 192.0.2.10
+        - 192.0.2.11
+    ErrorDescription:
+      properties:
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+        details:
+          anyOf:
+          - items: {}
+            type: array
+          - additionalProperties: true
+            type: object
+          - type: string
+          - type: 'null'
+          title: Details
+      type: object
+      required:
+      - error
+      - details
+      title: ErrorDescription
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    PageResponse_ProxyProfileClientResponse_:
+      properties:
+        count:
+          type: integer
+          title: Count
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next
+        previous:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previous
+        results:
+          items:
+            $ref: '#/components/schemas/ProxyProfileClientResponse'
+          type: array
+          title: Results
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      title: PageResponse[ProxyProfileClientResponse]
+      example:
+        count: 25
+        next: https://api.example.com/v2/configs?offset=10&limit=10
+        results: []
+    PageResponse_Union_ProxyTemplateAdminResponse__ProxyTemplateUserResponse__:
+      properties:
+        count:
+          type: integer
+          title: Count
+        next:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next
+        previous:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Previous
+        results:
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ProxyTemplateAdminResponse'
+            - $ref: '#/components/schemas/ProxyTemplateUserResponse'
+          type: array
+          title: Results
+      type: object
+      required:
+      - count
+      - next
+      - previous
+      - results
+      title: PageResponse[Union[ProxyTemplateAdminResponse, ProxyTemplateUserResponse]]
+      example:
+        count: 25
+        next: https://api.example.com/v2/configs?offset=10&limit=10
+        results: []
+    PatchProxyProfileRequest:
+      properties:
+        name:
+          anyOf:
+          - type: string
+            maxLength: 60
+            minLength: 1
+          - type: 'null'
+          title: Name
+          description: Name of the proxy profile
+        origin_host:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Origin Host
+          description: Origin host (IPv4 address or FQDN) for the proxy profile.
+        rules:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/PolicyRules-Input'
+            type: array
+            minItems: 1
+          - type: 'null'
+          title: Rules
+          description: Rules grouped by policy
+        template_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Template Id
+          description: ID of the proxy template to render this profile with
+      type: object
+      title: PatchProxyProfileRequest
+      example:
+        name: web-server-profile-patched
+        template_id: 3
+    PolicyRules-Input:
+      properties:
+        policy:
+          type: string
+          title: Policy
+          description: Policy that this group of mappings is associated with
+        mappings:
+          items:
+            $ref: '#/components/schemas/RuleMapping'
+          type: array
+          minItems: 1
+          title: Mappings
+          description: Protocol/port mappings for this policy
+      type: object
+      required:
+      - policy
+      - mappings
+      title: PolicyRules
+      example:
+        mappings:
+        - port: 2222
+          protocol: tcp
+        policy: minecraft
+    PolicyRules-Output:
+      properties:
+        policy:
+          type: string
+          title: Policy
+          description: Policy that this group of mappings is associated with
+        mappings:
+          items:
+            $ref: '#/components/schemas/RuleMapping'
+          type: array
+          minItems: 1
+          title: Mappings
+          description: Protocol/port mappings for this policy
+      type: object
+      required:
+      - policy
+      - mappings
+      title: PolicyRules
+      example:
+        mappings:
+        - port: 2222
+          protocol: tcp
+        policy: minecraft
+    ProxyProfileClientCreateRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          minLength: 1
+          title: Name
+          description: Name of the proxy profile
+        origin_host:
+          type: string
+          title: Origin Host
+          description: Origin host (IPv4 address or FQDN) for the proxy profile.
+        rules:
+          items:
+            $ref: '#/components/schemas/PolicyRules-Input'
+          type: array
+          minItems: 1
+          title: Rules
+          description: Rules grouped by policy
+        template_id:
+          type: integer
+          title: Template Id
+          description: ID of the proxy template to render this profile with
+        protected_ip_address:
+          anyOf:
+          - type: string
+            format: ipv4
+          - type: 'null'
+          title: Protected Ip Address
+          description: Optional manual IPv4 selection from any assigned non-common pool, including shared pools. Omit or use null for automatic allocation. Creation rechecks availability; no fallback on manual failure.
+          examples:
+          - 192.0.2.10
+          - null
+      type: object
+      required:
+      - name
+      - origin_host
+      - rules
+      - template_id
+      title: ProxyProfileClientCreateRequest
+      example:
+        name: web-server-profile
+        origin_host: 8.8.8.8
+        rules:
+        - mappings:
+          - port: 80
+            protocol: tcp
+            proxy_protocol:
+              accept_proxy: true
+              version: '2'
+          - port: 53
+            protocol: udp
+          policy: allow
+        template_id: 3
+    ProxyProfileClientResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: Unique identifier of the proxy profile
+        client_id:
+          type: integer
+          title: Client Id
+          description: Identifier of the client owning this profile
+        name:
+          type: string
+          title: Name
+          description: Name of the proxy profile
+        origin_host:
+          type: string
+          title: Origin Host
+          description: Origin host (IPv4 address or FQDN) of the proxy profile
+        protected_ip_address:
+          anyOf:
+          - type: string
+            format: ipv4
+          - type: 'null'
+          title: Protected Ip Address
+          description: Protected IP address assigned to the profile
+        status:
+          $ref: '#/components/schemas/ProxyProfileStatus'
+          description: Current status of the proxy profile
+        mode:
+          $ref: '#/components/schemas/ProxyProfileMode'
+          description: Operating mode of the profile
+        is_processing:
+          type: boolean
+          title: Is Processing
+          description: Whether the profile is currently being processed
+        is_error:
+          type: boolean
+          title: Is Error
+          description: Whether the profile is in an error state
+        error_details:
+          anyOf:
+          - $ref: '#/components/schemas/ErrorDescription'
+          - type: 'null'
+          description: Details of the error if the profile is in an error state
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp when the profile was created
+        template_id:
+          type: integer
+          title: Template Id
+          description: ID of the proxy template bound to this profile
+        rules:
+          items:
+            $ref: '#/components/schemas/PolicyRules-Output'
+          type: array
+          title: Rules
+          readOnly: true
+      type: object
+      required:
+      - id
+      - client_id
+      - name
+      - origin_host
+      - protected_ip_address
+      - status
+      - mode
+      - is_processing
+      - is_error
+      - error_details
+      - created_at
+      - template_id
+      - rules
+      title: ProxyProfileClientResponse
+      example:
+        client_id: 7
+        created_at: '2025-11-15T10:30:00Z'
+        id: 42
+        is_error: false
+        is_processing: false
+        name: web-server-profile
+        origin_host: 8.8.8.8
+        protected_ip_address: 10.0.0.50
+        rules:
+        - mappings:
+          - port: 80
+            protocol: tcp
+            proxy_protocol:
+              accept_proxy: true
+              version: '2'
+            rule_id: 3f2b8c1e-5d4a-4e6b-9c7d-1a2b3c4d5e6f
+          - port: 53
+            protocol: udp
+            rule_id: 7a9e0d2c-4b1f-4c3a-8e5d-6f7a8b9c0d1e
+          policy: allow
+        status: ACTIVE
+        template_id: 3
+    ProxyProfileMode:
+      type: string
+      enum:
+      - regular
+      - shield
+      title: ProxyProfileMode
+    ProxyProfileStatus:
+      type: string
+      enum:
+      - INACTIVE
+      - ACTIVE
+      - DELETED
+      title: ProxyProfileStatus
+    ProxyProtocolSettings:
+      properties:
+        version:
+          type: string
+          enum:
+          - '1'
+          - '2'
+          title: Version
+          description: PROXY protocol version (UDP rules must use "2")
+          default: '2'
+        accept_proxy:
+          type: boolean
+          title: Accept Proxy
+          description: Whether this rule accepts PROXY protocol
+          default: false
+      type: object
+      title: ProxyProtocolSettings
+      example:
+        accept_proxy: false
+        version: '2'
+    ProxyTemplateAdminResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: Template id
+        name:
+          type: string
+          title: Name
+          description: Template name
+        description:
+          type: string
+          title: Description
+          description: Template description
+        template:
+          type: string
+          title: Template
+          description: Jinja template body
+        client_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Client Id
+          description: Owning client; null = common default
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the scope default
+        meta:
+          anyOf:
+          - $ref: '#/components/schemas/ProxyTemplateMetaResponse'
+          - type: 'null'
+          description: Template meta (fields/policies), with `icon_url` populated per policy
+        policies:
+          items:
+            $ref: '#/components/schemas/contexts__edge_proxy__application__schemas__profile__Policy'
+          type: array
+          title: Policies
+          description: All policies declared in this template, including internal ones
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - template
+      - client_id
+      - is_default
+      - meta
+      - policies
+      title: ProxyTemplateAdminResponse
+    ProxyTemplateMetaResponse:
+      properties:
+        fields:
+          items:
+            $ref: '#/components/schemas/TemplateField'
+          type: array
+          title: Fields
+          description: Template field definitions
+        policies:
+          items:
+            $ref: '#/components/schemas/contexts__edge_proxy__application__schemas__profile__Policy'
+          type: array
+          title: Policies
+          description: Declared policies, including internal ones
+        mode:
+          anyOf:
+          - $ref: '#/components/schemas/ProxyProfileMode'
+          - type: 'null'
+          description: Operating mode this template forces onto any profile built from it
+        shields:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Shields
+          description: Shield site codes this template forces onto any profile built from it
+      type: object
+      required:
+      - fields
+      - policies
+      - mode
+      - shields
+      title: ProxyTemplateMetaResponse
+      description: 'Response-only view of ProxyTemplate.meta: policies enriched with `icon_url`/`logo_url` via `meta_out`.'
+    ProxyTemplateUserResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: Template id
+        name:
+          type: string
+          title: Name
+          description: Template name
+        description:
+          type: string
+          title: Description
+          description: Template description
+        is_default:
+          type: boolean
+          title: Is Default
+          description: Whether this is the scope default
+        policies:
+          items:
+            $ref: '#/components/schemas/contexts__edge_proxy__application__schemas__profile__Policy'
+          type: array
+          title: Policies
+          description: Policies available on this template
+        is_base:
+          type: boolean
+          title: Is Base
+          readOnly: true
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - is_default
+      - policies
+      - is_base
+      title: ProxyTemplateUserResponse
+      description: |-
+        Client-facing view: only non-sensitive identifying fields.
+
+        The raw Jinja body and meta are deliberately withheld from non-admin callers;
+        `policies` is derived from meta with internal/debug policy ids filtered out.
+    Request:
+      properties: {}
+      type: object
+      title: Request
+    RuleMapping:
+      properties:
+        protocol:
+          $ref: '#/components/schemas/ACLProtocol'
+          description: Protocol for the ACL rule
+        proxy_protocol:
+          anyOf:
+          - $ref: '#/components/schemas/ProxyProtocolSettings'
+          - type: 'null'
+          description: PROXY protocol settings for this rule; omit or null to disable
+        outbound_port:
+          anyOf:
+          - type: integer
+            maximum: 65535
+            minimum: 1
+          - type: 'null'
+          title: Outbound Port
+          description: Origin port to connect to for this rule; omit to mirror the inbound port (default behavior)
+        rule_id:
+          type: string
+          format: uuid
+          title: Rule Id
+          description: Persistent id of this mapping. Echo it on update to keep the mapping's identity; a mapping sent without it is a new mapping
+        port:
+          type: integer
+          maximum: 65535
+          minimum: 1
+          title: Port
+          description: Destination port
+      type: object
+      required:
+      - protocol
+      - port
+      title: RuleMapping
+      example:
+        port: 2222
+        protocol: tcp
+    TemplateField:
+      properties:
+        name:
+          type: string
+          title: Name
+        name_in_config:
+          type: string
+          title: Name In Config
+        description:
+          type: string
+          title: Description
+        required:
+          type: boolean
+          title: Required
+        validation_schema:
+          additionalProperties: true
+          type: object
+          title: Validation Schema
+      type: object
+      required:
+      - name_in_config
+      title: TemplateField
+      description: One entry of ProxyTemplateMeta['fields']; `required` is descriptive only, not enforced.
+    UpdateProxyProfileRequest:
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          minLength: 1
+          title: Name
+          description: Name of the proxy profile
+        origin_host:
+          type: string
+          title: Origin Host
+          description: Origin host (IPv4 address or FQDN) for the proxy profile.
+        rules:
+          items:
+            $ref: '#/components/schemas/PolicyRules-Input'
+          type: array
+          minItems: 1
+          title: Rules
+          description: Rules grouped by policy
+        template_id:
+          type: integer
+          title: Template Id
+          description: ID of the proxy template to render this profile with
+      type: object
+      required:
+      - name
+      - origin_host
+      - rules
+      - template_id
+      title: UpdateProxyProfileRequest
+      example:
+        name: web-server-profile-updated
+        origin_host: 1.1.1.1
+        rules:
+        - mappings:
+          - port: 80
+            protocol: tcp
+            proxy_protocol:
+              accept_proxy: true
+              version: '2'
+            rule_id: 3f2b8c1e-5d4a-4e6b-9c7d-1a2b3c4d5e6f
+          policy: allow
+        template_id: 3
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    contexts__edge_proxy__application__schemas__profile__Policy:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique identifier of the policy
+        name:
+          type: string
+          title: Name
+          description: Name of the policy
+        description:
+          type: string
+          title: Description
+          description: Description of the policy
+        icon_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Icon Url
+          description: Absolute URL to the policy's icon, if set
+        logo_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url
+          description: 'Deprecated: use `logo_url_light`. Equal to `logo_url_light`.'
+        logo_url_light:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url Light
+          description: Absolute URL to the policy's light-theme logo, if one was uploaded as that variant.
+        logo_url_dark:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Logo Url Dark
+          description: Absolute URL to the policy's dark-theme logo, if one was uploaded as that variant.
+      type: object
+      required:
+      - id
+      - name
+      - description
+      - icon_url
+      - logo_url
+      - logo_url_light
+      - logo_url_dark
+      title: Policy
+      example:
+        description: Allow traffic matching the rule to pass through the proxy
+        id: allow
+        name: Allow
+  securitySchemes:
+    APIKey:
+      description: |-
+        API key for authentication. Make sure to include the word `apikey`, followed by a single space and then your token.
+        Example: `apikey 1234_abcdef`
+      type: apiKey
+      in: header
+      name: Authorization
+tags:
+- name: edge_proxy
+- name: edge_proxy_public
+- name: proxy profiles
+- name: proxy templates
+- name: public
+- name: v3
+x-tagGroups:
+- name: Edge Proxy API
+  tags:
+  - edge_proxy
+  - edge_proxy_public
+  - proxy profiles
+  - proxy templates
+  - public
+  - v3
+security:
+- APIKey: []
