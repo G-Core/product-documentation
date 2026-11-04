@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 959f39b56053
+  version: e6aa9de0e2d5
 servers:
 - url: https://api.gcore.com
 tags:
@@ -6848,7 +6848,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LECertificatePreValidationError'
+                $ref: '#/components/schemas/LECertificatePreValidationErrors'
       x-codeSamples:
       - lang: Python
         source: |-
@@ -9715,11 +9715,9 @@ components:
       - $ref: '#/components/schemas/SourcesShouldBeEnabledError'
       - $ref: '#/components/schemas/OriginSourceNotResolvedError'
       - $ref: '#/components/schemas/OriginSourceWrongPortError'
-      - $ref: '#/components/schemas/OriginSourcePrivateNetworkError'
       - $ref: '#/components/schemas/OriginSourceForbiddenNetworkError'
       - $ref: '#/components/schemas/OriginSourceBadIPError'
       - $ref: '#/components/schemas/OriginSourceInvalidError'
-      - $ref: '#/components/schemas/OriginSourceIPv4Error'
       - $ref: '#/components/schemas/AuthTypeInvalidValueError'
       - $ref: '#/components/schemas/AuthInvalidWithNoneAuthTypeValueError'
       - $ref: '#/components/schemas/OriginGroupOriginsForbiddenForPrivateOriginError'
@@ -9763,11 +9761,9 @@ components:
       - $ref: '#/components/schemas/SourcesShouldBeEnabledError'
       - $ref: '#/components/schemas/OriginSourceNotResolvedError'
       - $ref: '#/components/schemas/OriginSourceWrongPortError'
-      - $ref: '#/components/schemas/OriginSourcePrivateNetworkError'
       - $ref: '#/components/schemas/OriginSourceForbiddenNetworkError'
       - $ref: '#/components/schemas/OriginSourceBadIPError'
       - $ref: '#/components/schemas/OriginSourceInvalidError'
-      - $ref: '#/components/schemas/OriginSourceIPv4Error'
       - $ref: '#/components/schemas/AuthTypeInvalidValueError'
       - $ref: '#/components/schemas/AuthInvalidWithNoneAuthTypeValueError'
       - $ref: '#/components/schemas/OriginGroupOriginsForbiddenForPrivateOriginError'
@@ -10545,11 +10541,9 @@ components:
       - $ref: '#/components/schemas/SourcesShouldBeEnabledError'
       - $ref: '#/components/schemas/OriginSourceNotResolvedError'
       - $ref: '#/components/schemas/OriginSourceWrongPortError'
-      - $ref: '#/components/schemas/OriginSourcePrivateNetworkError'
       - $ref: '#/components/schemas/OriginSourceForbiddenNetworkError'
       - $ref: '#/components/schemas/OriginSourceBadIPError'
       - $ref: '#/components/schemas/OriginSourceInvalidError'
-      - $ref: '#/components/schemas/OriginSourceIPv4Error'
       - $ref: '#/components/schemas/AuthTypeInvalidValueError'
       - $ref: '#/components/schemas/AuthInvalidWithNoneAuthTypeValueError'
       - $ref: '#/components/schemas/OriginGroupOriginsForbiddenForPrivateOriginError'
@@ -11868,15 +11862,42 @@ components:
               example:
               - Let's Encrypt certificate issuing is not started yet.
     LECertificatePreValidationError:
+      title: Pre-validation of the resource's domains failed
       type: object
+      required:
+      - errors
       properties:
         errors:
           type: array
           items:
             type: string
-          description: Errors occurred during resource pre-validation. Check the response to get more details.
+          description: One message for each domain of the resource that failed the check.
           example:
-          - An error occurred when connecting to the validation URL. Please ensure that DNS records are pointed to our services, and check whether the rules you created overlap the path "/.well-known/acme-challenge/". If you have just created a CDN resource, it may take up to 15 minutes to activate it. In this case, please wait until the CDN resource is activated and try to issue the certificate again.
+          - 'An error occurred when connecting to the validation URL. Please ensure that DNS records are pointed to our services, and check whether the rules you created overlap the path "/.well-known/acme-challenge/". If you have just created a CDN resource, it may take up to 15 minutes to activate it. In this case, please wait until the CDN resource is activated and try to issue the certificate again. Problem detected: The connection timed out.'
+    LECertificatePreValidationErrors:
+      oneOf:
+      - $ref: '#/components/schemas/LECertificatePreValidationError'
+      - $ref: '#/components/schemas/LECertificatePreValidationResourceError'
+    LECertificatePreValidationResourceError:
+      title: Let's Encrypt certificate cannot be issued for the resource
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: object
+          required:
+          - resource
+          properties:
+            resource:
+              type: array
+              items:
+                type: string
+              description: |-
+                The resource cannot get a Let's Encrypt certificate: Let's Encrypt issuing is disabled for your account,
+                the resource has a wildcard CNAME, or HTTPS is already provided for the resource's domain.
+              example:
+              - We cannot issue a Let's Encrypt certificate for a resource with a wildcard cname.
     LEChallengeStatus:
       type: object
       properties:
@@ -13084,26 +13105,6 @@ components:
                       description: The specified origin source belongs to a forbidden network. Please specify the origin source that belongs to a public network.
                       example:
                       - The domain name's IP belongs to a forbidden network. Please use another domain name.
-    OriginSourceIPv4Error:
-      title: Origin domain IP is not IPv4
-      type: object
-      properties:
-        errors:
-          type: object
-          properties:
-            sources:
-              type: object
-              properties:
-                origin.example.org:
-                  type: object
-                  properties:
-                    source:
-                      type: array
-                      items:
-                        type: string
-                      description: The specified origin domain IP is not IPv4. Please specify a domain that has an IPv4 address.
-                      example:
-                      - The domain name's IP is not IPv4. Please use another domain name.
     OriginSourceInvalidError:
       title: Port origin source value is incorrect
       type: object
@@ -13175,29 +13176,9 @@ components:
                       type: array
                       items:
                         type: string
-                      description: The specified origin source cannot be resolved. Please use a registered domain as the origin source.
+                      description: The origin domain does not resolve to public IPv4 addresses. Please use a domain that resolves to public IPv4 addresses only.
                       example:
                       - The domain name cannot be resolved. Please specify a valid domain name.
-    OriginSourcePrivateNetworkError:
-      title: Origin source belongs to private network
-      type: object
-      properties:
-        errors:
-          type: object
-          properties:
-            sources:
-              type: object
-              properties:
-                192.168.0.1:
-                  type: object
-                  properties:
-                    source:
-                      type: array
-                      items:
-                        type: string
-                      description: The specified origin source belongs to a private network. Please specify the origin source that belongs to a public network.
-                      example:
-                      - The domain name's IP belongs to a private network. Please use another domain name.
     OriginSourceShouldNotHavePortError:
       title: Origin source cannot have port
       type: object
