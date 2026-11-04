@@ -26,7 +26,18 @@
     return banner;
   }
 
+  function isHomePage() {
+    var path = window.location.pathname.replace(/\/+$/, '') || '/';
+    return path === '/' || path === '/home';
+  }
+
   function mount() {
+    if (isHomePage()) {
+      var homeBanner = document.getElementById(BANNER_ID);
+      if (homeBanner) homeBanner.remove();
+      return;
+    }
+
     var content = document.querySelector('.mdx-content');
     if (!content || !content.parentElement) return;
 
@@ -35,8 +46,10 @@
       existing.remove();
       existing = null;
     }
-    var link = existing || createBanner();
     var toolbar = document.querySelector('.feedback-toolbar');
+    if (existing && toolbar && existing.nextElementSibling === toolbar) return;
+    if (existing && existing.previousElementSibling === content) return;
+    var link = existing || createBanner();
     if (toolbar && toolbar.parentElement) {
       toolbar.parentElement.insertBefore(link, toolbar);
       return;
@@ -45,13 +58,20 @@
     content.parentElement.insertBefore(link, content.nextSibling);
   }
 
+  var scheduled = false;
+
   function schedule() {
-    mount();
-    window.requestAnimationFrame(mount);
-    window.setTimeout(mount, 50);
-    window.setTimeout(mount, 300);
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(function () {
+      scheduled = false;
+      mount();
+    });
   }
 
   schedule();
   window.addEventListener('mintlify:navigate', schedule);
+  if (document.body) {
+    new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
+  }
 })();
