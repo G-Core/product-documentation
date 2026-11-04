@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
   title: Gcore OpenAPI – FastEdge Reseller API
-  version: c321511e2451
+  version: 9e780399eed2
 servers:
 - url: https://api.gcore.com
 tags:
@@ -36,7 +36,7 @@ paths:
           format: int64
           minimum: 1
           type: integer
-      - description: Filter by application name (case-insensitive partial match)
+      - description: Filter by application name (exact match)
         in: query
         name: name
         required: false
@@ -169,6 +169,16 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
+          optional: true
+        - key: plan
+          key_type: plan_id
+          optional: true
+        - key: binary
+          key_type: binary_id
+          optional: true
         resource: application
   /fastedge/v1/admin/apps/{app_id}:
     delete:
@@ -209,6 +219,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: app_id
+          key_type: app_id
         resource: application
     get:
       description: |-
@@ -249,6 +262,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: app_id
+          key_type: app_id
         resource: application
     patch:
       description: |-
@@ -306,6 +322,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: app_id
+          key_type: app_id
         resource: application
     put:
       description: |-
@@ -357,47 +376,9 @@ paths:
         domain:
         - reseller
         - admin
-        resource: application
-  /fastedge/v1/admin/apps/client/{client_id}:
-    get:
-      deprecated: true
-      operationId: listAppsClient
-      parameters:
-      - description: ID of the client
-        in: path
-        name: client_id
-        required: true
-        schema:
-          format: int64
-          type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  apps:
-                    items:
-                      $ref: '#/components/schemas/app_short_admin'
-                    type: array
-                required:
-                - apps
-                type: object
-          description: Returns list of applications for the specified client
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-          description: Bad request
-      summary: Get apps for the specified client (use /v1/admin/apps instead)
-      tags:
-      - Apps
-      x-permissions:
-        action: read
-        domain:
-        - reseller
-        - admin
+        entities:
+        - key: app_id
+          key_type: app_id
         resource: application
   /fastedge/v1/admin/clients:
     get:
@@ -420,17 +401,17 @@ paths:
           maxLength: 320
           minLength: 3
           type: string
-      - description: Filter by group ID (shows clients that belong to this group)
+      - description: Filter by client ID
         in: query
-        name: group__incl
+        name: client_id
         required: false
         schema:
           format: int64
           minimum: 1
           type: integer
-      - description: Filter by client ID
+      - description: Filter by group ID (shows clients that belong to this group)
         in: query
-        name: client_id
+        name: group__incl
         required: false
         schema:
           format: int64
@@ -540,6 +521,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
         resource: client
     put:
       description: Modify client account settings including plan and network assignments.
@@ -584,6 +568,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
         resource: client
   /fastedge/v1/admin/groups:
     get:
@@ -663,6 +650,13 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client__incl
+          key_type: client_id
+          optional: true
+        - key: template__incl
+          key_type: template_id
+          optional: true
         resource: group
     post:
       description: |-
@@ -756,6 +750,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: group_id
+          key_type: group_id
         resource: group
     get:
       description: |-
@@ -793,6 +790,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: group_id
+          key_type: group_id
         resource: group
     put:
       description: |-
@@ -855,6 +855,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: group_id
+          key_type: group_id
         resource: group
   /fastedge/v1/admin/groups/{group_id}/client/{client_id}:
     delete:
@@ -902,6 +905,11 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: group_id
+          key_type: group_id
+        - key: client_id
+          key_type: client_id
         resource: group
     post:
       description: |-
@@ -948,6 +956,11 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: group_id
+          key_type: group_id
+        - key: client_id
+          key_type: client_id
         resource: group
   /fastedge/v1/admin/networks:
     get:
@@ -974,11 +987,17 @@ paths:
                 - networks
           description: Returns list of available networks for the client
       summary: List available networks
+      tags:
+      - Clients
       x-permissions:
         action: read
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
+          optional: true
         resource: network
   /fastedge/v1/admin/plans:
     get:
@@ -1016,6 +1035,10 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
+          optional: true
         resource: plan
     post:
       description: |-
@@ -1042,6 +1065,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
           description: Bad request
+        '403':
+          description: Forbidden, reseller ID is not allowed
         '503':
           content:
             application/json:
@@ -1056,6 +1081,10 @@ paths:
         action: create
         domain:
         - admin
+        entities:
+        - in: body
+          key: reseller_id
+          key_type: reseller_id
         resource: plan
   /fastedge/v1/admin/plans/{plan_id}:
     delete:
@@ -1093,6 +1122,9 @@ paths:
         action: delete
         domain:
         - admin
+        entities:
+        - key: plan_id
+          key_type: plan_id
         resource: plan
     get:
       description: Retrieve complete configuration for a specific subscription plan.
@@ -1120,6 +1152,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: plan_id
+          key_type: plan_id
         resource: plan
     put:
       description: |-
@@ -1164,6 +1199,9 @@ paths:
         action: update
         domain:
         - admin
+        entities:
+        - key: plan_id
+          key_type: plan_id
         resource: plan
   /fastedge/v1/admin/prebilling:
     post:
@@ -1253,6 +1291,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
           description: Bad request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Forbidden, client ID or network is not allowed
         '503':
           content:
             application/json:
@@ -1260,67 +1304,6 @@ paths:
                 $ref: '#/components/schemas/error'
           description: Service unavailable
       summary: Get prebilling data
-      tags:
-      - Billing
-      x-permissions:
-        action: read
-        domain:
-        - reseller
-        - admin
-        resource: prebilling
-  /fastedge/v1/admin/prebilling_consumption:
-    get:
-      deprecated: true
-      operationId: listPrebillingConsumption
-      parameters:
-      - description: Start date in yyyy-MM-dd format
-        in: query
-        name: from
-        required: true
-        schema:
-          format: date
-          type: string
-      - description: End date in yyyy-MM-dd format
-        in: query
-        name: to
-        required: true
-        schema:
-          format: date
-          type: string
-      - description: Limit for pagination
-        in: query
-        name: limit
-        required: true
-        schema:
-          format: int32
-          type: integer
-      - description: Offset for pagination
-        in: query
-        name: offset
-        required: true
-        schema:
-          format: int32
-          type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/prebillingConsumptionResponse'
-          description: Returns prebilling consumption data for the specified parameters
-        '400':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-          description: Bad request
-        '503':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/error'
-          description: Service unavailable
-      summary: Get prebilling consumption
       tags:
       - Billing
       x-permissions:
@@ -1395,6 +1378,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
           description: Bad request
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+          description: Forbidden
       summary: Get aggregated FastEdge usage statistics
       tags:
       - Stats
@@ -1498,6 +1487,13 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: client_id
+          key_type: client_id
+          optional: true
+        - key: template_id
+          key_type: template_id
+          optional: true
         resource: template
   /fastedge/v1/admin/template/{template_id}:
     delete:
@@ -1540,6 +1536,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: template_id
+          key_type: template_id
         resource: template
     get:
       description: |-
@@ -1571,6 +1570,9 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: template_id
+          key_type: template_id
         resource: template
     put:
       operationId: updateTemplateAdmin
@@ -1618,6 +1620,12 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: template_id
+          key_type: template_id
+        - in: body
+          key: binary_id
+          key_type: binary_id
         resource: template
   /fastedge/v1/admin/template/{template_id}/share:
     delete:
@@ -1661,6 +1669,12 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: template_id
+          key_type: template_id
+        - key: group_id
+          key_type: group_id
+          optional: true
         resource: template
     post:
       operationId: shareToGroup
@@ -1703,6 +1717,12 @@ paths:
         domain:
         - reseller
         - admin
+        entities:
+        - key: template_id
+          key_type: template_id
+        - key: group_id
+          key_type: group_id
+          optional: true
         resource: template
 components:
   schemas:
@@ -2262,43 +2282,6 @@ components:
           default: 0
           writeOnly: true
           x-go-type-skip-optional-pointer: true
-    prebillingConsumptionData:
-      type: object
-      properties:
-        client_id:
-          type: integer
-        date:
-          type: string
-          format: date
-        subproduct:
-          type: string
-        metric_value:
-          type: integer
-        metric_unit:
-          type: string
-        metric_name:
-          type: string
-    prebillingConsumptionPagination:
-      type: object
-      properties:
-        total_pages:
-          type: integer
-          format: int32
-        current_page:
-          type: integer
-          format: int32
-        limit:
-          type: integer
-          format: int32
-    prebillingConsumptionResponse:
-      type: object
-      properties:
-        pagination:
-          $ref: '#/components/schemas/prebillingConsumptionPagination'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/prebillingConsumptionData'
     prebillingMetric:
       type: object
       properties:

@@ -4,7 +4,7 @@ info:
   license:
     name: Proprietary
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: d0a35b03ba63
+  version: bab38d72d5e5
 servers:
 - url: https://api.gcore.com
 tags:
@@ -255,7 +255,10 @@ paths:
       tags:
       - Users
       summary: Get users
+      deprecated: true
       description: |-
+        **Deprecated:** This endpoint is deprecated. Use `GET /v2/users` instead.
+
         Get a list of users.
 
         Pass a value for the `limit` parameter in your request if you want retrieve a paginated result.
@@ -313,6 +316,8 @@ paths:
       tags:
       - Users
       summary: Get user's details
+      deprecated: true
+      description: '**Deprecated:** This endpoint is deprecated. Use `GET /v2/users/{user_id}` instead.'
       parameters:
       - $ref: '#/components/parameters/UserID'
       responses:
@@ -1096,6 +1101,151 @@ paths:
           		panic(err.Error())
           	}
           }
+  /iam/v2/users:
+    get:
+      operationId: iamListUsersV2
+      tags:
+      - Users
+      summary: List users
+      description: |-
+        List the users of the caller's own client. Replaces the deprecated `GET /users`.
+
+        Filtering follows the standard query filtering rules: `ids` and `langs` are
+        repeated flat parameters (OR), e.g. `ids=1&ids=2`; `email`, `name` and
+        `created_at` require a bracket operator, e.g. `email[contains]=example.com`.
+        Sorting is `order_by=field.direction` (e.g. `order_by=created_at.desc`, the
+        default); results are paginated with `limit`/`offset`.
+      parameters:
+      - name: ids
+        in: query
+        required: false
+        style: form
+        explode: true
+        description: Filter by user id. Repeat the parameter for several values (OR), e.g. `ids=1&ids=2`.
+        schema:
+          type: array
+          items:
+            type: integer
+      - name: email
+        in: query
+        required: false
+        style: deepObject
+        explode: true
+        description: |-
+          Filter by email, case-insensitive. Bracket operator required: `email[exact]`,
+          `email[prefix]`, `email[contains]` or `email[suffix]`, e.g. `email[contains]=example.com`.
+        schema:
+          type: object
+          additionalProperties: {}
+      - name: name
+        in: query
+        required: false
+        style: deepObject
+        explode: true
+        description: |-
+          Filter by name, case-insensitive. Bracket operator required: `name[exact]`,
+          `name[prefix]`, `name[contains]` or `name[suffix]`, e.g. `name[prefix]=Jo`.
+        schema:
+          type: object
+          additionalProperties: {}
+      - name: created_at
+        in: query
+        required: false
+        style: deepObject
+        explode: true
+        description: |-
+          Filter by creation time. Bracket operator required: `created_at[gte]`,
+          `created_at[gt]`, `created_at[lt]` or `created_at[lte]` (ISO 8601), e.g.
+          `created_at[gte]=2026-01-01T00:00:00Z&created_at[lt]=2026-02-01T00:00:00Z`.
+        schema:
+          type: object
+          additionalProperties: {}
+      - name: langs
+        in: query
+        required: false
+        style: form
+        explode: true
+        description: Filter by interface language. Repeat the parameter for several values (OR), e.g. `langs=en&langs=ru`.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - az
+            - de
+            - en
+            - ru
+            - zh
+      - name: auth_type
+        in: query
+        required: false
+        description: Filter by login method - a specific social provider, 'sso', or 'password'.
+        schema:
+          type: string
+          enum:
+          - password
+          - sso
+          - google-oauth2
+          - github
+      - name: order_by
+        in: query
+        required: false
+        description: |-
+          Sort order as `field.direction`, e.g. `order_by=created_at.desc`. Allowed
+          fields: `created_at`, `email`, `name`. Defaults to `created_at.desc`.
+        schema:
+          type: string
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedClientUserV2List'
+        '401':
+          $ref: '#/components/responses/401'
+  /iam/v2/users/{user_id}:
+    get:
+      operationId: iamGetUserV2
+      tags:
+      - Users
+      summary: Get user
+      description: Get a single user of the caller's own client. Replaces the deprecated `GET /users/{userId}`.
+      parameters:
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientUserV2'
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          description: User not found.
+  /iam/v2/users/me:
+    get:
+      operationId: iamGetCurrentUserV2
+      tags:
+      - Users
+      summary: Get current user
+      description: The authenticated user's own profile, including the clients they belong to.
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientUserMeV2'
+        '401':
+          $ref: '#/components/responses/401'
 components:
   schemas:
     AccessToken:
@@ -1344,9 +1494,181 @@ components:
           example: 456
         role:
           $ref: '#/components/schemas/Group'
+    ClientUserMeV2:
+      type: object
+      description: The client-tier caller's own profile, including the clients they belong to.
+      required:
+      - id
+      - email
+      - name
+      - client
+      - groups
+      - activated
+      - user_type
+      - two_fa
+      - auth_types
+      - created_at
+      - clients_and_roles
+      - show_chat
+      - can_disable_2fa
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: User's email address used for login and notifications.
+        name:
+          type: string
+          maxLength: 255
+          description: Full name of the user.
+        client:
+          type: integer
+          nullable: true
+          readOnly: true
+        lang:
+          $ref: '#/components/schemas/LangEnumV2'
+        phone:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: User phone
+        groups:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GroupV2'
+        activated:
+          type: boolean
+          readOnly: true
+          description: Whether the user's membership in this client is activated.
+        user_type:
+          type: string
+          readOnly: true
+        two_fa:
+          type: boolean
+          description: Indicates whether two-factor authentication (TOTP) is enabled for the user.
+        auth_types:
+          type: array
+          readOnly: true
+          items:
+            type: string
+          description: List of authentication methods available to the user (e.g., 'password', 'sso').
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+        clients_and_roles:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/ClientsAndRolesV2'
+        show_chat:
+          type: boolean
+          readOnly: true
+          description: Whether the support chat widget should be shown.
+        can_disable_2fa:
+          type: boolean
+          readOnly: true
+          description: False when the user cannot disable their own 2FA because they are an active member of an account that enforces 2FA. Use it to disable the Disable-2FA control.
+    ClientUserV2:
+      type: object
+      description: Fixed field set for /v2/users.
+      required:
+      - id
+      - email
+      - name
+      - client
+      - groups
+      - activated
+      - user_type
+      - two_fa
+      - auth_types
+      - created_at
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          description: User's email address used for login and notifications.
+        name:
+          type: string
+          maxLength: 255
+          description: Full name of the user.
+        client:
+          type: integer
+          nullable: true
+          readOnly: true
+        lang:
+          $ref: '#/components/schemas/LangEnumV2'
+        phone:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: User phone
+        groups:
+          type: array
+          readOnly: true
+          items:
+            $ref: '#/components/schemas/GroupV2'
+        activated:
+          type: boolean
+          readOnly: true
+          description: Whether the user's membership in this client is activated.
+        user_type:
+          type: string
+          readOnly: true
+        two_fa:
+          type: boolean
+          description: Indicates whether two-factor authentication (TOTP) is enabled for the user.
+        auth_types:
+          type: array
+          readOnly: true
+          items:
+            type: string
+          description: List of authentication methods available to the user (e.g., 'password', 'sso').
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
     ClientWebsite:
       type: string
       description: The company website.
+    ClientsAndRolesV2:
+      type: object
+      required:
+      - client_id
+      - client_company_name
+      - user_roles
+      - user_id
+      - auth_types
+      properties:
+        client_id:
+          type: integer
+          readOnly: true
+        client_company_name:
+          type: string
+          readOnly: true
+        user_roles:
+          type: array
+          readOnly: true
+          items:
+            type: string
+        user_id:
+          type: integer
+          readOnly: true
+        auth_types:
+          type: array
+          readOnly: true
+          items:
+            type: string
     CreateTokenError:
       oneOf:
       - title: Invalid role
@@ -1498,6 +1820,18 @@ components:
           - Engineers
           - Purge and Prefetch only (API)
           - Purge and Prefetch only (API+Web)
+    GroupV2:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
     InviteUserError:
       oneOf:
       - allOf:
@@ -1562,6 +1896,14 @@ components:
           description: This message describes error if json schema from your request is invalid.
           example: |
             JSON parse error - Expecting ',' delimiter: line 3 column 33 (char 77)
+    LangEnumV2:
+      type: string
+      enum:
+      - az
+      - de
+      - en
+      - ru
+      - zh
     Language:
       type: string
       description: |-
@@ -1676,6 +2018,29 @@ components:
         username: you@yourcompany.com
         password: yourpassword
         one_time_password: authenticator passcode
+    PaginatedClientUserV2List:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          format: uri
+          nullable: true
+          example: https://api.gcore.com/iam/v2/users?offset=400&limit=100
+        previous:
+          type: string
+          format: uri
+          nullable: true
+          example: https://api.gcore.com/iam/v2/users?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientUserV2'
     PaginatedUsersArray:
       type: object
       required:
