@@ -4,13 +4,11 @@ sidebarTitle: Connect Claude Code
 description: Set up Claude Code with Gcore MCP Server, authenticate, configure the server, and verify the connection.
 ---
 
-Claude Code is the recommended client for Gcore MCP Server due to its deferred schema loading. It fetches tool schemas on demand when they match a query, allowing it to work with all Gcore tools without context window limits.
+Claude Code connects to Gcore MCP Server in dynamic mode. Leave `GCORE_TOOLS` unset. The client receives six tools and can reach every operation. Pattern rules for a narrower set are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
 
-## Prerequisites
-
-- [Gcore API token](/account-settings/api-tokens) with permissions for the operations to perform
-- [uv package manager](https://docs.astral.sh/uv/getting-started/installation/) installed
-- Git for Windows (Windows only) — download from [git-scm.com](https://git-scm.com/download/win)
+- [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens) with permissions for the operations to perform
+- [uv&nbsp;package&nbsp;manager](https://docs.astral.sh/uv/getting-started/installation/) installed
+- **Git for Windows**: required on Windows. Download it from [git-scm.com](https://git-scm.com/download/win).
 
 ## Step 1. Install Claude Code
 
@@ -101,15 +99,14 @@ Add the Gcore MCP Server entry to the `mcpServers` section:
         "gcore-mcp-server"
       ],
       "env": {
-        "GCORE_API_KEY": "your-api-key",
-        "GCORE_TOOLS": "*"
+        "GCORE_API_KEY": "API_TOKEN"
       }
     }
   }
 }
 ```
 
-Replace `your-api-key` with the [Gcore API token](/account-settings/api-tokens). Save the file.
+Replace `API_TOKEN` with the [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens). Save the file.
 
 <Warning>
 If the configuration file already contains other settings, merge the `mcpServers` section without overwriting existing content. JSON syntax errors cause Claude Code to fail silently.
@@ -149,14 +146,14 @@ A successful response displays CDN resource details, including resource ID, CNAM
 If the server shows `Failed to connect`, verify that uv is installed and the API key is valid. Test the API key independently:
 
 ```bash
-curl -H "Authorization: APIKey your-api-key" https://api.gcore.com/cdn/resources
+curl -H "Authorization: APIKey API_TOKEN" https://api.gcore.com/cdn/resources
 ```
 
 A 200 response confirms valid credentials. A 401 response indicates an invalid or expired key.
 </Warning>
 
-## Tool search behavior
+## Tools the server exposes
 
-When a query mentions a product or operation, Claude Code searches tool names and descriptions for matches, loads schemas for matched tools, and executes the appropriate tool. The query "create a CDN resource" triggers a search for `cdn` and `create` patterns, returning only the relevant tool schema rather than loading all tools.
+The configuration above leaves `GCORE_TOOLS` unset, so Claude Code receives `search_tools`, `get_tool_schema`, `call_read_tool`, `call_write_tool`, `call_destructive_tool`, and `execute_code`.
 
-Setting `GCORE_TOOLS=*` enables all available tools. This configuration is appropriate for Claude Code because schemas load only when needed. Other clients require [tool filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools) to avoid context window limits.
+Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode. `GCORE_TOOLS=*` in that mode registers 817 tools, one per operation. A value that matches nothing exits with status 2. Limit the set with [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).

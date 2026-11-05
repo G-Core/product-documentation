@@ -1,118 +1,65 @@
 ---
 title: Filter tools with GCORE_TOOLS
 sidebarTitle: Filter tools
-description: Control which tools the Gcore MCP Server exposes with the GCORE_TOOLS environment variable using toolsets, wildcards, and exact names.
+description: Limit which Gcore MCP Server operations a client can call.
 ---
 
-Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed by the server, reducing context consumption and improving tool selection accuracy.
+Gcore MCP Server exposes six tools by default and can reach every operation through them. `GCORE_TOOLS` limits that set. `GCORE_MCP_MODE=direct` with the same variable registers one tool per matched operation instead.
 
-## Tool filtering overview
-
-Gcore MCP Server provides approximately 720 tools covering the full API surface. Loading all tools consumes significant context window space, leaving less room for conversation. When too many similar tools are available, models may select incorrect tools or produce slower responses due to schema processing overhead.
-
-Claude Code handles large tool sets through deferred loading—tool schemas load on demand rather than at startup. Other clients require explicit filtering to function properly.
-
-## Filter syntax
-
-The `GCORE_TOOLS` variable accepts predefined toolset names, wildcard patterns, and exact tool names. These can be combined in a single value separated by commas.
-
-Predefined toolsets are named collections of related tools:
+Patterns are SDK paths, comma-separated. A value that matches nothing stops the server before it accepts connections. Check a pattern with no API key:
 
 ```bash
-GCORE_TOOLS="instances"
-GCORE_TOOLS="instances,management"
+gcore-mcp-server --list "dns.zones"
 ```
 
-Wildcard patterns match tools by name prefix using `*`:
+The command prints the matching operations and a count out of 817.
+
+## Dynamic mode
+
+With `GCORE_TOOLS` and `GCORE_MCP_MODE` both unset, the client receives `search_tools`, `get_tool_schema`, `call_read_tool`, `call_write_tool`, `call_destructive_tool`, and `execute_code`. The server log reports dynamic mode, 817 operations, and six MCP tools.
+
+`GCORE_CODE_EXECUTION=false` removes `execute_code` and leaves the other five.
+
+`GCORE_TOOLS` in dynamic mode limits which operations search and calls can reach. `GCORE_TOOLS=dns.zones,not-a-real-toolset` logs a warning for the unknown pattern and starts with the operations under `dns.zones` (23 operations in that run).
+
+`GCORE_MCP_MODE=direct` without `GCORE_TOOLS` logs a warning and starts in dynamic mode.
+
+## Direct mode
+
+Set both variables:
 
 ```bash
-GCORE_TOOLS="cdn.*"
-GCORE_TOOLS="cloud.instances.*"
-GCORE_TOOLS="dns.records.*"
+GCORE_MCP_MODE=direct
+GCORE_TOOLS=cloud.instances
 ```
 
-Exact tool names specify individual tools:
+The client receives one tool per matched operation. The tool name replaces dots with underscores, so `cloud.instances.list` is `cloud_instances_list`. Project and region tools are included even when the pattern does not name them: `cloud_projects_get`, `cloud_projects_list`, `cloud_regions_get`, and `cloud_regions_list`. The `cloud.instances` pattern registered 40 tools.
 
-```bash
-GCORE_TOOLS="cloud.instances.create,cloud.instances.delete"
-```
+`GCORE_TOOLS=*` in direct mode registers all 817 operations.
 
-Mixed configurations combine toolsets and patterns:
+`GCORE_TOOLS` set without `GCORE_MCP_MODE` selects direct mode. The startup log says so. A value that matches nothing then stops the process and serves no tools. These names exit that way: `instances`, `management`, and `management,instances`.
 
-```bash
-GCORE_TOOLS="instances,management,cloud.gpu_baremetal.clusters.*"
-```
+## Patterns
 
-## Predefined toolsets
+A name with no wildcard matches that operation and the operations under it. `dns.zones` matches 19 operations, including `dns.zones.list` and `dns.zones.rrsets.delete`.
 
-Gcore MCP Server includes predefined toolsets that group related operations. Using toolsets simplifies configuration compared to listing individual tools.
+`*` matches any characters, dots included. `cloud.*.delete*` matches 74 operations, including `cloud.instances.delete` and `cloud.instances.delete_and_poll`.
 
-| Toolset | Description | Included tools |
-|---------|-------------|----------------|
-| `management` | Account and project operations | Project list, region list, client info |
-| `instances` | Virtual machine operations | Create, delete, start, stop, resize |
-| `baremetal` | Bare metal servers | Create, delete, reinstall, power |
-| `gpu_baremetal` | GPU bare metal clusters | Cluster management, node operations |
-| `gpu_virtual` | GPU virtual clusters | Virtual GPU cluster operations |
-| `networking` | Network resources | Networks, subnets, floating IPs, load balancers |
-| `security` | Security resources | Security groups, SSH keys, secrets |
-| `storage` | Storage resources | Volumes, snapshots, file shares |
-| `ai` | AI clusters | AI cluster management |
-| `ai_ml` | AI/ML inference | Inference deployment, model management |
-| `billing` | Billing information | Cost reports, usage data |
-| `containers` | Container registries | Registry and image management |
-| `cleanup` | Deletion operations | Resource cleanup tools |
-| `list` | Read-only operations | All list/get operations |
+| Pattern | Result |
+|---------|--------|
+| `dns.zones` | 19 operations under that prefix |
+| `cloud.instances` | Instance operations, plus project and region tools in direct mode |
+| `cloud.*.delete*` | 74 delete operations, including `delete_and_poll` |
+| `*` | All 817 operations |
 
-## Pattern matching
+Several patterns go in one value, separated by commas: `GCORE_TOOLS=cdn.*,dns.*`.
 
-Patterns use `*` as a wildcard to match tool name prefixes. The pattern `cdn.*` matches all CDN tools including `cdn.cdn_resources.list`, `cdn.cdn_resources.create`, and `cdn.origins.list`. More specific patterns like `cdn.cdn_resources.*` match only the CDN resource tools, excluding origin and other CDN tools.
+## Deny list
 
-| Pattern | Matches |
-|---------|---------|
-| `cdn.*` | All CDN tools |
-| `cdn.cdn_resources.*` | CDN resource tools only |
-| `cloud.instances.*` | Cloud instance tools |
-| `cloud.*` | All cloud service tools |
-| `dns.records.create` | Single specific tool |
-| `*` | All tools |
+`GCORE_DENY_TOOLS` uses the same patterns. A denied operation disappears from `search_tools` and is not registered in direct mode. `GCORE_DENY_TOOLS=dns.zones.delete` removed `dns.zones.delete` from a search for "delete dns zone". `GCORE_DENY_TOOLS=cloud.instances.delete` removed both `cloud_instances_delete` and `cloud_instances_delete_and_poll` from the direct-mode list (40 tools down to 38).
 
-Multiple products combine with commas: `GCORE_TOOLS="cdn.*,dns.*"` exposes all CDN and DNS tools. Nested filtering narrows scope: `GCORE_TOOLS="cloud.gpu_baremetal.clusters.*"` exposes GPU bare metal cluster tools without including other cloud tools.
-
-## Default behavior
-
-When `GCORE_TOOLS` is not set, the server applies default toolsets based on transport mode. Stdio transport defaults to the `management` toolset, while HTTP transport defaults to `management,instances`. These defaults provide minimal tools for basic exploration without overwhelming the client.
-
-| Transport | Default tools |
-|-----------|---------------|
-| stdio | `management` toolset |
-| HTTP | `management,instances` toolsets |
-
-## Priority and combination
-
-When combining toolsets and patterns, toolset tools are included first, pattern-matched tools are added second, and duplicates are removed. Toolset definitions take precedence over pattern matches.
-
-With `GCORE_TOOLS="instances,cloud.volumes.*"`, all `instances` toolset tools load first, then volume tools from the pattern are added. If the same tool appears in both, it appears once in the final set.
-
-## Configuration examples
-
-| Use case | Configuration |
-|----------|--------------|
-| CDN management | `GCORE_TOOLS="cdn.*"` |
-| DNS management | `GCORE_TOOLS="dns.*"` |
-| Cloud infrastructure | `GCORE_TOOLS="management,instances,storage,networking"` |
-| GPU cluster operations | `GCORE_TOOLS="management,gpu_baremetal"` |
+A deny pattern that matches nothing logs a warning and blocks nothing. The server still starts.
 
 <Warning>
-Setting `GCORE_TOOLS=*` exposes all 720 tools. Use this configuration with Claude Code where deferred loading prevents context overflow. Other clients may fail or become unresponsive with this setting.
-</Warning>
-
-## Verify active tools
-
-After configuring, verify which tools are exposed using [MCP Inspector](/developer-tools/mcp-server/test-tools-with-mcp-inspector). Connect with the desired `GCORE_TOOLS` value and view the Tools panel to count and verify the tool list.
-
-Server logs also indicate loaded tools at startup. Running `GCORE_TOOLS="cdn.*" gcore-mcp-server 2>&1 | head -50` displays startup messages including the tool count.
-
-<Warning>
-Patterns are case-sensitive and must match actual tool names. If no tools appear, check the pattern syntax and use MCP Inspector to discover correct tool names. The product prefix matters—`cdn` differs from `cloud` in the tool namespace.
+A `GCORE_TOOLS` value that matches nothing exits with status 2. Run `gcore-mcp-server --list` on the pattern before adding it to a client configuration.
 </Warning>
