@@ -90,7 +90,32 @@ In dynamic mode the Tools tab lists `search_tools`, `get_tool_schema`, `call_rea
 
 Tool execution requires selecting a tool from the list, filling parameter values according to the input schema, and clicking **Run Tool**. The Results panel displays the JSON response from the server.
 
-Select `call_read_tool`, set `name` to `cloud.instances.list`, and leave `arguments` empty. Click **Run Tool**. The response includes `_scope.project` and a note that every active region was searched. Each item includes `region_id`.
+Select `call_read_tool`, set `name` to `cloud.instances.list`, and leave `arguments` empty. Click **Run Tool**. The response names the project it used and the region on each instance:
+
+```json
+{
+  "_scope": {
+    "project": {
+      "id": 1234567,
+      "name": "Default"
+    }
+  },
+  "count": 2,
+  "regions_searched": 30,
+  "note": "region_id was not given, so every active region was searched; each item shows its region_id.",
+  "results": [
+    {
+      "id": "11111111-2222-3333-4444-555555555555",
+      "name": "my-instance-1",
+      "status": "ACTIVE",
+      "vm_state": "active",
+      "region": "Luxembourg-3",
+      "region_id": 148,
+      "project_id": 1234567
+    }
+  ]
+}
+```
 
 Select `get_tool_schema` and set `name` to `cloud.instances.list` to read the argument schema, including which fields are optional. `call_destructive_tool` for `dns.zones.delete` returns `CONFIRMATION REQUIRED` and does not send the call.
 
@@ -102,9 +127,13 @@ Schema exploration helps understand exact parameter names and formats before con
 
 ## Debug execution errors
 
-The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. The server log panel shows all HTTP requests made to the Gcore API, including the endpoint called and the response status code.
+The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. The server log names each API request and its status:
 
-<Frame>![MCP Inspector server log showing Connected status and INFO logs with HTTP requests to Gcore API](/images/docs/developer-tools/mcp-server/test-tools-with-mcp-inspector/server-output.png)</Frame>
+```text
+INFO | Gcore SDK 0.61.0 | mode=dynamic | 817 operations {'read': 368, 'write': 227, 'destructive': 222} | 6 MCP tools | read_only=False confirm=destructive
+INFO | HTTP Request: GET https://api.gcore.com/cdn/resources?limit=1000 "HTTP/1.1 200 OK"
+INFO | cdn.cdn_resources.list ok in 1257 ms
+```
 
 This visibility helps diagnose issues that produce generic errors in AI clients.
 

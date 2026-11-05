@@ -114,17 +114,26 @@ If the configuration file already contains other settings, merge the `mcpServers
 
 ## Step 4. Verify the connection
 
-Restart Claude Code to load the new configuration:
+Claude Code waits 30 seconds for the tool list. The Gcore server can take longer to send it. Set `MCP_TIMEOUT` to `120000` in the same terminal before starting Claude Code.
 
-```bash
-claude
-```
+<Tabs>
+<Tab title="Windows">
 
-Check that Gcore MCP Server is connected:
-
-```bash
+```powershell
+$env:MCP_TIMEOUT = "120000"
 claude mcp list
 ```
+
+</Tab>
+<Tab title="macOS/Linux">
+
+```bash
+export MCP_TIMEOUT=120000
+claude mcp list
+```
+
+</Tab>
+</Tabs>
 
 The output shows `gcore-mcp-server` with status `Connected`:
 
@@ -132,18 +141,34 @@ The output shows `gcore-mcp-server` with status `Connected`:
 gcore-mcp-server: uvx --from gcore-mcp-server@... - ✓ Connected
 ```
 
-Test with a resource query:
+Start Claude Code in the same terminal and test with a resource query:
+
+```bash
+claude
+```
 
 ```
 List my CDN resources
 ```
 
-A successful response displays CDN resource details, including resource ID, CNAME, status, and configuration.
+A successful response lists CDN resources with the resource id, CNAME, and status:
 
-<Frame>![Claude Code displaying CDN resource details returned by Gcore MCP Server](/images/docs/developer-tools/mcp-server/connect-claude-code-to-gcore-mcp-server/claude-code-cdn-resources.png)</Frame>
+```json
+{
+  "results": [
+    {
+      "id": 102938,
+      "cname": "cdn-mcp-test.example.com",
+      "status": "suspended",
+      "enabled": true
+    }
+  ],
+  "count": 7
+}
+```
 
 <Warning>
-If the server shows `Failed to connect`, verify that uv is installed and the API key is valid. Test the API key independently:
+`tools fetch failed - Request timed out` means the wait ended before the tool list arrived. Raise `MCP_TIMEOUT` and run the check again in the same terminal. `Failed to connect` means the process did not start. Verify that uv is installed and the API key is valid. Test the API key independently:
 
 ```bash
 curl -H "Authorization: APIKey API_TOKEN" https://api.gcore.com/cdn/resources
