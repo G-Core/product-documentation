@@ -12,6 +12,6 @@ Affected users: Edge Proxy customers using the public API at api.gcore.com.
 Release evidence: On 2026-11-05 a customer API token called the production API. List templates and list profiles returned 200. Create returned 201 with a protected IP, status INACTIVE, and is_processing true. A later read showed status ACTIVE and is_processing false. Delete then returned 204, and the following read returned 404. The test profile was removed.
 Open verification: none
 Source tickets/PRs: DOC-2898, DP-4585
-Documentation links: /edge-proxy/create-a-proxy-profile, /api-reference/edge-proxy/proxy-profiles/list-proxy-profiles
+Documentation links: /edge-proxy/how-protection-works, /edge-proxy/quick-start, /api-reference/edge-proxy/proxy-profiles/list-proxy-profiles
 Duplicate check: not found
 Published entry: none

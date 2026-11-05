@@ -1,0 +1,68 @@
+---
+title: How Edge Proxy protection works
+sidebarTitle: How protection works
+description: Learn how Edge Proxy filters incoming traffic, forwards connections to an origin, and deploys protection through proxy profiles.
+---
+
+An attack can flood your server with unwanted traffic, preventing legitimate users from connecting. Gcore Edge Proxy helps protect it by filtering incoming traffic.
+
+To route traffic through this protection, you direct connections to a protected IP address on Gcore's network instead of your server's own address. Edge Proxy blocks attack traffic there and forwards legitimate connections to your server, known as the origin.
+
+## Proxy profile
+
+To control how Edge Proxy handles these connections, you use a [proxy&nbsp;profile](/edge-proxy/setup-and-configuration). It links one protected IP address to one origin and defines how incoming traffic is filtered and forwarded.
+
+The profile uses a template that contains filtering policies. Rules in the profile assign those policies to specific ports. Together, these settings determine which traffic Edge Proxy filters and where it sends legitimate connections.
+
+## Templates and policies
+
+A filtering policy tells Edge Proxy how to recognize traffic for a particular application. Minecraft, for example, has a dedicated policy designed for its traffic. A TCP service without a dedicated policy can use Generic TCP Server instead.
+
+These policies come from templates supplied by Gcore, so the selected template determines which policies a profile can use. You can find their names in [Supported&nbsp;applications](/edge-proxy/supported-applications).
+
+When configuring a profile through the API, `template_id` identifies the selected template, while each rule refers to a policy by its `id` rather than its display name. The [template&nbsp;list](/api-reference/edge-proxy/proxy-templates/list-proxy-templates) marks your account's default template with `is_default`.
+
+In the default template, Generic TCP Server has the ID `tcp-server`, and General UDP Countermeasure uses `udp-general`. These policies are intended for ordinary TCP and UDP services that do not require application-specific filtering.
+
+Choose a policy based on the application you want to protect, not the port number or the policy's position in the list. Using the wrong policy can cause legitimate traffic to be blocked during an attack.
+
+The template also determines how allowed traffic reaches the origin through its `mode` setting:
+
+- `regular` forwards traffic from the edge to the origin.
+- `shield` sends traffic through additional Gcore shield sites included in the template before it reaches the origin.
+
+## Port forwarding
+
+A protected IP address can receive connections on several ports, and different ports can use different filtering policies. The profile defines these relationships through rules: each rule applies one policy to one or more port mappings, which specify the protocol and port used by clients.
+
+The port used by the client does not have to match the port on the origin. For example, clients can connect to the protected IP address on port 80 while the origin application listens on port 8080. In this case, set `port` to `80` and `outbound_port` to `8080`, so Edge Proxy accepts connections on port 80 and forwards them to port 8080. If both ports are the same, you can omit `outbound_port`.
+
+To protect additional ports on the same origin, add more port mappings to the existing profile. An origin host already assigned to an active profile cannot be used by another profile, even if the port or protocol differs.
+
+### Preserving the client IP address
+
+Because Edge Proxy forwards connections from its own IP addresses, the origin sees a Gcore edge address instead of the client's address.
+
+If your application needs the original client IP address, the port mapping can add a PROXY protocol header that carries this information. The application must support the PROXY protocol to read the header. If it does not, leave the header unset.
+
+## Deployment and readiness
+
+Creating a proxy profile assigns a protected IP address and starts deploying its configuration across the Gcore edge network. The address is returned immediately, but it is not ready for client connections until deployment finishes.
+
+While deployment is running, `status` is `INACTIVE`, `is_processing` is `true`, and `is_error` is `false`. After successful deployment, `status` changes to `ACTIVE` and `is_processing` becomes `false`, while `is_error` remains `false`. A new profile reaches this state automatically, without a separate Activate call.
+
+After deployment, you can deactivate a profile without deleting it or releasing its protected IP address. This changes its status from `ACTIVE` to `INACTIVE`. When you need the protection again, Activate returns the profile to `ACTIVE`.
+
+You can also use Redeploy to apply the current configuration across the edge again without deactivating the profile. During this operation, `status` remains `ACTIVE` while `is_processing` changes to `true` and then back to `false`.
+
+If deployment fails, `is_error` becomes `true`, and `error_details` describes the failure. The profile is not ready for client traffic while an error is present.
+
+The protected address is ready for use only when `status` is `ACTIVE`, `is_processing` is `false`, and `is_error` is `false`.
+
+## Directing traffic to the protected IP
+
+Before directing client connections through Edge Proxy, restrict access to the origin so that only Gcore edge IP addresses can reach its protected ports. Add the addresses listed in [Restrict&nbsp;access](/edge-proxy/setup-and-configuration#restrict-access-to-the-origin) to the firewall's allowlist and block other sources. Otherwise, attackers could bypass Edge Proxy and connect directly to the origin.
+
+Once the profile is ready and the origin allows these connections, clients can use the protected IP address on the mapped port. If they connect through a domain name, update its DNS A record to point to the protected IP address instead of the origin.
+
+The [Quick&nbsp;start](/edge-proxy/quick-start) demonstrates this process for a generic TCP service on port 80, from selecting a template and creating a profile to waiting for deployment and verifying the connection.
