@@ -1,0 +1,175 @@
+---
+title: "Solution: Live web"
+sidebarTitle: "Solution: Live web"
+description: Build a full-cycle live streaming workflow from the web browser with WebRTC, OBS over RTMP, LL-HLS, LL-DASH, recording, and secure delivery.
+---
+
+Web services that let presenters go live straight from the browser — online classes, webinars, auctions, and live commerce — can run the whole video chain on Gcore Video Streaming: WebRTC ingest, transcoding, CDN delivery, and optional recording. The presenter needs no software, and viewers watch in any browser with a delay of about 3 seconds. A Gcore account and an [API&nbsp;token](/account-settings/api-tokens) are required, and the [Gcore Customer Portal](https://portal.gcore.com) is available for setup and checks.
+
+## Scenario
+
+A web service lets users broadcast from the browser camera and microphone and lets viewers watch with low latency in the service's own pages. Most feeds come from the browser over WebRTC, while OBS over RTMP is the standard alternative for presenters who need a full encoder setup. The workflow must cover these needs:
+
+- Browser publishing without installing software, started from the service's own page.
+- RTMP and OBS as an alternative ingest for the same streams.
+- Adaptive playback for many viewers at a latency of about 3 seconds, in LL-HLS and LL-DASH.
+- Control from the service's back end: streams, ingest URLs, playback URLs, and status.
+- Recovery when a presenter's connection drops or the browser tab closes.
+- Optional recording, DVR, and protected playback.
+
+In short, browser and OBS feeds enter the same Gcore ingester and transcoder, and the CDN delivers the result to viewers over low-latency protocols:
+
+```text
+                      +-----------------------------+
+Browser (WebRTC) --+  |                             |
+                   +->|  Gcore ingest + transcoding |--> Gcore CDN --> Viewers
+OBS (RTMP) --------+  |                             |    LL-HLS, LL-DASH
+                      +-----------------------------+
+```
+
+## Outcome and benefits
+
+One Gcore account covers browser ingest, transcoding, and delivery, so the service integrates a single video back end instead of a separate WebRTC media server, transcoder, and CDN. A viewer opens a regular HLS or DASH stream, which scales through the CDN, while the presenter keeps the simplicity of a browser call.
+
+- No software for presenters: the Gcore JS WHIP client publishes camera and microphone from the page.
+- One pipeline for every ingest: WebRTC, RTMP, and SRT feeds are transcoded the same way and produce the same playback URLs.
+- Low latency by default: LL-HLS and LL-DASH are enabled for all accounts and need no activation.
+- Stable quality for viewers: Gcore transcodes WebRTC feeds at the original target resolution, even when the presenter's browser lowers the quality during congestion.
+- Usage-based cost: Full HD transcoding is free, while delivery and storage are billed by usage.
+
+## Architecture
+
+The service's front end publishes and plays video, its back end owns the Gcore API token and hands out ingest URLs, and Gcore handles ingest, transcoding, and delivery.
+
+```text
+ Presenter's browser                        Service back end
+ (Gcore JS WHIP client)                     (holds the API token)
+        |                                      |
+        |  1. gets push_url_whip               |
+        |                                      |
+        |  2. WebRTC (WHIP): H.264 + OPUS      |
+        v                                      |
+ +-----------------------------------------+   |
+ |  Live stream - one per presenter / room |<--+
+ |  Ingest + transcoding to ABR ladder     |
+ +-----------------------------------------+
+        ^        |                  |
+ OBS    |        |                  +--> Recording, DVR, restreams (optional)
+ (RTMP) +        |
+                 v
+        Gcore CDN: LL-HLS, LL-DASH (about 3 s)
+                 |
+                 v
+        Viewers: hls.js, dash.js, Gcore player
+```
+
+The same stream entity accepts either a WebRTC feed or an RTMP feed, one protocol at a time, and every playback URL belongs to the stream.
+
+## Step 1. Create streams per presenter
+
+The service's back end creates a [live&nbsp;stream](/streaming/live-streaming/create-a-live-stream) per presenter or per room with the Gcore [Streaming&nbsp;API](/streaming/api/streaming-platform-api-tutorial), and keeps the API token on the server. The create response returns `push_url_whip` for the browser, the RTMP and SRT push URLs for encoders, and the playback URLs `iframe_url`, `hls_cmaf_url`, `dash_url`, and `hls_mpegts_url`.
+
+- The WHIP URL contains the push token, so the back end passes it only to the authorized presenter. `POST /streaming/streams/{id}/reset_push_token` invalidates a URL immediately.
+- Setting `active` to `false` stops ingest, and an inactive stream ignores push attempts.
+- The default soft limit on an active PAYG account is three active streams. When the limit is reached, a WHIP publish request returns the reason code 2005, and support or the account manager raises the limit.
+- The optional `client_user_id` and `client_entity_data` fields tag the stream with the presenter or room, and they come back in the API and webhooks.
+
+{/* TODO: verify — handing the WHIP URL only to the authorized presenter is guidance derived from the push token inside the URL, not stated as a recommendation in the source articles. */}
+
+## Step 2. Publish from the browser with WebRTC
+
+The Gcore JS WHIP client (`rtckit`) publishes camera and microphone from the page to the WHIP endpoint. It handles signaling, device access, and event monitoring, and any other WHIP client works with the same URL. The [WebRTC&nbsp;WHIP](/streaming/live-streaming/protocols/webrtc) guide has the client code, the supported clients, and the error codes.
+
+- The stream needs one H.264 video track and one OPUS audio track. A keyframe interval of 1 second, no B-frames, and a bitrate of 1-2 Mbps suit presenter streams.
+- Gcore runs WHIP servers in each region, which shortens the route from the presenter's device to the ingest point.
+- One publisher per stream is allowed. A second publisher receives an error with the reason code 2003 and the current broadcast continues, and after an unclean disconnect the next attempt waits about 30 seconds.
+- Closing the tab ends the session. When the presenter resumes from any browser, the ingester picks the stream up and it becomes playable after a brief delay.
+- The `mediaDevicesAutoSwitch` option switches to the next camera or microphone when a device disconnects.
+- WebRTC reduces or pauses transmission when the connection degrades. The application warns the presenter, and TCP or a TURN server are the fallback options for poor networks.
+
+For a quick test without code, the Customer Portal publishes the webcam through **Go live from your browser** in the live stream settings, as described in [WebRTC&nbsp;to&nbsp;HLS/DASH](/streaming/live-streaming/webrtc-to-hls-dash).
+
+## Step 3. Connect OBS or another encoder
+
+Presenters who need scenes, several sources, or a hardware encoder push to the same stream over RTMP or RTMPS with the server URL and stream key from the live stream settings. [OBS](/streaming/live-streaming/broadcasting-software/obs) takes these values in a custom stream service, and OBS can also publish over WHIP.
+
+- RTMP carries H.264 and AAC. SRT is available for HEVC, AV1, and Opus feeds.
+- Low-latency playback depends on the encoder, so the keyframe interval stays at 1-2 seconds and B-frames stay off.
+- One ingest protocol is active per stream. Starting RTMP while WebRTC is publishing to the same stream makes transcoding fail, so the back end switches a presenter between ingest types by stopping one before starting the other.
+- A stream pushed over RTMP or SRT can use a [backup&nbsp;URL](/streaming/live-streaming/primary-backup) for failover. WebRTC has no backup URL.
+
+## Step 4. Transcode into an adaptive ladder
+
+Gcore transcodes every feed, whether it arrives over WebRTC, RTMP, or SRT, in the same pipeline. The free [ABR&nbsp;ladder](/streaming/live-streams-and-videos-protocols-and-codecs/transcoding-output) has 1080p, 720p, 468p, and 360p renditions with H.264 and AAC, at up to 30 FPS.
+
+- WebRTC feeds use constant transcoding at the original target resolution. When the presenter's browser lowers the resolution because of congestion, the transcoder keeps the 1080p ladder, and the quality returns to the original level when the network recovers.
+- Transcoding starts after the first media arrives, and the HLS and DASH versions are ready within about 2 seconds.
+- Larger resolutions, custom ladders, and other codecs belong to [premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding), which enterprise accounts request through support or sales.
+
+## Step 5. Deliver with LL-HLS and LL-DASH
+
+Gcore delivers the transcoded stream through the CDN in three formats at the same time: LL-DASH, LL-HLS, and legacy HLS with MPEG-TS. [Low-latency&nbsp;streaming](/streaming/live-streaming/how-low-latency-streaming-works) is enabled by default for all accounts and needs no separate activation.
+
+| Format | Latency with WebRTC ingest | Use |
+|--------|----------------------------|-----|
+| LL-DASH | 2-4 seconds | dash.js, Android, ExoPlayer |
+| LL-HLS | 3-4 seconds | hls.js, Safari, iOS |
+
+The viewer page plays either the built-in player from `iframe_url` or the service's own player with `hls_cmaf_url` or `dash_url`. The [Gcore&nbsp;player&nbsp;SDK](/streaming/player/player-api-tutorial) plays HLS, LL-HLS, DASH, and LL-DASH, and it accepts any source URL.
+
+- To approach 3 seconds with hls.js or dash.js, start with a 4-second live delay and a catch-up cap of 1.1x, then lower the delay while viewers don't rebuffer. The [player&nbsp;settings](/streaming/live-streaming/configure-low-latency-playback) include ready configurations for both libraries.
+- LL-HLS works natively from iOS 14, and LL-DASH works from iOS 17.1. Older iOS versions fall back to regular HLS with a higher latency.
+- A stalled viewer adds the stall time to the delay permanently, so the player resyncs to the live edge after a long stall.
+
+{/* TODO: verify — the source articles give 2-4 seconds for LL-DASH and 3-4 seconds for LL-HLS with WebRTC ingest, and 2-3 seconds in the Live Streaming overview. Confirm with product that the target of about 3 seconds can be promised. */}
+
+## Step 6. Track stream state in the app
+
+The web app needs to know when to show the live player, so it follows the stream state with webhooks and the API. A stream webhook reports the start of ingest (`live`) and the start of transcoding (`transcoding`), and playback is ready when `transcoding` becomes true.
+
+- The `stream_source_type` field of `GET /streaming/streams/{id}` reports whether the active feed is `webrtc`, `rtmp`, or `srt`.
+- [Webhooks](/streaming/extra-features/get-webhooks-from-the-streaming-platform) are sent to one endpoint, which support configures. Each event is sent once and is not retried, so the back end checks the stream through the API after downtime.
+- A running stream provides a JPEG [screenshot](/streaming/live-streaming/live-stream-screenshots) every 10 seconds, which serves as a placeholder before the viewer starts the player.
+- The portal and API [metrics](/streaming/statistics/view-your-live-stream-metrics) show concurrent viewers, bitrate, FPS, and keyframe interval for every minute.
+
+## Step 7. Add DVR, recording, and restreams
+
+DVR lets viewers [rewind](/streaming/live-streaming/pause-and-rewind-the-live-streams) a running stream, with a default window of 1 hour that the API extends up to 4 hours. A [recording](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) saves the broadcast in Video Hosting as a separate video with its own ID and playback URLs, so the page hides the live player when the stream ends and shows a VOD player with the recorded video.
+
+- Interruptions shorter than 1 minute keep one continuous recording, and a longer gap splits it into separate videos.
+- A [restream](/streaming/live-streaming/create-and-configure-a-restream-to-social-media) forwards the same stream to YouTube or any RTMP or SRT recipient while the player keeps playing it.
+- The [live&nbsp;broadcaster&nbsp;solution](/streaming/faq/solution-live-broadcaster) describes clips, VOD management, and thumbnails for services that reuse live content.
+
+## Step 8. Protect playback
+
+Paid or private broadcasts use secure tokens on a custom CDN resource with a paid CDN tariff, because the default streaming domain doesn't support tokens. The service's back end signs the playback URL after it checks the viewer, and one [secure&nbsp;token](/streaming/interaction-with-cdn/video-secure-token) covers the manifest and all segments.
+
+- Short-lived tokens with automatic [refresh](/streaming/interaction-with-cdn/player-token-refresh) in the player keep the stream protected without interrupting a long viewing session.
+- The custom CDN resource adds country, referrer, IP, and user-agent policies on top of tokens.
+
+## Step 9. Plan capacity and support
+
+By default, an account can run three live streams at the same time, and on request support or the account manager raises this limit to the number of simultaneous streams the service needs. Gcore CDN sets no limit on concurrent viewers, so a single broadcast can reach a large audience.
+
+- Transcoding up to 1080p at 30 FPS is free, while delivery and storage are billed by usage under the [tariffs](/streaming/billing/overview-of-tariffs).
+- Several customers of the web service share one account, and the back end separates them with `client_user_id` or with a separate Gcore account per customer, as described in [customer&nbsp;isolation](/streaming/getting-started/dev_environment).
+- Premium support is available for dedicated events and is arranged in advance with the account manager, who agrees the coverage hours and the response times for the event.
+
+{/* TODO: verify — the statement that Gcore CDN sets no limit on concurrent viewers is not in the Streaming documentation, which only states delivery for more than 1 million concurrent viewers. Support hours and response times for premium support are not documented either. The 100+ concurrent streams figure is also not in the documentation, which describes only a soft limit of three active streams that support raises. */}
+
+## Availability summary
+
+The table groups the capabilities of this workflow by how a customer gets them today, based on the documented behavior.
+
+| Capability | Status | Note |
+|------------|--------|------|
+| Browser publishing over WebRTC | Available | Gcore JS WHIP client or any WHIP client |
+| RTMP, RTMPS, and SRT ingest, OBS | Available | One protocol per stream at a time |
+| Backup ingest | Available | RTMP and SRT only |
+| LL-HLS and LL-DASH delivery | Available | Enabled by default |
+| Latency of ~3 seconds | Available | Encoder and player tuning, 2-4 seconds in the documented range |
+| DVR, recording, restreams | Available | DVR up to 4 hours with the API |
+| Secure tokens | Available | Custom CDN resource on a paid tariff |
+| 100+ concurrent streams | On request | Raised on request by support or the account manager |
+| Premium encoding, 2K to 8K, HEVC, AV1 | On request | Enterprise accounts |
+| Premium support for dedicated events | On request | Arranged in advance with the account manager |

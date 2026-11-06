@@ -48,7 +48,7 @@ For SRT target URLs, only `mode=caller` is supported. Gcore initiates the outbou
 <p>Before configuring a restream, verify that the source stream meets the destination's encoding requirements. A mismatch in bitrate, codec, or keyframe interval causes the destination to reject or drop the incoming feed.</p>
 
 <Warning>
-By default, restreaming forwards the source stream to the destination as is. Verify that the source bitrate, codecs, resolution, keyframe interval, and audio format match the destination requirements. To control transcoded output or audio behavior — suppressing audio to avoid copyright claims, for instance — use the REST API.
+Each restream forwards one of two versions of the live stream: the original stream as sent by the encoder (default), or the transcoded version. The version is selected with the `source` attribute (`original` or `transcoded`) of the [Create&nbsp;restream](/api-reference/streaming/restreams/create-restream) API method, and it is not an encoding profile that can be adjusted per destination. With the original version, the destination receives the stream as is, so verify that the source bitrate, codecs, resolution, keyframe interval, and audio format match the destination requirements. To select the transcoded version or control audio behavior — suppressing audio to avoid copyright claims, for instance — use the REST API.
 </Warning>
 
 ## Configure a restream
@@ -194,6 +194,8 @@ srt://<hostname>:<port>?mode=caller&latency=<microseconds>&streamid=<ID>
 ## Create a restream
 
 <p>Send `POST /streaming/restreams` with the target URI, source stream ID, a name, and `active: true` to start restreaming immediately. Set `active: false` to configure without activating yet. Set `source` to `"transcoded"` to restream the processed version of the stream (with overlays applied, using the highest ladder resolution); the default is `"original"`.</p>
+
+<p>Each restream has its own `source`, so one live stream can send the original to one destination and the transcoded version to another. Resolution, frame rate, bitrate, and codec follow the selected version and can't be set separately for each destination. Only the audio track can be changed per restream, with `no_audio`.</p>
 
 <p>To control the audio track (to prevent copyright claims on destinations like YouTube), configure `no_audio` and `no_audio_mode`:</p>
 

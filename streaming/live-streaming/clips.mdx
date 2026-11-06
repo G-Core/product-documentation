@@ -38,9 +38,11 @@ The API returns the updated stream object with `dvr_enabled: true` and `dvr_dura
 
 Cut a segment from an ongoing live stream. Specify `duration` in seconds and optionally `start` as a Unix timestamp. The clip becomes accessible at `start + duration` — requesting it before that returns `425 Too Early`. An expired clip returns `404`.
 
+Segment times are wall-clock times. Every segment of the live HLS playlist carries an `EXT-X-PROGRAM-DATE-TIME` tag with millisecond precision, and the MPEG-DASH manifest provides `availabilityStartTime` and `ProducerReferenceTime`. The MPEG-DASH manifest names `https://time.gvideo.co/?iso&ms` as its clock source (`UTCTiming`), and that endpoint returns the current UTC time to the millisecond. Use these values to convert an event time into `start`. In tests, `EXT-X-PROGRAM-DATE-TIME` ran about 1.6 seconds ahead of the encoder clock, so measure the offset for the encoder setup when frame-accurate alignment matters.
+
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `duration` | Yes | Segment length in seconds. Maximum equals `dvr_duration`. Final length may vary slightly due to keyframe alignment. |
+| `duration` | Yes | Segment length in seconds. Minimum is 30. Maximum equals `dvr_duration`. Final length may vary slightly due to keyframe alignment. |
 | `start` | No | Unix timestamp of the segment start. Defaults to the current time. |
 | `expiration` | No | Unix timestamp when the clip expires. Range: 1 minute to 4 hours after clip end. Defaults to `start + duration + 3600`. |
 | `vod_required` | No | `true` to also save as a permanent VOD in video hosting. |
@@ -200,6 +202,8 @@ curl -X PUT "https://api.gcore.com/streaming/streams/$STREAM_ID/clip_recording" 
 </Tabs>
 
 To save the clip as a permanent VOD, set `vod_required: true`. When the clip is created, the response includes a `video_id`. Use `GET /streaming/videos/{video_id}` to retrieve the permanent HLS/MP4 URLs once transcoding completes.
+
+The clip response has no thumbnail fields. The linked video receives its five screenshots and the timeline sprite about 2 minutes after the clip is created, and the video request returns them. The `mp4_master` link is a single MP4 file at the highest rendition, and it downloads immediately, which suits editing or social publishing.
 
 ## List clips
 
