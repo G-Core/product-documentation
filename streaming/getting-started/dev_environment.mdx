@@ -1,12 +1,83 @@
 ---
-title: Plan accounts for development and production
-sidebarTitle: Account planning
-description: Compare Gcore Streaming account models for development and production workflows and isolation.
+title: Isolate sub-customers and separate environments
+sidebarTitle: Sub-customers and environments
+description: Isolate sub-customer content and separate development and production in Gcore Streaming with accounts and the client_user_id attribute.
 ---
 
-Gcore Streaming treats one account as one shared workspace for live streams, VOD assets, API tokens, billing, and service limits. It does not split a single account into built-in development and production environments.
+Gcore Streaming treats one account as one shared workspace for live streams, VOD assets, API tokens, billing, and service limits. It does not split a single account into built-in environments or customer spaces, so separation comes from using several accounts or from labeling content inside one account.
 
-## Account models
+Two cases need separation: the sub-customers of a service that hosts videos and live streams for its own users, a video-sharing service for instance, and the environments of one team (development, staging, production). The first case is covered in [Isolate&nbsp;sub-customers](#isolate-sub-customers), and the second in [Separate&nbsp;environments](#separate-environments). Gcore enforces isolation only between separate accounts, while inside one account content can be filtered but not isolated.
+
+The diagrams show the difference. Separate accounts isolate sub-customers, while one account holds everything together and only labels it.
+
+```text
+Variant 1. Isolation: one account for each sub-customer
+
++--------------------------------+   +--------------------------------+
+| Account #1 (sub-customer A)    |   | Account #2 (sub-customer B)    |
+|                                |   |                                |
+|   Live streams    VOD videos   |   |   Live streams    VOD videos   |
+|   API tokens      Billing      |   |   API tokens      Billing      |
+|   Delivery domain              |   |   Delivery domain              |
++--------------------------------+   +--------------------------------+
+        no shared content, tokens, billing, or limits
+
+Variant 2. Filtering: one account, content labeled with client_user_id
+
++---------------------------------------------------------------------+
+| Account                                                             |
+|                                                                     |
+|   Live stream 1    client_user_id = 1    (sub-customer A)           |
+|   Video 1          client_user_id = 1    (sub-customer A)           |
+|   Live stream 2    client_user_id = 2    (sub-customer B)           |
+|   Video 2          client_user_id = 2    (sub-customer B)           |
+|                                                                     |
+|   One API token, one billing, one list of all streams and videos.   |
+|   The application backend filters the lists by client_user_id.      |
++---------------------------------------------------------------------+
+```
+
+## Isolate sub-customers
+
+A service that hosts videos and live streams for its own sub-customers must decide where each sub-customer's content lives and who can reach it. Gcore Streaming offers hard isolation through accounts and soft separation through labels.
+
+| Option | What it separates | Who enforces it |
+| --- | --- | --- |
+| Account for each sub-customer | API tokens, billing, assets, limits, and delivery domain | Gcore |
+| `client_user_id` in one account | Nothing by itself. It labels streams and videos and filters lists and some statistics | The application backend |
+| Directories | Nothing. They organize videos | Nobody |
+
+### One account for each sub-customer
+
+Separate accounts are the only documented hard boundary between sub-customers. Each account has its own API tokens, billing, assets, service limits, and CDN delivery domain, so content, credentials, and costs of one sub-customer never mix with another.
+
+Use this model when sub-customers need their own credentials or invoices, or when content must never share a workspace. The cost is account management: every account is created and configured separately. A reseller setup, where Gcore creates sub-customer accounts under the service's account, is available by arrangement. Contact [Gcore&nbsp;support](mailto:support@gcore.com) or the account manager to discuss it.
+
+### One account with client_user_id
+
+Live streams and videos are not isolated inside one account, but they can be filtered by a sub-customer identifier. Two optional attributes of streams and videos carry it:
+
+- `client_user_id`: An integer that identifies the sub-customer in the application's own system.
+- `client_entity_data`: A string for any other metadata of the stream or video.
+
+Gcore stores both attributes, returns them in API responses and [webhooks](/streaming/extra-features/get-webhooks-from-the-streaming-platform), and doesn't enforce anything with them. The video list can be filtered by `client_user_id`, and so can the watching duration and unique viewer statistics of live streams and videos, which gives per-sub-customer reporting for those two metrics.
+
+Views, geography, browsers, operating systems, and the [billing&nbsp;reports](/streaming/billing/usage-and-billing-reports) are calculated for the whole account and can't be split by sub-customer.
+
+Gcore doesn't check the label, so the application backend enforces the separation: it holds the API token, sets `client_user_id` on every stream and video it creates, and applies the sub-customer filter on every list and statistics request. Keep the API token on the backend only, because anyone with the token sees every sub-customer's content.
+
+### Permissions
+
+Roles and API tokens apply to the whole account. Portal [user&nbsp;roles](/account-settings/users/about-users) include Administrators, Engineers, and purge-only roles, and an [API&nbsp;token](/account-settings/api-tokens) gets one role for each product, Streaming included. The documentation doesn't describe limiting a role or token to one directory, stream, video, or sub-customer.
+
+### Viewer access
+
+Access of end viewers to a video or stream is controlled separately from the account model:
+
+- [Video&nbsp;secure&nbsp;tokens](/streaming/interaction-with-cdn/video-secure-token) restrict playback to signed links with an expiration time and optional IP binding. Secure tokens and CDN access policies by country, referrer, or IP require a [custom&nbsp;CDN&nbsp;resource](/streaming/interaction-with-cdn/custom-cdn-resource) on a paid CDN tariff, because the default streaming delivery domain doesn't support them.
+- [AES-128&nbsp;encryption](/streaming/video-hosting/protect-your-videos-with-the-aes-128-encryption) protects VOD content with a key served by a key server.
+
+## Separate environments
 
 Select an account model based on whether the project needs logical organization or hard separation.
 
@@ -16,7 +87,25 @@ Select an account model based on whether the project needs logical organization 
 | Two accounts | Separate development and production workflows | Separate API tokens, billing, assets, and operational access |
 | Three or more accounts | Enterprise release workflows | Separate development, staging, production, and custom commercial terms |
 
-## One account for small projects
+The diagram shows the three-account model, where each environment is a separate account and a release moves the same workflow from one account to the next. Two accounts work the same way without the staging account.
+
+```text
+Separate accounts for development, staging, and production
+
++-------------------+  +-------------------+  +-------------------+
+| Account #1: dev   |  | Account #2: stage |  | Account #3: prod  |
+|                   |  |                   |  |                   |
+| Live    VOD       |  | Live    VOD       |  | Live    VOD       |
+| API token (dev)   |  | API token (stage) |  | API token (prod)  |
+| Delivery domain   |  | Delivery domain   |  | Delivery domain   |
+| Billing           |  | Billing           |  | Billing           |
++-------------------+  +-------------------+  +-------------------+
+  no shared content, tokens, billing, or limits
+
+release:   dev  ------>  stage  ------>  prod
+```
+
+### One account for small projects
 
 Use one account when development and production assets do not require separate access boundaries and the same team manages both.
 
@@ -31,7 +120,7 @@ For VOD libraries, create directories to group uploaded videos and reduce operat
 Directories organize VOD assets inside one account. They are not an access boundary for live streams, API tokens, billing, or service limits.
 </Note>
 
-## Two accounts for separate workflows
+### Two accounts for separate workflows
 
 Use two accounts when development and production must have separate credentials, assets, and operational access. Create one for each workflow and generate a separate [API&nbsp;token](/account-settings/api-tokens) in each.
 
@@ -41,7 +130,7 @@ Each account also has separate CDN delivery domain names, so development and pro
 
 Account switching is available from one login when the user has access to multiple accounts. Use [additional&nbsp;accounts](/account-settings/account/additional-accounts) to create and switch between accounts.
 
-## Three or more accounts for enterprise workflows
+### Three or more accounts for enterprise workflows
 
 Use three or more accounts when the release process needs separate development, staging, production, or regional environments. Each account can have its own users, API tokens, assets, delivery settings, and billing setup.
 
