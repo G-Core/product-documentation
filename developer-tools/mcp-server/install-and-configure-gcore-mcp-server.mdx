@@ -1,12 +1,10 @@
 ---
 title: Install and configure Gcore MCP Server
 sidebarTitle: Install and configure
-description: Install and configure Gcore MCP Server with prerequisites, environment variables, and Cloud defaults for AI clients.
+description: Install Gcore MCP Server and set the environment variables AI clients read.
 ---
 
-Prerequisites and server installation common to all AI clients. For client-specific configuration, see [Connect Claude Code](/developer-tools/mcp-server/connect-claude-code-to-gcore-mcp-server) or [Connect Cursor IDE](/developer-tools/mcp-server/connect-cursor-to-gcore-mcp-server).
-
-## Prerequisites
+Gcore MCP Server runs from `uv` and reads its settings from environment variables. Client configuration is in [Connect&nbsp;Claude&nbsp;Code](/developer-tools/mcp-server/connect-claude-code-to-gcore-mcp-server) and [Connect&nbsp;Cursor&nbsp;IDE](/developer-tools/mcp-server/connect-cursor-to-gcore-mcp-server).
 
 **Install uv**
 
@@ -39,7 +37,7 @@ uv --version
 
 **Create a Gcore API token**
 
-Create an [API token](/account-settings/api-tokens) with permissions matching the products to be used. See [API token permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions) for required roles per product.
+Create an [API&nbsp;token](/account-settings/api-tokens) with permissions matching the products to be used. Required roles per product are in [API&nbsp;token&nbsp;permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions).
 
 <Warning>
 The API token is displayed once and cannot be retrieved later. Store it securely and do not commit it to version control.
@@ -50,7 +48,7 @@ The API token is displayed once and cannot be retrieved later. Store it securely
 <Tabs>
 <Tab title="Temporary (uvx)">
 
-`uvx` runs the server in a temporary environment without installing it permanently. The AI client handles this automatically using the `uvx` command in its configuration—no manual step is needed.
+`uvx` runs the server in a temporary environment without installing it permanently. The AI client handles this automatically using the `uvx` command in its configuration. No manual step is needed.
 
 To verify the server starts correctly, run it directly:
 
@@ -86,58 +84,46 @@ Use `gcore-mcp-server` as the command in the AI client configuration instead of 
 
 ## Environment variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GCORE_API_KEY` | Yes | API token for authentication |
-| `GCORE_TOOLS` | No | Tool filter pattern — controls which tools are loaded |
-| `GCORE_CLOUD_PROJECT_ID` | No | Default project ID for Cloud operations |
-| `GCORE_CLOUD_REGION_ID` | No | Default region ID for Cloud operations |
+The server starts in dynamic mode when `GCORE_TOOLS` and `GCORE_MCP_MODE` are unset. Pattern syntax is in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
+
+| Variable | Required | Effect |
+|----------|----------|--------|
+| `GCORE_API_KEY` | For API calls | API token. Unset, the server still lists tools and every call fails. |
+| `GCORE_MCP_MODE` | No | `dynamic` or `direct`. Unset, together with an empty `GCORE_TOOLS`, selects dynamic mode. |
+| `GCORE_TOOLS` | No | SDK path patterns. Unset, the six dynamic tools reach all 817 operations. A value that matches nothing exits with status 2. Set without `GCORE_MCP_MODE`, it selects direct mode. |
+| `GCORE_DENY_TOOLS` | No | Patterns to hide from search and from direct mode. |
+| `GCORE_READ_ONLY` | No | `true` allows read operations only. |
+| `GCORE_CODE_EXECUTION` | No | `false` removes `execute_code`. The default tool list includes it. |
+| `GCORE_TRANSPORT` | No | `stdio` or `http`. `sse` exits with status 2. |
+| `GCORE_PORT` | No | Port for `GCORE_TRANSPORT=http`. |
+| `GCORE_CLOUD_PROJECT_ID` | No | Optional project pin. |
+| `GCORE_CLOUD_REGION_ID` | No | Optional region pin. |
 
 <Info>
 Requests that return "401 Unauthorized" indicate an invalid or expired API token. Verify the token in the [Gcore Customer Portal](/account-settings/api-tokens) and check that it has permissions for the requested product.
 </Info>
 
-## Configure Cloud defaults
+## Project and region
 
-Cloud tools require `project_id` and `region_id` for most operations. Setting defaults avoids specifying them in every request.
+`cloud.instances.list` with `project_id` and `region_id` omitted returns `_scope.project` for the account default project. The response note says every active region was searched, and each item includes `region_id`. The schema for `project_id` says the default project is used except for destructive operations. The schema for `region_id` says list operations search every region and other operations need a region.
 
-To find project and region IDs, ask the AI client:
-
-```
-List my Cloud projects
-```
-
-```
-List available Cloud regions
-```
-
-Or navigate to **Cloud** > **Projects** in the [Gcore Customer Portal](https://portal.gcore.com) and check the URL for region IDs.
-
-Once the IDs are known, add them to the `env` section of the AI client configuration:
+`GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` are optional. Add them to the client `env` block only to pin calls:
 
 ```json
-{
-  "mcpServers": {
-    "gcore-mcp-server": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
-        "gcore-mcp-server"
-      ],
-      "env": {
-        "GCORE_API_KEY": "your-api-key",
-        "GCORE_TOOLS": "cloud.*",
-        "GCORE_CLOUD_PROJECT_ID": "1186668",
-        "GCORE_CLOUD_REGION_ID": "76"
-      }
-    }
-  }
-}
+"GCORE_CLOUD_PROJECT_ID": "PROJECT_ID",
+"GCORE_CLOUD_REGION_ID": "REGION_ID"
 ```
 
-With defaults set, requests like "Create a VM with 2 vCPUs" use the specified project and region automatically.
+Find the IDs by asking the client to list projects and regions, or from the URL at **Cloud** > **Projects** in the [Gcore Customer Portal](https://portal.gcore.com).
+
+## Read-only mode and approval
+
+`GCORE_READ_ONLY=true` rejects writes. In direct mode the write and destructive tools are absent. In dynamic mode the client receives `search_tools`, `get_tool_schema`, `call_read_tool`, and `execute_code`. A write passed to `call_read_tool` returns an error that the server is in read-only mode.
+
+`GCORE_TRANSPORT=http` starts read-only and logs that `GCORE_READ_ONLY=false` is required to allow changes. The session URL is `http://127.0.0.1:<port>/mcp`. `GET /sse` returns 404.
+
+With the default confirmation behavior, `dns.zones.delete` returns `CONFIRMATION REQUIRED` and the text "This call was NOT executed." Repeating the call is what sends it. `cloud.instances.create` and `dns.zones.create` do not set `requires_confirmation`.
 
 <Info>
-If Cloud requests return errors about a missing project or region, add `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` to the `env` section, or specify them inline: "List VMs in project 1186668, region Luxembourg". Requests that return "429 Too Many Requests" are rate limited. Retry after the Retry-After interval when the response includes that header.
+Requests that return "429 Too Many Requests" are rate limited. Retry after the Retry-After interval when the response includes that header.
 </Info>

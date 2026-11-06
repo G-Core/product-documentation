@@ -1,15 +1,13 @@
 ---
 title: Connect Cursor IDE to Gcore MCP Server
 sidebarTitle: Connect Cursor IDE
-description: Connect Cursor IDE to Gcore MCP Server, configure tool patterns, verify the connection, and test queries.
+description: Connect Cursor IDE to Gcore MCP Server and send a test query.
 ---
 
-Cursor IDE supports Gcore MCP Server with a tool count limit. Unlike Claude Code, Cursor loads all tool schemas at startup, which causes context window issues when too many tools are active. The active tool count must stay under 50 by using a specific `GCORE_TOOLS` pattern.
+Cursor IDE connects to Gcore MCP Server in dynamic mode. Leave `GCORE_TOOLS` unset. The client receives six tools and can reach every operation. Pattern rules for a narrower set are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
 
-## Prerequisites
-
-- [Gcore API token](/account-settings/api-tokens) with permissions for the operations to perform
-- [uv package manager](https://docs.astral.sh/uv/getting-started/installation/) installed
+- [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens) with permissions for the operations to perform
+- [uv&nbsp;package&nbsp;manager](https://docs.astral.sh/uv/getting-started/installation/) installed
 - Cursor IDE 0.40 or later
 
 ## Step 1. Add Gcore MCP Server to Cursor
@@ -46,19 +44,14 @@ Add the `gcore-mcp-server` entry to the `mcpServers` object. If the file is empt
         "gcore-mcp-server"
       ],
       "env": {
-        "GCORE_API_KEY": "your-api-key",
-        "GCORE_TOOLS": "dns.*"
+        "GCORE_API_KEY": "API_TOKEN"
       }
     }
   }
 }
 ```
 
-Replace `your-api-key` with the [Gcore API token](/account-settings/api-tokens).
-
-<Warning>
-Do not set `GCORE_TOOLS=*` in Cursor IDE. Cursor loads all tool schemas at startup — with 720 tools, the client becomes unresponsive or selects incorrect tools. Always specify a product pattern. Each product pattern stays well under the 50-tool limit: `dns.*` loads approximately 35 tools, `storage.*` approximately 40, and `fastedge.*` approximately 20.
-</Warning>
+Replace `API_TOKEN` with the [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens). Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode. A value that matches nothing exits with status 2.
 
 If the file already contains other MCP servers, add the `gcore-mcp-server` block inside the existing `mcpServers` object without removing other entries.
 
@@ -66,46 +59,41 @@ If the file already contains other MCP servers, add the `gcore-mcp-server` block
 
 Restart Cursor to load the new configuration. Open **Settings** and navigate to **Features → MCP**. The `gcore-mcp-server` entry appears with a green indicator and lists the loaded tools.
 
-<Frame>![Gcore MCP Server connected in Cursor IDE settings with dns.* tools listed](/images/docs/developer-tools/mcp-server/connect-cursor-to-gcore-mcp-server/cursor-mcp-connected.png)</Frame>
-
 <Info>
-If the server does not appear in MCP settings, verify that the `mcp.json` file has valid JSON syntax — a missing comma or bracket prevents loading. Check that `uv` is installed (`uv --version`) and restart Cursor fully (quit and reopen, not just reload the window).
+If the server does not appear in MCP settings, verify that the `mcp.json` file has valid JSON syntax. A missing comma or bracket prevents loading. Check that `uv` is installed (`uv --version`). Quit Cursor and open it again. Reloading the window does not load the server.
 </Info>
 
 ## Step 3. Test with a query
 
-Open a Cursor chat and ask a question using the connected product. With `GCORE_TOOLS="dns.*"`:
+Open a Cursor chat and ask:
 
 ```
 List my DNS zones
 ```
 
-A successful response displays DNS zones with their names, record counts, and status.
-
-<Frame>![Cursor IDE returning DNS zone details via Gcore MCP Server](/images/docs/developer-tools/mcp-server/connect-cursor-to-gcore-mcp-server/cursor-dns-query.png)</Frame>
-
-<Info>
-If tools are not available in chat, confirm the `GCORE_API_KEY` value has no extra spaces or quotes, verify the token is active in the [Gcore Customer Portal](/account-settings/api-tokens), and check that the `GCORE_TOOLS` pattern matches at least one tool name. Use [MCP Inspector](/developer-tools/mcp-server/test-tools-with-mcp-inspector) to verify the pattern. Requests returning "401 Unauthorized" indicate an invalid or expired token — see [API token permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions) for required roles.
-</Info>
-
-## Switch to a different product
-
-To work with a different Gcore product, update the `GCORE_TOOLS` value in `mcp.json` and restart Cursor.
-
-| Product | Pattern | Approximate tool count |
-|---------|---------|----------------------|
-| DNS | `dns.*` | 35 |
-| Storage | `storage.*` | 40 |
-| FastEdge | `fastedge.*` | 20 |
-| IAM | `iam.*` | 20 |
-| Streaming | `streaming.*` | 60 |
-| CDN | `cdn.cdn_resources.*` | ~15 |
-| Cloud (basic) | `management,instances` | ~25 |
-
-For workflows involving multiple products, combine patterns and verify the total stays under 50:
+A successful response lists DNS zones with the zone name, record count, and status:
 
 ```json
-"GCORE_TOOLS": "dns.*,management"
+{
+  "zones": [
+    {
+      "name": "example.com",
+      "status": "non-delegated",
+      "enabled": true,
+      "rrsets_amount": {
+        "dynamic": {
+          "healthcheck": 0,
+          "total": 0
+        },
+        "static": 3,
+        "total": 3
+      }
+    }
+  ],
+  "total_amount": 8
+}
 ```
 
-Use [MCP Inspector](/developer-tools/mcp-server/test-tools-with-mcp-inspector) to count tools for any pattern before adding it to the Cursor config.
+<Info>
+If tools are not available in chat, confirm the `GCORE_API_KEY` value has no extra spaces or quotes, and verify the token is active in the [Gcore Customer Portal](/account-settings/api-tokens). Requests returning "401 Unauthorized" indicate an invalid or expired token. Required roles are in [API&nbsp;token&nbsp;permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions).
+</Info>
