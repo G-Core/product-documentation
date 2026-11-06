@@ -1,0 +1,217 @@
+---
+title: Overview
+sidebarTitle: Overview
+description: Configure Edge Proxy protected IP addresses, filtering policies, and traffic forwarding.
+---
+
+Edge Proxy protects an origin by routing connections through a protected IPv4 address. A proxy profile links that address to the origin and defines how traffic is filtered and forwarded, using policies from a Gcore-managed template.
+
+The base URL is `https://api.gcore.com/security/edgeproxy`.
+
+## Proxy profiles
+
+A proxy profile stores the origin, the selected template, and rules that assign filtering policies to ports. Creating a [proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/create-proxy-profile) returns its protected IP address. Omit `protected_ip_address` to have an address allocated automatically, or select one from the [available&nbsp;addresses](/api-reference/edge-proxy/proxy-profiles/list-available-protected-ipv4-addresses).
+
+To change an existing profile, [Replace&nbsp;proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/replace-proxy-profile) submits its full configuration again, or [Update&nbsp;proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/update-proxy-profile) submits only the fields to change. An update can also move the profile to another free protected address.
+
+[Activate](/api-reference/edge-proxy/proxy-profiles/activate-proxy-profile), [deactivate](/api-reference/edge-proxy/proxy-profiles/deactivate-proxy-profile), or [redeploy](/api-reference/edge-proxy/proxy-profiles/redeploy-proxy-profile) an existing profile. The [ACL&nbsp;limit](/api-reference/edge-proxy/proxy-profiles/get-acl-limit) shows how many rules the account can hold and how many it currently uses.
+
+## Proxy templates
+
+Gcore manages proxy templates, which provide the filtering policies that a profile can use in its rules. [List&nbsp;proxy&nbsp;templates](/api-reference/edge-proxy/proxy-templates/list-proxy-templates) returns the available templates and their policies, while [Get&nbsp;proxy&nbsp;template](/api-reference/edge-proxy/proxy-templates/get-proxy-template) returns one template.
+
+## Quick start
+
+A TCP service listening on port 80 uses the default template and its Generic TCP Server policy, `tcp-server`. The steps create a proxy profile, wait until the protected IP address is ready, and verify that connections reach the application through Edge Proxy.
+
+Edge Proxy must be active on the account, and the origin must be reachable at a public IPv4 address or domain name. The application must accept TCP connections on port 80. When a firewall restricts access, allow the Gcore [edge&nbsp;IP&nbsp;addresses](/edge-proxy/setup-and-configuration#restrict-access-to-the-origin) to reach that port. Restricting direct access to the origin also prevents clients from bypassing protection.
+
+An [API&nbsp;token](/account-settings/api-tokens), `curl`, and `jq` are required, and [Use&nbsp;Postman](/developer-tools/rest-api/use-postman) stores that token on the collection and reuses an id from the list response in the next request. Run the commands in the same shell, because later steps use variables set by earlier ones. When a command reports an error, resolve it before continuing.
+
+Set the token and the origin address:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export EDGE_PROXY_ORIGIN="{YOUR_ORIGIN_HOST}"
+```
+
+<Steps>
+<Step title="Select a template and policy">
+
+A profile can use only policies from its selected template. The commands find the account's default template (`is_default` is true), select its `tcp-server` policy, and save both IDs for profile creation.
+
+```bash
+unset TEMPLATE_ID POLICY_ID
+template_json=$(curl --fail --silent --show-error \
+  "https://api.gcore.com/security/edgeproxy/v3/templates?limit=100" \
+  -H "Authorization: APIKey $GCORE_API_KEY")
+TEMPLATE_ID=$(printf '%s' "$template_json" | jq -r '.results | map(select(.is_default == true)) | .[0].id // empty')
+POLICY_ID=$(printf '%s' "$template_json" | jq -r '.results | map(select(.is_default == true)) | .[0].policies | map(select(.id == "tcp-server")) | .[0].id // empty')
+if [ -z "$TEMPLATE_ID" ] || [ -z "$POLICY_ID" ]; then
+  printf '%s\n' "The default template or Generic TCP Server policy was not returned." >&2
+else
+  export TEMPLATE_ID POLICY_ID
+  printf '%s\n' "$template_json" \
+    | jq '.results[] | select(.is_default == true) | {id, policies: [.policies[] | select(.id == "tcp-server") | {id, name}]}'
+fi
+```
+
+A successful selection looks like this. The template ID may differ:
+
+```json
+{
+  "id": 1,
+  "policies": [
+    {
+      "id": "tcp-server",
+      "name": "Generic TCP Server"
+    }
+  ]
+}
+```
+
+When either ID is missing, stop and select a valid template and policy.
+
+</Step>
+<Step title="Create the profile">
+
+The Create proxy profile request links the origin to the selected template and applies `tcp-server` to TCP port 80. It uses `edge-proxy-profile` as the name, which must contain 1 to 60 characters, and omits `protected_ip_address` so Gcore assigns an address.
+
+This request uses port 80 both on the protected IP and on the origin. When the application listens on port 8080, set `outbound_port` in the mapping and allow Gcore edge traffic on port 8080:
+
+```json
+{
+  "protocol": "tcp",
+  "port": 80,
+  "outbound_port": 8080
+}
+```
+
+For port 80, run:
+
+```bash
+if [ -z "${TEMPLATE_ID:-}" ] || [ -z "${POLICY_ID:-}" ]; then
+  printf '%s\n' "Select a valid template and policy before creating the profile." >&2
+else
+  body=$(jq -n \
+    --arg name "edge-proxy-profile" \
+    --arg origin "$EDGE_PROXY_ORIGIN" \
+    --argjson template_id "$TEMPLATE_ID" \
+    --arg policy "$POLICY_ID" \
+    '{name:$name, origin_host:$origin, template_id:$template_id, rules:[{policy:$policy, mappings:[{protocol:"tcp", port:80}]}]}')
+  unset PROFILE_ID
+  if create_json=$(curl --fail --silent --show-error \
+    --request POST "https://api.gcore.com/security/edgeproxy/v3/profiles" \
+    -H "Authorization: APIKey $GCORE_API_KEY" \
+    -H "Content-Type: application/json" \
+    --data "$body"); then
+    printf '%s\n' "$create_json" | jq '{id, status, is_processing, is_error, protected_ip_address, error_details}'
+    PROFILE_ID=$(printf '%s' "$create_json" | jq -r '.id // empty')
+    if [ -n "$PROFILE_ID" ]; then
+      export PROFILE_ID
+    else
+      printf '%s\n' "The response did not contain a profile ID." >&2
+    fi
+  fi
+fi
+```
+
+A successful request returns HTTP 201 with the profile ID and protected IP address. Deployment has started, so `status` is `INACTIVE` and `is_processing` is `true`:
+
+```json
+{
+  "id": 42,
+  "status": "INACTIVE",
+  "is_processing": true,
+  "is_error": false,
+  "error_details": null,
+  "protected_ip_address": "203.0.113.20"
+}
+```
+
+An HTTP 400 response can mean that the service is inactive, no protected address is available, the origin is already used by an active profile, or the profile limit has been reached.
+
+</Step>
+<Step title="Wait for deployment">
+
+The protected IP is returned before the profile is ready to accept connections. Edge Proxy must first deploy its configuration across the network. The commands read the profile until processing finishes and save `PROTECTED_IP` only when the profile is `ACTIVE` and has no error. A new profile becomes active automatically, without a separate Activate call.
+
+```bash
+if [ -z "${PROFILE_ID:-}" ]; then
+  printf '%s\n' "Create the profile before checking deployment." >&2
+else
+  unset PROTECTED_IP
+  processing="true"
+  for _ in $(seq 1 36); do
+    if ! profile_json=$(curl --fail --silent --show-error \
+      "https://api.gcore.com/security/edgeproxy/v3/profiles/$PROFILE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"); then
+      printf '%s\n' "Could not read the profile status." >&2
+      break
+    fi
+    processing=$(printf '%s' "$profile_json" | jq -r '.is_processing')
+    if [ "$processing" = "false" ]; then
+      break
+    fi
+    sleep 5
+  done
+  if [ "$processing" != "false" ]; then
+    printf '%s\n' "Deployment was not confirmed ready. Check the profile again before continuing." >&2
+  else
+    status=$(printf '%s' "$profile_json" | jq -r '.status')
+    is_error=$(printf '%s' "$profile_json" | jq -r '.is_error')
+    protected_ip=$(printf '%s' "$profile_json" | jq -r '.protected_ip_address')
+    if [ "$status" != "ACTIVE" ] || [ "$is_error" != "false" ] || [ -z "$protected_ip" ] || [ "$protected_ip" = "null" ]; then
+      printf '%s\n' "$profile_json" | jq '{id, status, is_processing, is_error, error_details, protected_ip_address}'
+      printf '%s\n' "The profile is not ready for client connections." >&2
+    else
+      export PROTECTED_IP="$protected_ip"
+      printf '%s\n' "$profile_json" | jq '{id, status, is_processing, is_error, protected_ip_address, error_details}'
+    fi
+  fi
+fi
+```
+
+A successful deployment has `status` `ACTIVE`, `is_processing` `false`, and `is_error` `false`:
+
+```json
+{
+  "id": 42,
+  "status": "ACTIVE",
+  "is_processing": false,
+  "is_error": false,
+  "error_details": null,
+  "protected_ip_address": "203.0.113.20"
+}
+```
+
+When `is_error` is `true`, read `error_details` before proceeding. Hold client traffic until all three conditions are met and `PROTECTED_IP` is set.
+
+</Step>
+<Step title="Direct clients to the protected IP">
+
+Once the profile is ready, clients can connect to `PROTECTED_IP` on TCP port 80 instead of connecting directly to the origin. When they use a domain name, update its DNS A record to point to the protected IP address. Connections sent directly to the origin bypass Edge Proxy filtering.
+
+</Step>
+<Step title="Verify the connection">
+
+Connect to the protected IP on port 80 with the application's normal client. A successful test returns the application's response through Edge Proxy rather than directly from the origin.
+
+When an HTTP service accepts requests sent to its IP address, run:
+
+```bash
+curl --fail --silent --show-error "http://$PROTECTED_IP/"
+```
+
+When the application selects a site based on its hostname, send the name in the Host header:
+
+```bash
+curl --fail --silent --show-error \
+  --header "Host: {YOUR_HOSTNAME}" \
+  "http://$PROTECTED_IP/"
+```
+
+When the connection fails while the profile is `ACTIVE`, [Connection&nbsp;failures](/edge-proxy/faqs-and-troubleshooting) covers an origin that blocks Gcore edge IP addresses, a policy that does not match the application, and a Host value the application does not recognize.
+
+</Step>
+</Steps>
