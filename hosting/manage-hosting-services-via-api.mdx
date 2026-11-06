@@ -1,7 +1,138 @@
 ---
 title: Manage hosting services via API
 sidebarTitle: API
-description: Manage hosting services with Billmanager, DCImanager, and VMmanager for provisioning, payments, dedicated servers, virtual private servers.
+description: Order a virtual or dedicated server in hosting billing.
 ---
 
-Hosting management is available through three APIs. The [Billmanager&nbsp;API](https://docs.ispsystem.com/billmanager/developer-section/billmanager-api) covers server provisioning, payments, and all portal actions. The [DCImanager&nbsp;API](https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api) manages Dedicated Servers. The [VMmanager&nbsp;API](https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api) manages Virtual Private Servers.
+A partner orders a virtual server or a dedicated server through the [Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr). Each action is an HTTP POST to `https://hosting.gcore.com/billmgr`. The `func` parameter selects the action.
+
+<Info>
+Support or the account manager issues the billing user. The partner sends the source IP address with that request. The portal answers only from addresses on the allow list. A call from any other address gets no response. The written request for reseller access is [Become&nbsp;a&nbsp;reseller](/hosting/become-reseller-and-resell-our-services). `{TODO: verify - the reseller request and the billing user for these calls are the same approval}`
+</Info>
+
+## Authenticate
+
+`authinfo` is the billing username and password, separated by a colon. `out=json` selects a JSON response. Send both on every call. The password stays in the POST body.
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.pricelist" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json"
+```
+
+`{TODO: verify - authinfo from an allow-listed address. The calls below were made from an open portal session, not with authinfo}`
+
+A session from `func=auth` is a second sign-in method in BILLmanager. `{TODO: verify - func=auth on hosting.gcore.com and the parameter that sends the session id on later calls}`
+
+## Read a failed call
+
+A failed call still returns HTTP 200. The failure text is in `doc.error.msg`. A successful list has `doc.list` and no `doc.error`. Read `doc.error` before using the list.
+
+## Tariffs available to order
+
+The virtual server catalog:
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.pricelist" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json"
+```
+
+The dedicated server catalog:
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.dedic.order.pricelist" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json"
+```
+
+The response lists the tariffs the account can order. Each item has the tariff id in `pricelist`, the name in `title`, the location, and the price for one, three, six, and 12 months. The location is the `datacenter` object on the tariff (`id` and `value`). A client account has no separate data center list. `{TODO: verify - a partner account receives the same catalog calls and the same datacenter object}`
+
+Text values sit in `$`. `period` is a number of months. This object is one tariff returned by `v2.vds.order.pricelist` on the Gcore Hosting Portal:
+
+```json
+{
+  "pricelist": { "$": "172456" },
+  "title": { "$": "KVM-HIGHCPU-SSD-1-SY4" },
+  "datacenter": {
+    "id": { "$": "13" },
+    "value": { "$": "Australia, Sydney" }
+  },
+  "prices": {
+    "price": [
+      {
+        "period": { "$": "1" },
+        "cost": { "$": "14.99" },
+        "currency": { "$": "EUR" }
+      }
+    ]
+  }
+}
+```
+
+## Order a virtual server
+
+Take `pricelist` and `datacenter.id` from the catalog. This call opens the order form and does not place the order:
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=172456" \
+  --data-urlencode "datacenter=13" \
+  --data-urlencode "period=1"
+```
+
+The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. Ubuntu 22.04 is `VM6_ISPsystem_Ubuntu-22.04`. The form also returns `addon_*` fields for that tariff. `{TODO: verify - which addon fields the order requires}`
+
+The same function with `sok=ok` submits the form:
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=PRICELIST" \
+  --data-urlencode "datacenter=DATACENTER" \
+  --data-urlencode "period=1" \
+  --data-urlencode "order_period=1" \
+  --data-urlencode "domain=server1.example.com" \
+  --data-urlencode "ostempl=OS_TEMPLATE" \
+  --data-urlencode "sok=ok"
+```
+
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` changes nothing. `{TODO: verify - what sok=ok creates on hosting.gcore.com. This submit was not sent}`
+
+## Order a dedicated server
+
+The dedicated server form uses the same parameters. The catalog call is `v2.dedic.order.pricelist`. The order call is `v2.dedic.order.param`. The form for tariff `152029` in datacenter `13` opened with `domain`, `ostempl`, and `order_period`. `{TODO: verify - sok=ok on v2.dedic.order.param. This submit was not sent}`
+
+```bash
+curl -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.dedic.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=PRICELIST" \
+  --data-urlencode "datacenter=DATACENTER" \
+  --data-urlencode "period=1" \
+  --data-urlencode "order_period=1" \
+  --data-urlencode "domain=server1.example.com" \
+  --data-urlencode "ostempl=OS_TEMPLATE" \
+  --data-urlencode "sok=ok"
+```
+
+## Pay for the order
+
+BILLmanager can charge the account balance on the order call when the call also sends `skipbasket=on`. `{TODO: verify - whether a Gcore partner order uses skipbasket=on or a cart call, and which balance is charged}`
+
+The same gap decides whose balance pays. `{TODO: verify - whether the partner orders on the partner balance or sends su with a client login}`
+
+## Read the service
+
+After the order, the partner reads the new service and waits until it is active. `{TODO: verify - func=vds for a virtual server and func=dedic for a dedicated server on hosting.gcore.com, the service id in the response, and which item_status value means the server is active}`
+
+A dedicated server is then managed in [DCImanager](https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api). A virtual server is managed in [VMmanager](https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api). `{TODO: verify - which service actions the partner performs in billmgr before those panels}`
