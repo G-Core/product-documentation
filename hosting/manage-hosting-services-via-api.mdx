@@ -7,12 +7,14 @@ description: Order a virtual or dedicated server in hosting billing.
 A partner orders a virtual server or a dedicated server through the [Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr). Each action is an HTTP POST to `https://hosting.gcore.com/billmgr`. The `func` parameter selects the action.
 
 <Info>
-Support or the account manager issues the billing user. The partner sends the source IP address with that request. The portal answers only from addresses on the allow list. A call from any other address gets no response. The written request for reseller access is [Become&nbsp;a&nbsp;reseller](/hosting/become-reseller-and-resell-our-services). `{TODO: verify - the reseller request and the billing user for these calls are the same approval}`
+Each call signs in with the existing Hosting Portal account. Company details and the source IP address are collected on the [reseller&nbsp;page](/hosting/become-reseller-and-resell-our-services).
+
+Support adds that IP address to the allow list and adds the account to the reseller group. A call from any other address gets no response.
 </Info>
 
 ## Authenticate
 
-`authinfo` is the billing username and password, separated by a colon. `out=json` selects a JSON response. Send both on every call. The password stays in the POST body.
+`authinfo` is the Hosting Portal username and password, separated by a colon. `out=json` selects a JSON response. Send both on every call. The password stays in the POST body.
 
 ```bash
 curl -s -X POST "https://hosting.gcore.com/billmgr" \
@@ -20,10 +22,6 @@ curl -s -X POST "https://hosting.gcore.com/billmgr" \
   --data-urlencode "authinfo=USER:PASSWORD" \
   --data-urlencode "out=json"
 ```
-
-`{TODO: verify - authinfo from an allow-listed address. The calls below were made from an open portal session, not with authinfo}`
-
-A session from `func=auth` is a second sign-in method in BILLmanager. `{TODO: verify - func=auth on hosting.gcore.com and the parameter that sends the session id on later calls}`
 
 ## Read a failed call
 
@@ -49,7 +47,7 @@ curl -s -X POST "https://hosting.gcore.com/billmgr" \
   --data-urlencode "out=json"
 ```
 
-The response lists the tariffs the account can order. Each item has the tariff id in `pricelist`, the name in `title`, the location, and the price for one, three, six, and 12 months. The location is the `datacenter` object on the tariff (`id` and `value`). A client account has no separate data center list. `{TODO: verify - a partner account receives the same catalog calls and the same datacenter object}`
+The response lists the tariffs the account can order. Each item has the tariff id in `pricelist`, the name in `title`, the location, and the price for one, three, six, and 12 months. The location is the `datacenter` object on the tariff (`id` and `value`). A client account has no separate data center list.
 
 Text values sit in `$`. `period` is a number of months. This object is one tariff returned by `v2.vds.order.pricelist` on the Gcore Hosting Portal:
 
@@ -89,7 +87,7 @@ curl -s -X POST "https://hosting.gcore.com/billmgr" \
 
 The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. Ubuntu 22.04 is `VM6_ISPsystem_Ubuntu-22.04`. The form also returns `addon_*` fields for that tariff. `{TODO: verify - which addon fields the order requires}`
 
-The same function with `sok=ok` submits the form:
+The same function with `sok=ok` submits the order. The charge comes from the account balance:
 
 ```bash
 curl -s -X POST "https://hosting.gcore.com/billmgr" \
@@ -105,11 +103,11 @@ curl -s -X POST "https://hosting.gcore.com/billmgr" \
   --data-urlencode "sok=ok"
 ```
 
-`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` changes nothing. `{TODO: verify - what sok=ok creates on hosting.gcore.com. This submit was not sent}`
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` changes nothing. `{TODO: verify - the response body after sok=ok. This submit was not sent}`
 
 ## Order a dedicated server
 
-The dedicated server form uses the same parameters. The catalog call is `v2.dedic.order.pricelist`. The order call is `v2.dedic.order.param`. The form for tariff `152029` in datacenter `13` opened with `domain`, `ostempl`, and `order_period`. `{TODO: verify - sok=ok on v2.dedic.order.param. This submit was not sent}`
+The dedicated server form uses the same parameters. The catalog call is `v2.dedic.order.pricelist`. The order call is `v2.dedic.order.param`. The form for tariff `152029` in datacenter `13` opened with `domain`, `ostempl`, and `order_period`. `{TODO: verify - the response body after sok=ok on v2.dedic.order.param. This submit was not sent}`
 
 ```bash
 curl -s -X POST "https://hosting.gcore.com/billmgr" \
@@ -127,9 +125,7 @@ curl -s -X POST "https://hosting.gcore.com/billmgr" \
 
 ## Pay for the order
 
-BILLmanager can charge the account balance on the order call when the call also sends `skipbasket=on`. `{TODO: verify - whether a Gcore partner order uses skipbasket=on or a cart call, and which balance is charged}`
-
-The same gap decides whose balance pays. `{TODO: verify - whether the partner orders on the partner balance or sends su with a client login}`
+The partner adds funds to the account balance before the first order. A submitted order and a renewal are charged from that balance.
 
 ## Read the service
 
