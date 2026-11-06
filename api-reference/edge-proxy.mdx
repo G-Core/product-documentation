@@ -1,0 +1,39 @@
+---
+title: Overview
+sidebarTitle: Overview
+description: A proxy profile places a protected address and forwarded ports in front of an origin, using one Gcore template.
+---
+
+A proxy profile puts a protected IPv4 address in front of an origin host and forwards the ports selected for that host. A proxy template, which Gcore provides, lists the policies those ports can use. The base URL is `https://api.gcore.com/security/edgeproxy`.
+
+## Proxy profile
+
+Creating a [proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/create-proxy-profile) stores the origin host, one template id, and at least one rule. Each rule names a policy from that template and the protocol and port to forward.
+
+The response includes the protected address. Omit `protected_ip_address` so Gcore allocates it, or pick an address from the [available&nbsp;addresses](/api-reference/edge-proxy/proxy-profiles/list-available-protected-ipv4-addresses).
+
+[Replace&nbsp;proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/replace-proxy-profile) sends the name, origin, template, and rules again. [Update&nbsp;proxy&nbsp;profile](/api-reference/edge-proxy/proxy-profiles/update-proxy-profile) changes only the fields in the request and can move the profile to another free address.
+
+[Activate](/api-reference/edge-proxy/proxy-profiles/activate-proxy-profile), [deactivate](/api-reference/edge-proxy/proxy-profiles/deactivate-proxy-profile), and [redeploy](/api-reference/edge-proxy/proxy-profiles/redeploy-proxy-profile) run separately from create and from an update. The [ACL&nbsp;limit](/api-reference/edge-proxy/proxy-profiles/get-acl-limit) reports how many rules the account may hold and how many it already uses.
+
+## Proxy template
+
+Gcore manages each proxy template and publishes the policies a profile can attach to a port. [List&nbsp;proxy&nbsp;templates](/api-reference/edge-proxy/proxy-templates/list-proxy-templates) returns those policies, and [Get&nbsp;proxy&nbsp;template](/api-reference/edge-proxy/proxy-templates/get-proxy-template) returns one template.
+
+## Quick start
+
+List the templates before creating a profile, because the profile needs a template id and a policy id from that template.
+
+```bash
+curl "https://api.gcore.com/security/edgeproxy/v3/templates" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Replace `template_id` and `policy` with values from that list. Leaving out `protected_ip_address` allocates the address.
+
+```bash
+curl -X POST "https://api.gcore.com/security/edgeproxy/v3/profiles" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"web-server\",\"origin_host\":\"203.0.113.10\",\"template_id\":13,\"rules\":[{\"policy\":\"allow\",\"mappings\":[{\"port\":80,\"protocol\":\"tcp\"}]}]}"
+```
