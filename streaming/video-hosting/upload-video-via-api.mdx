@@ -6,7 +6,7 @@ description: Upload video to VOD storage by copying from external URL or using T
 
 Two API upload methods are available: copy a file from an external URL, or upload a local file using the TUS resumable protocol. For large-scale migrations, Gcore provides a support-assisted batch workflow — contact [support@gcore.com](mailto:support@gcore.com) to arrange it. The Customer Portal upload workflow is covered in [Upload&nbsp;a&nbsp;video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
 
-All requests require an [API token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
+Requests to the Gcore API require an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -18,7 +18,7 @@ Processing statuses for uploaded videos are described in [VOD&nbsp;status](/stre
 
 ## Copy from external storage
 
-If the source file is available at a public HTTPS or SFTP URL, Gcore downloads it server-side. Supported protocols:
+If the source file is available at a public HTTP, HTTPS, or SFTP URL, Gcore downloads it server-side. Supported protocols:
 
 - HTTP/HTTPS from external video hosting services (Vimeo, Mux)
 - HTTP/HTTPS from S3-compatible storages (AWS S3, Azure Blob Storage)
@@ -41,7 +41,7 @@ Send `POST /streaming/videos` with the source URL in the `origin_url` attribute:
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos' \
 -H 'Content-Type: application/json' \
--H 'Authorization: APIKey $GCORE_API_KEY' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
 -d '{
   "video": {
     "name": "Gcore Demo",
@@ -70,7 +70,7 @@ The source file of an existing video can't be replaced, because no field of the 
 
 ### Download behavior
 
-Gcore attempts to download the source file three times, expecting a `200 OK` response. If all three attempts fail, the video entity stays in `Empty` status and the `error` field contains details — delete the empty entity and create a new one with a correct URL.
+For an HTTP or HTTPS source, Gcore attempts to download the file three times and expects a `200 OK` response. If the attempts fail, the video status becomes `error` and the `error` field contains the details. Delete that video and create a new one with a correct URL.
 
 If the download succeeds, Gcore starts transcoding the video. Check transcoding progress via the [GET /streaming/videos/{id}](/api-reference/streaming/videos/get-video) endpoint or [webhook notifications](/streaming/extra-features/get-webhooks-from-the-streaming-platform).
 
@@ -87,7 +87,7 @@ Send `POST /streaming/videos` without the `origin_url` attribute to create a vid
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos' \
 -H 'Content-Type: application/json' \
--H 'Authorization: APIKey $GCORE_API_KEY' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
 -d '{
   "video": {
     "name": "Gcore Demo",
@@ -119,7 +119,7 @@ Use the `id` from Step 1 to request the TUS upload server URL and session token:
 
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos/2501637/upload' \
--H 'Authorization: APIKey $GCORE_API_KEY'
+-H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
 The API returns:
@@ -177,7 +177,11 @@ Transmitted data must comply with the [Upload-Metadata header rules](https://tus
 Bash upload command:
 
 ```bash
-DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(echo <client_id> | base64 -w0),filename $(echo <filename> | base64 -w0),token $(echo <token> | base64 -w0),video_id $(echo <video_id> | base64 -w0)'"
+client_id="1000503"
+video_id="2501637"
+filename="file_to_upload.mp4"
+token="eyJhbGciOiJIUzI3O6kc3Og..."
+DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(printf '%s' "$client_id" | base64 -w0),filename $(printf '%s' "$filename" | base64 -w0),token $(printf '%s' "$token" | base64 -w0),video_id $(printf '%s' "$video_id" | base64 -w0)'"
 ```
 
 JavaScript upload with the [CodePen template](https://codepen.io/apih9000/pen/wvQmNEW?editors=1011) — copy `token`, `video_id`, and `client_id` to test the TUS upload flow:
@@ -204,9 +208,11 @@ const options = {
     ...
   },
   onShouldRetry(err, retryAttempt, options) {
-    // HTTP 500 can be transient or a configuration error (token/ID mismatch).
-    // Inspect err.originalResponse body to distinguish them before retrying.
-    return retryAttempt < 3;
+    const body = err.originalResponse ? err.originalResponse.getBody() : ""
+    if (body.includes("does not match this video") || body.includes("does not match this client")) {
+      return false
+    }
+    return retryAttempt < 3
   },
   onSuccess() {
     ...
