@@ -140,7 +140,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 ### 1. Create the certificate object
 
-<p>Create the certificate object before attaching it. `automated` must be `true`. The PEM fields stay null until issuance finishes. The Python and Go calls return no body, so the new ID comes from the certificate list filtered by name. The curl call returns the object, including `id`.</p>
+<p>Create the certificate object before attaching it. `automated` must be `true`. The PEM fields stay null until issuance finishes. The Python, Go, and curl calls return the certificate object, including <code>id</code>.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -154,15 +154,9 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
     client = Gcore()
 
-    client.cdn.certificates.create(
+    created = client.cdn.certificates.create(
         name="cdn-le-certificate",
         automated=True,
-    )
-
-    created = next(
-        item
-        for item in client.cdn.certificates.list(automated=True)
-        if item.name == "cdn-le-certificate"
     )
     print(created.id, created.automated, created.has_related_resources)
     ```
@@ -183,7 +177,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
+        created, err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
             OfLetSEncryptCertificate: &cdn.CertificateNewParamsBodyLetSEncryptCertificate{
                 Name:      "cdn-le-certificate",
                 Automated: true,
@@ -192,18 +186,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
         if err != nil {
             panic(err)
         }
-
-        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{
-            Automated: gcore.Bool(true),
-        })
-        if err != nil {
-            panic(err)
-        }
-        for _, item := range page.Results {
-            if item.Name == "cdn-le-certificate" {
-                fmt.Println(item.ID, item.Automated, item.HasRelatedResources)
-            }
-        }
+        fmt.Println(created.ID, created.Automated, created.HasRelatedResources)
     }
     ```
   </Tab>
