@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 8f86190e9102
+  version: c5dc16c2da13
 servers:
 - url: https://api.gcore.com
 tags:
@@ -202,6 +202,67 @@ paths:
           	}
           	fmt.Printf("%+v\n", publicNetworkList.Addresses)
           }
+  /cdn/ip_ranges:
+    get:
+      operationId: get-cdn-ip-ranges
+      tags:
+      - IP addresses list
+      summary: Get CDN servers IP ranges
+      description: |-
+        Get the networks of CDN servers that pull content from your origin, to allow them in your origin IP ACL.
+
+        By default, each entry is a whole CDN network, so the list is as short as possible without covering addresses outside the CDN networks.
+        To get narrower entries, set `ipv4_prefix_length` or `ipv6_prefix_length`: each entry is then reduced to that prefix length.
+        An entry never covers addresses outside the CDN networks, so entries in a CDN network narrower than the requested length keep the length of that network.
+
+        This list is updated periodically. If you use it to configure IP ACL on your origin, we recommend updating the ACL automatically with a script.
+        The `X-Generated-At` response header shows when the current list was generated.
+      parameters:
+      - $ref: '#/components/parameters/ipv4_prefix_length'
+      - $ref: '#/components/parameters/ipv6_prefix_length'
+      - $ref: '#/components/parameters/ip_version'
+      - $ref: '#/components/parameters/format'
+      - $ref: '#/components/parameters/accept'
+      responses:
+        '200':
+          description: Successful.
+          headers:
+            X-Generated-At:
+              description: Time when the current list was generated.
+              schema:
+                type: string
+                format: date-time
+                example: '2026-01-01T12:00:00+00:00'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IpRange'
+            text/plain:
+              schema:
+                type: string
+                description: Plain text list of networks, one per line.
+              example: |
+                198.51.100.0/24
+                203.0.113.8/29
+                2001:db8:1::/64
+        '400':
+          description: Validation failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonValidationError'
+        '429':
+          description: Too many requests.
+        '503':
+          description: The service is temporarily unavailable, or the list has not been generated yet. Retry later; when the `Retry-After` header is present, wait that number of seconds.
+          headers:
+            Retry-After:
+              description: Number of seconds to wait before retrying. Present when the list has not been generated yet.
+              schema:
+                type: integer
+                example: 60
   /cdn/clients/me:
     get:
       operationId: get-cdn-service-details
@@ -7532,6 +7593,44 @@ components:
 
         Possible value:
         - **resource** - Data is grouped by CDN resources.
+    ip_version:
+      name: ip_version
+      in: query
+      description: |-
+        Return only entries of this IP version.
+        If not set, both IPv4 and IPv6 entries are returned.
+      required: false
+      schema:
+        type: integer
+        enum:
+        - 4
+        - 6
+    ipv4_prefix_length:
+      name: ipv4_prefix_length
+      in: query
+      description: |-
+        Prefix length of IPv4 entries.
+        An entry is narrower when the CDN network it belongs to is narrower than this length.
+        If not set or `0`, each entry is a whole CDN network.
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 32
+        default: 0
+    ipv6_prefix_length:
+      name: ipv6_prefix_length
+      in: query
+      description: |-
+        Prefix length of IPv6 entries.
+        An entry is narrower when the CDN network it belongs to is narrower than this length.
+        If not set or `0`, each entry is a whole CDN network.
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 128
+        default: 0
     is_primary:
       in: query
       name: is_primary
@@ -9084,9 +9183,9 @@ components:
                   type: array
                   items:
                     type: string
-                  description: The specified s3 access key id is less than 20 characters. Please lengthen the name and try again.
+                  description: The specified s3 access key id is invalid. Please specify 4-255 allowed characters and try again.
                   example:
-                  - Only 20-25 alpha-numeric characters are allowed.
+                  - Only 4-255 alpha-numeric-hyphen-colon-underscore characters are allowed.
     AuthS3AccessKeyIdIsRequiredError:
       title: Auth must have a s3 access key id
       type: object
@@ -9118,9 +9217,21 @@ components:
                   type: array
                   items:
                     type: string
-                  description: The specified s3 access key id is not equal 40 characters. Please lengthen the name and try again.
+                  description: The specified s3 secret access key is invalid. Please specify 16-255 allowed characters and try again.
                   example:
-                  - Only 40 alpha-numeric-plus-slash characters are allowed.
+                  - Only 16-255 alpha-numeric-plus-slash-dash-colon-underscore characters are allowed.
+    AuthS3BucketNameIsInvalidError:
+      title: Auth must have a valid s3 bucket name
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            auth:
+              type: object
+              properties:
+                s3_bucket_name:
+                  $ref: '#/components/schemas/S3BucketNameInvalidMessages'
     AuthS3BucketNameIsRequiredError:
       title: Auth must have a s3 bucket name
       type: object
@@ -9152,9 +9263,9 @@ components:
                   type: array
                   items:
                     type: string
-                  description: The specified s3 access key id is less 20-50 characters. Please lengthen the name and try again.
+                  description: The specified s3 secret access key is invalid. Please specify 16-255 allowed characters and try again.
                   example:
-                  - Only 20-50 alpha-numeric-plus-slash characters are allowed.
+                  - Only 16-255 alpha-numeric-plus-slash-dash-colon-underscore characters are allowed.
     AuthS3RegionIsInvalidError:
       title: Auth must have a known s3 region
       type: object
@@ -9186,7 +9297,7 @@ components:
                   type: array
                   items:
                     type: string
-                  description: S3 secret access key is a mandatory field. Please specify it.
+                  description: S3 region is a mandatory field. Please specify it.
                   example:
                   - This field is required.
     AuthS3SecretAccessKeyIsRequiredError:
@@ -9206,6 +9317,18 @@ components:
                   description: S3 secret access key is a mandatory field. Please specify it.
                   example:
                   - This field is required.
+    AuthS3StorageHostnameIsInvalidError:
+      title: Auth must have a valid s3 storage hostname
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            auth:
+              type: object
+              properties:
+                s3_storage_hostname:
+                  $ref: '#/components/schemas/S3StorageHostnameInvalidMessages'
     AuthS3StorageHostnameIsRequiredError:
       title: Auth must have a s3 storage hostname
       type: object
@@ -9735,7 +9858,11 @@ components:
       - $ref: '#/components/schemas/AuthS3RegionIsRequiredError'
       - $ref: '#/components/schemas/AuthS3RegionIsInvalidError'
       - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
+      - $ref: '#/components/schemas/AuthS3BucketNameIsInvalidError'
+      - $ref: '#/components/schemas/AuthS3StorageHostnameIsInvalidError'
       - $ref: '#/components/schemas/S3ConfigRequiredError'
+      - $ref: '#/components/schemas/S3BucketNameInvalidError'
+      - $ref: '#/components/schemas/S3StorageHostnameInvalidError'
       - $ref: '#/components/schemas/S3BucketNameDuplicateError'
       - $ref: '#/components/schemas/S3SourceAmbiguousError'
       - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
@@ -9781,7 +9908,11 @@ components:
       - $ref: '#/components/schemas/AuthS3RegionIsRequiredError'
       - $ref: '#/components/schemas/AuthS3RegionIsInvalidError'
       - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
+      - $ref: '#/components/schemas/AuthS3BucketNameIsInvalidError'
+      - $ref: '#/components/schemas/AuthS3StorageHostnameIsInvalidError'
       - $ref: '#/components/schemas/S3ConfigRequiredError'
+      - $ref: '#/components/schemas/S3BucketNameInvalidError'
+      - $ref: '#/components/schemas/S3StorageHostnameInvalidError'
       - $ref: '#/components/schemas/S3BucketNameDuplicateError'
       - $ref: '#/components/schemas/S3SourceAmbiguousError'
       - $ref: '#/components/schemas/OriginTypeRequiredForNewS3Error'
@@ -10561,7 +10692,11 @@ components:
       - $ref: '#/components/schemas/AuthS3RegionIsRequiredError'
       - $ref: '#/components/schemas/AuthS3RegionIsInvalidError'
       - $ref: '#/components/schemas/AuthS3StorageHostnameIsRequiredError'
+      - $ref: '#/components/schemas/AuthS3BucketNameIsInvalidError'
+      - $ref: '#/components/schemas/AuthS3StorageHostnameIsInvalidError'
       - $ref: '#/components/schemas/S3ConfigRequiredError'
+      - $ref: '#/components/schemas/S3BucketNameInvalidError'
+      - $ref: '#/components/schemas/S3StorageHostnameInvalidError'
       - $ref: '#/components/schemas/S3BucketNameDuplicateError'
       - $ref: '#/components/schemas/S3StorageIdInvalidError'
       - $ref: '#/components/schemas/S3StorageOwnedFieldError'
@@ -11794,6 +11929,20 @@ components:
                 type: string
               example:
               - Expected a list of items but got type "str".
+    IpRange:
+      type: object
+      properties:
+        cidr:
+          type: string
+          description: Network in CIDR notation.
+          example: 198.51.100.0/24
+        ip_version:
+          type: integer
+          description: IP version of the network.
+          enum:
+          - 4
+          - 6
+          example: 4
     JSONParseError:
       title: Invalid request JSON schema
       type: object
@@ -13279,7 +13428,7 @@ components:
                       type: string
                     description: Provide `origin_type` explicitly when adding new S3 sources to an existing origin group.
                     example:
-                    - No existing S3 source with bucket "my-bucket". Provide origin_type explicitly for new S3 sources.
+                    - No existing S3 source with bucket "example-bucket". Provide origin_type explicitly for new S3 sources.
     PaginatedResponse:
       type: object
       properties:
@@ -14428,7 +14577,7 @@ components:
             sources:
               type: object
               properties:
-                my-bucket:
+                example-bucket:
                   type: object
                   properties:
                     config:
@@ -14438,6 +14587,36 @@ components:
                       description: 'Two S3 sources can share a bucket name when they reach it through different storages: an `amazon` source alongside an `other` source, two `other` sources with different `s3_storage_hostname` values, sources bound to different Gcore Object Storages, or a source bound to a Gcore Object Storage alongside an `amazon` or `other` source. Sources reaching the same storage must use different bucket names.'
                       example:
                       - The S3 bucket name must be unique inside group of origins.
+    S3BucketNameInvalidError:
+      title: S3 bucket name is invalid
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/S3BucketNameInvalidSourceError'
+    S3BucketNameInvalidMessages:
+      type: array
+      items:
+        type: string
+      description: |-
+        The bucket name is invalid for the selected `s3_type` (`amazon` or `other`). Possible messages:
+        - `Ensure this field has no more than 256 characters.`
+        - `Contains invalid characters. Allowed ^[A-Za-z0-9-_.:]+$`
+        - `Must be a valid Amazon S3 bucket name: 3-63 lowercase letters, numbers, dots and hyphens, starting and ending with a letter or number, without consecutive dots, and not formatted as an IP address.`
+      example:
+      - 'Must be a valid Amazon S3 bucket name: 3-63 lowercase letters, numbers, dots and hyphens, starting and ending with a letter or number, without consecutive dots, and not formatted as an IP address.'
+    S3BucketNameInvalidSourceError:
+      type: object
+      properties:
+        config:
+          type: object
+          properties:
+            s3_bucket_name:
+              $ref: '#/components/schemas/S3BucketNameInvalidMessages'
     S3Config:
       type: object
       description: |-
@@ -14482,7 +14661,14 @@ components:
           description: |-
             S3 bucket name.
 
-            If `s3_type` is `gcore`, the bucket must exist in the selected storage.
+            Restrictions:
+            - If `s3_type` is `amazon`: from 3 to 63 lowercase Latin letters (a-z), numbers (0-9),
+              dots and dashes; must start and end with a letter or number, must not contain two
+              dots in a row, and must not be formatted as an IP address.
+            - If `s3_type` is `other`: Latin letters (A-Z, a-z), numbers (0-9), dots, dashes,
+              underscores and colons.
+            - If `s3_type` is `gcore`: Latin letters (A-Z, a-z), numbers (0-9), dots, dashes and
+              underscores. The bucket must exist in the selected storage.
         s3_region:
           type: string
           nullable: true
@@ -14499,6 +14685,9 @@ components:
 
             The parameter is required if `s3_type` is `other`. Not allowed if `s3_type` is
             `gcore`: the CDN fills it and does not return it.
+
+            A hostname or an IPv4 address, optionally followed by a colon and a port from 1 to
+            65535. IPv6 addresses are not supported.
 
             Must be a public address: private and reserved IP addresses, `localhost`, and hostnames that resolve to them are rejected.
         s3_access_key_id:
@@ -14753,21 +14942,21 @@ components:
                 type: string
               description: Returned when one or more of the sources sharing the bucket name is bound to a Gcore Object Storage. Send `storage_id` to target a bound source. When the other sources sharing the name are `amazon` or `other` sources, the message also names `s3_type` or `s3_storage_hostname` for them, and those keys are returned with the same message.
               example:
-              - Several S3 sources use bucket "my-bucket". Provide storage_id to identify which one.
+              - Several S3 sources use bucket "example-bucket". Provide storage_id to identify which one.
             s3_storage_hostname:
               type: array
               items:
                 type: string
               description: Several S3 sources in the group use this bucket name, so the update cannot tell which of them it targets. Send `s3_storage_hostname` to identify one.
               example:
-              - Several S3 sources use bucket "my-bucket". Provide s3_storage_hostname to identify which one.
+              - Several S3 sources use bucket "example-bucket". Provide s3_storage_hostname to identify which one.
             s3_type:
               type: array
               items:
                 type: string
               description: 'Returned alongside `s3_storage_hostname` when one of the sources sharing the bucket name is an `amazon` source, which no hostname can identify. Send `s3_type: amazon` to target that one; the others are identified by their host.'
               example:
-              - 'Several S3 sources use bucket "my-bucket". Provide s3_type: amazon for the Amazon source, or s3_storage_hostname for the others.'
+              - 'Several S3 sources use bucket "example-bucket". Provide s3_type: amazon for the Amazon source, or s3_storage_hostname for the others.'
     S3SourceResponse:
       type: object
       title: S3 Source
@@ -14847,11 +15036,11 @@ components:
             - `Provided storage does not exist (storage_id=123).`
             - `Provided storage is not active (storage_id=123).`
             - `Only Standard storages are supported by the integration (storage_id=123). Please select a Standard storage.`
-            - `Provided bucket does not exist (storage_id=123, bucket=assets).`
+            - `Provided bucket does not exist (storage_id=123, bucket=example-bucket).`
             - `Unable to validate provided storage due to internal error. Please try again.`
             - `Cannot bind the storage right now. Please try again.`
           example:
-          - Provided bucket does not exist (storage_id=123, bucket=assets).
+          - Provided bucket does not exist (storage_id=123, bucket=example-bucket).
     S3StorageBucketNameInvalidError:
       title: Bucket name for a Gcore Object Storage binding is invalid
       type: object
@@ -14879,9 +15068,9 @@ components:
                 - `This field may not be null.`
                 - `This field may not be blank.`
                 - `Ensure this field has no more than 256 characters.`
-                - `Contains invalid characters. Allowed ^[A-Za-z0-9_.:-]+$`
+                - `Contains invalid characters. Allowed ^[A-Za-z0-9_.-]+$`
               example:
-              - Contains invalid characters. Allowed ^[A-Za-z0-9_.:-]+$
+              - Contains invalid characters. Allowed ^[A-Za-z0-9_.-]+$
     S3StorageHostHeaderOverrideError:
       title: Host header override is not allowed with a Gcore Object Storage binding
       type: object
@@ -14903,6 +15092,40 @@ components:
           description: The CDN manages the Host header for an origin bound to a Gcore Object Storage. Omit `host_header_override` or send `null`.
           example:
           - 'Not allowed with a storage binding: CDN fills this field from the selected storage.'
+    S3StorageHostnameInvalidError:
+      title: S3 storage hostname is invalid
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/S3StorageHostnameInvalidSourceError'
+    S3StorageHostnameInvalidMessages:
+      type: array
+      items:
+        type: string
+      description: |-
+        The storage hostname cannot be used. Possible messages:
+        - `Ensure this field has no more than 256 characters.`
+        - `Contains invalid characters. Allowed ^[A-Za-z0-9-_.:]+$`
+        - `Specify a hostname or an IPv4 address, optionally followed by a port.`
+        - `The port value must be a number within the range 1 and 65535`
+        - `The address belongs to a private or reserved network. Please use a public address.`
+        - `The domain name cannot be resolved. Please specify a valid domain name.`
+        - `The address belongs to a forbidden network. Please use another address.`
+      example:
+      - Specify a hostname or an IPv4 address, optionally followed by a port.
+    S3StorageHostnameInvalidSourceError:
+      type: object
+      properties:
+        config:
+          type: object
+          properties:
+            s3_storage_hostname:
+              $ref: '#/components/schemas/S3StorageHostnameInvalidMessages'
     S3StorageIdInvalidError:
       title: storage_id is invalid
       type: object
@@ -15397,7 +15620,7 @@ components:
 
             Restrictions:
             - Latin letters (A-Z, a-z), numbers (0-9), colon, dash, and underscore.
-            - From 3 to 512 characters.
+            - From 4 to 255 characters.
         s3_secret_access_key:
           type: string
           description: |-
@@ -15405,18 +15628,28 @@ components:
 
             Restrictions:
             - Latin letters (A-Z, a-z), numbers (0-9), pluses, slashes, dashes, colons and underscores.
-            - If "s3_type": amazon, length should be 40 characters.
-            - If "s3_type": other, length should be from 16 to 255 characters.
+            - From 16 to 255 characters.
         s3_bucket_name:
           type: string
           maxLength: 256
-          description: S3 bucket name.
+          description: |-
+            S3 bucket name.
+
+            Restrictions:
+            - If "s3_type": amazon, from 3 to 63 lowercase Latin letters (a-z), numbers (0-9), dots
+              and dashes; must start and end with a letter or number, must not contain two dots in
+              a row, and must not be formatted as an IP address.
+            - If "s3_type": other, Latin letters (A-Z, a-z), numbers (0-9), dots, dashes,
+              underscores and colons.
         s3_storage_hostname:
           type: string
           description: |-
             S3 storage hostname.
 
             The parameter is required, if "s3_type": other.
+
+            A hostname or an IPv4 address, optionally followed by a colon and a port from 1 to
+            65535. IPv6 addresses are not supported.
 
             Must be a public address: private and reserved IP addresses, `localhost`, and hostnames that resolve to them are rejected.
         s3_region:
