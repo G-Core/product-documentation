@@ -182,17 +182,11 @@ export SSL_PRIVATE_KEY="$(cat ./privkey.pem)"
 
     client = Gcore()
 
-    client.cdn.certificates.create(
+    uploaded = client.cdn.certificates.create(
         name="cdn.example.com",
         ssl_certificate=os.environ["SSL_CERTIFICATE"],
         ssl_private_key=os.environ["SSL_PRIVATE_KEY"],
         validate_root_ca=True,
-    )
-
-    uploaded = next(
-        item
-        for item in client.cdn.certificates.list(automated=False)
-        if item.name == "cdn.example.com"
     )
     print(uploaded.id, uploaded.cert_subject_cn, uploaded.validity_not_after)
     ```
@@ -214,7 +208,7 @@ export SSL_PRIVATE_KEY="$(cat ./privkey.pem)"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
+        uploaded, err := client.CDN.Certificates.New(ctx, cdn.CertificateNewParams{
             OfOwnCertificate: &cdn.CertificateNewParamsBodyOwnCertificate{
                 Name:           "cdn.example.com",
                 SslCertificate: os.Getenv("SSL_CERTIFICATE"),
@@ -225,18 +219,7 @@ export SSL_PRIVATE_KEY="$(cat ./privkey.pem)"
         if err != nil {
             panic(err)
         }
-
-        page, err := client.CDN.Certificates.List(ctx, cdn.CertificateListParams{
-            Automated: gcore.Bool(false),
-        })
-        if err != nil {
-            panic(err)
-        }
-        for _, item := range page.Results {
-            if item.Name == "cdn.example.com" {
-                fmt.Println(item.ID, item.CertSubjectCn, item.ValidityNotAfter)
-            }
-        }
+        fmt.Println(uploaded.ID, uploaded.CertSubjectCn, uploaded.ValidityNotAfter)
     }
     ```
   </Tab>
@@ -278,11 +261,11 @@ export SSL_PRIVATE_KEY="$(cat ./privkey.pem)"
   </Tab>
 </Tabs>
 
-<p>The [upload endpoint](/api-reference/cdn/ssl-certificates/add-ssl-certificate) creates the certificate object. Use the returned `id` to attach it to a CDN resource. If the SDK create method does not return the object, retrieve the certificate by name from the certificate list.</p>
+<p>The [upload&nbsp;endpoint](/api-reference/cdn/ssl-certificates/add-ssl-certificate) creates the certificate object and returns <code>id</code>. Use that ID to attach the certificate to a CDN resource.</p>
 
 ## Get the certificate ID
 
-<p>The curl upload response already includes `id`. Use the list call when the SDK create method returns nothing, or when the ID is no longer at hand.</p>
+<p>The create response includes <code>id</code>. Use the list call when that ID is no longer at hand.</p>
 
 <Tabs>
   <Tab title="Python SDK">
