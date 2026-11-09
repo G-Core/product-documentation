@@ -135,12 +135,12 @@ A project name can contain between 3 and 63 characters, including Latin letters,
 
 
 
-3. Open the **Access** tab. The tab lists all users and their roles — to invite new users, click **Invite Users**, or [manage existing access](/cloud/getting-started/projects/users/manage-user-access-to-your-project) on the dedicated page.
+3. Open the **Access** tab. The tab lists each user with a status and a role.
 
-<p>To configure user access across the account, click **Manage users via profile**.</p>
+<p>To invite a user to the project, click **Manage users via profile**. To change a role for a user already on the list, edit that user on the [project&nbsp;access](/cloud/getting-started/projects/users/manage-user-access-to-your-project) page.</p>
 
 
-<Frame>![Project access tab displaying one user added to the project](/images/docs/cloud/getting-started/projects/create-a-project/access-project-settings.png)</Frame>
+<Frame>![Access tab listing project users and the Manage users via profile link](/images/docs/cloud/getting-started/projects/create-a-project/access-project-settings.png)</Frame>
 
 
 
@@ -218,30 +218,33 @@ print(f"Is default:  {project.is_default}")
   </Tab>
   <Tab title="Go SDK">
 ```go
+package main
+
 import (
     "context"
     "fmt"
     "log"
-    "os"
 
     gcore "github.com/G-Core/gcore-go"
     "github.com/G-Core/gcore-go/cloud"
     "github.com/G-Core/gcore-go/packages/param"
 )
 
-client := gcore.NewClient()
-ctx := context.Background()
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
 
-project, err := client.Cloud.Projects.New(ctx, cloud.ProjectNewParams{
-    Name:        "my-project",
-    Description: param.NewOpt("Production environment"),
-})
-if err != nil {
-    log.Fatal(err)
+    project, err := client.Cloud.Projects.New(ctx, cloud.ProjectNewParams{
+        Name:        "my-project",
+        Description: param.NewOpt("Production environment"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Project ID: %d\n", project.ID) // save as PROJECT_ID
+    fmt.Printf("Name:       %s\n", project.Name)
+    fmt.Printf("State:      %s\n", project.State)
 }
-fmt.Printf("Project ID: %d\n", project.ID)    // save as PROJECT_ID
-fmt.Printf("Name:       %s\n", project.Name)
-fmt.Printf("State:      %s\n", project.State)
 ```
   </Tab>
   <Tab title="curl">
@@ -288,6 +291,7 @@ for p in projects.results:
   </Tab>
   <Tab title="Go SDK">
 ```go
+// Replace the statements after ctx in main.
 page, err := client.Cloud.Projects.List(ctx, cloud.ProjectListParams{})
 if err != nil {
     log.Fatal(err)
@@ -353,6 +357,7 @@ print(f"Created at:  {project.created_at}")
   </Tab>
   <Tab title="Go SDK">
 ```go
+// Replace the statements after ctx in main.
 projectID := int64(1202779)
 
 project, err := client.Cloud.Projects.Get(ctx, cloud.ProjectGetParams{
@@ -412,6 +417,7 @@ print(f"Description: {project.description}")
   </Tab>
   <Tab title="Go SDK">
 ```go
+// Replace the statements after ctx in main.
 projectID := int64(1202779)
 
 project, err := client.Cloud.Projects.Update(ctx, cloud.ProjectUpdateParams{
@@ -470,6 +476,7 @@ print("Project deleted.")
   </Tab>
   <Tab title="Go SDK">
 ```go
+// Replace the statements after ctx in main.
 projectID := int64(1202779)
 
 if err := client.Cloud.Projects.DeleteAndPoll(ctx, cloud.ProjectDeleteParams{
@@ -520,6 +527,8 @@ output "project_id" {
   value = gcore_cloud_project.example.id
 }
 ```
+
+<p>Run `terraform apply` to create the project.</p>
 
 ## Update a project
 
@@ -572,8 +581,10 @@ output "project_list" {
 resource "gcore_cloud_project" "existing" {
   name = "my-project"
 }
+```
 
-# terraform import gcore_cloud_project.existing '<project_id>'
+```bash
+terraform import gcore_cloud_project.existing "<project_id>"
 ```
 
 </MethodSection>
