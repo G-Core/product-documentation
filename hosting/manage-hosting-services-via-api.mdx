@@ -44,8 +44,6 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
 
 The response lists the tariffs for that one location. Each item has the tariff id in `pricelist`, the name in `title`, the location, and the price for one, three, six, and 12 months. The location on a tariff is the `datacenter` object (`id` and `value`).
 
-The same response lists every available location in `slist`, in the entry whose `$name` is `datacenter`. Each value has the location id in `$key` and the location name in `$`. Repeat the catalog call with `datacenter` set to each `$key`. Each call returns only that location's tariffs. Together those calls are the full catalog.
-
 Text values sit in `$`. `period` is a number of months. This object is one tariff returned by `v2.vds.order.pricelist` for Buenos Aires:
 
 ```json
@@ -68,6 +66,66 @@ Text values sit in `$`. `period` is a number of months. This object is one tarif
 }
 ```
 
+The same response lists every available location in `slist`, in the entry whose `$name` is `datacenter`. Each value has the location id in `$key` and the location name in `$`. Repeat the catalog call with `datacenter` set to each `$key`. Each call returns only that location's tariffs. Together those calls are the full catalog.
+
+To retrieve tariffs from all available locations, run this Python script. It saves the virtual and dedicated server catalogs to separate JSON files for each location:
+
+```python
+import json
+import subprocess
+
+auth = "USER:PASSWORD"
+
+def call(func, datacenter=None):
+    cmd = [
+        "curl", "-4", "-sS", "-X", "POST", "https://hosting.gcore.com/billmgr",
+        "--data-urlencode", "func=" + func,
+        "--data-urlencode", "authinfo=" + auth,
+        "--data-urlencode", "out=json",
+    ]
+    if datacenter:
+        cmd += ["--data-urlencode", "datacenter=" + datacenter]
+    return json.loads(subprocess.check_output(cmd))["doc"]
+
+def location_ids(doc):
+    for block in doc.get("slist") or []:
+        if block.get("$name") == "datacenter":
+            values = block.get("val") or []
+            if isinstance(values, dict):
+                values = [values]
+            return [item["$key"] for item in values]
+    return []
+
+for func in ("v2.vds.order.pricelist", "v2.dedic.order.pricelist"):
+    for datacenter in location_ids(call(func)):
+        with open(func + "-" + datacenter + ".json", "w", encoding="utf-8") as catalog_file:
+            json.dump(call(func, datacenter), catalog_file)
+```
+
+## Pay for the order
+
+Add funds to the account balance before placing orders. The `skipbasket=on` parameter charges the order from that balance instead of adding it to the cart. Renewals are also paid from the account balance.
+
+<Info>
+If the account balance is insufficient, the API returns `doc.error` with `$type` set to `not_enough_money`. The service is not created.
+
+An order totaling 4.95 EUR with a balance of 0.00 EUR and no available credit returned this error.
+
+```json
+{
+  "doc": {
+    "error": {
+      "$type": "not_enough_money",
+      "msg": {
+        "$": "insufficient funds to complete the operation. Required amount  4.95 EUR. Your current balance: 0.00 EUR, credit limit 0.00 "
+      }
+    }
+  }
+}
+```
+
+</Info>
+
 ## Order a virtual server
 
 Take `pricelist` and `datacenter.id` from the catalog. This call opens the order form and does not place the order:
@@ -84,7 +142,7 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
 
 The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. Ubuntu 22.04 is `VM6_ISPsystem_Ubuntu-22.04`. The form also returns `addon_*` fields for that tariff. On `KVM-SSD-2-DTA` in Baku, public IPv4 is `addon_171555` (a count, minimum 1) and IPv6 is `addon_171556` (a checkbox). Another tariff uses other ids. Read the names from the form for the tariff being ordered.
 
-Submit the same function with `sok=ok` and `skipbasket=on`. `skipbasket=on` charges the order from the account balance. When the balance is lower than the order total, the call returns HTTP 200 and `doc.error`. `$type` is `not_enough_money`, and the service is not created.
+Submit the same function with `sok=ok` and `skipbasket=on`.
 
 ```bash
 curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
@@ -101,22 +159,7 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
   --data-urlencode "sok=ok"
 ```
 
-`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. For `KVM-SSD-2-DTA` in Baku the order total was 4.95 EUR. With a balance of 0.00 EUR and a credit limit of 0.00 EUR, `sok=ok` refused the order and did not create a service:
-
-```json
-{
-  "doc": {
-    "error": {
-      "$type": "not_enough_money",
-      "msg": {
-        "$": "insufficient funds to complete the operation. Required amount  4.95 EUR. Your current balance: 0.00 EUR, credit limit 0.00 "
-      }
-    }
-  }
-}
-```
-
-The body returned when the balance covers the order total is not shown.
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. Check the response for `doc.error`. To find the ordered server and check its status, see Read the service.
 
 ## Order a dedicated server
 
@@ -134,7 +177,7 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
 
 The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. The form also returns `addon_*` fields for that tariff. On tariff `152029` in Sydney the add-ons include public IPv4, IPv6, and traffic. Another tariff uses other ids. Read the names from the form for the tariff being ordered.
 
-Submit the same function with `sok=ok` and `skipbasket=on`. The call charges the order from the account balance.
+Submit the same function with `sok=ok` and `skipbasket=on`.
 
 ```bash
 curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
@@ -151,11 +194,7 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
   --data-urlencode "sok=ok"
 ```
 
-`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. When the balance is lower than the order total, the call returns `doc.error` with `$type` `not_enough_money`, and the service is not created.
-
-## Pay for the order
-
-Add funds to the account balance before the first order. Renewals are charged from that balance. The order calls above send `skipbasket=on` so the new order is charged from that balance too.
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. Check the response for `doc.error`. To find the ordered server and check its status, see Read the service.
 
 ## Read the service
 
@@ -184,7 +223,7 @@ An active dedicated server returns the same label, Active.
 
 ## Manage the service
 
-The service id is `id` from the list above. These four calls are the order follow-up: reboot, the console, OS reinstall, and renewal.
+Use the service id from the previous section to reboot a server, open its console, reinstall the operating system, or renew the service.
 
 Reboot a virtual server with `service.reboot.confirm`. The form includes a `force` checkbox. Add `force=on` to set it.
 
@@ -200,6 +239,14 @@ curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
 A dedicated server reboot uses `service.reboot` with the same `elid` and `sok=ok`.
 
 Open the virtual server console with `vds_open_vnc` and the service id. The response field `ok` has `$type` `url`. The value in `$` is the console address for that response.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=vds_open_vnc" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "elid=SERVICE_ID"
+```
 
 Request an OS reinstall with `vds_send_reinstall_request`. The form requires `os_pool` and `code`. `os_pool` is an OS template key, the same kind of value as `ostempl`. `code` is a TOTP token. The call replaces the installed system.
 
