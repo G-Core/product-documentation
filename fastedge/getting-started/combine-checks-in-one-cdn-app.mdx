@@ -1,0 +1,172 @@
+---
+title: "Run several checks in one CDN application"
+sidebarTitle: "Several checks, one app"
+description: Run an authorization check and a label check in one FastEdge CDN application.
+---
+
+A CDN stage runs one FastEdge application. An authorization check and a label check for the same stage belong in that one handler, and the CDN resource stores one application id for the stage.
+
+Complete the [CDN&nbsp;setup](/fastedge/getting-started/setup-rust-cdn) before building the handler. Attach the deployed application with [CDN&nbsp;applications](/cdn/getting-started/integrate-cdn-with-fastedge).
+
+## Write both checks in one handler
+
+Replace `src/lib.rs` in the `my_cdn_app` project from the CDN setup. The handler returns HTTP 401 when `x-auth` is not `allow`, HTTP 403 when `x-label` is missing, and HTTP 200 when `x-auth` is `allow` and `x-label` has a value.
+
+```rust
+use proxy_wasm::traits::*;
+use proxy_wasm::types::*;
+
+proxy_wasm::main! {{
+    proxy_wasm::set_log_level(LogLevel::Trace);
+    proxy_wasm::set_root_context(|_| -> Box<dyn RootContext> { Box::new(Root) });
+}}
+
+struct Root;
+
+impl Context for Root {}
+
+impl RootContext for Root {
+    fn get_type(&self) -> Option<ContextType> {
+        Some(ContextType::HttpContext)
+    }
+
+    fn create_http_context(&self, _: u32) -> Option<Box<dyn HttpContext>> {
+        Some(Box::new(Filter))
+    }
+}
+
+struct Filter;
+
+impl Context for Filter {}
+
+impl HttpContext for Filter {
+    fn on_http_request_headers(&mut self, _: usize, _: bool) -> Action {
+        let auth = self.get_http_request_header("x-auth").unwrap_or_default();
+        if auth != "allow" {
+            self.send_http_response(
+                401,
+                vec![
+                    ("content-type", "text/plain"),
+                    ("cache-control", "no-store"),
+                ],
+                Some(b"auth-rejected"),
+            );
+            return Action::Pause;
+        }
+
+        let label = self.get_http_request_header("x-label").unwrap_or_default();
+        if label.is_empty() {
+            self.send_http_response(
+                403,
+                vec![
+                    ("content-type", "text/plain"),
+                    ("cache-control", "no-store"),
+                ],
+                Some(b"label-rejected"),
+            );
+            return Action::Pause;
+        }
+
+        let body = format!("labeled {label}");
+        self.send_http_response(
+            200,
+            vec![
+                ("content-type", "text/plain"),
+                ("cache-control", "no-store"),
+            ],
+            Some(body.as_bytes()),
+        );
+        Action::Pause
+    }
+}
+```
+
+## Build the binary
+
+Build with the same target as the CDN setup.
+
+```bash
+cargo build --release --target wasm32-wasip1
+```
+
+The binary is `target/wasm32-wasip1/release/my_cdn_app.wasm`.
+
+## Deploy the application
+
+Upload `my_cdn_app.wasm` with the [CDN&nbsp;deploy](/fastedge/getting-started/get-started-cdn) steps and attach that one application to the stage. The calls below create the application and store one application id on `on_request_headers`.
+
+All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the commands:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+### Step 1. Upload the binary
+
+The response `id` is the binary for the next call.
+
+```bash
+curl -sX POST "https://api.gcore.com/fastedge/v1/binaries/raw" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary "@target/wasm32-wasip1/release/my_cdn_app.wasm"
+```
+
+The API returns:
+
+```json
+{"api_type":"proxy-wasm","checksum":"5ed7253dc27699a756e466aa6b217f21","id":10515,"source":1,"status":1}
+```
+
+```bash
+export BINARY_ID="{BINARY_ID_FROM_RESPONSE}"
+```
+
+### Step 2. Create the application
+
+Setting `status` to `1` enables the application.
+
+```bash
+curl -sX POST "https://api.gcore.com/fastedge/v1/apps" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"doc-fe-checks\",\"binary\":$BINARY_ID,\"status\":1}"
+```
+
+The API returns:
+
+```json
+{"api_type":"proxy-wasm","binary":10515,"id":3882,"name":"doc-fe-checks","plan":"Free","plan_id":30,"status":1}
+```
+
+```bash
+export FASTEDGE_APP_ID="{APP_ID_FROM_RESPONSE}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+### Step 3. Attach the application
+
+Store the application id as one string on `on_request_headers`.
+
+```bash
+curl -sX PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"options\":{\"fastedge\":{\"enabled\":true,\"on_request_headers\":{\"enabled\":true,\"app_id\":\"$FASTEDGE_APP_ID\",\"interrupt_on_error\":true,\"execute_on_edge\":true,\"execute_on_shield\":false}}}}"
+```
+
+A list of application ids is rejected. The API returns HTTP 400:
+
+```json
+{"errors":{"options":{"fastedge":{"on_request_headers":{"app_id":["Not a valid string."]}}}}}
+```
+
+## Check both behaviors
+
+Request the CDN hostname with no `x-auth` header, and the application returns HTTP 401 and the body `auth-rejected`.
+
+Send `x-auth: allow` and no `x-label`, and the application returns HTTP 403 and the body `label-rejected`.
+
+Send `x-auth: allow` and `x-label: beta`, and the application returns HTTP 200 and the body `labeled beta`.
+
+After an earlier binary update, one edge served the previous binary on the first request and these checks on the next request.
