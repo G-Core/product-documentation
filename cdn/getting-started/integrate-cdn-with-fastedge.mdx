@@ -18,7 +18,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <p>The CDN runtime invokes a CDN application at five stages:</p>
 
 - **On request headers (before cache):** when the CDN receives request headers, before the cache is checked.
-- **On request headers (after cache):** after the CDN cache is checked, before the request is sent to the origin.
+- **On request headers (after cache):** after the CDN cache lookup.
 - **On request body:** when the CDN receives the request body.
 - **On response headers:** before the CDN sends response headers to the client.
 - **On response body:** before the CDN sends the response body to the client.
@@ -31,9 +31,9 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>The same application can be attached to more than one stage.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. One edge kept running the previous binary for about two and a half minutes after the API stored the new binary.</p>
+<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
 
-<p>A handler that runs for 50 ms finishes. A handler that runs for 100 ms is stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
+<p>On the request-header stages, a handler that ran for 50 ms finished, and a handler that ran for 100 ms was stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
 
 <p>When the limit is exceeded and <code>interrupt_on_error</code> is true, the client receives HTTP 532 and an empty body. When <code>interrupt_on_error</code> is false, the CDN continues the request.</p>
 
@@ -163,6 +163,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Step 3. Check the application
 
+<p>These checks apply to the **Validate JWT in Authorization header** template. Send each request to a URL covered by the FastEdge setting from Step 2.</p>
+
 <p>Request the CDN hostname with no <code>Authorization</code> header. The application returns 401 and the body <code>No Authorization header</code>.</p>
 
 <p>Request it again with <code>Authorization: Bearer</code> and a value that is not a JWT signed with the <code>secret</code> key. The application returns 403.</p>
@@ -210,7 +212,7 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 <p>The CDN runtime invokes a CDN application at five stages:</p>
 
 - **on_request_headers:** when the CDN receives request headers, before cache.
-- **on_request_headers_after_cache:** after the CDN cache is checked, before the request is sent to the origin.
+- **on_request_headers_after_cache:** after the CDN cache lookup.
 - **on_request_body:** when the CDN receives the request body.
 - **on_response_headers:** before the CDN sends response headers to the client.
 - **on_response_body:** before the CDN sends the response body to the client.
@@ -223,9 +225,9 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 
 <p>The same application can be attached to more than one stage.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. One edge kept running the previous binary for about two and a half minutes after the API stored the new binary.</p>
+<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
 
-<p>A handler that runs for 50 ms finishes. A handler that runs for 100 ms is stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
+<p>On the request-header stages, a handler that ran for 50 ms finished, and a handler that ran for 100 ms was stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
 
 <p>When the limit is exceeded and <code>interrupt_on_error</code> is true, the client receives HTTP 532 and an empty body. When <code>interrupt_on_error</code> is false, the CDN continues the request.</p>
 
@@ -835,15 +837,15 @@ curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$FASTEDGE_APP_ID \
 
 <p>The same application can be attached to more than one stage.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. One edge kept running the previous binary for about two and a half minutes after the API stored the new binary.</p>
+<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
 
-<p>A handler that runs for 50 ms finishes. A handler that runs for 100 ms is stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
+<p>On the request-header stages, a handler that ran for 50 ms finished, and a handler that ran for 100 ms was stopped. Finishing within the limit does not set the HTTP response: the application can change the request, reject it, or let the CDN continue.</p>
 
 <p>When the limit is exceeded and <code>interrupt_on_error</code> is true, the client receives HTTP 532 and an empty body. When <code>interrupt_on_error</code> is false, the CDN continues the request.</p>
 
 ## Deploy the application on a CDN resource
 
-<p>The JWT template checks the token in the <code>Authorization</code> header before the request reaches the origin. Setting <code>status</code> to active deploys the application. The template reads the signing key from the <code>secret</code> environment variable. The sample value is a placeholder. Attach that application to the CDN resource, then run <code>terraform apply</code>. A stage created without <code>interrupt_on_error</code>, <code>execute_on_edge</code>, or <code>execute_on_shield</code> stores those fields as true, true, and false.</p>
+<p>The JWT template checks the token in the <code>Authorization</code> header before the request reaches the origin. Setting `status = 1` deploys the application. The template reads the signing key from the <code>secret</code> environment variable. The sample value is a placeholder. Attach that application to the CDN resource, then run <code>terraform apply</code>. A stage created without <code>interrupt_on_error</code>, <code>execute_on_edge</code>, or <code>execute_on_shield</code> stores those fields as true, true, and false.</p>
 
 ```hcl
 data "gcore_fastedge_templates" "cdn" {
@@ -953,7 +955,7 @@ resource "gcore_cdn_resource_rule" "api" {
 
 ## Turn FastEdge off
 
-<p>Set `fastedge.enabled` to false and run `terraform apply`. On a CDN resource, leaving the stage out of the configuration keeps the stored stage, so set that stage's `enabled` to false as well. On a rule, `fastedge.enabled` set to false removes the stage.</p>
+<p>To turn FastEdge off for the whole CDN resource, set <code>fastedge.enabled</code> to false and set the stage <code>enabled</code> to false. Leaving the stage out of the configuration keeps the stored stage. Run <code>terraform apply</code>.</p>
 
 ```hcl
 data "gcore_fastedge_templates" "cdn" {
@@ -998,6 +1000,43 @@ resource "gcore_cdn_resource" "example" {
     }
   }
 }
+```
+
+<p>To turn FastEdge off for a URL path, set <code>fastedge.enabled</code> to false on the CDN rule. That removes the stage from the rule. The CDN resource has no FastEdge option. Run <code>terraform apply</code>.</p>
+
+```hcl
+data "gcore_fastedge_templates" "cdn" {
+  api_type = "proxy-wasm"
+}
+
+resource "gcore_fastedge_app" "jwt" {
+  name = "my-cdn-app"
+  template = one([
+    for item in data.gcore_fastedge_templates.cdn.items : item.id
+    if item.name == "Validate JWT in Authorization header"
+  ])
+  status = 1
+  env = {
+    secret = "your-signing-key"
+  }
+}
+
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
 
 resource "gcore_cdn_resource_rule" "api" {
   resource_id = gcore_cdn_resource.example.id
@@ -1015,7 +1054,9 @@ resource "gcore_cdn_resource_rule" "api" {
 
 ## Delete the application
 
-<p>Remove every `app_id` that reads `gcore_fastedge_app.jwt.id`, including the stage block on the CDN resource, and remove the `gcore_fastedge_app` resource. The stage `enabled` is already false from the previous apply. Then run `terraform apply`. Deleting the application while a stage is still enabled fails because the application is used by the CDN. A CDN resource update that still sends the deleted application id is rejected.</p>
+<p>Remove the <code>gcore_fastedge_app</code> resource and every <code>app_id</code> that reads <code>gcore_fastedge_app.jwt.id</code>. Keep <code>fastedge.enabled</code> set to false on the same object that had the application, either the CDN resource or the CDN rule. Then run <code>terraform apply</code>. Deleting the application while a stage is still enabled fails because the application is used by the CDN. A CDN resource update that still sends the deleted application id is rejected.</p>
+
+<p>When FastEdge is off on the whole CDN resource, apply this configuration.</p>
 
 ```hcl
 resource "gcore_cdn_origin_group" "example" {
@@ -1039,6 +1080,27 @@ resource "gcore_cdn_resource" "example" {
       enabled = false
     }
   }
+}
+```
+
+<p>When FastEdge is off on a CDN rule, apply this configuration.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
 }
 
 resource "gcore_cdn_resource_rule" "api" {
