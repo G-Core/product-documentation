@@ -4,7 +4,7 @@ sidebarTitle: Connect Codex
 description: Connect Codex to Gcore MCP Server and check that the server is enabled.
 ---
 
-Codex connects to Gcore MCP Server in dynamic mode. Leave `GCORE_TOOLS` unset. The client receives six tools and can reach every operation. Pattern rules for a narrower set are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
+Connect Codex to Gcore MCP Server so Codex can call Gcore operations.
 
 - [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens) with permissions for the operations to perform
 - [uv&nbsp;package&nbsp;manager](https://docs.astral.sh/uv/getting-started/installation/) installed
@@ -34,31 +34,49 @@ Confirm the command is available:
 codex --version
 ```
 
-The command prints the Codex CLI version.
-
 ## Step 2. Sign in
 
+Sign in through the browser.
+
 ```bash
-codex login --device-auth
+codex login
 ```
 
-The command prints a sign-in link, `https://auth.openai.com/codex/device`, and a one-time code. Open the link, sign in, and enter the code.
+Verify that Codex is signed in:
 
 ```bash
 codex login status
 ```
 
-Before sign-in, this command prints `Not logged in`.
-
 ## Step 3. Add Gcore MCP Server
 
-Set the API token in the shell that starts Codex. The Codex configuration stores the variable name, not the token.
+The Codex configuration stores the variable name, not the token. Set `GCORE_API_KEY` in the shell that starts Codex. Enter the token at the prompt so the shell history does not store it. On macOS and Linux the prompt also hides the token. When a secret manager already exports `GCORE_API_KEY`, skip the prompt.
 
 <Tabs>
 <Tab title="Windows">
 
 ```powershell
-$env:GCORE_API_KEY = "API_TOKEN"
+$env:GCORE_API_KEY = Read-Host "GCORE API token"
+```
+
+</Tab>
+<Tab title="macOS/Linux">
+
+```bash
+read -rsp "GCORE API token: " GCORE_API_KEY
+echo
+export GCORE_API_KEY
+```
+
+</Tab>
+</Tabs>
+
+Open the Codex configuration and add this table. When the file already lists other servers, add the table without removing those entries.
+
+<Tabs>
+<Tab title="Windows">
+
+```powershell
 notepad $env:USERPROFILE\.codex\config.toml
 ```
 
@@ -66,14 +84,11 @@ notepad $env:USERPROFILE\.codex\config.toml
 <Tab title="macOS/Linux">
 
 ```bash
-export GCORE_API_KEY="API_TOKEN"
 nano ~/.codex/config.toml
 ```
 
 </Tab>
 </Tabs>
-
-Replace `API_TOKEN` with the [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens). Add this table. When the file already lists other servers, add the table without removing those entries.
 
 ```toml
 [mcp_servers.gcore]
@@ -82,11 +97,11 @@ args = ["--from", "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-serv
 env_vars = ["GCORE_API_KEY"]
 ```
 
-Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode. A value that matches nothing exits with status 2.
+Leave `GCORE_TOOLS` unset so the server stays in dynamic mode. Codex then receives six tools that reach every operation. Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode. A value that matches nothing exits with status 2. Pattern rules are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
 
-## Step 4. Verify the connection
+## Step 4. Verify the configuration
 
-From the same shell, list the configured servers:
+List the servers saved in the Codex configuration. This command does not start Gcore MCP Server or run an operation.
 
 ```bash
 codex mcp list
@@ -111,27 +126,7 @@ Start Codex from that shell and ask:
 List my DNS zones
 ```
 
-A successful response lists zones with the zone name, status, and record count:
-
-```json
-{
-  "zones": [
-    {
-      "name": "example.com",
-      "status": "non-delegated",
-      "enabled": true,
-      "rrsets_amount": {
-        "dynamic": {
-          "healthcheck": 0,
-          "total": 0
-        },
-        "static": 3,
-        "total": 3
-      }
-    }
-  ]
-}
-```
+Codex should use Gcore MCP Server to retrieve the DNS zones. When the connection works and the token has the required permissions, Codex returns the available zones or reports that none were found.
 
 <Info>
 Requests that return "401 Unauthorized" indicate an invalid or expired token. Required roles are in [API&nbsp;token&nbsp;permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions).
