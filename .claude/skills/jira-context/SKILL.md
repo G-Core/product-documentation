@@ -4,10 +4,12 @@ description: >-
   Analyzes a Jira ticket and produces a documentation brief: fetches the ticket
   and linked dev or Confluence pages, classifies whether the change is customer-facing (PUBLIC_PRODUCT_DOC, PUBLIC_TROUBLESHOOTING, BUG_FIX, INTERNAL_DOC,
   NOT_DOCUMENTABLE, INCIDENT_POSTMORTEM), finds the affected article, scores
-  update complexity, and recommends the next skill. Use when the user gives a
-  Jira ticket ID or URL (especially DOC-####) and asks what work it needs,
-  whether it is documentable, or to triage it. Use before writing or editing any
-  article. It only produces a brief and does not write or update docs.
+  update complexity,   and recommends the next skill. An unanswered customer question is BLOCKED or
+  ROUTE, not CANCEL: name who must answer and do not close the ticket. Use when
+  the user gives a Jira ticket ID or URL (especially DOC-####) and asks what
+  work it needs, whether it is documentable, or to triage it. Use before
+  writing or editing any article. It only produces a brief and does not write
+  or update docs.
 ---
 
 Fetch a Jira ticket, determine whether documentation work is needed, classify
@@ -42,7 +44,7 @@ Create the file only when it does not exist, with this table and no other conten
 |--------|--------|----------|----------|--------|
 ```
 
-If the file exists, append rows to it. After each ticket is classified, append one row before starting the next ticket. If that ticket already has a row, replace the row. Decision is `CANCEL`, `PROCEED`, `BLOCKED`, or `NOT_PORTAL`. Reason is one sentence.
+If the file exists, append rows to it. After each ticket is classified, append one row before starting the next ticket. If that ticket already has a row, replace the row. Decision is `CANCEL`, `PROCEED`, `BLOCKED`, `ROUTE`, or `NOT_PORTAL`. Reason is one sentence. `CANCEL` means the customer's question is already answered in public. `BLOCKED` means a named person still has to confirm a fact. `ROUTE` means the question is handed to a named person or team and the ticket stays open with them.
 
 If the user gave a list, a status stop or a blocking comment applies to that ticket only: write the row, then continue with the next ticket. For a single ticket, write the row, report, and stop as Phase 2 says.
 
@@ -198,6 +200,19 @@ If **none checked** → likely NOT_DOCUMENTABLE or INTERNAL_DOC. Verify with the
 
 **Rule 5:** If no existing article exists AND the ticket has fewer than 3 sentences of useful customer-facing information AND stakeholders are internal → NOT_DOCUMENTABLE.
 
+**Rule 6:** A missing answer is not a cancel. `CANCEL` is allowed only when the customer's question is already answered in full on a live page, in the docs, in the API, or in the contract. The reason quotes that answer and gives the URL.
+
+If any part of the question is not published:
+
+- Do not choose `CANCEL`. Do not tell the user to close the ticket. Closing the documentation ticket does not answer the customer.
+- Name the person the ticket already names. If it names none, name the team that owns the fact: product, marketing, the catalog, or sales.
+- `BLOCKED` when a documentation sentence still depends on that fact.
+- `ROUTE` when the question is not a documentation article and must be handed to that person or team. The question stays open with them.
+- State the exact question they must answer. One unanswered part keeps the whole ticket open.
+- Do not invent the fact. Do not write the article before they answer.
+
+A prospect asking support is evidence the answer is not findable. That is a reason to name who answers it, not a reason to cancel.
+
 ### Red flags (verify carefully before proceeding)
 
 | Signal | Likely category |
@@ -224,6 +239,8 @@ If **none checked** → likely NOT_DOCUMENTABLE or INTERNAL_DOC. Verify with the
 | "automatically enabled" + affects performance | PUBLIC_PRODUCT_DOC |
 
 ### If category requires cancel
+
+Re-read Rule 6 before this path. If any part of the customer's question is still unanswered, do not use this path. Use `BLOCKED` or `ROUTE`.
 
 Append the decisions-file row first. Then output exactly this — nothing more:
 
@@ -295,6 +312,16 @@ A developer ticket is a point fix, not an epic. The scope is the sentence that s
 
 Skip this section when the category requires cancel. That path already wrote the row and its short block.
 
+When the decision is `BLOCKED` or `ROUTE` because a fact is missing, append the row, then output only this:
+
+```
+Ticket: [TICKET-ID]
+Decision: [BLOCKED / ROUTE]
+Ask: [person or team]
+Question: [the unanswered question]
+Do not close the ticket.
+```
+
 Otherwise append the decisions-file row first, then produce this brief:
 
 ```
@@ -302,7 +329,7 @@ Otherwise append the decisions-file row first, then produce this brief:
 
 ### Classification
 - Category: [category]
-- Decision: [PROCEED / CANCEL / BLOCKED]
+- Decision: [PROCEED / CANCEL / BLOCKED / ROUTE]
 
 ### What changed
 [1 paragraph: what the product change is, who it affects]
