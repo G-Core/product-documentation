@@ -4,7 +4,9 @@ sidebarTitle: "Several checks, one app"
 description: Reject a blocked country or a bot user agent, and forward a query token to the origin, in one FastEdge CDN application.
 ---
 
-Each CDN stage runs one FastEdge application. This example combines country and user-agent checks with token forwarding in a single `on_request_headers` handler.
+A CDN stage can run only one FastEdge application. Several checks or request modifications at the same stage belong in one handler.
+
+This example combines three operations in `on_request_headers`: blocking requests from selected countries, rejecting user agents containing `bot`, and forwarding a query token to the origin for authorization. The same approach combines other checks and request modifications.
 
 Before writing the handler, complete the [CDN&nbsp;setup](/fastedge/getting-started/setup-rust-cdn) to create the `my_cdn_app` project.
 
@@ -102,6 +104,8 @@ fn query_value(query: &str, name: &str) -> String {
     String::new()
 }
 ```
+
+All three operations run in `on_http_request_headers`. Each check can stop the request by sending an HTTP response and returning `Action::Pause`. If no check rejects the request, the handler can modify its headers and return `Action::Continue`. To combine different operations, add their logic to the same handler.
 
 The handler uses `add_http_request_header` to forward `Authorization` and `x-client-country` to the origin. In this environment, `set_http_request_header` changes a header within the application but does not forward that updated value to the origin.
 
@@ -203,6 +207,6 @@ Send a request from a permitted country with a user agent that does not contain 
 
 All rejected requests include `content-type: text/plain`, `cache-control: no-store`, and `x-client-country` in their responses.
 
-**4. Successful request**
+**4. Forward to origin**
 
 Send a request from a permitted country with a user agent that does not contain `bot` and a nonempty `token` query parameter. The request continues to the origin with `Authorization` set to `Bearer` followed by the token value, and `x-client-country` set to the client country code.
