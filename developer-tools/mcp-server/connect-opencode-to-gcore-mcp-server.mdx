@@ -1,0 +1,137 @@
+---
+title: Connect OpenCode to Gcore MCP Server
+sidebarTitle: Connect OpenCode
+description: Install OpenCode, connect Gcore MCP Server, and confirm the server is available.
+---
+
+Connect OpenCode to Gcore MCP Server to manage Gcore resources through natural-language requests. The server runs locally and uses a Gcore API token to access the operations the token is allowed to perform.
+
+- [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens) with permissions for the operations to perform
+- [uv&nbsp;package&nbsp;manager](https://docs.astral.sh/uv/getting-started/installation/) installed
+- **Node.js**: required on Windows. The install command uses npm. Download it from [nodejs.org](https://nodejs.org/).
+- **Git for Windows**: required on Windows. Download it from [git-scm.com](https://git-scm.com/download/win).
+
+## Step 1. Install OpenCode
+
+Install the OpenCode CLI, then confirm the command is available.
+
+<Tabs>
+<Tab title="Windows">
+
+```powershell
+npm install -g @opencode/cli
+```
+
+After installation, restart the terminal so `opencode` is on PATH.
+
+</Tab>
+<Tab title="macOS/Linux">
+
+```bash
+curl -fsSL https://opencode.ai/v2/install | bash
+```
+
+</Tab>
+</Tabs>
+
+Verify the installation:
+
+```bash
+opencode --version
+```
+
+## Step 2. Configure Gcore MCP Server
+
+The global config file is `opencode.json` in the OpenCode config directory. On macOS and Linux the directory is `~/.config/opencode`. On Windows it is `%USERPROFILE%\.config\opencode`. A project can use `opencode.json` in the project directory instead.
+
+Store the API token in a separate file. The config references that file, so the token is not written into `opencode.json`.
+
+<Tabs>
+<Tab title="Windows">
+
+Create the directory, then open the token file and the config file:
+
+```powershell
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode"
+notepad "$env:USERPROFILE\.config\opencode\gcore-api-key"
+notepad "$env:USERPROFILE\.config\opencode\opencode.json"
+```
+
+</Tab>
+<Tab title="macOS">
+
+Create the directory and the token file. The token is not printed and is not stored in shell history:
+
+```bash
+mkdir -p ~/.config/opencode
+read -rs "k?Gcore API key: " && (umask 077; printf %s "$k" > ~/.config/opencode/gcore-api-key) && unset k
+nano ~/.config/opencode/opencode.json
+```
+
+</Tab>
+<Tab title="Linux">
+
+Create the directory and the token file. The token is not printed and is not stored in shell history:
+
+```bash
+mkdir -p ~/.config/opencode
+read -rsp "Gcore API key: " k && (umask 077; printf %s "$k" > ~/.config/opencode/gcore-api-key) && unset k
+nano ~/.config/opencode/opencode.json
+```
+
+</Tab>
+</Tabs>
+
+On Windows, paste the API token into `gcore-api-key` and save the file.
+
+Add the `gcore` entry inside the existing `servers` object under `mcp`. Keep other entries.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "gcore": {
+        "type": "local",
+        "command": [
+          "uvx",
+          "--from",
+          "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
+          "gcore-mcp-server"
+        ],
+        "environment": {
+          "GCORE_API_KEY": "{file:~/.config/opencode/gcore-api-key}"
+        }
+      }
+    }
+  }
+}
+```
+
+To read the token from the environment instead of a file, replace the `GCORE_API_KEY` value inside `environment` with the line below. An unset variable becomes an empty key.
+
+```text
+{env:GCORE_API_KEY}
+```
+
+Save the file. A JSON syntax error prevents OpenCode from loading the server.
+
+## Step 3. Check the connection
+
+List the configured MCP servers:
+
+```bash
+opencode mcp list
+```
+
+The first run can print `No MCP servers configured` while the server is still starting. Run the command again.
+
+The `gcore` server is listed as connected.
+
+## Tools the server exposes
+
+The configuration above leaves `GCORE_TOOLS` unset, so OpenCode receives `search_tools`, `get_tool_schema`, `call_read_tool`, `call_write_tool`, `call_destructive_tool`, and `execute_code`.
+
+OpenCode loads every tool at startup. Do not set `GCORE_TOOLS=*`. Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode and registers one tool per matched operation. Limit the set with [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
+
+OpenCode does not display approval prompts. A destructive call returns a confirmation token. Repeat the call with that token.
