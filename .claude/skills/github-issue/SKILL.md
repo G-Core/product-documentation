@@ -240,6 +240,8 @@ Maintained by the agent. Update after each triage or merge.
 | 2652 | SDK updated to Python v0.56.0, Go v0.56.0 | api-sdk-tracker | 2026-09-01 | In progress | `issue/2652-sdk-waap-breaking-changes` | Breaking: `policies.toggle()` now requires `mode: bool` (Python) and `WaapDomainPolicySettingsParam{Mode}` (Go). Updated 10 WAAP policy articles. Updated prose in advanced-rules.mdx, custom-rules.mdx, ip-allowlist-and-blocklist.mdx. |
 | 3165 | SDK updated to Python v0.59.0, Go v0.59.0 | api-sdk-tracker | 2026-10-12 | In progress | `issue/3165-sdk-v059` | Rule sets are paginated and no longer embed rules. Policy enable/disable uses Update. Snapshot and streaming samples from v0.57.0 and v0.58.0 are on this branch. Pins set to v0.59.0. |
 | 3242 | SDK updated to Python v0.60.0, Go v0.60.0 | api-sdk-tracker | 2026-10-28 | PR open | `issue/3242-sdk-v060` | Logs Uploader Go target create and S3 origin key fields no longer match v0.60.0. Playlist, WAAP rule update, and cost-report samples do not call the removed fields. Pins set to v0.60.0. |
+| 3272 | SDK updated to Python v0.61.0, Go v0.61.0 | api-sdk-tracker | 2026-11-04 | Done | PR #3293 | CDN certificate create now returns the certificate. Pins set to v0.61.0. |
+| 3285 | SDK updated to Python v0.62.0, Go v0.62.0 | api-sdk-tracker | 2026-11-07 | In progress | `issue/3285-sdk-v062` | Go storage Delete and access-key New need the params struct. Python and curl samples still match. Pins set to v0.62.0. |
 | 3251 | Terraform provider updated to v2.0.0-rc.3 | terraform | 2026-10-31 | In progress | `issue/3251-cdn-origin-group` | Pin and pool health monitor are already on main. Two articles still set removed `origin` on `gcore_cdn_resource`. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
@@ -249,6 +251,21 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-11-10 — Issue #3285: SDK v0.62.0
+
+- Fetched issue #3285. No comments. Decision: PROCEED. Pins on main were v0.61.0. The issue body also repeats the v0.61.0 delta, which is already on main.
+- Go `ObjectStorages.Delete`, `SftpStorages.Delete`, and `SSHKeys.Delete` now require a params struct. The only field is optional `Accept-Language`. `AccessKeys.New` already required params in v0.61.0; the article called it with the storage ID only.
+- Live production checks with gcore and gcore-go v0.62.0: Python, Go, and curl created and deleted an SSH key, an S3 storage, and an SFTP storage. Access-key create without `expires_at` returned a secret. `expires_at` two hours ahead returned HTTP 400; four minutes ahead was accepted. Default instance flavor list in the first region returned 82 of 82. Created objects were deleted in the same run.
+- Volume types, WAAP detailed events, and DDoS country/JA4 groupings are not used by an article. Flavor samples already receive the full first page. Pins set to v0.62.0. Branch: `issue/3285-sdk-v062`.
+
+### 2026-11-09 — Issue #3272: SDK v0.61.0
+
+- Fetched issue #3272. No comments. Decision: PROCEED. Pins were v0.60.0.
+- Go `Certificates.New` now returns `(*SslDetail, error)`. Python `certificates.create` returns `SslDetail`. Two CDN certificate articles still said the SDK returns no body, and the Go samples assigned only `err`.
+- GPU server `rebuild` accepts optional `image_id`, `ssh_key_name`, and `user_data` and calls v4. The article samples pass only the required cluster ID and still match that signature. The curl sample stays on the v3 path that the API spec still documents. No live GPU rebuild.
+- Volume type list, file-share quotas, inference paging, streaming captions, and WAAP `description` response type have no broken article sample. Not added.
+- Pins set to v0.61.0. Branch: `issue/3272-sdk-v061`.
 
 ### 2026-11-02 — Issue #3251: Terraform provider v2.0.0-rc.3
 
