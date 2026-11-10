@@ -20,7 +20,7 @@ To change an existing profile, [Replace&nbsp;proxy&nbsp;profile](/api-reference/
 
 ## Proxy templates
 
-Gcore publishes every proxy template. A profile selects one by `template_id`, and the account's default template is the entry with `is_default` set to true. [List&nbsp;proxy&nbsp;templates](/api-reference/edge-proxy/proxy-templates/list-proxy-templates) and [Get&nbsp;proxy&nbsp;template](/api-reference/edge-proxy/proxy-templates/get-proxy-template) are the client calls.
+Every account starts with one default template, the same template for every account. [List&nbsp;proxy&nbsp;templates](/api-reference/edge-proxy/proxy-templates/list-proxy-templates) marks it with `is_default` set to true. Any other template is created by a separate request. A profile sets `template_id` to that template. [Get&nbsp;proxy&nbsp;template](/api-reference/edge-proxy/proxy-templates/get-proxy-template) returns one template.
 
 A policy describes how Edge Proxy recognizes traffic for one application. Minecraft has its own policy. An ordinary TCP service uses Generic TCP Server, whose id is `tcp-server`. A rule stores that id, not the policy name.
 
@@ -40,9 +40,9 @@ export EDGE_PROXY_ORIGIN="{YOUR_ORIGIN_HOST}"
 ```
 
 <Steps>
-<Step title="Select a template and policy">
+<Step title="Use the default template">
 
-A profile can use only policies from its selected template. The commands find the account's default template (`is_default` is true), select its `tcp-server` policy, and save both IDs for profile creation.
+Every account starts with one default template. The commands find that template (`is_default` is true), take its `tcp-server` policy, and save both IDs for profile creation.
 
 ```bash
 unset TEMPLATE_ID POLICY_ID
@@ -176,7 +176,7 @@ else
 fi
 ```
 
-A successful deployment has `status` `ACTIVE`, `is_processing` `false`, and `is_error` `false`:
+A successful deployment has `status` `ACTIVE` and `is_processing` `false`:
 
 ```json
 {
@@ -189,7 +189,7 @@ A successful deployment has `status` `ACTIVE`, `is_processing` `false`, and `is_
 }
 ```
 
-When `is_error` is `true`, read `error_details` before proceeding. Hold client traffic until all three conditions are met and `PROTECTED_IP` is set.
+When `is_error` is `true`, read `error_details` before proceeding. Hold client traffic until `status` is `ACTIVE`, `is_processing` is `false`, and `PROTECTED_IP` is set.
 
 </Step>
 <Step title="Direct clients to the protected IP">

@@ -1,7 +1,277 @@
 ---
 title: Manage hosting services via API
 sidebarTitle: API
-description: Manage hosting services with Billmanager, DCImanager, and VMmanager for provisioning, payments, dedicated servers, virtual private servers.
+description: Order a virtual or dedicated server in hosting billing.
 ---
 
-Hosting management is available through three APIs. The [Billmanager&nbsp;API](https://docs.ispsystem.com/billmanager/developer-section/billmanager-api) covers server provisioning, payments, and all portal actions. The [DCImanager&nbsp;API](https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api) manages Dedicated Servers. The [VMmanager&nbsp;API](https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api) manages Virtual Private Servers.
+Order a virtual server or a dedicated server through the [Gcore&nbsp;Hosting&nbsp;Portal](https://hosting.gcore.com/billmgr). Each action is an HTTP POST to `https://hosting.gcore.com/billmgr`. The `func` parameter selects the action.
+
+<Info>
+Sign in with the existing Hosting Portal account. [Contact&nbsp;support](/hosting/contact-our-technical-support) and send the company details and the source IP address. What to send is on the [reseller&nbsp;page](/hosting/become-reseller-and-resell-our-services).
+
+Support adds that IP address to the allow list and adds the account to the reseller group. Send the calls below from that address. If the host also has IPv6, force the call over the allow-listed IPv4. `authinfo` from the IPv6 address is rejected.
+</Info>
+
+## Authenticate
+
+`authinfo` is the Hosting Portal username and password, separated by a colon. `out=json` selects a JSON response. Send both on every call. The password stays in the POST body. The first call is the tariff list below.
+
+## Read a failed call
+
+An HTTP error means the call did not return a billing document. A call can also return HTTP 200 and still fail. Then the failure text is in `doc.error.msg`, and `doc.list` is absent. Read `doc.error` before using the list.
+
+## Tariffs available to order
+
+Request the virtual server catalog for one location. `datacenter` is the location id. This call reads Baku:
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.pricelist" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "datacenter=52"
+```
+
+Request the dedicated server catalog for one location. This call reads Sydney:
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.dedic.order.pricelist" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "datacenter=13"
+```
+
+The response lists the tariffs for that one location. Each item has the tariff id in `pricelist`, the name in `title`, the location, and the price for one, three, six, and 12 months. The location on a tariff is the `datacenter` object (`id` and `value`).
+
+Text values sit in `$`. `period` is a number of months. This object is one tariff returned by `v2.vds.order.pricelist` for Buenos Aires:
+
+```json
+{
+  "pricelist": { "$": "169910" },
+  "title": { "$": "KVM-SSD-1-EZEN" },
+  "datacenter": {
+    "id": { "$": "56" },
+    "value": { "$": "Argentina, Buenos Aires" }
+  },
+  "prices": {
+    "price": [
+      {
+        "period": { "$": "1" },
+        "cost": { "$": "4.49" },
+        "currency": { "$": "EUR" }
+      }
+    ]
+  }
+}
+```
+
+The same response lists every available location in `slist`, in the entry whose `$name` is `datacenter`. Each value has the location id in `$key` and the location name in `$`. Repeat the catalog call with `datacenter` set to each `$key`. Each call returns only that location's tariffs. Together those calls are the full catalog.
+
+To retrieve tariffs from all available locations, run this Python script. It saves the virtual and dedicated server catalogs to separate JSON files for each location:
+
+```python
+import json
+import subprocess
+
+auth = "USER:PASSWORD"
+
+def call(func, datacenter=None):
+    cmd = [
+        "curl", "-4", "-sS", "-X", "POST", "https://hosting.gcore.com/billmgr",
+        "--data-urlencode", "func=" + func,
+        "--data-urlencode", "authinfo=" + auth,
+        "--data-urlencode", "out=json",
+    ]
+    if datacenter:
+        cmd += ["--data-urlencode", "datacenter=" + datacenter]
+    return json.loads(subprocess.check_output(cmd))["doc"]
+
+def location_ids(doc):
+    for block in doc.get("slist") or []:
+        if block.get("$name") == "datacenter":
+            values = block.get("val") or []
+            if isinstance(values, dict):
+                values = [values]
+            return [item["$key"] for item in values]
+    return []
+
+for func in ("v2.vds.order.pricelist", "v2.dedic.order.pricelist"):
+    for datacenter in location_ids(call(func)):
+        with open(func + "-" + datacenter + ".json", "w", encoding="utf-8") as catalog_file:
+            json.dump(call(func, datacenter), catalog_file)
+```
+
+## Pay for the order
+
+Add funds to the account balance before placing orders. The `skipbasket=on` parameter charges the order from that balance instead of adding it to the cart. Renewals are also paid from the account balance.
+
+<Info>
+If the account balance is insufficient, the API returns `doc.error` with `$type` set to `not_enough_money`. The service is not created.
+
+An order totaling 4.95 EUR with a balance of 0.00 EUR and no available credit returned this error.
+
+```json
+{
+  "doc": {
+    "error": {
+      "$type": "not_enough_money",
+      "msg": {
+        "$": "insufficient funds to complete the operation. Required amount  4.95 EUR. Your current balance: 0.00 EUR, credit limit 0.00 "
+      }
+    }
+  }
+}
+```
+
+</Info>
+
+## Order a virtual server
+
+Take `pricelist` and `datacenter.id` from the catalog. This call opens the order form and does not place the order:
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=171551" \
+  --data-urlencode "datacenter=52" \
+  --data-urlencode "period=1"
+```
+
+The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. Ubuntu 22.04 is `VM6_ISPsystem_Ubuntu-22.04`. The form also returns `addon_*` fields for that tariff. On `KVM-SSD-2-DTA` in Baku, public IPv4 is `addon_171555` (a count, minimum 1) and IPv6 is `addon_171556` (a checkbox). Another tariff uses other ids. Read the names from the form for the tariff being ordered.
+
+Submit the same function with `sok=ok` and `skipbasket=on`.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.vds.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=PRICELIST" \
+  --data-urlencode "datacenter=DATACENTER" \
+  --data-urlencode "period=1" \
+  --data-urlencode "order_period=1" \
+  --data-urlencode "domain=server1.example.com" \
+  --data-urlencode "ostempl=OS_TEMPLATE" \
+  --data-urlencode "skipbasket=on" \
+  --data-urlencode "sok=ok"
+```
+
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. Check the response for `doc.error`. To find the ordered server and check its status, see Read the service.
+
+## Order a dedicated server
+
+Take `pricelist` and `datacenter.id` from `v2.dedic.order.pricelist`. This call opens the order form and does not place the order:
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.dedic.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=152029" \
+  --data-urlencode "datacenter=13" \
+  --data-urlencode "period=1"
+```
+
+The form returns `domain` (the server name), `ostempl` (the operating system), and `order_period` (`1`, `3`, `6`, or `12`). Read `ostempl` from this response. The form also returns `addon_*` fields for that tariff. On tariff `152029` in Sydney the add-ons include public IPv4, IPv6, and traffic. Another tariff uses other ids. Read the names from the form for the tariff being ordered.
+
+Submit the same function with `sok=ok` and `skipbasket=on`.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=v2.dedic.order.param" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "pricelist=PRICELIST" \
+  --data-urlencode "datacenter=DATACENTER" \
+  --data-urlencode "period=1" \
+  --data-urlencode "order_period=1" \
+  --data-urlencode "domain=server1.example.com" \
+  --data-urlencode "ostempl=OS_TEMPLATE" \
+  --data-urlencode "skipbasket=on" \
+  --data-urlencode "sok=ok"
+```
+
+`pricelist`, `datacenter`, `order_period`, `domain`, and `ostempl` come from the catalog and the form. A request without `sok=ok` returns the form and does not order the server. Check the response for `doc.error`. To find the ordered server and check its status, see Read the service.
+
+## Read the service
+
+After the order, list the virtual servers:
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=vds" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json"
+```
+
+List dedicated servers with `func=dedic`. Read `id` and `item_status` on the service. `$` is the label and `$orig` is the status code. An active virtual server returns this object:
+
+```json
+{
+  "id": { "$": "SERVICE_ID" },
+  "item_status": {
+    "$": "Active",
+    "$orig": "2"
+  }
+}
+```
+
+An active dedicated server returns the same label, Active.
+
+## Manage the service
+
+Use the service id from the previous section to reboot a server, open its console, reinstall the operating system, or renew the service.
+
+Reboot a virtual server with `service.reboot.confirm`. The form includes a `force` checkbox. Add `force=on` to set it.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=service.reboot.confirm" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "elid=SERVICE_ID" \
+  --data-urlencode "sok=ok"
+```
+
+A dedicated server reboot uses `service.reboot` with the same `elid` and `sok=ok`.
+
+Open the virtual server console with `vds_open_vnc` and the service id. The response field `ok` has `$type` `url`. The value in `$` is the console address for that response.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=vds_open_vnc" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "elid=SERVICE_ID"
+```
+
+Request an OS reinstall with `vds_send_reinstall_request`. The form requires `os_pool` and `code`. `os_pool` is an OS template key, the same kind of value as `ostempl`. `code` is a TOTP token. The call replaces the installed system.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=vds_send_reinstall_request" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "elid=SERVICE_ID" \
+  --data-urlencode "os_pool=VM6_ISPsystem_Ubuntu-22.04" \
+  --data-urlencode "code=TOTP_CODE" \
+  --data-urlencode "sok=ok"
+```
+
+Renew a virtual or dedicated server with `service.prolong`. The form returns `period` for one, three, six, and 12 months, with the price for each. `skipbasket=on` charges the renewal from the account balance.
+
+```bash
+curl -4 -s -X POST "https://hosting.gcore.com/billmgr" \
+  --data-urlencode "func=service.prolong" \
+  --data-urlencode "authinfo=USER:PASSWORD" \
+  --data-urlencode "out=json" \
+  --data-urlencode "elid=SERVICE_ID" \
+  --data-urlencode "period=1" \
+  --data-urlencode "skipbasket=on" \
+  --data-urlencode "sok=ok"
+```
+
+Manage a dedicated server in [DCImanager](https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api). Manage a virtual server in [VMmanager](https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api).

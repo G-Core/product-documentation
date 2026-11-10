@@ -1,0 +1,142 @@
+---
+title: Connect Codex to Gcore MCP Server
+sidebarTitle: Connect Codex
+description: Connect Codex to Gcore MCP Server and check that the server is enabled.
+---
+
+Connect Codex to Gcore MCP Server so Codex can call Gcore operations.
+
+- [Gcore&nbsp;API&nbsp;token](/account-settings/api-tokens) with permissions for the operations to perform
+- [uv&nbsp;package&nbsp;manager](https://docs.astral.sh/uv/getting-started/installation/) installed
+
+## Step 1. Install Codex
+
+<Tabs>
+<Tab title="Windows">
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://chatgpt.com/codex/install.ps1 | iex"
+```
+
+</Tab>
+<Tab title="macOS/Linux">
+
+```bash
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+```
+
+</Tab>
+</Tabs>
+
+Confirm the command is available:
+
+```bash
+codex --version
+```
+
+## Step 2. Sign in
+
+Sign in through the browser.
+
+```bash
+codex login
+```
+
+Verify that Codex is signed in:
+
+```bash
+codex login status
+```
+
+## Step 3. Add Gcore MCP Server
+
+The Codex configuration stores the variable name, not the token. Set `GCORE_API_KEY` in the shell that starts Codex. Enter the token at the prompt so the shell history does not store it. macOS uses Zsh, and Linux uses Bash. On both, the prompt hides the token. When a secret manager already exports `GCORE_API_KEY`, skip the prompt.
+
+<Tabs>
+<Tab title="Windows">
+
+```powershell
+$env:GCORE_API_KEY = Read-Host "GCORE API token"
+```
+
+</Tab>
+<Tab title="macOS">
+
+```bash
+read -rs "GCORE_API_KEY?GCORE API token: "
+echo
+export GCORE_API_KEY
+```
+
+</Tab>
+<Tab title="Linux">
+
+```bash
+read -rsp "GCORE API token: " GCORE_API_KEY
+echo
+export GCORE_API_KEY
+```
+
+</Tab>
+</Tabs>
+
+Open the Codex configuration and add this table. When the file already lists other servers, add the table without removing those entries.
+
+<Tabs>
+<Tab title="Windows">
+
+```powershell
+notepad $env:USERPROFILE\.codex\config.toml
+```
+
+</Tab>
+<Tab title="macOS/Linux">
+
+```bash
+nano ~/.codex/config.toml
+```
+
+</Tab>
+</Tabs>
+
+```toml
+[mcp_servers.gcore]
+command = "uvx"
+args = ["--from", "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git", "gcore-mcp-server"]
+env_vars = ["GCORE_API_KEY"]
+```
+
+Leave `GCORE_TOOLS` unset so the server stays in dynamic mode. Codex then receives six tools that reach every operation. Setting `GCORE_TOOLS` without `GCORE_MCP_MODE` selects direct mode. A value that matches nothing exits with status 2. Pattern rules are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
+
+## Step 4. Verify the configuration
+
+List the servers saved in the Codex configuration. This command does not start Gcore MCP Server or run an operation.
+
+```bash
+codex mcp list
+```
+
+`gcore` appears as enabled. The `Auth` column says `Unsupported` because this server does not have its own sign-in. It reads `GCORE_API_KEY` from the environment. The command masks the key.
+
+```text
+Name   Command  Args                                                                                         Env                  Cwd  Status   Auth
+gcore  uvx      --from gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git gcore-mcp-server  GCORE_API_KEY=*****  -    enabled  Unsupported
+```
+
+<Info>
+When `gcore` is missing, confirm that `uv --version` runs and that `GCORE_API_KEY` is set in the same shell. A Codex process started earlier does not see a variable exported later.
+</Info>
+
+## Step 5. Test with a query
+
+Start Codex from that shell and ask:
+
+```text
+List my DNS zones
+```
+
+Codex should use Gcore MCP Server to retrieve the DNS zones. When the connection works and the token has the required permissions, Codex returns the available zones or reports that none were found.
+
+<Info>
+Requests that return "401 Unauthorized" indicate an invalid or expired token. Required roles are in [API&nbsp;token&nbsp;permissions](/developer-tools/mcp-server/gcore-mcp-server-overview#api-token-permissions).
+</Info>

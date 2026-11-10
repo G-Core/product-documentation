@@ -1,0 +1,212 @@
+---
+title: "Run several checks in one CDN application"
+sidebarTitle: "Several checks, one app"
+description: Reject a blocked country or a bot user agent, and forward a query token to the origin, in one FastEdge CDN application.
+---
+
+A CDN stage can run only one FastEdge application. Several checks or request modifications at the same stage belong in one handler.
+
+This example combines three operations in `on_request_headers`: blocking requests from selected countries, rejecting user agents containing `bot`, and forwarding a query token to the origin for authorization. The same approach combines other checks and request modifications.
+
+Before writing the handler, complete the [CDN&nbsp;setup](/fastedge/getting-started/setup-rust-cdn) to create the `my_cdn_app` project.
+
+## Write the checks in one handler
+
+Replace `src/lib.rs` in the `my_cdn_app` project with the following code. The handler checks the client country, user agent, and `token` query parameter in that order. If a check fails, it rejects the request. Otherwise, it forwards the request to the origin with the token in the `Authorization` header and the country code in `x-client-country`.
+
+`request.country` contains the two-letter country code derived from the client IP. Replace `ZZ` in `BLOCKED_COUNTRIES` with the country codes to block.
+
+```rust
+use proxy_wasm::traits::*;
+use proxy_wasm::types::*;
+
+proxy_wasm::main! {{
+    proxy_wasm::set_log_level(LogLevel::Trace);
+    proxy_wasm::set_root_context(|_| -> Box<dyn RootContext> { Box::new(Root) });
+}}
+
+struct Root;
+
+impl Context for Root {}
+
+impl RootContext for Root {
+    fn get_type(&self) -> Option<ContextType> {
+        Some(ContextType::HttpContext)
+    }
+
+    fn create_http_context(&self, _: u32) -> Option<Box<dyn HttpContext>> {
+        Some(Box::new(Filter))
+    }
+}
+
+struct Filter;
+
+const BLOCKED_COUNTRIES: &[&str] = &["ZZ"];
+
+impl Filter {
+    fn reject(&self, status: u32, body: &'static str, country: &str) -> Action {
+        self.send_http_response(
+            status,
+            vec![
+                ("content-type", "text/plain"),
+                ("cache-control", "no-store"),
+                ("x-client-country", country),
+            ],
+            Some(body.as_bytes()),
+        );
+        Action::Pause
+    }
+}
+
+impl Context for Filter {}
+
+impl HttpContext for Filter {
+    fn on_http_request_headers(&mut self, _: usize, _: bool) -> Action {
+        let country = self
+            .get_property(vec!["request.country"])
+            .map(|bytes| String::from_utf8_lossy(&bytes).into_owned())
+            .unwrap_or_default();
+
+        if country.is_empty() || BLOCKED_COUNTRIES.iter().any(|code| *code == country) {
+            return self.reject(403, "country-rejected", &country);
+        }
+
+        let user_agent = self
+            .get_http_request_header("user-agent")
+            .unwrap_or_default();
+        if user_agent.to_ascii_lowercase().contains("bot") {
+            return self.reject(403, "bot-rejected", &country);
+        }
+
+        let query = self
+            .get_property(vec!["request.query"])
+            .map(|bytes| String::from_utf8_lossy(&bytes).into_owned())
+            .unwrap_or_default();
+        let token = query_value(&query, "token");
+        if token.is_empty() {
+            return self.reject(401, "token-rejected", &country);
+        }
+
+        let authorization = format!("Bearer {token}");
+        self.add_http_request_header("authorization", &authorization);
+        self.add_http_request_header("x-client-country", &country);
+        Action::Continue
+    }
+}
+
+fn query_value(query: &str, name: &str) -> String {
+    for pair in query.split('&') {
+        let (key, value) = pair.split_once('=').unwrap_or((pair, ""));
+        if key == name {
+            return value.to_string();
+        }
+    }
+    String::new()
+}
+```
+
+All three operations run in `on_http_request_headers`. Each check can stop the request by sending an HTTP response and returning `Action::Pause`. If no check rejects the request, the handler can modify its headers and return `Action::Continue`. To combine different operations, add their logic to the same handler.
+
+The handler uses `add_http_request_header` to forward `Authorization` and `x-client-country` to the origin. In this environment, `set_http_request_header` changes a header within the application but does not forward that updated value to the origin.
+
+## Build the binary
+
+Build with the same target as the CDN setup.
+
+```bash
+cargo build --release --target wasm32-wasip1
+```
+
+The binary is `target/wasm32-wasip1/release/my_cdn_app.wasm`.
+
+## Deploy the application
+
+To deploy through the Customer Portal, follow the [CDN&nbsp;deploy](/fastedge/getting-started/get-started-cdn) guide to upload `my_cdn_app.wasm` and attach the application to `on_request_headers`. To deploy through the REST API, run the following commands.
+
+REST API requests require an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the commands:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+### Step 1. Upload the binary
+
+Use the returned binary id as `BINARY_ID` when creating the application.
+
+```bash
+curl -sX POST "https://api.gcore.com/fastedge/v1/binaries/raw" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary "@target/wasm32-wasip1/release/my_cdn_app.wasm"
+```
+
+The API returns:
+
+```json
+{"api_type":"proxy-wasm","checksum":"5ed7253dc27699a756e466aa6b217f21","id":10515,"source":1,"status":1}
+```
+
+```bash
+export BINARY_ID="{BINARY_ID_FROM_RESPONSE}"
+```
+
+### Step 2. Create the application
+
+Create a FastEdge application from the uploaded binary. Setting `status` to `1` enables the application.
+
+```bash
+curl -sX POST "https://api.gcore.com/fastedge/v1/apps" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"doc-fe-checks\",\"binary\":$BINARY_ID,\"status\":1}"
+```
+
+The API returns:
+
+```json
+{"api_type":"proxy-wasm","binary":10515,"id":3882,"name":"doc-fe-checks","plan":"Free","plan_id":30,"status":1}
+```
+
+```bash
+export FASTEDGE_APP_ID="{APP_ID_FROM_RESPONSE}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+### Step 3. Attach the application
+
+Attach the application to the CDN resource's `on_request_headers` stage. The `app_id` field accepts a single application ID as a string.
+
+```bash
+curl -sX PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"options\":{\"fastedge\":{\"enabled\":true,\"on_request_headers\":{\"enabled\":true,\"app_id\":\"$FASTEDGE_APP_ID\",\"interrupt_on_error\":true,\"execute_on_edge\":true,\"execute_on_shield\":false}}}}"
+```
+
+Passing an array of application IDs instead returns HTTP 400:
+
+```json
+{"errors":{"options":{"fastedge":{"on_request_headers":{"app_id":["Not a valid string."]}}}}}
+```
+
+## Check the results
+
+Test the application through the CDN hostname.
+
+**1. Blocked country**
+
+Send a request from a country listed in `BLOCKED_COUNTRIES`. The application returns HTTP 403 with the body `country-rejected`, without running the user-agent or token checks. A request with an empty `request.country` value is rejected in the same way.
+
+**2. Bot user agent**
+
+Send a request from a permitted country with a user agent containing `bot` and a `token` query parameter. The application returns HTTP 403 with the body `bot-rejected`. The match is case-insensitive.
+
+**3. Missing token**
+
+Send a request from a permitted country with a user agent that does not contain `bot` and without a `token` query parameter. The application returns HTTP 401 with the body `token-rejected`.
+
+All rejected requests include `content-type: text/plain`, `cache-control: no-store`, and `x-client-country` in their responses.
+
+**4. Forward to origin**
+
+Send a request from a permitted country with a user agent that does not contain `bot` and a nonempty `token` query parameter. The request continues to the origin with `Authorization` set to `Bearer` followed by the token value, and `x-client-country` set to the client country code.
