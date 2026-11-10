@@ -2,10 +2,56 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud Reseller API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 70ff41e88e41
+  version: 354026771df1
 servers:
 - url: https://api.gcore.com
 paths:
+  /cloud/reseller/v1/cost_report/breakdown:
+    post:
+      operationId: ResellerCostReportBreakdownHandler.post
+      summary: Get daily cost breakdown of a client (pay-as-you-go only)
+      description: |-
+        Get the daily costs of a client of your reseller account, grouped by one dimension: region (default),
+        project, resource type or flavor. The period must not be longer than 31 days.
+
+        The response can have more than one row for one day and one `group_by` value. Usage with a different
+        unit (`usage.unit`) is in a different row. Usage without a price (`error` is not null) is also in a
+        different row.
+
+        If your reseller account pays for the usage of its clients, the client has no costs of its own.
+        For such a client, the request returns an error.
+
+        The report does not include the commit features (prepaid resources) of the billing plan.
+        Usage data of the last hour can be incomplete. Most data is available in 24 hours.
+      parameters: []
+      responses:
+        '200':
+          description: Daily cost breakdown of the client
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CostReportBreakdownResponseSerializer'
+        '400':
+          $ref: '#/components/responses/ProblemBadRequest'
+        '401':
+          $ref: '#/components/responses/ProblemUnauthorized'
+        '403':
+          $ref: '#/components/responses/ProblemForbidden'
+        '404':
+          $ref: '#/components/responses/ProblemNotFound'
+        '409':
+          $ref: '#/components/responses/ProblemConflict'
+        '500':
+          $ref: '#/components/responses/ProblemInternalServerError'
+        '503':
+          $ref: '#/components/responses/ProblemServiceUnavailable'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResellerCostReportBreakdownRequestSerializer'
+      tags:
+      - Cost Reports
   /cloud/reseller/v1/limits_request:
     get:
       operationId: ResellerLimitRequestsCollection.get
@@ -154,6 +200,160 @@ components:
           type: array
       title: Global and regional quota limits of the client.
       type: object
+    CostReportBreakdownGroupBy:
+      description: Dimension the breakdown rows are summed down to, on top of the always-present date.
+      enum:
+      - flavor
+      - project
+      - region
+      - type
+      title: CostReportBreakdownGroupBy
+      type: string
+    CostReportBreakdownResponseSerializer:
+      properties:
+        count:
+          description: Count of returned rows
+          example: 7
+          examples:
+          - 7
+          minimum: 0
+          title: Count
+          type: integer
+        price_status:
+          $ref: '#/components/schemas/CostReportPriceDisplayStatus'
+          description: '''show'' when the client may see prices, ''hide'' for trial clients, clients with no product status, and clients of a reseller that does not expose prices. This report never returns ''error''.'
+        results:
+          items:
+            $ref: '#/components/schemas/CostReportBreakdownResultSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      - price_status
+      title: CostReportBreakdownResponseSerializer
+      type: object
+    CostReportBreakdownResultSerializer:
+      description: One day of usage for one `group_by` value.
+      properties:
+        date:
+          description: Day the usage was billed for
+          example: '2026-07-17'
+          examples:
+          - '2026-07-17'
+          format: date
+          title: Date
+          type: string
+        error:
+          anyOf:
+          - $ref: '#/components/schemas/CostReportCostError'
+          - type: 'null'
+          description: Why the cost is missing, set only when cost is null
+          examples:
+          - null
+        flavor:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Flavor name, set when `group_by` is 'flavor'
+          examples:
+          - bm2-infrastructure-medium
+          title: Flavor
+        project_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Project ID, set when `group_by` is 'project'
+          examples:
+          - 101
+          title: Project Id
+        region_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Region ID, set when `group_by` is 'region'. 0 means global usage that has no region.
+          examples:
+          - 76
+          title: Region Id
+        type:
+          anyOf:
+          - $ref: '#/components/schemas/PrebillingResourceTypes'
+          - type: 'null'
+          description: Resource type, set when `group_by` is 'type' or 'flavor'
+          examples:
+          - baremetal
+        usage:
+          $ref: '#/components/schemas/CostReportBreakdownUsageSerializer'
+      required:
+      - date
+      - type
+      - flavor
+      - region_id
+      - project_id
+      - usage
+      - error
+      title: CostReportBreakdownResultSerializer
+      type: object
+    CostReportBreakdownUsageSerializer:
+      description: How much the group was used that day, and what that costs.
+      properties:
+        cost:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: Cost for the day, never rounded. Null if there is no price.
+          examples:
+          - 163.190753
+          title: Cost
+        currency:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Currency of the cost, null if there is no cost
+          examples:
+          - EUR
+          title: Currency
+        unit:
+          description: Unit of the billing value
+          example: minutes
+          examples:
+          - minutes
+          title: Unit
+          type: string
+        value:
+          description: Usage of the billing metric for the day, in `unit`, kept at full precision.
+          example: 6688
+          examples:
+          - 6688
+          title: Value
+          type: number
+      required:
+      - value
+      - unit
+      - cost
+      - currency
+      title: CostReportBreakdownUsageSerializer
+      type: object
+    CostReportCostError:
+      description: Why a row has no cost. Values are the plain strings v1 has always returned.
+      enum:
+      - Multiple subscriptions
+      - No tariff
+      title: CostReportCostError
+      type: string
+    CostReportPriceDisplayStatus:
+      enum:
+      - error
+      - hide
+      - show
+      title: CostReportPriceDisplayStatus
+      type: string
+    CostReportResourcesResponseFormat:
+      enum:
+      - csv_records
+      - json
+      title: CostReportResourcesResponseFormat
+      type: string
     CreateGlobalQuotasLimitsSerializer:
       additionalProperties: false
       properties:
@@ -231,6 +431,95 @@ components:
       - region
       title: NotAvailableReason
       type: string
+    PrebillingResourceTypes:
+      description: Resource types for prebilling report
+      enum:
+      - ai_cluster
+      - ai_virtual_cluster
+      - backup
+      - baremetal
+      - basic_vm
+      - containers
+      - dbaas_postgresql_connection_pooler
+      - dbaas_postgresql_cpu
+      - dbaas_postgresql_memory
+      - dbaas_postgresql_public_network
+      - dbaas_postgresql_volume
+      - egress_traffic
+      - external_ip
+      - file_share
+      - floatingip
+      - functions
+      - functions_calls
+      - functions_traffic
+      - image
+      - inference
+      - inference_public_models
+      - instance
+      - load_balancer
+      - log_index
+      - snapshot
+      - volume
+      title: PrebillingResourceTypes
+      type: string
+    Problem:
+      additionalProperties: false
+      description: The error body, served as `application/problem+json`.
+      properties:
+        context:
+          anyOf:
+          - $ref: '#/components/schemas/ProblemContext'
+          - type: 'null'
+          default: null
+          description: Data for the `type`. Absent on a type without context keys, and on a `not-found` for an unknown URL.
+        detail:
+          description: The facts of this occurrence.
+          title: Detail
+          type: string
+        errors:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/ProblemError'
+            type: array
+          - type: 'null'
+          default: null
+          description: One item for each invalid input. Only on `validation-error`, and absent when no single input is wrong.
+          title: Errors
+        hint:
+          description: What to do next.
+          title: Hint
+          type: string
+        request_id:
+          description: ID of the request. The response also sends it in the `X-Request-Id` header. Quote it to support.
+          title: Request Id
+          type: string
+        status:
+          description: Copy of the HTTP status code.
+          title: Status
+          type: integer
+        title:
+          description: Fixed sentence for the `type`.
+          title: Title
+          type: string
+        trace_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: W3C trace ID from the `traceparent` of the request. Null when the request has no valid `traceparent`.
+          title: Trace Id
+        type:
+          $ref: '#/components/schemas/ProblemType'
+          description: Stable error code in kebab-case, such as `not-found`. Clients branch on it. It is not `errors[].code`, which names what is wrong with one input in `snake_case`, such as `not_found`.
+      required:
+      - type
+      - title
+      - status
+      - detail
+      - hint
+      - request_id
+      - trace_id
+      title: Problem
+      type: object
     ProblemBlockingResource:
       additionalProperties: false
       description: One resource that blocks the request.
@@ -975,6 +1264,111 @@ components:
       - status
       title: ChangeStatus object
       type: object
+    ResellerCostReportBreakdownRequestSerializer:
+      additionalProperties: false
+      properties:
+        client_id:
+          description: ID of a client of the reseller.
+          example: 123
+          examples:
+          - 123
+          format: int64
+          title: Client Id
+          type: integer
+        enable_last_day:
+          default: false
+          description: Expenses for the last specified day are taken into account. As the default, False.
+          example: false
+          examples:
+          - false
+          title: Enable Last Day
+          type: boolean
+        group_by:
+          $ref: '#/components/schemas/CostReportBreakdownGroupBy'
+          default: region
+          description: Dimension the daily rows are summed down to. Only one grouping per request.
+          examples:
+          - region
+        project_ids:
+          description: List of project IDs. Omit for all accessible projects.
+          example: &id002
+          - 16
+          - 17
+          - 18
+          - 19
+          - 20
+          examples:
+          - *id002
+          items:
+            type: integer
+          minItems: 1
+          title: Project Ids
+          type: array
+        region_ids:
+          description: List of region IDs. Omit for all regions and global usage; an empty list is rejected. Use 0 for global usage that has no region.
+          example: &id003
+          - 0
+          - 76
+          examples:
+          - *id003
+          items:
+            type: integer
+          minItems: 1
+          title: Region Ids
+          type: array
+        response_format:
+          $ref: '#/components/schemas/CostReportResourcesResponseFormat'
+          default: json
+          description: 'Format of the response: json (default) or `csv_records`.'
+          examples:
+          - csv_records
+          - json
+        tags:
+          $ref: '#/components/schemas/TagsFilterSerializer'
+          description: Filter by tags
+          examples:
+          - condition_type: OR
+            conditions:
+            - key: os_version
+              strict: true
+              value: '22.04'
+            - key: os_version
+              strict: true
+              value: '23.04'
+        time_from:
+          description: The start date of the report period (ISO 8601). The report starts from the beginning of this day in UTC.
+          example: '2023-01-01T00:00:00Z'
+          examples:
+          - '2023-01-01T00:00:00Z'
+          format: date-time
+          title: Time From
+          type: string
+        time_to:
+          description: The end date of the report period (ISO 8601). The report ends just before the beginning of this day in UTC.
+          example: '2023-02-01T00:00:00Z'
+          examples:
+          - '2023-02-01T00:00:00Z'
+          format: date-time
+          title: Time To
+          type: string
+        types:
+          description: List of resource types. Omit for all types.
+          example: &id004
+          - egress_traffic
+          - instance
+          examples:
+          - *id004
+          items:
+            $ref: '#/components/schemas/PrebillingResourceTypes'
+          minItems: 1
+          title: Types
+          type: array
+      required:
+      - time_from
+      - time_to
+      - client_id
+      title: ResellerCostReportBreakdownRequestSerializer
+      type: object
     ResellerLimitsRequestCollectionSerializer:
       properties:
         count:
@@ -1057,7 +1451,87 @@ components:
       - updated_at
       title: ResellerLimitsRequestSerializer
       type: object
+    TagsFilterConditionSerializer:
+      additionalProperties: false
+      description: Represents a single tag filtering condition.
+      properties:
+        key:
+          description: The name of the tag to filter (e.g., 'os_version').
+          example: os_version
+          examples:
+          - os_version
+          maxLength: 128
+          minLength: 3
+          title: Key
+          type: string
+        strict:
+          description: Determines how strictly the tag value must match the specified value. If true, the tag value must exactly match the given value. If false, a less strict match (e.g., partial or case-insensitive match) may be applied.
+          example: true
+          examples:
+          - true
+          title: Strict
+          type: boolean
+        value:
+          description: The value of the tag to filter (e.g., '22.04').
+          example: '22.04'
+          examples:
+          - '22.04'
+          maxLength: 256
+          minLength: 3
+          title: Value
+          type: string
+      title: TagsFilterConditionSerializer
+      type: object
+    TagsFilterConditionTypes:
+      enum:
+      - AND
+      - OR
+      title: TagsFilterConditionTypes
+      type: string
+    TagsFilterSerializer:
+      additionalProperties: false
+      description: Represents a filter consisting of multiple tag filtering conditions.
+      properties:
+        condition_type:
+          $ref: '#/components/schemas/TagsFilterConditionTypes'
+          default: OR
+          description: Specifies whether conditions are combined using OR (default) or AND logic.
+        conditions:
+          description: A list of tag filtering conditions defining how tags should match.
+          example: &id005
+          - key: os_version
+            strict: true
+            value: '9'
+          - key: os_type
+            strict: true
+            value: linux
+          - key: os_distro
+            strict: true
+            value: centos
+          examples:
+          - *id005
+          items:
+            $ref: '#/components/schemas/TagsFilterConditionSerializer'
+          maxItems: 10
+          minItems: 1
+          title: Conditions
+          type: array
+      required:
+      - conditions
+      title: TagsFilterSerializer
+      type: object
   responses:
+    ProblemBadRequest:
+      description: The request cannot succeed as it is. `type` is `validation-error`, `resource-in-use`, `quota-exceeded` or `not-available`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemBadRequestOnReadWithLegacyKeys:
       description: The request cannot succeed as it is. `type` is `validation-error` or `not-available`.
       content:
@@ -1080,6 +1554,19 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemConflict:
+      description: The resource is in a transient state. `type` is `resource-busy`. Send the same request again after the `Retry-After` seconds.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+        Retry-After:
+          $ref: '#/components/headers/RetryAfter'
     ProblemConflictWithLegacyKeys:
       description: The resource is in a transient state. `type` is `resource-busy`. Send the same request again after the `Retry-After` seconds.
       content:
@@ -1093,12 +1580,34 @@ components:
           $ref: '#/components/headers/ContentLanguage'
         Retry-After:
           $ref: '#/components/headers/RetryAfter'
+    ProblemForbidden:
+      description: The credentials do not permit the operation, or another service manages the resource. `type` is `permission-denied`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemForbiddenWithLegacyKeys:
       description: The credentials do not permit the operation, or another service manages the resource. `type` is `permission-denied`.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemInternalServerError:
+      description: The server cannot complete the request. `type` is `internal-server-error`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
       headers:
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
@@ -1115,6 +1624,17 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemNotFound:
+      description: The resource or the URL does not exist. `type` is `not-found`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemNotFoundWithLegacyKeys:
       description: The resource or the URL does not exist. `type` is `not-found`.
       content:
@@ -1126,12 +1646,34 @@ components:
           $ref: '#/components/headers/RequestId'
         Content-Language:
           $ref: '#/components/headers/ContentLanguage'
+    ProblemServiceUnavailable:
+      description: The service is down for a known reason, such as planned maintenance. `type` is `service-unavailable`. A 503 without the `application/problem+json` media type, and every 502 and 504, comes from the gateway and has no problem body.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
     ProblemServiceUnavailableWithLegacyKeys:
       description: The service is down for a known reason, such as planned maintenance. `type` is `service-unavailable`. A 503 without the `application/problem+json` media type, and every 502 and 504, comes from the gateway and has no problem body.
       content:
         application/problem+json:
           schema:
             $ref: '#/components/schemas/ProblemWithLegacyKeys'
+      headers:
+        X-Request-Id:
+          $ref: '#/components/headers/RequestId'
+        Content-Language:
+          $ref: '#/components/headers/ContentLanguage'
+    ProblemUnauthorized:
+      description: The request has no valid credentials. `type` is `unauthorized`.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
       headers:
         X-Request-Id:
           $ref: '#/components/headers/RequestId'
@@ -1184,10 +1726,12 @@ components:
       in: header
       name: Authorization
 tags:
+- name: Cost Reports
 - name: Quotas
 x-tagGroups:
 - name: Cloud Reseller API
   tags:
+  - Cost Reports
   - Quotas
 security:
 - APIKey: []
