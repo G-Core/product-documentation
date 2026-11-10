@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Edge Proxy API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: f71fd1004da1
+  version: 80fc68edde9e
 servers:
 - url: https://api.gcore.com
 tags:
@@ -154,7 +154,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       responses:
         '200':
           description: Successful Response
@@ -198,7 +202,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       requestBody:
         required: true
         content:
@@ -257,7 +265,7 @@ paths:
       tags:
       - Proxy profiles
       summary: Update proxy profile
-      description: Update the given fields of an existing edge proxy profile; omitted fields are kept.
+      description: Update the given fields of an existing edge proxy profile; omitted fields are kept. Send `protected_ip_address` to move the profile to another free IPv4 address from any non-common pool assigned to the customer; manual failures never substitute another address.
       operationId: updateProxyProfile
       parameters:
       - name: proxy_profile_id
@@ -265,7 +273,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       requestBody:
         required: true
         content:
@@ -280,7 +292,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProxyProfileClientResponse'
         '400':
-          description: Origin host is already used by another active profile, no protected IP is available in the client's pools, or edge proxy service is inactive
+          description: Origin host is already used by another active profile, no protected IP is available in the client's pools, requested protected IP is already allocated, address conflicts with active protection configuration, or edge proxy service is inactive
           content:
             application/json:
               schema:
@@ -292,11 +304,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Request'
         '403':
+          description: Requested protected IP is not in your assigned pools.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Request'
-          description: Forbidden
         '404':
           description: Proxy profile not found
           content:
@@ -304,7 +316,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Request'
         '409':
-          description: Another operation is in progress for this profile; retry later
+          description: Another operation is in progress for this profile, or the requested protected IP is locked by another request; retry later
           headers:
             Retry-After:
               description: Seconds to wait before retrying
@@ -332,7 +344,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       responses:
         '204':
           description: Successful Response
@@ -390,7 +406,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       responses:
         '202':
           description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
@@ -448,7 +468,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       responses:
         '202':
           description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
@@ -506,7 +530,11 @@ paths:
         required: true
         schema:
           type: integer
+          maximum: 1000000000
+          minimum: 1
+          description: A positive integer ID
           title: Proxy Profile Id
+        description: A positive integer ID
       responses:
         '202':
           description: Accepted. The operation runs asynchronously; poll GET /v3/profiles/{`proxy_profile_id`} for status.
@@ -699,7 +727,7 @@ paths:
       tags:
       - Proxy profiles
       summary: List available protected IPv4 addresses
-      description: 'List unallocated addresses from the customer''s assigned non-common pools, in numeric IP order. Common pools are excluded; customers without assigned pools retain automatic allocation. Empty results mean no assigned pools, empty or fully allocated pools, no prefix matches, or no matches after the cursor. Listing does not reserve addresses: creation rechecks membership and availability. Keep `starts_with` across pages and reset cursor when the filter changes.'
+      description: 'List unallocated addresses from the customer’s assigned non-common pools (BYOIP), in numeric IP order. Common pools are excluded; customers without assigned pools retain automatic allocation. Empty results mean no assigned pools, empty or fully allocated pools, no prefix matches, or no matches after the cursor. Listing does not reserve addresses: creation rechecks membership and availability. Keep `starts_with` across pages and reset cursor when the filter changes.'
       operationId: listAvailableAddresses
       parameters:
       - name: limit
@@ -935,6 +963,14 @@ components:
           - type: 'null'
           title: Template Id
           description: ID of the proxy template to render this profile with
+        protected_ip_address:
+          type: string
+          format: ipv4
+          title: Protected Ip Address
+          description: Move the profile to another free IPv4 address from any assigned non-common pool. The rest of the configuration is kept. The previous address is released once the change is deployed; if the deployment fails the profile stays on the previous address.
+          example: 192.0.2.11
+          examples:
+          - 192.0.2.11
       type: object
       title: PatchProxyProfileRequest
       example:
@@ -1068,9 +1104,6 @@ components:
         status:
           $ref: '#/components/schemas/ProxyProfileStatus'
           description: Current status of the proxy profile
-        mode:
-          $ref: '#/components/schemas/ProxyProfileMode'
-          description: 'Operating mode, set by the template: ''regular'' proxies traffic through the edge proxy; ''shield'' also routes it through the template''s shield sites'
         is_processing:
           type: boolean
           title: Is Processing
@@ -1107,7 +1140,6 @@ components:
       - origin_host
       - protected_ip_address
       - status
-      - mode
       - is_processing
       - is_error
       - error_details
@@ -1138,12 +1170,6 @@ components:
           policy: allow
         status: ACTIVE
         template_id: 3
-    ProxyProfileMode:
-      type: string
-      enum:
-      - regular
-      - shield
-      title: ProxyProfileMode
     ProxyProfileStatus:
       type: string
       enum:
@@ -1214,12 +1240,6 @@ components:
           - type: 'null'
           title: Icon Url
           description: Absolute URL to the policy's icon, if set
-        logo_url:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Logo Url
-          description: 'Deprecated: use `logo_url_light`. Equal to `logo_url_light`.'
         logo_url_light:
           anyOf:
           - type: string
@@ -1238,7 +1258,6 @@ components:
       - name
       - description
       - icon_url
-      - logo_url
       - logo_url_light
       - logo_url_dark
       title: ProxyTemplatePolicy

@@ -1,0 +1,205 @@
+---
+title: "Solution: Live broadcaster"
+sidebarTitle: "Solution: Live broadcaster"
+description: Build a full-cycle live sports broadcasting workflow with ingest, failover, restreaming, DVR, clips, VOD, secure delivery, and statistics.
+---
+
+Sports media companies that run several live events at once, forward feeds to broadcasters, and publish clips and highlights can cover the whole video chain with Gcore Video Streaming — ingest, transcoding, delivery, DVR, recording, clipping, VOD storage, and statistics. The broadcaster keeps its own player, event management, and tagging, and uses the Gcore API and webhooks as the video back end. A Gcore account and an [API&nbsp;token](/account-settings/api-tokens) are required, and the [Gcore Customer Portal](https://portal.gcore.com) is available for setup and checks.
+
+## Scenario
+
+A sports video company streams multiple events simultaneously, with up to about 1,000,000 concurrent viewers per event. It plays video in its own hls.js/dash.js/etc. player and builds tags, clips, and highlights on top of the video timeline. The workflow must cover these needs:
+
+- Permanent venue RTMP/SRT feeds and event-specific feeds that run in parallel, with primary and backup inputs.
+- Simultaneous forwarding of a feed to YouTube/Facebook/etc. and professional recipients.
+- Tags and clips aligned with the video timeline, including after reconnects and failovers.
+- A 24-hour DVR window and a continuous recording after the event.
+- VOD management through the API, including moving, downloading, and replacing videos.
+- Automatic thumbnails, posters, and timeline previews.
+- Protected HLS and downloads for the player and for server-side services.
+- Webhooks, usage data per customer, and support during live events.
+
+In short, three live feeds enter the Gcore ingester and transcoder, which sends the result to the CDN and to external sites at the same time, while the CDN delivers it to end viewers:
+
+```text
+                    +----------------------+
+Live feed 1 --+     |  Gcore ingest        |----+--> Gcore CDN --> End viewers
+Live feed 2 --+---> |      + transcoding   |    |
+Live feed 3 --+     |      + recorder      |    +--> YouTube, Facebook, etc
+                    +----------------------+
+```
+
+## Outcome and benefits
+
+One Gcore account covers the live and VOD chain, so the broadcaster maintains a single integration instead of separate ingest, transcoding, recording, storage, and delivery services. Every step is available through the API, which lets the broadcaster's own back end create streams per event, start recordings, cut clips, and read status.
+
+- Redundant ingest: each stream has a primary and a backup push URL, so one encoder failure doesn't end the event.
+- Adaptive delivery: one input becomes an adaptive bitrate ladder in LL-HLS, LL-DASH, and HLS, which the broadcaster's hls.js player plays directly.
+- Fan-out: the same stream feeds the player and any number of restream destinations in parallel.
+- Reuse of live content: DVR, recording, and clipping turn a running event into VOD and highlights without re-encoding at the broadcaster's side.
+- Usage-based cost: Full HD transcoding is free, while delivery and storage are billed by usage.
+
+## Architecture
+
+The workflow has one ingest layer, one processing layer that produces playback, restreams, and recordings, and one back-end layer that the broadcaster controls through the API and webhooks.
+
+```text
+ Venue and event encoders (RTMP, RTMPS, SRT, WebRTC)
+        |  primary push              |  backup push
+        v                            v
+ +--------------------------------------------------+
+ |  Live stream - one per venue or event            |
+ |  Transcoding into an adaptive bitrate ladder     |
+ +--------------------------------------------------+
+     |            |              |               |
+     |            |              |               +--> Webhooks, API, metrics
+     |            |              |                    --> broadcaster back end
+     |            |              +--> DVR, recording, clips
+     |            |                   --> Video Hosting (VOD): MP4, thumbnails,
+     |            |                       previews, directories
+     |            +--> Restreams: RTMP, RTMPS, SRT (caller)
+     |                 --> YouTube, TV broadcasters
+     +--> CDN: LL-HLS, LL-DASH, HLS with secure tokens
+          --> own hls.js player, FFmpeg services
+```
+
+The Gcore API controls every box in the diagram. The broadcaster's back end stores its own event and tag data, and Gcore stores the video and its timing.
+
+## Step 1. Create streams for venues and events
+
+Each venue feed and each event feed is a separate [live&nbsp;stream](/streaming/live-streaming/create-a-live-stream), created in the Customer Portal or with the Gcore [Streaming&nbsp;API](/streaming/api/streaming-platform-api-tutorial). A permanent venue stream and a temporary event stream can run at the same time, because every stream has its own ingest URLs and playback URLs.
+
+- The default soft limit on an active PAYG account is 3 active streams, and support or the account manager raises it easily.
+- One-time streams run up to 24 hours. Streams that run around the clock use the 24/7 transcoding option, which the account manager enables.
+
+## Step 2. Configure ingest and failover
+
+Encoders push to the stream over RTMP, RTMPS, or SRT, and WebRTC (WHIP) is available for push only. Gcore can also pull from RTMP, RTMPS, SRT, HLS, and RTSP sources. RTMP carries H.264 and AAC only, so HEVC, AV1, and Opus feeds use SRT, and the [input&nbsp;parameters](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) list the accepted codecs and bitrates, up to 4K at 60 FPS.
+
+For redundancy, the encoder pushes to the [primary&nbsp;and&nbsp;backup](/streaming/live-streaming/primary-backup) URLs of the stream at the same time. Failover works for RTMP and SRT push:
+
+- If the primary input is down for more than 3 seconds, Gcore starts transcoding the backup input. Viewers receive no new data for about 15 seconds during the switch.
+- The primary input returns after it stays up for 60 consecutive seconds, with another short gap.
+- Pull streams accept several source URLs and switch to the next one after about 3 seconds without data.
+
+The stream object reports the active ingest in `live`, `backup_live`, and the ingest region fields, and enterprise accounts can choose ingest points in Europe and the US. Every switch starts a new transcoding session, while the playback URLs of the stream stay the same, so players keep requesting the same manifest URL.
+
+## Step 3. Set output renditions and playback URLs
+
+Gcore transcodes every live stream into an [adaptive&nbsp;bitrate&nbsp;ladder](/streaming/live-streams-and-videos-protocols-and-codecs/transcoding-output) at no charge: 1080p, 720p, 468p, and 360p with H.264 and AAC at up to 30 FPS. Larger resolutions up to 8K, custom bitrate ladders from 144p to 8K, HEVC, AV1, VP9, and 60 FPS output belong to [premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding), which enterprise accounts request through support or sales.
+
+The stream returns `hls_cmaf_url` (LL-HLS), `dash_url` (LL-DASH), and `hls_mpegts_url` (regular HLS). LL-HLS latency is 3-5 seconds and LL-DASH latency is 2-4 seconds. The broadcaster's own hls.js player plays the CMAF URL with the hls.js settings for [low-latency&nbsp;playback](/streaming/live-streaming/configure-low-latency-playback).
+
+## Step 4. Forward feeds to broadcasters
+
+A [restream](/streaming/live-streaming/create-and-configure-a-restream-to-social-media) forwards the live stream to YouTube or any RTMP, RTMPS, or SRT recipient while the player keeps playing the same stream. The number of restreams is not limited technically, the default account limit is three and support raises it, and each destination is billed as a restream add-on.
+
+- Protocol conversion works in both directions between RTMP and SRT, and RTMPS to RTMPS and SRT to SRT are supported.
+- SRT output works in caller mode only, so Gcore connects to the recipient, and the recipient must listen. Latency, passphrase, and stream ID go into the SRT URL parameters.
+- Each restream sends either the original stream from the encoder or the transcoded stream with overlays applied. Resolution, frame rate, bitrate, and codec follow that choice and are not set per destination.
+- Audio is the only per-destination setting: a restream can drop the audio track or replace it with silence, and YouTube requires the silence option for streams without audio.
+
+A recipient that needs its own resolution, bitrate, or codec receives a dedicated stream whose encoder output already matches, with the restream set to the original source. This keeps the other destinations unchanged.
+
+## Step 5. Enable DVR, recording, and clips
+
+DVR lets viewers [rewind](/streaming/live-streaming/pause-and-rewind-the-live-streams) a running stream. The default window is 1 hour, the API sets it up to 4 hours with `dvr_duration`, and a 24-hour window is available to enterprise accounts on request through support. The window covers one ingest session, so it does not carry over a reconnect or failover, and the live manifests, including DVR, return 404 after the stream stops.
+
+Replay after the event comes from a [recording](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos), which Gcore saves in Video Hosting as a separate video entity with its own video ID and its own playback URLs. The live playback URLs of the stream stay tied to the stream and stop working when it ends, so the broadcaster's site code hides the live player when the event finishes and shows a new VOD player with the URL of the recorded video. The `stream_id` field of the video links it to the stream, and the video webhook announces when the recording is ready to play.
+
+- Interruptions shorter than 1 minute, including primary and backup switches, keep one continuous video. A longer gap splits the recording into separate videos.
+- The gap is cut out of the video, so the video is shorter than the wall-clock event, and offsets after the gap shift by its length. Tags stored as wall-clock times map to video offsets after subtracting the cut gaps.
+- Recordings longer than 4 hours are split into 4-hour fragments. Raw origin recording is a premium feature and is stored for seven days, while transcoded recordings stay until deleted.
+
+[Clips](/streaming/live-streaming/clips) are cut from the DVR window of a live stream through the API. A clip lasts from 30 seconds up to the DVR duration, can start in the past within the window, and returns an HLS master link and an MP4 link. A clip link expires up to 4 hours after the clip end, and `vod_required: true` saves the clip as a permanent video.
+
+## Step 6. Manage VOD assets
+
+Videos enter Video Hosting from live recordings, from a pull by URL (HTTP, HTTPS, S3-compatible storage, or SFTP), or through resumable TUS [upload&nbsp;by&nbsp;API](/streaming/video-hosting/upload-video-via-api). Support assists with a batch migration of an existing library when the customer prepares an HTTP link for each file.
+
+- The API lists, updates, and deletes videos. Directories organize videos, and a `PATCH` with `directory_id` moves a video between directories of the same account without changing its ID or playback URL, in the [directory](/streaming/video-hosting/organize-uploaded-videos) tree.
+- A separate copy between libraries or accounts is created by uploading a new video from a reachable source URL. The copy gets a new ID and is transcoded again.
+- Any transcoded rendition can be downloaded as MP4 for editing or social publishing through the [MP4&nbsp;links](/streaming/video-hosting/download-mp4-files). The uploaded original file is deleted after transcoding, so the broadcaster keeps its own copy of it.
+- The source file of an existing video cannot be replaced. The broadcaster's application keeps a stable internal identifier that maps to the current Gcore video ID, and the player reference changes when a new file is uploaded.
+
+## Step 7. Generate thumbnails and previews
+
+Thumbnails come from three different sources, depending on whether the content is a running live stream, a recorded video, or a clip, and each source exposes its images through different API fields.
+
+### Live stream screenshots
+
+A running stream provides one JPEG every 10 seconds, up to 1080 px wide, which makes a [live&nbsp;preview](/streaming/live-streaming/live-stream-screenshots) possible before the viewer presses play. The `screenshot` field of `GET /streaming/streams/{id}` always points to the latest image, history is not kept, and the image updates only while the encoder sends live video.
+
+### Recorded video screenshots
+
+A recording is a regular video in Video Hosting, so it gets the same images as an uploaded video:
+
+- Five automatic screenshots spread across the video, returned in the `screenshots` array.
+- An optional custom poster of up to 1 MB, which replaces the automatic screenshot.
+- [Timeline&nbsp;previews](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices) as a JPEG sprite with a WebVTT file that maps time ranges to sprite tiles. Both URLs come from `GET /streaming/videos/{id}`, and the video list leaves the sprite empty.
+
+### Clip screenshots
+
+The clip response contains only the HLS and MP4 links and has no thumbnail fields. With `vod_required: true`, Gcore saves the clip as a video, and that linked video receives its five screenshots and the sprite about 2 minutes after creation.
+
+## Step 8. Protect delivery
+
+Protected delivery uses secure tokens on a custom CDN resource with a paid CDN tariff, because the default streaming domain does not support tokens. The broadcaster's back end signs a URL with a secret and an expiry time, and one [secure&nbsp;token](/streaming/interaction-with-cdn/video-secure-token) covers the manifest and all segments of a stream or video.
+
+- Valid tokens return 200, invalid tokens or a wrong IP return 403, and expired tokens return 410.
+- Short-lived tokens with automatic refresh are recommended, and [token&nbsp;refresh](/streaming/interaction-with-cdn/player-token-refresh) in the player has an hls.js implementation.
+- The [custom&nbsp;CDN&nbsp;resource](/streaming/interaction-with-cdn/custom-cdn-resource) adds country, referrer, IP, and user-agent policies on top of tokens, which fits broadcasting-rights restrictions.
+- VOD in HLS can also use [AES-128&nbsp;encryption](/streaming/video-hosting/protect-your-videos-with-the-aes-128-encryption), which support enables for the account.
+
+The token is part of the URL, so a server-side tool like FFmpeg reads a protected stream from the signed HTTPS URL. IP binding, referrer, and user-agent policies must allow that service.
+
+## Step 9. Automate and monitor
+
+All streaming, recording, clipping, and VOD operations are available through the Gcore API, and the stream object reports its state in `live`, `backup_live`, `transcoding`, `recording`, and the active ingest region fields.
+
+- [Webhooks](/streaming/extra-features/get-webhooks-from-the-streaming-platform) cover four event types — stream, video, deleted video, and restream. Stream events report the start of the primary or backup ingest, the start of transcoding, and the start and stop of recording, and video events report the statuses `pending`, `viewable`, `ready`, and `error` with an error description.
+- Webhooks are sent to one endpoint per account, which support configures from the account ID and the endpoint URL.
+- Each event is sent once and is not retried, so the back end reconciles state by polling the stream and video objects after downtime.
+
+Rendition errors appear in the [VOD&nbsp;status](/streaming/video-hosting/vod-status) of a video, and the [live&nbsp;stream&nbsp;metrics](/streaming/statistics/view-your-live-stream-metrics) report bitrate, FPS, and keyframe interval every minute.
+
+## Step 10. Separate customers and collect telemetry
+
+An account is one shared workspace, so strict separation of customers uses a separate Gcore account per customer, with its own API tokens, billing, limits, and delivery domain. Reseller setups with sub-customer accounts are arranged through support or the account manager, and the [isolation&nbsp;options](/streaming/getting-started/dev_environment) cover both approaches.
+
+- Within one account, `client_user_id` and `client_entity_data` tag streams, videos, and restreams with the customer and event. Gcore returns them in the API and webhooks and uses them as filters, but the broadcaster's back end enforces access.
+- API tokens and roles apply to the whole account, and they cannot be limited to a single stream, video, or customer.
+- Unique viewers and watching duration are measured at the CDN for any player, including a custom hls.js player, and can be filtered by `client_user_id`. Views, geography, browsers, and operating systems come from the built-in player only. The [statistics&nbsp;API](/streaming/statistics/view-statistics-of-live-streams-videos-and-billing) returns both groups.
+
+## Step 11. Plan capacity, usage, and support
+
+By default, an account can run three live streams at the same time, and on request support or the account manager raises this limit to the number of simultaneous streams the customer needs. Gcore CDN sets no limit on concurrent viewers, so a single event can reach more than 1 million viewers.
+
+- Usage reports show transcoding minutes, delivery minutes, simultaneous streams, and stored minutes and gigabytes at account level, in the [billing&nbsp;reports](/streaming/billing/usage-and-billing-reports). Reconciliation by customer uses one account per customer, or the broadcaster's own aggregation from the statistics API by `client_user_id`.
+- Reports and statistics are read through the API, and the documentation describes no report export.
+- Transcoding up to 1080p at 30 FPS is free, while delivery, storage, restreams, and a custom CDN resource are billed by usage, under the [tariffs](/streaming/billing/overview-of-tariffs). Premium encoding, a 24-hour DVR window, and 24/7 streams are agreed in an enterprise plan.
+- Support works through support@gcore.com with the ticket checklist from the [Streaming&nbsp;FAQ](/streaming/faq/streaming-faq), and `status.gcore.com` shows incidents. Premium support is available for dedicated events and is arranged in advance with the account manager, who agrees the coverage hours, including evenings and weekends, and the response times for the event.
+
+## Availability summary
+
+The table groups the requested capabilities by how a customer gets them today, based on the documented behavior. Roadmap items are not listed because the documentation contains none.
+
+| Capability | Status | Note |
+|------------|--------|------|
+| RTMP, RTMPS, and SRT ingest with primary and backup | Available | Failover for RTMP and SRT push |
+| RTMP and SRT conversion, SRT caller output | Available | Restream to any number of destinations |
+| Custom ABR ladders, 4K and 8K, HEVC, AV1 | On request | Premium encoding for enterprise accounts |
+| DVR up to 4 hours | Available | Set with the API |
+| DVR for 24 hours | On request | Enterprise accounts through support |
+| Continuous recording across reconnects | Available | Gaps shorter than 1 minute |
+| Clips from live | Available | Up to the DVR duration, permanent with a VOD copy |
+| VOD API, directories, MP4 download | Available | Original file is not kept after transcoding |
+| Replace a video under the same ID | Limited | Stable internal identifier in the broadcaster's application |
+| Thumbnails, posters, timeline previews | Available | Clips get them through the linked video |
+| Protected HLS and MP4 | Available | Custom CDN resource on a paid tariff |
+| Webhooks | Available | One endpoint through support, no retries |
+| Per-customer isolation | Available | Account per customer or application-side separation |
+| Usage export per customer | Available | Statistics API with `client_user_id`, no export |
+| Premium support for dedicated events | On request | Arranged in advance with the account manager |
+
+Additional Gcore services in this design are the custom CDN resource with a paid CDN tariff for secure tokens and the premium encoding and 24/7 options of the enterprise plan. A third-party product is not required for the documented workflow, and the broadcaster's own player, tagging, and event management stay on the broadcaster's side.

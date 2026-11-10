@@ -6,7 +6,7 @@ description: Upload video to VOD storage by copying from external URL or using T
 
 Two API upload methods are available: copy a file from an external URL, or upload a local file using the TUS resumable protocol. For large-scale migrations, Gcore provides a support-assisted batch workflow — contact [support@gcore.com](mailto:support@gcore.com) to arrange it. The Customer Portal upload workflow is covered in [Upload&nbsp;a&nbsp;video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
 
-All requests require an [API token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
+Requests to the Gcore API require an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -18,7 +18,7 @@ Processing statuses for uploaded videos are described in [VOD&nbsp;status](/stre
 
 ## Copy from external storage
 
-If the source file is available at a public HTTPS or SFTP URL, Gcore downloads it server-side. Supported protocols:
+If the source file is available at a public HTTP, HTTPS, or SFTP URL, Gcore downloads it server-side. Supported protocols:
 
 - HTTP/HTTPS from external video hosting services (Vimeo, Mux)
 - HTTP/HTTPS from S3-compatible storages (AWS S3, Azure Blob Storage)
@@ -41,7 +41,7 @@ Send `POST /streaming/videos` with the source URL in the `origin_url` attribute:
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos' \
 -H 'Content-Type: application/json' \
--H 'Authorization: APIKey $GCORE_API_KEY' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
 -d '{
   "video": {
     "name": "Gcore Demo",
@@ -64,9 +64,13 @@ The API returns:
 
 There is no limit on the number of videos that can wait in the transcoding queue. API requests are still subject to the [RPS limits](/api-reference/overview).
 
+Copying an existing video has no dedicated endpoint. Create a new video with an `origin_url` that points to a reachable copy of the source file, optionally with `clip_start_seconds` and `clip_duration_seconds` to copy only a fragment. The copy gets a new video ID and playback URL, and it's transcoded again. The same request works across accounts, as long as Gcore can reach the source URL.
+
+The source file of an existing video can't be replaced, because no field of the video updates it. To publish a new version of a video, create a new video and point the player to the new ID, or keep a stable alias in the application that maps to the current video ID.
+
 ### Download behavior
 
-Gcore attempts to download the source file three times, expecting a `200 OK` response. If all three attempts fail, the video entity stays in `Empty` status and the `error` field contains details — delete the empty entity and create a new one with a correct URL.
+For an HTTP or HTTPS source, Gcore attempts to download the file three times and expects a `200 OK` response. If the attempts fail, the video status becomes `error` and the `error` field contains the details. Delete that video and create a new one with a correct URL.
 
 If the download succeeds, Gcore starts transcoding the video. Check transcoding progress via the [GET /streaming/videos/{id}](/api-reference/streaming/videos/get-video) endpoint or [webhook notifications](/streaming/extra-features/get-webhooks-from-the-streaming-platform).
 
@@ -83,7 +87,7 @@ Send `POST /streaming/videos` without the `origin_url` attribute to create a vid
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos' \
 -H 'Content-Type: application/json' \
--H 'Authorization: APIKey $GCORE_API_KEY' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
 -d '{
   "video": {
     "name": "Gcore Demo",
@@ -115,7 +119,7 @@ Use the `id` from Step 1 to request the TUS upload server URL and session token:
 
 ```bash
 curl -L 'https://api.gcore.com/streaming/videos/2501637/upload' \
--H 'Authorization: APIKey $GCORE_API_KEY'
+-H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
 The API returns:
@@ -173,7 +177,11 @@ Transmitted data must comply with the [Upload-Metadata header rules](https://tus
 Bash upload command:
 
 ```bash
-DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(echo <client_id> | base64 -w0),filename $(echo <filename> | base64 -w0),token $(echo <token> | base64 -w0),video_id $(echo <video_id> | base64 -w0)'"
+client_id="1000503"
+video_id="2501637"
+filename="file_to_upload.mp4"
+token="eyJhbGciOiJIUzI3O6kc3Og..."
+DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(printf '%s' "$client_id" | base64 -w0),filename $(printf '%s' "$filename" | base64 -w0),token $(printf '%s' "$token" | base64 -w0),video_id $(printf '%s' "$video_id" | base64 -w0)'"
 ```
 
 JavaScript upload with the [CodePen template](https://codepen.io/apih9000/pen/wvQmNEW?editors=1011) — copy `token`, `video_id`, and `client_id` to test the TUS upload flow:
@@ -200,9 +208,11 @@ const options = {
     ...
   },
   onShouldRetry(err, retryAttempt, options) {
-    // HTTP 500 can be transient or a configuration error (token/ID mismatch).
-    // Inspect err.originalResponse body to distinguish them before retrying.
-    return retryAttempt < 3;
+    const body = err.originalResponse ? err.originalResponse.getBody() : ""
+    if (body.includes("does not match this video") || body.includes("does not match this client")) {
+      return false
+    }
+    return retryAttempt < 3
   },
   onSuccess() {
     ...
@@ -271,6 +281,19 @@ Use the `priority` field to adjust scheduling order for transcoding tasks within
   - 10 — highest priority (processed first)
 
 This value adjusts relative job weight in the queue; it does not guarantee absolute ordering.
+
+### Poster and screenshots
+
+<p>Every video gets five automatic screenshots in the `screenshots` field, spread across the video, including recordings, copies, and videos created from clips. They are generated even when transcoding ends in `error`, and `screenshot_id` selects the default one. The index in `screenshots` and `screenshot_id` is zero-based, while the numbers in the screenshot URLs are one-based, so the first screenshot in the array is the URL that contains `_1_`.</p>
+
+<p>The example shows the five screenshots of one video. The default is `screenshots[0]`, and it is black because the video opens on a black frame.</p>
+
+<Frame>![Five automatically generated screenshots of a video, with the first one marked as the default](/images/docs/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app/auto-screenshots.jpg)</Frame>
+
+<p>The first screenshot is taken at the start of the video, so it is black when the video starts from a black image. If the default screenshot isn't suitable as a thumbnail, set `screenshot_id` to another screenshot or upload a custom poster.</p>
+
+<p>A custom poster is optional. Pass the image in `poster` as a base64 string, or pass a URL in `remote_poster_url`. The image must be JPEG, WebP, or PNG, up to 1 MB. Set `screenshot_id` to `-1` to use the custom poster instead of a screenshot, and set `remove_poster` to `true` to remove it. While a poster is set, selecting another screenshot with `screenshot_id` doesn't change the thumbnail, so remove the poster first.</p>
+
 
 ### AI subtitles
 

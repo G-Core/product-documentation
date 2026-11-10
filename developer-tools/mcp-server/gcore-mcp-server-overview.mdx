@@ -24,21 +24,21 @@ FastEdge also has a separate [AI-assisted&nbsp;development](/fastedge/local-deve
 
 ## Supported AI clients
 
-| Client | Compatibility | Notes |
-|--------|---------------|-------|
-| Claude Code | Full | Recommended due to tool search capability |
-| Cursor IDE | Limited | Under 50 tools before context issues |
-| MCP Inspector | Full | Web-based interface for testing and exploration |
+The server starts in dynamic mode. The client receives six tools: `search_tools`, `get_tool_schema`, `call_read_tool`, `call_write_tool`, `call_destructive_tool`, and `execute_code`. Those tools reach all 817 operations. Leave `GCORE_TOOLS` unset.
 
-Claude Code handles large tool sets through deferred schema loading — tool schemas are fetched on demand when they match a query, preventing context window bloat. Other clients require [tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools) via the `GCORE_TOOLS` environment variable to reduce the number of exposed tools.
+| Client | Notes |
+|--------|-------|
+| Claude Code | [Connect&nbsp;Claude&nbsp;Code](/developer-tools/mcp-server/connect-claude-code-to-gcore-mcp-server) |
+| Cursor IDE | [Connect&nbsp;Cursor&nbsp;IDE](/developer-tools/mcp-server/connect-cursor-to-gcore-mcp-server) |
+| MCP Inspector | [MCP&nbsp;Inspector](/developer-tools/mcp-server/test-tools-with-mcp-inspector) |
+
+[Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools) limits which operations the six tools can reach. Direct mode registers one tool per operation instead. Set `GCORE_MCP_MODE=direct` and a `GCORE_TOOLS` pattern for that mode.
 
 ## Natural language requests
 
-Requests are written in plain language — no fixed commands or syntax required. The AI client reads the available tool names and descriptions, matches them to the request, calls the appropriate tool, and returns the result in a readable format.
+Requests are written in plain language. No fixed command syntax is required. A list call that omits `project_id` and `region_id` uses the account default project and searches every active region. Each returned item includes `region_id`.
 
-Requests can be written in any language. For multi-step operations, the server chains tool calls automatically. A request like "Create a VM with a standard configuration" triggers the server to look up available regions, flavors, and images, present a summary for confirmation, and then provision the instance.
-
-<Frame>![Claude Code resolving region, flavor, and image automatically before asking for confirmation to create a VM](/images/docs/developer-tools/mcp-server/gcore-mcp-server-overview/claude-code-create-vm.png)</Frame>
+`cloud.instances.create` and `dns.zones.create` are write operations. Their schemas do not require approval. `dns.zones.delete` is destructive: the server replies `CONFIRMATION REQUIRED` and does not send the call until the same call is repeated with approval.
 
 ## Set up Gcore MCP Server
 
@@ -49,8 +49,8 @@ Connect the server to Claude Code or Cursor IDE with [Server&nbsp;setup](/develo
 <Step title="Test the available tools">
 Explore exposed tools in a browser with [MCP&nbsp;Inspector](/developer-tools/mcp-server/test-tools-with-mcp-inspector).
 </Step>
-<Step title="Filter tools for large tool sets">
-Limit exposed tools for a specific workflow with [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools) and the `GCORE_TOOLS` environment variable.
+<Step title="Limit operations">
+Leave `GCORE_TOOLS` unset to reach every operation through the six tools. Set a pattern only to narrow that set. Pattern rules are in [Tool&nbsp;filtering](/developer-tools/mcp-server/filter-tools-with-gcore-tools).
 </Step>
 </Steps>
 

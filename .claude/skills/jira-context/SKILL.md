@@ -113,17 +113,15 @@ Run this before Phase 3. AI has its own documentation. Do not classify it as por
 
 The Org Unit on the DOC ticket is not the source of truth. The drafting agent writes it, and it is often wrong. Open the linked developer ticket and read its labels and components.
 
-It is AI when either of these is on the developer ticket:
+The label `ai-enhanced` means an AI agent drafted the ticket text. It does not mean the product area is AI. Ignore that label in this phase. Do not stop classification because of it, and do not require the DOC ticket to carry it.
 
-- Component `Everywhere AI`
-- Label `ai-enhanced`
+It is AI only when the developer ticket has the component `Everywhere AI`.
 
-One of them is enough. Org Unit `AI` on the DOC ticket does not prove it. Org Unit `Cloud` on the DOC ticket does not override the developer ticket.
+Org Unit `AI` on the DOC ticket does not prove it. Org Unit `Cloud` on the DOC ticket does not override the developer ticket.
 
-When the developer ticket has either marker:
+When the developer ticket has the component `Everywhere AI`:
 
-- The DOC ticket must have the same label, `ai-enhanced`. If that label is missing, name the missing label in the reason. Do not add it in this skill.
-- Append a row: Category `AI_DOCS`, Decision `NOT_PORTAL`, Reason one sentence that names the marker and says AI has its own documentation.
+- Append a row: Category `AI_DOCS`, Decision `NOT_PORTAL`, Reason one sentence that names the component and says AI has its own documentation.
 - Output only this, then continue with the next ticket. Do not run Phase 3 or Phase 4 for this ticket.
 
 ```
@@ -211,7 +209,7 @@ If **none checked** → likely NOT_DOCUMENTABLE or INTERNAL_DOC. Verify with the
 | "Team DX", "DevOps team", "Backend team" in stakeholders | INTERNAL_DOC |
 | `api-reference/`, "OpenAPI", "swagger", "YAML spec" | NOT_DOCUMENTABLE |
 | "GitLab to GitHub", "migrate repo", "publish internally" | NOT_DOCUMENTABLE |
-| Developer ticket component `Everywhere AI` or label `ai-enhanced` | AI_DOCS, Decision `NOT_PORTAL`. Do not cancel. |
+| Developer ticket component `Everywhere AI` | AI_DOCS, Decision `NOT_PORTAL`. Do not cancel. The label `ai-enhanced` only means an agent drafted the ticket. |
 
 ### Green flags (proceed)
 
