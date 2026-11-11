@@ -291,7 +291,7 @@ ssh_pwauth: True
 
 <p>Set the **Name Template** for the instances. Select one of the available options from the dropdown:</p>
 
-- `{ip_octets}` — the placeholder is replaced with the last two octets of the assigned IP address — `my-vm-{ip_octets}` becomes `my-vm-10-0-5`.
+- `{ip_octets}` — the placeholder is replaced with the last three octets of the assigned IP address — `my-vm-{ip_octets}` becomes `my-vm-10-0-5`.
 - `{instance_role}` — the placeholder is replaced with the value of the `instance_role` metadata tag set in the **Add tags** section.
 
 ## Step 9. Create the instance
@@ -340,12 +340,13 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
   <Tab title="Go SDK">
     ```go
     sshKeyCreated, err := client.Cloud.SSHKeys.New(ctx, cloud.SSHKeyNewParams{
-        Name: "my-ssh-key",
+        Name:      "my-key",
+        PublicKey: gcore.String("ssh-ed25519 AAAA... user@host"),
     })
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("%+v\n", sshKeyCreated.ID)
+    fmt.Printf("%s\n", sshKeyCreated.Name)
     ```
   </Tab>
   <Tab title="curl">
@@ -371,7 +372,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
   </Tab>
 </Tabs>
 
-<p>When `public_key` is omitted, the response includes a `private_key` field - save it immediately, as it is not shown again.</p>
+<p>When `public_key` is omitted, the response includes `private_key`. The Go SDK field is `PrivateKey`. Save that value immediately. It is not shown again.</p>
 
 ## Quickstart
 
@@ -545,7 +546,9 @@ The image determines the operating system and sets the minimum boot volume size 
         if err != nil {
             panic(err.Error())
         }
-        fmt.Printf("%+v\n", imageList.Count)
+        for _, img := range imageList.Results {
+            fmt.Printf("%s %s\n", img.ID, img.Name)
+        }
     }
     ```
   </Tab>
@@ -598,7 +601,9 @@ A [flavor](/api-reference/cloud/flavors/list-flavors) sets the vCPU count and RA
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("%+v\n", instanceFlavorList.Count)
+    for _, f := range instanceFlavorList.Results {
+        fmt.Printf("%s %d vCPU / %d MB RAM\n", f.FlavorID, f.Vcpus, f.Ram)
+    }
     ```
   </Tab>
   <Tab title="curl">
@@ -705,11 +710,15 @@ The instance is created with a public interface - `"type": "external"` assigns a
 
     ```json
     {
-      "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]   // save as TASK_ID
+      "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]
     }
     ```
   </Tab>
 </Tabs>
+
+```bash
+export TASK_ID="d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"   # tasks[0] from the create response
+```
 
 ### Step 4. Wait for the instance
 
@@ -741,7 +750,7 @@ Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go
       "state": "FINISHED",
       "created_resources": {
         "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],   // save as INSTANCE_ID
-        "volumes": ["726ecfcc-7fd0-4e30-a86e-7892524aa483"]
+        "volumes": ["726ecfcc-7fd0-4e30-a86e-7892524aa483"]   // save as BOOT_VOLUME_ID
       }
     }
     ```
@@ -749,7 +758,8 @@ Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go
 </Tabs>
 
 ```bash
-export INSTANCE_ID="{INSTANCE_ID}"
+export INSTANCE_ID="169942e0-9b53-42df-95ef-1a8b6525c2bd"       # created_resources.instances[0]
+export BOOT_VOLUME_ID="726ecfcc-7fd0-4e30-a86e-7892524aa483"   # created_resources.volumes[0]
 ```
 
 ### Step 5. Get the public IP address
@@ -767,15 +777,11 @@ The `addresses` field on the instance object contains the public IP assigned at 
   </Tab>
   <Tab title="Go SDK">
     ```go
-    instance, err := client.Cloud.Instances.Get(
-        ctx,
-        "instance_id",
-        cloud.InstanceGetParams{},
-    )
-    if err != nil {
-        panic(err.Error())
+    for _, addrs := range instance.Addresses {
+        for _, addr := range addrs {
+            fmt.Printf("IP: %s\n", addr.Addr)
+        }
     }
-    fmt.Printf("%+v\n", instance.ID)
     ```
   </Tab>
   <Tab title="curl">
@@ -850,6 +856,60 @@ The default security group is applied automatically, allowing inbound SSH (port 
     ```bash
     curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?visibility=public" \
       -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+## Rebuild a VM
+
+<p>Rebuild reinstalls the operating system on the boot volume and replaces the data on that volume.</p>
+
+<p>An empty body reinstalls the current image. <code>image_id</code> selects another public image in the same region. <code>ssh_key_name</code> replaces the SSH key with an existing key name. <code>user_data</code> must be valid base64 when it is set.</p>
+
+<p>The call returns a task id. The instance status is REBUILD while the task runs and returns to ACTIVE when the new image is in place. <code>metadata.image_name</code> shows that image.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    project_id = client.cloud_project_id
+    region_id = client.cloud_region_id
+    instance_id = os.environ["INSTANCE_ID"]
+
+    response = client.post(
+        f"/cloud/v3/instances/{project_id}/{region_id}/{instance_id}/rebuild",
+        cast_to=object,
+        body={
+            "image_id": os.environ["IMAGE_ID"],
+            "ssh_key_name": "my-key",
+        },
+    )
+    client.cloud.tasks.poll(response["tasks"][0])
+    instance = client.cloud.instances.get(instance_id)
+    print(instance.status, instance.metadata["image_name"])
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/rebuild" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "image_id": "'"$IMAGE_ID"'",
+        "ssh_key_name": "my-key"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]
+    }
     ```
   </Tab>
 </Tabs>
@@ -991,7 +1051,11 @@ The API returns:
 {"tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]}
 ```
 
-<p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources`.</p>
+```bash
+export TASK_ID="d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"   # tasks[0] from the create response
+```
+
+<p>Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until <code>state</code> is <code>FINISHED</code>, then read the instance ID from <code>created_resources</code>.</p>
 
 ```bash
 curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
@@ -1154,7 +1218,7 @@ resource "gcore_cloud_instance" "example" {
 }
 ```
 
-<p>When `public_key` is omitted, Gcore generates a key pair. The private key is returned once in the response and is not stored — save it before applying.</p>
+<p><code>public_key</code> is required. Generate the key pair locally and set <code>public_key</code> to the contents of the public key file. The provider has no attribute for a generated private key.</p>
 
 ## Optional fields
 
