@@ -1,6 +1,6 @@
 ---
-title: "Rewrite: redirect requests from the CDN to the origin"
-sidebarTitle: Rewrite
+title: "Redirect requests from the CDN to the origin"
+sidebarTitle: Rewrite request paths
 description: Change CDN request paths before fetching from the origin with nginx rewrite rules and redirect flags.
 ---
 
@@ -9,15 +9,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>The Rewrite option changes the request path before the CDN fetches content from the origin. With the `redirect` or `permanent` flag, the CDN returns a redirect to the viewer. The option follows [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.</p>
+<p>The Rewrite option lets Gcore CDN fetch content from a different path on the origin without changing the URL in the visitor's browser. A request for `/photo.jpg` can be rewritten to `/media/photo.jpg` on the origin. The same option can also return an HTTP 301 or 302 redirect, sending the visitor to another URL.</p>
 
-<p>To enable the option, open a CDN resource, navigate to the **Options** tab, then to the **Content** section. Toggle **Enable rewrite**. The same option can be set on a rule in the **Rules** section.</p>
+<p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open an existing [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).</p>
+
+<Frame>![CDN in the sidebar and the opened resource on the OPTIONS tab](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image2.png)</Frame>
+
+<p>On the **OPTIONS** tab, select **Content** > **Rewrite** and turn on **Enable rewrite**. The same option can be set on a rule in the **Rules** section.</p>
 
 <Frame>![CDN resource Options tab with Rewrite enabled, showing the Rewrite body field and Rewrite flag dropdown](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image1.png)</Frame>
 
 ## Rewrite body
 
-<p>The **Rewrite body** field pre-fills with `/(.*) /$1`. Replace it with two parts separated by a space:</p>
+<p>The **Rewrite body** field pre-fills with `/(.*) /$1` and follows [nginx&nbsp;rewrite&nbsp;rules](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html). Replace it with two parts separated by a space:</p>
 
 <p>1. A regular expression that matches the request path.</p>
 
@@ -42,6 +46,8 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - **redirect** — returns a 302 temporary redirect to the client.
 - **permanent** — returns a 301 permanent redirect to the client.
 
+<p>A replacement that starts with `http://` or `https://` redirects the viewer to that host. **permanent** returns 301. **redirect**, **break**, **last**, and the default flag return 302. A [domain&nbsp;redirect](/cdn/cdn-resource-options/redirect-one-domain-to-another) keeps the request path on the new host.</p>
+
 </MethodSection>
   <MethodSection id="api" label="REST API">
 
@@ -63,6 +69,8 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 <p>`body` is two parts separated by a space: a regular expression that matches the request path, then the replacement. `$1` inserts the first capture group, and `$2` inserts the second. `enabled` and `body` are both required.</p>
 
 <p>`flag` accepts `break`, `last`, `redirect`, or `permanent`. When `flag` is omitted, the API stores `break`. An invalid capture reference or an unsupported variable returns HTTP 400.</p>
+
+<p>A replacement that starts with `http://` or `https://` redirects the viewer. `permanent` returns 301. `break`, `last`, `redirect`, and an omitted flag return 302. A [domain&nbsp;redirect](/cdn/cdn-resource-options/redirect-one-domain-to-another) keeps the request path on the new host.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -323,7 +331,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
   </Tab>
 </Tabs>
 
-## Rewrite one path
+## Rewrite requests matching a rule
 
 <p>The same option can be stored on a resource rule, so requests that match the rule are rewritten. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
 
@@ -436,6 +444,8 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>`break` stops further rewrite rules, `last` starts a new location search, `redirect` returns 302, and `permanent` returns 301. Set `enabled` to `false` to keep the saved body and flag while Gcore CDN stops applying the rewrite. A resource created without this block leaves the rewrite unset.</p>
 
+<p>A replacement that starts with `http://` or `https://` redirects the viewer. `permanent` returns 301. `break`, `last`, `redirect`, and an omitted flag return 302. A [domain&nbsp;redirect](/cdn/cdn-resource-options/redirect-one-domain-to-another) keeps the request path on the new host.</p>
+
 ```hcl
 resource "gcore_cdn_origin_group" "example" {
   name = "my-origin-group"
@@ -463,7 +473,7 @@ resource "gcore_cdn_resource" "example" {
 }
 ```
 
-## Rewrite one path
+## Rewrite requests matching a rule
 
 <p>Store `rewrite` on a resource rule so only requests that match the rule are rewritten. The resource block is the CDN resource the rule belongs to. `rule_type` `0` is a regular expression and must start with `^/` or `/`.</p>
 
@@ -483,14 +493,6 @@ resource "gcore_cdn_resource" "example" {
   cname           = "cdn.example.com"
   origin_group    = gcore_cdn_origin_group.example.id
   origin_protocol = "HTTPS"
-
-  options = {
-    rewrite = {
-      enabled = true
-      body    = "/(.*) /media/$1"
-      flag    = "break"
-    }
-  }
 }
 
 resource "gcore_cdn_resource_rule" "example" {
