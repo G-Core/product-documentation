@@ -1,6 +1,6 @@
 ---
 title: "Redirect requests from the CDN to the origin"
-sidebarTitle: Rewrite
+sidebarTitle: Rewrite request paths
 description: Change CDN request paths before fetching from the origin with nginx rewrite rules and redirect flags.
 ---
 
@@ -9,11 +9,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
+<p>The Rewrite option lets Gcore CDN fetch content from a different path on the origin without changing the URL in the visitor's browser. A request for `/photo.jpg` can be rewritten to `/media/photo.jpg` on the origin. The same option can also return an HTTP 301 or 302 redirect, sending the visitor to another URL.</p>
+
 <p>In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and open an existing [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource).</p>
 
 <Frame>![CDN in the sidebar and the opened resource on the OPTIONS tab](/images/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/rewrite-redirect-requests-from-the-cdn-to-the-origin-image2.png)</Frame>
-
-<p>The Rewrite option changes the request path before the CDN fetches content from the origin. With the `redirect` or `permanent` flag, the CDN returns a redirect to the viewer. The option follows [nginx](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html) rewrite rules.</p>
 
 <p>On the **OPTIONS** tab, select **Content** > **Rewrite** and turn on **Enable rewrite**. The same option can be set on a rule in the **Rules** section.</p>
 
@@ -21,7 +21,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Rewrite body
 
-<p>The **Rewrite body** field pre-fills with `/(.*) /$1`. Replace it with two parts separated by a space:</p>
+<p>The **Rewrite body** field pre-fills with `/(.*) /$1` and follows [nginx&nbsp;rewrite&nbsp;rules](https://nginx.org/en/docs/http/ngx_http_rewrite_module.html). Replace it with two parts separated by a space:</p>
 
 <p>1. A regular expression that matches the request path.</p>
 
@@ -331,7 +331,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
   </Tab>
 </Tabs>
 
-## Rewrite one path
+## Rewrite requests matching a rule
 
 <p>The same option can be stored on a resource rule, so requests that match the rule are rewritten. `ruleType` `0` is a regular expression and must start with `^/` or `/`.</p>
 
@@ -473,7 +473,7 @@ resource "gcore_cdn_resource" "example" {
 }
 ```
 
-## Rewrite one path
+## Rewrite requests matching a rule
 
 <p>Store `rewrite` on a resource rule so only requests that match the rule are rewritten. The resource block is the CDN resource the rule belongs to. `rule_type` `0` is a regular expression and must start with `^/` or `/`.</p>
 
@@ -493,14 +493,6 @@ resource "gcore_cdn_resource" "example" {
   cname           = "cdn.example.com"
   origin_group    = gcore_cdn_origin_group.example.id
   origin_protocol = "HTTPS"
-
-  options = {
-    rewrite = {
-      enabled = true
-      body    = "/(.*) /media/$1"
-      flag    = "break"
-    }
-  }
 }
 
 resource "gcore_cdn_resource_rule" "example" {
