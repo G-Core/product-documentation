@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users.</p>
+<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users. A CDN application runs only on the edge locations included in the account's CDN plan. A free CDN plan does not include the full edge network.</p>
 
 <p>A [CDN&nbsp;resource](/cdn/getting-started/create-a-cdn-resource/overview) configured for the origin is required.</p>
 
@@ -17,7 +17,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>The CDN runtime invokes a CDN application at five stages:</p>
 
-- **On request headers (before cache):** when the CDN receives request headers, before the cache is checked.
+- **On request headers (before cache):** when the CDN receives request headers, before the cache is checked. This stage runs before a response body exists, so it cannot change page content.
 - **On request headers (after cache):** after the CDN cache lookup.
 - **On request body:** when the CDN receives the request body.
 - **On response headers:** before the CDN sends response headers to the client.
@@ -33,11 +33,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-<p>To run more logic on one stage, combine it into one application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) runs an authorization check and a label check together.</p>
+<p>A stage cannot run a second application. Extra checks and request changes belong in the same application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) rejects a blocked country or a bot user agent and forwards a query token to the origin.</p>
 
-<p>The same application can be attached to more than one stage.</p>
+<p>The same application can be attached to more than one stage. Different stages on one resource can use different applications.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
+<p>A stage that must see every request, including a request served from cache, runs on the edge. The shield runs only when the edge cache misses, and the edge then caches the shield response. If a shield application generates a response based on a visitor's country, IP address, or cookie, the edge may cache that response and serve it to subsequent visitors. Running the application on the edge and the shield executes it twice on a cache miss.</p>
+
+<p>Replacing the binary of an attached application updates that application in place. The CDN resource keeps the same application ID, so the application stays attached. The new binary reaches edge nodes in about 10 seconds. A request stage runs the new binary on the next request. Output from a response stage stays in the CDN cache for about 15 minutes, until that response expires or the path is purged.</p>
 
 ## Step 1. Create a FastEdge application
 
@@ -135,7 +137,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Tab>
   <Tab title="For specific URL paths">
 
-<p>URL-specific rules apply FastEdge logic only to certain paths — protecting `/api/` with JWT validation while leaving static assets unaffected, for instance.</p>
+<p>URL-specific rules apply FastEdge logic only to certain paths — protecting `/api/` with JWT validation while leaving static assets unaffected, for instance. When a request matches a rule, that rule's FastEdge settings replace the resource settings for the request. Stages the rule does not list do not run. If several rules match, the rule with the highest weight applies.</p>
 
 1. In the Customer Portal, navigate to **CDN**.
 2. Find the resource and open its settings.
@@ -175,16 +177,19 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Disconnect FastEdge from CDN
 
-<p>To stop FastEdge processing, clear the **FastEdge** checkbox on the CDN resource, or disable the rule that attaches the application.</p>
+<p>To stop FastEdge processing, clear the **FastEdge** checkbox on the CDN resource, or disable the rule that attaches the application. Clearing the **FastEdge** checkbox removes the saved stages and application selections. Enabling FastEdge again does not restore them.</p>
 
 <p>1. In the Customer Portal, navigate to **CDN**.</p>
 <p>2. Find the resource and open its settings.</p>
 
 <Frame>![CDN resources list with resource settings button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
 
-<p>3. To disable FastEdge for the **whole CDN resource**, scroll to the **FastEdge apps** section and clear the **FastEdge** checkbox.</p>
-<p>4. To disable FastEdge for **specific URL paths**, open the **Rules** page and disable the relevant rule.</p>
-<p>5. Click **Save changes**.</p>
+<p>3. Select how to disable FastEdge:</p>
+
+- **Whole CDN resource**: clear the **FastEdge** checkbox in the **FastEdge apps** section.
+- **Specific URL paths**: open **Rules** and disable the relevant rule.
+
+<p>4. Click **Save changes**.</p>
 
 ## Delete a CDN application
 
@@ -205,7 +210,7 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users.</p>
+<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users. A CDN application runs only on the edge locations included in the account's CDN plan. A free CDN plan does not include the full edge network.</p>
 
 <p>A [CDN&nbsp;resource](/api-reference/cdn/cdn-resources/create-cdn-resource) configured for the origin is required.</p>
 
@@ -213,7 +218,7 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 
 <p>The CDN runtime invokes a CDN application at five stages:</p>
 
-- **on_request_headers:** when the CDN receives request headers, before cache.
+- **on_request_headers:** when the CDN receives request headers, before cache. This stage runs before a response body exists, so it cannot change page content.
 - **on_request_headers_after_cache:** after the CDN cache lookup.
 - **on_request_body:** when the CDN receives the request body.
 - **on_response_headers:** before the CDN sends response headers to the client.
@@ -229,11 +234,13 @@ An enabled FastEdge application linked to a CDN resource cannot be deleted. Disc
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-<p>To run more logic on one stage, combine it into one application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) runs an authorization check and a label check together.</p>
+<p>A stage cannot run a second application. Extra checks and request changes belong in the same application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) rejects a blocked country or a bot user agent and forwards a query token to the origin.</p>
 
-<p>The same application can be attached to more than one stage.</p>
+<p>The same application can be attached to more than one stage. Different stages on one resource can use different applications.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
+<p>A stage that must see every request, including a request served from cache, runs on the edge. The shield runs only when the edge cache misses, and the edge then caches the shield response. If a shield application generates a response based on a visitor's country, IP address, or cookie, the edge may cache that response and serve it to subsequent visitors. Running the application on the edge and the shield executes it twice on a cache miss.</p>
+
+<p>Replacing the binary of an attached application updates that application in place. The CDN resource keeps the same application ID, so the application stays attached. The new binary reaches edge nodes in about 10 seconds. A request stage runs the new binary on the next request. Output from a response stage stays in the CDN cache for about 15 minutes, until that response expires or the path is purged.</p>
 
 <p>These steps configure FastEdge with the FastEdge API and the CDN API.</p>
 
@@ -677,7 +684,7 @@ curl -X PATCH https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID \
 
 <p>The five supported stages are `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage accepts the same `app_id`, `interrupt_on_error`, `execute_on_edge`, and `execute_on_shield` parameters.</p>
 
-<p>A rule stores FastEdge for paths that match `/api/.*`. `ruleType` 0 is a regular expression and must start with `^/` or `/`. Keep `fastedge.enabled` false on the CDN resource so the application runs only for those paths. If the resource option is already on, turn that stage off before relying on the rule.</p>
+<p>A rule stores FastEdge for paths that match `/api/.*`. `ruleType` 0 is a regular expression and must start with `^/` or `/`. Keep `fastedge.enabled` false on the CDN resource so the application runs only for those paths. If the resource option is already on, turn that stage off before relying on the rule. When a request matches a rule, the rule's <code>fastedge</code> block replaces the resource <code>fastedge</code> block for that request. Stages the rule does not list do not run. If several rules match, the rule with the highest weight applies.</p>
 
 ```bash
 curl -X POST "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID/rules" \
@@ -833,9 +840,9 @@ curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$FASTEDGE_APP_ID \
 </MethodSection>
 <MethodSection id="terraform" label="Terraform">
 
-<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users. A CDN application is built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification. Terraform 1.11 or later and the Gcore provider <code>~&gt; 2.0</code> are required. [Terraform&nbsp;setup](/developer-tools/terraform/get-started-with-terraform) covers installation, provider authentication, and <code>terraform init</code>.</p>
+<p>FastEdge CDN applications run inside the CDN request pipeline, modifying requests and responses before they reach the origin or end users. A CDN application runs only on the edge locations included in the account's CDN plan. A free CDN plan does not include the full edge network. A CDN application is built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification. Terraform 1.11 or later and the Gcore provider <code>~&gt; 2.0</code> are required. [Terraform&nbsp;setup](/developer-tools/terraform/get-started-with-terraform) covers installation, provider authentication, and <code>terraform init</code>.</p>
 
-<p>The CDN option has five stage attributes: `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage holds one application. Set `on_request_headers` to run the application when the CDN receives request headers, before the cache is checked.</p>
+<p>The CDN option has five stage attributes: `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, and `on_response_body`. Each stage holds one application. Set `on_request_headers` to run the application when the CDN receives request headers, before the cache is checked. That stage runs before a response body exists, so it cannot change page content.</p>
 
 ## Execution limits
 
@@ -843,11 +850,13 @@ curl -X DELETE https://api.gcore.com/fastedge/v1/apps/$FASTEDGE_APP_ID \
 
 <Warning>Only one FastEdge application can be attached to each processing stage.</Warning>
 
-<p>To run more logic on one stage, combine it into one application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) runs an authorization check and a label check together.</p>
+<p>A stage cannot run a second application. Extra checks and request changes belong in the same application. The handler in [one&nbsp;CDN&nbsp;application](/fastedge/getting-started/combine-checks-in-one-cdn-app) rejects a blocked country or a bot user agent and forwards a query token to the origin.</p>
 
-<p>The same application can be attached to more than one stage.</p>
+<p>The same application can be attached to more than one stage. Different stages on one resource can use different applications.</p>
 
-<p>Replacing the binary of an attached application updates that application on the CDN resource. The resource keeps the same application ID. An edge can keep running the previous binary for a few minutes after the API stores the new binary.</p>
+<p>A stage that must see every request, including a request served from cache, runs on the edge. The shield runs only when the edge cache misses, and the edge then caches the shield response. If a shield application generates a response based on a visitor's country, IP address, or cookie, the edge may cache that response and serve it to subsequent visitors. Running the application on the edge and the shield executes it twice on a cache miss.</p>
+
+<p>Replacing the binary of an attached application updates that application in place. The CDN resource keeps the same application ID, so the application stays attached. The new binary reaches edge nodes in about 10 seconds. A request stage runs the new binary on the next request. Output from a response stage stays in the CDN cache for about 15 minutes, until that response expires or the path is purged.</p>
 
 ## Deploy the application on a CDN resource
 
@@ -905,7 +914,7 @@ resource "gcore_cdn_resource" "example" {
 
 ## Limit the application to URL paths
 
-<p>A rule stores the stage for paths that match `/api/.*`. `rule_type` 0 is a regular expression and must start with `^/` or `/`. The CDN resource has no FastEdge option, so the application runs only for those paths. Run `terraform apply`.</p>
+<p>A rule stores the stage for paths that match `/api/.*`. `rule_type` 0 is a regular expression and must start with `^/` or `/`. The CDN resource has no FastEdge option, so the application runs only for those paths. When a request matches a rule, the rule's <code>fastedge</code> block replaces the resource <code>fastedge</code> block for that request. Stages the rule does not list do not run. If several rules match, the rule with the highest weight applies. Run <code>terraform apply</code>.</p>
 
 ```hcl
 data "gcore_fastedge_templates" "cdn" {
