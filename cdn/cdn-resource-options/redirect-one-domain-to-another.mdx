@@ -1,0 +1,226 @@
+---
+title: Redirect one domain to another
+sidebarTitle: Redirect a domain
+description: Redirect every request from a CDN hostname to another host and keep the path and query string.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Visitors who open a CDN hostname are sent to another host, and the original path and query string stay in the URL. A request for `/docs/page?x=1` returns 301 with `Location: https://example.com/docs/page?x=1`.</p>
+
+<p>The CDN resource still needs an origin group. The redirect comes from the CDN, so the request is not fetched from the origin. When the replacement starts with `/`, the [Rewrite&nbsp;option](/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin) changes the origin path instead of redirecting the visitor to another host.</p>
+
+## Send the visitor to another host
+
+<p>1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and navigate to **CDN** > **CDN resources**. Open the resource.</p>
+
+<p>2. Open the **Options** tab and select **Content**.</p>
+
+<p>3. Turn on **Enable rewrite**.</p>
+
+<p>4. In the **Rewrite body** field, enter the pattern and the target URL, separated by a space. Replace `example.com` with the host that should receive the visitor:</p>
+
+```
+^/(.*)$ https://example.com/$1
+```
+
+<p>`(.*)` captures the path after the first slash, and `$1` inserts that capture.</p>
+
+<p>5. In the **Rewrite flag** dropdown, select **permanent** for HTTP 301 or **redirect** for HTTP 302. An absolute replacement URL also returns HTTP 302 with **break** or **last**.</p>
+
+<p>6. Click **Save changes**.</p>
+
+{/* TODO: screenshot of the Content section with Enable rewrite on, Rewrite body set to the domain pattern, and Rewrite flag set to permanent */}
+
+<p>7. Confirm the redirect. Replace `cdn.example.com` with the CDN hostname:</p>
+
+```bash
+curl -I "http://cdn.example.com/docs/page?x=1"
+```
+
+<p>The response is 301, and the `Location` header is `https://example.com/docs/page?x=1`.</p>
+
+## Pick another target
+
+<p>The same option covers two narrower targets. Keep **permanent** or **redirect** as in the steps above.</p>
+
+- **One URL**: `^/.*$ https://example.com/`. Every path redirects to `https://example.com/`, and the query string is kept. `^/(.*)$ https://example.com/` is rejected because the capture is never inserted.
+- **Homepage only**: `^/$ https://example.com/`. A request for `/` redirects to `https://example.com/`. Any other path stays on the origin.
+
+</MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A CDN hostname returns a redirect to another host and keeps the request path. The update sets `options.rewrite` on an existing CDN resource.</p>
+
+<p>The resource still needs an origin group. The redirect comes from the CDN, so the request is not fetched from the origin.</p>
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required. The CDN resource ID is the `id` from the [resources&nbsp;list](/api-reference/cdn/cdn-resources/list-cdn-resources) call.
+</Info>
+
+<p>Export these variables:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
+```
+
+## Redirect and keep the path
+
+<p>`body` is a regular expression and an absolute URL, separated by a space. `$1` inserts the captured path. `flag` `permanent` returns 301, and `flag` `redirect` returns 302.</p>
+
+<p>A request for `/docs/page?x=1` returns `Location: https://example.com/docs/page?x=1`. A replacement that starts with `https://` also redirects when `flag` is `break`, `last`, or omitted. An omitted flag is stored as `break` and returns 302.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    from gcore import Gcore
+
+    client = Gcore()
+    resource_id = int(os.environ["CDN_RESOURCE_ID"])
+
+    updated = client.cdn.cdn_resources.update(
+        resource_id,
+        options={
+            "rewrite": {
+                "enabled": True,
+                "body": "^/(.*)$ https://example.com/$1",
+                "flag": "permanent",
+            }
+        },
+    )
+    print(updated.options.rewrite.enabled, updated.options.rewrite.body, updated.options.rewrite.flag)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cdn"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        resourceID, err := strconv.ParseInt(os.Getenv("CDN_RESOURCE_ID"), 10, 64)
+        if err != nil {
+            panic(err)
+        }
+
+        updated, err := client.CDN.CDNResources.Update(ctx, resourceID, cdn.CDNResourceUpdateParams{
+            Options: cdn.CDNResourceUpdateParamsOptions{
+                Rewrite: cdn.CDNResourceUpdateParamsOptionsRewrite{
+                    Enabled: true,
+                    Body:    "^/(.*)$ https://example.com/$1",
+                    Flag:    "permanent",
+                },
+            },
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(updated.Options.Rewrite.Enabled, updated.Options.Rewrite.Body, updated.Options.Rewrite.Flag)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cdn/resources/$CDN_RESOURCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "options": {
+          "rewrite": {
+            "enabled": true,
+            "body": "^/(.*)$ https://example.com/$1",
+            "flag": "permanent"
+          }
+        }
+      }'
+    ```
+
+<p>The API returns HTTP 200. The saved option is:</p>
+
+```json
+{
+  "enabled": true,
+  "body": "^/(.*)$ https://example.com/$1",
+  "flag": "permanent"
+}
+```
+
+  </Tab>
+</Tabs>
+
+## Redirect every path to one URL
+
+<p>A pattern with no capture group sends every path to one URL and keeps the query string. `^/(.*)$ https://example.com/` returns HTTP 400 because the capture is never inserted.</p>
+
+<p>Send the same update with this `body` and `flag` `permanent`. A request for `/docs/page?x=1` returns `Location: https://example.com/?x=1`.</p>
+
+```
+^/.*$ https://example.com/
+```
+
+## Redirect only the homepage
+
+<p>A pattern that matches only `/` redirects the homepage. Any other path is not redirected.</p>
+
+<p>Send the same update with this `body` and `flag` `permanent`. A request for `/` returns `Location: https://example.com/`.</p>
+
+```
+^/$ https://example.com/
+```
+
+</MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>A CDN hostname returns a 301 redirect to another host and keeps the request path. The [Terraform&nbsp;provider](/developer-tools/terraform/overview) stores the pattern in the `rewrite` block of `gcore_cdn_resource`. Run `terraform apply` after editing `options`.</p>
+
+<p>The resource still needs an origin group. The redirect comes from the CDN, so the request is not fetched from the origin. `flag` `permanent` returns 301, and `flag` `redirect` returns 302.</p>
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name = "my-origin-group"
+
+  sources = [
+    {
+      source  = "origin.example.com"
+      enabled = true
+    }
+  ]
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    rewrite = {
+      enabled = true
+      body    = "^/(.*)$ https://example.com/$1"
+      flag    = "permanent"
+    }
+  }
+}
+```
+
+<p>`$1` inserts the path captured by `(.*)`. A request for `/docs/page?x=1` returns `Location: https://example.com/docs/page?x=1`.</p>
+
+<p>To send every path to one URL, set `body` to `^/.*$ https://example.com/`. A pattern that captures a group and never inserts it is rejected. To redirect only `/`, set `body` to `^/$ https://example.com/`.</p>
+
+</MethodSection>
+</MethodSwitch>
