@@ -1,0 +1,93 @@
+---
+title: "Rebuild a virtual instance"
+sidebarTitle: "Rebuild an instance"
+description: Reinstall the operating system on an existing virtual machine and replace the boot volume data.
+---
+
+Rebuilding a virtual instance reinstalls its operating system using either the current image or another public image available in the same region. You can also replace the SSH key or provide new user data as part of the operation.
+
+<Warning>
+The operation replaces all data on the boot volume.
+</Warning>
+
+The API returns a task ID. During the operation, the instance enters `REBUILD` status and returns to `ACTIVE` when rebuilding finishes. The installed image is available in `metadata.image_name`.
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and a [region&nbsp;ID](/api-reference/cloud/regions/list-regions).
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{INSTANCE_ID}"
+export IMAGE_ID="{IMAGE_ID}"
+```
+
+## Rebuild the instance
+
+`IMAGE_ID` is a public image ID from the [Images&nbsp;API](/api-reference/cloud#tag/Images/operation/ImageListForProjectRegion.get). `my-key` is the name of an SSH key already registered in the project, and `user_data` must be valid base64.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    project_id = client.cloud_project_id
+    region_id = client.cloud_region_id
+    instance_id = os.environ["INSTANCE_ID"]
+
+    response = client.post(
+        f"/cloud/v3/instances/{project_id}/{region_id}/{instance_id}/rebuild",
+        cast_to=object,
+        body={
+            "image_id": os.environ["IMAGE_ID"],
+            "ssh_key_name": "my-key",
+        },
+    )
+    client.cloud.tasks.poll(response["tasks"][0])
+    instance = client.cloud.instances.get(instance_id)
+    print(instance.status, instance.metadata["image_name"])
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/rebuild" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "image_id": "'"$IMAGE_ID"'",
+        "ssh_key_name": "my-key"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]
+    }
+    ```
+
+    ```bash
+    export TASK_ID="d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"   # tasks[0] from the response
+    ```
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Repeat the request until `state` is `FINISHED`, then read the instance:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    `status` returns to `ACTIVE`. `metadata.image_name` is the installed image.
+  </Tab>
+</Tabs>

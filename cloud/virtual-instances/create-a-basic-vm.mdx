@@ -1,0 +1,188 @@
+---
+title: "Create a Basic VM"
+sidebarTitle: "Create a Basic VM"
+description: Create a Basic VM with a local system disk, a shared-CPU flavor, and existing network ports.
+---
+
+Basic VMs boot from a system-managed local SSD sized by the flavor. The create call attaches existing ports by ID, and the region is a field in the request body.
+
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and a pre-created [port](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) in the target region.
+</Info>
+
+`REGION_ID` is the numeric ID of a region that supports Basic VMs. Query the [regions&nbsp;API](/api-reference/cloud/regions/list-regions) and filter for regions where `has_basic_vm` is true.
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{REGION_ID}"
+export PORT_ID="{YOUR_PORT_ID}"
+```
+
+## Step 1. Select an image
+
+Only Linux images are accepted. Query the images endpoint for the target region and save the ID of the chosen image.
+
+```bash
+curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$REGION_ID?visibility=public" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+```bash
+export IMAGE_ID="{IMAGE_ID}"
+```
+
+## Step 2. List Basic VM flavors
+
+Basic VM flavors use the `g1s-shared-*` or `g2s-shared-*` naming scheme. Query the standard flavors endpoint and filter by name prefix.
+
+```bash
+curl "https://api.gcore.com/cloud/v1/flavors/$GCORE_CLOUD_PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "results": [
+    {"flavor_id": "g2s-shared-1-2-25",  "vcpus": 1, "ram": 2048},
+    {"flavor_id": "g2s-shared-2-4-50",  "vcpus": 2, "ram": 4096},
+    {"flavor_id": "g2s-shared-4-8-80",  "vcpus": 4, "ram": 8192}
+  ]
+}
+```
+
+The number after the RAM value in the flavor name is the local SSD size in GiB. Set `FLAVOR_NAME` to the chosen flavor.
+
+```bash
+export FLAVOR_NAME="g2s-shared-1-2-25"
+```
+
+## Step 3. Create the Basic VM
+
+Pass `region_id` in the request body. The boot disk is created with the flavor, and the request does not accept volume fields.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `region_id` | Yes | Numeric ID of the target region. |
+| `flavor_name` | Yes | Shared-CPU flavor name from Step 2. |
+| `image_id` | Yes | ID of a Linux OS image. Only Linux images are accepted. |
+| `interfaces[].port_id` | Yes | ID of a pre-created port in the same region. Pass multiple entries to attach several NICs; the array order sets the NIC boot order. |
+| `name` | No | Display name. Auto-generated if omitted. |
+| `ssh_key_id` | No | UUID of an SSH key registered in the project. |
+| `user_data` | No | Base64-encoded cloud-init script. |
+| `tags` | No | Key-value map of labels. |
+
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "region_id": '"$REGION_ID"',
+    "flavor_name": "'"$FLAVOR_NAME"'",
+    "image_id": "'"$IMAGE_ID"'",
+    "name": "my-basic-vm",
+    "interfaces": [{"port_id": "'"$PORT_ID"'"}]
+  }'
+```
+
+The API returns:
+
+```json
+{"tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]}
+```
+
+```bash
+export TASK_ID="d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"   # tasks[0] from the create response
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources`.
+
+```bash
+curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+When complete:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "instances": ["a1b2c3d4-..."]
+  }
+}
+```
+
+```bash
+export BASIC_VM_ID="{BASIC_VM_ID}"
+```
+
+## Step 4. Get Basic VM details
+
+The response includes `boot_volume_id` for the system-managed local disk. That disk is destroyed together with the VM on delete.
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "id": "a1b2c3d4-...",
+  "name": "my-basic-vm",
+  "status": "ACTIVE",
+  "region_id": 26,
+  "flavor_name": "g2s-shared-1-2-25",
+  "image_id": "bf221f42-...",
+  "boot_volume_id": "e5f6a7b8-...",
+  "addresses": {
+    "doc-test-net": [{"addr": "10.10.10.5", "type": "fixed"}]
+  }
+}
+```
+
+## Step 5. Update the Basic VM
+
+Rename the VM or replace its interface list. Updating `interfaces[]` replaces the whole list, and the interface order stays as it was at creation.
+
+| Field | Description |
+|-------|-------------|
+| `name` | New display name. |
+| `tags` | Merge-patch map. A `null` value removes the key. |
+| `interfaces[]` | Full list of port IDs. Ports in the list but not currently attached are attached; ports currently attached but not in the list are detached. |
+
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-basic-vm-renamed"}'
+```
+
+The API returns:
+
+```json
+{"tasks": ["c7d8e9f0-..."]}
+```
+
+Poll the task until `state` is `FINISHED`.
+
+## Step 6. Delete the Basic VM
+
+Deleting a Basic VM also destroys its system-managed boot disk. Ports attached to the VM are detached and are not deleted.
+
+```bash
+curl -X DELETE "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/basic_vms/$BASIC_VM_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{"tasks": ["f1a2b3c4-..."]}
+```
+
+Poll the task until `state` is `FINISHED`.
