@@ -242,6 +242,7 @@ Maintained by the agent. Update after each triage or merge.
 | 3242 | SDK updated to Python v0.60.0, Go v0.60.0 | api-sdk-tracker | 2026-10-28 | PR open | `issue/3242-sdk-v060` | Logs Uploader Go target create and S3 origin key fields no longer match v0.60.0. Playlist, WAAP rule update, and cost-report samples do not call the removed fields. Pins set to v0.60.0. |
 | 3272 | SDK updated to Python v0.61.0, Go v0.61.0 | api-sdk-tracker | 2026-11-04 | Done | PR #3293 | CDN certificate create now returns the certificate. Pins set to v0.61.0. |
 | 3285 | SDK updated to Python v0.62.0, Go v0.62.0 | api-sdk-tracker | 2026-11-07 | In progress | `issue/3285-sdk-v062` | Go storage Delete and access-key New need the params struct. Python and curl samples still match. Pins set to v0.62.0. |
+| 3335 | SDK updated to Python v0.63.0, Go v0.63.0 | api-sdk-tracker | 2026-11-12 | PR open | `issue/3335-sdk-v063` | User list and get curl samples now call `/iam/v2/users`. Virtual instance rebuild uses `rebuild_and_poll()`. Pins set to v0.63.0. |
 | 3251 | Terraform provider updated to v2.0.0-rc.3 | terraform | 2026-10-31 | In progress | `issue/3251-cdn-origin-group` | Pin and pool health monitor are already on main. Two articles still set removed `origin` on `gcore_cdn_resource`. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
@@ -251,6 +252,19 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-11-12 — Issue #3335: SDK v0.63.0
+
+- Fetched issue #3335. No comments. Decision: PROCEED. Pins on main were v0.62.0.
+- IAM user `list` and `get` now call `GET /iam/v2/users` and `GET /iam/v2/users/{user_id}`. Live production checks: both the v2 paths and the previous `/iam/users` paths returned HTTP 200. v2 list still has `count`, `results`, `next`, and `previous`. v2 user objects still have `id`, `email`, `name`, `lang`, `groups` (`id`, `name`), `activated`, and `two_fa`. Python and Go invite, list, get, update, and delete samples in `account-settings/users/manage-users.mdx` still match the v0.63.0 signatures. Curl list and get now use the v2 paths. Update stays `PATCH /iam/users/{user_id}`.
+- `cloud.instances.rebuild` and `rebuild_and_poll` wrap the same rebuild request the virtual-instance article already shows with `client.post`. A live rebuild was not run. Inference `delete_and_poll` and WAAP `get_breakdown` are not used by an article. Not added.
+- Pins set to v0.63.0. Branch: `issue/3335-sdk-v063`.
+- The virtual instance rebuild sample now calls `client.cloud.instances.rebuild_and_poll()` instead of `client.post`, `tasks.poll`, and `instances.get`. The curl tab still polls the task. No live rebuild.
+
+### 2026-11-12 — Issue #3335 live rebuild
+
+- Luxembourg-3 had two instances and one unattached volume. Deleted all three, including their volumes. Created a 1-vCPU instance from ubuntu-22.04-x64 and rebuilt it to ubuntu-24.04-x64 with gcore 0.63.0. The task reached `FINISHED` while `status` was still `REBUILD` and `metadata.image_name` still named ubuntu-22.04. About 16 seconds later `status` was `ACTIVE` and `image_name` was ubuntu-24.04. Deleted the test instance and its volume. Instances and volumes left in the region: 0.
+- Recreated the instance and left it running after the same `FINISHED`-then-`ACTIVE` sequence. Not deleted.
 
 ### 2026-11-10 — Issue #3285: SDK v0.62.0
 
