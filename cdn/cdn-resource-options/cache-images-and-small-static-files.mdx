@@ -1,7 +1,7 @@
 ---
 title: "Cache images and small static files"
 sidebarTitle: "Images and static files"
-description: Cache CSS, JavaScript, fonts, and images on the edge while HTML stays uncached.
+description: Cache CSS, JavaScript, fonts, and images on the edge while HTML pages and extensionless paths stay uncached.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays uncached. A changed file is published under a new name, so the previous URL can keep its cache.
+<p>When HTML pages and static files share the same CDN caching policy, visitors may receive outdated pages even though CSS, JavaScript, fonts, and images benefit from longer caching. Two CDN rules separate these behaviors, keeping pages uncached and static assets cached for four days.</p>
 
 <p>A new CDN resource follows origin cache headers, with a four-day fallback when the origin sends none. That fallback applies to every file type, because [CDN&nbsp;caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) follows the status code and `Cache-Control`, not the extension.</p>
 
@@ -19,7 +19,7 @@ CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays un
 
 ## Leave HTML uncached
 
-<p>With only that fallback, HTML is cached the same way as CSS. A rule sets `/` and any path ending in `.html` to **Do not cache**.</p>
+<p>With only that fallback, HTML is cached the same way as CSS. A rule sets `/`, any path ending in `.html`, and any path whose last segment has no dot to **Do not cache**.</p>
 
 <p>1. In the [Gcore&nbsp;Customer&nbsp;Portal](https://portal.gcore.com), navigate to **CDN** > **CDN resources** and click the resource CNAME.</p>
 
@@ -27,7 +27,9 @@ CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays un
 
 <p>2. Open the **Rules** tab. Click **Create rule**, then **Create blank rule**.</p>
 
-<p>3. Name the rule and enter `^/($|.*\.html$)`. The pattern is a regular expression and must start with `^/` or `/`.</p>
+<p>3. Name the rule and enter `^/($|.*\.html$|[^./]+|.*/[^./]+)$`. The pattern is a regular expression and must start with `^/` or `/`.</p>
+
+<p>The pattern covers the root path, `.html` files, and extensionless URLs. Adjust the pattern to match the website's URL structure.</p>
 
 <Frame>![HTML rule name and pattern](/images/docs/cdn/cdn-resource-options/cache-images-and-small-static-files/html-rule-pattern.png)</Frame>
 
@@ -37,7 +39,7 @@ CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays un
 
 <p>5. Click **Create rule**.</p>
 
-<p>The first matching rule wins, and this pattern does not overlap the static pattern below. A request for `/` or for `index.html` returns no `Cache` header, so the response is not stored.</p>
+<p>The first matching rule wins, and this pattern does not overlap the static pattern below. A request for `/`, for `index.html`, or for a path whose last segment has no dot returns no `Cache` header, so the response is not stored.</p>
 
 ## Cache the static files
 
@@ -61,7 +63,7 @@ CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays un
 
 <Frame>![Static rule query string set to Ignore all](/images/docs/cdn/cdn-resource-options/cache-images-and-small-static-files/static-rule-query-string.png)</Frame>
 
-<p>6. Add **Gzip compression**. [Gzip&nbsp;and&nbsp;Brotli](/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression) can share a rule, while Brotli also requires origin shielding, and [large&nbsp;file&nbsp;delivery](/cdn/cdn-resource-options/optimize-large-file-delivery) stays off on this rule.</p>
+<p>6. Add **Gzip compression**.</p>
 
 <Frame>![Static rule Gzip compression enabled](/images/docs/cdn/cdn-resource-options/cache-images-and-small-static-files/static-rule-gzip.png)</Frame>
 
@@ -87,7 +89,18 @@ CSS, JavaScript, fonts, and images keep a long CDN lifetime, while HTML stays un
 
 <p>Request the same URL twice and read `Cache`, `Cache-Control`, and `Content-Encoding`.</p>
 
-<p>HTML returns no `Cache` header. A second request for a CSS, font, or image file returns HIT, and `Cache-Control` carries the 12-hour browser lifetime.</p>
+```bash
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/index.html"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/about"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/static/app.css"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/static/app.css"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/static/app.css?build=1"
+curl -sI -H "Accept-Encoding: gzip" "https://cdn.example.com/static/app.css?build=2"
+curl -sI -H "Accept-Encoding: gzip" -H "Origin: https://example.com" "https://cdn.example.com/static/font.woff2"
+```
+
+<p>A request for `/`, a path ending in `.html`, or a path whose last segment has no dot returns no `Cache` header. A second request for a CSS, font, or image file returns HIT, and `Cache-Control` carries the 12-hour browser lifetime.</p>
 
 <p>Two query strings on the same CSS path share one cached object. A font requested with an `Origin` header returns `Access-Control-Allow-Origin`.</p>
 
@@ -109,11 +122,13 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
 <p>A new resource leaves the edge lifetime origin-controlled, with a four-day fallback and an empty value field. Browser caching, Gzip, query strings, and CORS stay unset until a rule overrides that fallback.</p>
 
-<p>Send each rule with `ruleType` `0`, because the lowest `weight` is checked first and the first matching rule wins. A resource allows five rules.</p>
+<p>Set `ruleType` to `0` for both rules. Rules are evaluated by ascending `weight`, and the first matching rule wins. A resource allows five rules.</p>
 
 ## Leave HTML uncached
 
-<p>`value` `0s` is **Do not cache**. The pattern covers `/` and any path that ends in `.html`.</p>
+<p>`value` `0s` is **Do not cache**. The pattern covers the root path, `.html` files, and extensionless URLs.</p>
+
+<p>Adjust the pattern to match the website's URL structure.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -128,7 +143,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
     rule = client.cdn.cdn_resources.rules.create(
         resource_id,
         name="html-no-cache",
-        rule=r"^/($|.*\.html$)",
+        rule=r"^/($|.*\.html$|[^./]+|.*/[^./]+)$",
         rule_type=0,
         active=True,
         weight=1,
@@ -163,7 +178,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
 
         rule, err := client.CDN.CDNResources.Rules.New(ctx, resourceID, cdn.CDNResourceRuleNewParams{
             Name:     "html-no-cache",
-            Rule:     `^/($|.*\.html$)`,
+            Rule:     `^/($|.*\.html$|[^./]+|.*/[^./]+)$`,
             RuleType: 0,
             Active:   gcore.Bool(true),
             Weight:   gcore.Int(1),
@@ -188,7 +203,7 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
       -H "Content-Type: application/json" \
       -d '{
         "name": "html-no-cache",
-        "rule": "^/($|.*\\.html$)",
+        "rule": "^/($|.*\\.html$|[^./]+|.*/[^./]+)$",
         "ruleType": 0,
         "active": true,
         "weight": 1,
@@ -200,13 +215,13 @@ export CDN_RESOURCE_ID="{YOUR_CDN_RESOURCE_ID}"
   </Tab>
 </Tabs>
 
-<p>The API returns the rule, including `id` and `rule`. A later request for `/` or `index.html` is not stored.</p>
+<p>The API returns the rule, including `id` and `rule`. A later request for `/`, for `index.html`, or for a path whose last segment has no dot is not stored.</p>
 
 ## Cache the static files
 
-<p>The edge lifetime is four days and does not follow origin headers, while the browser lifetime is 12 hours. Query strings are ignored, Gzip is on, and CORS allows any origin.</p>
+<p>The edge lifetime is four days and does not follow origin headers, while the browser lifetime is 12 hours. Query strings are ignored only when the query string does not change the file.</p>
 
-<p>Replace `*` with the site origin when a font should stay limited to that site. One rule accepts this set of options together.</p>
+<p>Gzip is on, and CORS allows any origin. Replace `*` with the site origin when a font should stay limited to that site.</p>
 
 <Tabs>
   <Tab title="Python SDK">
