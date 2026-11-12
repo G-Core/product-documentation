@@ -358,7 +358,7 @@ for name in Caminandes_1_Llama_Drama Caminandes_2_Gran_Dillama Caminandes_3_Llam
 done
 ```
 
-Every file answers `HTTP/2 200`, and each poster reports a `content-length` below 1048576.
+Every file answers `200`, and each poster reports a `content-length` below 1048576.
 
 ### Step 2. Create a directory
 
@@ -371,10 +371,20 @@ curl -sS -X POST 'https://api.gcore.com/streaming/directories' \
 -d '{"name": "Batch demo"}'
 ```
 
-The response contains the ID of the new directory:
+The response wraps the new directory in `directory`. Take its ID from `directory.id`:
 
 ```json
-{"directory": {"id": 123456, "name": "Batch demo", ...}}
+{
+  "directory": {
+    "id": 123456,
+    "name": "Batch demo",
+    "parent_id": null,
+    "client_id": 12345,
+    "items_count": 0,
+    "created_at": "2026-11-12T13:14:26.000Z",
+    "updated_at": "2026-11-12T13:14:26.000Z"
+  }
+}
 ```
 
 Save the ID for the next steps. To migrate into an existing directory, take its ID from `GET /streaming/directories` instead.
@@ -399,8 +409,7 @@ Each object in the `videos` array describes one video, and only `name` is requir
 | Field | Purpose |
 |-------|---------|
 | `name` | Video title |
-| `description` | Internal note that viewers don't see. It records the original link as `Migrated from: <original video URL>`, because the API doesn't return `origin_url` after creation |
-| `origin_url` | URL of the video file to download and transcode |
+| `origin_url` | URL of the video file to download and transcode. The API returns it in the video object, so a migrated video can be matched with its source file |
 | `remote_poster_url` | URL of the poster image to download |
 | `screenshot_id` | `-1` makes the uploaded poster the default thumbnail |
 | `directory_id` | Directory that receives the video |
@@ -471,3 +480,5 @@ The directory lists all four videos with their statuses. Poll it until every vid
 curl -sS -H "Authorization: APIKey $GCORE_API_KEY" \
 "https://api.gcore.com/streaming/directories/$DIRECTORY_ID"
 ```
+
+To see the source link of a migrated video, request it with <code>GET&nbsp;/streaming/videos/{video_id}</code>. The `origin_url` field holds the link.
