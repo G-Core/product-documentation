@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: acf928db942e
+  version: 6c0b1e54f1c7
 servers:
 - url: https://api.gcore.com
 tags:
@@ -1739,6 +1739,22 @@ paths:
           	}
           }
   /streaming/directories:
+    get:
+      tags:
+      - Directories
+      summary: Get list of directories
+      description: |-
+        List of directories of the client. For the hierarchical structure, use the "/directories/tree" method.
+
+        Use the "id" of a directory from this list as "directory_id" when uploading videos or creating subdirectories.
+      operationId: get_directories
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/directories_list'
     post:
       tags:
       - Directories
@@ -1757,7 +1773,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/directory_base'
+                $ref: '#/components/schemas/directory_created'
         '422':
           description: |-
             Possible error messages:   
@@ -9636,6 +9652,23 @@ components:
               2
               00:00:13.236 --> 00:00:20.198
               Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
+    directories_list:
+      type: object
+      properties:
+        items:
+          type: array
+          description: Directories of the client.
+          items:
+            $ref: '#/components/schemas/directory_base'
+      example:
+        items:
+        - id: 100
+          name: New series
+          parent_id: null
+          client_id: 102748
+          items_count: 2
+          created_at: '2024-07-01T18:00:00Z'
+          updated_at: '2024-07-01T18:00:00Z'
     directories_tree:
       type: object
       properties:
@@ -9680,13 +9713,14 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/directory_video'
                 - $ref: '#/components/schemas/directory_item'
-              description: Array of subdirectories, if any.
-              default: null
+              description: Contents of the directory, subdirectories and videos in one list. Empty array if the directory is empty.
+              default: []
       example:
         directory:
           id: 100
           name: New series
           parent_id: null
+          client_id: 102748
           items_count: 2
           created_at: '2024-07-01T18:00:00Z'
           updated_at: '2024-07-01T18:00:00Z'
@@ -9713,8 +9747,12 @@ components:
           description: Title of the directory
         parent_id:
           type: integer
+          nullable: true
           description: ID of a parent directory. "null" if it's in the root.
           default: null
+        client_id:
+          type: integer
+          description: ID of the client (account) that owns the directory.
         items_count:
           type: integer
           description: Number of objects in this directory. Counting files and folders. The quantity is calculated only at one level (not recursively in all subfolders).
@@ -9728,9 +9766,25 @@ components:
         id: 100
         name: New series
         parent_id: null
+        client_id: 102748
         items_count: 2
         created_at: '2024-07-01T18:00:00Z'
         updated_at: '2024-07-01T18:00:00Z'
+    directory_created:
+      type: object
+      description: Response of the create directory method. The directory object is wrapped in the "directory" key.
+      properties:
+        directory:
+          $ref: '#/components/schemas/directory_base'
+      example:
+        directory:
+          id: 100
+          name: New series
+          parent_id: null
+          client_id: 102748
+          items_count: 0
+          created_at: '2024-07-01T18:00:00Z'
+          updated_at: '2024-07-01T18:00:00Z'
     directory_item:
       type: object
       properties:
