@@ -1,10 +1,10 @@
 ---
-title: Upload video via API to VOD storage
-sidebarTitle: Upload video via API
+title: Upload and migrate via API
+sidebarTitle: Upload and migrate via API
 description: Upload video to VOD storage by copying from external URL or using TUS resumable protocol, with batch migration and optional settings.
 ---
 
-Two API upload methods are available: copy a file from an external URL, or upload a local file using the TUS resumable protocol. For large-scale migrations, Gcore provides a support-assisted batch workflow — contact [support@gcore.com](mailto:support@gcore.com) to arrange it. The Customer Portal upload workflow is covered in [Upload&nbsp;a&nbsp;video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
+Two API upload methods are available: copy a file from an external URL, or upload a local file using the TUS resumable protocol. For large-scale migrations, the [batch&nbsp;migration](#batch-migration) endpoint creates up to 500 videos in one request. The Customer Portal upload workflow is covered in [Upload&nbsp;a&nbsp;video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
 
 Requests to the Gcore API require an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
 
@@ -246,21 +246,6 @@ Common errors returned by the TUS upload server and their causes:
   - `token video (12345) does not match this video (23456)` — `video_id` mismatch; do not retry.
   - `token client (123) does not match this client (234)` — `client_id` mismatch; do not retry.
 
-## Batch migration
-
-For migrating a large collection of videos, Gcore provides a support-assisted batch workflow. Contact [support@gcore.com](mailto:support@gcore.com) to arrange it.
-
-To prepare the migration, obtain an HTTP link to each file in the source storage:
-
-- [Google Drive](https://support.google.com/drive/answer/2494822?hl=en&co=GENIE.Platform%3DDesktop&oco=0#zippy=%2Cshare-multiple-files)
-- [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html) — enable public access, then [list objects](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) to get URLs
-- [Vimeo](https://help.vimeo.com/hc/en-us/articles/12426150952593-Direct-links-to-video-files)
-- [Mux](https://docs.mux.com/guides/video/download-for-offline-editing#retrieving-the-url-to-the-master)
-- [Dropbox](https://help.dropbox.com/share/create-and-share-link)
-- [Gcore Object Storage or SFTP](/storage/manage-object-storage/manage-buckets-via-the-control-panel#manage-files)
-
-For storage types not listed, contact [support@gcore.com](mailto:support@gcore.com).
-
 ## Optional upload settings
 
 The following parameters can be included in any `POST /streaming/videos` request body to configure transcoding behavior at upload time.
@@ -303,3 +288,197 @@ AI-generated subtitles can be created automatically at upload time by adding two
 - `auto_translate_subtitles_language` — translates the transcribed subtitles into additional languages. Set to `default` for the account language, or provide a comma-separated list of language codes.
 
 Language codes and translation options are documented in [Generate&nbsp;AI&nbsp;subtitles](/streaming/ai-video-service/generate-ai-subtitles-and-add-them-to-video/generate-captions-in-customer-portal).
+
+## Batch migration
+
+The [batch&nbsp;endpoint](/api-reference/streaming/videos/create-videos-in-batch) `POST /streaming/videos/batch` creates many videos in one aggregated request instead of one request per file, so a large library moves in a few calls. The `videos` array holds one object per video with the same fields as a single `POST /streaming/videos` request, including `origin_url`, `priority`, and optional subtitles. Videos from one request enter the transcoding queue in order of `priority`.
+
+```bash
+curl -L 'https://api.gcore.com/streaming/videos/batch' \
+-H 'Content-Type: application/json' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
+-d '{
+  "videos": [
+    {
+      "name": "Interview 1",
+      "origin_url": "https://storage.example.com/interview-1.mp4"
+    },
+    {
+      "name": "Interview 2",
+      "origin_url": "https://storage.example.com/interview-2.mp4"
+    }
+  ]
+}'
+```
+
+The response is an array of the created videos. Each one follows the same [download behavior](#download-behavior) and status flow as a single video created from a URL.
+
+Each request is limited as follows:
+
+- 500 videos per request
+- 64 MB request body
+- 30 s API connection timeout
+
+A library with more than 500 files is sent as several consecutive requests, which still count toward the [RPS limits](/api-reference/overview).
+
+To prepare the migration, obtain an HTTP link to each file in the source storage:
+
+- [Google Drive](https://support.google.com/drive/answer/2494822?hl=en&co=GENIE.Platform%3DDesktop&oco=0#zippy=%2Cshare-multiple-files)
+- [Amazon S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html) — enable public access, then [list objects](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html) to get URLs
+- [Vimeo](https://help.vimeo.com/hc/en-us/articles/12426150952593-Direct-links-to-video-files)
+- [Mux](https://docs.mux.com/guides/video/download-for-offline-editing#retrieving-the-url-to-the-master)
+- [Dropbox](https://help.dropbox.com/share/create-and-share-link)
+- [Gcore Object Storage or SFTP](/storage/manage-object-storage/manage-buckets-via-the-control-panel#manage-files)
+
+For storage types not listed, contact [support@gcore.com](mailto:support@gcore.com).
+
+
+## Batch migration example
+
+This example shows how to run a batch migration correctly: one request creates the videos in a new [directory](/streaming/video-hosting/organize-uploaded-videos), downloads each poster by URL, and attaches English subtitles to one video. Gcore prepared a demo bucket with public HTTP access, so the same steps can be run as they are to test batch migration, and the same flow applies to a real library after the URLs are replaced.
+
+The demo bucket `https://demo-files.gvideo.io/bucket/` holds four Blender Studio open movies. Every video is a 720p H.264 MP4, every poster is a JPEG under the 1 MB poster limit, and the files are public, so no `origin_http_headers` are needed:
+
+| Video | Poster | Subtitles |
+|-------|--------|-----------|
+| `Caminandes_1_Llama_Drama_h264_1800_720.mp4` | `Caminandes_1_Llama_Drama.jpeg` | None |
+| `Caminandes_2_Gran_Dillama_h264_1800_720.mp4` | `Caminandes_2_Gran_Dillama.jpeg` | None |
+| `Caminandes_3_Llamigos_h264_1800_720.mp4` | `Caminandes_3_Llamigos.jpeg` | None |
+| `Agent_327_Operation_Barbershop_h264_1800_720.mp4` | `Agent_327_Operation_Barbershop.jpeg` | `Agent_327_Operation_Barbershop.en.vtt` (English WebVTT) |
+
+### Step 1. Check the source files
+
+Gcore downloads videos and posters from their URLs, so every file must be reachable without authentication. Posters must be JPEG, WebP, or PNG, up to 1 MB each. A `HEAD` request shows the status and size of each file:
+
+```bash
+BASE="https://demo-files.gvideo.io/bucket"
+for name in Caminandes_1_Llama_Drama Caminandes_2_Gran_Dillama Caminandes_3_Llamigos Agent_327_Operation_Barbershop; do
+  curl -sSI "$BASE/${name}_h264_1800_720.mp4" | grep -i -E "^HTTP|content-length"
+  curl -sSI "$BASE/$name.jpeg" | grep -i -E "^HTTP|content-length"
+done
+```
+
+Every file answers `200`, and each poster reports a `content-length` below 1048576.
+
+### Step 2. Create a directory
+
+A directory keeps the migrated videos together, so the batch can be checked and removed as one unit. Send `POST /streaming/directories`:
+
+```bash
+curl -sS -X POST 'https://api.gcore.com/streaming/directories' \
+-H 'Content-Type: application/json' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
+-d '{"name": "Batch demo"}'
+```
+
+The response wraps the new directory in `directory`. Take its ID from `directory.id`:
+
+```json
+{
+  "directory": {
+    "id": 123456,
+    "name": "Batch demo",
+    "parent_id": null,
+    "client_id": 12345,
+    "items_count": 0,
+    "created_at": "2026-11-12T13:14:26.000Z",
+    "updated_at": "2026-11-12T13:14:26.000Z"
+  }
+}
+```
+
+Save the ID for the next steps. To migrate into an existing directory, take its ID from `GET /streaming/directories` instead.
+
+```bash
+export DIRECTORY_ID="123456"
+```
+
+### Step 3. Download the subtitles
+
+The batch endpoint takes the subtitle text inside the request instead of a URL, so the `.vtt` file is downloaded first:
+
+```bash
+mkdir -p vtt
+curl -sS -o vtt/Agent_327_Operation_Barbershop.en.vtt "$BASE/Agent_327_Operation_Barbershop.en.vtt"
+```
+
+### Step 4. Build the batch request
+
+Each object in the `videos` array describes one video, and only `name` is required. The script builds the request from these fields:
+
+| Field | Purpose |
+|-------|---------|
+| `name` | Video title |
+| `origin_url` | URL of the video file to download and transcode. The API returns it in the video object, so a migrated video can be matched with its source file |
+| `remote_poster_url` | URL of the poster image to download |
+| `screenshot_id` | `-1` makes the uploaded poster the default thumbnail |
+| `directory_id` | Directory that receives the video |
+| `subtitles` | Array of tracks with `name`, `language` as a three-letter ISO 639-2 code (`eng` for English), and `vtt` with the full WebVTT text |
+
+Save the script as `build_batch.py`:
+
+```python
+import json
+import sys
+
+BASE = "https://demo-files.gvideo.io/bucket"
+directory_id = int(sys.argv[1])
+
+with open("vtt/Agent_327_Operation_Barbershop.en.vtt", encoding="utf-8") as f:
+    vtt = f.read()
+
+movies = [
+    ("Caminandes 1: Llama Drama", "Caminandes_1_Llama_Drama"),
+    ("Caminandes 2: Gran Dillama", "Caminandes_2_Gran_Dillama"),
+    ("Caminandes 3: Llamigos", "Caminandes_3_Llamigos"),
+    ("Agent 327: Operation Barbershop", "Agent_327_Operation_Barbershop"),
+]
+
+videos = []
+for title, name in movies:
+    source = f"{BASE}/{name}_h264_1800_720.mp4"
+    video = {
+        "name": title,
+        "description": f"Migrated from: {source}",
+        "origin_url": source,
+        "remote_poster_url": f"{BASE}/{name}.jpeg",
+        "screenshot_id": -1,
+        "directory_id": directory_id,
+    }
+    if name == "Agent_327_Operation_Barbershop":
+        video["subtitles"] = [{"name": "English", "language": "eng", "vtt": vtt}]
+    videos.append(video)
+
+with open("batch.json", "w", encoding="utf-8") as f:
+    json.dump({"videos": videos}, f)
+```
+
+Run it with the directory ID to write `batch.json`:
+
+```bash
+python3 build_batch.py "$DIRECTORY_ID"
+```
+
+### Step 5. Send the batch request
+
+One request creates all four videos:
+
+```bash
+curl -sS -X POST 'https://api.gcore.com/streaming/videos/batch?fields=id,name,status' \
+-H 'Content-Type: application/json' \
+-H "Authorization: APIKey $GCORE_API_KEY" \
+--data @batch.json
+```
+
+The response is an array with the IDs of the new videos. The videos start as `empty` or `pending` while Gcore downloads and transcodes them.
+
+### Step 6. Check the result
+
+The directory lists all four videos with their statuses. Poll it until every video is `ready` or `viewable`:
+
+```bash
+curl -sS -H "Authorization: APIKey $GCORE_API_KEY" \
+"https://api.gcore.com/streaming/directories/$DIRECTORY_ID"
+```
+
+To see the source link of a migrated video, request it with <code>GET&nbsp;/streaming/videos/{video_id}</code>. The `origin_url` field holds the link.
