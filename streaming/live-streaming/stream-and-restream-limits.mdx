@@ -1,0 +1,128 @@
+---
+title: Live stream and restream limits
+sidebarTitle: Stream and restream limits
+description: Gcore Video Streaming counts live streams by the live field and restreams by the active field, with examples and the errors at the limit.
+---
+
+Gcore Video Streaming applies two separate account limits: one on live streams that receive input at the same moment, and one on enabled restreams. Each limit reads a single parameter, `live` for streams and `active` for restreams, so a stream or restream that exists but is not counted never takes a slot. Both parameters are returned in the [stream](/api-reference/streaming/streams/get-live-stream) and [restream](/api-reference/streaming/restreams/create-restream) objects of the REST API, while the default limits are listed in the [tariffs](/streaming/billing/overview-of-tariffs) and [technical&nbsp;support](mailto:support@gcore.com) raises them.
+
+The two limits follow different parameters because of what Gcore can observe. A live stream is counted by activity, since Gcore Streaming controls the output. Restreams depend on the conditions of the external target platforms that receive the stream, so it is impossible to track them by activity, and the limit follows the `active` switch instead.
+
+## Live streams
+
+The live stream limit counts only streams whose `live` field is `true`, meaning the stream is receiving input right now. The `active` field is an on/off switch and is not part of the count, so an enabled stream without input takes no slot.
+
+```text
+LIVE STREAM LIMIT
+
+ stream
+   |
+   +-- active  (on/off switch) ........ not counted
+   |
+   +-- live    (receiving input)
+         |
+         +-- true  ... takes 1 slot
+         +-- false ... takes 0 slots
+
+ checked when a stream starts receiving input:
+   streams with live = true  >=  limit   ->   the new stream is refused
+```
+
+The check runs when a stream tries to go live, not when it is created or enabled. In the REST API, creating a stream or setting `active` to `true` is never refused because of this limit. A stream that Gcore pulls from a source counts like a pushed stream while its `live` field is `true`, and the slot is freed as soon as the stream stops being live.
+
+### Live stream counting example
+
+The table shows 8 streams, limit 3. Only the `live` column decides which streams take a slot, so 6 are enabled (active) but only 3 are live.
+
+| Stream | active | live | Slots taken |
+| --- | --- | --- | --- |
+| Stream 1 | true | <mark>true</mark> | 1 |
+| Stream 2 | true | <mark>true</mark> | 1 |
+| Stream 3 | true | false | 0 (enabled, no input yet) |
+| Stream 4 | true | false | 0 (enabled, broadcast ended) |
+| Stream 5 | false | false | 0 (disabled) |
+| Stream 6 | true | <mark>true</mark> | 1 |
+| Stream 7 | false | false | 0 (disabled) |
+| Stream 8 | true | false | 0 (enabled, no input yet) |
+
+Three streams are live, so the limit is reached. When Stream 3 starts receiving input, Gcore refuses it, and once Stream 1 stops, Stream 3 can go live.
+
+### Live stream errors
+
+At the limit, Gcore refuses the stream when it starts receiving input, and what the encoder sees depends on the ingest protocol.
+
+| Ingest | Response at the limit |
+| --- | --- |
+| RTMP/SRT | The connection is accepted and closed at once. No error text is returned, and the encoder reports a closed connection (FFmpeg reports `End of file` while submitting a packet to the muxer) |
+| WebRTC (WHIP) | HTTP 403 with the header `X-Reason-Code: 2005`. The body is a plain HTML 403 Forbidden page, not JSON |
+
+A disabled stream returns the reason code 2004 before the limit is checked, which is one of the [WHIP&nbsp;reason&nbsp;codes](/streaming/live-streaming/protocols/webrtc). To free a slot, stop the encoder that pushes into a live stream, or set `active` to `false` on a stream that Gcore pulls.
+
+## Restreams
+
+Unlike the live stream limit, the restream limit reads `active`, not `live`. A restream takes a slot whenever `active` is `true`, even when it sends nothing, while the `live` field only reports whether the restream is sending to the destination right now.
+
+```text
+RESTREAM LIMIT
+
+ restream
+   |
+   +-- active  (enabled)
+   |     |
+   |     +-- true  ... takes 1 slot, even when nothing is sent
+   |     +-- false ... takes 0 slots
+   |
+   +-- live    (sending to the destination) ... not counted
+
+ checked when a restream is created with active = true,
+ or when an inactive restream is switched to active = true:
+   restreams with active = true  +  1   >   limit   ->   request refused
+```
+
+Creating a restream with `active` set to `false` is never limited, and disabling an active restream frees its slot at once. Renaming an active restream, or sending `active: true` for a restream that is already active, is accepted.
+
+### Restream counting example
+
+The table shows 8 restreams, limit 3. Only the `active` column decides which restreams take a slot, so Restream 3 holds a slot while it waits for its source.
+
+| Restream | active | live | Slots taken |
+| --- | --- | --- | --- |
+| Restream 1 | <mark>true</mark> | true | 1 |
+| Restream 2 | <mark>true</mark> | true | 1 |
+| Restream 3 | <mark>true</mark> | false | 1 (enabled, waiting for the source) |
+| Restream 4 | false | false | 0 (disabled) |
+| Restream 5 | false | false | 0 (disabled) |
+| Restream 6 | false | false | 0 (disabled) |
+| Restream 7 | false | false | 0 (disabled) |
+| Restream 8 | false | false | 0 (disabled) |
+
+Three restreams have `active` set to `true`, so the limit is reached. Enabling Restream 4 is refused, as is creating another restream with `active` set to `true`. After Restream 3 is disabled, Restream 4 can be enabled.
+
+### Restream errors
+
+Creating a restream with `active` set to `true` and switching an inactive restream to `active: true` return the same response at the limit.
+
+```text
+HTTP 422
+Content-Type: application/json; charset=utf-8
+
+{"errors":{"active":["restreams_limit_exceeded (4/3)"]}}
+```
+
+The text in brackets is `N/limit`, where N is the number of active restreams the request would produce. On an account with a limit of 3 and three active restreams, the request would make the fourth, so the text reads `4/3`.
+
+### Restream into another stream
+
+A restream can push into another stream of the same account, which turns stream A into the source of stream B. This A to B setup takes two live stream slots and one restream slot while both streams are live.
+
+```text
+A -> B RESTREAM
+
+ encoder --> [ stream A ] --> [ restream ] --> [ stream B ]
+              live = true      active = true     live = true
+              1 live slot      1 restream slot   1 live slot
+```
+
+Stream B is treated as a new ingest, so its `EXT-X-PROGRAM-DATE-TIME` values are generated again from the moment the restream's packets reach Gcore. They are not copied from stream A.
+
+When no live stream slot is free for stream B, the restream is blocked without an error. It stays `active: true` with `live: false`, stream B stays offline, and neither the restream nor stream B returns an error message. The restream keeps retrying and starts by itself within seconds after a slot is freed. With a live stream limit of 3 and two other streams live, stream A takes the last free slot, so stream B cannot go live until another stream stops.
