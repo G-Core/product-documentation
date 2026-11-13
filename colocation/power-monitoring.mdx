@@ -1,0 +1,64 @@
+---
+title: Power monitoring
+sidebarTitle: Power monitoring
+description: Historical rack power readings and optional PDU bank measurements for a Colocation account.
+---
+
+Exceeding the power capacity committed to a rack incurs an overcommit fee. You can monitor actual power consumption over time for each rack, with an optional breakdown by individual power distribution unit (PDU) banks.
+
+## Read power consumption
+
+`from`, `to`, and `interval` are required on every request.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `from` | Yes | Start of the reporting period. |
+| `to` | Yes | End of the reporting period. |
+| `interval` | Yes | Reading interval in minutes: `5` for five-minute readings, `60` for hourly maximums, or `1440` for daily maximums. |
+| `dc` | No | Filter readings by data center code. |
+| `rack_name` | No | Filter readings by rack name. |
+| `detail` | No | Set to `banks` to include readings for individual PDU banks. |
+
+An [API&nbsp;token](/account-settings/api-tokens) is required. This request asks for five-minute readings and includes each PDU bank.
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+
+curl "https://api.gcore.com/colo/client/power-consumption/?from=2026-08-19T13:00:00Z&to=2026-08-19T13:10:00Z&interval=5&detail=banks" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The response contains power readings with timestamps for each rack. When `detail=banks` is specified, it also includes measurements for individual PDU banks.
+
+```json
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "dc": "ANX",
+      "rack_name": "A1",
+      "max_power_kw": 4.5,
+      "points": [
+        {"timestamp": "2026-08-19T13:00:00Z", "power_kw": 4.2},
+        {"timestamp": "2026-08-19T13:05:00Z", "power_kw": 4.5}
+      ],
+      "banks": [
+        {
+          "pdu_name": "pdu-1",
+          "bank_number": 1,
+          "connect_to_feed": true,
+          "max_power_kw": 4.5,
+          "points": [
+            {"timestamp": "2026-08-19T13:00:00Z", "power_kw": 4.2},
+            {"timestamp": "2026-08-19T13:05:00Z", "power_kw": 4.5}
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+The [Power&nbsp;consumption&nbsp;API](https://api.gcore.com/colo/docs/swagger#/client/client_power_consumption_retrieve) lists every parameter and response field, including fields not shown above.
