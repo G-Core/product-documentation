@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 6c0b1e54f1c7
+  version: bfed8a7a53fa
 servers:
 - url: https://api.gcore.com
 tags:
@@ -722,14 +722,16 @@ paths:
         required: false
         schema:
           type: integer
+          minimum: 1
           default: 1
-        description: Page to view from task list, starting from 1
+        description: Page to view from task list, starting from 1. A value below 1, a value that is not a number, and a page past the last one return 400.
       - name: limit
         in: query
-        description: Number of results to return per page.
+        description: Number of results to return per page. The default is 10, the maximum is 100, a larger value is reduced to 100. A value that is not a positive integer (0, a negative number, text) is replaced with the default 10, it is not rejected.
         required: false
         schema:
           type: integer
+          maximum: 100
           default: 10
       operationId: get_ai_tasks_list
       tags:
@@ -741,6 +743,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ai_tasks_list'
+        '400':
+          description: |-
+            Bad request:
+            - "page" is below 1, is not a number, or is past the last page. The "error" text is "An unexpected server error occurred." and "details" is "Invalid page.",
+            - "ordering" is not one of the allowed fields.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ai_response_error400'
+              examples:
+                invalid_page:
+                  summary: Invalid page
+                  value:
+                    error: An unexpected server error occurred.
+                    details: Invalid page.
+                invalid_ordering:
+                  summary: Invalid ordering field
+                  value:
+                    error: Invalid ordering field.
         '404':
           description: Not found
           content:
@@ -836,7 +857,8 @@ paths:
         required: true
         schema:
           type: string
-        description: ID of the task to get status of execution or result. This value is taken from the response of the initial AI task creation method.
+          format: uuid
+        description: ID of the task (UUID) to get status of execution or result. This value is taken from the response of the initial AI task creation method.
       operationId: get_ai_task
       tags:
       - AI
@@ -847,12 +869,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ai_results'
+        '400':
+          description: Bad request. The "task_id" is not a valid UUID.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ai_response_error400'
         '404':
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/notfound'
+                $ref: '#/components/schemas/ai_post_response_error404'
         '422':
           description: This is advanced functionality; to enable it, contact your manager or the Support Team.
           content:
@@ -907,7 +935,8 @@ paths:
         required: true
         schema:
           type: string
-        description: ID of the task to be cancelled
+          format: uuid
+        description: ID of the task (UUID) to be cancelled
       operationId: post_ai_tasks_cancel
       tags:
       - AI
@@ -929,7 +958,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/error'
         '404':
-          description: Not found
+          description: Not found. This status is also returned when "task_id" is not a valid UUID.
           content:
             application/json:
               schema:
@@ -1541,7 +1570,13 @@ paths:
       tags:
       - Directories
       summary: Get directory
-      description: Complete directory structure with contents. The structure contains both subfolders and videos in a continuous list.
+      description: |-
+        Complete directory structure with contents. The structure contains
+          both subfolders and videos in a continuous list.
+
+          The contents ("items") are paginated. Use "page" and "per_page" to go through them. The pagination data is returned in the "x-page", "x-per-page", "x-total" and "x-total-pages" response headers. A page past the end returns an empty "items" array. The "items_count" field is the total number of objects in the directory and is the same on every page.
+
+          The items are sorted: subdirectories first, then videos. Within each group the newest items come first.
       operationId: get_directories_id
       parameters:
       - name: directory_id
@@ -1550,13 +1585,64 @@ paths:
         required: true
         schema:
           type: integer
+      - name: page
+        in: query
+        description: Page number. Starts at 1.
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        description: Number of directory items (subdirectories and videos) per page. The maximum is 100, a larger value is reduced to 100.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      - name: search
+        in: query
+        description: Case-insensitive search by part of the name or slug of subdirectories and videos. When set, the search covers all levels of the client's directories, not only the requested one. The characters "_" and "%" in the search text work as wildcards (any one character, any number of characters). The "items_count" field does not depend on it.
+        schema:
+          type: string
       responses:
         '200':
           description: Successful
+          headers:
+            x-page:
+              description: Current page number.
+              schema:
+                type: integer
+            x-per-page:
+              description: Number of items per page.
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items.
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages.
+              schema:
+                type: integer
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/directory'
+        '403':
+          description: Access denied. The directory belongs to another account or the user has no access to it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accessdenied'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/notfound'
+              example:
+                error: Couldn't find Directory with 'id'=100
       x-codeSamples:
       - lang: Python
         source: |-
@@ -1617,19 +1703,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/directory_base'
+                $ref: '#/components/schemas/directory_response'
+        '403':
+          description: Access denied. The directory belongs to another account or the user has no access to it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accessdenied'
         '404':
           description: Not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/notfound'
+              example:
+                error: Couldn't find Directory with 'id'=100
         '422':
           description: |-
             Possible error messages:   
-             **{ "errors": { "name": [ "can't be blank" ] } }**   
-             *Name* is a required parameter, so it must be specified
-          content: {}
+             **{ "errors": { "name": [ "can't be blank", "is too short (minimum is 1 character)" ] } }**   
+             *Name* can't be empty, so it must contain at least 1 character   
+             **{ "errors": { "name": [ "is too long (maximum is 255 characters)" ] } }**   
+             *Name* must be 255 characters or less   
+             **{ "errors": { "name": [ "has already been taken" ] } }**   
+             *Name* must be unique among the directories with the same parent (case-insensitive)   
+             **{ "errors": { "parent_id": [ "not existing" ] } }**   
+             The parent directory is not found   
+             **{ "errors": { "parent": [ "does not belong to the same client" ] } }**   
+             The parent directory belongs to another account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/directoryerror422'
       x-codegen-request-body-name: body
       x-codeSamples:
       - lang: Python
@@ -1700,12 +1805,20 @@ paths:
         '204':
           description: Directory has been deleted successfully
           content: {}
+        '403':
+          description: Access denied. The directory belongs to another account or the user has no access to it.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accessdenied'
         '404':
           description: Not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/notfound'
+              example:
+                error: Couldn't find Directory with 'id'=100
       x-codeSamples:
       - lang: Python
         source: |-
@@ -1744,13 +1857,55 @@ paths:
       - Directories
       summary: Get list of directories
       description: |-
-        List of directories of the client. For the hierarchical structure, use the "/directories/tree" method.
+        List of directories and videos at the root level of the client's video hosting. For the hierarchical structure, use the "/directories/tree" method.
 
-        Use the "id" of a directory from this list as "directory_id" when uploading videos or creating subdirectories.
+          Use the "id" of a directory from this list as "directory_id" when uploading videos or creating subdirectories.
+
+          The list is paginated. Use "page" and "per_page" to go through it. The pagination data is returned in the "x-page", "x-per-page", "x-total" and "x-total-pages" response headers. A page past the end returns an empty "items" array.
+
+          The items are sorted: directories first, then videos. Within each group the newest items come first.
       operationId: get_directories
+      parameters:
+      - name: page
+        in: query
+        description: Page number. Starts at 1.
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        description: Number of items (directories and videos) per page. The maximum is 100, a larger value is reduced to 100.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 25
+      - name: search
+        in: query
+        description: Case-insensitive search by part of the name or slug of directories and videos. When set, the search covers all levels of the client's directories, not only the root level. The characters "_" and "%" in the search text work as wildcards (any one character, any number of characters).
+        schema:
+          type: string
       responses:
         '200':
           description: Successful
+          headers:
+            x-page:
+              description: Current page number.
+              schema:
+                type: integer
+            x-per-page:
+              description: Number of items per page.
+              schema:
+                type: integer
+            x-total:
+              description: Total number of items.
+              schema:
+                type: integer
+            x-total-pages:
+              description: Total number of pages.
+              schema:
+                type: integer
           content:
             application/json:
               schema:
@@ -1777,9 +1932,20 @@ paths:
         '422':
           description: |-
             Possible error messages:   
-             **{ "errors": { "name": [ "can't be blank" ] } }**   
-             *Name* is a required parameter, so it must be specified
-          content: {}
+             **{ "errors": { "name": [ "can't be blank", "is too short (minimum is 1 character)" ] } }**   
+             *Name* is a required parameter, so it must be specified and contain at least 1 character   
+             **{ "errors": { "name": [ "is too long (maximum is 255 characters)" ] } }**   
+             *Name* must be 255 characters or less   
+             **{ "errors": { "name": [ "has already been taken" ] } }**   
+             *Name* must be unique among the directories with the same parent (case-insensitive)   
+             **{ "errors": { "parent_id": [ "not existing" ] } }**   
+             The parent directory is not found   
+             **{ "errors": { "parent": [ "does not belong to the same client" ] } }**   
+             The parent directory belongs to another account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/directoryerror422'
       x-codegen-request-body-name: body
       parameters: []
       x-codeSamples:
@@ -7874,6 +8040,16 @@ paths:
           }
 components:
   schemas:
+    accessdenied:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: Error message
+      example:
+        error: Access denied
     ai_badrequest:
       type: object
       properties:
@@ -8133,6 +8309,25 @@ components:
           description: A textual explicit description of the result of the operation
       example:
         result: Task has been cancelled successfully.
+    ai_response_error400:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: A textual description of the error.
+        details:
+          description: Details of the error, if any. Either an object where the key is the name of the invalid parameter and the value is the message, or a text message.
+          oneOf:
+          - type: string
+          - type: object
+            additionalProperties:
+              type: string
+      example:
+        error: Invalid input parameters.
+        details:
+          task_id: Must be a valid UUID.
     ai_response_info_language:
       type: object
       properties:
@@ -9654,21 +9849,30 @@ components:
               Wir haben vielleicht 80 oder 100.000, die auf einem bestimmten Cluster spielen.
     directories_list:
       type: object
+      required:
+      - items
       properties:
         items:
           type: array
-          description: Directories of the client.
+          description: Directories and videos at the root level of the client's video hosting, in one list. Paginated, see the "page" and "per_page" parameters. Empty array if there is nothing at the root level or the page is past the end.
           items:
-            $ref: '#/components/schemas/directory_base'
+            oneOf:
+            - $ref: '#/components/schemas/directory_video'
+            - $ref: '#/components/schemas/directory_item'
       example:
         items:
         - id: 100
+          item_type: Directory
           name: New series
           parent_id: null
           client_id: 102748
           items_count: 2
           created_at: '2024-07-01T18:00:00Z'
           updated_at: '2024-07-01T18:00:00Z'
+        - id: 4734454
+          name: Season 1, Official Trailer 2024
+          item_type: Video
+          slug: 2Y20240219074738
     directories_tree:
       type: object
       properties:
@@ -9702,10 +9906,14 @@ components:
             descendants: []
     directory:
       type: object
+      required:
+      - directory
       properties:
         directory:
           allOf:
           - $ref: '#/components/schemas/directory_base'
+          required:
+          - items
           properties:
             items:
               type: array
@@ -9713,8 +9921,7 @@ components:
                 oneOf:
                 - $ref: '#/components/schemas/directory_video'
                 - $ref: '#/components/schemas/directory_item'
-              description: Contents of the directory, subdirectories and videos in one list. Empty array if the directory is empty.
-              default: []
+              description: Contents of the directory, subdirectories and videos in one list. Paginated, see the "page" and "per_page" parameters. Empty array if the directory is empty or the page is past the end.
       example:
         directory:
           id: 100
@@ -9755,7 +9962,7 @@ components:
           description: ID of the client (account) that owns the directory.
         items_count:
           type: integer
-          description: Number of objects in this directory. Counting files and folders. The quantity is calculated only at one level (not recursively in all subfolders).
+          description: Number of objects in this directory. Counting files and folders. The quantity is calculated only at one level (not recursively in all subfolders). It is the total count and does not depend on the page of the paginated "items" or on the "search" parameter.
         created_at:
           type: string
           description: Time of creation. Datetime in ISO 8601 format.
@@ -9771,20 +9978,9 @@ components:
         created_at: '2024-07-01T18:00:00Z'
         updated_at: '2024-07-01T18:00:00Z'
     directory_created:
-      type: object
-      description: Response of the create directory method. The directory object is wrapped in the "directory" key.
-      properties:
-        directory:
-          $ref: '#/components/schemas/directory_base'
-      example:
-        directory:
-          id: 100
-          name: New series
-          parent_id: null
-          client_id: 102748
-          items_count: 0
-          created_at: '2024-07-01T18:00:00Z'
-          updated_at: '2024-07-01T18:00:00Z'
+      description: Response of the create directory method. The same as "directory_response".
+      allOf:
+      - $ref: '#/components/schemas/directory_response'
     directory_item:
       type: object
       properties:
@@ -9808,10 +10004,13 @@ components:
       properties:
         name:
           type: string
-          description: Title of the directory. Omit this if you don't want to change.
+          minLength: 1
+          maxLength: 255
+          description: Title of the directory, from 1 to 255 characters. The title must be unique among the directories with the same parent. Omit this if you don't want to change.
         parent_id:
           type: integer
-          description: ID of a parent directory. "null" if it's in the root. Omit this if you don't want to change.
+          nullable: true
+          description: ID of a parent directory. Send "null" to move the directory to the root. Omit this if you don't want to change.
       example:
         name: New series. Season 2
     directory_post:
@@ -9819,9 +10018,12 @@ components:
       properties:
         name:
           type: string
-          description: Title of the directory.
+          minLength: 1
+          maxLength: 255
+          description: Title of the directory, from 1 to 255 characters. The title must be unique among the directories with the same parent.
         parent_id:
           type: integer
+          nullable: true
           description: ID of a parent directory. "null" if it's in the root.
           default: null
       required:
@@ -9829,6 +10031,23 @@ components:
       example:
         name: New series. Season 1
         parent_id: 100
+    directory_response:
+      type: object
+      description: Response with a single directory. The directory object is wrapped in the "directory" key.
+      required:
+      - directory
+      properties:
+        directory:
+          $ref: '#/components/schemas/directory_base'
+      example:
+        directory:
+          id: 100
+          name: New series
+          parent_id: null
+          client_id: 102748
+          items_count: 0
+          created_at: '2024-07-01T18:00:00Z'
+          updated_at: '2024-07-01T18:00:00Z'
     directory_video:
       type: object
       properties:
@@ -9841,6 +10060,22 @@ components:
       - $ref: '#/components/schemas/videoListItem'
       example:
         item_type: Video
+    directoryerror422:
+      type: object
+      required:
+      - errors
+      properties:
+        errors:
+          type: object
+          description: Validation errors. The key is the name of the invalid field, the value is the list of error messages for it.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+      example:
+        errors:
+          name:
+          - has already been taken
     embeds:
       type: object
       properties:
@@ -10050,11 +10285,16 @@ components:
           - - 1640995610
             - 20
     notfound:
-      allOf:
-      - $ref: '#/components/schemas/badrequest'
-      - example:
-          status: 404
-          error: Not Found. Entity you are looking for was not found, please check the initial parameters
+      type: object
+      description: Response body of a 404. It has only the "error" key, there is no "status" key. The text depends on the resource.
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          description: Error message
+      example:
+        error: Couldn't find Video with 'id'=100
     overlayBase:
       type: object
       properties:
@@ -11523,8 +11763,8 @@ components:
           description: 'Custom meta field for storing the Identifier in your system. We do not use this field in any way when processing the stream. Example: ```client_user_id = 1001```'
         directory_id:
           type: integer
-          default: null
-          description: ID of the directory where the video is stored.
+          nullable: true
+          description: ID of the directory where the video is stored. "null" if the video is in the root.
         quality_set_id:
           type: integer
           default: null
