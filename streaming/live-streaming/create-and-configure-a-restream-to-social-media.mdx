@@ -37,6 +37,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx"
 Supported restreaming combinations:
 
  - RTMP → RTMP
+ - RTMP → RTMPS
  - RTMPS → RTMPS
  - RTMP → SRT
  - SRT → SRT
@@ -44,6 +45,10 @@ Supported restreaming combinations:
 
 For SRT target URLs, only `mode=caller` is supported. Gcore initiates the outbound connection to the external SRT or RTMP target point, so restreaming works as a PUSH from Gcore to the destination.
 </Info>
+
+<p>A restream can be created, enabled, or disabled while the source stream is live, and the encoder keeps its connection to Gcore. Setting `active` to `false` stops a running restream within seconds, and setting it back to `true` starts it again, while the source stream and the encoder keep running.</p>
+
+<p>The destination can also be another Gcore stream of the same account. The target URL is the `push_url` of that stream, with `rtmps://` and port 443 for an RTMPS push. This [A&nbsp;to&nbsp;B](/streaming/live-streaming/stream-and-restream-limits#restream-into-another-stream) setup counts toward both the live stream and restream limits.</p>
 
 <p>Before configuring a restream, verify that the source stream meets the destination's encoding requirements. A mismatch in bitrate, codec, or keyframe interval causes the destination to reject or drop the incoming feed.</p>
 
@@ -156,7 +161,7 @@ The target SRT server can accept the latency value in seconds, milliseconds, or 
 
 </MethodSection>
   <MethodSection id="api" label="REST API">
-<p>Restreams broadcast a live stream to external platforms via RTMP, RTMPS, or SRT. Supported combinations: RTMP → RTMP, RTMPS → RTMPS, RTMP → SRT, SRT → SRT, SRT → RTMP. For SRT targets, only `mode=caller` is supported — Gcore initiates a PUSH connection to the destination.</p>
+<p>Restreams broadcast a live stream to external platforms via RTMP, RTMPS, or SRT. Supported combinations: RTMP → RTMP, RTMP → RTMPS, RTMPS → RTMPS, RTMP → SRT, SRT → SRT, SRT → RTMP. For SRT targets, only `mode=caller` is supported — Gcore initiates a PUSH connection to the destination.</p>
 
 <Info>
 An [API&nbsp;token](/account-settings/api-tokens) is required, along with the ID of an existing [live&nbsp;stream](/streaming/live-streaming/create-a-live-stream).
@@ -620,11 +625,13 @@ curl -X DELETE "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
 
 ## Multiple restreaming
 
-Technically, the number of restreams is not limited. The default account limit is three restreams. To increase this limit, contact [technical&nbsp;support](mailto:support@gcore.com) and specify the number of restreams needed. Gcore support will update the limit and notify when the change is active.
+The default account limit is three restreams. To increase this limit, contact [technical&nbsp;support](mailto:support@gcore.com) and specify the number of restreams needed. Gcore support will update the limit and notify when the change is active.
+
+Only restreams with `active` set to `true` count toward this limit, even when they are not sending, and a request over the limit returns HTTP 422. The [limit&nbsp;rules](/streaming/live-streaming/stream-and-restream-limits#restreams) show the counting with an example and the error body.
 
 ## Source stream recovery
 
-If the source stream becomes unavailable, Gcore retries the source before stopping the restream.
+An active restream follows its source stream: it starts when the source goes live and stops when the source ends, without any call to the restream, while `active` stays `true`. If the source stream becomes unavailable, Gcore retries the source before stopping the restream.
 
 **Recovery behavior:**
 
