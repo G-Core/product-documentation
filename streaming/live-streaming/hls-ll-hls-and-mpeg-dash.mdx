@@ -28,7 +28,7 @@ The formats differ in segment container and latency, so the choice depends on th
 
 With free transcoding, all three formats carry H.264 video and AAC audio.
 
-| Format | Segment format | Latency | How it works | Best for |
+| Format | Segment format | Glass-to-glass latency | How it works | Best for |
 | --- | --- | --- | --- | --- |
 | HLS MPEG-TS | MPEG-TS (`.ts`) | Regular, 15-30 seconds | Whole 6-second segments | Maximum compatibility with older devices, set-top boxes, Smart TVs, and legacy players |
 | HLS CMAF (LL-HLS) | Fragmented MP4 (`.m4s`) | Low, 3-5 seconds | Partial segments and blocking playlist reloads | Modern HLS playback and Apple devices |
@@ -131,6 +131,8 @@ MPD (shortened):
 </MPD>
 ```
 
+The value `minimumUpdatePeriod="PT500S"` is intentional. The `SegmentTemplate` uses `$Number$` and a fixed 6-second `duration`, so players calculate each segment URL from `availabilityStartTime` and don't reload the manifest to find new segments. This keeps the number of manifest requests to the CDN low.
+
 ## Default parameters
 
 LL-HLS and LL-DASH are processed in the same low-latency transcoding and packaging pipeline, so both outputs use aligned keyframes and segment boundaries, which eliminates drift between the two formats. The default parameters are:
@@ -138,7 +140,7 @@ LL-HLS and LL-DASH are processed in the same low-latency transcoding and packagi
 - **GOP**: 2 seconds, which ensures rapid seek and playback start
 - **Segment size**: 6 seconds in all three formats
 - **Part size**: 0.5 seconds, which allows players to download content in small increments
-- **Minimal buffer**: 1.5 seconds
+- **Minimal buffer**: 1.5 seconds for LL-HLS and 2 seconds for LL-DASH
 
 Enterprise accounts on [premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding) can set other values, including 2-second segments.
 
