@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: bfed8a7a53fa
+  version: cf66791257f9
 servers:
 - url: https://api.gcore.com
 tags:
@@ -6114,9 +6114,9 @@ paths:
           
 
 
-        The output is HLS and MPEG-DASH with ABR. We transcode video for you by our cloud-based infrastructure. ABR ladder supports all qualities from SD to 8K HDR 60fps.
+        The output is HLS and MPEG-DASH with ABR. We transcode video for you by our cloud-based infrastructure. Default ABR ladder is up to 1080p Full HD. Premium encoding ABR ladder supports all qualities up to 8K HDR 60fps.
 
-        All our streams are Low Latency enabled. We support a delay of ±4 seconds for video streams by utilizing Common Media Application Format (CMAF) technology. So you obtain latency from the traditional 30-50 seconds to ±4 seconds only by default. If you need legacy non-low-latency HLS, then look at HLS MPEG-TS delivery below.
+        All streams are Low Latency enabled. We support a delay of ±5 seconds for video streams by utilizing Common Media Application Format (CMAF) technology. So you obtain latency from the traditional ~30 seconds to ±5 seconds only by default. If you need legacy non-low-latency HLS, then look at HLS MPEG-TS delivery below.
 
           
 
@@ -6217,7 +6217,7 @@ paths:
         - **WebRTC (WHIP)**: `push_url_whip`.
 
         Playback URLs & Low Latency
-        The platform provides several Adaptive Bitrate (ABR) playback options. Modern delivery utilizes Common Media Application Format (CMAF) to achieve Low Latency (±4 seconds):
+        The platform provides several Adaptive Bitrate (ABR) playback options. Modern delivery utilizes Common Media Application Format (CMAF) to achieve Low Latency (±5 seconds):
         - **LL-HLS (HLS CMAF)**: `hls_cmaf_url`. Recommended for most modern players to get aka Low Latency (LL-HLS).
         - **LL-DASH (MPEG-DASH CMAF)**: `dash_url`. Optimized for web and Android to get aka Low Latency (LL-DASH).
         - **Legacy HLS (MPEG-TS)**: `hls_mpegts_url`.
@@ -11061,8 +11061,9 @@ components:
 
               Low Latency support: YES.
 
-              This is CMAF-based MPEG-DASH stream. Encoder and packager dynamically assemble the video stream with fMP4 fragments. Chunks have ±2-4 seconds duration depending on the settings. All chunks for DASH are transferred through CDN using chunk transfer technology, which allows to use all the advantages of low latency delivery of DASH.
-              - by default low latency is ±4 sec, because it's stable for almost all last-mile use cases.
+              This is CMAF-based MPEG-DASH stream. Encoder and packager dynamically assemble the video stream with fMP4 fragments. Chunks (segments) have 6 seconds duration.
+              All chunks for DASH are transferred through CDN using chunk transfer technology, which allows to use all the advantages of low latency delivery of DASH.
+              - by default low latency is ±5 sec, because it's stable for almost all last-mile use cases.
               - and its possible to enable ±2 sec for DASH, just ask our Support Team.
 
                 
@@ -11075,9 +11076,11 @@ components:
 
               Low Latency support: YES.
 
-              This is CMAF-based HLS stream. Encoder and packager dynamically assemble the video stream with fMP4 fragments. Chunks have ±2-4 seconds duration depending on the settings. All chunks for LL-HLS are transferred through CDN via dividing into parts (small segments ```#EXT-X-PART``` of 0.5-1.0 sec duration), which allows to use all the advantages of low latency delivery of LL-HLS.
+              This is CMAF-based HLS stream. Encoder and packager dynamically assemble the video stream with fMP4 fragments. Chunks (segments) have 6 seconds duration.
+
+              All chunks for LL-HLS are transferred through CDN via dividing into parts (small segments ```#EXT-X-PART``` of 0.5 sec duration), which allows to use all the advantages of low latency delivery of LL-HLS.
               - by default low latency is ±5 sec, because it's stable for almost all last-mile use cases.
-              - and its possible to enable ±3 sec for LL-HLS, just ask our Support Team.
+              - and it's possible to decrease to ±3 sec for LL-HLS, just ask our Support Team.
 
                 
 
@@ -11099,6 +11102,8 @@ components:
               Some legacy devices or software may require MPEG-TS (.ts) segments as a format for streaming, so we provide this options keeping backward compatibility with any of your existing workflows. For other cases it's better to use "hls_cmaf_url" instead.
 
               You can use this legacy HLSv6 format based on MPEG-TS segmenter in parallel with main HLS CMAF. Both formats are sharing same segments size, manifest length (DVR), etc.
+
+              Segment duration is 6 seconds.
                 
 
 
@@ -11113,11 +11118,11 @@ components:
               ```
               #EXTM3U
               #EXT-X-VERSION:6
-              #EXT-X-TARGETDURATION:2
+              #EXT-X-TARGETDURATION:6
               ...
-              #EXTINF:2.000000,
+              #EXTINF:6.000000,
               #EXT-X-PROGRAM-DATE-TIME:2025-08-14T08:15:00
-              seg1.ts?duration_sec=2
+              seg1.ts?duration_sec=6
               ...
               ```
           screenshot:
