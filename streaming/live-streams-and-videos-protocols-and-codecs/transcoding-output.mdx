@@ -61,96 +61,14 @@ A VOD file is transcoded after upload, and the source can use many containers an
 
 Premium encoding extends free transcoding with 2K, 4K, and 8K resolutions, 240p and 144p renditions, 60+ FPS, HEVC, AV1, and VP9 codecs, and custom bitrate ladders. Enterprise accounts request it from support or a sales manager, as described in [premium&nbsp;encoding](/streaming/live-streams-and-videos-protocols-and-codecs/premium-encoding#request-premium-encoding).
 
-## Output protocols
+## Output formats
 
-The ABR renditions are delivered in four HTTP streaming formats: **HLS MPEG-TS**, **HLS CMAF**, **MPEG-DASH**, and **MP4**. Select the format that matches the target players, devices, and latency goals.
+The ABR renditions are delivered over HTTP, and the available formats depend on the content type. The [demo](/streaming/getting-started/demo) page has live and VOD players with copyable playback links, so each format can be watched in action.
 
-For VOD, these protocols deliver adaptive bitrate playback from uploaded and transcoded videos. For Live, they deliver adaptive bitrate playback of an ongoing broadcast with regular or low latency.
+### Live stream formats
 
-### HLS MPEG-TS
+Live streams are delivered as HLS MPEG-TS at regular latency, and as HLS CMAF (LL-HLS) and MPEG-DASH at low latency of 2 to 5 seconds. The [HLS,&nbsp;LL-HLS,&nbsp;and&nbsp;MPEG-DASH](/streaming/live-streaming/hls-ll-hls-and-mpeg-dash) article compares the three formats by latency and segment format and shows the default manifests.
 
-HLS MPEG-TS is the traditional HLS format that uses `.ts` segments. It is the safest compatibility option for Live and VOD playback, especially on older devices, set-top boxes, Smart TVs, and legacy players.
+### VOD formats
 
-- **Segment format**: MPEG-TS (`.ts`)
-- **Best for**: Maximum compatibility
-- **Live latency**: Regular latency, usually higher than low-latency CMAF workflows
-- **VOD usage**: Reliable HLS playback
-- **Codec fit**: H.264 with AAC audio
-- **Example manifest**:
-
-  ```
-  #EXTM3U
-  #EXT-X-VERSION:3
-  #EXT-X-TARGETDURATION:4
-  #EXT-X-MEDIA-SEQUENCE:0
-  #EXTINF:4.000,
-  segment0.ts
-  ```
-
-### HLS CMAF
-
-HLS CMAF uses fragmented MP4 (`.m4s`) chunks. It is recommended for modern HLS playback, and for Live it also supports low-latency playback.
-
-- **Segment format**: Fragmented MP4 (`.m4s`)
-- **Best for**: Modern HLS playback, Apple devices, and low-latency Live
-- **Live latency**: Low latency when configured with partial segments
-- **VOD usage**: Modern HLS playback
-- **Codec fit**: H.264 with AAC audio
-- **Example manifest**:
-
-  ```
-  #EXTM3U
-  #EXT-X-VERSION:6
-  #EXT-X-TARGETDURATION:2
-  #EXT-X-PART-INF:PART-TARGET=0.5
-  #EXTINF:2.0,
-  seg0.m4s
-  #EXT-X-PART:DURATION=0.5,URI="seg1_part_0.m4s",INDEPENDENT=YES
-  ```
-
-### MPEG-DASH
-
-MPEG-DASH is widely used for Android, web players, Smart TVs, and advanced player workflows. It serves both VOD and Live, including low-latency Live, with fragmented MP4 (`.m4s`) chunks.
-
-- **Segment format**: Fragmented MP4 (`.m4s`)
-- **Best for**: Android, web players, Smart TVs, and low-latency Live
-- **Live latency**: Low latency when configured with short segments and chunked delivery
-- **VOD usage**: Adaptive bitrate playback
-- **Codec fit**: H.264 with AAC audio
-- **Example MPD structure**:
-
-  ```xml
-  <MPD type="dynamic" minimumUpdatePeriod="PT2S">
-    <Period>
-      <AdaptationSet>
-        <SegmentTemplate media="segment_$Time$.m4s" initialization="init.mp4" duration="2000" startNumber="1">
-          <SegmentTimeline>
-            <S t="0" d="2000" r="4"/>
-          </SegmentTimeline>
-        </SegmentTemplate>
-      </AdaptationSet>
-    </Period>
-  </MPD>
-  ```
-
-## Output examples
-
-The embedded player plays a live stream transcoded to 1080p H.264, and the [demo](/streaming/getting-started/demo) page lists VOD and live players for every output format.
-
-<Frame>
-<iframe
-  title="Live streaming demo player"
-  src="https://player.gvideo.co/broadcasts/2675_21606?no_low_latency"
-  width="100%"
-  height="420"
-  allow="autoplay; fullscreen; picture-in-picture"
-  allowFullScreen
-/>
-</Frame>
-
-Playback URLs:
-
-- [HTML&nbsp;player](https://player.gvideo.co/broadcasts/2675_21606?no_low_latency)
-- [MPEG-DASH&nbsp;CMAF](https://demo.gvideo.io/cmaf/2675_19146/index.mpd) (low latency)
-- [LL&nbsp;HLS&nbsp;CMAF](https://demo.gvideo.io/cmaf/2675_19146/master.m3u8) (low latency)
-- [HLS&nbsp;MPEG-TS](https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8) (regular latency)
+VOD files are delivered as HLS MPEG-TS or HLS CMAF, MPEG-DASH, and MP4. HLS and MPEG-DASH give adaptive playback from one manifest, while MP4 gives one file per rendition for playback or download, and the [HLS,&nbsp;MPEG-DASH,&nbsp;and&nbsp;MP4](/streaming/video-hosting/hls-and-mp4) article covers manifest URLs, quality range modifiers, and playback links.
