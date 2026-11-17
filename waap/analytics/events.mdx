@@ -82,18 +82,25 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Exporting events
 
-<p>WAAP provides two export paths: a CSV download of the events currently loaded in the table, and continuous delivery of CDN request logs that include WAAP fields.</p>
+<p>WAAP provides three ways to take events out of the product. **Export CSV** downloads up to 1000 events that match the current filters, with the event details except request headers, for one incident or traffic slice. [Get&nbsp;security&nbsp;events](/api-reference/waap/analytics/get-security-events) returns the complete extract for a period and pages through results with the `next` cursor. [Logs&nbsp;Uploader](/cdn/logs/logs-uploader) delivers CDN request logs that include WAAP fields on a continuous schedule.</p>
 
 ### Export from the Events page
 
-<p>The Events page downloads the events currently loaded in the table as a CSV file. That file is not the full filtered result set. For a complete extract, use the [Get security events](/api-reference/waap/analytics/get-security-events) endpoint and page through results with the `next` cursor.</p>
+<p>**Export CSV** downloads up to 1000 events that match the filters currently applied, in the table's sort order. The file is not limited to the rows loaded on screen. When more than 1000 events match, the portal reports: "More than 1000 events match the filters. The file contains only the first 1000." Narrow the filters or export shorter time ranges. For the complete set, use [Get&nbsp;security&nbsp;events](/api-reference/waap/analytics/get-security-events) or [Logs&nbsp;Uploader](/cdn/logs/logs-uploader).</p>
 
 <Steps>
   <Step title="Apply the investigation filters">
-    Set the time range and any other filters first. The CSV contains the events currently loaded in the table after those filters are applied.
+    Set the time range and any other filters first. **Export CSV** uses those filters and the current table sort, up to 1000 events.
   </Step>
   <Step title="Download the CSV">
-    Click the download icon in the toolbar. The control is labeled **Export CSV**. The browser downloads a CSV file.
+    Click the download icon in the toolbar. The control is labeled **Export CSV**. The portal shows "Preparing the CSV file. Please don't close or reload the page until it downloads." Leave the page open until the file downloads.
+
+    The file starts with the filters that were applied. With only a time range selected, the first line is Date range. Each following row is one event, and request headers are not included.
+
+    - Request: Date, Event ID, Domain, Domain ID, Requested domain, Request, Scheme, Query string, HTTP version, Response, Response time, Content type
+    - Decision: Action, Result, Decision, Optional action, Rule ID, Request type, Traffic types, Reference ID, Session ID, Session request count, Incident ID
+    - Client: Source, Country, ASN, Organization, Organization subnet, JA3, JA4, User agent, Client, Client version, Client type, Base browser, Base browser version, OS, Device, Device type, CPU, Rendering engine
+    - Detection: Event, Matched patterns, Tags, Detectors, Policy overrides
 
     <Frame>
       ![WAAP Events export](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-export-csv.png)
@@ -133,7 +140,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ### Exporting evidence for incident response
 
-<p>Once relevant traffic is isolated, analysts can download the events loaded in the table as a CSV file, or use the API with pagination for a complete extract.</p>
+<p>Once relevant traffic is isolated, **Export CSV** downloads up to 1000 filtered events, with the event details except request headers. For a complete extract, use [Get&nbsp;security&nbsp;events](/api-reference/waap/analytics/get-security-events) and page with the `next` cursor. For continuous collection, use [Logs&nbsp;Uploader](/cdn/logs/logs-uploader).</p>
 
 <p>This allows teams to:</p>
 
@@ -159,13 +166,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
   </Step>
 </Steps>
 
-  </MethodSection>
+</MethodSection>
   <MethodSection id="api" label="REST API">
 
-<p>Query security events and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. The current [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs do not include a method for `GET /waap/v2/analytics/events`, so the examples use HTTP. Response examples include only the fields used in each step.</p>
+<p>Query security events and retrieve individual event details using the [Analytics](/api-reference/waap#analytics) endpoints. Response examples include only the fields used in each step.</p>
 
 <Info>
-An [API token](/account-settings/api-tokens) is required. To retrieve details for a specific event, the domain ID is also needed — use [List Domains](/api-reference/waap/domains/list-domains) (`GET /waap/v2/domains`) to list available domains and their IDs.
+An [API token](/account-settings/api-tokens) is required.
 </Info>
 
 <p>Set the API token before running the examples:</p>
@@ -178,39 +185,101 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <p>The [Get security events](/api-reference/waap/analytics/get-security-events) endpoint (`GET /waap/v2/analytics/events`) returns security events across all domains in the account. Each record includes the client IP address, triggered rule, decision, and request metadata. Results older than 30 days are not available. Pages use cursor pagination: pass the `next` value from a response as the `next` query parameter to fetch the following page.</p>
 
-```bash
-START=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
-        date -u -v-24H '+%Y-%m-%dT%H:%M:%SZ')
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from datetime import datetime, timedelta, timezone
 
-curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&decision=blocked&limit=50" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+    from gcore import Gcore
 
-<p>Response:</p>
+    client = Gcore()
+    start = (datetime.now(timezone.utc) - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    page = client.waap.analytics.get_events(
+        start=start,
+        limit=50,
+    )
+    if page.next:
+        client.waap.analytics.get_events(
+            start=start,
+            limit=50,
+            next=page.next,
+        )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
 
-```json
-{
-  "results": [
-    {
-      "id": "96763b8fb655e9f18a2e04097b704e39-458959",
-      "decision": "blocked",
-      "optional_action": "",
-      "action": "block",
-      "client_ip": "203.0.113.45",
-      "country": "US",
-      "domain": "example.com",
-      "domain_id": 12345,
-      "method": "POST",
-      "path": "/api/login",
-      "rule_name": "SQL Injection",
-      "status_code": 403,
-      "result": "blocked",
-      "request_time": 1790505000000
+    import (
+        "context"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        start := time.Now().UTC().Add(-24 * time.Hour).Format("2006-01-02T15:04:05Z")
+
+        page, err := client.Waap.Analytics.GetEvents(ctx, waap.AnalyticsGetEventsParams{
+            Start: start,
+            Limit: gcore.Int(50),
+        })
+        if err != nil {
+            panic(err)
+        }
+
+        if page.Next != "" {
+            _, err = client.Waap.Analytics.GetEvents(ctx, waap.AnalyticsGetEventsParams{
+                Start: start,
+                Limit: gcore.Int(50),
+                Next:  gcore.String(page.Next),
+            })
+            if err != nil {
+                panic(err)
+            }
+        }
     }
-  ],
-  "next": "eyJyZXF1ZXN0X3RpbWUiOjE3OTA1MDUwMDAwMDB9"
-}
-```
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    START=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || \
+            date -u -v-24H '+%Y-%m-%dT%H:%M:%SZ')
+
+    curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&limit=50" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "96763b8fb655e9f18a2e04097b704e39-458959",
+          "decision": "blocked",
+          "optional_action": "",
+          "action": "block",
+          "client_ip": "203.0.113.45",
+          "country": "US",
+          "domain": "example.com",
+          "domain_id": 12345,
+          "method": "POST",
+          "path": "/api/login",
+          "rule_name": "SQL Injection",
+          "status_code": 403,
+          "result": "blocked",
+          "request_time": 1790505000000
+        }
+      ],
+      "next": "eyJyZXF1ZXN0X3RpbWUiOjE3OTA1MDUwMDAwMDB9"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 <p>The table lists commonly used query parameters. It is not the complete API. Parameters discussed on the Events page, including `ja3` and `ja4`, are included. For the full set — including `tags`, `user_agent`, `has_policy_override`, `order_by`, and every `exclude_*` filter — see [Get security events](/api-reference/waap/analytics/get-security-events).</p>
 
@@ -242,16 +311,79 @@ curl -X GET "https://api.gcore.com/waap/v2/analytics/events?start=${START}&decis
 
 <p>Retrieve the full set of attributes for a specific event, including request headers, user agent details, session context, the incident ID from any challenge that was issued, the threat category tags that explain why the request was flagged, and the `detector` array for WAF and OWASP signature matches.</p>
 
-<p>The `request_id` value comes from the `id` field in the events list response. The `domain_id` is also present in each list result.</p>
+<p>Set <code>DOMAIN_ID</code> from <code>domain_id</code> and <code>REQUEST_ID</code> from <code>id</code> in the events list response.</p>
 
-```bash
-curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST_ID}/details" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    from datetime import datetime, timedelta, timezone
 
-<p>The API returns:</p>
+    from gcore import Gcore
 
-```json
+    client = Gcore()
+    start = (datetime.now(timezone.utc) - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    page = client.waap.analytics.get_events(
+        start=start,
+        limit=50,
+    )
+    event = page.results[0]
+    details = client.waap.domains.statistics.get_request_details(
+        event.id,
+        domain_id=event.domain_id,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "time"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        start := time.Now().UTC().Add(-24 * time.Hour).Format("2006-01-02T15:04:05Z")
+
+        page, err := client.Waap.Analytics.GetEvents(ctx, waap.AnalyticsGetEventsParams{
+            Start: start,
+            Limit: gcore.Int(50),
+        })
+        if err != nil {
+            panic(err)
+        }
+
+        event := page.Results[0]
+        _, err = client.Waap.Domains.Statistics.GetRequestDetails(
+            ctx,
+            event.ID,
+            waap.DomainStatisticGetRequestDetailsParams{
+                DomainID: event.DomainID,
+            },
+        )
+        if err != nil {
+            panic(err)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export DOMAIN_ID="12345"
+    export REQUEST_ID="96763b8fb655e9f18a2e04097b704e39-458959"
+
+    curl "https://api.gcore.com/waap/v1/domains/$DOMAIN_ID/requests/$REQUEST_ID/details" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    <p>The API returns:</p>
+
+    ```json
 {
   "id": "96763b8fb655e9f18a2e04097b704e39-458959",
   "path": "/api/login",
@@ -318,8 +450,10 @@ curl -X GET "https://api.gcore.com/waap/v1/domains/{DOMAIN_ID}/requests/{REQUEST
   ]
 }
 ```
+  </Tab>
+</Tabs>
 
 <p>Top-level `rule_name` is the policy that made the decision. `detector` lists the signatures inside that policy. The array is populated only for WAF and OWASP Top Threats signature events; otherwise it is empty. `matched_content` is the matched fragment, URL-encoded and limited to 200 characters.</p>
 
-  </MethodSection>
+</MethodSection>
 </MethodSwitch>
