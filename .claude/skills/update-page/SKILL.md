@@ -20,6 +20,7 @@ Update existing articles based on provided context about product or UI changes.
 4. `.agents/references/mdx-rules.md` — when editing MethodSwitch structure or frontmatter
 5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
 6. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
+7. `.agents/references/mcp-tools/edge-network-context.md` — only when a CDN or edge behavior claim is still open after the portal or API check
 
 Do not read other articles for context unless they are directly linked from the
 article being updated.
@@ -221,6 +222,8 @@ test before writing it into the article. Do not trust Jira ticket descriptions a
 
 **Never write a restriction or limitation into documentation without a live test.**
 Jira tickets describe intent and bugs — not necessarily the current production behavior.
+
+When the open claim is customer-visible CDN or edge behavior (what an option does, a limit, an error the customer sees, or how CDN relates to WAAP, DNS, FastEdge, or Streaming) and the portal or this test has not already shown it, read `.agents/references/mcp-tools/edge-network-context.md` and ask before writing the sentence. This does not replace the live test above.
 
 ---
 

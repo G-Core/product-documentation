@@ -23,6 +23,7 @@ Any resource created during testing (instance, cluster, network, volume, bucket,
 - If the article says to delete something — delete it.
 - If something the article describes does not exist or works differently — do not skip it.
   Explore what the portal actually shows now and document the divergence as a FINDING. Make a full investigation of functionality related to this.
+- If that divergence is customer-visible CDN or edge behavior the screen does not show (what an option does, a limit, an error the customer sees, or how CDN relates to WAAP, DNS, FastEdge, or Streaming), read `.agents/references/mcp-tools/edge-network-context.md` and ask before the FINDING changes that sentence. Labels, paths, and controls stay with the portal.
 - If a step requires a prerequisite resource (a network, a cluster, an SSH key,
   a volume, a load balancer, etc.) that does not yet exist:
 

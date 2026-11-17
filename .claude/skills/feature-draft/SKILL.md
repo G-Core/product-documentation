@@ -23,12 +23,13 @@ for a technical writer to review.
 3. `.agents/references/mcp-tools/jira.md` — if a Jira ticket is provided
 4. `.agents/references/mcp-tools/confluence.md` — if Confluence links are present
 5. `.agents/references/mcp-tools/playwright.md` — only if user agrees to portal testing
-6. `.agents/references/content-types.md` — to determine article type and structure
-7. `.agents/references/style-guide.md` — writing rules for the draft
-8. `.agents/references/procedures.md` — step format and ordering rules
-9. `.agents/references/mdx-rules.md` — MDX and frontmatter rules
-10. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
-11. One existing article of the same type as a style reference
+6. `.agents/references/mcp-tools/edge-network-context.md` — only when an agent-added CDN or edge claim is still open after Jira and Confluence
+7. `.agents/references/content-types.md` — to determine article type and structure
+8. `.agents/references/style-guide.md` — writing rules for the draft
+9. `.agents/references/procedures.md` — step format and ordering rules
+10. `.agents/references/mdx-rules.md` — MDX and frontmatter rules
+11. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+12. One existing article of the same type as a style reference
 
 ---
 
@@ -232,6 +233,7 @@ yourself through inference or "logical deduction".
 2. **Parent ticket** — epic or parent story (fetch if not yet loaded)
 3. **Sibling tickets** — other issues under the same parent
 4. **Confluence pages** — linked from tickets or searchable by feature name
+5. **CDN or edge behavior** — if the claim is still open and it is customer-visible CDN or edge behavior, read `.agents/references/mcp-tools/edge-network-context.md` and ask. A portal check from Phase 4 still wins.
 
 Use `.agents/references/mcp-tools/jira.md` and `.agents/references/mcp-tools/confluence.md`.
 
@@ -241,6 +243,7 @@ Use `.agents/references/mcp-tools/jira.md` and `.agents/references/mcp-tools/con
 |-----------|--------|
 | Came from contributor or source material | Keep — no verification needed |
 | Confirmed in Jira or Confluence | Keep |
+| Support query states the customer-visible behavior, and a portal check does not contradict it | Keep that behavior in your own words. Do not paste the reply. |
 | Your own reasoning, not in any source | `{TODO: verify — added by agent, not in source}` |
 
 **Self-check:** for every technical claim, ask "Where did I get this?"

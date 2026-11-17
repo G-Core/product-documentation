@@ -23,6 +23,7 @@ reader from start to finished result.
 4. `.agents/references/mdx-rules.md` — frontmatter and MDX rules
 5. Source articles found during Phase 2 (read only the relevant sections)
 6. `.agents/references/mcp-tools/playwright.md` — only if user agrees to end-to-end testing
+7. `.agents/references/mcp-tools/edge-network-context.md` — only when a CDN or edge handoff is still open after the source articles and any portal check
 
 Do not read every article in the repo. Read only articles confirmed relevant
 during the search phase.
@@ -172,6 +173,8 @@ Wait for the answer.
 - Write from source articles
 - Mark every cross-product handoff that was not verified:
   `{TODO: verify that the output of step N is the correct input for step N+1}`
+
+When a handoff is customer-visible CDN or edge behavior and neither the source article nor a portal check states it, read `.agents/references/mcp-tools/edge-network-context.md` and ask before you write it or mark it TODO. If the query says not found, keep the TODO.
 
 ---
 
