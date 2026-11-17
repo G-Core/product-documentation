@@ -30,6 +30,7 @@ the article type and the project style guide.
 10. `.agents/references/mcp-tools/jira.md` — only if fetching from Jira directly
 11. `.agents/references/concept-articles.md` — only for concept articles (Type 5 in content-types.md)
 12. `.agents/references/intro-writing.md` — only when writing the intro of a tab or section
+13. `.agents/references/mcp-tools/edge-network-context.md` — only when an agent-added CDN or edge claim is still open after Jira and Confluence
 
 Do not read more than two reference articles. Do not read articles from other
 product areas unless directly relevant.
@@ -265,6 +266,7 @@ what you added through your own reasoning.
 2. **Parent ticket** — does the parent epic specify this?
 3. **Sibling tickets** — other issues linked to the same parent
 4. **Confluence pages** — linked from any ticket or searchable by feature name
+5. **CDN or edge behavior** — if the claim is still open and it is customer-visible CDN or edge behavior, read `.agents/references/mcp-tools/edge-network-context.md` and ask. A portal or API result from Phase 1 still wins.
 
 Use `.agents/references/mcp-tools/jira.md` and `.agents/references/mcp-tools/confluence.md`.
 
@@ -274,6 +276,7 @@ Use `.agents/references/mcp-tools/jira.md` and `.agents/references/mcp-tools/con
 |-----------|--------|
 | Claim came from contributor or source | Keep it — no verification needed |
 | Claim confirmed in Jira or Confluence | Keep it |
+| Support query states the customer-visible behavior, and portal or API does not contradict it | Keep that behavior in your own words. Do not paste the reply. |
 | Claim is your own reasoning, not found anywhere | `{TODO: verify — added by agent, not confirmed in source}` |
 | Sources disagree | Use most authoritative (Confluence spec > ticket description), note the discrepancy |
 

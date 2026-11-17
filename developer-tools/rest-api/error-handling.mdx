@@ -4,20 +4,11 @@ sidebarTitle: "Error handling"
 description: Cloud error responses include a type code, a hint, and field-level validation details.
 ---
 
-Cloud API error responses use `Content-Type: application/problem+json`. Branch on `type`. `title`, `detail`, and `hint` are the human-readable text.
-
-A missing token on `GET /iam/clients/me` is a different body, `Content-Type: application/json`:
-
-```json
-{
-  "message": "Authentication credentials were not provided.",
-  "code": "not_authenticated"
-}
-```
+When a Cloud API request fails, the error response explains what went wrong and how to resolve it. Errors in this format use `Content-Type: application/problem+json`, with `type` identifying the error and `detail` and `hint` providing human-readable explanations.
 
 ## Error response fields
 
-Every Cloud API error body in this article includes these fields:
+The `application/problem+json` responses described below contain the following fields:
 
 | Field | Description |
 |-------|-------------|
@@ -100,7 +91,7 @@ A create-volume call with `"source": "new-volume"` and no `size` returns:
 }
 ```
 
-`invalid_fields` on this response is grouped under `new-volume`, the `source` value. `errors[].loc` is the path to read. Correct `size`, then send the call again. The same body sent again returns the same 400.
+`invalid_fields` on this response is grouped under `new-volume`, the `source` value. `errors[].loc` is the path to read. Correct `size`, then send the call again.
 
 A body that is not JSON is also `validation-error`. The item then has `"code": "json_invalid"` and `"loc": ["body"]`.
 
@@ -165,6 +156,17 @@ HTTP 405. `PATCH` on the volume collection returns:
 
 This response has no `exception_class` or `message`. The `Allow` header on the same response is `GET, POST`, matching `context.allowed_methods`.
 
+## Other error formats
+
+A missing token on `GET /iam/clients/me` is a different body, `Content-Type: application/json`:
+
+```json
+{
+  "message": "Authentication credentials were not provided.",
+  "code": "not_authenticated"
+}
+```
+
 ## Language
 
 Send `Accept-Language` to select the language of `title`, `detail`, and `hint`. The response sets `Content-Language` to that language and sends `Vary: Accept-Language`. With no `Accept-Language`, `Content-Language` is `en`.
@@ -199,7 +201,7 @@ Send `Accept-Language` to select the language of `title`, `detail`, and `hint`. 
 
 `errors[].detail` and `message` are Russian. `invalid_fields` stays English (`Field required`). `type`, `code`, and `loc` are unchanged.
 
-## Next step
+## Handle errors
 
 | `type` | Action |
 |--------|--------|

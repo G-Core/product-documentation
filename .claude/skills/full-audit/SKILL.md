@@ -130,6 +130,7 @@ Read a reference only in the phase that names it:
 
 - `.agents/references/product-routing.md` — Phase 0
 - `.agents/references/mcp-tools/playwright.md` — Phases 1, 2, 3
+- `.agents/references/mcp-tools/edge-network-context.md` — Phase 2, only for an open CDN or edge behavior claim
 - `.agents/references/content-types.md` — Phase 5, before rewriting any section
 - `.agents/references/mdx-rules.md` — Phases 5 (if MDX structure changes) and 7
 - `.agents/references/sdk-best-practices.md` — Phase 5, if fixing SDK code examples
