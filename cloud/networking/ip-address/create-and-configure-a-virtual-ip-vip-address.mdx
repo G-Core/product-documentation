@@ -28,21 +28,11 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Public IP limits
 
-<p>A virtual instance has at most five network interfaces. Each interface supports up to 64 IP addresses, and both IPv4 and IPv6 count toward that limit.</p>
+<p>Reserving a public VIP uses one address from the project's external IP quota in that region. Contact support to request a quota increase.</p>
 
-<p>On a standard public network (pub_net), the project's external IP quota per region is a separate limit. Contact support to request a quota increase.</p>
+<p>The VIP counts toward the 64 addresses on that VM interface, together with the interface's other IPv4 and IPv6 addresses. On a dedicated external network, the assigned subnet can set a lower limit.</p>
 
-<p>On a dedicated external network, the interface still stops at 64 addresses, and the size of the assigned subnet can set a lower limit.</p>
-
-<p>A VM can be connected to only one external network at a time. Multiple IP addresses within that one external network are supported, but connecting the VM to two different external networks simultaneously is not allowed.</p>
-
-<p>For dual-stack interfaces (IPv4 + IPv6), only the IPv4 address counts against the external IP quota.</p>
-
-<p>Each external IP address is billed separately, including addresses that share one network port in a dedicated external network.</p>
-
-<p>Floating IPs from private network interfaces are also supported, subject to quotas. In a multi-network setup, each subnet can have one Floating IP. Within a single network, multiple subnets can exist, and each subnet of a single machine (VM/BM) is allowed one Floating IP.</p>
-
-<p>By default, Bare Metal servers support up to six attached IPs. A dedicated Bare Metal network removes this limit, allowing unlimited IPs per machine. Unlike standard networks, this type of network lacks port security and can be allocated by request.</p>
+<p>Connect the VIP to a port on the same network. A VM connects to one external network at a time.</p>
 
 ## Create a virtual IP address
 
@@ -72,13 +62,30 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <Frame>![VIP settings dialog with Select VM and Select Port dropdowns](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/vip-settings-add-instance.png)</Frame>
 
-3. Install and configure Keepalived on the Virtual Machines using the [Keepalived documentation](https://keepalived.readthedocs.io/en/latest/installing_keepalived.html).
+3. Install Keepalived on each Virtual Machine. Package and service names are in the [Keepalived&nbsp;documentation](https://keepalived.readthedocs.io/en/latest/installing_keepalived.html).
 
-4. Change the Keepalived configuration file to set the "MASTER" machine and "BACKUP" machines. Additionally, set the priority to determine the order in which the VIP will be transferred between devices. If the master server fails, the IP address will be transferred to the backup machine with the highest priority. If the second machine fails, the VIP will be transferred to the backup machine with the second-highest priority.
+4. On the primary machine, save this configuration as `/etc/keepalived/keepalived.conf`. Set `interface` to that machine's interface name, and set `virtual_ipaddress` to the reserved VIP and its prefix length.
 
-5. Run Keepalived on the Virtual Machine and add it to the autostart list.
+```text
+vrrp_instance VIP {
+    state MASTER
+    interface eth0
+    virtual_router_id 51
+    priority 100
+    advert_int 1
+    virtual_ipaddress {
+        192.0.2.10/24
+    }
+}
+```
 
-<p>The VIP is now configured and the fault-tolerant system is operational.</p>
+5. On each backup machine, use the same `virtual_router_id` and the same `virtual_ipaddress`. Set `state` to `BACKUP` and set `priority` to 90.
+
+6. On each machine that uses systemd, run `systemctl enable --now keepalived`.
+
+7. Stop Keepalived on the primary machine. On a backup machine, `ip addr` shows the VIP. Start Keepalived on the primary machine again, and the VIP returns there because that machine has the higher priority.
+
+<p>The backup machine holds the VIP while Keepalived is stopped on the primary machine.</p>
 
 ## Assign a virtual IP address as a secondary address
 
@@ -130,55 +137,32 @@ ip addr
 
 <p>The VIP is now configured. To verify it, connect to the Virtual Machine [via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
 
-### Configure a virtual IP address for Windows Virtual Machines
+## Configure a virtual IP address for Windows Virtual Machines
 
 1. Open the **Control Panel**.
-2. Go to the **Network and Sharing Center**.
-3. Right-click the network connection to which the virtual IP address will be added and select **Properties**.
+2. Open the **Network and Sharing Center**.
+3. Right-click the network connection that will carry the virtual IP address and select **Properties**.
 4. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
 
+<Frame>![Windows adapter properties with TCP/IPv4 selected](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946990237457.png)</Frame>
 
-<Frame>![Windows TCP/IPv4 Properties dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946990237457.png)</Frame>
-
-
-
-5. Click **Use the following IP address** option and enter the virtual IP address, subnet mask, and default gateway in the appropriate fields. To find these parameters, run the following command:
+5. Leave **Obtain an IP address automatically** selected. Run `ipconfig /all` and record this adapter's subnet mask. Selecting **Use the following IP address** replaces the address assigned by DHCP.
 
 ```sh
-ipconfig 
- ```
+ipconfig /all
+```
 
-<p>The output will be similar to:</p>
+<Frame>![Windows ipconfig output showing the adapter subnet mask](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947005842961.png)</Frame>
 
-
-<Frame>![Windows ipconfig output showing IP details](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947005842961.png)</Frame>
-
-
-
-<p>Go back to the **Control Panel**, verify the values are correct, and click **Advanced ....**</p>
-
-
-<Frame>![Windows Advanced TCP/IP settings button](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947053843345.png)</Frame>
-
-
-
-6. In the **IP Settings** tab, find the **IP addresses** section and click **Add ....**
-
+6. Click **Advanced**. On the **IP Settings** tab, the list under **IP addresses** shows **DHCP Enabled**. Click **Add**.
 
 <Frame>![Windows IP Settings tab with Add button](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/20.png)</Frame>
 
-
-
-7. In the next window, enter the VIP and the subnet mask from the command line. Then click **Add**.
-
+7. Enter the VIP and the subnet mask recorded in step 5, then click **Add**. Click **OK** in each open dialog.
 
 <Frame>![Windows Add IP address dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/21.png)</Frame>
 
-
-
-8. Click **OK**.
-
-<p>The VIP is now configured. To verify it, connect to the Virtual Machine [via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using the VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added to the network configuration. Repeat the steps.</p>
+<p>After the dialogs close, `ipconfig` must list both the original address and the VIP. Confirm traffic by connecting to a service that is listening on the VM, using the VIP as the destination.</p>
 
 </MethodSection>
 
@@ -200,57 +184,118 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 ## Quickstart
 
-<p>The scripts below reserve a public virtual IP address, connect one VM's network port to it, then remove the connection and delete the VIP.</p>
+<p>The first script reserves a public VIP and prints every VM port that can share it. Set <code>PORT_ID</code> to the printed port of the VM that should receive the VIP, then run the second script.</p>
+
+<p>Traffic requires the [guest&nbsp;OS&nbsp;setup](#configure-the-vip-inside-the-guest-os). Removal is in [Clean&nbsp;up](#clean-up).</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    import os
     from gcore import Gcore
 
     client = Gcore()
 
-    port_id = os.environ["PORT_ID"]  # Port ID of an existing VM's network interface; see Step 2
-
-    # Step 1. Reserve a public virtual IP address
+    # Reserve a public virtual IP address and list VM ports that can share it
     vip = client.cloud.reserved_fixed_ips.create_and_poll(
         type="external",
         ip_family="ipv4",
         is_vip=True,
     )
-    print(f"VIP: port_id={vip.port_id}  address={vip.fixed_ip_address}")
+    print(f"VIP_PORT_ID={vip.port_id}  address={vip.fixed_ip_address}")
 
-    # Step 2. List VM ports eligible to share this VIP
     candidates = client.cloud.reserved_fixed_ips.vip.candidate_ports.list(vip.port_id)
-    print(f"Candidate VM ports: {candidates.count}")
+    if not candidates.results:
+        raise SystemExit("No VM port on this network can share the VIP.")
+    for port in candidates.results:
+        print(f"PORT_ID={port.port_id}  VM={port.instance_name}")
+    ```
 
-    # Step 3. Connect a VM port to the VIP
+    Set `VIP_PORT_ID` to the printed VIP port. Set `PORT_ID` to the printed port of the VM that should receive the VIP.
+
+    ```bash
+    export VIP_PORT_ID="{vip_port_id}"
+    export PORT_ID="{port_id}"
+    ```
+
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+    vip_port_id = os.environ["VIP_PORT_ID"]
+    port_id = os.environ["PORT_ID"]
+
+    candidates = client.cloud.reserved_fixed_ips.vip.candidate_ports.list(vip_port_id)
+    allowed = {port.port_id for port in candidates.results}
+    if port_id not in allowed:
+        raise SystemExit("PORT_ID is not a VM port that can share this VIP.")
+
     result = client.cloud.reserved_fixed_ips.vip.connected_ports.add(
-        vip.port_id,
+        vip_port_id,
         port_ids=[port_id],
     )
     print(f"Connected VMs: {result.count}")
 
-    # Step 4. List VMs connected to the VIP
-    connected = client.cloud.reserved_fixed_ips.vip.connected_ports.list(vip.port_id)
+    connected = client.cloud.reserved_fixed_ips.vip.connected_ports.list(vip_port_id)
     for vm in connected.results:
         print(f"  VM: {vm.instance_name}  port_id: {vm.port_id}")
-
-    # Step 5. Disconnect all VMs from the VIP
-    client.cloud.reserved_fixed_ips.vip.connected_ports.replace(
-        vip.port_id,
-        port_ids=[],
-    )
-
-    # Step 6. Disable VIP mode (required before deletion)
-    client.cloud.reserved_fixed_ips.vip.toggle(vip.port_id, is_vip=False)
-
-    # Step 7. Delete the reserved IP
-    client.cloud.reserved_fixed_ips.delete_and_poll(vip.port_id)
-    print("VIP deleted.")
     ```
   </Tab>
   <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Reserve a public virtual IP address and list VM ports that can share it
+        vip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+                IsVip:    param.NewOpt(true),
+                IPFamily: cloud.InterfaceIPFamilyIpv4,
+                Type:     constant.ValueOf[constant.External](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create VIP: %v", err)
+        }
+        fmt.Printf("VIP_PORT_ID=%s  address=%s\n", vip.PortID, vip.FixedIPAddress)
+
+        candidates, err := client.Cloud.ReservedFixedIPs.Vip.CandidatePorts.List(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipCandidatePortListParams{},
+        )
+        if err != nil {
+            log.Fatalf("list candidates: %v", err)
+        }
+        if len(candidates.Results) == 0 {
+            log.Fatal("No VM port on this network can share the VIP.")
+        }
+        for _, port := range candidates.Results {
+            fmt.Printf("PORT_ID=%s  VM=%s\n", port.PortID, port.InstanceName)
+        }
+    }
+    ```
+
+    Set `VIP_PORT_ID` to the printed VIP port. Set `PORT_ID` to the printed port of the VM that should receive the VIP.
+
+    ```bash
+    export VIP_PORT_ID="{vip_port_id}"
+    export PORT_ID="{port_id}"
+    ```
+
     ```go
     package main
 
@@ -262,42 +307,38 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/packages/param"
-        "github.com/G-Core/gcore-go/shared/constant"
     )
 
     func main() {
-        portID := os.Getenv("PORT_ID") // Port ID of an existing VM's network interface; see Step 2
+        vipPortID := os.Getenv("VIP_PORT_ID")
+        portID := os.Getenv("PORT_ID")
+        if vipPortID == "" || portID == "" {
+            log.Fatal("Set VIP_PORT_ID and PORT_ID before connecting a VM.")
+        }
 
         client := gcore.NewClient()
         ctx := context.Background()
 
-        // Step 1. Reserve a public virtual IP address
-        vip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
-            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
-                IsVip:    param.NewOpt(true),
-                IPFamily: cloud.InterfaceIPFamilyIpv4,
-                Type:     constant.ValueOf[constant.External](),
-            },
-        })
-        if err != nil {
-            log.Fatalf("create VIP: %v", err)
-        }
-        fmt.Printf("VIP: port_id=%s  address=%s\n", vip.PortID, vip.FixedIPAddress)
-
-        // Step 2. List VM ports eligible to share this VIP
         candidates, err := client.Cloud.ReservedFixedIPs.Vip.CandidatePorts.List(ctx,
-            vip.PortID,
+            vipPortID,
             cloud.ReservedFixedIPVipCandidatePortListParams{},
         )
         if err != nil {
             log.Fatalf("list candidates: %v", err)
         }
-        fmt.Printf("Candidate VM ports: %d\n", candidates.Count)
+        allowed := false
+        for _, port := range candidates.Results {
+            if port.PortID == portID {
+                allowed = true
+                break
+            }
+        }
+        if !allowed {
+            log.Fatal("PORT_ID is not a VM port that can share this VIP.")
+        }
 
-        // Step 3. Connect a VM port to the VIP
         result, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Add(ctx,
-            vip.PortID,
+            vipPortID,
             cloud.ReservedFixedIPVipConnectedPortAddParams{PortIDs: []string{portID}},
         )
         if err != nil {
@@ -305,9 +346,8 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
         }
         fmt.Printf("Connected VMs: %d\n", result.Count)
 
-        // Step 4. List VMs connected to the VIP
         connected, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.List(ctx,
-            vip.PortID,
+            vipPortID,
             cloud.ReservedFixedIPVipConnectedPortListParams{},
         )
         if err != nil {
@@ -316,30 +356,6 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
         for _, vm := range connected.Results {
             fmt.Printf("  VM: %s  port_id: %s\n", vm.InstanceName, vm.PortID)
         }
-
-        // Step 5. Disconnect all VMs from the VIP
-        if _, err = client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Replace(ctx,
-            vip.PortID,
-            cloud.ReservedFixedIPVipConnectedPortReplaceParams{PortIDs: []string{}},
-        ); err != nil {
-            log.Fatalf("disconnect VMs: %v", err)
-        }
-
-        // Step 6. Disable VIP mode (required before deletion)
-        if _, err = client.Cloud.ReservedFixedIPs.Vip.Toggle(ctx,
-            vip.PortID,
-            cloud.ReservedFixedIPVipToggleParams{IsVip: false},
-        ); err != nil {
-            log.Fatalf("toggle VIP off: %v", err)
-        }
-
-        // Step 7. Delete the reserved IP
-        if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx,
-            vip.PortID, cloud.ReservedFixedIPDeleteParams{},
-        ); err != nil {
-            log.Fatalf("delete VIP: %v", err)
-        }
-        fmt.Println("VIP deleted.")
     }
     ```
   </Tab>
@@ -408,7 +424,7 @@ Reserving a public IP with `is_vip: true` creates a port that can be shared acro
     }
     ```
 
-    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Save `created_resources.ports[0]` as `VIP_PORT_ID`.
+    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The new port is `created_resources.ports[0]`.
 
     ```json
     {
@@ -417,6 +433,10 @@ Reserving a public IP with `is_vip: true` creates a port that can be shared acro
         "ports": ["6a6eb2dc-8647-4fb4-8497-9b8ba301b9ec"]
       }
     }
+    ```
+
+    ```bash
+    export VIP_PORT_ID="6a6eb2dc-8647-4fb4-8497-9b8ba301b9ec"
     ```
 
     Then retrieve the VIP details:
@@ -531,7 +551,7 @@ Adding a VM's port to the VIP makes both the VM's own IP and the VIP reachable o
     curl -X PATCH "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VIP_PORT_ID/connected_devices" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"port_ids": ["f1e2d3c4-b5a6-7890-abcd-ef1234567890"]}'
+      -d '{"port_ids": ["'"$PORT_ID"'"]}'
     ```
 
     Response:
