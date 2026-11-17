@@ -1,14 +1,36 @@
 ---
 title: How to use Gcore APIs with Postman
 sidebarTitle: Use Postman
-description: Send a request in Postman and reuse a response value in the next request.
+description: Import an OpenAPI file into Postman and reuse a response value in the next request.
 ---
 
-Postman provides a graphical interface for sending Gcore API requests and inspecting responses. Authentication is configured at the collection level, a protection template is retrieved, and its `id` is reused in another request.
+Postman provides a graphical interface for sending Gcore API requests and inspecting responses. Import the OpenAPI file for an API, authorize the collection with an API token, and reuse a value from one response in the next request.
 
 <Steps>
+  <Step title="Import the specification">
+    Click **Use resources or import**, then select the **Import** tab. Paste the URL of the API:
+
+    <Frame>![Use resources or import control in the Postman toolbar](/images/docs/developer-tools/rest-api/use-postman/use-resources-or-import.png)</Frame>
+
+    | API | URL |
+    | --- | --- |
+    | IAM | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/iam_api.yaml` |
+    | CDN | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/cdn_api.yaml` |
+    | Managed DNS | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/dns_api.yaml` |
+    | Cloud | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/cloud_api.yaml` |
+    | DDoS Protection | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/ddos_protection_api.yaml` |
+    | Edge Proxy | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify_enriched/edge_proxy_api.yaml` |
+    | FastEdge | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/fastedge_api.yaml` |
+    | WAAP | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/waap_api.yaml` |
+    | Streaming | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/streaming_api.yaml` |
+    | Object Storage | `https://raw.githubusercontent.com/G-Core/product-documentation/main/api-reference/services_docs_mintlify/object_storage_api.yaml` |
+
+    <Frame>![Import tab with the OpenAPI file ready to import](/images/docs/developer-tools/rest-api/use-postman/import-openapi.png)</Frame>
+
+    Select **OpenAPI 3.1 Specification with a Postman Collection**, then **Import**. The collection appears in the left sidebar and contains a request for every operation in that file.
+  </Step>
   <Step title="Store the token">
-    Click **Create new**, then **Environment**. Name the environment `Gcore API`. Add a variable named `token` and set the value to the [API&nbsp;token](/account-settings/api-tokens).
+    Click **Create new**, then **Environment**. Name the environment `Gcore API`. Add a variable named `token`, set the value to the [API&nbsp;token](/account-settings/api-tokens), and click **Secure** next to `token`.
 
     <Frame>![Gcore API environment with the token variable](/images/docs/developer-tools/rest-api/use-postman/environment.png)</Frame>
 
@@ -17,7 +39,7 @@ Postman provides a graphical interface for sending Gcore API requests and inspec
     <Frame>![Environment menu listing Gcore API](/images/docs/developer-tools/rest-api/use-postman/environment-selected.png)</Frame>
   </Step>
   <Step title="Authorize the collection">
-    Create a collection. On its **Authorization** tab:
+    Open the imported collection. On its **Authorization** tab:
 
     1. Set **Auth type** to **API Key**.
     2. Set **Key** to `Authorization`.
@@ -26,12 +48,18 @@ Postman provides a graphical interface for sending Gcore API requests and inspec
 
     <Frame>![Collection authorization set to API Key](/images/docs/developer-tools/rest-api/use-postman/authorization.png)</Frame>
 
-    Requests in the collection use this header when their authorization is inherited.
+    Requests in the collection use this header when their authorization is inherited. The imported specification names the header and does not insert the token.
   </Step>
   <Step title="Read the templates">
-    Create a request in the collection. On the **Authorization** tab, the collection authorization is shown as **Inherited**.
+    This example uses the DDoS Protection collection from the table above.
 
-    Set the method to GET and enter `https://api.gcore.com/security/sifter/v3/templates` as the request URL. The operation is [List&nbsp;protection&nbsp;templates](/api-reference/ddos-protection/protection-templates/list-protection-templates).
+    <Info>
+    Access to the DDoS Protection API is an [Enterprise&nbsp;feature](/ddos-protection/about-ddos-protection).
+    </Info>
+
+    Open **List protection templates**. On the **Authorization** tab, the collection authorization is shown as **Inherited**.
+
+    The method is GET and the URL is `https://api.gcore.com/security/sifter/v3/templates`. The operation is [List&nbsp;protection&nbsp;templates](/api-reference/ddos-protection/protection-templates/list-protection-templates).
 
     Select **Send**.
 
@@ -42,9 +70,9 @@ Postman provides a graphical interface for sending Gcore API requests and inspec
     Find the template named `Basic` in the response. In the `Gcore API` environment, create a variable named `template_id` and set its value to the template's `id`.
   </Step>
   <Step title="Read one template">
-    Create another request in the same collection. On the **Authorization** tab, the collection authorization is shown as **Inherited**.
+    Open **Get protection template** in the same collection. On the **Authorization** tab, the collection authorization is shown as **Inherited**.
 
-    Set the method to GET and enter `https://api.gcore.com/security/sifter/v3/templates/{{template_id}}` as the request URL. The operation is [Get&nbsp;protection&nbsp;template](/api-reference/ddos-protection/protection-templates/get-protection-template).
+    On the **Params** tab, set `protection_template_id` to `{{template_id}}`. The operation is [Get&nbsp;protection&nbsp;template](/api-reference/ddos-protection/protection-templates/get-protection-template).
 
     Select **Send**.
 
