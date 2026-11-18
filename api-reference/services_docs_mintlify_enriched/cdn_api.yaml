@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 8d1515611469
+  version: 4973f81c55f4
 servers:
 - url: https://api.gcore.com
 tags:
@@ -1030,11 +1030,21 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/CnameAlreadyExistsError'
-                - $ref: '#/components/schemas/SecondaryCnameAlreadyExistsError'
-                - $ref: '#/components/schemas/JSONParseError'
-                - $ref: '#/components/schemas/CommonValidationError'
+                $ref: '#/components/schemas/CreateResourceValidationError'
+        '503':
+          description: The service is temporarily unavailable. Retry the request later.
+          headers:
+            Retry-After:
+              description: |-
+                Number of seconds to wait before you retry the request. Sent only when the service knows how long to
+                wait.
+              schema:
+                type: integer
+                example: 60
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceTemporarilyUnavailableError'
       x-codeSamples:
       - lang: Python
         source: |-
@@ -1150,8 +1160,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/CannotLinkYourSSLCertificate'
+                $ref: '#/components/schemas/ChangeResourceValidationError'
         '404':
           description: CDN resource is not found.
       x-codeSamples:
@@ -1217,6 +1226,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResourceResponse'
+        '400':
+          description: Failed to change the CDN resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeResourceValidationError'
         '404':
           description: CDN resource is not found.
       x-codeSamples:
@@ -7277,9 +7292,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/LetsEncryptCertificateAlreadyAttached'
-                - $ref: '#/components/schemas/WildcardResourceCnameSSLLEError'
+                $ref: '#/components/schemas/IssueLetsEncryptCertificateValidationError'
   /cdn/resources/{res_id}:
     patch:
       operationId: revoke-lets-encrypt-certificate
@@ -9656,14 +9669,12 @@ components:
           type: object
           properties:
             sslData:
-              type: array
-              items:
-                type: string
+              type: string
               description: |-
                 You cannot link your SSL certificate because a Let's Encrypt certificate issuing attempt is in progress.
                 Please wait until the attempt is completed and try again.
-              example:
-              - You cannot add a certificate because the current issuing attempt is in progress. Please wait until the attempt is completed and try again.
+          example:
+            sslData: You cannot add a certificate because the current issuing attempt is in progress. Please wait until the attempt is completed and try again.
     ChangeAlias:
       type: object
       properties:
@@ -9957,6 +9968,16 @@ components:
           $ref: '#/components/schemas/resource_options'
       required:
       - originGroup
+    ChangeResourceValidationError:
+      anyOf:
+      - $ref: '#/components/schemas/CannotLinkYourSSLCertificate'
+      - $ref: '#/components/schemas/SecondaryCnameAlreadyExistsError'
+      - $ref: '#/components/schemas/SecondaryHostnameReservedError'
+      - $ref: '#/components/schemas/SharedDomainHttpsRequiredError'
+      - $ref: '#/components/schemas/SharedDomainCertificateFixedError'
+      - $ref: '#/components/schemas/SharedDomainSecondaryHostnamesError'
+      - $ref: '#/components/schemas/JSONParseError'
+      - $ref: '#/components/schemas/CommonValidationError'
     ChangeRule:
       type: object
       properties:
@@ -10105,6 +10126,22 @@ components:
                 type: string
               example:
               - CNAME cdn.example.com already exists. Try another CNAME or contact support.
+    CnameReservedError:
+      title: CNAME is reserved
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            cname:
+              type: array
+              description: |-
+                The hostname is reserved and cannot be used, such as a domain the service provides without a label in
+                front of it.
+              items:
+                type: string
+              example:
+              - This CNAME is reserved and cannot be used. Try another CNAME or contact support.
     CommonValidationError:
       title: Other Errors
       type: object
@@ -10740,6 +10777,21 @@ components:
           $ref: '#/components/schemas/resource_options'
       required:
       - cname
+    CreateResourceValidationError:
+      anyOf:
+      - $ref: '#/components/schemas/CnameAlreadyExistsError'
+      - $ref: '#/components/schemas/SecondaryCnameAlreadyExistsError'
+      - $ref: '#/components/schemas/SharedDomainNotEnabledError'
+      - $ref: '#/components/schemas/SharedDomainAccountNotSetUpError'
+      - $ref: '#/components/schemas/SharedDomainClosedError'
+      - $ref: '#/components/schemas/SharedDomainLabelError'
+      - $ref: '#/components/schemas/CnameReservedError'
+      - $ref: '#/components/schemas/SecondaryHostnameReservedError'
+      - $ref: '#/components/schemas/SharedDomainHttpsRequiredError'
+      - $ref: '#/components/schemas/SharedDomainCertificateFixedError'
+      - $ref: '#/components/schemas/SharedDomainSecondaryHostnamesError'
+      - $ref: '#/components/schemas/JSONParseError'
+      - $ref: '#/components/schemas/CommonValidationError'
     CreateRule:
       type: object
       properties:
@@ -11342,12 +11394,12 @@ components:
         active_to: null
         client_id: 1
         resource_id: 1
-        cname: cdn1.example.com
+        cname: api.example.com
       - id: 2
         active_from: '2020-03-21T04:36:30.269Z'
         active_to: '2020-04-21T04:36:33.062Z'
         client_id: 1
-        cname: cdn2.example.com
+        cname: app.example.com
     GetPublicIPList:
       type: object
       properties:
@@ -11946,6 +11998,12 @@ components:
           - 4
           - 6
           example: 4
+    IssueLetsEncryptCertificateValidationError:
+      anyOf:
+      - $ref: '#/components/schemas/LetsEncryptCertificateAlreadyAttached'
+      - $ref: '#/components/schemas/WildcardResourceCnameSSLLEError'
+      - $ref: '#/components/schemas/SharedDomainHttpsRequiredError'
+      - $ref: '#/components/schemas/SharedDomainCertificateFixedError'
     JSONParseError:
       title: Invalid request JSON schema
       type: object
@@ -14101,8 +14159,8 @@ components:
           originGroup_name: Resource origin group
           originProtocol: HTTP
           secondaryHostnames:
-          - cdn1.example.com
-          - cdn2.example.com
+          - images.example.com
+          - video.example.com
           shielded: false
           shield_dc: null
           shield_enabled: false
@@ -14158,8 +14216,8 @@ components:
             originGroup_name: Resource origin group
             originProtocol: HTTP
             secondaryHostnames:
-            - cdn1.example.com
-            - cdn2.example.com
+            - images.example.com
+            - video.example.com
             shielded: false
             shield_dc: null
             shield_enabled: false
@@ -15392,7 +15450,136 @@ components:
               type: string
               description: The additional CNAME is already used by another resource in our system. Try another additional CNAME or contact support.
           example:
-            secondaryHostnames: Hostname cdn1.example.com already exists.
+            secondaryHostnames: Hostname images.example.com already exists.
+    SecondaryHostnameReservedError:
+      title: Additional CNAME is reserved
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            secondaryHostnames:
+              type: string
+              description: The additional CNAME is reserved and cannot be used, such as a hostname on a domain the service provides.
+          example:
+            secondaryHostnames: This CNAME is reserved and cannot be used. Try another CNAME or contact support.
+    ServiceTemporarilyUnavailableError:
+      title: Service temporarily unavailable
+      type: object
+      properties:
+        error:
+          type: string
+          description: |-
+            The service cannot process the request right now. Retry later; when the response has a `Retry-After`
+            header, wait that number of seconds first.
+          example: The account is still being prepared. Please retry in a minute.
+    SharedDomainAccountNotSetUpError:
+      title: Account is not set up for the provided domain
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            cname:
+              type: array
+              description: |-
+                Your account is not set up for resources on this domain. Use the domain the service provides for your
+                account.
+              items:
+                type: string
+              example:
+              - This account is not set up for resources on example.net.
+    SharedDomainCertificateFixedError:
+      title: Certificate of the provided domain cannot be changed
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sslData:
+              type: array
+              description: |-
+                A resource on a domain the service provides uses that domain's certificate. You cannot link another
+                certificate to it.
+              items:
+                type: string
+              example:
+              - The certificate of a resource on example.net comes with the domain and cannot be changed.
+    SharedDomainClosedError:
+      title: Provided domain is closed for new resources
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            cname:
+              type: array
+              description: The domain the service provides does not accept new resources.
+              items:
+                type: string
+              example:
+              - example.net is closed for new resources.
+    SharedDomainHttpsRequiredError:
+      title: HTTPS cannot be disabled on the provided domain
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            sslEnabled:
+              type: array
+              description: HTTPS cannot be disabled for a resource on a domain the service provides.
+              items:
+                type: string
+              example:
+              - HTTPS cannot be disabled for a resource on example.net.
+    SharedDomainLabelError:
+      title: Label is not allowed on the provided domain
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            cname:
+              type: array
+              description: |-
+                The label in front of the domain the service provides is not allowed. The message says why:
+                - it is not a single label;
+                - it uses characters other than letters, digits and hyphens, or starts or ends with a hyphen;
+                - it is shorter than 5 or longer than 63 characters;
+                - the hostname is longer than 253 characters;
+                - it starts with `xn--`;
+                - the hostname is not available.
+              items:
+                type: string
+              example:
+              - Use at least 5 characters.
+    SharedDomainNotEnabledError:
+      title: Resources on the provided domain are not enabled
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            cname:
+              type: array
+              description: Resources on a domain the service provides are not enabled for your account.
+              items:
+                type: string
+              example:
+              - Resources on example.net are not enabled for this account.
+    SharedDomainSecondaryHostnamesError:
+      title: Additional CNAMEs are not allowed on the provided domain
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            secondaryHostnames:
+              type: string
+              description: A resource on a domain the service provides cannot have additional CNAMEs. Use aliases instead.
+          example:
+            secondaryHostnames: Secondary hostnames are not allowed for a resource on example.net. Use aliases instead.
     ShieldingLocationItem:
       type: object
       properties:
@@ -15844,6 +16031,15 @@ components:
         Delivery domains that will be used for content delivery through a CDN.
 
         Delivery domains should be added to your DNS settings.
+
+        A delivery domain can also be a hostname on a domain the service provides for your account,
+        such as `my-site.example.net`. You do not add such a hostname to your DNS settings. It is a single label
+        in front of the provided domain, and the label:
+        - is 5 to 63 characters long;
+        - uses only letters, digits and hyphens, without a leading or trailing hyphen;
+        - does not start with `xn--`.
+
+        Some labels are reserved and cannot be used.
       example: cdn.example.com
     cors:
       type: object
@@ -17563,12 +17759,14 @@ components:
         Additional delivery domains (CNAMEs) that will be used to deliver content via the CDN.
 
         Up to ten additional CNAMEs are possible.
+
+        A resource on a domain the service provides cannot have additional delivery domains. Use aliases instead.
       items:
         type: string
         format: domain
       example:
-      - first.example.com
-      - second.example.com
+      - images.example.com
+      - video.example.com
     secure_key:
       type: object
       nullable: true
@@ -17798,6 +17996,9 @@ components:
         ID of the SSL certificate linked to the CDN resource.
 
         Can be used only with `"sslEnabled": true`.
+
+        In responses, the value is `null` when HTTPS uses the certificate of a domain the service provides. That
+        certificate cannot be replaced or removed: for such a resource, omit the field or send `null`.
       example: 192
     sslEnabled:
       type: boolean
@@ -17808,6 +18009,8 @@ components:
         Possible values:
         - **true** - HTTPS is enabled.
         - **false** - HTTPS is disabled.
+
+        HTTPS cannot be disabled for a resource on a domain the service provides.
       example: false
     ssl_ca_add:
       type: object
