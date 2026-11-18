@@ -1,10 +1,10 @@
 ---
 title: "Reserved tags"
 sidebarTitle: Reserved tags
-description: Reserved tags are preconfigured tags that trigger actions in custom rules for WAAP traffic, login pages, automation, and LLM resources.
+description: Reserved tags are predefined tags that custom rules assign to WAAP requests.
 ---
 
-Reserved tags are preconfigured tags that trigger specific actions in custom rules. They play a key role in [tag-generating rules](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules)—each rule contains a reserved tag in its [condition](/waap/waap-rules/custom-rules#rule-conditions). 
+Reserved tags are predefined tags. A custom rule assigns one in the **Then** action. The condition selects which requests receive the tag. 
 
 ## Available reserved tags
 
@@ -66,65 +66,57 @@ Alternatively, you can inject a header for logged-in users. WAAP will use this h
 
 ## Inspect WAAP traffic
 
-If you want to track certain traffic on the [WAAP analytics](/waap/analytics#web-application-firewall-requests) page, use the reserved **monitor** tag. Each request marked with this tag will appear: 
+To track certain traffic on the [Events](/waap/analytics/events) page, use the reserved **monitor** tag. Each request marked with this tag will appear: 
 
-  * On the **Web Application Firewall Requests** graph. Enable the **Monitored Requests** checkbox to view all tagged requests. 
+  * On the Events chart, in the **Monitored** series. 
 
-  * In the **Requests** table. Select the **Monitored** traffic type to view the tagged requests.
-
-
-
-<Frame>![WAAP requests graph on the Analytics page](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/monitored-tag-analytics-page.png)</Frame>
+  * In the events table, where **Action** is **Monitored**.
 
 
 
-When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible on the [WAAP](/waap/analytics#waap-page) analytics page.
+<Frame>![Events chart with the Monitored series](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/monitored-tag-analytics-page.png)</Frame>
+
+
+
+When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible on the [Events](/waap/analytics/events) page.
 
 ### Sample rule with the monitor tag
 
 As an example, create a rule that will allow you to view analytics on monitored requests from particular countries: 
 
-1\. In the **IF** section, select **Country** from the dropdown. 
+1\. In the condition row, select **Country**. The operator is **Equals**.
 
-2\. In the following dropdown, select **-** to apply the rule to every request that comes from the relevant country. 
+2\. Choose the country.
 
-3\. Select **Equals** to trigger the rule only when the request comes from the specified country. 
+3\. In the **Then** section, select **Tag** and select **Monitor**.
 
-4\. Choose the needed country from the list. 
-
-5\. In the **THEN** section, select the **Tag** action and choose **Monitor**. 
-
-6\. Click **Save** to create the rule. 
+4\. Click **Save**. 
 
 
 <Frame>![A custom rule for tagging requests from certain countries](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/monitored-tag-certain-countries.png)</Frame>
 
 
 
-All monitored requests will now be displayed on the [WAAP analytics](/waap/analytics#web-application-firewall-requests) page.
+All monitored requests are displayed on the [Events](/waap/analytics/events) page.
 
 ## Ignore automation services
 
 This functionality will notify WAAP of legitimate automation behavior and exclude requests from being affected by our [Anti-automation and bot protection](/waap/waap-policies/anti-automation-and-bot-protection) policy group. This means that you stay protected from unknown automation services while allowing known bots to access your domain. 
 
-To allow the activity of some automation services, create a custom rule with the **Ignored Automation** tag: 
+To allow a known automation service, create a custom rule that matches its IP address and assigns the **Ignored Automation** tag:
 
-1\. In the **IF** section, select **User Agent** from the dropdown. 
+1\. In the condition row, select **IP**. The operator is **Equals**.
 
-2\. In the following dropdown, select **-** to apply the rule to every request that comes from the relevant bot. In this example, "mybot".
+2\. Enter `203.0.113.10`.
 
-3\. Enter the bot in the **User Agent** field. 
-
-4\. In the **THEN** section, select the **Tag** action and choose **Ignored Automation**.
+3\. In the **Then** section, select **Tag**, then select **Ignored Automation**.
 
 
-<Frame>![A custom rule for tagging requests with ignored bot activity](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/monitored-tag-ignored-automation.png)</Frame>
+<Frame>![A custom rule that assigns Ignored Automation by IP address](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/monitored-tag-ignored-automation.png)</Frame>
 
 
 
-5\. Click **Save** to create the rule. 
-
-WAAP will apply no actions to the activity of "mybot". 
+4\. Click **Save**. 
 
 ## Protect login pages
 
@@ -132,20 +124,18 @@ Use this tag to notify WAAP if certain endpoints are used as login pages. This f
 
 To identify login pages for the WAAP, create the following custom rule: 
 
-1\. In the **IF** section, select **URL** from the dropdown. 
+1\. In the condition row, select **URL**. The operator is **Contains**.
 
-2\. In the following dropdown, select **-** to apply the rule to the exact endpoint. 
+2\. Enter the login page path.
 
-3\. Provide the login page endpoint. 
-
-4\. In the **THEN** section, select the **Tag** action and choose **Login Page**. 
+3\. In the **Then** section, select **Tag** and select **Login Page**. 
 
 
 <Frame>![A custom rule for tagging requests to login pages](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-login-page-activity.png)</Frame>
 
 
 
-5\. Click **Save** to create the rule. 
+4\. Click **Save**. 
 
 ## Identify LLM resources
 
@@ -155,7 +145,7 @@ Create a custom or advanced rule that matches reliable LLM resource identifiers 
 
 1\. In the **IF** section, add conditions that identify the LLM resource. Match a URL path that contains the LLM endpoint, or match a dedicated request or response header that the application sets for LLM traffic.
 
-2\. In the **THEN** section, select the **Tag** action and choose **LLM Trigger**.
+2\. In the **Then** section, select **Tag** and select **LLM Trigger**.
 
 
 <Frame>![Custom rule applying the LLM Trigger reserved tag to an LLM URL path](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-llm-trigger.png)</Frame>
@@ -182,28 +172,20 @@ For example, if the threshold for declined orders is set to three, and the thres
 
 ### Sample rule with the legitimate and malicious activity tags
 
-Using the **legitimate activity** and **malicious activity** tags, you can categorize particular requests based on the behavior they exhibit. To do so, create the following custom rule: 
+Assign **Legitimate Activity** when the request contains a header that the application sets for this behavior:
 
-1\. In the **IF** section, select **Header** from the dropdown. 
+1\. In the condition row, select **Header exists**. The operator is **Equals**.
 
-2\. In the **Header key** field, enter cookie. 
+2\. In **Header key**, enter `X-Legitimate`.
 
-3\. In the following dropdown, select **-** to apply the rule to the exact header. 
-
-4\. Select **Contains** to trigger the rule even when the header partially matches the specified one. 
-
-5\. In the **Header** key field, enter paid. 
-
-6\. In the **THEN** section, select the **Tag** action and choose **Legitimate Activity**.
+3\. In the **Then** section, select **Tag**, then select **Legitimate Activity**.
 
 
-<Frame>![A custom rule for tagging requests from paid users](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-paid-users-activity.png)</Frame>
+<Frame>![A custom rule that assigns Legitimate Activity from a request header](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-paid-users-activity.png)</Frame>
 
 
 
-7\. Click **Save**. 
-
-After you create the rule, requests from paid users will be treated as safe and the ones demonstrating legitimate activity. 
+4\. Click **Save**. 
 
 <Info>
 **Info**
@@ -213,49 +195,43 @@ Contact our [support team](mailto:support@gcore.com) to get additional configura
 
 ## Detect denial of inventory
 
-You can create custom rules with reserved tags to prevent denial of inventory (inventory hoarding) attacks. 
+Custom rules assign reserved tags to the cart and checkout endpoints that denial of inventory (inventory hoarding) attacks use.
 
-This mitigation method aims to detect hoarder bots that use endpoints to rapidly add items to a cart without completing the purchase. 
+This mitigation method aims to detect hoarder bots that use endpoints to rapidly add items to a cart without completing the purchase.
 
-WAAP will calculate the number of items in each client's cart and compare the number to the threshold configured by support. If the threshold is exceeded and the client doesn't check out the order, WAAP will tag this client as hoarderbot. 
+Support configures the cart threshold. The rules below assign **Cart Checkout** to the checkout URL and **Item Added to Cart** to the cart URL.
 
-To detect denial of inventory, create the following rule: 
+WAAP counts the items in each client's cart and compares that count with the threshold. If the count exceeds the threshold and the client does not check out, WAAP tags the client as hoarderbot.
 
-1\. In the **IF** section, select **URL** from the dropdown. 
+Create a rule that assigns **Cart Checkout**: 
 
-2\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+1\. In the condition row, select **URL**. The operator is **Contains**.
 
-3\. Define match criteria. Select **Contains** to apply the rule even when a URL partly matches the specified one. 
+2\. Enter `/checkout.aspx`.
 
-4\. Enter the **checkout.aspx** in the URL field. 
-
-5\. In the **THEN** section, select the **Tag** action and choose the **Cart Checkout** tag.
+3\. In the **Then** section, select **Tag** and select **Cart Checkout**.
 
 
 <Frame>![A custom rule to detect denial of inventory attacks](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-cart-checkout.png)</Frame>
 
 
 
-6\. Click **Save** to create the rule.
+4\. Click **Save**.
 
-Similarly, create a rule that will check for the number of items added to the cart and enforce relevant actions on similar requests: 
+Create a rule that assigns **Item Added to Cart**: 
 
-1\. In the **IF** section, select **URL** from the dropdown. 
+1\. In the condition row, select **URL**. The operator is **Contains**.
 
-2\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
+2\. Enter `/addtocart.aspx`.
 
-3\. Define match criteria. Select **Contains** to apply the rule even when a URL partly matches the specified one. 
-
-4\. Enter the **addtocart.aspx** in the **URL** field. 
-
-5\. In the **THEN** section, select the **Tag** action and apply the **Item Added to Cart** tag to each request that matches the specified criteria.
+3\. In the **Then** section, select **Tag** and select **Item Added to Cart**.
 
 
 <Frame>![A custom rule to detect item added to cart](/images/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags/tag-items-added-to-cart.png)</Frame>
 
 
 
-6\. Click **Save** to create the rule.
+4\. Click **Save**.
 
 ## Use reserved tags for API protection
 
