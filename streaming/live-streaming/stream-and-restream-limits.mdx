@@ -10,25 +10,11 @@ The two limits follow different parameters because of what Gcore can observe. A 
 
 ## Live streams
 
-The live stream limit counts only streams whose `live` field is `true`, meaning the stream is receiving input right now. The `active` field is an on/off switch and is not part of the count, so an enabled stream without input takes no slot.
+The live stream limit is the number of streams that can be live at the same moment. A stream is live while Gcore receives its video, either pushed by an encoder or pulled by Gcore from a source URL, and the `live` field is `true`. A live stream takes one slot, and the slot is freed as soon as the stream stops being live. A stream that is created or enabled (`active` is `true`) but has no video takes no slot, so any number of streams can be created and enabled.
 
-```text
-LIVE STREAM LIMIT
+Gcore checks the limit when a stream tries to go live, not when it is created or enabled. In the REST API, creating a stream or setting `active` to `true` is never refused because of this limit. Streams that are already live are not affected, and only the stream that tries to start over the limit is refused.
 
- stream
-   |
-   +-- active  (on/off switch) ........ not counted
-   |
-   +-- live    (receiving input)
-         |
-         +-- true  ... takes 1 slot
-         +-- false ... takes 0 slots
-
- checked when a stream starts receiving input:
-   streams with live = true  >=  limit   ->   the new stream is refused
-```
-
-The check runs when a stream tries to go live, not when it is created or enabled. In the REST API, creating a stream or setting `active` to `true` is never refused because of this limit. A stream that Gcore pulls from a source counts like a pushed stream while its `live` field is `true`, and the slot is freed as soon as the stream stops being live.
+The Live Streaming page of the Customer Portal shows the limit counter. To find out why a stream does not start, compare the counter with the number of streams that are live.
 
 ### Live stream counting example
 
@@ -43,20 +29,28 @@ The table shows 8 streams, limit 3. Only the `live` column decides which streams
 | Stream 5 | false | false | 0 (disabled) |
 | Stream 6 | true | <mark>true</mark> | 1 |
 | Stream 7 | false | false | 0 (disabled) |
-| Stream 8 | true | false | 0 (enabled, no input yet) |
+| Stream 8 | true | false | 0 (enabled, pull stream waiting for a free slot) |
 
-Three streams are live, so the limit is reached. When Stream 3 starts receiving input, Gcore refuses it, and once Stream 1 stops, Stream 3 can go live.
+Three streams are live, so the limit is reached. When Stream 3 starts receiving input, Gcore refuses it, and when Stream 8 is due to start pulling, it stays offline. Once Stream 1 stops, a slot is free and Stream 3 can go live.
 
-### Live stream errors
+### Live stream behavior at the limit
 
-At the limit, Gcore refuses the stream when it starts receiving input, and what the encoder sees depends on the ingest protocol.
+What happens to a stream that tries to go live at the limit depends on how its video arrives.
+
+For a push stream, Gcore refuses the connection when the encoder starts sending video, and what the encoder sees depends on the ingest protocol.
 
 | Ingest | Response at the limit |
 | --- | --- |
 | RTMP/SRT | The connection is accepted and closed at once. No error text is returned, and the encoder reports a closed connection (FFmpeg reports `End of file` while submitting a packet to the muxer) |
 | WebRTC (WHIP) | HTTP 403 with the header `X-Reason-Code: 2005`. The body is a plain HTML 403 Forbidden page, not JSON |
 
-A disabled stream returns the reason code 2004 before the limit is checked, which is one of the [WHIP&nbsp;reason&nbsp;codes](/streaming/live-streaming/protocols/webrtc). To free a slot, stop the encoder that pushes into a live stream, or set `active` to `false` on a stream that Gcore pulls.
+A disabled stream returns the reason code 2004 before the limit is checked, which is one of the [WHIP&nbsp;reason&nbsp;codes](/streaming/live-streaming/protocols/webrtc).
+
+For a pull stream, Gcore does not start pulling the source, and no error is returned. The stream stays enabled (`active` is `true`) with the status offline (`live` is `false`). When any other live stream stops and a slot is free, Gcore starts pulling the source automatically, and no action on the stream is needed.
+
+A refused start of a push or a pull stream sends no [webhook](/streaming/extra-features/get-webhooks-from-the-streaming-platform#webhooks-for-live-streams), so a missing `live: true` event does not show that the limit was reached. Compare the limit counter with the number of live streams instead.
+
+To free a slot, stop the encoder of a live push stream, or set `active` to `false` on a live pull stream.
 
 ## Restreams
 
@@ -113,7 +107,7 @@ The text in brackets is `N/limit`, where N is the number of active restreams the
 
 ### Restream into another stream
 
-A restream can push into another stream of the same account, which turns stream A into the source of stream B. This A to B setup takes two live stream slots and one restream slot while both streams are live.
+A restream can push into another stream of the same account, which turns stream A into the source of stream B. This A to B setup is [not&nbsp;allowed](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-into-another-gcore-stream) because it consumes a large amount of Gcore resources for no reason. An existing A to B restream takes two live stream slots and one restream slot while both streams are live.
 
 ```text
 A -> B RESTREAM
