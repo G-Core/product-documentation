@@ -48,7 +48,7 @@ For SRT target URLs, only `mode=caller` is supported. Gcore initiates the outbou
 
 <p>A restream can be created, enabled, or disabled while the source stream is live, and the encoder keeps its connection to Gcore. Setting `active` to `false` stops a running restream within seconds, and setting it back to `true` starts it again, while the source stream and the encoder keep running.</p>
 
-<p>The destination can also be another Gcore stream of the same account. The target URL is the `push_url` of that stream, with `rtmps://` and port 443 for an RTMPS push. This [A&nbsp;to&nbsp;B](/streaming/live-streaming/stream-and-restream-limits#restream-into-another-stream) setup counts toward both the live stream and restream limits.</p>
+<p>The destination can also be another Gcore stream of the same account, but this setup is [not&nbsp;allowed](#restream-into-another-gcore-stream) because it consumes a large amount of Gcore resources for no reason.</p>
 
 <p>Before configuring a restream, verify that the source stream meets the destination's encoding requirements. A mismatch in bitrate, codec, or keyframe interval causes the destination to reject or drop the incoming feed.</p>
 
@@ -628,6 +628,14 @@ curl -X DELETE "https://api.gcore.com/streaming/restreams/$RESTREAM_ID" \
 The default account limit is three restreams. To increase this limit, contact [technical&nbsp;support](mailto:support@gcore.com) and specify the number of restreams needed. Gcore support will update the limit and notify when the change is active.
 
 Only restreams with `active` set to `true` count toward this limit, even when they are not sending, and a request over the limit returns HTTP 422. The [limit&nbsp;rules](/streaming/live-streaming/stream-and-restream-limits#restreams) show the counting with an example and the error body.
+
+## Restream into another Gcore stream
+
+Restreaming a stream into another ingest point of Gcore Streaming, which means the `push_url` of another stream of the same account, is not allowed. Do not create such restreams, and remove existing ones. Restreams to external destinations (YouTube, Facebook, Twitch, or any RTMP, RTMPS, or SRT server) are not affected.
+
+The reason is that this setup consumes a large amount of Gcore resources for no reason. The video is already inside Gcore, but the restream sends it out of the Gcore network and back to the Gcore ingest, so the same video is received, processed, and transcoded twice. It occupies two live stream slots and one restream slot, adds a delay and one more point of failure on the route, and the second stream gets its own timestamps instead of the ones from the first. The duplicate load on the ingest and transcoding servers is capacity that is wasted for no benefit, because the video is already available for processing and delivery in the first stream.
+
+The [limit&nbsp;rules](/streaming/live-streaming/stream-and-restream-limits#restream-into-another-stream) describe how an existing restream of this kind is counted.
 
 ## Source stream recovery
 
