@@ -83,6 +83,7 @@ Identify the task, then read exactly one skill file. Read nothing else until the
 | Re-test API tabs after a backend change | `.claude/skills/api-retest/SKILL.md` |
 | Add a Terraform tab to an existing article | `.claude/skills/terraform-use-case/SKILL.md` |
 | Audit an article step by step against the live portal and fix it | `.claude/skills/full-audit/SKILL.md` |
+| Regression-test an existing article against the live portal | `.claude/skills/regression-test/SKILL.md` |
 | Product team: new feature - draft article and draft PR | `.claude/skills/feature-draft/SKILL.md` |
 | Compile a multi-product end-to-end guide | `.claude/skills/cookbook/SKILL.md` |
 | Take or retake a screenshot for an article step | `.claude/skills/article-screenshot/SKILL.md` |
