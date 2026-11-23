@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>Secure token restricts content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp. The CDN rejects requests with a missing, expired, or incorrect hash with a `403 Forbidden` response.</p>
+<p>Secure token restricts content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp. A missing or incorrect hash returns `403 Forbidden`. An expired link returns `410 Gone`. The CDN does not forward either request to the origin.</p>
 
 ## Customer Portal setup
 
@@ -47,10 +47,10 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 curl -I "https://cdn.example.com/photo.jpeg"
 ```
 
-<p>The CDN returns `403 Forbidden` and does not forward the request to the origin.</p>
+<p>A missing token returns `403 Forbidden`. An expired link returns `410 Gone`. The CDN does not forward either request to the origin.</p>
 
 <Warning>
-Enabling secure token may decrease the cache hit ratio. To improve it, enable [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting), which treats objects with different query parameters as one cacheable object.
+Enabling secure token may decrease the cache hit ratio, because each signed URL carries its own `md5` and `expires`. The edge checks the token before it serves the file, including a file that is already in cache. Set [Ignore&nbsp;Query&nbsp;String](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers#query-string-setting) to **Ignore only** for `md5` and `expires`, so the signed URLs of one file share one cache entry.
 </Warning>
 
 ## Signed URL format
@@ -325,7 +325,7 @@ echo -n '2147483647/images/1.jpg secret_key' | openssl md5 -binary | openssl bas
 
 ## IP binding and mobile networks
 
-<p>When a secure token includes the client IP address, the CDN recomputes the hash with the IP on the incoming request. A token signed for one address fails as soon as the carrier moves the client to another.</p>
+<p>When a secure token includes the client IP address, the CDN recomputes the hash with the IP on the incoming request. A token signed for one address fails when the carrier moves the client to another address or the client switches between IPv4 and IPv6. For downloads and media, leave the client IP out of the hash.</p>
 
 <p>On some mobile networks the public address changes within minutes, because the ISP routes many subscribers through carrier-grade NAT and rotates addresses across a pool.</p>
 
@@ -454,7 +454,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 </MethodSection>
   <MethodSection id="terraform" label="Terraform">
 
-<p>Restrict content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `secure_key` is enabled, a missing, expired, or incorrect hash returns `403 Forbidden`. A blank `key` returns HTTP 400 and the message `This field may not be blank.` Run `terraform apply` after editing `options`.</p>
+<p>Restrict content access to URLs that contain a valid MD5 hash and a Unix expiration timestamp with the [Terraform&nbsp;provider](/developer-tools/terraform/overview) v2. When `secure_key` is enabled, a missing or incorrect hash returns `403 Forbidden`, and an expired link returns `410 Gone`. The CDN does not forward either request to the origin. A blank `key` returns HTTP 400 and the message `This field may not be blank.` Run `terraform apply` after editing `options`.</p>
 
 ## Type 2 signing
 
