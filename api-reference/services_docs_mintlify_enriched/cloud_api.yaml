@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: ca5cdaa7138c
+  version: 3abdf8330998
 servers:
 - url: https://api.gcore.com
 paths:
@@ -351,10 +351,10 @@ paths:
       - in: query
         name: ip_address
         required: false
-        description: Exact IP filter on a fixed IP.
+        description: Filter by an IP address of a port of the server. The filter compares the fixed IPs and the floating IPs of the port.
         schema:
-          $ref: '#/components/schemas/IpAddressFilter'
-          description: Exact IP filter on a fixed IP.
+          $ref: '#/components/schemas/PortAddressFilter'
+          description: Filter by an IP address of a port of the server. The filter compares the fixed IPs and the floating IPs of the port.
         style: deepObject
         explode: true
       - in: query
@@ -3110,10 +3110,10 @@ paths:
       - in: query
         name: ip_address
         required: false
-        description: Filter by an IP address of a port of the basic VM.
+        description: Filter by an IP address of a port of the basic VM. The filter compares the fixed IPs and the floating IPs of the port.
         schema:
-          $ref: '#/components/schemas/IpAddressFilter'
-          description: Filter by an IP address of a port of the basic VM.
+          $ref: '#/components/schemas/PortAddressFilter'
+          description: Filter by an IP address of a port of the basic VM. The filter compares the fixed IPs and the floating IPs of the port.
         style: deepObject
         explode: true
       - in: query
@@ -23015,10 +23015,10 @@ paths:
       - in: query
         name: ip_address
         required: false
-        description: Exact IP filter on a fixed IP.
+        description: Filter by an IP address of a port of the instance. The filter compares the fixed IPs and the floating IPs of the port.
         schema:
-          $ref: '#/components/schemas/IpAddressFilter'
-          description: Exact IP filter on a fixed IP.
+          $ref: '#/components/schemas/PortAddressFilter'
+          description: Filter by an IP address of a port of the instance. The filter compares the fixed IPs and the floating IPs of the port.
         style: deepObject
         explode: true
       - in: query
@@ -73698,6 +73698,18 @@ components:
             type: string
           title: Servergroups
           type: array
+        slurm_clusters:
+          description: IDs of created Slurm clusters
+          items:
+            type: string
+          title: Slurm Clusters
+          type: array
+        slurm_node_sets:
+          description: IDs of created Slurm node sets
+          items:
+            type: string
+          title: Slurm Node Sets
+          type: array
         snapshots:
           description: IDs of created volume snapshots
           items:
@@ -74616,6 +74628,15 @@ components:
           format: uuid4
           title: Id
           type: string
+        instance_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: ID of the instance that was last given for this member when it was created or when the pool members were replaced. It does not change if the instance changes later. Null for a member that was added by address without `instance_id`, or that was created before this field was added.
+          examples:
+          - 169942e0-9b53-42df-95ef-1a8b6525c2bd
+          title: Instance Id
         monitor_address:
           anyOf:
           - format: ipvanyaddress
@@ -74692,6 +74713,7 @@ components:
       - monitor_address
       - monitor_port
       - subnet_id
+      - instance_id
       - backup
       title: DetailedLbPoolMemberSerializer
       type: object
@@ -77777,19 +77799,10 @@ components:
         `port_group` is the 0-based bond index (`null` for DPU/SmartNIC, which has no trunk).
         `trunk` conveys the role within the bond.
       properties:
-        floating_ip:
-          anyOf:
-          - format: ipvanyaddress
-            type: string
-          - type: 'null'
-          description: Public floating IP NAT-ing this interface, if any.
-          examples:
-          - 5.188.135.29
-          title: Floating Ip
         ip_assignments:
-          description: Fixed IPs assigned to the port.
+          description: Fixed IPs assigned to the port, each with its floating IP.
           items:
-            $ref: '#/components/schemas/PortIpAssignmentSerializer'
+            $ref: '#/components/schemas/GlobalPortIpAssignmentSerializer'
           title: Ip Assignments
           type: array
         mac_address:
@@ -77835,7 +77848,6 @@ components:
       - network_id
       - mac_address
       - ip_assignments
-      - floating_ip
       - port_group
       - trunk
       title: GlobalBaremetalInterfaceSerializer
@@ -78353,19 +78365,10 @@ components:
       type: object
     GlobalInstanceInterfaceSerializer:
       properties:
-        floating_ip:
-          anyOf:
-          - format: ipvanyaddress
-            type: string
-          - type: 'null'
-          description: Public floating IP NAT-ing this interface, if any.
-          examples:
-          - 5.188.135.29
-          title: Floating Ip
         ip_assignments:
-          description: Fixed IPs assigned to the port.
+          description: Fixed IPs assigned to the port, each with its floating IP.
           items:
-            $ref: '#/components/schemas/PortIpAssignmentSerializer'
+            $ref: '#/components/schemas/GlobalPortIpAssignmentSerializer'
           title: Ip Assignments
           type: array
         mac_address:
@@ -78390,7 +78393,6 @@ components:
       - network_id
       - mac_address
       - ip_assignments
-      - floating_ip
       title: GlobalInstanceInterfaceSerializer
       type: object
     GlobalInstanceListOrderBy:
@@ -78755,6 +78757,58 @@ components:
       - count
       - results
       title: GlobalPortCollectionSerializer
+      type: object
+    GlobalPortFloatingIpSerializer:
+      properties:
+        id:
+          description: Floating IP ID.
+          example: c64e5db1-5f1f-43ec-a8d9-5090df85b82d
+          examples:
+          - c64e5db1-5f1f-43ec-a8d9-5090df85b82d
+          format: uuid4
+          title: Id
+          type: string
+        ip_address:
+          description: Public IP address of the floating IP.
+          example: 5.188.135.29
+          examples:
+          - 5.188.135.29
+          format: ipvanyaddress
+          title: Ip Address
+          type: string
+      required:
+      - id
+      - ip_address
+      title: GlobalPortFloatingIpSerializer
+      type: object
+    GlobalPortIpAssignmentSerializer:
+      properties:
+        floating_ip:
+          anyOf:
+          - $ref: '#/components/schemas/GlobalPortFloatingIpSerializer'
+          - type: 'null'
+          description: Floating IP that translates this address. `null` when the address has no floating IP. An IPv6 address always has `null`.
+        ip_address:
+          description: The IP address assigned to the port from the specified subnet
+          example: 192.168.123.20
+          examples:
+          - 192.168.123.20
+          format: ipvanyaddress
+          title: Ip Address
+          type: string
+        subnet_id:
+          description: ID of the subnet that allocated the IP
+          example: 351b0dd7-ca09-431c-be53-935db3785067
+          examples:
+          - 351b0dd7-ca09-431c-be53-935db3785067
+          format: uuid4
+          title: Subnet Id
+          type: string
+      required:
+      - subnet_id
+      - ip_address
+      - floating_ip
+      title: GlobalPortIpAssignmentSerializer
       type: object
     GlobalPortListOrderBy:
       enum:
@@ -94121,6 +94175,39 @@ components:
       - transaction
       title: PoolerModes
       type: string
+    PortAddressFilter:
+      additionalProperties: false
+      description: |-
+        Filter by IP address against the fixed IPs of the resource ports and the floating IPs on these ports.
+
+        `exact` finds full addresses. `contains` finds a part of an address.
+        Repeat the key to find any of several values.
+
+        Examples:
+
+        - `ip_address[exact]=192.168.1.10` - a port has this fixed IP.
+        - `ip_address[exact]=203.0.113.5` - a port has this floating IP.
+        - `ip_address[contains]=192.168` - a fixed IP or a floating IP contains "192.168".
+
+        An unsupported operator (for example `prefix`) gives a 400.
+      properties:
+        contains:
+          description: Substring match on IP address, e.g. `[contains]=192.168`. Repeat the key to match any substring.
+          items:
+            type: string
+          maxItems: 5
+          title: Contains
+          type: array
+        exact:
+          description: Exact IP match, e.g. `[exact]=192.168.1.10`. Repeat the key to match any of several.
+          items:
+            format: ipvanyaddress
+            type: string
+          maxItems: 20
+          title: Exact
+          type: array
+      title: PortAddressFilter
+      type: object
     PortAndInstanceCollectionSerializer:
       properties:
         count:
@@ -94884,12 +94971,39 @@ components:
       type: string
     PriceFloatingIpSerializer:
       properties:
-        floating_ip_id:
-          description: Existing floating IP. Omit it for a new floating IP.
+        id:
+          description: ID of an existing floating IP. Omit it for a new floating IP.
           format: uuid4
-          title: Floating Ip Id
+          title: Id
           type: string
       title: PriceFloatingIpSerializer
+      type: object
+    PriceIpAssignmentSerializer:
+      properties:
+        floating_ip:
+          $ref: '#/components/schemas/PriceFloatingIpSerializer'
+          description: Floating IP of this address of the new port.
+        ip_address:
+          anyOf:
+          - format: ipv4
+            type: string
+          - format: ipv6
+            type: string
+          description: IP address to assign. Omit it to get any free address of the subnet, which is the only option when the subnet's free addresses are not known to the caller.
+          examples:
+          - 192.168.123.20
+          title: Ip Address
+        subnet_id:
+          description: ID of the subnet
+          example: b39792c3-3160-4356-912e-ba396c95cdcf
+          examples:
+          - b39792c3-3160-4356-912e-ba396c95cdcf
+          format: uuid4
+          title: Subnet Id
+          type: string
+      required:
+      - subnet_id
+      title: PriceIpAssignmentSerializer
       type: object
     PricePortReferenceSerializer:
       properties:
@@ -94913,7 +95027,7 @@ components:
         ip_assignments:
           description: IP addresses of the new port. Omit the field to get one address from an IPv4 subnet.
           items:
-            $ref: '#/components/schemas/IpAssignmentRequestSerializer'
+            $ref: '#/components/schemas/PriceIpAssignmentSerializer'
           maxItems: 64
           minItems: 1
           title: Ip Assignments
