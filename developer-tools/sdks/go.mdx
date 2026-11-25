@@ -70,7 +70,7 @@ params.Name = param.Null[string]()
 ```
 
 <Warning>
-Flavor IDs are region-specific. Run <code>client.Cloud.Instances.Flavors.List(ctx, params)</code> to see what flavors are available in a given region before creating an instance.
+Flavor names are region-specific. Run <code>client.Cloud.Instances.Flavors.List(ctx, params)</code> to see what flavors are available in a given region before creating an instance.
 </Warning>
 
 ## Task polling
@@ -78,20 +78,15 @@ Flavor IDs are region-specific. Run <code>client.Cloud.Instances.Flavors.List(ct
 Cloud API write operations return a task ID. Use `NewAndPoll` methods where available - they submit the request and block until the resource is ready:
 
 ```go
-imageID := os.Getenv("IMAGE_ID")
+regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
 instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-    Flavor: "g2-standard-2-4",
-    Name:   gcore.String("my-vm"),
+    RegionID:     regionID,
+    FlavorName:   "g2-standard-2-4",
+    BootVolumeID: os.Getenv("VOLUME_ID"),
     Interfaces: []cloud.InstanceNewParamsInterface{
-        {Type: cloud.InstanceNewParamsInterfaceTypeExternal},
+        {PortID: os.Getenv("PORT_ID")},
     },
-    Volumes: []cloud.InstanceNewParamsVolume{{
-        Source:    cloud.InstanceNewParamsVolumeSourceImage,
-        ImageID:   gcore.String(imageID),
-        Size:      gcore.Int(20),
-        BootIndex: gcore.Int(0),
-    }},
 })
 if err != nil {
     panic(err)

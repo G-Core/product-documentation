@@ -200,7 +200,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 <p>The scripts below list available flavors and images, provision a Bare Metal server with a public interface, and print its IP address. Replace `my-key` with an existing SSH key name from the project.</p>
 
 <Warning>
-The scripts pick the first available flavor for brevity. Bare Metal flavors differ significantly in hardware and cost — inspect the flavor list and set `flavor_id` to a value that matches your workload before running in production.
+The scripts pick the first available flavor. Bare Metal flavors differ in hardware and cost. Read the flavor list and set `flavor_name` to the flavor for the workload before creating a server.
 </Warning>
 
 <p>The server is provisioned in about 4–5 minutes.</p>
@@ -213,29 +213,35 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
 
     client = Gcore()
 
-    # Step 1. List BM flavors. Pick a flavor that matches your hardware needs.
-    # The example takes the first available; change flavor_id for production use.
-    flavors = client.cloud.baremetal.flavors.list(disabled=False, include_capacity=True)
-    flavor_id = next(f.flavor_id for f in flavors.results if f.capacity > 0)
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
 
-    # Step 2. List BM images - pick ubuntu x64.
-    images = client.cloud.baremetal.images.list()
-    image_id = next(img.id for img in images.results if "ubuntu-24.04-x64-ironic" in img.name)
+    images = client.cloud.baremetal.images.list(region_id=region_id, visibility="public")
+    image = next(img for img in images.results if "ubuntu" in img.name and "x64" in img.name)
 
-    # Step 3. Create the server and wait for ACTIVE status (4-5 min).
+    flavors = client.cloud.baremetal.flavors.list(
+        region_ids=[region_id],
+        compatible_with_image_id=image.id,
+        os_types=["linux"],
+    )
+    flavor_name = next(item.name for item in flavors.results if item.capacity > 0)
+
+    # A port with only the region gets one public IPv4 address.
+    # A server without a DPU rejects a port that still has security groups.
+    port = client.cloud.ports.create_and_poll(region_id=region_id)
+    client.cloud.ports.update_and_poll(port_id=port.id, security_group_ids=[])
+
     server = client.cloud.baremetal.servers.create_and_poll(
-        flavor=flavor_id,
-        image_id=image_id,
-        name="my-bm-server",
-        interfaces=[{"type": "external"}],
-        ssh_key_name="my-key",
+        region_id=region_id,
+        flavor_name=flavor_name,
+        image_id=image.id,
+        interfaces=[{"port_id": port.id}],
+        ssh_key_id=os.environ["SSH_KEY_ID"],
     )
 
-    # Step 4. Get full server details and print the public IP.
     details = client.cloud.baremetal.servers.get(server_id=server.id)
-    for network, ifaces in details.addresses.items():
-        for iface in ifaces:
-            print(f"ssh ubuntu@{iface.addr}")
+    for iface in details.interfaces:
+        for assignment in iface.ip_assignments:
+            print(f"ssh ubuntu@{assignment.ip_address}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -247,75 +253,88 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
         "fmt"
         "log"
         "os"
+        "strconv"
+        "strings"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/shared/constant"
     )
 
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
 
-        // Step 1. List BM flavors. Pick a flavor that matches your hardware needs.
-        // The example takes the first available; change flavorID for production use.
-        flavors, err := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
-            Disabled:        gcore.Bool(false),
-            IncludeCapacity: gcore.Bool(true),
-        })
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
         if err != nil {
             log.Fatal(err)
         }
-        var flavorID string
-        for _, f := range flavors.Results {
-            if f.Capacity > 0 {
-                flavorID = f.FlavorID
-                break
-            }
-        }
-        if flavorID == "" {
-            log.Fatal("no available flavor found in this region")
-        }
 
-        // Step 2. List BM images - pick ubuntu x64.
-        images, err := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{})
+        images, err := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{
+            RegionID:   gcore.Int(regionID),
+            Visibility: cloud.BaremetalImageListParamsVisibilityPublic,
+        })
         if err != nil {
             log.Fatal(err)
         }
         var imageID string
         for _, img := range images.Results {
-            if img.Name == "ubuntu-24.04-x64-ironic" {
+            if strings.Contains(img.Name, "ubuntu") && strings.Contains(img.Name, "x64") {
                 imageID = img.ID
                 break
             }
         }
         if imageID == "" {
-            log.Fatal("ubuntu-24.04-x64-ironic image not found in this region")
+            log.Fatal("ubuntu x64 image not found")
         }
 
-        // Step 3. Create the server and wait for ACTIVE status (4-5 min).
+        flavors, err := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
+            RegionIDs:             []int64{regionID},
+            CompatibleWithImageID: gcore.String(imageID),
+            OsTypes:               []string{"linux"},
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        var flavorName string
+        for _, item := range flavors.Results {
+            if item.Capacity > 0 {
+                flavorName = item.Name
+                break
+            }
+        }
+        if flavorName == "" {
+            log.Fatal("no available flavor")
+        }
+
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{RegionID: regionID})
+        if err != nil {
+            log.Fatal(err)
+        }
+        if _, err = client.Cloud.Ports.UpdateAndPoll(ctx, port.ID, cloud.PortUpdateParams{
+            SecurityGroupIDs: []string{},
+        }); err != nil {
+            log.Fatal(err)
+        }
+
         server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-            Flavor:  flavorID,
-            ImageID: gcore.String(imageID),
-            Name:    gcore.String("my-bm-server"),
-            Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{{
-                OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
-                    Type: constant.External("external"),
-                },
-            }},
-            SSHKeyName: gcore.String("my-key"),
+            RegionID:   regionID,
+            FlavorName: flavorName,
+            ImageID:    imageID,
+            Interfaces: []cloud.BaremetalServerNewParamsInterface{{PortID: port.ID}},
+            SSHKeyID:   gcore.String(os.Getenv("SSH_KEY_ID")),
         })
         if err != nil {
             log.Fatal(err)
         }
 
-        // Step 4. Get full server details and print the public IP.
         details, err := client.Cloud.Baremetal.Servers.Get(ctx, server.ID, cloud.BaremetalServerGetParams{})
         if err != nil {
             log.Fatal(err)
         }
-        for network, ifaces := range details.Addresses {
-            fmt.Printf("%s: ssh ubuntu@%s\n", network, ifaces[0].AsFixedIPAddress().Addr)
+        for _, iface := range details.Interfaces {
+            for _, assignment := range iface.IPAssignments {
+                fmt.Printf("ssh ubuntu@%s\n", assignment.IPAddress)
+            }
         }
     }
     ```
@@ -335,19 +354,26 @@ The scripts pick the first available flavor for brevity. Bare Metal flavors diff
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    flavors = client.cloud.baremetal.flavors.list(disabled=False, include_capacity=True)
-    for f in flavors.results:
-        print(f.flavor_id, f.capacity, f.hardware_description)
+    flavors = client.cloud.baremetal.flavors.list(
+        region_ids=[int(os.environ["GCORE_CLOUD_REGION_ID"])],
+        os_types=["linux"],
+    )
+    for item in flavors.results:
+        print(item.name, item.capacity, item.hardware_description)
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
+    regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    if err != nil {
+        log.Fatal(err)
+    }
     flavors, err := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
-        Disabled:        gcore.Bool(false),
-        IncludeCapacity: gcore.Bool(true),
+        RegionIDs: []int64{regionID},
+        OsTypes:   []string{"linux"},
     })
-    for _, f := range flavors.Results {
-        fmt.Println(f.FlavorID, f.Capacity)
+    for _, item := range flavors.Results {
+        fmt.Println(item.Name, item.Capacity)
     }
     ```
   </Tab>
@@ -458,11 +484,12 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `flavor` | Yes | Flavor ID from Step 1. |
-| `image_id` | Yes | BM image ID from Step 2. Standard VM images are not compatible. |
-| `name` | Yes | Server name. On reseller accounts, use `name_templates` with a region-specific pattern — the error message lists the allowed values for that region. |
-| `ssh_key_name` | Yes | Name of an existing SSH key in the project. Required for Linux images. |
-| `interfaces[].type` | Yes | `"external"` assigns a public IP. `"subnet"` attaches a private network. |
+| `flavor_name` | Yes | Flavor name from Step 1. |
+| `image_id` | Yes | Bare metal image ID from Step 2. A virtual machine image is not accepted. |
+| `region_id` | Yes | Region of the server. The ports must be in the same region. |
+| `interfaces[].port_id` | Yes | ID of a port created before the server. A server without a DPU rejects a port that still has security groups. |
+| `ssh_key_id` | No | ID of an existing SSH key. A Linux image uses this key for the default user. |
+| `name` | No | When `name` is omitted, Gcore assigns the name. |
 | `password` | No | For Windows images: sets the Admin user password. For Linux: sets the default user password when no SSH key is used. |
 | `user_data` | No | Base64-encoded [cloud-init](https://cloudinit.readthedocs.io/en/latest/) script applied on first boot. Ignored when `password` is set. |
 
@@ -470,11 +497,11 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   <Tab title="Python SDK">
     ```python
     server = client.cloud.baremetal.servers.create_and_poll(
-        flavor=os.environ["FLAVOR_ID"],
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        flavor_name=os.environ["FLAVOR_NAME"],
         image_id=os.environ["IMAGE_ID"],
-        name="my-bm-server",
-        interfaces=[{"type": "external"}],
-        ssh_key_name="my-key",
+        interfaces=[{"port_id": os.environ["PORT_ID"]}],
+        ssh_key_id=os.environ["SSH_KEY_ID"],
     )
     server_id = server.id
     ```
@@ -482,15 +509,11 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        Flavor:  os.Getenv("FLAVOR_ID"),
-        ImageID: gcore.String(os.Getenv("IMAGE_ID")),
-        Name:    gcore.String("my-bm-server"),
-        Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{{
-            OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
-                Type: constant.External("external"),
-            },
-        }},
-        SSHKeyName: gcore.String("my-key"),
+        RegionID:   regionID,
+        FlavorName: os.Getenv("FLAVOR_NAME"),
+        ImageID:    os.Getenv("IMAGE_ID"),
+        Interfaces: []cloud.BaremetalServerNewParamsInterface{{PortID: os.Getenv("PORT_ID")}},
+        SSHKeyID:   gcore.String(os.Getenv("SSH_KEY_ID")),
     })
     serverID := server.ID
     ```
@@ -551,16 +574,18 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   <Tab title="Python SDK">
     ```python
     server = client.cloud.baremetal.servers.get(server_id=server_id)
-    for network, ifaces in server.addresses.items():
-        for iface in ifaces:
-            print(f"{network}: {iface.addr}")
+    for iface in server.interfaces:
+        for assignment in iface.ip_assignments:
+            print(assignment.ip_address)
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
     details, err := client.Cloud.Baremetal.Servers.Get(ctx, serverID, cloud.BaremetalServerGetParams{})
-    for network, ifaces := range details.Addresses {
-        fmt.Printf("%s: %s\n", network, ifaces[0].AsFixedIPAddress().Addr)
+    for _, iface := range details.Interfaces {
+        for _, assignment := range iface.IPAssignments {
+            fmt.Println(assignment.IPAddress)
+        }
     }
     ```
   </Tab>
@@ -610,23 +635,19 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
 
 ## Create a server with a private network interface
 
-<p>To connect a server to a private network, add an interface with `"type": "subnet"` and provide the `network_id` and `subnet_id`. The network must have Bare Metal support enabled — create one following the [network guide](/cloud/networking/create-and-manage-a-network) and check the **Bare Metal network** option. Both public and private interfaces can be added at creation time; the interface order determines routing priority.</p>
+<p>Create one port for each interface before the server. A port created with only `region_id` is a public address. A port created with `network_id` is on that network. Remove security groups from both ports, then pass both port IDs in `interfaces`. A bare metal server rejects a `vxlan` network. The network has to be a bare metal network. Create one in the [network guide](/cloud/networking/create-and-manage-a-network) and enable **Bare Metal network**.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
     server = client.cloud.baremetal.servers.create_and_poll(
-        flavor=os.environ["FLAVOR_ID"],
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        flavor_name=os.environ["FLAVOR_NAME"],
         image_id=os.environ["IMAGE_ID"],
-        name="my-bm-server",
-        ssh_key_name="my-key",
+        ssh_key_id=os.environ["SSH_KEY_ID"],
         interfaces=[
-            {"type": "external"},
-            {
-                "type": "subnet",
-                "network_id": os.environ["NETWORK_ID"],
-                "subnet_id": os.environ["SUBNET_ID"],
-            },
+            {"port_id": os.environ["PUBLIC_PORT_ID"]},
+            {"port_id": os.environ["PRIVATE_PORT_ID"]},
         ],
     )
     ```
@@ -634,23 +655,13 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        Flavor:     os.Getenv("FLAVOR_ID"),
-        ImageID:    gcore.String(os.Getenv("IMAGE_ID")),
-        Name:       gcore.String("my-bm-server"),
-        SSHKeyName: gcore.String("my-key"),
-        Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
-            {
-                OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
-                    Type: constant.External("external"),
-                },
-            },
-            {
-                OfSubnet: &cloud.BaremetalServerNewParamsInterfaceSubnet{
-                    Type:      constant.Subnet("subnet"),
-                    NetworkID: os.Getenv("NETWORK_ID"),
-                    SubnetID:  os.Getenv("SUBNET_ID"),
-                },
-            },
+        RegionID:   regionID,
+        FlavorName: os.Getenv("FLAVOR_NAME"),
+        ImageID:    os.Getenv("IMAGE_ID"),
+        SSHKeyID:   gcore.String(os.Getenv("SSH_KEY_ID")),
+        Interfaces: []cloud.BaremetalServerNewParamsInterface{
+            {PortID: os.Getenv("PUBLIC_PORT_ID")},
+            {PortID: os.Getenv("PRIVATE_PORT_ID")},
         },
     })
     ```
@@ -684,24 +695,19 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
 
 <p>Standard BM servers aggregate all physical ports into a single LACP bond (`bond0`). Multi-bond separates traffic across multiple independent bonds, isolating networks at the hardware level for higher availability and throughput. Multi-bond must be enabled for the server by [Gcore support](https://gcore.com/contact-us) before provisioning.</p>
 
-<p>Once enabled, control bond assignment with the `port_group` parameter on each interface. Interfaces sharing the same `port_group` value are placed on the same trunk port. Each distinct value creates a separate trunk.</p>
+<p>Once enabled, set `port_group` on each interface. Interfaces with the same `port_group` share a trunk. A flavor that supports one port group rejects a second group.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
     server = client.cloud.baremetal.servers.create_and_poll(
-        flavor=os.environ["FLAVOR_ID"],
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        flavor_name=os.environ["FLAVOR_NAME"],
         image_id=os.environ["IMAGE_ID"],
-        name="my-bm-server",
-        ssh_key_name="my-key",
+        ssh_key_id=os.environ["SSH_KEY_ID"],
         interfaces=[
-            {"type": "external", "port_group": 1},
-            {
-                "type": "subnet",
-                "network_id": os.environ["NETWORK_ID"],
-                "subnet_id": os.environ["SUBNET_ID"],
-                "port_group": 2,
-            },
+            {"port_id": os.environ["PUBLIC_PORT_ID"], "port_group": 0},
+            {"port_id": os.environ["PRIVATE_PORT_ID"], "port_group": 1},
         ],
     )
     ```
@@ -709,25 +715,13 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        Flavor:     os.Getenv("FLAVOR_ID"),
-        ImageID:    gcore.String(os.Getenv("IMAGE_ID")),
-        Name:       gcore.String("my-bm-server"),
-        SSHKeyName: gcore.String("my-key"),
-        Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
-            {
-                OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
-                    Type:      constant.External("external"),
-                    PortGroup: gcore.Int(1),
-                },
-            },
-            {
-                OfSubnet: &cloud.BaremetalServerNewParamsInterfaceSubnet{
-                    Type:      constant.Subnet("subnet"),
-                    NetworkID: os.Getenv("NETWORK_ID"),
-                    SubnetID:  os.Getenv("SUBNET_ID"),
-                    PortGroup: gcore.Int(2),
-                },
-            },
+        RegionID:   regionID,
+        FlavorName: os.Getenv("FLAVOR_NAME"),
+        ImageID:    os.Getenv("IMAGE_ID"),
+        SSHKeyID:   gcore.String(os.Getenv("SSH_KEY_ID")),
+        Interfaces: []cloud.BaremetalServerNewParamsInterface{
+            {PortID: os.Getenv("PUBLIC_PORT_ID"), PortGroup: gcore.Int(0)},
+            {PortID: os.Getenv("PRIVATE_PORT_ID"), PortGroup: gcore.Int(1)},
         },
     })
     ```
@@ -756,7 +750,7 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
   </Tab>
 </Tabs>
 
-<p>After provisioning, retrieve the server details with `GET /cloud/v1/bminstances/{project_id}/{region_id}/{server_id}` — each trunk appears as a separate interface block in the `addresses` map.</p>
+<p>After provisioning, retrieve the server. Each trunk is a separate entry in `interfaces`, with its `port_group`.</p>
 
 ## Limitations
 

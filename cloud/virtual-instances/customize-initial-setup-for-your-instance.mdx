@@ -68,17 +68,32 @@ write_files:
 
     user_data_b64 = base64.b64encode(cloud_init_yaml.encode()).decode()
 
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id, network_id=network.id, owned_by="any"
+    )
+    subnet = subnets.results[0]
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        name="my-boot-volume",
+        size=10,
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnet.id}],
+    )
     instance = client.cloud.instances.create_and_poll(
-        name="my-vm",
-        flavor=os.environ["FLAVOR_ID"],
+        region_id=region_id,
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
         user_data=user_data_b64,
-        interfaces=[{"type": "external"}],
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "size": 20,
-            "boot_index": 0,
-        }],
     )
     print(f"Instance: {instance.id}  status: {instance.status}")
     ```
@@ -93,6 +108,7 @@ write_files:
         "fmt"
         "log"
         "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -111,20 +127,56 @@ write_files:
 
         userDataB64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
 
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        if err != nil {
+            log.Fatal(err)
+        }
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+            RegionID: gcore.Int(regionID),
+            External: gcore.Bool(true),
+            OwnedBy:  cloud.NetworkListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        network := networks.Results[0]
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+            RegionID:  gcore.Int(regionID),
+            NetworkID: gcore.String(network.ID),
+            OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                ImageID:  os.Getenv("IMAGE_ID"),
+                Name:     "my-boot-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+            RegionID:  regionID,
+            NetworkID: gcore.String(network.ID),
+            IPAssignments: []cloud.IPAssignmentRequestParam{
+                {SubnetID: subnets.Results[0].ID},
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
         instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-            Flavor:   os.Getenv("FLAVOR_ID"),
-            Name:     gcore.String("my-vm"),
-            UserData: gcore.String(userDataB64),
-            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
-                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
-            }},
-            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
-                OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:   os.Getenv("IMAGE_ID"),
-                    Size:      gcore.Int(20),
-                    BootIndex: gcore.Int(0),
-                },
-            }},
+            RegionID:     regionID,
+            FlavorName:   os.Getenv("FLAVOR_ID"),
+            BootVolumeID: volume.ID,
+            UserData:     gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterface{
+                {PortID: port.ID},
+            },
         })
         if err != nil {
             log.Fatalf("create instance: %v", err)
@@ -200,8 +252,8 @@ Pass the encoded string in the `user_data` field of the instance creation reques
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `user_data` | No | Base64-encoded cloud-init YAML; runs on first boot only. |
-| `flavor` | Yes | [Flavor](/api-reference/cloud#tag/Flavors/operation/FlavorListV2.get) ID; IDs are region-specific. |
-| `boot_index` | Yes | Set to `0` for the primary boot volume. |
+| `flavor_name` | Yes | Flavor name from the selected region. |
+| `boot_volume_id` | Yes | ID of the boot volume created from the image. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -215,17 +267,32 @@ Pass the encoded string in the `user_data` field of the instance creation reques
     with open("user-data.yaml", "rb") as f:
         user_data_b64 = base64.b64encode(f.read()).decode()
 
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id, network_id=network.id, owned_by="any"
+    )
+    subnet = subnets.results[0]
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        name="my-boot-volume",
+        size=10,
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnet.id}],
+    )
     instance = client.cloud.instances.create_and_poll(
-        name="my-vm",
-        flavor=os.environ["FLAVOR_ID"],
+        region_id=region_id,
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
         user_data=user_data_b64,
-        interfaces=[{"type": "external"}],
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "size": 20,
-            "boot_index": 0,
-        }],
     )
     print(f"Instance: {instance.id}  status: {instance.status}")
     ```
@@ -240,6 +307,7 @@ Pass the encoded string in the `user_data` field of the instance creation reques
         "fmt"
         "log"
         "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -252,20 +320,56 @@ Pass the encoded string in the `user_data` field of the instance creation reques
         data, _ := os.ReadFile("user-data.yaml")
         userDataB64 := base64.StdEncoding.EncodeToString(data)
 
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        if err != nil {
+            log.Fatal(err)
+        }
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+            RegionID: gcore.Int(regionID),
+            External: gcore.Bool(true),
+            OwnedBy:  cloud.NetworkListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        network := networks.Results[0]
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+            RegionID:  gcore.Int(regionID),
+            NetworkID: gcore.String(network.ID),
+            OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                ImageID:  os.Getenv("IMAGE_ID"),
+                Name:     "my-boot-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+            RegionID:  regionID,
+            NetworkID: gcore.String(network.ID),
+            IPAssignments: []cloud.IPAssignmentRequestParam{
+                {SubnetID: subnets.Results[0].ID},
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
         instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-            Flavor:   os.Getenv("FLAVOR_ID"),
-            Name:     gcore.String("my-vm"),
-            UserData: gcore.String(userDataB64),
-            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
-                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
-            }},
-            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
-                OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:   os.Getenv("IMAGE_ID"),
-                    Size:      gcore.Int(20),
-                    BootIndex: gcore.Int(0),
-                },
-            }},
+            RegionID:     regionID,
+            FlavorName:   os.Getenv("FLAVOR_ID"),
+            BootVolumeID: volume.ID,
+            UserData:     gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterface{
+                {PortID: port.ID},
+            },
         })
         if err != nil {
             log.Fatalf("create instance: %v", err)

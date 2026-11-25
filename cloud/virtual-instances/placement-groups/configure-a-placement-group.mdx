@@ -132,43 +132,57 @@ To find the values for each variable:
     client = Gcore()
 
     # Step 1. Create an anti-affinity placement group.
-    group = client.cloud.placement_groups.create(
+    group = client.cloud.placement_groups.create_and_poll(
         name="my-group",
         policy="anti-affinity",
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
-    group_id = group.servergroup_id
+    group_id = group.id
     print(f"Group: {group_id}")
 
     # Step 2. Create a VM in the group.
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id, network_id=network.id, owned_by="any"
+    )
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        name="my-boot-volume",
+        size=10,
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnets.results[0].id}],
+    )
     instance = client.cloud.instances.create_and_poll(
-        flavor=os.environ["FLAVOR_ID"],
-        name="my-vm",
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "boot_index": 0,
-            "size": 20,
-            "type_name": "standard",
-        }],
-        interfaces=[{"type": "external"}],
-        servergroup_id=group_id,
+        region_id=region_id,
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
+        placement_group_id=group_id,
     )
     instance_id = instance.id
     print(f"VM: {instance_id}")
 
     # Step 3. Verify group membership.
-    details = client.cloud.placement_groups.get(group_id=group_id)
-    print(f"Members: {[vm.instance_id for vm in details.instances]}")
+    details = client.cloud.placement_groups.get(placement_group_id=group_id)
+    print(f"Members: {details.member_ids}")
 
     # Step 4. Remove the VM from the group.
-    client.cloud.instances.remove_from_placement_group_and_poll(
+    client.cloud.instances.update_and_poll(
         instance_id=instance_id,
+        placement_group_id=None,
     )
     print("VM removed from group")
 
     # Step 5. Delete the placement group.
-    task = client.cloud.placement_groups.delete(group_id=group_id)
-    client.cloud.tasks.poll(task.tasks[0])
+    client.cloud.placement_groups.delete_and_poll(placement_group_id=group_id)
     print(f"Deleted group {group_id}")
     ```
   </Tab>
@@ -181,9 +195,11 @@ To find the values for each variable:
         "fmt"
         "log"
         "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/packages/param"
     )
 
     func main() {
@@ -191,31 +207,67 @@ To find the values for each variable:
         ctx := context.Background()
 
         // Step 1. Create an anti-affinity placement group.
-        group, err := client.Cloud.PlacementGroups.New(ctx, cloud.PlacementGroupNewParams{
-            Name:   "my-group",
-            Policy: cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        if err != nil {
+            log.Fatal(err)
+        }
+        group, err := client.Cloud.PlacementGroups.NewAndPoll(ctx, cloud.PlacementGroupNewParams{
+            Name:     "my-group",
+            Policy:   cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+            RegionID: regionID,
         })
         if err != nil {
             log.Fatal(err)
         }
-        groupID := group.ServergroupID
+        groupID := group.ID
         fmt.Printf("Group: %s\n", groupID)
 
         // Step 2. Create a VM in the group.
-        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-            Flavor:        os.Getenv("FLAVOR_ID"),
-            Name:          gcore.String("my-vm"),
-            ServergroupID: gcore.String(groupID),
-            Volumes: []cloud.InstanceNewParamsVolumeUnion{
-                {OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:   os.Getenv("IMAGE_ID"),
-                    BootIndex: gcore.Int(0),
-                    Size:      gcore.Int(20),
-                    TypeName:  "standard",
-                }},
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+            RegionID: gcore.Int(regionID),
+            External: gcore.Bool(true),
+            OwnedBy:  cloud.NetworkListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        network := networks.Results[0]
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+            RegionID:  gcore.Int(regionID),
+            NetworkID: gcore.String(network.ID),
+            OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                ImageID:  os.Getenv("IMAGE_ID"),
+                Name:     "my-boot-volume",
+                Size:     10,
+                TypeName: "standard",
             },
-            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
-                {OfExternal: &cloud.InstanceNewParamsInterfaceExternal{Type: "external"}},
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+            RegionID:  regionID,
+            NetworkID: gcore.String(network.ID),
+            IPAssignments: []cloud.IPAssignmentRequestParam{
+                {SubnetID: subnets.Results[0].ID},
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            RegionID:         regionID,
+            FlavorName:       os.Getenv("FLAVOR_ID"),
+            BootVolumeID:     volume.ID,
+            PlacementGroupID: gcore.String(groupID),
+            Interfaces: []cloud.InstanceNewParamsInterface{
+                {PortID: port.ID},
             },
         })
         if err != nil {
@@ -229,12 +281,12 @@ To find the values for each variable:
         if err != nil {
             log.Fatal(err)
         }
-        fmt.Printf("Members: %d\n", len(details.Instances))
+        fmt.Printf("Members: %d\n", len(details.MemberIDs))
 
         // Step 4. Remove the VM from the group.
-        if _, err = client.Cloud.Instances.RemoveFromPlacementGroupAndPoll(
-            ctx, instanceID, cloud.InstanceRemoveFromPlacementGroupParams{},
-        ); err != nil {
+        if _, err = client.Cloud.Instances.UpdateAndPoll(ctx, instanceID, cloud.InstanceUpdateParams{
+            PlacementGroupID: param.Null[string](),
+        }); err != nil {
             log.Fatal(err)
         }
         fmt.Println("VM removed from group")
@@ -273,11 +325,12 @@ A [placement group](/api-reference/cloud/placement-groups/create-placement-group
 
     client = Gcore()
 
-    group = client.cloud.placement_groups.create(
+    group = client.cloud.placement_groups.create_and_poll(
         name="my-group",
         policy="anti-affinity",
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
-    group_id = group.servergroup_id
+    group_id = group.id
     print(f"Group ID: {group_id}  policy: {group.policy}")
     ```
   </Tab>
@@ -287,6 +340,8 @@ A [placement group](/api-reference/cloud/placement-groups/create-placement-group
         "context"
         "fmt"
         "log"
+        "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -295,14 +350,19 @@ A [placement group](/api-reference/cloud/placement-groups/create-placement-group
     client := gcore.NewClient()
     ctx := context.Background()
 
-    group, err := client.Cloud.PlacementGroups.New(ctx, cloud.PlacementGroupNewParams{
-        Name:   "my-group",
-        Policy: cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+    regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    if err != nil {
+        log.Fatal(err)
+    }
+    group, err := client.Cloud.PlacementGroups.NewAndPoll(ctx, cloud.PlacementGroupNewParams{
+        Name:     "my-group",
+        Policy:   cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+        RegionID: regionID,
     })
     if err != nil {
         log.Fatal(err)
     }
-    groupID := group.ServergroupID
+    groupID := group.ID
     fmt.Printf("Group ID: %s  policy: %s\n", groupID, group.Policy)
     ```
   </Tab>
@@ -332,29 +392,23 @@ A [placement group](/api-reference/cloud/placement-groups/create-placement-group
 
 ### Step 2. Create a VM in the group
 
-Passing `servergroup_id` in the instance creation request assigns the VM to the group at launch time. The scheduler places the VM according to the group policy — on the same host as other group members (affinity) or on a different host (anti-affinity).
+Passing `placement_group_id` in the SDK instance creation request assigns the VM to the group at launch time. The scheduler places the VM according to the group policy, on the same host as other group members for affinity or on a different host for anti-affinity.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `servergroup_id` | Yes | The placement group ID. |
-| `flavor` | Yes | Flavor ID — region-specific; list available flavors via <code>GET&nbsp;/cloud/v1/projects/{project_id}/instances/flavors?region_ids={region_id}</code>. |
-| `image_id` | Yes | Public image ID — region-specific; list available images via <code>GET&nbsp;/cloud/v1/images/{project_id}/{region_id}?visibility=public</code>. |
+| `placement_group_id` | Yes | The placement group ID. |
+| `flavor_name` | Yes | Flavor name in the selected region. |
+| `boot_volume_id` | Yes | ID of the boot volume created from the image. |
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
     instance = client.cloud.instances.create_and_poll(
-        flavor=os.environ["FLAVOR_ID"],
-        name="my-vm",
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "boot_index": 0,
-            "size": 20,
-            "type_name": "standard",
-        }],
-        interfaces=[{"type": "external"}],
-        servergroup_id=group_id,
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
+        placement_group_id=group_id,
     )
     instance_id = instance.id
     print(f"Instance ID: {instance_id}  status: {instance.status}")
@@ -363,19 +417,12 @@ Passing `servergroup_id` in the instance creation request assigns the VM to the 
   <Tab title="Go SDK">
     ```go
     instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-        Flavor:        os.Getenv("FLAVOR_ID"),
-        Name:          gcore.String("my-vm"),
-        ServergroupID: gcore.String(groupID),
-        Volumes: []cloud.InstanceNewParamsVolumeUnion{
-            {OfImage: &cloud.InstanceNewParamsVolumeImage{
-                ImageID:   os.Getenv("IMAGE_ID"),
-                BootIndex: gcore.Int(0),
-                Size:      gcore.Int(20),
-                TypeName:  "standard",
-            }},
-        },
-        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
-            {OfExternal: &cloud.InstanceNewParamsInterfaceExternal{Type: "external"}},
+        RegionID:         regionID,
+        FlavorName:       os.Getenv("FLAVOR_ID"),
+        BootVolumeID:     volume.ID,
+        PlacementGroupID: gcore.String(groupID),
+        Interfaces: []cloud.InstanceNewParamsInterface{
+            {PortID: port.ID},
         },
     })
     if err != nil {
@@ -425,30 +472,28 @@ Passing `servergroup_id` in the instance creation request assigns the VM to the 
 
 ### Step 3. Add an existing VM to a group
 
-An existing VM can be moved into a placement group without recreating it. The scheduler migrates the VM to a host that satisfies the group policy if necessary.
+An existing VM can be moved into a placement group without recreating it. The scheduler migrates the VM to a host that satisfies the group policy if necessary. `update_and_poll` sets `placement_group_id`.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `instance_id` | Yes | The ID of the VM to add. |
-| `servergroup_id` | Yes | The target placement group ID. |
+| `placement_group_id` | Yes | The target placement group ID. |
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.instances.add_to_placement_group_and_poll(
+    client.cloud.instances.update_and_poll(
         instance_id=instance_id,
-        servergroup_id=group_id,
+        placement_group_id=group_id,
     )
     print("VM added to group")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    if _, err = client.Cloud.Instances.AddToPlacementGroupAndPoll(
-        ctx, instanceID, cloud.InstanceAddToPlacementGroupParams{
-            ServergroupID: groupID,
-        },
-    ); err != nil {
+    if _, err = client.Cloud.Instances.UpdateAndPoll(ctx, instanceID, cloud.InstanceUpdateParams{
+        PlacementGroupID: gcore.String(groupID),
+    }); err != nil {
         log.Fatal(err)
     }
     fmt.Println("VM added to group")
@@ -482,17 +527,18 @@ Removing a VM from a placement group releases the placement constraint. The VM k
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.instances.remove_from_placement_group_and_poll(
+    client.cloud.instances.update_and_poll(
         instance_id=instance_id,
+        placement_group_id=None,
     )
     print("VM removed from group")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    if _, err = client.Cloud.Instances.RemoveFromPlacementGroupAndPoll(
-        ctx, instanceID, cloud.InstanceRemoveFromPlacementGroupParams{},
-    ); err != nil {
+    if _, err = client.Cloud.Instances.UpdateAndPoll(ctx, instanceID, cloud.InstanceUpdateParams{
+        PlacementGroupID: param.Null[string](),
+    }); err != nil {
         log.Fatal(err)
     }
     fmt.Println("VM removed from group")
@@ -525,14 +571,15 @@ To move a VM between placement groups, remove it from the current group and then
   <Tab title="Python SDK">
     ```python
     # Remove from current group.
-    client.cloud.instances.remove_from_placement_group_and_poll(
+    client.cloud.instances.update_and_poll(
         instance_id=instance_id,
+        placement_group_id=None,
     )
 
     # Add to new group.
-    client.cloud.instances.add_to_placement_group_and_poll(
+    client.cloud.instances.update_and_poll(
         instance_id=instance_id,
-        servergroup_id=new_group_id,
+        placement_group_id=new_group_id,
     )
     print("VM moved to new group")
     ```
@@ -540,18 +587,16 @@ To move a VM between placement groups, remove it from the current group and then
   <Tab title="Go SDK">
     ```go
     // Remove from current group.
-    if _, err = client.Cloud.Instances.RemoveFromPlacementGroupAndPoll(
-        ctx, instanceID, cloud.InstanceRemoveFromPlacementGroupParams{},
-    ); err != nil {
+    if _, err = client.Cloud.Instances.UpdateAndPoll(ctx, instanceID, cloud.InstanceUpdateParams{
+        PlacementGroupID: param.Null[string](),
+    }); err != nil {
         log.Fatal(err)
     }
 
     // Add to new group.
-    if _, err = client.Cloud.Instances.AddToPlacementGroupAndPoll(
-        ctx, instanceID, cloud.InstanceAddToPlacementGroupParams{
-            ServergroupID: newGroupID,
-        },
-    ); err != nil {
+    if _, err = client.Cloud.Instances.UpdateAndPoll(ctx, instanceID, cloud.InstanceUpdateParams{
+        PlacementGroupID: gcore.String(newGroupID),
+    }); err != nil {
         log.Fatal(err)
     }
     fmt.Println("VM moved to new group")
@@ -583,10 +628,10 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    details = client.cloud.placement_groups.get(group_id=group_id)
-    print(f"Policy: {details.policy}  members: {len(details.instances)}")
-    for vm in details.instances:
-        print(f"  {vm.instance_id}  {vm.instance_name}")
+    details = client.cloud.placement_groups.get(placement_group_id=group_id)
+    print(f"Policy: {details.policy}  members: {len(details.member_ids)}")
+    for member_id in details.member_ids:
+        print(f"  {member_id}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -595,9 +640,9 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
     if err != nil {
         log.Fatal(err)
     }
-    fmt.Printf("Policy: %s  members: %d\n", details.Policy, len(details.Instances))
-    for _, vm := range details.Instances {
-        fmt.Printf("  %s  %s\n", vm.InstanceID, vm.InstanceName)
+    fmt.Printf("Policy: %s  members: %d\n", details.Policy, len(details.MemberIDs))
+    for _, memberID := range details.MemberIDs {
+        fmt.Printf("  %s\n", memberID)
     }
     ```
   </Tab>

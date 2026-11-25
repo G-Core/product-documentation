@@ -46,11 +46,18 @@ from gcore import Gcore
 client = Gcore()
 ```
 
-With `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` set, Cloud API methods use them automatically — no project ID or region ID is passed to individual calls:
+With `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` set, most Cloud API methods use them automatically. An instance create still passes `region_id`, because the request body requires it:
 
 ```python
+import os
+
 network = client.cloud.networks.create_and_poll(name="my-network")
-instance = client.cloud.instances.create_and_poll(name="my-vm", ...)
+instance = client.cloud.instances.create_and_poll(
+    region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    flavor_name="g2-standard-1-2",
+    boot_volume_id=os.environ["VOLUME_ID"],
+    interfaces=[{"port_id": os.environ["PORT_ID"]}],
+)
 ```
 
 Never hardcode credentials in source files. Store the three variables in a `.env` file and load them with [python-dotenv](https://pypi.org/project/python-dotenv/).
@@ -80,11 +87,11 @@ SDK methods map directly to API endpoints. The resource path in the URL becomes 
 
 | Endpoint | SDK method |
 |----------|------------|
-| `GET /cloud/v1/instances/{project_id}/{region_id}` | `client.cloud.instances.list()` |
-| `POST /cloud/v2/instances/{project_id}/{region_id}` | `client.cloud.instances.create(...)` |
-| `GET /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.get(instance_id)` |
-| `DELETE /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.delete(instance_id)` |
-| `GET /cloud/v1/flavors/{project_id}/{region_id}` | `client.cloud.instances.flavors.list()` |
+| `GET /cloud/v1/projects/{project_id}/instances` | `client.cloud.instances.list()` |
+| `POST /cloud/v1/projects/{project_id}/instances` | `client.cloud.instances.create(...)` |
+| `GET /cloud/v1/projects/{project_id}/instances/{instance_id}` | `client.cloud.instances.get(instance_id)` |
+| `DELETE /cloud/v1/projects/{project_id}/instances/{instance_id}` | `client.cloud.instances.delete(instance_id)` |
+| `GET /cloud/v1/projects/{project_id}/instances/flavors` | `client.cloud.instances.flavors.list()` |
 | `POST /cloud/v2/volumes/{project_id}/{region_id}/{volume_id}/attach` | `client.cloud.volumes.attach_to_instance(volume_id, ...)` |
 | `GET /cloud/v1/tasks/{task_id}` | `client.cloud.tasks.get(task_id)` |
 
@@ -98,16 +105,11 @@ Cloud API write operations return a task ID instead of the created resource dire
 import os
 
 instance = client.cloud.instances.create_and_poll(
-    flavor="g2-standard-2-4",
-    ssh_key_name="my-key",
-    interfaces=[{"type": "external"}],
-    volumes=[{
-        "source": "image",
-        "image_id": os.environ["IMAGE_ID"],
-        "size": 20,
-        "boot_index": 0,
-    }],
-    name="my-vm",
+    region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    flavor_name="g2-standard-2-4",
+    boot_volume_id=os.environ["VOLUME_ID"],
+    interfaces=[{"port_id": os.environ["PORT_ID"]}],
+    ssh_key_id=os.environ["SSH_KEY_ID"],
 )
 print(instance.id)
 ```
@@ -118,16 +120,11 @@ When `_and_poll` is not available for a resource, use `tasks.poll()` directly as
 import os
 
 result = client.cloud.instances.create(
-    flavor="g2-standard-2-4",
-    ssh_key_name="my-key",
-    interfaces=[{"type": "external"}],
-    volumes=[{
-        "source": "image",
-        "image_id": os.environ["IMAGE_ID"],
-        "size": 20,
-        "boot_index": 0,
-    }],
-    name="my-vm",
+    region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    flavor_name="g2-standard-2-4",
+    boot_volume_id=os.environ["VOLUME_ID"],
+    interfaces=[{"port_id": os.environ["PORT_ID"]}],
+    ssh_key_id=os.environ["SSH_KEY_ID"],
 )
 
 # Blocks until state is FINISHED or ERROR

@@ -209,12 +209,12 @@ sg = client.cloud.security_groups.create_and_poll(
 )
 print(f"Security group: {sg.name} ({sg.id})")
 
-# Step 2. Attach to a running VM by name.
-client.cloud.instances.assign_security_group(
-    instance_id=os.environ["INSTANCE_ID"],
-    name="web-firewall",
+# Step 2. Attach the group by replacing the port's security group list.
+client.cloud.ports.update_and_poll(
+    port_id=os.environ["PORT_ID"],
+    security_group_ids=[sg.id],
 )
-print("Attached to VM.")
+print("Attached to the port.")
 
 # Step 3. Add an ICMP rule.
 client.cloud.security_groups.rules.create_and_poll(
@@ -225,10 +225,10 @@ client.cloud.security_groups.rules.create_and_poll(
 )
 print("ICMP rule added.")
 
-# Step 4. Detach and delete.
-client.cloud.instances.unassign_security_group(
-    instance_id=os.environ["INSTANCE_ID"],
-    name="web-firewall",
+# Step 4. Remove the group from the port, then delete it.
+client.cloud.ports.update_and_poll(
+    port_id=os.environ["PORT_ID"],
+    security_group_ids=[],
 )
 client.cloud.security_groups.delete(group_id=sg.id)
 print("Security group deleted.")
@@ -266,13 +266,13 @@ func main() {
     }
     fmt.Printf("Security group: %s (%s)\n", sg.Name, sg.ID)
 
-    // Step 2. Attach to a running VM by name.
-    if err = client.Cloud.Instances.AssignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
-        Name: gcore.String("web-firewall"),
+    // Step 2. Attach the group by replacing the port's security group list.
+    if _, err = client.Cloud.Ports.UpdateAndPoll(ctx, os.Getenv("PORT_ID"), cloud.PortUpdateParams{
+        SecurityGroupIDs: []string{sg.ID},
     }); err != nil {
         log.Fatalf("attach security group: %v", err)
     }
-    fmt.Println("Attached to VM.")
+    fmt.Println("Attached to the port.")
 
     // Step 3. Add an ICMP rule.
     if _, err = client.Cloud.SecurityGroups.Rules.NewAndPoll(ctx, sg.ID, cloud.SecurityGroupRuleNewParams{
@@ -284,10 +284,12 @@ func main() {
     }
     fmt.Println("ICMP rule added.")
 
-    // Step 4. Detach and delete.
-    client.Cloud.Instances.UnassignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceUnassignSecurityGroupParams{
-        Name: gcore.String("web-firewall"),
-    })
+    // Step 4. Remove the group from the port, then delete it.
+    if _, err = client.Cloud.Ports.UpdateAndPoll(ctx, os.Getenv("PORT_ID"), cloud.PortUpdateParams{
+        SecurityGroupIDs: []string{},
+    }); err != nil {
+        log.Fatalf("detach security group: %v", err)
+    }
     client.Cloud.SecurityGroups.Delete(ctx, sg.ID, cloud.SecurityGroupDeleteParams{})
     fmt.Println("Security group deleted.")
 }
@@ -408,11 +410,7 @@ A new security group is automatically populated with default egress rules that a
 
 There are two ways to attach a security group: at VM creation or to a running instance.
 
-<Info>
-To attach to a running instance, pass the group **name** — not the UUID. The `assign_security_group` endpoint identifies groups by name.
-</Info>
-
-At VM creation, pass the security group UUID in the `security_groups` field:
+At VM creation, pass the security group UUID in `security_group_ids` on the port. The instance then uses that port.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -422,13 +420,32 @@ At VM creation, pass the security group UUID in the `security_groups` field:
 
     client = Gcore()
 
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id, network_id=network.id, owned_by="any"
+    )
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        name="my-boot-volume",
+        size=10,
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnets.results[0].id}],
+        security_group_ids=[os.environ["SG_ID"]],
+    )
     instance = client.cloud.instances.create_and_poll(
-        name="my-vm",
-        flavor=os.environ["FLAVOR_ID"],
-        ssh_key_name="my-key",
-        interfaces=[{"type": "external"}],
-        volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"], "size": 20, "boot_index": 0}],
-        security_groups=[{"id": os.environ["SG_ID"]}],
+        region_id=region_id,
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
+        ssh_key_id=os.environ["SSH_KEY_ID"],
     )
     print(f"Instance: {instance.id}")
     ```
@@ -441,6 +458,7 @@ At VM creation, pass the security group UUID in the `security_groups` field:
         "context"
         "fmt"
         "os"
+        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -450,21 +468,57 @@ At VM creation, pass the security group UUID in the `security_groups` field:
         client := gcore.NewClient()
         ctx := context.Background()
 
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        if err != nil {
+            panic(err.Error())
+        }
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+            RegionID: gcore.Int(regionID),
+            External: gcore.Bool(true),
+            OwnedBy:  cloud.NetworkListParamsOwnedByAny,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        network := networks.Results[0]
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+            RegionID:  gcore.Int(regionID),
+            NetworkID: gcore.String(network.ID),
+            OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                ImageID:  os.Getenv("IMAGE_ID"),
+                Name:     "my-boot-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+            RegionID:  regionID,
+            NetworkID: gcore.String(network.ID),
+            SecurityGroupIDs: []string{os.Getenv("SG_ID")},
+            IPAssignments: []cloud.IPAssignmentRequestParam{
+                {SubnetID: subnets.Results[0].ID},
+            },
+        })
+        if err != nil {
+            panic(err.Error())
+        }
         instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-            Flavor:     os.Getenv("FLAVOR_ID"),
-            Name:       gcore.String("my-vm"),
-            SSHKeyName: gcore.String("my-key"),
-            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
-                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
-            }},
-            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
-                OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:   os.Getenv("IMAGE_ID"),
-                    Size:      gcore.Int(20),
-                    BootIndex: gcore.Int(0),
-                },
-            }},
-            SecurityGroups: []cloud.InstanceNewParamsSecurityGroup{{ID: os.Getenv("SG_ID")}},
+            RegionID:     regionID,
+            FlavorName:   os.Getenv("FLAVOR_ID"),
+            BootVolumeID: volume.ID,
+            SSHKeyID:     gcore.String(os.Getenv("SSH_KEY_ID")),
+            Interfaces: []cloud.InstanceNewParamsInterface{
+                {PortID: port.ID},
+            },
         })
         if err != nil {
             panic(err.Error())
@@ -490,7 +544,7 @@ At VM creation, pass the security group UUID in the `security_groups` field:
   </Tab>
 </Tabs>
 
-If the VM already exists, attach the security group by name:
+If the VM already exists, set `security_group_ids` on its port. The list replaces the groups on that port.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -500,9 +554,9 @@ If the VM already exists, attach the security group by name:
 
     client = Gcore()
 
-    client.cloud.instances.assign_security_group(
-        instance_id=os.environ["INSTANCE_ID"],
-        name="web-firewall",
+    client.cloud.ports.update_and_poll(
+        port_id=os.environ["PORT_ID"],
+        security_group_ids=[os.environ["SG_ID"]],
     )
     print("Security group attached.")
     ```
@@ -514,6 +568,7 @@ If the VM already exists, attach the security group by name:
     import (
         "context"
         "fmt"
+        "os"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
@@ -523,8 +578,8 @@ If the VM already exists, attach the security group by name:
         client := gcore.NewClient()
         ctx := context.Background()
 
-        err := client.Cloud.Instances.AssignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
-            Name: gcore.String("web-firewall"),
+        _, err := client.Cloud.Ports.UpdateAndPoll(ctx, os.Getenv("PORT_ID"), cloud.PortUpdateParams{
+            SecurityGroupIDs: []string{os.Getenv("SG_ID")},
         })
         if err != nil {
             panic(err.Error())
@@ -641,9 +696,9 @@ When multiple security groups are assigned to a Virtual Machine, rules from all 
 
     client = Gcore()
 
-    client.cloud.instances.unassign_security_group(
-        instance_id=os.environ["INSTANCE_ID"],
-        name="web-firewall",
+    client.cloud.ports.update_and_poll(
+        port_id=os.environ["PORT_ID"],
+        security_group_ids=[],
     )
     client.cloud.security_groups.delete(group_id=os.environ["SG_ID"])
     ```
@@ -664,9 +719,11 @@ When multiple security groups are assigned to a Virtual Machine, rules from all 
         client := gcore.NewClient()
         ctx := context.Background()
 
-        client.Cloud.Instances.UnassignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceUnassignSecurityGroupParams{
-            Name: gcore.String("web-firewall"),
-        })
+        if _, err := client.Cloud.Ports.UpdateAndPoll(ctx, os.Getenv("PORT_ID"), cloud.PortUpdateParams{
+            SecurityGroupIDs: []string{},
+        }); err != nil {
+            panic(err.Error())
+        }
         client.Cloud.SecurityGroups.Delete(ctx, os.Getenv("SG_ID"), cloud.SecurityGroupDeleteParams{})
     }
     ```
