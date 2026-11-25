@@ -323,11 +323,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 ## Add an SSH key
 
-<p>If the project does not yet have an SSH key, register one before creating the instance. The create call references the key by name, not by ID.</p>
+<p>If the project does not yet have an SSH key, register one before creating the instance. The Python and Go instance calls take the key `id`. The curl instance body takes the key name.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Identifier used as `ssh_key_name` in the create call. |
+| `name` | Yes | Name of the key. The SDK instance call uses the returned `id`. |
 | `public_key` | No | An RSA or Ed25519 public key string. Omit to generate a new key pair. |
 
 <Tabs>
@@ -348,7 +348,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("%s\n", sshKeyCreated.Name)
+    fmt.Printf("%s\n", sshKeyCreated.ID)
     ```
   </Tab>
   <Tab title="curl">
@@ -374,7 +374,11 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
   </Tab>
 </Tabs>
 
-<p>When `public_key` is omitted, the response includes `private_key`. The Go SDK field is `PrivateKey`. Save that value immediately. It is not shown again.</p>
+<p>When `public_key` is omitted, the response includes `private_key`. The Go SDK field is `PrivateKey`. Save that value immediately. It is not shown again. Save the key `id` as `SSH_KEY_ID` for the SDK instance call.</p>
+
+```bash
+export SSH_KEY_ID="{SSH_KEY_ID}"
+```
 
 ## Quickstart
 
@@ -387,43 +391,61 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     from gcore import Gcore
 
     client = Gcore()
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
 
     # Step 1. Find Ubuntu 22.04 image
-    images = client.cloud.instances.images.list()
+    images = client.cloud.instances.images.list(region_id=region_id, visibility="public")
     image = next(img for img in images.results if "ubuntu-22.04" in img.name and "x64" in img.name)
     print(f"Image: {image.name} ({image.id}), min_disk={image.min_disk} GiB")
 
-    # Step 2. Pick a flavor (IDs are region-specific; this selects 2 vCPU / 4 GB)
-    flavors = client.cloud.instances.flavors.list()
-    flavor = next(f for f in flavors.results if f.vcpus == 2 and f.ram == 4096)
-    print(f"Flavor: {flavor.flavor_id} ({flavor.vcpus} vCPU / {flavor.ram // 1024} GB RAM)")
+    # Step 2. Pick a flavor (this selects 2 vCPU / 4 GiB)
+    flavors = client.cloud.instances.flavors.list(
+        region_ids=[region_id],
+        available=True,
+        order_by="vcpus.asc",
+    )
+    flavor = next(f for f in flavors.results if f.vcpus == 2 and f.ram_mib == 4096)
+    print(f"Flavor: {flavor.name} ({flavor.vcpus} vCPU / {flavor.ram_mib // 1024} GiB RAM)")
 
-    # Step 3. Create instance and wait (create_and_poll polls automatically)
+    # The public address comes from a port on the shared external network
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id,
+        network_id=network.id,
+        owned_by="any",
+    )
+    subnet = subnets.results[0]
+    keys = client.cloud.ssh_keys.list()
+    ssh_key = next(key for key in keys.results if key.name == "my-key")
+
+    # Step 3. Create the boot volume, the port, and the instance
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=image.id,
+        name="my-boot-volume",
+        size=max(10, image.min_disk),
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnet.id}],
+    )
     instance = client.cloud.instances.create_and_poll(
-        name="my-vm",
-        flavor=flavor.flavor_id,
-        ssh_key_name="my-key",
-        interfaces=[{"type": "external"}],
-        volumes=[{
-            "source": "image",
-            "image_id": image.id,
-            "size": max(20, image.min_disk),
-            "boot_index": 0,
-        }],
+        region_id=region_id,
+        flavor_name=flavor.name,
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
+        ssh_key_id=ssh_key.id,
     )
     print(f"Instance ID: {instance.id}, Status: {instance.status}")
 
-    # Step 4. Wait for ACTIVE status — handled automatically by create_and_poll()
-
-    # Step 5. Get public IP
-    for ifaces in instance.addresses.values():
-        for iface in ifaces:
-            print(f"Public IP: {iface.addr}")
-
-    # Step 6. Connect via SSH
-    for ifaces in instance.addresses.values():
-        for iface in ifaces:
-            print(f"ssh ubuntu@{iface.addr}")
+    # Step 4. The public IP is a fixed address on the interface
+    for interface in instance.interfaces:
+        for assignment in interface.ip_assignments:
+            print(f"ssh ubuntu@{assignment.ip_address}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -434,6 +456,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
         "context"
         "fmt"
         "os"
+        "strconv"
         "strings"
 
         gcore "github.com/G-Core/gcore-go"
@@ -443,63 +466,123 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
     func main() {
         client := gcore.NewClient()
         ctx := context.Background()
+        regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+        if err != nil {
+            panic(err.Error())
+        }
 
         // Step 1. Find Ubuntu 22.04 image
-        imageList, err := client.Cloud.Instances.Images.List(ctx, cloud.InstanceImageListParams{})
+        imageList, err := client.Cloud.Instances.Images.List(ctx, cloud.InstanceImageListParams{
+            RegionID:   gcore.Int(regionID),
+            Visibility: cloud.InstanceImageListParamsVisibilityPublic,
+        })
         if err != nil {
             panic(err.Error())
         }
         var imageID string
+        var minDisk int64
         for _, img := range imageList.Results {
             if strings.Contains(img.Name, "ubuntu-22.04") && strings.Contains(img.Name, "x64") {
                 imageID = img.ID
+                minDisk = img.MinDisk
                 fmt.Printf("Image: %s (%s)\n", img.Name, img.ID)
                 break
             }
         }
 
-        // Step 2. Pick a flavor (IDs are region-specific; this selects 2 vCPU / 4 GB)
-        flavorList, err := client.Cloud.Instances.Flavors.List(ctx, cloud.InstanceFlavorListParams{})
+        // Step 2. Pick a flavor (this selects 2 vCPU / 4 GiB)
+        flavorList, err := client.Cloud.Instances.Flavors.List(ctx, cloud.InstanceFlavorListParams{
+            RegionIDs: []int64{regionID},
+            Available: gcore.Bool(true),
+            OrderBy:   cloud.InstanceFlavorListParamsOrderByVcpusAsc,
+        })
         if err != nil {
             panic(err.Error())
         }
-        var flavorID string
-        for _, f := range flavorList.Results {
-            if f.Vcpus == 2 && f.Ram == 4096 {
-                flavorID = f.FlavorID
-                fmt.Printf("Flavor: %s (%d vCPU / %d MB RAM)\n", f.FlavorID, f.Vcpus, f.Ram)
+        var flavorName string
+        for _, flavor := range flavorList.Results {
+            if flavor.Vcpus == 2 && flavor.RamMib == 4096 {
+                flavorName = flavor.Name
+                fmt.Printf("Flavor: %s (%d vCPU / %d MiB RAM)\n", flavor.Name, flavor.Vcpus, flavor.RamMib)
                 break
             }
         }
 
-        // Step 3. Create instance and wait (NewAndPoll polls automatically)
+        // The public address comes from a port on the shared external network
+        networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+            RegionID: gcore.Int(regionID),
+            External: gcore.Bool(true),
+            OwnedBy:  cloud.NetworkListParamsOwnedByAny,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        network := networks.Results[0]
+        subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+            RegionID:  gcore.Int(regionID),
+            NetworkID: gcore.String(network.ID),
+            OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        subnet := subnets.Results[0]
+        keyList, err := client.Cloud.SSHKeys.List(ctx, cloud.SSHKeyListParams{})
+        if err != nil {
+            panic(err.Error())
+        }
+        var sshKeyID string
+        for _, key := range keyList.Results {
+            if key.Name == "my-key" {
+                sshKeyID = key.ID
+                break
+            }
+        }
+
+        // Step 3. Create the boot volume, the port, and the instance
+        size := int64(10)
+        if minDisk > size {
+            size = minDisk
+        }
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfImage: &cloud.VolumeNewParamsBodyImage{
+                ImageID:  imageID,
+                Name:     "my-boot-volume",
+                Size:     size,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+            RegionID:  regionID,
+            NetworkID: gcore.String(network.ID),
+            IPAssignments: []cloud.IPAssignmentRequestParam{
+                {SubnetID: subnet.ID},
+            },
+        })
+        if err != nil {
+            panic(err.Error())
+        }
         instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-            Flavor:       flavorID,
-            NameTemplate: gcore.String("my-vm-{ip_octets}"),
-            SSHKeyName:   gcore.String("my-key"),
-            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
-                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
-            }},
-            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
-                OfImage: &cloud.InstanceNewParamsVolumeImage{
-                    ImageID:   imageID,
-                    Size:      gcore.Int(20),
-                    BootIndex: gcore.Int(0),
-                },
-            }},
+            RegionID:     regionID,
+            FlavorName:   flavorName,
+            BootVolumeID: volume.ID,
+            SSHKeyID:     gcore.String(sshKeyID),
+            Interfaces: []cloud.InstanceNewParamsInterface{
+                {PortID: port.ID},
+            },
         })
         if err != nil {
             panic(err.Error())
         }
         fmt.Printf("Instance ID: %s, Status: %s\n", instance.ID, instance.Status)
 
-        // Step 4. Wait for ACTIVE status — handled automatically by NewAndPoll()
-
-        // Step 5. Get public IP
-        // Step 6. Connect via SSH
-        for _, addrs := range instance.Addresses {
-            for _, addr := range addrs {
-                fmt.Printf("ssh ubuntu@%s\n", addr.Addr)
+        // Step 4. The public IP is a fixed address on the interface
+        for _, iface := range instance.Interfaces {
+            for _, assignment := range iface.IPAssignments {
+                fmt.Printf("ssh ubuntu@%s\n", assignment.IPAddress)
             }
         }
     }
@@ -587,24 +670,30 @@ export IMAGE_ID="{IMAGE_ID}"
 
 ### Step 2. Select a flavor
 
-A [flavor](/api-reference/cloud/flavors/list-flavors) sets the vCPU count and RAM for the instance. IDs are region-specific — run this call to see what's available in the selected region.
+A [flavor](/api-reference/cloud/flavors/list-flavors) sets the vCPU count and RAM for the instance. The flavor name is region-specific. Run this call to list the flavors in the selected region.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    flavors = client.cloud.instances.flavors.list()
+    flavors = client.cloud.instances.flavors.list(
+        region_ids=[int(os.environ["GCORE_CLOUD_REGION_ID"])],
+        available=True,
+    )
     for f in flavors.results:
-        print(f.flavor_id, f"{f.vcpus} vCPU / {f.ram // 1024} GB RAM")
+        print(f.name, f"{f.vcpus} vCPU / {f.ram_mib // 1024} GiB RAM")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    instanceFlavorList, err := client.Cloud.Instances.Flavors.List(ctx, cloud.InstanceFlavorListParams{})
+    instanceFlavorList, err := client.Cloud.Instances.Flavors.List(ctx, cloud.InstanceFlavorListParams{
+        RegionIDs: []int64{regionID},
+        Available: gcore.Bool(true),
+    })
     if err != nil {
         panic(err.Error())
     }
     for _, f := range instanceFlavorList.Results {
-        fmt.Printf("%s %d vCPU / %d MB RAM\n", f.FlavorID, f.Vcpus, f.Ram)
+        fmt.Printf("%s %d vCPU / %d MiB RAM\n", f.Name, f.Vcpus, f.RamMib)
     }
     ```
   </Tab>
@@ -629,62 +718,106 @@ A [flavor](/api-reference/cloud/flavors/list-flavors) sets the vCPU count and RA
 </Tabs>
 
 ```bash
-export FLAVOR_ID="{FLAVOR_ID}"   # name in the curl response; flavor_id in the SDK response
+export FLAVOR_ID="{FLAVOR_ID}"   # flavor name from the list
 ```
 
 ### Step 3. Create the instance
 
-The instance is created with a public interface - `"type": "external"` assigns a public IPv4 address automatically, without a separate floating IP.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | Display name for the instance. |
-| `flavor` | Yes | Flavor ID string from Step 2. |
-| `ssh_key_name` | Yes | Name of an existing SSH key in the project. |
-| `interfaces[].type` | Yes | `"external"` for a public IP. Use `"subnet"` for a private interface. |
-| `volumes[].source` | Yes | `"image"` to boot from an image. |
-| `volumes[].size` | Yes | Boot volume size in GiB. Must be at least `min_disk` from Step 1. |
-| `volumes[].boot_index` | Yes | Set to `0` for the boot volume. |
+The Python and Go SDKs create a boot volume from the image and a port on the external network, then create the instance from those IDs. `flavor_name` is the flavor name from Step 2. `ssh_key_id` is the ID of an existing SSH key. The volume `size` must be at least `min_disk` from Step 1. Leave `name` unset. The account name template assigns it, and an account that forbids a custom name rejects any other value. The curl request on this step still sends the volume and the public interface in the instance body, and that body needs `name` or `name_template`.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    region_id = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    networks = client.cloud.networks.list(region_id=region_id, external=True, owned_by="any")
+    network = networks.results[0]
+    subnets = client.cloud.networks.subnets.list(
+        region_id=region_id,
+        network_id=network.id,
+        owned_by="any",
+    )
+    subnet = subnets.results[0]
+    volume = client.cloud.volumes.create_and_poll(
+        region_id=region_id,
+        source="image",
+        image_id=os.environ["IMAGE_ID"],
+        name="my-boot-volume",
+        size=10,
+        type_name="standard",
+    )
+    port = client.cloud.ports.create_and_poll(
+        region_id=region_id,
+        network_id=network.id,
+        ip_assignments=[{"subnet_id": subnet.id}],
+    )
     instance = client.cloud.instances.create_and_poll(
-        name="my-vm",
-        flavor=os.environ["FLAVOR_ID"],
-        ssh_key_name="my-key",
-        interfaces=[{"type": "external"}],
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "size": 20,
-            "boot_index": 0,
-        }],
+        region_id=region_id,
+        flavor_name=os.environ["FLAVOR_ID"],
+        boot_volume_id=volume.id,
+        interfaces=[{"port_id": port.id}],
+        ssh_key_id=os.environ["SSH_KEY_ID"],
     )
     instance_id = instance.id
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
-        Flavor:       os.Getenv("FLAVOR_ID"),
-        NameTemplate: gcore.String("my-vm-{ip_octets}"),
-        SSHKeyName:   gcore.String("my-key"),
-        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
-            OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
-        }},
-        Volumes: []cloud.InstanceNewParamsVolumeUnion{{
-            OfImage: &cloud.InstanceNewParamsVolumeImage{
-                ImageID:   os.Getenv("IMAGE_ID"),
-                Size:      gcore.Int(20),
-                BootIndex: gcore.Int(0),
-            },
-        }},
+    regionID, err := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+    if err != nil {
+        panic(err.Error())
+    }
+    networks, err := client.Cloud.Networks.List(ctx, cloud.NetworkListParams{
+        RegionID: gcore.Int(regionID),
+        External: gcore.Bool(true),
+        OwnedBy:  cloud.NetworkListParamsOwnedByAny,
     })
     if err != nil {
         panic(err.Error())
     }
-    // instance is ACTIVE when NewAndPoll returns
+    network := networks.Results[0]
+    subnets, err := client.Cloud.Networks.Subnets.List(ctx, cloud.NetworkSubnetListParams{
+        RegionID:  gcore.Int(regionID),
+        NetworkID: gcore.String(network.ID),
+        OwnedBy:   cloud.NetworkSubnetListParamsOwnedByAny,
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    subnet := subnets.Results[0]
+    volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+        OfImage: &cloud.VolumeNewParamsBodyImage{
+            ImageID:  os.Getenv("IMAGE_ID"),
+            Name:     "my-boot-volume",
+            Size:     10,
+            TypeName: "standard",
+        },
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    port, err := client.Cloud.Ports.NewAndPoll(ctx, cloud.PortNewParams{
+        RegionID:  regionID,
+        NetworkID: gcore.String(network.ID),
+        IPAssignments: []cloud.IPAssignmentRequestParam{
+            {SubnetID: subnet.ID},
+        },
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+        RegionID:     regionID,
+        FlavorName:   os.Getenv("FLAVOR_ID"),
+        BootVolumeID: volume.ID,
+        SSHKeyID:     gcore.String(os.Getenv("SSH_KEY_ID")),
+        Interfaces: []cloud.InstanceNewParamsInterface{
+            {PortID: port.ID},
+        },
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    // instance status is active when NewAndPoll returns
     instanceID := instance.ID
     ```
   </Tab>
@@ -725,7 +858,7 @@ export TASK_ID="d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"   # tasks[0] from the crea
 
 ### Step 4. Wait for the instance
 
-Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go SDK `NewAndPoll()` in Step 3 handle polling automatically and return only when the instance is ACTIVE. For curl, poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
+Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go SDK `NewAndPoll()` in Step 3 handle polling automatically and return only when the instance status is `active`. For curl, poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -767,22 +900,21 @@ export BOOT_VOLUME_ID="726ecfcc-7fd0-4e30-a86e-7892524aa483"   # created_resourc
 
 ### Step 5. Get the public IP address
 
-The `addresses` field on the instance object contains the public IP assigned at creation.
+The Python and Go SDKs return the public IP on the instance interface. The curl response uses `addresses`.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    # instance.addresses is populated on the object returned by create_and_poll()
-    for ifaces in instance.addresses.values():
-        for iface in ifaces:
-            print(f"IP: {iface.addr}")
+    for interface in instance.interfaces:
+        for assignment in interface.ip_assignments:
+            print(f"IP: {assignment.ip_address}")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    for _, addrs := range instance.Addresses {
-        for _, addr := range addrs {
-            fmt.Printf("IP: %s\n", addr.Addr)
+    for _, iface := range instance.Interfaces {
+        for _, assignment := range iface.IPAssignments {
+            fmt.Printf("IP: %s\n", assignment.IPAddress)
         }
     }
     ```
@@ -808,7 +940,7 @@ The `addresses` field on the instance object contains the public IP assigned at 
   </Tab>
 </Tabs>
 
-The keys in `addresses` are network names that vary by region (typically `"pub_net"` for public interfaces), so iterate over all keys when parsing programmatically.
+In the curl response, the keys in `addresses` are network names that vary by region, so iterate over all keys when parsing programmatically.
 
 ### Step 6. Connect via SSH
 
@@ -865,29 +997,27 @@ The default security group is applied automatically, allowing inbound SSH (port 
 
 ## Clean up
 
-<p>To delete the instance and its boot volume in a single call, pass the volume ID in the `volumes` query parameter.</p>
+<p>The SDK delete call removes the instance, the boot volume, and the port when those IDs are passed. The curl request passes the boot volume ID in the `volumes` query parameter.</p>
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    boot_volume_id = instance.volumes[0].id
     client.cloud.instances.delete_and_poll(
         instance_id=instance.id,
-        volumes=boot_volume_id,
+        volume_ids=[volume.id],
+        port_ids=[port.id],
     )
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    taskIDList, err := client.Cloud.Instances.Delete(
-        ctx,
-        "instance_id",
-        cloud.InstanceDeleteParams{},
-    )
+    err := client.Cloud.Instances.DeleteAndPoll(ctx, instance.ID, cloud.InstanceDeleteParams{
+        VolumeIDs: []string{volume.ID},
+        PortIDs:   []string{port.ID},
+    })
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("%+v\n", taskIDList.Tasks)
     ```
   </Tab>
   <Tab title="curl">
