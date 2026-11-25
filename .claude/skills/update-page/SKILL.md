@@ -17,10 +17,11 @@ Update existing articles based on provided context about product or UI changes.
 1. This SKILL.md
 2. The article file(s) identified during Phase 1
 3. `.agents/references/style-guide.md` — when rewriting prose or restructuring
-4. `.agents/references/mdx-rules.md` — when editing MethodSwitch structure or frontmatter
-5. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
-6. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
-7. `.agents/references/mcp-tools/edge-network-context.md` — only when a CDN or edge behavior claim is still open after the portal or API check
+4. `.agents/references/procedures.md` — when the article tells the reader to open the portal, a section, or a control. A sequence of those actions is a numbered list, never one sentence.
+5. `.agents/references/mdx-rules.md` — when editing MethodSwitch structure or frontmatter
+6. `.agents/references/sdk-best-practices.md` — SDK usage patterns (use `*_and_poll()`, no manual polling)
+7. `.agents/references/mcp-tools/playwright.md` — only if user agrees to Playwright testing
+8. `.agents/references/mcp-tools/edge-network-context.md` — only when a CDN or edge behavior claim is still open after the portal or API check
 
 Do not read other articles for context unless they are directly linked from the
 article being updated.
@@ -265,6 +266,25 @@ that the reader cannot tell which sentences were changed.
 - Rewrite the affected section — do not patch individual sentences
 - Ensure the intro sentence for the section still matches what follows
 - Check if `description` still summarizes the article. If the subject changed, rewrite it: one sentence, 140 characters maximum, no Portal, API, or Terraform.
+
+**If the text tells the reader where to go in the portal:**
+
+A chain of actions such as log in, open a product, open a project, select a sidebar item, and click a page is a numbered list. It is not a paragraph and not one sentence joined by "then" or "and". Read `.agents/references/procedures.md` and follow it. Two or more ordered actions are at least two numbered items. Login and the first open may share item 1. Each later open, select, or click is its own item. A blank line separates items. One action only stays a sentence. Do not invent a list for a single click.
+
+```mdx
+Wrong: Log in to the Gcore Customer Portal, open **Cloud**, open a project, then select **Cloud Management** and click **Cost Report**.
+
+Right:
+1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and open **Cloud**.
+
+2. Open a project.
+
+3. In the left sidebar, select **Cloud Management**.
+
+4. Click **Cost Report**.
+```
+
+When the article already states this path as prose, rewrite that prose into the list. Do this even when the labels themselves did not change. Inside `<MethodSection>`, wrap each numbered item in `<p>`, as `mdx-rules.md` requires.
 
 **If restructuring a section:**
 - Read the full section before and after in your head — does it flow?
