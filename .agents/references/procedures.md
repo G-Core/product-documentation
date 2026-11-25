@@ -130,6 +130,18 @@ Consolidate login and navigation into a single step when they are always done to
    **Cloud** > **Virtual Machines**.
 ```
 
+Login and the first destination share one item. Each later open, select, or click is the next numbered item. Do not join that chain into one sentence with "then" or "and".
+
+```
+1. Log in to the [Gcore Customer Portal](https://portal.gcore.com) and open **Cloud**.
+
+2. Open a project.
+
+3. In the left sidebar, select **Cloud Management**.
+
+4. Click **Cost Report**.
+```
+
 ---
 
 ## Single-step procedures
