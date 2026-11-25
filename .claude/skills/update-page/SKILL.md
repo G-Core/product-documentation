@@ -286,6 +286,21 @@ Right:
 
 When the article already states this path as prose, rewrite that prose into the list. Do this even when the labels themselves did not change. Inside `<MethodSection>`, wrap each numbered item in `<p>`, as `mdx-rules.md` requires.
 
+**If a sentence lists several items of the same kind:**
+
+Field names, models, options, or other peers do not stay in one comma-separated sentence. One lead sentence states the grouping. Then one bullet per item. A bullet that names the item and then explains it uses a colon after the name. Do not keep adding names to the sentence when a new item appears. Inside `<MethodSection>`, put the lead sentence in `<p>` and leave the bullets unwrapped.
+
+```mdx
+Wrong: `baremetal_gpu_h100_count_*`, `baremetal_gpu_a100_count_*`, and `baremetal_gpu_b200_count_*` track GPU bare metal servers by GPU model.
+
+Right:
+<p>GPU fields track servers by GPU model.</p>
+
+- `baremetal_gpu_h100_count_*`: H100
+- `baremetal_gpu_a100_count_*`: A100
+- `baremetal_gpu_b200_count_*`: B200
+```
+
 **If restructuring a section:**
 - Read the full section before and after in your head — does it flow?
 - Verify headings are still in logical order
