@@ -58,7 +58,7 @@ Exit code 0 required. Fix every violation, then re-run. `--all` scans the repo a
 - No standalone "For more details, see..." sentences
 
 **Voice:**
-- No "you" or "your" in prose
+- "you" and "your" are allowed in prose. Do not repeat them when the imperative already names the action. `description` still must not contain them
 - No forbidden words: just, simply, obviously, ensure, platform
 - Never describe what is absent: do not write that SDK support is "pending", "not yet available", or "not supported". Document only what exists. If only curl is available, show only curl — no explanation needed.
 

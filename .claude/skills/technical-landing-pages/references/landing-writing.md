@@ -13,7 +13,7 @@ Test for every card: could someone who has only heard of the product explain why
 ## Voice
 
 - Start with the action or the result. An imperative is fine: "Enable HTTPS for end users by adding an SSL certificate", "Make images load faster with Image Stack".
-- "You" and "your" are allowed on a landing in small doses. At most one per card or lead, never in two adjacent sentences, only for something the reader does ("You can also select..."), and never in the opening paragraph. Elsewhere write neutrally. They freshen a line; they must not become the voice of the page. The style checker flags every "you", so show those flags to the user.
+- "You" and "your" are allowed. At most one per card or lead, never in two adjacent sentences, and never in the opening paragraph. They must not become the voice of the page. The style checker does not flag them in the body.
 - "For example," may start a sentence that gives an example. The style checker flags it too. Show the flag to the user.
 - A sentence that starts with "Use" must still state a fact beyond the link: "Use Rules to control how specific files are delivered" is fine, "Use the Rules article" is not.
 

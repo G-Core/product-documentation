@@ -57,17 +57,16 @@ Start with the subject matter directly.
 | "This guide covers installing Terraform and configuring the Gcore provider." | "Terraform manages infrastructure as code through configuration files — a [Gcore account](...) and an [API token](...) are the only requirements." |
 | "This article explains how import works." | "Terraform import reads an existing resource's state from the API and writes it to the state file." |
 
-### No "you" or "your" in authored prose
+### "you" and "your"
 
-Rephrase to imperative (without subject) or neutral third person.
-This applies everywhere — body text, `<Info>`, `<Note>`, `<Warning>`, `<Tip>` blocks.
+"you" and "your" are allowed in body text and in `<Info>`, `<Note>`, `<Warning>`, and `<Tip>` blocks. Use them when the reader has to recognize their own action or something they own. Do not put them in every sentence. When the imperative already says what to do, leave the subject out.
 
-| Bad | Good |
+| Enough | Too much |
 |-----|------|
-| "You need an API token." | "An [API token](/account-settings/api-tokens) is required." |
-| "Your configuration file should include..." | "The configuration file must include..." |
-| "When you run terraform plan..." | "When running terraform plan..." |
-| "It is not linked to your Gcore account." | "It is not linked to the Gcore account." |
+| "If you requested the change, click **Approve change**." | "You open your profile. You enter your address. You click **Save**." |
+| "Open the link in the message sent to your current address." | "Your account, your email, and your password are yours to change in your settings." |
+
+The frontmatter `description` still must not contain "you" or "your".
 
 **Exception:** terminal output verbatim (e.g. "Your infrastructure matches the configuration") — do not alter.
 
@@ -90,7 +89,7 @@ Common contractions are allowed — they make documentation sound like a real pe
 
 Allowed: it's, don't, can't, won't, doesn't, they're, we've, there's
 
-Avoid contractions that include "you" or "I" (you're, you'll, I'm, I'd) — these conflict with the no "you/your" rule.
+Contractions with "you" (you're, you'll, you've) follow the same limit as "you": allowed, not in every sentence. Avoid contractions with "I" (I'm, I'd).
 
 ### Be direct
 

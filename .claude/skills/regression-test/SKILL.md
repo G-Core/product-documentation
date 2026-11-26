@@ -1044,7 +1044,7 @@ When the full checklist is marked, scan for any remaining `[ ]` and re-check tho
 Checklist:
 
 **Voice and tone:**
-- [ ] No "you" or "your" in authored prose
+- [ ] "you" and "your" are not repeated where an imperative already names the action
 - [ ] No meta-preamble opener ("This guide covers...", "This article explains...")
 - [ ] No banned words: just, simply, ensure, obviously, platform, leverage, utilize, etc.
 - [ ] No "permanent API token"
