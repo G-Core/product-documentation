@@ -52,10 +52,10 @@ curl -s "https://api.gcore.com/waap/reseller/v1/prebilling/total/requests?from=2
 
 ## Get consumption per client
 
-<p>Returns the same metric keyed by client ID, with one list of daily entries per client instead of a single aggregated total. It accepts the same parameters as the aggregated total endpoint.</p>
+<p>Returns the selected metric as one entry per client instead of a single aggregated total. `from`, `to`, and `client_ids` filter the report as they do for the aggregated total. `limit`, `offset`, and `count` count clients. `limit` accepts 1 to 100 and defaults to 100, and `offset` defaults to 0.</p>
 
 ```bash
-curl -s "https://api.gcore.com/waap/reseller/v1/prebilling/breakdown/requests?from=2026-07-01&to=2026-07-08" \
+curl -s "https://api.gcore.com/waap/reseller/v2/prebilling/breakdown/requests?from=2026-07-01&to=2026-07-08" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -66,19 +66,23 @@ curl -s "https://api.gcore.com/waap/reseller/v1/prebilling/breakdown/requests?fr
   "limit": 100,
   "offset": 0,
   "count": 2,
-  "results": {
-    "clients": {
-      "12345": [
+  "results": [
+    {
+      "client_id": 12345,
+      "items": [
         {"date": "2026-07-01", "amount": 54200},
         {"date": "2026-07-02", "amount": 55830}
-      ],
-      "67890": [
+      ]
+    },
+    {
+      "client_id": 67890,
+      "items": [
         {"date": "2026-07-01", "amount": 74140},
         {"date": "2026-07-02", "amount": 76150}
       ]
     }
-  }
+  ]
 }
 ```
 
-<p>Each key under `clients` is a client ID, and its value is the same `date` and `amount` pairs returned by the aggregated total endpoint, scoped to that one client.</p>
+<p>Each object in `results` is one client. `items` holds that client's `date` and `amount` pairs, all on the same page.</p>
