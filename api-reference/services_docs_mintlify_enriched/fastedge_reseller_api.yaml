@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
   title: Gcore OpenAPI – FastEdge Reseller API
-  version: 951392883ec5
+  version: 91be8e21eb34
 servers:
 - url: https://api.gcore.com
 tags:
@@ -214,6 +214,12 @@ paths:
       summary: Delete an app
       tags:
       - Apps
+      x-audit:
+        entity_id_field: app_id
+        entity_id_source: request_path
+        entity_type: fastedge_app
+        event: App deleted
+        log_body: false
       x-permissions:
         action: delete
         domain:
@@ -316,6 +322,11 @@ paths:
       summary: Patch an app
       tags:
       - Apps
+      x-audit:
+        entity_id_field: app_id
+        entity_id_source: request_path
+        entity_type: fastedge_app
+        event: App changed
       x-codegen-request-body-name: app
       x-permissions:
         action: update
@@ -370,6 +381,11 @@ paths:
       summary: Update an app
       tags:
       - Apps
+      x-audit:
+        entity_id_field: app_id
+        entity_id_source: request_path
+        entity_type: fastedge_app
+        event: App changed
       x-codegen-request-body-name: app
       x-permissions:
         action: update
@@ -563,6 +579,8 @@ paths:
       summary: Update status and/or limits for the specified client
       tags:
       - Clients
+      x-audit:
+        event: Account changed
       x-permissions:
         action: update
         domain:
@@ -674,9 +692,11 @@ paths:
                   type: boolean
                 descr:
                   description: Group description
+                  maxLength: 1024
                   type: string
                 name:
                   description: Group name
+                  maxLength: 128
                   type: string
               required:
               - name
@@ -698,6 +718,11 @@ paths:
       summary: Add new group
       tags:
       - Groups
+      x-audit:
+        entity_id_field: id
+        entity_id_source: response_body
+        entity_type: fastedge_group
+        event: Group added
       x-permissions:
         action: create
         domain:
@@ -745,6 +770,12 @@ paths:
       summary: Delete group
       tags:
       - Groups
+      x-audit:
+        entity_id_field: group_id
+        entity_id_source: request_path
+        entity_type: fastedge_group
+        event: Group deleted
+        log_body: false
       x-permissions:
         action: delete
         domain:
@@ -818,9 +849,11 @@ paths:
                   type: boolean
                 descr:
                   description: Group description
+                  maxLength: 1024
                   type: string
                 name:
                   description: Group name
+                  maxLength: 128
                   type: string
               required:
               - name
@@ -850,6 +883,11 @@ paths:
       summary: Update group
       tags:
       - Groups
+      x-audit:
+        entity_id_field: group_id
+        entity_id_source: request_path
+        entity_type: fastedge_group
+        event: Group changed
       x-permissions:
         action: update
         domain:
@@ -900,6 +938,12 @@ paths:
       summary: Remove client from the group
       tags:
       - Groups
+      x-audit:
+        entity_id_field: group_id
+        entity_id_source: request_path
+        entity_type: fastedge_group
+        event: Group member deleted
+        log_body: false
       x-permissions:
         action: update
         domain:
@@ -951,6 +995,11 @@ paths:
       summary: Add client to the group
       tags:
       - Groups
+      x-audit:
+        entity_id_field: group_id
+        entity_id_source: request_path
+        entity_type: fastedge_group
+        event: Group member added
       x-permissions:
         action: update
         domain:
@@ -1076,6 +1125,11 @@ paths:
       summary: Add a new plan
       tags:
       - Plans
+      x-audit:
+        entity_id_field: id
+        entity_id_source: response_body
+        entity_type: fastedge_plan
+        event: Plan added
       x-codegen-request-body-name: plan
       x-permissions:
         action: create
@@ -1118,6 +1172,12 @@ paths:
       summary: Delete a plan
       tags:
       - Plans
+      x-audit:
+        entity_id_field: plan_id
+        entity_id_source: request_path
+        entity_type: fastedge_plan
+        event: Plan deleted
+        log_body: false
       x-permissions:
         action: delete
         domain:
@@ -1194,6 +1254,11 @@ paths:
       summary: Update a plan
       tags:
       - Plans
+      x-audit:
+        entity_id_field: plan_id
+        entity_id_source: request_path
+        entity_type: fastedge_plan
+        event: Plan changed
       x-codegen-request-body-name: plan
       x-permissions:
         action: update
@@ -1223,7 +1288,10 @@ paths:
                   description: This field is not actually used, it is here only to comply with Billing API. If specified, it must be set to true.
                   type: boolean
                 from:
-                  description: Start date-time in RFC3339 format
+                  description: |-
+                    Start date-time in RFC3339 format, inclusive. Must not be in the future.
+                    If it falls on a day before today (UTC), it is rounded down to the start of that day (00:00:00 UTC),
+                    e.g. "2026-01-01T12:00:00Z" becomes "2026-01-01T00:00:00Z". A value that falls on today is used as is.
                   example: '2026-01-01T00:00:00Z'
                   format: date-time
                   type: string
@@ -1267,7 +1335,12 @@ paths:
                   example: FAST_EDGE
                   type: string
                 to:
-                  description: End date-time in RFC3339 format
+                  description: |-
+                    End date-time in RFC3339 format, exclusive.
+                    If it falls on a day before today (UTC), it is rounded up to the start of the next day (00:00:00 UTC),
+                    so the whole day is included, e.g. "2026-01-31T12:00:00Z" becomes "2026-02-01T00:00:00Z".
+                    A value already at 00:00:00 UTC is left unchanged, so "2026-01-31T23:59:59Z" and "2026-02-01T00:00:00Z" are equivalent.
+                    A value that falls on today or later is used as is.
                   example: '2026-01-31T23:59:59Z'
                   format: date-time
                   type: string
@@ -1532,6 +1605,12 @@ paths:
       summary: Delete template
       tags:
       - Templates
+      x-audit:
+        entity_id_field: template_id
+        entity_id_source: request_path
+        entity_type: fastedge_template
+        event: Template deleted
+        log_body: false
       x-permissions:
         action: delete
         domain:
@@ -1616,6 +1695,11 @@ paths:
       summary: Update template
       tags:
       - Templates
+      x-audit:
+        entity_id_field: template_id
+        entity_id_source: request_path
+        entity_type: fastedge_template
+        event: Template changed
       x-permissions:
         action: update
         domain:
@@ -1665,6 +1749,12 @@ paths:
       summary: Unshare template from the group
       tags:
       - Templates
+      x-audit:
+        entity_id_field: template_id
+        entity_id_source: request_path
+        entity_type: fastedge_template
+        event: Template unshared
+        log_body: false
       x-permissions:
         action: update
         domain:
@@ -1713,6 +1803,11 @@ paths:
       summary: Share template to the group
       tags:
       - Templates
+      x-audit:
+        entity_id_field: template_id
+        entity_id_source: request_path
+        entity_type: fastedge_template
+        event: Template shared
       x-permissions:
         action: update
         domain:
@@ -1732,7 +1827,8 @@ components:
       description: |-
         Aggregated FastEdge usage statistics for one group. The group-key fields
         (`client_id`, `app_id`, region, country) are present only for the dimensions
-        requested in `group_by`.
+        requested in `group_by`. If there are no requests, the response contains a
+        single all-zero record without group-key fields, regardless of `group_by`.
       required:
       - total_count
       - exec_time
@@ -2181,6 +2277,7 @@ components:
         descr:
           type: string
           description: Group description
+          maxLength: 1024
           example: Video streaming customers
     group_short:
       type: object
@@ -2196,6 +2293,7 @@ components:
         name:
           type: string
           description: Group name
+          maxLength: 128
         default_flag:
           type: boolean
           description: Add new members to the group by default
@@ -2203,6 +2301,7 @@ components:
         descr:
           type: string
           description: Group description
+          maxLength: 1024
           example: Video streaming customers
         client_count:
           type: integer
@@ -2232,6 +2331,7 @@ components:
       - max_subrequests
       - reseller_id
       - name
+      - max_app_count
       type: object
       properties:
         id:
@@ -2282,6 +2382,10 @@ components:
           default: 0
           writeOnly: true
           x-go-type-skip-optional-pointer: true
+        max_app_count:
+          type: integer
+          description: Maximum number of apps allowed per plan
+          default: 0
     prebillingMetric:
       type: object
       properties:
