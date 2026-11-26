@@ -12,7 +12,7 @@ Applies whenever an API skill works in an article that has a `<MethodSection id=
 
 ## Forbidden — style, prose content, and structure (never touch in Portal)
 
-- Rewriting "you/your" to neutral voice
+- Rewriting "you" or "your". Both are allowed in prose
 - Fixing number style (1 → one)
 - Fixing link text length
 - Fixing `&nbsp;` in multi-word links

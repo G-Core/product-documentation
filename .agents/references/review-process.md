@@ -19,7 +19,7 @@ python .agents/tools/check_mdx_encoding.py {relative/path/to/article.mdx}
 python .agents/tools/check_article_images.py {relative/path/to/article.mdx}
 ```
 
-- `style_check.py` covers: "you/your", forbidden words, UK spelling, em-dash spacing, link text, meta-preamble openers, number style, alt text, heading style, callout prefixes, frontmatter.
+- `style_check.py` covers: forbidden words, UK spelling, em-dash spacing, link text, meta-preamble openers, number style, alt text, heading style, callout prefixes, frontmatter. "you" and "your" in the body are allowed. The checker still rejects them in `description`.
 - `check_mdx_encoding.py` covers: BOM, CRLF, garbage characters, invalid UTF-8.
 - `validate_mdx.ps1` covers: MDX that does not compile. It does not catch a missing `.jsx` in the MethodSwitch import.
 - `check_article_images.py` covers: images from another folder, missing files, duplicates, unreferenced files.
@@ -79,7 +79,7 @@ Select-String -Path article.mdx -Pattern 'permanent (API )?token|the following|c
 - "navigate to" (not "go to"), "click" (not "click on"), "select" (not "choose"), "enter" (not "type in")
 - Navigation paths use `>` as the separator: `**Section** > **Subsection**`
 - API tokens are never called "permanent"
-- "you/your" is fixed in authored prose and inside `<Info>`, `<Note>`, `<Warning>`, `<Tip>` blocks. Code blocks and terminal output stay verbatim
+- "you" and "your" are allowed in authored prose and inside `<Info>`, `<Note>`, `<Warning>`, `<Tip>` blocks. Do not repeat them when the imperative already names the action. Code blocks and terminal output stay verbatim. `description` still must not contain them
 - Read adjacent sentence pairs — join cause-effect or contrast pairs with a connector
 - Voice is consistent throughout (tutorial or reference, not mixed)
 

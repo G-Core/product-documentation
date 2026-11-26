@@ -26,7 +26,7 @@ Re-run the script after fixing until it reports **OK — no violations found**.
 
 ## Step 2 — Manual checklist
 
-The linter already enforces: "you/your", banned words, UK spelling, em-dash spacing, link text, meta-preamble openers, number style, alt text, heading style, callout prefixes, and frontmatter. The checklist below covers only what a script cannot see.
+The linter already enforces: banned words, UK spelling, em-dash spacing, link text, meta-preamble openers, number style, alt text, heading style, callout prefixes, and frontmatter. "you" and "your" in the body are allowed. The checker still rejects them in `description`. The checklist below covers only what a script cannot see.
 
 Work through the article section by section and verify each rule. Do not skim.
 For each checklist item: read the article, verify the rule, then mark the item with `[V]`.
@@ -36,6 +36,7 @@ When the full checklist is marked, scan for any remaining `[ ]` and re-check tho
 Checklist:
 
 **Voice and tone:**
+- [ ] "you" and "your" are not repeated where an imperative already names the action
 - [ ] No "permanent API token"
 
 **Sentence structure:**

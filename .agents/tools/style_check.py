@@ -4,13 +4,14 @@ Checks detectable violations from .agents/references/style-guide.md.
 Usage: python .agents/tools/style_check.py hosting/path/to/article.mdx
 
 Landing pages (see .claude/skills/technical-landing-pages/references/landing-writing.md):
-the checker still flags three things on a landing, and the flags are intentional.
+the checker still flags two things on a landing, and the flags are intentional.
 The output marks them as a possible false positive. Show them to the user, who decides
 which to fix. Do not ignore them and do not fix them on your own, because the user
 may have allowed one on purpose:
-  - "you" / "your" (check_you_your): allowed on a landing in small doses.
   - "For example," at the start of a sentence (check_forbidden_words): allowed.
   - a digit inside a JSX attribute such as cols={2} (check_numbers): a false positive.
+"you" and "your" in the body are allowed and are not flagged. The description field
+still must not contain them.
 """
 
 import re
@@ -70,22 +71,6 @@ def strip_urls_and_links(text: str) -> str:
     text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", text)
     text = re.sub(r"https?://\S+", "", text)
     return text
-
-
-def check_you_your(lines: list[tuple[int, str]]) -> list[Violation]:
-    # On a landing page a measured use of "you" can be intentional. Check with the user, do not auto-fix.
-    violations: list[Violation] = []
-    pattern = re.compile(r"\b(you|your|you're|you'll|you've)\b", re.IGNORECASE)
-    for lineno, text in lines:
-        clean = strip_urls_and_links(text)
-        for m in pattern.finditer(clean):
-            violations.append(Violation(
-                line=lineno,
-                rule="No you/your",
-                detail=f"Found '{m.group()}' — rephrase to imperative or neutral",
-                text=text.strip(),
-            ))
-    return violations
 
 
 def check_forbidden_words(lines: list[tuple[int, str]]) -> list[Violation]:
@@ -546,11 +531,19 @@ def check_frontmatter(raw_lines: list[str]) -> list[Violation]:
                     text=raw.strip(),
                 ))
 
+            if re.search(r"\b(you|your|you're|you'll|you've)\b", val, re.IGNORECASE):
+                violations.append(Violation(
+                    line=i,
+                    rule="description search summary",
+                    detail="description must not contain you or your",
+                    text=raw.strip(),
+                ))
+
     return violations
 
 
 CHECKERS = [
-    check_you_your, check_forbidden_words, check_uk_spelling, check_em_dash,
+    check_forbidden_words, check_uk_spelling, check_em_dash,
     check_bullet_label_dash,
     check_link_text, check_meta_preamble, check_numbers, check_alt_text,
 ]
@@ -573,8 +566,6 @@ def is_landing(path: Path) -> bool:
 
 
 def is_landing_review_flag(v: Violation) -> bool:
-    if v.rule == "No you/your":
-        return True
     if v.rule == "Forbidden word/phrase" and v.detail.startswith("for example"):
         return True
     return v.rule == "Number style" and v.text.lstrip().startswith("<")

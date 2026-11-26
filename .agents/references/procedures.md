@@ -221,7 +221,7 @@ Prerequisites, access requirements, or environment setup.
 
 Callout rules:
 - One callout per step maximum
-- No "you" or "your" inside callouts — same rule as prose
+- "you" and "your" inside callouts follow the prose rule: allowed, not in every sentence
 - Keep callouts to 1–2 sentences. If more is needed, it belongs in the step text.
 
 ---

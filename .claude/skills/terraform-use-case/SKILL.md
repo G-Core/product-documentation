@@ -385,7 +385,7 @@ No colons, no `{...}`, no URL paths.
 ### Checklist — run each item, fix before continuing
 
 **Voice:**
-- [ ] No "you" or "your" in any prose — use "the account", "the configuration"
+- [ ] "you" and "your" are not repeated where an imperative already names the action
 - [ ] No forbidden words: just, simply, obviously, ensure, platform, seamlessly, leverage, for example, such as
 - [ ] No meta-preamble: "The following configuration...", "The steps below...", "This section covers..."
 - [ ] No "does not support", "is not available", "is not supported" — rewrite to tell the reader where to go instead

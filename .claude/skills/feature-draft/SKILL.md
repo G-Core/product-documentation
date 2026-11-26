@@ -267,7 +267,7 @@ Quick validation before creating the PR:
 - [ ] No forbidden openers: "This guide...", "This article..."
 - [ ] No forbidden sections: `## Prerequisites`, `## Next steps`
 - [ ] Headings in sentence case
-- [ ] No "you" or "your" in prose
+- [ ] "you" and "your" are not repeated where an imperative already names the action
 - [ ] No forbidden words: just, simply, ensure, platform
 
 ---
