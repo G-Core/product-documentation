@@ -50,7 +50,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
     <p>To purge `https://www.example.com/pictures/icon.jpg?size=small`, enter `/pictures/icon.jpg?size=small`.</p>
 
-    <p>A path that contains `|`, a line break, or a tab cannot be sent as a URL. Use Purge by pattern, and keep `|` out of the pattern. `*` matches the rest of the path, so `/pictures/icon.jpg*` is accepted.</p>
+    <p>A path that contains `|`, a line break, or a tab cannot be sent as a URL. Use Purge by pattern, and keep `|` out of the pattern. A `*` at the end of the pattern matches the rest of the path, so `/pictures/icon.jpg*` is accepted.</p>
 
     <Frame>
       ![Purge by URL section with text area for entering URLs](/images/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/purge-by-url.png)
@@ -80,7 +80,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     <Warning>
       One purge request per resource per minute is allowed. One purge request is limited to 10 patterns.
     </Warning>
-    <p>In the input field, enter path patterns without a domain name. Use the `*` operator to match any number of characters. Each path must start with `/` and be on a separate line. A pattern that contains `|`, a line break, or a tab is rejected. If a query string is not included in a pattern, the purge covers all query string variants of matching files.</p>
+    <p>In the input field, enter path patterns without a domain name. The `*` operator matches any number of characters at the end of the pattern. Each path must start with `/` and be on a separate line. A pattern that contains `|`, a line break, or a tab is rejected. If a query string is not included in a pattern, the purge covers all query string variants of matching files.</p>
 
     <Frame>
       ![Purge by pattern radio button selected with pattern text area](/images/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/purge-by-pattern.png)
@@ -92,9 +92,6 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
     | ------ | ------- |
     | One file (all query string variants) | `/static/image.jpg` |
     | All files in a folder | `/static/*` |
-    | Files by extension | `/static/*.jpg` |
-    | Files under a matching path segment | `/img/*/files` |
-    | Files by extension under a path | `/img/static/*.jpg` |
 
     <p>To target a file with a specific query string, include it in the path: `/static/image.jpg?VERSION`.</p>
 
@@ -139,7 +136,7 @@ export CDN_RESOURCE_ID="{YOUR_RESOURCE_ID}"
 
 ## Purge by URL
 
-<p>Remove specific files from the CDN cache. Two purge requests per resource per minute are allowed; one request is limited to 100 URLs. URLs must start with `/` and must not include the protocol or domain name. A URL that contains `|`, a line break, or a tab is rejected. A `%` that is not followed by two hexadecimal digits is rejected. `%20` is accepted. Include query strings if the CDN resource caches content per query string. Purge by pattern accepts `/pictures/icon.jpg*` when the pattern does not contain `|`.</p>
+<p>Remove specific files from the CDN cache. Two purge requests per resource per minute are allowed; one request is limited to 100 URLs. URLs must start with `/` and must not include the protocol or domain name. A URL that contains `|`, a line break, or a tab is rejected. A `%` that is not followed by two hexadecimal digits is rejected. `%20` is accepted. Include query strings if the CDN resource caches content per query string. Purge by pattern accepts `/pictures/icon.jpg*` when the `*` is the last character and the pattern does not contain `|`.</p>
 
 ```text
 Control characters, such as line breaks or tabs, and the | character are not allowed.
@@ -211,7 +208,7 @@ The % character must be followed by two hexadecimal digits.
 
 ## Purge by pattern
 
-<p>Remove files matching a path pattern. Use the `*` operator to match any number of characters. Patterns must start with `/`. A pattern that contains `|`, a line break, or a tab is rejected. If a query string is not included in a pattern, the purge covers all query string variants of matching files. One request is limited to 10 patterns; one purge request per resource per minute is allowed.</p>
+<p>Remove files matching a path pattern. The `*` operator matches any number of characters at the end of the pattern. Patterns must start with `/`. A pattern that contains `|`, a line break, or a tab is rejected. If a query string is not included in a pattern, the purge covers all query string variants of matching files. One request is limited to 10 patterns; one purge request per resource per minute is allowed.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -222,7 +219,7 @@ The % character must be followed by two hexadecimal digits.
 
     client.cdn.cdn_resources.purge(
         12345,
-        paths=["/images/*", "/static/*.js"],
+        paths=["/images/*", "/static/*"],
     )
     ```
   </Tab>
@@ -244,7 +241,7 @@ The % character must be followed by two hexadecimal digits.
 
         err := client.CDN.CDNResources.Purge(ctx, 12345, cdn.CDNResourcePurgeParams{
             OfPurgeByPattern: &cdn.CDNResourcePurgeParamsBodyPurgeByPattern{
-                Paths: []string{"/images/*", "/static/*.js"},
+                Paths: []string{"/images/*", "/static/*"},
             },
         })
         if err != nil {
@@ -259,7 +256,7 @@ The % character must be followed by two hexadecimal digits.
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "paths": ["/images/*", "/static/*.js"]
+        "paths": ["/images/*", "/static/*"]
       }'
     ```
 
@@ -267,7 +264,7 @@ The % character must be followed by two hexadecimal digits.
 
     ```json
     {
-      "paths": ["/images/*", "/static/*.js"]
+      "paths": ["/images/*", "/static/*"]
     }
     ```
   </Tab>
