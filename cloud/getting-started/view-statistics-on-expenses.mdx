@@ -4,7 +4,7 @@ sidebarTitle: Cost reports
 description: View Cloud cost reports and reservation cost reports to track resource usage, commitments, and export cost data.
 ---
 
-Cloud usage and its cost are split across two reports, so an on-demand bill stays separate from a resource commitment.
+Cloud has two cost reports.
 
 - **Cost Report**: costs for all Cloud resources used, calculated at on-demand rates. If active resource commitments exist, the prices shown don't reflect actual costs because commit discounts are not applied.
 - **Reservation Cost Report**: monthly resource usage and costs that account for resource commitments. This report shows how much of the committed resources were consumed, whether commits were fully utilized, and any overcommit costs incurred when usage exceeded the reserved amount.
@@ -19,17 +19,15 @@ To open either report:
 
 4. Click **Cost Report** or **Reservation Cost Report**.
 
-The same usage and cost figures are returned by the [Cost&nbsp;reports&nbsp;API](/api-reference/cloud#tag/Cost-Reports/operation/CostReportResourcesHandler.post).
-
 Statistics for the last hour may contain incomplete data — for accurate results, review data collected more than an hour ago.
 
 ## Cost Report
 
 <Info>
-This report uses on-demand rates, so commit discounts appear only in the [Reservation&nbsp;Cost&nbsp;Report](/cloud/getting-started/view-statistics-on-expenses#reservation-cost-report).
+On-demand figures for this report are returned by the [Cost&nbsp;reports&nbsp;API](/api-reference/cloud#tag/Cost-Reports/operation/CostReportResourcesV2Handler.post).
 </Info>
 
-The report contains data about each Cloud resource in use, helping estimate future on-demand costs.
+The report covers the selected period, including resources in projects marked **(Deleted)**.
 
 The cost data can be filtered by:
 
@@ -41,19 +39,19 @@ The cost data can be filtered by:
 
 After applying filters, the chart shows the selected period. **Group by** splits that chart by **Region**, **Type**, **Flavor**, or **Project**.
 
-**Cost** shows that spend in the account currency. The cards are **Total spend**, **Top cost driver**, and **Daily average**, the chart title is **Spend over time**, and the panel title is **Top cost drivers**.
+**Cost** displays spending in the account currency. The cards are **Total spend**, **Top cost driver**, and **Daily average**. The chart title is **Spend over time**, and the panel title is **Top cost drivers**.
 
 <Frame>![Cost report spend chart grouped by region](/images/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-spend.png)</Frame>
 
-**Usage** shows the same period in one unit. The menu next to **Usage** lists every unit that has volume in the period, and each row gives the volume and the cost. **Hours**, **GB-hours**, and **Bytes** are units in that menu. The selected volume stays on **Total usage**, **Top usage driver**, and **Daily average** when the cost is zero. The chart title is then **Usage over time**, and the panel title is **Top usage drivers**.
+**Usage** shows consumption for one unit over the same period, and the cards still show cost. The menu lists every unit that has volume in the period. **Hours**, **GB-hours**, and **Bytes** are units in that menu. The selected unit is shown on **Total usage**, **Top usage driver**, and **Daily average**. The chart title is **Usage over time**, and the panel title is **Top usage drivers**.
 
 <Frame>![Usage unit menu listing Hours, GB-hours, and Bytes](/images/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-usage-units.png)</Frame>
 
-**Type** groups the same usage by resource type.
+**Type** in **Group by** splits the chart by resource type.
 
 <Frame>![Cost report usage chart grouped by resource type](/images/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-usage-type.png)</Frame>
 
-**Flavor** groups it by configuration. The tooltip on a bar lists the volume and cost of each series for that day.
+**Flavor** in **Group by** splits the chart by configuration. The tooltip on a bar lists the volume and cost of each series for that day.
 
 <Frame>![Cost report usage chart grouped by flavor, with a daily tooltip](/images/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-usage-flavor.png)</Frame>
 
@@ -65,9 +63,9 @@ The table under the chart lists each resource in the selected period:
 - **Project**
 - **Tags**
 - **Usage**
-- **First Seen Date**
-- **Last Seen Date**
 - **Cost**
+
+**Manage Columns** adds **First Seen Date** and **Last Seen Date**.
 
 The search field above the table matches part of a resource detail. The table and the chart update to the matches.
 
@@ -78,7 +76,7 @@ To export data for the selected period, click **Export CSV** in the top-right co
 - **Detailed**: a detailed breakdown of each resource.
 - **Totals**: the total cost of resources in each location.
 
-<br />
+A row with no tariff has `Error` set to `No tariff`, and `Feature_name`, `Cost`, and `Currency` are empty.
 
 <Tabs>
   <Tab title="Detailed CSV report">
@@ -86,49 +84,51 @@ To export data for the selected period, click **Export CSV** in the top-right co
 
     Column | Description
     ---|---
-    Service | Name of the Cloud resource.
-    UUID | Universally unique identifier assigned to the resource. Some resources, like IP addresses, don't have a UUID as they're already unique.
-    Feature | Billing identifier that combines resource type, configuration, region, and pricing model. Every resource has a feature value, including resources with a single configuration like IP addresses.
-    Tags | Tags added to the resource, including system-generated tags.
-    Service_name | Name of the service as displayed in the **Name** field in the portal — the name of a virtual machine.
+    Service | Resource type.
+    UUID | Resource identifier. Empty for external IP addresses and egress traffic.
+    Feature | Configuration identifier: a flavor or a storage class. Empty for external IP addresses, floating IP addresses, egress traffic, file shares, and images.
+    Tags | Tags on the resource, including system-generated tags.
+    Service_name | Resource name shown in the portal. Empty for egress traffic.
     Region_id | ID of the region where the resource was created, as listed by the [regions&nbsp;API](/api-reference/cloud/regions/list-regions).
     Region_name | Name of the geographical location of the data center where the resource was created.
     Project_id | ID of the project where the resource was created. The project ID is visible on the **Projects** page in the [grid&nbsp;view](/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts).
     Project_name | Name of the project where the resource was created.
-    First_seen | Date when the resource was first detected in the billing system during the selected period. Identifies when a resource started generating costs.
-    Last_seen | Date when the resource was last detected in the billing system during the selected period. Identifies when a resource stopped generating costs, though it doesn't necessarily indicate the resource was deleted.
-    Period_from | Start date of the reporting period. Reflects the selected date range, not when the resource was created.
-    Period_to | End date of the reporting period. Reflects the selected date range, not when the resource was stopped or deleted.
-    Units | Consumption measurement unit — either usage time (gbminutes, minutes, milliseconds) or consumed quantity (bytes, GBS).
-    Value | Numerical measurement of resource usage.
-    Error | Any errors associated with costs incurred during the specified period.
-    Cost | Cost of the resource for the specified period.
-    Currency | Currency in which the cost is calculated.
-    Attached_to | Cloud product the resource is connected to — the ID of a virtual machine that a volume is attached to.
-    Port_id | Unique identifier for a network virtual port of a VM, used to associate IP addresses and traffic with specific network connections.
+    Period_from | Start of this row's usage interval inside the selected range.
+    Period_to | End of this row's usage interval inside the selected range.
+    Units | Unit of Value: `minutes`, `gbminutes`, `bytes`, or `GBH` (gigabyte-hours).
+    Value | Amount of usage in `Units`.
+    Feature_name | Billing name, including the pricing model.
+    Error | Empty, or `No tariff` when the row has no price.
+    Cost | Cost for this row's interval.
+    Currency | Currency of `Cost`.
+    Attached_to | Identifier of the resource this row is attached to. Filled for volumes, snapshots, and some external IP addresses.
+    Port_id | Network port on an external IP address or egress traffic row. Empty for other resource types.
   </Tab>
   <Tab title="Totals CSV report">
     The following table describes the columns in the **Totals** CSV export.
 
     Column | Description
     ---|---
-    Type | Cloud resource type.
-    Feature | Billing identifier that combines resource type, configuration, region, and pricing model. Every resource has a feature value, including resources with a single configuration like IP addresses.
+    Type | Resource type.
+    Feature | Configuration identifier. Empty when the row has no flavor or storage class.
     Region_id | ID of the region where the resource was created.
     Region_name | Name of the geographical location of the data center where the resource was created.
-    Period_from | Start date of the reporting period. Reflects the selected date range, not when the resource was created.
-    Period_to | End date of the reporting period. Reflects the selected date range, not when the resource was stopped or deleted.
-    Units | Consumption measurement unit — either usage time (gbminutes, minutes, milliseconds) or consumed quantity (bytes, GBS).
-    Value | Numerical measurement of resource usage.
-    Error | Any errors associated with costs incurred during the specified period.
-    Cost | Cost of the resource for the specified period.
-    Currency | Currency in which the cost is calculated.
+    Period_from | Midnight at the start of the selected range. Every row uses this value.
+    Period_to | Midnight after the last day of the selected range. Every row uses this value.
+    Units | Unit of Value: `minutes`, `gbminutes`, `bytes`, or `GBH` (gigabyte-hours).
+    Value | Total usage in `Units`.
+    Feature_name | Billing name, including the pricing model.
+    Error | Empty, or `No tariff` when the row has no price.
+    Cost | Cost for the selected range.
+    Currency | Currency of `Cost`.
   </Tab>
 </Tabs>
 
 ## Reservation Cost Report
 
-The Reservation Cost Report presents monthly usage and costs for prepaid and [reserved](/cloud/getting-started/resource-reservation/about-resource-reservation) resources, showing commit utilization and any overcommit charges. Data is grouped by resource type and feature.
+The Reservation Cost Report presents monthly usage and costs for prepaid and [reserved](/cloud/getting-started/resource-reservation/about-resource-reservation) resources. Data is grouped by resource type and feature.
+
+Monthly totals are returned by the [reservation&nbsp;totals&nbsp;API](/api-reference/cloud#tag/Cost-Reports/operation/ReservationCostReportTotalsHandler.post).
 
 The cost data can be filtered by:
 
@@ -142,7 +142,7 @@ The report includes statistics for all regions, including deleted ones.
 
 
 
-Use the **Rounding** checkbox in the top-right corner to toggle cost rounding on or off.
+Select **Rounding** to round costs in the report. **Export totals CSV** then writes `Cost` with five decimal places.
 
 Cost data is displayed as a chart and a table. In the chart view, the **Total €** tab displays the cumulative costs for the selected period.
 
@@ -151,7 +151,7 @@ Cost data is displayed as a chart and a table. In the chart view, the **Total �
 
 
 
-More granular information is available on the following tabs:
+These tabs show the selected month in one unit:
 
 - **Hours**
 - **Gigabyte-hours**
@@ -166,7 +166,7 @@ More granular information is available on the following tabs:
 Under the chart, the table shows a detailed breakdown of resources consumed during the selected month. The table includes the following columns:
 
 - **Resource type**: the type of Cloud resource.
-- **Feature name**: the billing identifier that combines resource type, configuration, region, and pricing model.
+- **Feature name**: the billing name, including the pricing model.
 - **Region**: the region where the resource is located.
 - **Usage**: the amount of resource consumed.
 - **Cost**: the cost for the selected period.
@@ -175,21 +175,20 @@ Under the chart, the table shows a detailed breakdown of resources consumed duri
 
 ### Reservation Cost Report export
 
-To export the billing report for the selected period, click **Export totals CSV** in the top-right corner.
+To export the selected month, click **Export totals CSV** in the top-right corner. The chart separates **Commit** and **Overcommit**. The file has one `Cost` column.
 
-The following table describes the columns in the **Totals** CSV export for reserved resources.
+A row with no tariff has `Error` set to `No tariff`, and `Feature_name`, `Cost`, and `Currency` are empty.
 
 Column | Description
 ---|---
-Type | Cloud resource type.
-Feature | Billing identifier that combines resource type, configuration, region, and pricing model. Every resource has a feature value, including resources with a single configuration like IP addresses.
-Region_id | ID of the region where the resource is reserved.
-Region_name | Name of the geographical location of the data center where the resource is reserved.
-Period | Timeframe for the displayed statistics.
-Units | Consumption measurement unit — either usage time (gbminutes, minutes, milliseconds) or consumed quantity (bytes, GBS).
-Value | Total consumed value.
-Commit value | Total amount of resources reserved.
-Commit cost | Cost for the reserved amount of Cloud resources.
-Overcommit cost | Additional charges incurred when resource usage exceeded the committed (reserved) amount.
-Error | Any errors associated with costs incurred during the specified period.
-Currency | Currency in which the cost is calculated.
+Type | Resource type.
+Feature | Configuration identifier. Empty when the row has no flavor or storage class.
+Region_id | ID of the region for the row.
+Region_name | Name of the geographical location of the data center.
+Period | First moment of the month after the selected month. Every row uses this value.
+Feature_name | Billing name, including the pricing model.
+Units | Unit of Value: `minutes`, `gbminutes`, `bytes`, or `GBH` (gigabyte-hours).
+Value | Usage for the month, in `Units`.
+Cost | Cost for the month.
+Error | Empty, or `No tariff` when the row has no price.
+Currency | Currency of `Cost`.
