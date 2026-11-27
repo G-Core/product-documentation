@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 1d9724b97b94
+  version: bf069ae5c423
 servers:
 - url: https://api.gcore.com
 paths:
@@ -42790,7 +42790,8 @@ paths:
           whose free addresses the caller does not know. Such an entry keeps an address the port already has
           in that subnet, in the order the port reports them, so a shorter list releases the addresses at the
           end of that order. A request can replace all current addresses. A port an instance holds takes its
-          addresses from one subnet per IP version, because the guest reaches one address range per version
+          addresses from one subnet per IP version, because the guest reaches one address range per version.
+          A reserved fixed IP takes one address of each IP version, except on a dedicated public network
 
         **Public network:** port security and allowed address pairs cannot be changed on ports in the
         region's public network. IP assignments can. To add an address there, send an entry with only
@@ -43392,7 +43393,8 @@ paths:
           whose free addresses the caller does not know. Such an entry keeps an address the port already has
           in that subnet, in the order the port reports them, so a shorter list releases the addresses at the
           end of that order. A request can replace all current addresses. A port an instance holds takes its
-          addresses from one subnet per IP version, because the guest reaches one address range per version
+          addresses from one subnet per IP version, because the guest reaches one address range per version.
+          A reserved fixed IP takes one address of each IP version, except on a dedicated public network
 
         **Public network:** port security and allowed address pairs cannot be changed on ports in the
         region's public network. IP assignments can. To add an address there, send an entry with only
@@ -44413,6 +44415,36 @@ paths:
       tags:
       - Pricing
       security: []
+      x-codeSamples:
+      - lang: Python
+        source: |-
+          from gcore import Gcore
+
+          client = Gcore()
+          gpu_price_catalog = client.cloud.pricing.gpu.list()
+          print(gpu_price_catalog.count)
+      - lang: Go
+        source: |
+          package main
+
+          import (
+          	"context"
+          	"fmt"
+
+          	"github.com/G-Core/gcore-go"
+          	"github.com/G-Core/gcore-go/option"
+          )
+
+          func main() {
+          	client := gcore.NewClient(
+          		option.WithAPIKey("My API Key"),
+          	)
+          	gpuPriceCatalog, err := client.Cloud.Pricing.GPU.List(context.TODO())
+          	if err != nil {
+          		panic(err.Error())
+          	}
+          	fmt.Printf("%+v\n", gpuPriceCatalog.Count)
+          }
   /cloud/v1/projects:
     post:
       operationId: ProjectListViewSet.post
@@ -78566,7 +78598,7 @@ components:
           title: Allowed Address Pairs
           type: array
         ip_assignments:
-          description: IP assignments on the port. Replaces the full set. Subnets must belong to the port's network, and a port an instance holds supports one subnet per IP version. An entry without `ip_address` keeps an address the port already has in that subnet, in the order the port reports them, or takes a free one when the port has none. Addresses that no entry keeps are released.
+          description: IP assignments on the port. Replaces the full set. Subnets must belong to the port's network, and a port an instance holds supports one subnet per IP version. An entry without `ip_address` keeps an address the port already has in that subnet, in the order the port reports them, or takes a free one when the port has none. Addresses that no entry keeps are released. A reserved fixed IP takes one address of each IP version, except on a dedicated public network.
           items:
             $ref: '#/components/schemas/IpAssignmentRequestSerializer'
           maxItems: 64
@@ -93533,7 +93565,7 @@ components:
           title: Allowed Address Pairs
           type: array
         ip_assignments:
-          description: IP assignments on the port. Replaces the full set. Subnets must belong to the port's network, and a port an instance holds supports one subnet per IP version. An entry without `ip_address` keeps an address the port already has in that subnet, in the order the port reports them, or takes a free one when the port has none. Addresses that no entry keeps are released.
+          description: IP assignments on the port. Replaces the full set. Subnets must belong to the port's network, and a port an instance holds supports one subnet per IP version. An entry without `ip_address` keeps an address the port already has in that subnet, in the order the port reports them, or takes a free one when the port has none. Addresses that no entry keeps are released. A reserved fixed IP takes one address of each IP version, except on a dedicated public network.
           items:
             $ref: '#/components/schemas/IpAssignmentRequestSerializer'
           maxItems: 64
