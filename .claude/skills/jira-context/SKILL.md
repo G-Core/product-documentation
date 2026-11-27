@@ -28,13 +28,13 @@ Phase 2c may search the published OpenAPI files and search `.mdx` files for a pa
 
 ## Decisions file
 
-Use this one file for every run:
+Use this one index for every run:
 
 `_private/jira-context-decisions.md`
 
-Do not create a second file. Do not put a date or a timestamp in the name.
+The index is one row. It is not the record of the check. The record is a separate file, written in the next section. Do not put a date or a timestamp in the index name.
 
-`_private/` is gitignored. Do not commit the file. Do not put credentials, tokens, or customer data in it. Do not read `_private/secrets/`.
+`_private/` is gitignored. Do not commit these files. Do not put credentials or tokens in them. Do not copy customer identifiers into them: account IDs, emails, names, IP addresses. Do not read `_private/secrets/`.
 
 Create the file only when it does not exist, with this table and no other content:
 
@@ -47,7 +47,32 @@ If the file exists, append rows to it. After each ticket is classified, append o
 
 If the user gave a list, a status stop or a blocking comment applies to that ticket only: write the row, then continue with the next ticket. For a single ticket, write the row, report, and stop as Phase 2 says.
 
-The chat brief for each ticket stays as specified below. The file is the full list of decisions for the run.
+The chat brief for each ticket stays as specified below. The index is the list of decisions for the run. The check trace is the record of how the decision was reached.
+
+## Check trace
+
+After the index row, write one file:
+
+`_private/jira-context/{TICKET}.md`
+
+`{TICKET}` is the key, for example `DOC-3036.md`. Create the directory if it is missing. If that ticket already has a file, replace the file. Do not append a second copy. Do not put this trace in the Jira comment, in the chat brief, or in the one-sentence Reason.
+
+The file is the path the classification actually walked. A future agent reads it to see which step produced the decision. Write every step that was taken. Do not collapse the file into a summary, a single JSON line, or a list of conclusions.
+
+For each step, write four things, in this order:
+
+1. Why this step. Name the skill phase or the rule that required it.
+2. Where you went. The ticket key, the file path, the URL, or the search.
+3. How you looked. The tool, the query, the fields you read. Quote the query.
+4. What came back. The status, the component, the matching line, or the empty result. An empty result is a result. Write it.
+
+Then write the step you did not take, and why.
+
+Keep the order of the work. Do not regroup it into a clean story that hides a dead end. If a search missed because of case or quoting, write that search and the search that followed.
+
+End the file with the rule that fired. Quote the rule from this skill. Then write the rules that were in reach and did not fire, each with the result that kept it from firing.
+
+Do not copy a customer account ID, email, name, or IP address into the file. Name the ticket that contained them.
 
 ---
 
@@ -104,7 +129,9 @@ Cannot start: [reason]
 - "feature not released" / "not in production"
 - "blocked by..." / "depends on..."
 
-If any blocking signal found — append a row with Decision `BLOCKED` and the signal as Reason, then report to the user.
+A comment that says "preprod", "not yet", "not in production", or "deploy to prod" is the state on that comment's date. It is not a blocking signal by itself. Check the live production behavior first: the production API, the production portal, or the published spec the customer sees. Block only when that current check shows the behavior is absent, and name the check in the Reason. The task is to find what already works.
+
+If any other blocking signal is found ("wait for", "on hold", "blocked by", "depends on") — append a row with Decision `BLOCKED` and the signal as Reason, then report to the user.
 
 ---
 
