@@ -1,6 +1,6 @@
 ---
 name: product-whats-new
-description: Evaluate every completed Gcore product-documentation ticket or article change for customer-visible product news, record Include and Needs verification decisions, and maintain one What's new page immediately after each product landing page. Use after documentation edits, ticket reviews, PR reviews, release updates, or when preparing product What's new pages in Claude Code.
+description: After a documentation pull request, read that PR diff and the article and write the What's new entry in the same session. Use when a docs PR has just been opened or when publishing product What's new pages.
 ---
 
 # Product What's New — Claude Code
@@ -11,36 +11,37 @@ Separate **product news** from **documentation edits**. A changed article is evi
 
 ## Modes
 
-- **Triage** (default): evaluate one completed ticket, article edit, or PR; persist an auditable decision. Do not modify public What's new pages in this mode.
-- **Publish** (explicit request): reconcile approved candidates against existing product What's new, update relevant product page(s), and mark records published.
-- **Audit** (explicit request): scan a specified set of completed tickets/diffs for candidates missed by triage; deduplicate against the register and existing What's new.
+- **After the PR** (default): the session that opened the pull request reads the diff and the article and writes the entry. Do not modify public What's new pages in this mode.
+- **Publish** (explicit request): copy those written entries onto the product What's new page. Do not rewrite them.
+- **Audit** (explicit request): scan a specified set of PRs whose entries were never written.
 
-**Automatic invocation is not guaranteed by SKILL.md alone.** To ensure triage after every article, add the one-line integration instruction from `references/integration.md` to the parent documentation workflow or project `CLAUDE.md`. Never run a broad audit automatically after each small edit.
+**Automatic invocation is not guaranteed by SKILL.md alone.** The parent workflow calls this skill after the pull request, using `references/integration.md`. Never run a broad audit automatically after each small edit.
 
-## Required input and evidence
+## After the pull request
 
-Inspect the **ticket/release context**, before/after diff, the resulting article, and relevant linked product/release information available in the workspace. If only the article is available, do not infer that its subject was just released. Use repository tools and existing local evidence; do not assume access to Jira, Slack, or external systems. Identify the affected product and its documentation landing page from the actual repository navigation configuration, not from a hardcoded product list.
+Run this in the same session that opened the pull request, after the PR exists. Read the PR diff and the changed article. Write the What's new entry from that reading. Do not write a note for another agent to analyze later. The weekly report copies `Entry` and does not interpret it again.
 
-When evidence is incomplete, ask for the missing fact only if needed to finish the main task; otherwise mark `Needs verification` and continue.
+One product change is one entry, even when the PR touches several articles.
 
-A check on the preprod Customer Portal is a check of the product. Behavior that worked there is the production behavior. A production check is the same evidence. Do not replace either check with `Needs verification`, and do not ask for the same clicks again on production.
+Write `Entry` when the diff gives customers a new feature, or changes something they already use so that the old way fails, disappears, or ends on a date. A manager can tell a customer that sentence.
 
-## Decision procedure (run for every completed doc task)
+Do not write an entry when the diff only does one of these:
 
-1. **Identify the underlying change.** Is this a new product capability, material improvement, changed behavior/default/limit, deprecation, breaking change, availability/region/pricing change, or impactful customer-facing fix? Or merely new wording, screenshots, translation, navigation, formatting, examples, regression correction, or clarification of existing behavior?
-2. **Determine customer impact.** Can a user do something new, must they act differently, does an integration change, or is there a meaningful effect on reliability, compatibility, security, pricing, limits, or availability? State who is affected and what changed, not just a feature name.
-3. **Establish novelty and availability.** Find evidence the product change actually shipped and when it became available. Ticket creation, documentation publication, PR merge, or new page creation **are not** release evidence by themselves. A newly documented old capability is not automatically news.
+- The article now matches behavior that was already there.
+- An existing action gains a confirmation or a cancellation step.
+- An SDK or CLI call changes shape and the previous API request still works.
+- An error code or message changes and the result stays the same.
+- The diff corrects columns, field names, or labels.
+- A second tool can set a feature the portal already has, and the portal path still works.
+- The date a control moved is not in the diff.
 
-   **A portal check is release evidence.** If this work used the behavior on the preprod or production Customer Portal and it worked, customers have that behavior. Preprod is not a weaker check. Record that check as the availability evidence. Then choose `Include` or `Skip` from what the customer gained. Do not mark `Needs verification`.
+A portal check during the article work is evidence of what the screen does. It does not by itself make an entry. Preprod and production are the same evidence. Do not leave the entry unwritten because the check was on preprod or because a Jira status is still open.
 
-   Do not wait for a Jira status, a workflow button, a resolution date, or a comment that some other bug is still open. A ticket left In Progress does not remove a capability that already worked on preprod or production. `Needs verification` means the change was not seen working on preprod or on production, and nothing else shows that customers can use it. Do not use `Needs verification` to demand the same check again on production.
-4. **Check duplicates.** Search the existing product What's new page and candidate register for the same underlying release. Several tickets/pages may describe **one** product event; link all relevant docs to one candidate.
-5. **Decide:**
-   - `Include`: verified, customer-relevant product change, not already published. A small but impactful change can qualify.
-   - `Skip`: documentation-only work, inconsequential product change, or already covered. Record nothing and say nothing.
-   - `Needs verification`: plausible customer-relevant product change that nobody has seen working, on preprod or on production, and no other evidence shows customers can use it. Record what to verify; do not publish. Do not use this status after a successful preprod or production check.
+If the same change already has an `Entry`, update that text. Do not add a second file.
 
-Do not assign scores, force quotas, or publish merely to maintain a cadence. Do not treat all bug fixes as news or reject all fixes: evaluate impact.
+If none of the write conditions apply, write no file and say nothing.
+
+Do not assign scores or publish to fill a week. A bug fix gets an entry only when the old customer request now fails or the feature is gone.
 
 ## Persistent decision register
 
@@ -48,9 +49,7 @@ Use `.whats-new/candidates/` in the repository root (create only if the workflow
 
 Do not log `Skip` decisions. Avoid logging secrets, customer data, internal-only pricing, or unapproved release details. If the repository must not contain internal metadata, use an approved external tracker instead; do not silently create public-facing records. If persistent storage is unavailable, output the decision and explicitly state that it was not saved.
 
-For `Include` or `Needs verification`, report at most one compact line in the normal task summary, e.g. `What's new: Needs verification — release date for multi-codec VOD unknown`, or `What's new: Include — new customer-facing capability (recorded)`. For `Skip`, report nothing.
-
-Do not block publication of ordinary documentation merely because a What's new candidate needs verification.
+When you write `Entry`, report one line in the task summary: the PR link and the first sentence of `Entry`. When you write nothing, say nothing.
 
 ## Location and navigation
 
@@ -68,24 +67,25 @@ Read `references/page-template.md` before publishing. Each entry needs:
 
 Group entries in reverse chronological order, normally by month. Prefer meaningful prose over `Added/Fixed/New` inventories. Do not list internal flags, tickets, PRs, unconfirmed release dates, marketing superlatives, or detailed step-by-step instructions. Use product terminology and link labels consistent with the repository. Do not repeat whole articles. Do not call a documentation correction a product release.
 
+## Weekly report
+
+When the user asks for the week, copy `Entry` from records whose `changed_on` falls in that week. Paste that text. Do not open the article again and do not rewrite the sentence. A record with no `Entry` is not in the report. One product event is one row.
+
 ## Publish procedure
 
-1. Load approved `Include` candidates, relevant docs, and existing product What's new.
-2. Confirm release evidence, availability date, customer impact, and exact target links; recheck candidate status at publish time.
+1. Copy `Entry` from the records for this release onto the product What's new page. Do not rewrite `Entry`. Do not load a file that has no `Entry`.
+2. Place that text on the product page with its date and the documentation link already stored on the record. Do not reopen the article to rewrite it.
 3. Merge multiple candidates describing one release, and check for already published equivalent entries.
 4. Edit only the relevant product page(s) and navigation if needed; keep the overview page untouched unless explicitly requested.
 5. Validate MDX/frontmatter/navigation, internal links, chronological ordering, factual scope, and absence of duplicates. Run existing repository checks when available.
 6. Mark candidates `Published`, recording published page and entry heading. Never mark published before the file is successfully updated.
 7. Report published entries and held candidates concisely.
 
-## Examples of classification
+## Examples
 
-- Rewriting an old CDN account limits article for clarity: `Skip` — no product behavior changed.
-- Correcting RTMP `?` vs `/` documentation for an already supported encoder format: `Skip` unless evidence shows a newly introduced compatibility change.
-- Adding a page about HEVC/AV1/VP9: `Needs verification` only when nobody has seen it work on preprod or on production. If either portal already showed it working, customers have that behavior: `Include` for a new capability, `Skip` when the page only describes behavior that was already there.
-- Reseller articles rewritten from a portal account that already showed the new sidebar: `Skip`. The portal check, preprod or production, is the availability evidence. A Jira status of In Progress does not reopen that check.
-- Changing an API parameter required by existing integrations: potentially `Include` even if a small diff; verify release and impact.
-- New region, material quota change, deprecation, or paid capability: potentially `Include`, with confirmed scope and effective date.
+Write `Entry`: a purge pattern that used to allow `*` before the extension now accepts `*` only at the end. A new orderable GPU flavor appears in a region.
+
+Do not write `Entry`: the article was updated to match a screen that already worked. An email change gains a confirmation step. An SDK call changes shape and the previous API request still works. A status code changes from 401 to 403 and the result is the same. Terraform can set a switch the portal already has.
 
 ## Guardrails
 
