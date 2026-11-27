@@ -188,12 +188,12 @@ Replace `148` with the chosen region's `id`.
 
 ## Step 4. Make a resource call
 
-With all three variables set, run a real Cloud API call — list all VMs in the project and region:
+With the token and project ID set, list the VMs in the project:
 
 <Tabs>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/projects/$PROJECT_ID/instances" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -225,7 +225,7 @@ With all three variables set, run a real Cloud API call — list all VMs in the 
   <Tab title="JavaScript">
     ```javascript
     const res = await fetch(
-      `https://api.gcore.com/cloud/v1/instances/${process.env.PROJECT_ID}/${process.env.REGION_ID}`,
+      `https://api.gcore.com/cloud/v1/projects/${process.env.PROJECT_ID}/instances`,
       { headers: { Authorization: `APIKey ${process.env.GCORE_API_KEY}` } }
     );
     const data = await res.json();
@@ -234,32 +234,32 @@ With all three variables set, run a real Cloud API call — list all VMs in the 
   </Tab>
 </Tabs>
 
-An empty list is expected on a new project — no VMs have been created yet. A `200 OK` response with valid JSON confirms the token, project ID, and region ID are all correct.
+An empty list is expected on a new project — no VMs have been created yet. A `200 OK` response with valid JSON confirms the token and project ID.
 
 ## Environment variables reference
 
-The three values set in Steps 1–3 are required for every Cloud API call. The variable names differ depending on the method used.
+The token and project ID from Steps 1 and 2 are required for a Cloud API call. A call that targets one region also sends the region ID, in the body or as `region_ids`.
 
-**curl and JavaScript** — project and region IDs are embedded in the URL path:
+**curl and JavaScript** — the project ID is in the instance path:
 
 ```bash
 export GCORE_API_KEY="..."    # Authentication
 export PROJECT_ID=1234567     # Goes into the URL path
-export REGION_ID=148          # Goes into the URL path
+export REGION_ID=148          # Sent when the call targets one region
 ```
 
-The curl URL pattern:
+The instance list path:
 
 ```
-https://api.gcore.com/cloud/v1/{resource_type}/{PROJECT_ID}/{REGION_ID}
+https://api.gcore.com/cloud/v1/projects/{PROJECT_ID}/instances
 ```
 
 Example:
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+curl "https://api.gcore.com/cloud/v1/projects/$PROJECT_ID/instances" \
   -H "Authorization: APIKey $GCORE_API_KEY"
-# Sends: GET https://api.gcore.com/cloud/v1/instances/1234567/148
+# Sends: GET https://api.gcore.com/cloud/v1/projects/1234567/instances
 ```
 
 **Python SDK** — all three values are read automatically from environment variables:
@@ -270,7 +270,7 @@ export GCORE_CLOUD_PROJECT_ID=1234567  # Read by Gcore() automatically
 export GCORE_CLOUD_REGION_ID=148       # Read by Gcore() automatically
 ```
 
-No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
+A list call reads the project ID from the environment. A create call still passes `region_id` in the body.
 
 **Go SDK** — all three values are read automatically by `gcore.NewClient()`, the same way the Python SDK reads them:
 
@@ -280,6 +280,6 @@ export GCORE_CLOUD_PROJECT_ID=1234567  # Read by gcore.NewClient() automatically
 export GCORE_CLOUD_REGION_ID=148       # Read by gcore.NewClient() automatically
 ```
 
-No project ID or region ID is passed to individual SDK calls — the client uses the values from the environment.
+A list call reads the project ID from the environment. A create call still passes `region_id` in the body.
 
 Resource creation is asynchronous — the response returns a task ID, not the finished resource.

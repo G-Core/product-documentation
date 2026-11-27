@@ -1,7 +1,7 @@
 ---
 title: Check the operational status of a Virtual Machine
 sidebarTitle: Check the status
-description: Check the operational status of a Virtual Machine, including status, vm_state, and task_state values for instances in a project.
+description: Check the operational status of a Virtual Machine in a Cloud project.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -24,16 +24,15 @@ If a Virtual Machine enters the `Error` state, contact [Gcore&nbsp;support](mail
 
 <MethodSection id="api" label="REST API">
 
-<p>Two endpoints expose instance status. The list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
+<p>The list and the detail endpoints return `status` for each VM. `rebooting`, `rebuilding`, and `resizing` mean that operation is still running.</p>
 
-<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects) and [region&nbsp;ID](/api-reference/cloud/regions/list-regions).</Info>
+<Info>An [API&nbsp;token](/account-settings/api-tokens) is required, along with a [project&nbsp;ID](/api-reference/cloud/projects/list-projects).</Info>
 
 <p>Set these variables before running the examples:</p>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
-export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 ```
 
@@ -43,7 +42,7 @@ export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 
 ## List instances
 
-<p>Returns all Virtual Machines in the project and region with their current `status`.</p>
+<p>Returns every Virtual Machine in the project with its current `status`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -82,7 +81,7 @@ for _, inst := range page.Results {
   </Tab>
   <Tab title="curl">
 ```bash
-curl -X GET "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}" \
+curl -X GET "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
@@ -95,13 +94,13 @@ Response:
     {
       "id": "4f89fc5a-3f68-4ae5-8b32-6e5304987872",
       "name": "my-instance",
-      "status": "ACTIVE",
+      "status": "active",
       "managed_by": null
     },
     {
       "id": "9a1bc2d3-4e5f-6789-abcd-ef0123456789",
       "name": "prod-cluster-worker-1",
-      "status": "ACTIVE",
+      "status": "active",
       "managed_by": {
         "type": "k8s_cluster",
         "resource_name": "prod-cluster"
@@ -115,13 +114,13 @@ Response:
 
 ## Get instance details
 
-<p>Returns full details for a single VM including `status`, `vm_state`, and `task_state`. When `task_state` is non-null, the VM is mid-operation — a reboot or resize may still show `status: ACTIVE` while `task_state: "rebooting"` indicates the operation is in progress.</p>
+<p>Returns one VM. `status` is `active` while the VM is running, and `rebooting`, `rebuilding`, or `resizing` while that operation is in progress.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
 instance = client.cloud.instances.get(instance_id=os.environ["INSTANCE_ID"])
-print(f"status={instance.status}  task_state={instance.task_state}")
+print(f"status={instance.status}")
 ```
   </Tab>
   <Tab title="Go SDK">
@@ -130,12 +129,12 @@ instance, err := client.Cloud.Instances.Get(ctx, os.Getenv("INSTANCE_ID"), cloud
 if err != nil {
     log.Fatalf("get instance: %v", err)
 }
-fmt.Printf("status=%s  task_state=%v\n", instance.Status, instance.TaskState)
+fmt.Printf("status=%s\n", instance.Status)
 ```
   </Tab>
   <Tab title="curl">
 ```bash
-curl -X GET "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${INSTANCE_ID}" \
+curl -X GET "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances/${INSTANCE_ID}" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
@@ -145,9 +144,7 @@ Response:
 {
   "id": "4f89fc5a-3f68-4ae5-8b32-6e5304987872",
   "name": "my-instance",
-  "status": "ACTIVE",
-  "vm_state": "active",
-  "task_state": null,
+  "status": "active",
   "managed_by": null
 }
 ```
@@ -213,7 +210,7 @@ instance_status     = "ACTIVE"
 instance_task_state = tostring(null)
 ```
 
-<p>The `status` and `vm_state` constants are listed in [Status&nbsp;values](#status-values) below.</p>
+<p>The API `status` values are listed in [Status&nbsp;values](#status-values).</p>
 
 ## Check state of a managed instance
 
@@ -234,20 +231,14 @@ terraform apply -refresh-only
 
 ## Status values
 
-The `status` field uses uppercase string constants. The `vm_state` field provides stable state context and is returned by the single-instance detail endpoint and the `data "gcore_cloud_instance"` Terraform data source.
+The API `status` field is a lowercase value. `rebooting`, `rebuilding`, and `resizing` mean that operation is still running.
 
-`task_state` is non-null only during a background operation. Operations like `REBOOT` and `REBUILD` transition `status` out of `ACTIVE` to a dedicated value. Other operations — live migration, snapshot creation — keep `status: ACTIVE` while `task_state` carries the operation name. Check both fields when the VM has not fully settled.
-
-| `status` | `vm_state` | Portal label | Meaning |
-|----------|------------|--------------|---------|
-| `ACTIVE` | `active` | Power on | The VM is running. |
-| `SHUTOFF` | `stopped` | Power off | The VM is powered off. |
-| `BUILD` | `building` | Building | The VM is being allocated. |
-| `ERROR` | `error` | Error | Resource allocation failed. |
-| `PAUSED` | `paused` | — | The VM is paused in memory. |
-| `REBOOT` | `active` | — | Soft reboot in progress. |
-| `HARD_REBOOT` | `active` | — | Hard reboot in progress. |
-| `REBUILD` | `active` | — | VM is being rebuilt from an image. |
-| `RESIZE` | `resized` | — | VM flavor is being changed. |
-| `MIGRATING` | `active` | — | VM is being live-migrated to another host. |
-| `SUSPENDED` | `suspended` | — | VM is suspended. |
+| `status` | Portal label | Meaning |
+|----------|--------------|---------|
+| `active` | Power on | The VM is running. |
+| `stopped` | Power off | The VM is powered off. |
+| `provisioning` | Building | The VM is being allocated. |
+| `error` | Error | Resource allocation failed. |
+| `rebooting` | — | Soft reboot in progress. |
+| `rebuilding` | — | The VM is being rebuilt from an image. |
+| `resizing` | — | The VM flavor is being changed. |

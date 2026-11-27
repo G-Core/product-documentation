@@ -309,23 +309,23 @@ The port ID is the UUID of the Virtual Machine's private network interface — r
 Retrieve it from the instance details:
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-In the response, look for `addresses.{network_name}[].port_id`:
+In the response, `interfaces[].port_id` is the port:
 
 ```json
 {
-  "addresses": {
-    "my-private-network": [
-      {
-        "addr": "192.168.100.5",
-        "port_id": "b1e2c3d4-...",
-        "subnet_id": "a87cedcc-..."
-      }
-    ]
-  }
+  "interfaces": [
+    {
+      "port_id": "b1e2c3d4-5f6a-7890-abcd-ef1234567890",
+      "network_id": "a1b2c3d4-1111-2222-3333-444455556666",
+      "ip_assignments": [
+        {"ip_address": "192.168.100.5", "subnet_id": "a87cedcc-1111-2222-3333-444455556666"}
+      ]
+    }
+  ]
 }
 ```
 
@@ -509,12 +509,12 @@ resource "gcore_cloud_floating_ip" "example" {
 }
 ```
 
-<p>To find the `port_id`, retrieve the instance details and extract the port ID from each interface entry under `addresses`:</p>
+<p>To find the `port_id`, retrieve the instance and read `interfaces[].port_id`:</p>
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/{PROJECT_ID}/{REGION_ID}/{INSTANCE_ID}" \
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
-  | jq '.addresses | to_entries[].value[].port_id'
+  | jq -r '.interfaces[].port_id'
 ```
 
 <p>After applying, `status` changes from `DOWN` to `ACTIVE`.</p>

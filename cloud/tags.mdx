@@ -228,19 +228,14 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances" \
       -H "Authorization: APIKey ${GCORE_API_KEY}" \
       -H "Content-Type: application/json" \
       -d '{
-        "flavor": "g2-standard-2-4",
-        "interfaces": [{"type": "external"}],
-        "volumes": [{
-          "source": "image",
-          "image_id": "your-image-id",
-          "size": 10,
-          "type_name": "standard",
-          "boot_index": 0
-        }],
+        "region_id": '"${GCORE_CLOUD_REGION_ID}"',
+        "flavor_name": "g2-standard-2-4",
+        "boot_volume_id": "'"${BOOT_VOLUME_ID}"'",
+        "interfaces": [{"port_id": "'"${PORT_ID}"'"}],
         "tags": {
           "env": "production",
           "team": "backend"
@@ -268,20 +263,22 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
     client = Gcore()
     instance_id = "your-instance-id"
 
-    result = client.cloud.instances.update(
+    result = client.cloud.instances.update_and_poll(
         instance_id=instance_id,
         tags={"env": "staging", "team": "backend"},
     )
-    user_tags = [(t.key, t.value) for t in result.tags if not t.read_only]
-    print(f"Updated tags: {user_tags}")
+    print(f"Updated tags: {result.tags}")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    result, err := client.Cloud.Instances.Update(context.Background(),
+    result, err := client.Cloud.Instances.UpdateAndPoll(context.Background(),
         "your-instance-id",
         cloud.InstanceUpdateParams{
-            Tags: map[string]string{"env": "staging", "team": "backend"},
+            Tags: cloud.TagUpdateMap{
+                "env":  gcore.String("staging"),
+                "team": gcore.String("backend"),
+            },
         },
     )
     if err != nil {
@@ -292,69 +289,51 @@ The `metadata` field is deprecated. Use the `tags` field for new implementations
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/your-instance-id" \
+    curl -X PATCH "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances/your-instance-id" \
       -H "Authorization: APIKey ${GCORE_API_KEY}" \
       -H "Content-Type: application/json" \
       -d '{"tags": {"env": "staging", "team": "backend"}}'
     ```
 
-    Response: the full instance object with updated tags.
+    The API returns task IDs. After the task is `FINISHED`, `tags` is an object of the keys sent in the request. Platform tags are in `system_tags` and stay unchanged.
 
     ```json
     {
-      "instance_id": "...",
-      "tags": [
-        {"key": "env", "value": "staging", "read_only": false},
-        {"key": "team", "value": "backend", "read_only": false},
-        {"key": "image_id", "value": "...", "read_only": true}
-      ]
+      "tasks": ["ef3b0d34-1111-2222-3333-444455556666"]
     }
     ```
   </Tab>
 </Tabs>
 
 <Note>
-System tags (e.g. `image_id`, `os_type`, `os_version`) have `"read_only": true` in the response and cannot be modified.
+`system_tags` holds platform keys, including `image_id`, `os_type`, and `os_version`. The `tags` object in an update does not change them.
 </Note>
 
 ## Filter resources by tag
 
 <p>Use query parameters to list only resources that match specific tag keys or values.</p>
 
-| Parameter | Format | Example |
-|-----------|--------|---------|
-| `tag_key_value` | JSON object | `{"env":"production"}` |
-| `tag_key` | plain string | `env` |
-| `tag_value` | plain string | `production` |
-
-<p>The `tag_key_value` parameter accepts a JSON-encoded object. To filter by a single tag:</p>
+<p>Repeat `tags[key]=value` for each key. Values for one key are combined with OR. Different keys are combined with AND.</p>
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%7D" \
+curl "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances?tags[env]=production" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
-<p>To filter by multiple tags simultaneously, include all key-value pairs in the same JSON object:</p>
-
 ```bash
-# URL-decoded form for readability:
-# tag_key_value={"env":"production","team":"backend"}
-curl "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}?tag_key_value=%7B%22env%22%3A%22production%22%2C%22team%22%3A%22backend%22%7D" \
+curl "https://api.gcore.com/cloud/v1/projects/${GCORE_CLOUD_PROJECT_ID}/instances?tags[env]=production&tags[team]=backend" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
 <p>Using the Python SDK:</p>
 
 ```python
-import json
 from gcore import Gcore
 
 client = Gcore()
 
-instances = list(client.cloud.instances.list(
-    tag_key_value=json.dumps({"env": "production"}),
-))
-print(f"Found {len(instances)} instances tagged env=production")
+page = client.cloud.instances.list(tags={"env": ["production"]})
+print(f"Found {page.count} instances tagged env=production")
 ```
 
 </MethodSection>
@@ -461,9 +440,9 @@ terraform init
 terraform apply
 
 # Verify tags via the Gcore API after apply
-curl "https://api.gcore.com/cloud/v1/instances/${PROJECT_ID}/${REGION_ID}/$(terraform output -raw instance_id)" \
+curl "https://api.gcore.com/cloud/v1/projects/${PROJECT_ID}/instances/$(terraform output -raw instance_id)" \
   -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  | python -c "import sys,json; [print(t) for t in json.load(sys.stdin)['tags'] if not t['read_only']]"
+  | python -c "import sys,json; print(json.load(sys.stdin)['tags'])"
 ```
 
 </MethodSection>

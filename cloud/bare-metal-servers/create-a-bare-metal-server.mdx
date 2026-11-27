@@ -520,15 +520,16 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
-        \"flavor\": \"$FLAVOR_ID\",
+        \"region_id\": $GCORE_CLOUD_REGION_ID,
+        \"flavor_name\": \"$FLAVOR_ID\",
         \"image_id\": \"$IMAGE_ID\",
         \"name\": \"my-bm-server\",
-        \"ssh_key_name\": \"my-key\",
-        \"interfaces\": [{\"type\": \"external\"}]
+        \"ssh_key_id\": \"$SSH_KEY_ID\",
+        \"interfaces\": [{\"port_id\": \"$PORT_ID\"}]
       }"
     ```
 
@@ -568,7 +569,7 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
 
 ### Step 4. Get server details
 
-<p>Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP address](/api-reference/cloud/bare-metal/get-bare-metal-server).</p>
+<p>Retrieve the server to confirm `status` is `active` and find the assigned [IP address](/api-reference/cloud/bare-metal/get-bare-metal-server).</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -591,7 +592,7 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -601,27 +602,22 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
     {
       "id": "90ba53c5-def5-4825-83fb-9adc78bd3266",
       "name": "my-bm-server",
-      "status": "ACTIVE",
-      "flavor": {
-        "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
-        "hardware_description": {
-          "cpu": "1x AMD Ryzen 7950X 16C/32T 4.5 GHz",
-          "disk": "2x 960GB NVMe"
+      "status": "active",
+      "flavor_name": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
+      "interfaces": [
+        {
+          "port_id": "b1e2c3d4-5f6a-7890-abcd-ef1234567890",
+          "ip_assignments": [
+            {"ip_address": "203.0.113.10", "subnet_id": "a87cedcc-1111-2222-3333-444455556666"}
+          ]
         }
-      },
-      "addresses": {
-        "pub_net": [
-          {"addr": "85.234.84.18", "type": "fixed"}
-        ]
-      },
-      "security_groups": [],
-      "volumes": []
+      ]
     }
     ```
   </Tab>
 </Tabs>
 
-<p>`security_groups: []` is expected — Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.</p>
+<p>Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.</p>
 
 <p>Use the public IP from the response to connect. The default user for Ubuntu images is `ubuntu`:</p>
 
@@ -668,21 +664,18 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
-        \"flavor\": \"$FLAVOR_ID\",
+        \"region_id\": $GCORE_CLOUD_REGION_ID,
+        \"flavor_name\": \"$FLAVOR_ID\",
         \"image_id\": \"$IMAGE_ID\",
         \"name\": \"my-bm-server\",
-        \"ssh_key_name\": \"my-key\",
+        \"ssh_key_id\": \"$SSH_KEY_ID\",
         \"interfaces\": [
-          {\"type\": \"external\"},
-          {
-            \"type\": \"subnet\",
-            \"network_id\": \"$NETWORK_ID\",
-            \"subnet_id\": \"$SUBNET_ID\"
-          }
+          {\"port_id\": \"$PUBLIC_PORT_ID\"},
+          {\"port_id\": \"$PRIVATE_PORT_ID\"}
         ]
       }"
     ```
@@ -728,22 +721,18 @@ ssh -i ~/.ssh/my-key ubuntu@<public-ip>
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
-        \"flavor\": \"$FLAVOR_ID\",
+        \"region_id\": $GCORE_CLOUD_REGION_ID,
+        \"flavor_name\": \"$FLAVOR_ID\",
         \"image_id\": \"$IMAGE_ID\",
         \"name\": \"my-bm-server\",
-        \"ssh_key_name\": \"my-key\",
+        \"ssh_key_id\": \"$SSH_KEY_ID\",
         \"interfaces\": [
-          {\"type\": \"external\", \"port_group\": 1},
-          {
-            \"type\": \"subnet\",
-            \"network_id\": \"$NETWORK_ID\",
-            \"subnet_id\": \"$SUBNET_ID\",
-            \"port_group\": 2
-          }
+          {\"port_id\": \"$PUBLIC_PORT_ID\", \"port_group\": 0},
+          {\"port_id\": \"$PRIVATE_PORT_ID\", \"port_group\": 1}
         ]
       }"
     ```
