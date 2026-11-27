@@ -146,6 +146,8 @@ The opening sentence of each paragraph must establish its relationship to the pr
 If a sentence already makes a complete point, stop. Do not append "— specifically in X, Y, and Z"
 unless the enumeration is genuinely necessary for the reader to act correctly.
 
+Do not restate that point in the next sentence with different words. If the sentence says requests use TLS 1.2 or TLS 1.3, do not add that TLS 1.0 and TLS 1.1 fail. The reader can add that up. One fact, one sentence.
+
 When "everywhere" or "in all cases" is used, a list that follows is usually redundant.
 
 ### Avoid redundant reassurance

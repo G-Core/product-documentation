@@ -75,6 +75,8 @@ the change into it.
 
 A developer ticket is a point fix, not an epic. Edit only the sentence that states the outdated fact. Do not copy the correction into other articles, tabs, or examples that never stated it. A second place is in scope only when it states the same outdated fact.
 
+Say each fact once. Do not follow it with another sentence that repeats it in different words. If the sentence says requests use TLS 1.2 or TLS 1.3, do not add that TLS 1.0 and TLS 1.1 fail. The reader can add that up. State what is true, then stop.
+
 ### Ticket is a signal, not a blueprint
 
 A Jira ticket tells you **what content is missing** — not how to structure the article or
