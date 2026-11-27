@@ -434,21 +434,15 @@ Passing `placement_group_id` in the SDK instance creation request assigns the VM
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "flavor": "$FLAVOR_ID",
-        "name": "my-vm",
-        "volumes": [{
-          "source": "image",
-          "image_id": "$IMAGE_ID",
-          "boot_index": 0,
-          "size": 20,
-          "type_name": "standard"
-        }],
-        "interfaces": [{"type": "external"}],
-        "servergroup_id": "$GROUP_ID"
+        "region_id": '"$GCORE_CLOUD_REGION_ID"',
+        "flavor_name": "'"$FLAVOR_ID"'",
+        "boot_volume_id": "'"$BOOT_VOLUME_ID"'",
+        "interfaces": [{"port_id": "'"$PORT_ID"'"}],
+        "placement_group_id": "'"$GROUP_ID"'"
       }'
     ```
 
@@ -501,11 +495,11 @@ An existing VM can be moved into a placement group without recreating it. The sc
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/put_into_servergroup" \
+    curl -X PATCH \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"servergroup_id": "$GROUP_ID"}'
+      -d '{"placement_group_id": "'"$GROUP_ID"'"}'
     ```
 
     Response:
@@ -546,9 +540,11 @@ Removing a VM from a placement group releases the placement constraint. The VM k
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/remove_from_servergroup" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
+    curl -X PATCH \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"placement_group_id": null}'
     ```
 
     Response:
@@ -605,16 +601,18 @@ To move a VM between placement groups, remove it from the current group and then
   <Tab title="curl">
     ```bash
     # Remove from current group.
-    curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/remove_from_servergroup" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-
-    # Add to new group.
-    curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/put_into_servergroup" \
+    curl -X PATCH \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"servergroup_id": "$GROUP_ID2"}'
+      -d '{"placement_group_id": null}'
+
+    # Add to new group.
+    curl -X PATCH \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"placement_group_id": "'"$GROUP_ID2"'"}'
     ```
 
     Poll both tasks at <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until each `state` is `FINISHED`.
@@ -680,7 +678,7 @@ Retrieving a group shows which VMs are currently assigned to it and confirms tha
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    task = client.cloud.placement_groups.delete(group_id=group_id)
+    task = client.cloud.placement_groups.delete(placement_group_id=group_id)
     client.cloud.tasks.poll(task.tasks[0])
     print(f"Deleted group {group_id}")
     ```

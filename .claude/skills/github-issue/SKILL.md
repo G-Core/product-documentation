@@ -244,6 +244,7 @@ Maintained by the agent. Update after each triage or merge.
 | 3285 | SDK updated to Python v0.62.0, Go v0.62.0 | api-sdk-tracker | 2026-11-07 | In progress | `issue/3285-sdk-v062` | Go storage Delete and access-key New need the params struct. Python and curl samples still match. Pins set to v0.62.0. |
 | 3335 | SDK updated to Python v0.63.0, Go v0.63.0 | api-sdk-tracker | 2026-11-12 | PR open | `issue/3335-sdk-v063` | User list and get curl samples now call `/iam/v2/users`. Virtual instance rebuild uses `rebuild_and_poll()`. Pins set to v0.63.0. |
 | 3251 | Terraform provider updated to v2.0.0-rc.3 | terraform | 2026-10-31 | In progress | `issue/3251-cdn-origin-group` | Pin and pool health monitor are already on main. Two articles still set removed `origin` on `gcore_cdn_resource`. |
+| 3400 | SDK updated to Python v0.64.0, Go v0.64.0 | api-sdk-tracker | 2026-11-26 | In progress | `issue/3400-sdk-v064` | Live-checked global instance, bare metal, placement group, and port routes. Replaced regional curls where the global view exists. Rebuild and security-group attach stay regional. |
 
 Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 
@@ -252,6 +253,12 @@ Status values: `Open`, `In progress`, `PR open`, `Done`, `Blocked`, `Cancelled`.
 ## Workflow log
 
 Append-only session notes. Add an entry every time this skill runs.
+
+### 2026-11-27 — Issue #3400: SDK v0.64.0
+
+- Fetched issue #3400. No comments. Decision: PROCEED. Pins on main were v0.63.0.
+- Python and Go 0.64.0 move bare metal, instances, and placement groups to the global view. `update` returns a task list. `get_console` is `console.get`. Power action takes one action value and does not change the DDoS profile. Tags are a merge-patch map. Placement group delete takes `placement_group_id`.
+- Updated `manage-a-bare-metal-server.mdx`, `tags.mdx`, and `configure-a-placement-group.mdx`. Flavor list, instance list, and Kubernetes flavor samples already match the new field names. Pins set to v0.64.0. Branch: `issue/3400-sdk-v064`.
 
 ### 2026-11-12 — Issue #3335: SDK v0.63.0
 

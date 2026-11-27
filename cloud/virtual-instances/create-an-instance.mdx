@@ -723,7 +723,7 @@ export FLAVOR_ID="{FLAVOR_ID}"   # flavor name from the list
 
 ### Step 3. Create the instance
 
-The Python and Go SDKs create a boot volume from the image and a port on the external network, then create the instance from those IDs. `flavor_name` is the flavor name from Step 2. `ssh_key_id` is the ID of an existing SSH key. The volume `size` must be at least `min_disk` from Step 1. Leave `name` unset. The account name template assigns it, and an account that forbids a custom name rejects any other value. The curl request on this step still sends the volume and the public interface in the instance body, and that body needs `name` or `name_template`.
+The Python and Go SDKs create a boot volume from the image and a port on the external network, then create the instance from those IDs. `flavor_name` is the flavor name from Step 2. `ssh_key_id` is the ID of an existing SSH key. The volume `size` must be at least `min_disk` from Step 1. Leave `name` unset. The account name template assigns it, and an account that forbids a custom name rejects any other value. The curl requests do the same three calls. A port body that contains only `region_id` creates one public IPv4 address.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -823,22 +823,33 @@ The Python and Go SDKs create a boot volume from the image and a port on the ext
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+    # Poll each task. created_resources.volumes[0] is BOOT_VOLUME_ID.
+    # created_resources.ports[0] is PORT_ID. Then create the instance.
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "name": "my-vm",
-        "flavor": "'"$FLAVOR_ID"'",
-        "ssh_key_name": "my-key",
-        "interfaces": [{"type": "external"}],
-        "volumes": [
-          {
-            "source": "image",
-            "image_id": "'"$IMAGE_ID"'",
-            "size": 20,
-            "boot_index": 0
-          }
-        ]
+        "source": "image",
+        "image_id": "'"$IMAGE_ID"'",
+        "name": "my-boot-volume",
+        "size": 10,
+        "type_name": "standard"
+      }'
+
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/ports" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"region_id": '"$GCORE_CLOUD_REGION_ID"'}'
+
+    curl -X POST "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "region_id": '"$GCORE_CLOUD_REGION_ID"',
+        "flavor_name": "'"$FLAVOR_ID"'",
+        "boot_volume_id": "'"$BOOT_VOLUME_ID"'",
+        "ssh_key_id": "'"$SSH_KEY_ID"'",
+        "interfaces": [{"port_id": "'"$PORT_ID"'"}]
       }'
     ```
 
@@ -862,10 +873,10 @@ Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go
 
 <Tabs>
   <Tab title="Python SDK">
-    `create_and_poll()` in Step 3 polls automatically. `instance` is ACTIVE when Step 3 returns.
+    `create_and_poll()` in Step 3 polls automatically. `instance.status` is `active` when Step 3 returns.
   </Tab>
   <Tab title="Go SDK">
-    `NewAndPoll()` in Step 3 polls automatically. `instance` is ACTIVE when Step 3 returns.
+    `NewAndPoll()` in Step 3 polls automatically. `instance` status is `active` when Step 3 returns.
   </Tab>
   <Tab title="curl">
     ```bash
@@ -885,8 +896,7 @@ Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go
     {
       "state": "FINISHED",
       "created_resources": {
-        "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],   // save as INSTANCE_ID
-        "volumes": ["726ecfcc-7fd0-4e30-a86e-7892524aa483"]   // save as BOOT_VOLUME_ID
+        "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"]
       }
     }
     ```
@@ -895,12 +905,12 @@ Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go
 
 ```bash
 export INSTANCE_ID="169942e0-9b53-42df-95ef-1a8b6525c2bd"       # created_resources.instances[0]
-export BOOT_VOLUME_ID="726ecfcc-7fd0-4e30-a86e-7892524aa483"   # created_resources.volumes[0]
+export BOOT_VOLUME_ID="726ecfcc-7fd0-4e30-a86e-7892524aa483"   # created_resources.volumes[0] from the volume task
 ```
 
 ### Step 5. Get the public IP address
 
-The Python and Go SDKs return the public IP on the instance interface. The curl response uses `addresses`.
+The public IP is an `ip_address` on an interface.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -921,7 +931,7 @@ The Python and Go SDKs return the public IP on the instance interface. The curl 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -929,18 +939,19 @@ The Python and Go SDKs return the public IP on the instance interface. The curl 
 
     ```json
     {
-      "status": "ACTIVE",
-      "addresses": {
-        "pub_net": [
-          {"addr": "203.0.113.42", "type": "fixed"}
-        ]
-      }
+      "status": "active",
+      "interfaces": [
+        {
+          "port_id": "b1e2c3d4-5f6a-7890-abcd-ef1234567890",
+          "ip_assignments": [
+            {"ip_address": "203.0.113.42", "subnet_id": "a87cedcc-1111-2222-3333-444455556666"}
+          ]
+        }
+      ]
     }
     ```
   </Tab>
 </Tabs>
-
-In the curl response, the keys in `addresses` are network names that vary by region, so iterate over all keys when parsing programmatically.
 
 ### Step 6. Connect via SSH
 
@@ -997,7 +1008,7 @@ The default security group is applied automatically, allowing inbound SSH (port 
 
 ## Clean up
 
-<p>The SDK delete call removes the instance, the boot volume, and the port when those IDs are passed. The curl request passes the boot volume ID in the `volumes` query parameter.</p>
+<p>The delete call removes the instance and the volumes and ports named in the request. Other attached volumes, ports, and floating IPs stay.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -1023,7 +1034,7 @@ The default security group is applied automatically, allowing inbound SSH (port 
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID?volume_ids=$BOOT_VOLUME_ID&port_ids=$PORT_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -1037,7 +1048,7 @@ The default security group is applied automatically, allowing inbound SSH (port 
   </Tab>
 </Tabs>
 
-<p>If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string.</p>
+<p>To delete every floating IP on the instance, add `all_floating_ips=true` to the query string.</p>
 
   </MethodSection>
   <MethodSection id="terraform" label="Terraform">
@@ -1181,11 +1192,11 @@ terraform import gcore_cloud_instance.example '<project_id>/<region_id>/<instanc
 terraform import gcore_cloud_volume.boot '<project_id>/<region_id>/<volume_id>'
 ```
 
-<p>To find the boot volume ID, look for `"is_root_volume": true` in the instance details:</p>
+<p>The boot volume ID is `boot_volume_id` on the instance:</p>
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY" | jq '.volumes[] | select(.is_root_volume == true) | .id'
+curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/instances/$INSTANCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" | jq -r .boot_volume_id
 ```
 
   </MethodSection>

@@ -187,7 +187,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
 ## Get server details
 
-<p>Retrieve the current state, IP addresses, flavor, and hardware description of a server.</p>
+<p>Retrieve the current status, flavor name, and IP addresses of a server.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -199,9 +199,9 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
     server = client.cloud.baremetal.servers.get(server_id=os.environ["SERVER_ID"])
     print(f"Status: {server.status}")
-    for network, ifaces in server.addresses.items():
-        for iface in ifaces:
-            print(f"{network}: {iface.addr}")
+    for iface in server.interfaces:
+        for assignment in iface.ip_assignments:
+            print(assignment.ip_address)
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -227,15 +227,17 @@ export SERVER_ID="{YOUR_SERVER_ID}"
             log.Fatalf("get server: %v", err)
         }
         fmt.Printf("Status: %s\n", server.Status)
-        for network, ifaces := range server.Addresses {
-            fmt.Printf("%s: %s\n", network, ifaces[0].AsFixedIPAddress().Addr)
+        for _, iface := range server.Interfaces {
+            for _, assignment := range iface.IPAssignments {
+                fmt.Println(assignment.IPAddress)
+            }
         }
     }
     ```
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -245,17 +247,16 @@ export SERVER_ID="{YOUR_SERVER_ID}"
     {
       "id": "90ba53c5-def5-4825-83fb-9adc78bd3266",
       "name": "my-bm-server",
-      "status": "ACTIVE",
-      "flavor": {
-        "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
-        "hardware_description": {
-          "cpu": "1x AMD Ryzen 7950X 16C/32T 4.5 GHz",
-          "disk": "2x 960GB NVMe"
+      "status": "active",
+      "flavor_name": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",
+      "interfaces": [
+        {
+          "port_id": "b1e2c3d4-5f6a-7890-abcd-ef1234567890",
+          "ip_assignments": [
+            {"ip_address": "203.0.113.10", "subnet_id": "a87cedcc-1111-2222-3333-444455556666"}
+          ]
         }
-      },
-      "addresses": {
-        "pub_net": [{"addr": "85.234.84.18", "type": "fixed"}]
-      }
+      ]
     }
     ```
   </Tab>
@@ -273,7 +274,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
     client = Gcore()
 
-    server = client.cloud.baremetal.servers.update(
+    server = client.cloud.baremetal.servers.update_and_poll(
         server_id=os.environ["SERVER_ID"],
         name="new-server-name",
     )
@@ -298,7 +299,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        server, err := client.Cloud.Baremetal.Servers.Update(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerUpdateParams{
+        server, err := client.Cloud.Baremetal.Servers.UpdateAndPoll(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerUpdateParams{
             Name: gcore.String("new-server-name"),
         })
         if err != nil {
@@ -311,19 +312,19 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="curl">
     ```bash
     curl -X PATCH \
-      "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "new-server-name"}'
     ```
 
-    The API returns the updated server object with the new `name` field.
+    The API returns task IDs. Poll `GET /cloud/v1/tasks/{task_id}` until `state` is `FINISHED`, then read the server again.
   </Tab>
 </Tabs>
 
 ## Update tags
 
-<p>Attach key-value tags to a server for filtering and cost allocation. Tags are included in `PATCH` requests as a list of objects with `key` and `value` fields — the call replaces the full tag set, so include all existing tags alongside any new ones.</p>
+<p>Attach key-value tags to a server for filtering and cost allocation. The `tags` object adds or updates the keys in the request. A key set to null removes that tag. Keys that are omitted stay as they are.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -333,12 +334,9 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
     client = Gcore()
 
-    server = client.cloud.baremetal.servers.update(
+    server = client.cloud.baremetal.servers.update_and_poll(
         server_id=os.environ["SERVER_ID"],
-        tags=[
-            {"key": "env", "value": "production"},
-            {"key": "team", "value": "platform"},
-        ],
+        tags={"env": "production", "team": "platform"},
     )
     print(f"Tags: {server.tags}")
     ```
@@ -361,10 +359,10 @@ export SERVER_ID="{YOUR_SERVER_ID}"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        server, err := client.Cloud.Baremetal.Servers.Update(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerUpdateParams{
-            Tags: []cloud.TagKeyValue{
-                {Key: "env", Value: gcore.String("production")},
-                {Key: "team", Value: gcore.String("platform")},
+        server, err := client.Cloud.Baremetal.Servers.UpdateAndPoll(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerUpdateParams{
+            Tags: cloud.TagUpdateMap{
+                "env":  gcore.String("production"),
+                "team": gcore.String("platform"),
             },
         })
         if err != nil {
@@ -377,18 +375,18 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="curl">
     ```bash
     curl -X PATCH \
-      "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "tags": [
-          {"key": "env", "value": "production"},
-          {"key": "team", "value": "platform"}
-        ]
+        "tags": {
+          "env": "production",
+          "team": "platform"
+        }
       }'
     ```
 
-    The API returns the updated server object including the `tags` array.
+    The API returns task IDs. After the task is `FINISHED`, the server `tags` object contains the keys from this request.
   </Tab>
 </Tabs>
 
@@ -433,9 +431,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
         // stop, reboot, or reboot_hard — change the Action string as needed
         taskList, err := client.Cloud.Baremetal.Servers.Action(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerActionParams{
-            OfBasicBareMetalActionInstanceSerializer: &cloud.BaremetalServerActionParamsBodyBasicBareMetalActionInstanceSerializer{
-                Action: "reboot",
-            },
+            Action: cloud.BaremetalServerActionParamsActionReboot,
         })
         if err != nil {
             log.Fatalf("action: %v", err)
@@ -450,7 +446,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v2/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID/action" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID/action" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"action": "reboot"}'
@@ -466,7 +462,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   </Tab>
 </Tabs>
 
-<p>Starting a stopped server accepts an additional `activate_profile` flag to re-activate the server's [Advanced&nbsp;DDoS&nbsp;protection](/ddos-protection) profile:</p>
+<p>Start a stopped server with the `start` action:</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -474,7 +470,6 @@ export SERVER_ID="{YOUR_SERVER_ID}"
     result = client.cloud.baremetal.servers.action(
         server_id=os.environ["SERVER_ID"],
         action="start",
-        activate_profile=True,
     )
     client.cloud.tasks.poll(result.tasks[0])
     ```
@@ -482,9 +477,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="Go SDK">
     ```go
     taskList, err := client.Cloud.Baremetal.Servers.Action(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerActionParams{
-        OfStartActionInstanceSerializer: &cloud.BaremetalServerActionParamsBodyStartActionInstanceSerializer{
-            ActivateProfile: gcore.Bool(true),
-        },
+        Action: cloud.BaremetalServerActionParamsActionStart,
     })
     if err != nil {
         log.Fatalf("start: %v", err)
@@ -495,15 +488,15 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v2/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID/action" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID/action" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"action": "start", "activate_profile": true}'
+      -d '{"action": "start"}'
     ```
   </Tab>
 </Tabs>
 
-<p>`activate_profile` defaults to `true` — set it to `false` to start the server without touching the DDoS profile.</p>
+<p>A power action does not change the server's Advanced DDoS profile.</p>
 
 ## Get console URL
 
@@ -517,7 +510,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
 
     client = Gcore()
 
-    console = client.cloud.baremetal.servers.get_console(server_id=os.environ["SERVER_ID"])
+    console = client.cloud.baremetal.servers.console.get(server_id=os.environ["SERVER_ID"])
     print(f"Console URL: {console.url}")
     ```
   </Tab>
@@ -539,7 +532,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
         client := gcore.NewClient()
         ctx := context.Background()
 
-        console, err := client.Cloud.Baremetal.Servers.GetConsole(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerGetConsoleParams{})
+        console, err := client.Cloud.Baremetal.Servers.Console.Get(ctx, os.Getenv("SERVER_ID"), cloud.BaremetalServerConsoleGetParams{})
         if err != nil {
             log.Fatalf("get console: %v", err)
         }
@@ -549,7 +542,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID/get_console" \
+    curl "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID/console" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -712,7 +705,7 @@ export SERVER_ID="{YOUR_SERVER_ID}"
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
+      "https://api.gcore.com/cloud/v1/projects/$GCORE_CLOUD_PROJECT_ID/baremetal/servers/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
