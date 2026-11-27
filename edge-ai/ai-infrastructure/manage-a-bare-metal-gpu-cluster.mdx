@@ -259,7 +259,7 @@ Most write operations are asynchronous and return `{ "tasks": ["task-uuid"] }`. 
 
 ## List bare metal GPU clusters
 
-<p>List clusters in a project and region. Query parameters filter the page by name, flavor, node count, tags, and timestamps, with the syntax in the [API&nbsp;reference](/api-reference/cloud/gpu-baremetal). The Python and Go calls return an unfiltered page, while the curl call sets those filters.</p>
+<p>List clusters in a project and region. The SDK and curl calls filter that page by name, flavor, node count, tags, and timestamps. The filter syntax is in the [API&nbsp;reference](/api-reference/cloud/gpu-baremetal).</p>
 
 <Info>
 The list call returns a page of clusters. Pass `limit` and `offset` to control page size and position.
@@ -272,7 +272,12 @@ The list call returns a page of clusters. Pass `limit` and `offset` to control p
 
     client = Gcore()
 
-    page = client.cloud.gpu_baremetal.clusters.list()
+    page = client.cloud.gpu_baremetal.clusters.list(
+        name={"prefix": ["prod-"]},
+        flavor={"prefix": ["bm3-"]},
+        servers_count={"gte": 4},
+        tags={"env": ["production"]},
+    )
     for cluster in page.results:
         print(cluster.id, cluster.name, cluster.servers_count, cluster.status)
     ```
@@ -293,8 +298,20 @@ The list call returns a page of clusters. Pass `limit` and `offset` to control p
         client := gcore.NewClient()
         ctx := context.Background()
 
-        page, err := client.Cloud.GPUBaremetal.Clusters.List(ctx,
-            cloud.GPUBaremetalClusterListParams{})
+        page, err := client.Cloud.GPUBaremetal.Clusters.List(ctx, cloud.GPUBaremetalClusterListParams{
+            Name: cloud.GPUBaremetalClusterListParamsName{
+                Prefix: []string{"prod-"},
+            },
+            Flavor: cloud.GPUBaremetalClusterListParamsFlavor{
+                Prefix: []string{"bm3-"},
+            },
+            ServersCount: cloud.GPUBaremetalClusterListParamsServersCount{
+                Gte: gcore.Int(4),
+            },
+            Tags: map[string][]string{
+                "env": {"production"},
+            },
+        })
         if err != nil {
             panic(err)
         }
